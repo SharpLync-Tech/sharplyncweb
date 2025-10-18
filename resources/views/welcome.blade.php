@@ -21,7 +21,7 @@
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
-        text-align: center !important;
+        text-align: left !important;
         font-size: clamp(1rem, 4vw, 1.3rem) !important;
         max-width: 100vw !important; /* narrower for better wrapping */
         color: #ffffff !important;
