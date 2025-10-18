@@ -28,7 +28,7 @@
       }
 
       div.button-container {
-        bottom: 15vh !important;
+        bottom: 5vh !important;
       }
 
       div.button-container a {
