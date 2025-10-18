@@ -1,40 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<<head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SEO Metadata -->
-  <title>SharpLync | IT Solutions, Connectivity & Cybersecurity</title>
-  <meta name="description" content="SharpLync provides managed IT services, cybersecurity, cloud integration, and connectivity solutions — helping businesses stay connected, secure, and productive.">
-  <meta name="keywords" content="SharpLync, IT Services, Managed IT, Cybersecurity, Cloud Solutions, Connectivity, Network Security, Business IT Support, Australia IT">
-  <meta name="author" content="SharpLync">
-
-  <!-- Open Graph / Social Metadata -->
-  <meta property="og:title" content="SharpLync | Your Personal Tech Link">
-  <meta property="og:description" content="Helping you stay connected, secure, and productive with expert IT and cybersecurity solutions.">
-  <meta property="og:image" content="{{ asset('images/sharplync-logo.png') }}">
-  <meta property="og:url" content="https://sharplync.com.au">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SharpLync | IT Solutions & Cybersecurity Experts">
-  <meta name="twitter:description" content="Helping businesses stay connected, secure, and productive with SharpLync’s advanced IT and cybersecurity services.">
-
-  <!-- Schema.org Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "SharpLync",
-    "url": "https://sharplync.com.au",
-    "logo": "https://sharplync.com.au/images/sharplync-logo.png",
-    "sameAs": [
-      "https://www.linkedin.com/company/sharplync",
-      "https://twitter.com/sharplync"
-    ],
-    "description": "SharpLync delivers secure, connected, and productive IT environments for modern businesses."
-  }
-  </script>
+  <title>Welcome to SharpLync</title>
 
   <!-- Minimal responsive tuning for mobile only -->
   <style>
