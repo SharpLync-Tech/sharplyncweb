@@ -76,23 +76,23 @@
          ">
 
     <!-- Tagline -->
-          <p class="tagline" style="
-              position:absolute;
-              top:26%;
-              right:10%;
-              transform:translateY(-50%);
-              color:#ffffff;
-              font-size:clamp(1rem,2.2vw,1.5rem);
-              font-weight:400;
-              text-shadow:0 2px 8px rgba(0,0,0,0.7);
-              z-index:3;
-              max-width:320px; /* tighter wrap for mobile */
-              line-height:1.3; /* slightly more compact */
-              text-align:left;
-              word-spacing:1px;
-          ">
-            Helping you stay connected, secure, and productive.
-          </p>
+        <p class="tagline" style="
+            position:absolute;
+            top:26%;
+            right:10%;
+            transform:translateY(-50%);
+            color:#ffffff;
+            font-size:clamp(1rem,2.2vw,1.5rem);
+            font-weight:400;
+            text-shadow:0 2px 8px rgba(0,0,0,0.7);
+            z-index:3;
+            max-width:clamp(280px, 35vw, 420px); /* flexible width */
+            line-height:1.3;
+            text-align:left;
+            word-spacing:1px;
+        ">
+          Helping you stay connected, secure, and productive.
+        </p>
 
 
     <!-- Explore Button -->
