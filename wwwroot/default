@@ -1,0 +1,46 @@
+server {
+    listen 8080;
+    server_name _;
+
+    # Laravel public root
+    root /home/site/wwwroot/public;
+    index index.php index.html;
+
+    # --- Serve static assets directly from disk ---
+    location ^~ /css/ {
+        alias /home/site/wwwroot/public/css/;
+        access_log off;
+        expires 30d;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ =404;
+    }
+
+    location ^~ /images/ {
+        alias /home/site/wwwroot/public/images/;
+        access_log off;
+        expires 30d;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ =404;
+    }
+
+    # --- Laravel front controller ---
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # --- PHP handling ---
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # --- Security ---
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /dev/stdout info;
+    access_log /dev/stdout;
+}

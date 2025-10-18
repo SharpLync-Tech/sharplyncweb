@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "route": "/", "serve": "/public/index.php" },
+    { "route": "/{*path}", "serve": "/public/index.php" }
+  ]
+}
