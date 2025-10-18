@@ -78,8 +78,8 @@
     <!-- Tagline -->
         <p class="tagline" style="
             position:absolute;
-            top:26%;
-            right:10%;
+            top:20%;
+            right:15%;
             transform:translateY(-50%);
             color:#ffffff;
             font-size:clamp(1rem,2.2vw,1.5rem);
