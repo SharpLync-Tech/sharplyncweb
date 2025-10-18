@@ -76,19 +76,7 @@
 
         <!-- Buttons -->
         <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
-          <a href="{{ url('/support') }}" style="
-              background-color:#2CBFAE;
-              color:#fff;
-              padding:12px 28px;
-              border-radius:6px;
-              font-weight:600;
-              text-decoration:none;
-              transition:all 0.3s ease;
-          " onmouseover="this.style.backgroundColor='#25a997'"
-            onmouseout="this.style.backgroundColor='#2CBFAE'">
-            Get Support
-          </a>
-
+          
           <a href="{{ url('/services') }}" style="
               border:2px solid #fff;
               color:#fff;
