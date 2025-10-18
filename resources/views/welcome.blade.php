@@ -17,7 +17,7 @@
       }
 
       p.tagline {
-        top: 62% !important; /* moved down */
+        top: 70% !important; /* moved down */
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
@@ -27,8 +27,12 @@
         color: #ffffff !important;
       }
 
+      div.button-container {
+        bottom: 15vh !important;
+      }
+
       div.button-container a {
-        padding: 12px 36px !important;
+        padding: 12px 38px !important;
         font-size: 1rem !important;
         border-width: 2px !important;
         max-width: 80vw !important;
