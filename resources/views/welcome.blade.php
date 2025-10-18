@@ -17,7 +17,7 @@
       }
 
       p.tagline {
-        top: 68% !important;
+        top: 75% !important;
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
