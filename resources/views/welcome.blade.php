@@ -75,7 +75,7 @@
             transition:all 0.3s ease;
             background:transparent;
          "
-         onmouseover="this.style.backgroundColor='#ffffff';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
+         onmouseover="this.style.backgroundColor='#00968f';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
          onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';this.style.transform='scale(1)';">
          Explore SharpLync
       </a>
