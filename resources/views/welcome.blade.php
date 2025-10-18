@@ -55,7 +55,7 @@
     <!-- Outlined Button (restored elegant style) -->
     <div style="
         position:absolute;
-        bottom:20vh;
+        bottom:10vh;
         left:50%;
         transform:translateX(-50%);
         text-align:center;
