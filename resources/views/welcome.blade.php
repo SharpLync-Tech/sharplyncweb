@@ -55,7 +55,7 @@
     <!-- Outlined Button (restored elegant style) -->
     <div style="
         position:absolute;
-        bottom:10vh;
+        bottom:20vh;
         left:50%;
         transform:translateX(-50%);
         text-align:center;
@@ -77,7 +77,7 @@
          "
          onmouseover="this.style.backgroundColor='#ffffff';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
          onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';this.style.transform='scale(1)';">
-         Explore Services
+         Explore SharpLync
       </a>
     </div>
 
