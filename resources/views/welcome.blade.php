@@ -82,7 +82,7 @@
         <p class="tagline" style="
             position:absolute;
             top:20%;
-            right:25%;
+            right:5%;
             transform:translateY(-50%);
             color:#ffffff;
             font-size:clamp(1rem,2.2vw,1.5rem);
