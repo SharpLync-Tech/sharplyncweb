@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to SharpLync</title>
 </head>
-<body style="margin:0;padding:0;overflow-x:hidden;background-color:#0A2A4D;font-family:'Inter','Open Sans',system-ui,sans-serif;">
+<body style="margin:0;padding:0;overflow:hidden;background-color:#0A2A4D;font-family:'Inter','Open Sans',system-ui,sans-serif;">
 
   <!-- Hero Section -->
   <div style="
       position:relative;
       width:100vw;
-      height:110vh;
+      height:100vh;
       overflow:hidden;
       background-image:url('{{ asset('images/hero-bg.jpg') }}');
       background-size:cover;
