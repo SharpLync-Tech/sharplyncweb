@@ -17,13 +17,14 @@
       }
 
       p.tagline {
-        top: 40% !important;
-        right: 0 !important;
+        top: 62% !important; /* moved down */
         left: 50% !important;
+        right: auto !important;
         transform: translateX(-50%) !important;
         text-align: center !important;
         font-size: clamp(1rem, 4vw, 1.3rem) !important;
-        max-width: 80vw !important;
+        max-width: 85vw !important;
+        color: #ffffff !important;
       }
 
       div.button-container a {
