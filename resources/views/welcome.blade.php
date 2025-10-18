@@ -108,7 +108,7 @@
         text-align:center;
         z-index:3;
     ">
-      <a href="{{ url('/home') }}"
+      <a href="{{ url('/style-preview') }}"
          style="
             display:inline-block;
             border:2px solid #ffffff;
