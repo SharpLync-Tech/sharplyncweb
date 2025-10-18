@@ -52,7 +52,7 @@
       Helping you stay connected, secure, and productive.
     </p>
 
-    <!-- Glowing Power Button (restored original style and position) -->
+    <!-- Outlined Button (restored elegant style) -->
     <div style="
         position:absolute;
         bottom:10vh;
@@ -64,20 +64,20 @@
       <a href="{{ url('/home') }}" 
          style="
             display:inline-block;
-            background-color:#2CBFAE;
-            color:#fff;
+            border:2px solid #ffffff;
+            color:#ffffff;
             font-weight:700;
             font-size:1.1rem;
-            padding:16px 48px;
+            padding:14px 46px;
             border-radius:6px;
             text-decoration:none;
             letter-spacing:0.5px;
             transition:all 0.3s ease;
-            box-shadow:0 0 15px rgba(44,191,174,0.6);
+            background:transparent;
          "
-         onmouseover="this.style.backgroundColor='#25a997';this.style.boxShadow='0 0 25px rgba(44,191,174,0.9)';"
-         onmouseout="this.style.backgroundColor='#2CBFAE';this.style.boxShadow='0 0 15px rgba(44,191,174,0.6)';">
-         Explore SharpLync
+         onmouseover="this.style.backgroundColor='#ffffff';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
+         onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';this.style.transform='scale(1)';">
+         Explore Services
       </a>
     </div>
 
