@@ -91,7 +91,7 @@
     <!-- Explore Button -->
     <div class="button-container" style="
         position:absolute;
-        bottom:18vh;
+        bottom:10vh;
         left:50%;
         transform:translateX(-50%);
         text-align:center;
@@ -111,7 +111,7 @@
             transition:all 0.3s ease;
             background:transparent;
          "
-         onmouseover="this.style.backgroundColor='#ffffff';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
+         onmouseover="this.style.backgroundColor='#00FFFF';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
          onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';this.style.transform='scale(1)';">
          Explore SharpLync
       </a>
