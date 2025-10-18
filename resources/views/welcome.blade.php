@@ -23,7 +23,7 @@
         transform: translateX(-50%) !important;
         text-align: center !important;
         font-size: clamp(1rem, 4vw, 1.3rem) !important;
-        max-width: 65vw !important; /* narrower for better wrapping */
+        max-width: 70vw !important; /* narrower for better wrapping */
         color: #ffffff !important;
         line-height: 1.3 !important;
         word-spacing: 1px !important;
