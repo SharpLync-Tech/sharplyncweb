@@ -17,16 +17,17 @@
       }
 
       p.tagline {
-        top: 70% !important; /* keep your positioning */
+        top: 68% !important;
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
         text-align: center !important;
-        font-size: clamp(1rem, 4vw, 1.3rem) !important;
-        max-width: 100vw !important; /* narrower for better wrapping */
+        font-size: clamp(0.9rem, 3.2vw, 1.1rem) !important; /* slightly smaller text */
+        max-width: 80vw !important; /* balanced width */
         color: #ffffff !important;
-        line-height: 1.3 !important;
-        word-spacing: 1px !important;
+        line-height: 1.2 !important; /* tighter line height */
+        letter-spacing: 0.3px !important; /* minor tweak for cleaner wrap */
+        word-spacing: 0 !important;
       }
 
 
