@@ -9,3 +9,7 @@ Route::get('/', function () {
 Route::get('/style-preview', function () {
     return view('style-preview');
 });
+
+Route::get('/test-blade', function () {
+    return view('testdeploy');
+});
