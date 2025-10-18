@@ -34,48 +34,51 @@
             filter:drop-shadow(0 0 8px rgba(0,0,0,0.5));
          ">
 
-    <!-- Tagline + Button (to the right side) -->
-    <div style="
+    <!-- Tagline (moved upward into the sky area) -->
+    <p style="
         position:absolute;
-        top:50%;
+        top:26%;
         right:10%;
         transform:translateY(-50%);
-        text-align:left;
         color:#ffffff;
+        font-size:clamp(1.2rem,2.2vw,1.6rem);
+        font-weight:400;
+        text-shadow:0 2px 8px rgba(0,0,0,0.7);
+        z-index:3;
+        max-width:420px;
+        line-height:1.5;
+        text-align:left;
+    ">
+      Helping you stay connected, secure, and productive.
+    </p>
+
+    <!-- Glowing Power Button (restored original style and position) -->
+    <div style="
+        position:absolute;
+        bottom:10vh;
+        left:50%;
+        transform:translateX(-50%);
+        text-align:center;
         z-index:3;
     ">
-
-        <!-- Tagline -->
-        <p style="
-            font-size:clamp(1.2rem,2.2vw,1.6rem);
-            font-weight:400;
-            margin-bottom:2rem;
-            text-shadow:0 2px 8px rgba(0,0,0,0.7);
-            max-width:420px;
-            line-height:1.5;
-        ">
-          Helping you stay connected, secure, and productive.
-        </p>
-
-        <!-- Glowing Power Button -->
-        <a href="{{ url('/home') }}" 
-           style="
-              display:inline-block;
-              background:linear-gradient(90deg, #2CBFAE, #1AA38F);
-              color:#fff;
-              font-weight:700;
-              font-size:1.1rem;
-              padding:18px 54px;
-              border-radius:8px;
-              text-decoration:none;
-              letter-spacing:0.5px;
-              box-shadow:0 0 15px rgba(44,191,174,0.6);
-              transition:transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-           "
-           onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 0 30px rgba(44,191,174,0.9)';this.style.background='linear-gradient(90deg, #32d9c5, #1CB39B)';"
-           onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 0 15px rgba(44,191,174,0.6)';this.style.background='linear-gradient(90deg, #2CBFAE, #1AA38F)';">
-           Explore SharpLync
-        </a>
+      <a href="{{ url('/home') }}" 
+         style="
+            display:inline-block;
+            background-color:#2CBFAE;
+            color:#fff;
+            font-weight:700;
+            font-size:1.1rem;
+            padding:16px 48px;
+            border-radius:6px;
+            text-decoration:none;
+            letter-spacing:0.5px;
+            transition:all 0.3s ease;
+            box-shadow:0 0 15px rgba(44,191,174,0.6);
+         "
+         onmouseover="this.style.backgroundColor='#25a997';this.style.boxShadow='0 0 25px rgba(44,191,174,0.9)';"
+         onmouseout="this.style.backgroundColor='#2CBFAE';this.style.boxShadow='0 0 15px rgba(44,191,174,0.6)';">
+         Explore SharpLync
+      </a>
     </div>
 
     <!-- Subtle Overlay -->
