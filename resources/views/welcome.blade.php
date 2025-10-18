@@ -17,15 +17,18 @@
       }
 
       p.tagline {
-        top: 70% !important; /* moved down */
+        top: 70% !important; /* keep your positioning */
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
         text-align: center !important;
         font-size: clamp(1rem, 4vw, 1.3rem) !important;
-        max-width: 85vw !important;
+        max-width: 65vw !important; /* narrower for better wrapping */
         color: #ffffff !important;
+        line-height: 1.3 !important;
+        word-spacing: 1px !important;
       }
+
 
       div.button-container {
         bottom: 3vh !important;
@@ -79,7 +82,7 @@
         <p class="tagline" style="
             position:absolute;
             top:20%;
-            right:15%;
+            right:25%;
             transform:translateY(-50%);
             color:#ffffff;
             font-size:clamp(1rem,2.2vw,1.5rem);
