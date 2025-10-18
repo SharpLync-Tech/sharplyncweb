@@ -51,18 +51,7 @@
         color:#fff;
         z-index:2;
     ">
-
-        <!-- Headline -->
-        <h1 style="
-            font-size:clamp(2rem,4vw,3.5rem);
-            font-weight:600;
-            margin-bottom:1rem;
-            text-shadow:0 3px 10px rgba(0,0,0,0.8);
-            color:#ffffff;
-        ">
-            Your Personal Tech Link — Backed by Experience.
-        </h1>
-
+        
         <!-- Subheadline -->
         <p style="
             font-size:clamp(1rem,2vw,1.3rem);
@@ -92,15 +81,5 @@
         </div>
     </div>
   </div>
-
-  <!-- Wave Divider -->
-  <div style="width:100%;overflow:hidden;line-height:0;position:relative;background-color:transparent;">
-    <svg viewBox='0 0 1440 320' preserveAspectRatio='none' style='display:block;width:100%;height:120px;'>
-      <path fill='#f8f9fb' fill-opacity='1'
-            d='M0,256L48,224C96,192,192,128,288,122.7C384,117,480,171,576,202.7C672,235,768,245,864,234.7C960,224,1056,192,1152,186.7C1248,181,1344,203,1392,213.3L1440,224L1440,320L0,320Z'>
-      </path>
-    </svg>
-  </div>
-
 </body>
 </html>
