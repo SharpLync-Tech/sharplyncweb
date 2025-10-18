@@ -37,7 +37,7 @@
     <!-- Tagline (moved upward into the sky area) -->
     <p style="
         position:absolute;
-        top:26%;
+        top:16%;
         right:10%;
         transform:translateY(-50%);
         color:#ffffff;
