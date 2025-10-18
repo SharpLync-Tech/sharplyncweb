@@ -60,7 +60,7 @@
             text-shadow:0 2px 6px rgba(0,0,0,0.6);
             max-width:750px;
         ">
-            Helping Australians stay connected, secure, and productive.
+            Helping Australian's stay connected, secure, and productive.
         </p>
 
         <!-- Buttons -->
