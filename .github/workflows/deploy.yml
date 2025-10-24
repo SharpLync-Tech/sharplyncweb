@@ -60,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: php-app
-      
+
       # ✅ Azure login using your Service Principal
       - name: Login to Azure
         uses: azure/login@v2
@@ -68,11 +68,12 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # ✅ Deploy app to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'sharplyncweb'     # must exactly match the name of your Azure Web App
+          app-name: 'sharplyncweb'
           slot-name: 'Production'
           package: .
