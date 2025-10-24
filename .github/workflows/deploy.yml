@@ -3,7 +3,7 @@
 # ============================================
 # Builds and deploys Laravel/PHP app to Azure Web App
 # using a single AZURE_CREDENTIALS secret.
-# Trigger full rebuild - 2025-10-24
+# 
 # ============================================
 
 name: Build and deploy PHP app to Azure Web App - sharplyncweb
