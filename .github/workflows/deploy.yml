@@ -1,8 +1,8 @@
 # ============================================
 # SharpLync Web Deployment Workflow
 # ============================================
-# This workflow builds and deploys your Laravel/PHP app
-# to Azure Web App using service principal authentication.
+# Builds and deploys Laravel/PHP app to Azure Web App
+# using a single AZURE_CREDENTIALS secret.
 # ============================================
 
 name: Build and deploy PHP app to Azure Web App - sharplyncweb
@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Required for actions/checkout
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -61,17 +61,11 @@ jobs:
         with:
           name: php-app
 
-      # ✅ Azure login using your Service Principal
+      # ✅ Azure login using AZURE_CREDENTIALS secret
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          creds: >
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # ✅ Deploy app to Azure Web App
       - name: Deploy to Azure Web App
