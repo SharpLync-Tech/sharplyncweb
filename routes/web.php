@@ -24,3 +24,8 @@ Route::get('/mobile-preview', function () {
     return view('test-logo');
 
 });
+
+Route::get('/home', function () {
+    return view('home');
+
+});
