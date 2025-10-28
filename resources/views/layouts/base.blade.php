@@ -10,51 +10,54 @@
 </head>
 <body>
 
-<header class="main-header">
-    <div class="logo">
-        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
-    </div>
-
-    <!-- Hamburger Icon -->
-    <button class="hamburger" id="menuToggle" aria-label="Toggle menu">
-        &#9776;
-    </button>
-
-    <nav id="mainNav">
-        <ul id="navLinks">
-            <li><a href="/">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#contact">Contact Us</a></li>
-        </ul>
-    </nav>
-</header>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toggle = document.getElementById('menuToggle');
-    const nav = document.getElementById('navLinks');
-    toggle.addEventListener('click', function() {
-        nav.classList.toggle('show');
-    });
-});
-</script>
-
-
-<main>
-    @yield('content')
-</main>
-
-<footer>
-    <div class="footer-content">
-        <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-        <div class="social-icons">
-            <a href="#"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
-            <a href="#"><img src="{{ asset('images/x.png') }}" alt="X (Twitter)"></a>
-            <a href="#"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
+    <!-- ========================= HEADER ========================= -->
+    <header class="main-header">
+        <div class="logo">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
         </div>
+
+        <!-- Hamburger menu (hidden on desktop) -->
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+
+        <nav>
+            <ul id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ========================= HEADER CPU IMAGE ========================= -->
+    <div class="header-cpu">
+        <img src="{{ asset('images/placeholder-cpu.png') }}" alt="CPU Chip">
     </div>
-</footer>
+
+    <!-- ========================= JS ========================= -->
+    <script>
+    function toggleMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.classList.toggle('show');
+    }
+    </script>
+
+    <!-- ========================= MAIN CONTENT ========================= -->
+    <main>
+        @yield('content')
+    </main>
+
+    <!-- ========================= FOOTER ========================= -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
+                <a href="#"><img src="{{ asset('images/x.png') }}" alt="X (Twitter)"></a>
+                <a href="#"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>
