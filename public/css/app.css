@@ -343,3 +343,38 @@ footer a:hover {
   from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* === Fixed Header & Footer === */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* === Services Row Layout === */
+.services-row {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  margin-top: 6rem; /* space below fixed header */
+  margin-bottom: 6rem; /* space above fixed footer */
+}
+
+.services-row .card {
+  flex: 1;
+  min-width: 220px;
+  max-width: 260px;
+}
+
