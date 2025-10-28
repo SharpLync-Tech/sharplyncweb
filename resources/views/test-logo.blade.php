@@ -1,26 +1,44 @@
-@extends('layouts.app')
-
-@section('title', 'SharpLync Test Logo')
-
-@section('content')
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SharpLync | Test Logo</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
       background-color: #f2f2f2;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #0A2A4D;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: #0A2A4D;
+      color: white;
+      text-align: center;
+      padding: 0.8rem 0;
+      font-size: 0.9rem;
+      margin-top: auto;
     }
 
     .container {
+      flex: 1;
       display: flex;
       justify-content: center;
-      align-items: stretch;
+      align-items: center;
       gap: 20px;
+      padding: 2rem 0;
     }
 
     .tile {
@@ -38,12 +56,19 @@
   </style>
 </head>
 <body>
+  <header>
+    SharpLync
+  </header>
+
   <div class="container">
     <div class="tile">Tile 1</div>
     <div class="tile">Tile 2</div>
     <div class="tile">Tile 3</div>
     <div class="tile">Tile 4</div>
   </div>
+
+  <footer>
+    &copy; <?php echo date('Y'); ?> SharpLync Pty Ltd. All rights reserved.
+  </footer>
 </body>
 </html>
-@endsection
