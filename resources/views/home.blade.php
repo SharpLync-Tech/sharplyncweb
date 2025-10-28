@@ -10,7 +10,7 @@
         <button class="btn-accent fade-in-btn" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
     </div>
     <div class="hero-image">
-        <img src="{{ asset('images/placeholder-cpu.png') }}" alt="SharpLync Hero Image">
+        <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero Image">
     </div>
 </section>
 
