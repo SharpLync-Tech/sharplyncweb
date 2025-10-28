@@ -32,7 +32,7 @@
 </main>
 
 <footer>
-    &copy; {{ date('Y') }} SharpLync. All rights reserved.
+    &copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.
 </footer>
 
 @include('layouts.footer')
