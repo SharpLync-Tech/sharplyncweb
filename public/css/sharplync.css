@@ -42,7 +42,6 @@ body {
   color: #2CBFAE;
 }
 
-/* Hide hamburger by default (desktop) */
 .hamburger {
   display: none;
   font-size: 1.8rem;
@@ -58,19 +57,20 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 6rem 10%;
-  background: linear-gradient(135deg, #0A2A4D 0%, #104976 50%, #2CBFAE 100%);
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   min-height: 85vh;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .hero-text {
-  max-width: 500px;
+  max-width: 520px;
   z-index: 2;
 }
 
 .hero-text h1 {
-  font-size: 2.8rem;
+  font-size: 3rem;
   line-height: 1.2;
 }
 
@@ -79,21 +79,57 @@ body {
 }
 
 .hero-text p {
-  margin: 1rem 0 2rem;
+  margin: 1rem 0 1.5rem;
   font-size: 1.1rem;
   color: #e9f4f3;
+}
+
+.tagline-sub {
+  font-size: 0.95rem;
+  color: #b9e3dd;
+  margin-bottom: 2.5rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hero-image {
+  position: relative;
 }
 
 .hero-image img {
   width: 400px;
   max-width: 100%;
-  margin-top: -8rem; /* moves CPU image up */
+  margin-top: -8rem;
   animation: float 6s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.cpu-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(44,191,174,0.3) 0%, rgba(10,42,77,0) 70%);
+  border-radius: 50%;
+  animation: pulseGlow 4s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 /* === Buttons === */
@@ -121,7 +157,7 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* === Services Tiles === */
+/* === Tiles Section === */
 .tiles-section {
   display: flex;
   justify-content: center;
@@ -213,9 +249,7 @@ footer {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* =========================================================
-   MOBILE HEADER + NAVIGATION FIX
-   ========================================================= */
+/* === Mobile Header + Nav === */
 @media (max-width: 900px) {
   .main-header {
     flex-direction: column;
@@ -229,30 +263,28 @@ footer {
     margin-bottom: 0.5rem;
   }
 
-  /* Force menu hidden by default on mobile */
-nav ul {
-  display: none !important;
-  visibility: hidden;
-  opacity: 0;
-  flex-direction: column;
-  background: rgba(10, 42, 77, 0.98);
-  width: 100%;
-  text-align: center;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  padding: 1rem 0;
-  border-top: 2px solid #2CBFAE;
-  transition: opacity 0.3s ease;
-}
+  nav ul {
+    display: none !important;
+    visibility: hidden;
+    opacity: 0;
+    flex-direction: column;
+    background: rgba(10, 42, 77, 0.98);
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding: 1rem 0;
+    border-top: 2px solid #2CBFAE;
+    transition: opacity 0.3s ease;
+  }
 
-nav ul.show {
-  display: flex !important;
-  visibility: visible;
-  opacity: 1;
-  animation: slideDown 0.3s ease-out;
-}
-
+  nav ul.show {
+    display: flex !important;
+    visibility: visible;
+    opacity: 1;
+    animation: slideDown 0.3s ease-out;
+  }
 
   nav a {
     display: block;
@@ -287,5 +319,14 @@ nav ul.show {
   .hero-image img {
     width: 260px;
     margin-top: 1rem;
+  }
+
+  .cpu-glow {
+    width: 260px;
+    height: 260px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
   }
 }
