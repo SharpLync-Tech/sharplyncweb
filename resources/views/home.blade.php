@@ -1,37 +1,40 @@
 {{-- resources/views/home.blade.php --}}
 @extends('layouts.app')
 
+@section('title', 'SharpLync Home')
+
 @section('content')
-    @include('partials.header')
+<div class="container">
+    <section id="services" class="section grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div class="card text-center">
+            <h3 class="card-title">IT Support & Cloud</h3>
+            <p>Reliable solutions that just work, so you can focus on business.</p>
+        </div>
 
-    <main class="container section">
-        <section id="services" class="services grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            <div class="card text-center">
-                <h3 class="card-title">IT Support & Cloud</h3>
-                <p>Reliable solutions that just work, so you can focus on business.</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="card-title">AI & Automation</h3>
-                <p>Smarter systems for a smoother workflow.</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="card-title">Security & Backup</h3>
-                <p>Protecting your data, devices, and reputation from every angle.</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="card-title">Xero Integration</h3>
-                <p>Connect your business tools seamlessly and securely.</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="card-title">Infrastructure Design</h3>
-                <p>From Wi-Fi to full-scale networks, we build it right.</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="card-title">SharpLync SafeCheck</h3>
-                <p>Free scam and phishing email checks, powered by AI.</p>
-            </div>
-        </section>
-    </main>
+        <div class="card text-center">
+            <h3 class="card-title">AI & Automation</h3>
+            <p>Smarter systems for a smoother workflow.</p>
+        </div>
 
-    @include('partials.footer')
+        <div class="card text-center">
+            <h3 class="card-title">Security & Backup</h3>
+            <p>Protecting your data, devices, and reputation from every angle.</p>
+        </div>
+
+        <div class="card text-center">
+            <h3 class="card-title">Xero Integration</h3>
+            <p>Connect your business tools seamlessly and securely.</p>
+        </div>
+
+        <div class="card text-center">
+            <h3 class="card-title">Infrastructure Design</h3>
+            <p>From Wi-Fi to full-scale networks, we build it right.</p>
+        </div>
+
+        <div class="card text-center">
+            <h3 class="card-title">SharpLync SafeCheck</h3>
+            <p>Free scam and phishing email checks, powered by AI.</p>
+        </div>
+    </section>
+</div>
 @endsection
