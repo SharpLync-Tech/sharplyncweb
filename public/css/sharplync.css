@@ -94,7 +94,7 @@ body {
 .hero-image img {
   width: 400px;
   max-width: 100%;
-  margin-top: -3rem; /* moves CPU image up */
+  margin-top: -8rem; /* moves CPU image up */
   animation: float 6s ease-in-out infinite;
 }
 
@@ -236,23 +236,30 @@ footer {
     margin-bottom: 0.5rem;
   }
 
-  nav ul {
-    display: none;
-    flex-direction: column;
-    background: rgba(10, 42, 77, 0.98);
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    padding: 1rem 0;
-    border-top: 2px solid #2CBFAE;
-  }
+  /* Force menu hidden by default on mobile */
+nav ul {
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  flex-direction: column;
+  background: rgba(10, 42, 77, 0.98);
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding: 1rem 0;
+  border-top: 2px solid #2CBFAE;
+  transition: opacity 0.3s ease;
+}
 
-  nav ul.show {
-    display: flex;
-    animation: slideDown 0.3s ease-out;
-  }
+nav ul.show {
+  display: flex !important;
+  visibility: visible;
+  opacity: 1;
+  animation: slideDown 0.3s ease-out;
+}
+
 
   nav a {
     display: block;
