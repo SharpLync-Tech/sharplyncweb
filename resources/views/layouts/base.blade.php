@@ -1,6 +1,6 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.3
+  Version: v1.4
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 <!DOCTYPE html>
@@ -41,10 +41,12 @@
     }
     </script>
 
+    <!-- ========================= MAIN CONTENT ========================= -->
     <main>
         @yield('content')
     </main>
 
+    <!-- ========================= FOOTER ========================= -->
     <footer>
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>

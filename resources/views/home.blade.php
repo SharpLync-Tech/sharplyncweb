@@ -1,6 +1,6 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.3
+  Version: v1.4
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 @extends('layouts.base')

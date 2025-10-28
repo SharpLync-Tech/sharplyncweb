@@ -1,6 +1,6 @@
 /* 
   Page: sharplync.css
-  Version: v1.3
+  Version: v1.4
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 */
 
@@ -57,6 +57,40 @@ body {
   border: none;
 }
 
+/* Mobile menu hidden by default */
+nav ul {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  nav ul {
+    display: none;
+    flex-direction: column;
+    background: rgba(10, 42, 77, 0.98);
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding: 1rem 0;
+    border-top: 2px solid #2CBFAE;
+  }
+
+  nav ul.show {
+    display: flex !important;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
 /* ==================== HERO ==================== */
 .hero {
   display: flex;
@@ -66,8 +100,6 @@ body {
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;
-  position: relative;
-  overflow: hidden;
   min-height: 85vh;
 }
 
@@ -89,12 +121,6 @@ body {
   margin: 1rem 0 1.5rem;
   font-size: 1.1rem;
   color: #e9f4f3;
-}
-
-/* Hero Image */
-.hero-image {
-  text-align: right;
-  flex: 1;
 }
 
 .hero-image img {
@@ -170,39 +196,22 @@ body {
   transform: scale(1.05);
 }
 
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 900px) {
-  .hamburger { display: block; }
+/* ==================== FOOTER ==================== */
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 2rem 10%;
+}
 
-  nav ul {
-    display: none;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: rgba(10,42,77,0.98);
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    padding: 1rem 0;
-    border-top: 2px solid #2CBFAE;
-  }
+.social-icons img {
+  width: 28px;
+  height: 28px;
+  margin: 0 0.5rem;
+  transition: transform 0.3s, filter 0.3s;
+}
 
-  nav ul.show {
-    display: flex !important;
-  }
-
-  .hero {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .hero-image img {
-    width: 260px;
-    margin-top: 1rem;
-  }
-
-  .tiles-wrapper {
-    flex-direction: column;
-  }
+.social-icons img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px #2CBFAE);
 }
