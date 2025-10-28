@@ -1,10 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.0
-  Description: Added trust bar and mobile responsive layout improvements.
+  Version: v1.1
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
-
 @extends('layouts.base')
 
 @section('title', 'SharpLync | Home')
@@ -34,17 +32,17 @@
     <h2>What We Do Best</h2>
     <div class="tiles-wrapper">
         <div class="tile fade-up">
-            <i class="fas fa-headset"></i>
+            <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
             <h3>IT Support & Cloud</h3>
             <p>Reliable, responsive, and scalable support solutions for your business.</p>
         </div>
         <div class="tile fade-up">
-            <i class="fas fa-shield-alt"></i>
+            <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
             <h3>Security & Backup</h3>
             <p>Proactive protection and secure backup strategies for peace of mind.</p>
         </div>
         <div class="tile fade-up">
-            <i class="fas fa-network-wired"></i>
+            <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
             <h3>Infrastructure Design</h3>
             <p>Tailored networks built for reliability and long-term performance.</p>
         </div>
