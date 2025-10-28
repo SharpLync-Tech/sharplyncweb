@@ -10,4 +10,14 @@
 <file name="queue.php" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134045430547107626" remote="134038026000000000" Dst="0" />
 <file name="services.php" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134045430547173168" remote="134038026000000000" Dst="0" />
 <file name="session.php" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134045430548760198" remote="134038026000000000" Dst="0" />
+<file name="app.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925983161932" remote="134060547000000000" Dst="0" />
+<file name="cache.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925986534361" remote="134060547000000000" Dst="0" />
+<file name="auth.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925986564181" remote="134060547000000000" Dst="0" />
+<file name="database.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925989700272" remote="134060547000000000" Dst="0" />
+<file name="filesystems.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925989769347" remote="134060547000000000" Dst="0" />
+<file name="logging.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925991162610" remote="134060547000000000" Dst="0" />
+<file name="mail.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925994021417" remote="134060547000000000" Dst="0" />
+<file name="queue.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925994106801" remote="134060547000000000" Dst="0" />
+<file name="services.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925995457471" remote="134060547000000000" Dst="0" />
+<file name="session.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925998053092" remote="134060547000000000" Dst="0" />
 </dwsync>

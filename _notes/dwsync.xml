@@ -18,4 +18,16 @@
 <file name=".user.ini" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134048831094636829" remote="134048470800000000" Dst="0" />
 <file name="default" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134048878314385562" remote="134048518200000000" Dst="0" />
 <file name="favicon.ico" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134048924703733213" remote="134048565600000000" Dst="0" />
+<file name="artisan" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925974225368" remote="134060547000000000" Dst="0" />
+<file name="composer.json" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925983181941" remote="134060547000000000" Dst="0" />
+<file name="composer.lock" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060925986597228" remote="134060547000000000" Dst="0" />
+<file name="default" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926007398428" remote="134060547000000000" Dst="0" />
+<file name="hostingstart.html" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926009619405" remote="134060548200000000" Dst="0" />
+<file name="index.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926012077616" remote="134060547000000000" Dst="0" />
+<file name="package.json" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926013910188" remote="134060547000000000" Dst="0" />
+<file name="favicon.ico" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926013955494" remote="134060547000000000" Dst="0" />
+<file name="phpunit.xml" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926016135718" remote="134060547000000000" Dst="0" />
+<file name="README.md" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926029364474" remote="134060547000000000" Dst="0" />
+<file name="routes.json" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926075329514" remote="134060547000000000" Dst="0" />
+<file name="vite.config.js" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060935237629640" remote="134060547000000000" Dst="0" />
 </dwsync>

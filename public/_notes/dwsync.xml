@@ -4,4 +4,7 @@
 <file name="favicon.ico" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134045430562600238" remote="134048423400000000" Dst="0" />
 <file name="index.php" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134048475000000000" remote="134048475000000000" Dst="0" />
 <file name="robots.txt" server="waws-prod-sy3-079.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134045430569864433" remote="134048423400000000" Dst="0" />
+<file name="favicon.ico" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926013910188" remote="134060547000000000" Dst="0" />
+<file name="index.php" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926024758365" remote="134060547000000000" Dst="0" />
+<file name="robots.txt" server="waws-prod-sy3-123.ftp.azurewebsites.windows.net:990//site/wwwroot/" local="134060926029304447" remote="134060547000000000" Dst="0" />
 </dwsync>

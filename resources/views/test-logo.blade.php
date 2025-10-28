@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="tiles-wrapper">
-    <div class="tile">Tile 1</div>
-    <div class="tile">Tile 2</div>
-    <div class="tile">Tile 3</div>
-    <div class="tile">Tile 4</div>
+    <div class="tile">IT Support & Cloud</div>
+    <div class="tile">Security & Backup</div>
+    <div class="tile">Infrastructure Design</div>
+    <div class="tile">SharpLync SafeCheck</div>
 </div>
 @endsection
