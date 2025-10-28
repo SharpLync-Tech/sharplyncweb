@@ -361,34 +361,45 @@ footer {
   z-index: 1000;
 }
 
-/* === Services Grid (Horizontal Layout) === */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2rem;
-  justify-items: center;
+/* === SharpLync Horizontal Service Cards === */
+.services-horizontal {
+  display: flex;
+  justify-content: center;
   align-items: stretch;
-  margin-top: 7rem; /* clears header */
-  margin-bottom: 7rem; /* clears footer */
+  flex-wrap: wrap; /* wraps nicely on smaller screens */
+  gap: 2rem;
+  margin-top: 7rem; /* clears fixed header */
+  margin-bottom: 7rem; /* clears fixed footer */
 }
 
-.services-grid .card {
-  width: 100%;
-  max-width: 300px;
+.service-card {
+  flex: 1 1 22%;
+  min-width: 250px;
+  max-width: 280px;
   background-color: #ffffff;
-  border-radius: 12px;
-  padding: 2rem 1.5rem;
+  border-radius: 10px;
   border-top: 4px solid #2CBFAE;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 2rem 1.5rem;
+  transition: all 0.3s ease;
 }
 
-.services-grid .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
-.services-grid .btn-secondary {
+.service-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #0A2A4D;
+}
+
+.service-card p {
+  color: #333;
+  margin-bottom: 1.2rem;
+}
+
+.service-card .btn-secondary {
   display: inline-block;
-  margin-top: 1rem;
 }
