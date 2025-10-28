@@ -361,21 +361,19 @@ footer {
   z-index: 1000;
 }
 
-/* === Tile Grid Layout for Test Logo Page === */
+/* === FIXED Tile Layout Override for Test Logo Page === */
 .tiles-grid {
-  display: flex;
+  display: flex !important;
   justify-content: center;
   align-items: stretch;
-  flex-wrap: wrap;
+  flex-wrap: nowrap !important; /* no vertical stacking */
   gap: 2rem;
-  margin-top: 6rem; /* clear header */
-  margin-bottom: 6rem; /* clear footer */
+  margin-top: 7rem; /* clears fixed header */
+  margin-bottom: 7rem; /* clears fixed footer */
 }
 
-.tiles-grid .card {
-  flex: 1 1 22%;
-  min-width: 220px;
-  max-width: 250px;
+.tile-card {
+  flex: 0 0 250px; /* fixed width */
   height: 150px;
   display: flex;
   justify-content: center;
@@ -384,15 +382,16 @@ footer {
   border-radius: 10px;
   background-color: #ffffff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 0 !important; /* override .card margin-bottom */
 }
 
-.tiles-grid .card:hover {
+.tile-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.tiles-grid .card-title {
+.tile-card h3 {
   color: #0A2A4D;
   font-size: 1.1rem;
   font-weight: 600;

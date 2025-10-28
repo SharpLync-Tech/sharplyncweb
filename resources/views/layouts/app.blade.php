@@ -27,7 +27,7 @@
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<main>
+<main style="padding-top: 6rem; padding-bottom: 6rem;">
     @yield('content')
 </main>
 

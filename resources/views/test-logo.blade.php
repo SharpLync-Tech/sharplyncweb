@@ -3,18 +3,18 @@
 @section('title', 'SharpLync | Test Logo')
 
 @section('content')
-<div class="container text-center mt-3">
+<div class="container text-center">
     <section id="tiles" class="section tiles-grid">
-        <div class="card text-center">
+        <div class="card tile-card">
             <h3 class="card-title">Tile 1</h3>
         </div>
-        <div class="card text-center">
+        <div class="card tile-card">
             <h3 class="card-title">Tile 2</h3>
         </div>
-        <div class="card text-center">
+        <div class="card tile-card">
             <h3 class="card-title">Tile 3</h3>
         </div>
-        <div class="card text-center">
+        <div class="card tile-card">
             <h3 class="card-title">Tile 4</h3>
         </div>
     </section>
