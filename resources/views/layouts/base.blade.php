@@ -1,6 +1,6 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.1
+  Version: v1.2
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 <!DOCTYPE html>
@@ -21,7 +21,7 @@
             <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
         </div>
 
-        <!-- Hamburger menu (hidden on desktop) -->
+        <!-- Hamburger menu (mobile only) -->
         <button class="hamburger" onclick="toggleMenu()">☰</button>
 
         <nav>
@@ -34,7 +34,6 @@
         </nav>
     </header>    
 
-    <!-- ========================= JS ========================= -->
     <script>
     function toggleMenu() {
         const navLinks = document.getElementById('navLinks');
@@ -42,7 +41,7 @@
     }
     </script>
 
-    <!-- ========================= MAIN CONTENT ========================= -->
+    <!-- ========================= MAIN ========================= -->
     <main>
         @yield('content')
     </main>
@@ -51,11 +50,6 @@
     <footer>
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-            <div class="social-icons">
-                <a href="#"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
-                <a href="#"><img src="{{ asset('images/x.png') }}" alt="X (Twitter)"></a>
-                <a href="#"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
-            </div>
         </div>
     </footer>
 
