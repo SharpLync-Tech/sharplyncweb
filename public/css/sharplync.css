@@ -1,0 +1,236 @@
+/* ------------------------------
+   SharpLync v2 Stylesheet
+   Theme: Navy (#0A2A4D), Teal (#2CBFAE), Light (#F7F9FB)
+   Font: Poppins
+   ------------------------------ */
+
+/* === Base Reset === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #F7F9FB;
+  color: #0A2A4D;
+  overflow-x: hidden;
+}
+
+/* === Header === */
+.main-header {
+  background-color: #0A2A4D;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.main-header img {
+  height: 50px;
+}
+
+.main-header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.main-header nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.main-header nav a:hover {
+  color: #2CBFAE;
+}
+
+/* === Hero Section === */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem 10%;
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 50%, #2CBFAE 100%);
+  color: white;
+  min-height: 85vh;
+  flex-wrap: wrap;
+}
+
+.hero-text {
+  max-width: 500px;
+  z-index: 2;
+}
+
+.hero-text h1 {
+  font-size: 2.8rem;
+  line-height: 1.2;
+}
+
+.hero-text h1 span {
+  color: #2CBFAE;
+}
+
+.hero-text p {
+  margin: 1rem 0 2rem;
+  font-size: 1.1rem;
+  color: #e9f4f3;
+}
+
+.hero-image img {
+  width: 350px;
+  max-width: 100%;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* === Buttons === */
+.btn, .btn-accent {
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn {
+  background-color: #0A2A4D;
+  color: white;
+}
+
+.btn-accent {
+  background-color: #2CBFAE;
+  color: #0A2A4D;
+}
+
+.btn:hover, .btn-accent:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* === Services Tiles === */
+.tiles-section {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 5rem 10%;
+  background-color: #ffffff;
+}
+
+.tile {
+  background: #f8f9fb;
+  border-top: 4px solid #2CBFAE;
+  border-radius: 12px;
+  flex: 1 1 220px;
+  text-align: center;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* === About Section === */
+.about-section {
+  text-align: center;
+  padding: 5rem 10%;
+  background-color: #F7F9FB;
+}
+
+/* === Contact Section === */
+.contact-section {
+  text-align: center;
+  padding: 5rem 10%;
+  background-color: #ffffff;
+}
+
+/* === Footer === */
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 2rem 10%;
+}
+
+.social-icons img {
+  width: 28px;
+  height: 28px;
+  margin: 0 0.5rem;
+  transition: transform 0.3s, filter 0.3s;
+}
+
+.social-icons img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px #2CBFAE);
+}
+
+/* === Animations === */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+.fade-in-delay {
+  opacity: 0;
+  animation: fadeIn 1.5s ease 0.5s forwards;
+}
+
+.fade-in-btn {
+  opacity: 0;
+  animation: fadeIn 1.5s ease 1s forwards;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 5rem 2rem;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-image {
+    margin-top: 2rem;
+  }
+
+  .tiles-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tile {
+    width: 90%;
+  }
+}
