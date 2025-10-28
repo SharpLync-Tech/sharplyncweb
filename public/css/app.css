@@ -361,20 +361,34 @@ footer {
   z-index: 1000;
 }
 
-/* === Services Row Layout === */
-.services-row {
-  display: flex;
-  justify-content: center;
+/* === Services Grid (Horizontal Layout) === */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  justify-items: center;
   align-items: stretch;
-  gap: 1.5rem;
-  flex-wrap: nowrap;
-  margin-top: 6rem; /* space below fixed header */
-  margin-bottom: 6rem; /* space above fixed footer */
+  margin-top: 7rem; /* clears header */
+  margin-bottom: 7rem; /* clears footer */
 }
 
-.services-row .card {
-  flex: 1;
-  min-width: 220px;
-  max-width: 260px;
+.services-grid .card {
+  width: 100%;
+  max-width: 300px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  border-top: 4px solid #2CBFAE;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.services-grid .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.services-grid .btn-secondary {
+  display: inline-block;
+  margin-top: 1rem;
+}
