@@ -31,7 +31,7 @@
 
     <!-- ========================= HEADER CPU IMAGE ========================= -->
     <div class="header-cpu">
-        <img src="{{ asset('images/placeholder-cpu.png') }}" alt="CPU Chip">
+        <img src="{{ asset('images/hero-cpu.png') }}" alt="CPU Chip">
     </div>
 
     <!-- ========================= JS ========================= -->
