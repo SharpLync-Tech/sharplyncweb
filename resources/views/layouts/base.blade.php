@@ -27,12 +27,7 @@
                 <li><a href="#contact">Contact Us</a></li>
             </ul>
         </nav>
-    </header>
-
-    <!-- ========================= HEADER CPU IMAGE ========================= -->
-    <div class="header-cpu">
-        <img src="{{ asset('images/hero-cpu.png') }}" alt="CPU Image">
-    </div>
+    </header>    
 
     <!-- ========================= JS ========================= -->
     <script>
