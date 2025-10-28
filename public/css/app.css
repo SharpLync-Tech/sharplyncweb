@@ -394,3 +394,37 @@ footer {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
+/* === SharpLync Tile Row Layout (final) === */
+.tiles-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 2rem !important;
+  width: 100% !important;
+  min-height: calc(100vh - 160px);
+  padding: 6rem 2rem;
+  background-color: #f8f9fb;
+}
+
+.tile {
+  width: 250px !important;
+  height: 150px !important;
+  background-color: #ffffff !important;
+  border-top: 4px solid #2CBFAE !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+  color: #0A2A4D !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
