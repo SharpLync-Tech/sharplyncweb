@@ -15,8 +15,8 @@
         <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
     </div>
 
-    <!-- Hamburger menu (hidden on desktop) -->
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <!-- Hamburger icon (hidden on desktop) -->
+    <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
 
     <nav>
         <ul id="navLinks">
@@ -30,10 +30,10 @@
 
 <script>
 function toggleMenu() {
-  document.getElementById('navLinks').classList.toggle('show');
+    const nav = document.getElementById('navLinks');
+    nav.classList.toggle('show');
 }
 </script>
-
 
 <main>
     @yield('content')
