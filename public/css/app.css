@@ -361,39 +361,35 @@ footer {
   z-index: 1000;
 }
 
-/* === FIXED Tile Layout Override for Test Logo Page === */
-.tiles-grid {
-  display: flex !important;
+/* === Test Logo Layout (Isolated) === */
+.tiles-row {
+  display: flex;
   justify-content: center;
-  align-items: stretch;
-  flex-wrap: nowrap !important; /* no vertical stacking */
+  align-items: flex-start;
   gap: 2rem;
-  margin-top: 7rem; /* clears fixed header */
-  margin-bottom: 7rem; /* clears fixed footer */
+  padding: 6rem 0; /* space below header */
+  flex-wrap: nowrap;
+  background-color: #f8f9fb;
+  min-height: 80vh;
 }
 
-.tile-card {
-  flex: 0 0 250px; /* fixed width */
+.tile-box {
+  width: 250px;
   height: 150px;
+  background-color: #ffffff;
+  border-top: 4px solid #2CBFAE;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  color: #0A2A4D;
+  font-weight: 600;
+  font-size: 1.1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-top: 4px solid #2CBFAE;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 0 !important; /* override .card margin-bottom */
 }
 
-.tile-card:hover {
+.tile-box:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.tile-card h3 {
-  color: #0A2A4D;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
 }
