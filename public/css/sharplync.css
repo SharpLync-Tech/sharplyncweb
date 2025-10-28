@@ -84,6 +84,7 @@ body {
 .hero-image img {
   width: 350px;
   max-width: 100%;
+  margin-top: -60px;
   animation: float 6s ease-in-out infinite;
 }
 
