@@ -1,3 +1,10 @@
+<!-- 
+  Page: home.blade.php
+  Version: v1.0
+  Description: Added trust bar and mobile responsive layout improvements.
+  Last updated: 29 Oct 2025 by Max (ChatGPT)
+-->
+
 @extends('layouts.base')
 
 @section('title', 'SharpLync | Home')
@@ -6,13 +13,17 @@
 <section class="hero">
     <div class="hero-text">
         <h1 class="fade-in">Old School Support.<br><span>Modern Results.</span></h1>
-        <p class="fade-in-delay">Reliable IT solutions designed for modern businesses — delivered with real human support.</p>
-        <p class="fade-in-delay tagline-sub">Proudly supporting regional Queensland businesses with dependable, local expertise.</p>
+        <p class="fade-in-delay">Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
         <div class="hero-buttons fade-in-btn">
             <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
             <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
         </div>
+        <div class="trust-bar fade-in-delay">
+            <div class="trust-item"><i class="fas fa-trophy"></i> 20+ Years Experience</div>
+            <div class="trust-item"><i class="fas fa-gauge-high"></i> 99.9% Uptime</div>
+        </div>
     </div>
+
     <div class="hero-image">
         <div class="cpu-glow"></div>
         <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero Image">
@@ -20,21 +31,23 @@
 </section>
 
 <section id="services" class="tiles-section">
-    <div class="tile fade-up">
-        <h3>IT Support & Cloud</h3>
-        <p>Comprehensive, scalable solutions for your business — on-site or remote.</p>
-    </div>
-    <div class="tile fade-up">
-        <h3>Security & Backup</h3>
-        <p>Stay safe with proactive protection and encrypted backup strategies.</p>
-    </div>
-    <div class="tile fade-up">
-        <h3>Infrastructure Design</h3>
-        <p>Tailored networks built for reliability and long-term performance.</p>
-    </div>
-    <div class="tile fade-up">
-        <h3>SharpLync SafeCheck</h3>
-        <p>Free AI-powered scam and phishing detection to keep your business secure.</p>
+    <h2>What We Do Best</h2>
+    <div class="tiles-wrapper">
+        <div class="tile fade-up">
+            <i class="fas fa-headset"></i>
+            <h3>IT Support & Cloud</h3>
+            <p>Reliable, responsive, and scalable support solutions for your business.</p>
+        </div>
+        <div class="tile fade-up">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Security & Backup</h3>
+            <p>Proactive protection and secure backup strategies for peace of mind.</p>
+        </div>
+        <div class="tile fade-up">
+            <i class="fas fa-network-wired"></i>
+            <h3>Infrastructure Design</h3>
+            <p>Tailored networks built for reliability and long-term performance.</p>
+        </div>
     </div>
 </section>
 

@@ -1,3 +1,9 @@
+<!-- 
+  Page: base.blade.php
+  Version: v1.1 0
+  Last updated: 29 Oct 2025 by Max (ChatGPT)
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <script src="https://kit.fontawesome.com/a2b2e9a56a.js" crossorigin="anonymous"></script>
 </head>
 <body>
 

@@ -1,3 +1,12 @@
+/* 
+  File: sharplync.css
+  Version: v1.0
+  Description: Final responsive styling with trust bar and animations.
+  Last updated: 29 Oct 2025 by Max (ChatGPT)
+*/
+
+
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -84,16 +93,31 @@ body {
   color: #e9f4f3;
 }
 
-.tagline-sub {
-  font-size: 0.95rem;
-  color: #b9e3dd;
-  margin-bottom: 2.5rem;
-}
-
 .hero-buttons {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.trust-bar {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e9f4f3;
+}
+
+.trust-item i {
+  color: #2CBFAE;
+  font-size: 1.2rem;
 }
 
 .hero-image {
@@ -159,28 +183,39 @@ body {
 
 /* === Tiles Section === */
 .tiles-section {
+  text-align: center;
+  padding: 5rem 10%;
+  background-color: #ffffff;
+}
+
+.tiles-wrapper {
   display: flex;
   justify-content: center;
   align-items: stretch;
   flex-wrap: wrap;
   gap: 2rem;
-  padding: 5rem 10%;
-  background-color: #ffffff;
 }
 
 .tile {
-  background: #f8f9fb;
-  border-top: 4px solid #2CBFAE;
+  background: #0A2A4D;
+  color: white;
   border-radius: 12px;
-  flex: 1 1 220px;
+  flex: 1 1 250px;
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.tile i {
+  font-size: 2rem;
+  color: #2CBFAE;
+  margin-bottom: 1rem;
 }
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(44,191,174,0.3);
 }
 
 /* === About Section === */
@@ -259,7 +294,7 @@ footer {
   }
 
   .main-header .logo img {
-    height: 50px;
+    height: 40px;
     margin-bottom: 0.5rem;
   }
 
@@ -316,6 +351,10 @@ footer {
     padding: 5rem 2rem;
   }
 
+  .hero-text {
+    max-width: 100%;
+  }
+
   .hero-image img {
     width: 260px;
     margin-top: 1rem;
@@ -328,5 +367,20 @@ footer {
 
   .hero-buttons {
     justify-content: center;
+  }
+
+  .trust-bar {
+    justify-content: center;
+    gap: 1rem;
+    flex-direction: column;
+    margin-top: 1.5rem;
+  }
+
+  .tiles-wrapper {
+    flex-direction: column;
+  }
+
+  .tile {
+    width: 100%;
   }
 }
