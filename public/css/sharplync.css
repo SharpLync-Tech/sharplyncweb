@@ -82,9 +82,9 @@ body {
 }
 
 .hero-image img {
-  width: 350px;
+  width: 400px;
   max-width: 100%;
-  margin-top: -60px;
+  margin-top: -200px;
   animation: float 6s ease-in-out infinite;
 }
 
