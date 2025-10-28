@@ -425,3 +425,138 @@ footer {
     font-size: 1rem;
   }
 }
+
+/* ==========================================================
+   HERO SECTION
+   ========================================================== */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8rem 2rem 4rem;
+  background-color: #f8f9fb;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero h1 {
+  color: #0A2A4D;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.hero h1 span {
+  color: #2CBFAE;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.hero-graphic {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cpu-placeholder {
+  width: 300px;
+  height: 300px;
+  border: 2px dashed #2CBFAE;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #0A2A4D;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* ==========================================================
+   FEATURE TILE SECTION
+   ========================================================== */
+.feature-tiles {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.feature-tiles .tile {
+  flex: 1 1 250px;
+  background-color: #ffffff;
+  border-top: 4px solid #2CBFAE;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-tiles .tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tile-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #2CBFAE;
+}
+
+.tile-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0A2A4D;
+  margin-bottom: 0.5rem;
+}
+
+.tile-text {
+  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ==========================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================== */
+@media (max-width: 992px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-graphic {
+    margin-top: 2rem;
+  }
+
+  .feature-tiles {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .feature-tiles .tile {
+    flex: 1 1 100%;
+    padding: 1.5rem;
+  }
+}
