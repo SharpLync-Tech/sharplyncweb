@@ -1,6 +1,6 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.2
+  Version: v1.3
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 @extends('layouts.base')
@@ -17,8 +17,8 @@
             <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
         </div>
         <div class="trust-bar">
-            <div class="trust-item">20+ Years Experience</div>
-            <div class="trust-item">99.9% Uptime</div>
+            <div class="trust-item">🏆 20+ Years Experience</div>
+            <div class="trust-item">⏱️ 99.9% Uptime</div>
         </div>
     </div>
 

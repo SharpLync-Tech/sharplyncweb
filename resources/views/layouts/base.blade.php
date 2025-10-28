@@ -1,6 +1,6 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.2
+  Version: v1.3
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 <!DOCTYPE html>
@@ -41,15 +41,18 @@
     }
     </script>
 
-    <!-- ========================= MAIN ========================= -->
     <main>
         @yield('content')
     </main>
 
-    <!-- ========================= FOOTER ========================= -->
     <footer>
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
+                <a href="#"><img src="{{ asset('images/x.png') }}" alt="X (Twitter)"></a>
+                <a href="#"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
+            </div>
         </div>
     </footer>
 
