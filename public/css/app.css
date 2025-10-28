@@ -473,3 +473,34 @@ footer {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
+
+/* === SharpLync Responsive Fix for Tiles === */
+@media (max-width: 992px) {
+  .tiles-wrapper {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 4rem 1rem;
+  }
+
+  .tile {
+    flex: 0 1 45%;
+    height: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tiles-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem 1rem;
+  }
+
+  .tile {
+    width: 90%;
+    height: 130px;
+    font-size: 1rem;
+  }
+}
