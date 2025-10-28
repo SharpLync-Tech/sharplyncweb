@@ -221,8 +221,26 @@ footer {
 }
 
 /* =========================================================
-   MOBILE HEADER + NAVIGATION FIX
+   RESPONSIVE NAVIGATION (FINAL FIX)
    ========================================================= */
+
+/* --- Desktop view --- */
+@media (min-width: 901px) {
+  #navLinks {
+    display: flex !important;
+    flex-direction: row;
+    position: static;
+    background: none;
+    width: auto;
+    border: none;
+  }
+
+  .hamburger {
+    display: none !important;
+  }
+}
+
+/* --- Mobile view --- */
 @media (max-width: 900px) {
   .main-header {
     flex-direction: column;
@@ -236,10 +254,11 @@ footer {
     margin-bottom: 0.5rem;
   }
 
-  nav ul {
+  /* Hide menu by default */
+  #navLinks {
     display: none;
     flex-direction: column;
-    background: rgba(10, 42, 77, 0.98);
+    background: rgba(10, 42, 77, 0.97);
     width: 100%;
     text-align: center;
     position: absolute;
@@ -247,30 +266,35 @@ footer {
     left: 0;
     padding: 1rem 0;
     border-top: 2px solid #2CBFAE;
+    z-index: 1000;
   }
 
-  nav ul.show {
+  /* Show when toggled */
+  #navLinks.show {
     display: flex;
     animation: slideDown 0.3s ease-out;
   }
 
-  nav a {
-    display: block;
-    padding: 0.8rem 0;
-    color: #fff;
-    font-weight: 500;
-    text-decoration: none;
+  #navLinks li {
+    margin: 0.5rem 0;
   }
 
-  nav a:hover {
+  #navLinks a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  #navLinks a:hover {
     color: #2CBFAE;
   }
 
   .hamburger {
     display: block;
     position: absolute;
-    top: 1rem;
-    right: 1.2rem;
+    top: 1.2rem;
+    right: 1.5rem;
+    z-index: 1100;
   }
 
   @keyframes slideDown {
@@ -278,6 +302,7 @@ footer {
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Hero Section Adjustments for Mobile */
   .hero {
     flex-direction: column;
     text-align: center;

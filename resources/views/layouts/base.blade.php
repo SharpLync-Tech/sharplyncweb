@@ -15,10 +15,12 @@
         <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
     </div>
 
-    <!-- Hamburger icon (hidden on desktop) -->
-    <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+    <!-- Hamburger Icon -->
+    <button class="hamburger" id="menuToggle" aria-label="Toggle menu">
+        &#9776;
+    </button>
 
-    <nav>
+    <nav id="mainNav">
         <ul id="navLinks">
             <li><a href="/">Home</a></li>
             <li><a href="#services">Services</a></li>
@@ -29,11 +31,15 @@
 </header>
 
 <script>
-function toggleMenu() {
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('menuToggle');
     const nav = document.getElementById('navLinks');
-    nav.classList.toggle('show');
-}
+    toggle.addEventListener('click', function() {
+        nav.classList.toggle('show');
+    });
+});
 </script>
+
 
 <main>
     @yield('content')
