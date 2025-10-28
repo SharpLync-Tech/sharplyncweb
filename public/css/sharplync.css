@@ -224,19 +224,24 @@ footer {
    RESPONSIVE NAVIGATION (FINAL FIX)
    ========================================================= */
 
-/* --- Desktop view --- */
-@media (min-width: 901px) {
+/* --- Desktop view override (force hamburger hidden) --- */
+@media only screen and (min-width: 901px) {
+  .hamburger {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
   #navLinks {
     display: flex !important;
     flex-direction: row;
-    position: static;
-    background: none;
-    width: auto;
-    border: none;
-  }
-
-  .hamburger {
-    display: none !important;
+    align-items: center;
+    justify-content: flex-end;
+    background: none !important;
+    position: static !important;
+    width: auto !important;
+    border: none !important;
   }
 }
 
