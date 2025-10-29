@@ -9,8 +9,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Auth\MicrosoftController;
+
+Route::get('/login', [MicrosoftController::class, 'redirectToMicrosoft'])->name('login');
+Route::get('/auth/callback', [MicrosoftController::class, 'handleCallback']);
+Route::get('/logout', [MicrosoftController::class, 'logout'])->name('logout');
 
 // Grouped under /admin
-Route::prefix('admin')->group(function () {
+Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 });
