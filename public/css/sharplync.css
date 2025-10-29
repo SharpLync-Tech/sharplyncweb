@@ -1,8 +1,8 @@
 /* 
   Page: sharplync.css
-  Version: v1.6
+  Version: v1.7
   Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Added teal glow hover effect to service tiles. All other functionality remains as in v1.5.
+  Description: Added .info-section and .info-card styling for About/Contact cards; all base styling preserved.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -236,6 +236,71 @@ footer {
   }
 
   .tiles-wrapper {
+    flex-direction: column;
+  }
+}
+
+/* ==================== INFO SECTION (NEW) ==================== */
+.info-section {
+  background-color: #F7F9FB;
+  color: #0A2A4D;
+  text-align: center;
+  padding: 5rem 10%;
+}
+
+.info-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.info-card {
+  background: #0C315E;
+  color: white;
+  border-radius: 12px;
+  flex: 1 1 420px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(44,191,174,0);
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+}
+
+.info-card h2 {
+  color: #2CBFAE;
+  margin-bottom: 1rem;
+}
+
+.info-card p {
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-card .btn {
+  background-color: #2CBFAE;
+  color: #0A2A4D;
+  border: none;
+  padding: 0.7rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.info-card .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(44,191,174,0.6);
+}
+
+/* ========== Responsive layout for info cards ========== */
+@media (max-width: 900px) {
+  .info-wrapper {
     flex-direction: column;
   }
 }

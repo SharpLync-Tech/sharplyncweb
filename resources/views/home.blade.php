@@ -1,8 +1,10 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.5
+  Version: v1.7
   Last updated: 29 Oct 2025 by Max (ChatGPT)
+  Description: Converted About and Contact sections into responsive cards consistent with service tiles.
 -->
+
 @extends('layouts.base')
 
 @section('title', 'SharpLync | Home')
@@ -48,14 +50,18 @@
     </div>
 </section>
 
-<section id="about" class="about-section">
-    <h2>About SharpLync</h2>
-    <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
-</section>
-
-<section id="contact" class="contact-section">
-    <h2>Contact Us</h2>
-    <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
-    <button class="btn">Get in Touch</button>
+<!-- Updated About & Contact Sections as Cards -->
+<section class="info-section">
+    <div class="info-wrapper">
+        <div class="info-card">
+            <h2>About SharpLync</h2>
+            <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
+        </div>
+        <div class="info-card">
+            <h2>Contact Us</h2>
+            <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
+            <button class="btn">Get in Touch</button>
+        </div>
+    </div>
 </section>
 @endsection
