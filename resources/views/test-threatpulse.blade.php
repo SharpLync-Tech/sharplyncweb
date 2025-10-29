@@ -62,7 +62,7 @@
 async function loadHeroThreats() {
   const contentEl = document.getElementById('heroThreatContent');
   try {
-    const response = await fetch('/proxy-intel.php'); // Adjust if filename differs
+    const response = await fetch('/proxy-cisa.php'); // Adjust if filename differs
     const data = await response.json();
     const items = (data?.items || []).slice(0, 10);
 
