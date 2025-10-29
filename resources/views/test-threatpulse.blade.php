@@ -1,8 +1,8 @@
 <!-- 
   Page: test-threatpulse.blade.php
-  Version: v2.3
+  Version: v2.4
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: SharpLync Pulse hero section with pulsating heart icon (non-functional update only).
+  Description: Heart icon added next to "SharpLync Pulse" text in live feed card (smaller pulsating version).
 -->
 
 @extends('layouts.base')
@@ -13,14 +13,11 @@
 <section class="hero">
   <div class="hero-text">
 
-    <!-- Added heart icon + mixed case text styling -->
-    <div class="pulse-heading">
-      <img src="{{ asset('images/heart.png') }}" alt="SharpLync Pulse Heart" class="pulse-heart">
-      <div>
-        <h1>SharpLync <span>Pulse</span></h1>
-        <p class="subline">Live Security Intelligence</p>
-      </div>
-    </div>
+    <!-- Restored clean heading (unchanged) -->
+    <h1>
+      <span class="pulse-dot"></span> SharpLync <span>Pulse</span><br>
+      <span>Live Security Intelligence</span>
+    </h1>
 
     <p>Real-time insights from trusted cybersecurity and IT intelligence sources — refreshed automatically.</p>
     
@@ -30,7 +27,10 @@
 
     <!-- Integrated SharpLync Pulse Card -->
     <div class="hero-threat-card" id="heroThreatCard">
-      <h3><span class="pulse-dot"></span> SharpLync Pulse</h3>
+      <h3>
+        <img src="{{ asset('images/heart.png') }}" alt="SharpLync Pulse Heart" class="pulse-heart-small">
+        SharpLync <span>Pulse</span>
+      </h3>
       <div class="hero-threat-content" id="heroThreatContent">
         Loading live updates...
       </div>
@@ -68,7 +68,7 @@
 async function loadHeroThreats() {
   const contentEl = document.getElementById('heroThreatContent');
   try {
-    const response = await fetch('/proxy-cisa.php'); // Adjust if filename differs
+    const response = await fetch('/proxy-cisa.php');
     const data = await response.json();
     const items = (data?.items || []).slice(0, 10);
 

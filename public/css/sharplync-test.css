@@ -1,8 +1,8 @@
 /* 
   Page: sharplync-test.css
-  Version: v2.1
+  Version: v2.2
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Added SharpLync Pulse heart animation and heading style (non-functional visual addition only).
+  Description: Added small pulsating heart next to SharpLync Pulse text in feed card header.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -94,76 +94,9 @@ body {
   color: #e9f4f3;
 }
 
-/* ==================== SHARPLYNC PULSE HEADING ==================== */
-.pulse-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  flex-wrap: wrap;
-  font-size: 3rem;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-.pulse-heading h1 {
-  font-size: 3rem;
-  margin: 0;
-  color: white;
-}
-
-.pulse-heading span {
-  color: #2CBFAE;
-}
-
-.subline {
-  color: #2CBFAE;
-  font-size: 1.4rem;
-  margin-top: 0.2rem;
-  font-weight: 500;
-}
-
-/* Heart animation */
-.pulse-heart {
-  width: 42px;
-  height: 42px;
-  animation: heartbeat 1.8s ease-in-out infinite;
-  transform-origin: center;
-  filter: drop-shadow(0 0 6px rgba(44,191,174,0.6));
-}
-
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 6px rgba(44,191,174,0.5));
-  }
-  25% {
-    transform: scale(1.15);
-    filter: drop-shadow(0 0 10px rgba(44,191,174,0.8));
-  }
-  50% {
-    transform: scale(1);
-  }
-  75% {
-    transform: scale(1.15);
-  }
-}
-
-/* Responsive tweak */
-@media (max-width: 600px) {
-  .pulse-heading {
-    justify-content: center;
-    text-align: center;
-    font-size: 2.3rem;
-  }
-  .pulse-heart {
-    width: 32px;
-    height: 32px;
-  }
-}
-
 /* Hero image */
 .hero-image img {
-  width: 400px;
+  width: 800px;
   max-width: 100%;
   height: auto;
   margin-top: -7rem;
@@ -188,7 +121,7 @@ body {
 .btn-accent {
   background-color: #2CBFAE;
   color: #0A2A4D;
-  margin-right: 0.8rem; /* Added spacing between buttons */
+  margin-right: 0.8rem;
 }
 
 .btn:hover, .btn-accent:hover {
@@ -223,7 +156,7 @@ body {
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6); /* teal glow */
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
 }
 
 .tile-icon {
@@ -315,8 +248,36 @@ footer {
   color: #2CBFAE;
   margin-bottom: 0.8rem;
   font-size: 1.1rem;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Small heart animation next to SharpLync Pulse */
+.pulse-heart-small {
+  width: 20px;
+  height: 20px;
+  animation: heartbeat-small 1.8s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 4px rgba(44,191,174,0.6));
+}
+
+@keyframes heartbeat-small {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px rgba(44,191,174,0.4));
+  }
+  25% {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 6px rgba(44,191,174,0.8));
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.2);
+  }
 }
 
 .hero-threat-content {
