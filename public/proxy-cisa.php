@@ -1,58 +1,97 @@
 <?php
 /*
   File: proxy-cisa.php
-  Version: v1.0
+  Version: v2.0
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Secure server-side proxy for fetching the live CISA Alerts RSS feed.
+  Description: Hybrid threat intelligence proxy that fetches live RSS feeds from CERT.at and ENISA,
+               with automatic fallback to demo alerts if both sources fail.
 */
 
-// Allow cross-origin requests from your domain
+// ---------------- CONFIGURATION ---------------- //
 header('Access-Control-Allow-Origin: https://sharplync.com.au');
 header('Content-Type: application/json; charset=UTF-8');
 
-// CISA RSS feed source
-$feedUrl = 'https://catalog.data.gov/api/3/action/package_search?q=cisa+alerts';
+$feeds = [
+    'certat' => 'https://www.cert.at/tagesmeldungen/rss.xml',     // 🇦🇹 Austrian CERT feed
+    'enisa'  => 'https://www.enisa.europa.eu/news/enisa-news/RSS' // 🇪🇺 EU Cybersecurity Agency feed
+];
 
-// Simple 10-minute cache to reduce load on CISA and your server
-$cacheFile = __DIR__ . '/cache_cisa_feed.json';
-$cacheTime = 600; // seconds
+$cacheFile = __DIR__ . '/cache_threats.json';
+$cacheTime = 600; // 10 minutes
 
-// Serve cached version if it's still fresh
+// ---------------- HELPER FUNCTIONS ---------------- //
+function fetch_feed($url) {
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => 10,
+            'user_agent' => 'SharpLyncThreatPulse/2.0'
+        ]
+    ]);
+    return @file_get_contents($url, false, $context);
+}
+
+function parse_rss($rssContent, $source) {
+    $xml = @simplexml_load_string($rssContent, 'SimpleXMLElement', LIBXML_NOCDATA);
+    if (!$xml) return [];
+
+    $items = [];
+    foreach ($xml->channel->item as $entry) {
+        $items[] = [
+            'title' => (string)$entry->title,
+            'link'  => (string)$entry->link,
+            'date'  => (string)$entry->pubDate,
+            'source' => strtoupper($source)
+        ];
+    }
+    return $items;
+}
+
+// ---------------- MAIN LOGIC ---------------- //
+
+// Use cached version if available and fresh
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTime)) {
     echo file_get_contents($cacheFile);
     exit;
 }
 
-// Try fetching live data from CISA
-$context = stream_context_create([
-    'http' => ['timeout' => 10, 'user_agent' => 'SharpLyncThreatPulse/1.0']
-]);
-
-$xmlData = @file_get_contents($feedUrl, false, $context);
-
-// Handle fetch failure
-if ($xmlData === false) {
-    if (file_exists($cacheFile)) {
-        // Serve cached data if available
-        echo file_get_contents($cacheFile);
-    } else {
-        echo json_encode(['error' => 'Unable to fetch live CISA feed.']);
+$results = [];
+foreach ($feeds as $key => $url) {
+    $rss = fetch_feed($url);
+    if ($rss) {
+        $parsed = parse_rss($rss, $key);
+        if (!empty($parsed)) {
+            $results = array_slice($parsed, 0, 10);
+            break;
+        }
     }
-    exit;
 }
 
-// Convert XML to JSON
-$xml = simplexml_load_string($xmlData, "SimpleXMLElement", LIBXML_NOCDATA);
-if ($xml === false) {
-    echo json_encode(['error' => 'Invalid XML received from CISA.']);
-    exit;
+// ---------------- FALLBACK IF ALL FAIL ---------------- //
+if (empty($results)) {
+    $results = [
+        [
+            'title' => 'CISA feed unavailable — showing sample alert.',
+            'link'  => 'https://sharplync.com.au',
+            'date'  => date('r'),
+            'source' => 'DEMO'
+        ],
+        [
+            'title' => 'SharpLync detects phishing domains impersonating Microsoft 365.',
+            'link'  => 'https://sharplync.com.au',
+            'date'  => date('r'),
+            'source' => 'DEMO'
+        ],
+        [
+            'title' => 'Trend Micro identifies surge in ransomware traffic across EU.',
+            'link'  => 'https://sharplync.com.au',
+            'date'  => date('r'),
+            'source' => 'DEMO'
+        ]
+    ];
 }
 
-$json = json_encode($xml, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-
-// Save to cache
-file_put_contents($cacheFile, $json);
-
-// Output the JSON
-echo $json;
+// ---------------- OUTPUT ---------------- //
+$output = json_encode(['items' => $results], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+file_put_contents($cacheFile, $output);
+echo $output;
 ?>
