@@ -1,0 +1,222 @@
+/* 
+  File: sharplync-admin.css
+  Version: v1.0
+  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Description:
+  SharpLync Admin Portal Base Stylesheet.
+  Includes layout, navigation, buttons, modals, and SharpLync brand colors.
+*/
+
+/* ==================== GLOBAL ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.admin-portal {
+  font-family: 'Comfortaa', sans-serif;
+  color: #0A2A4D;
+  background-color: #F7F9FB;
+  overflow-x: hidden;
+}
+
+/* ==================== HEADER ==================== */
+header.admin-header {
+  background-color: #0A2A4D;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header.admin-header h1 {
+  font-size: 20px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+}
+
+header.admin-header .logout-btn {
+  color: white;
+  text-decoration: none;
+  background: #b40000;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+header.admin-header .logout-btn:hover {
+  background: #e60000;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 220px;
+  height: calc(100% - 60px);
+  background-color: #104946;
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 15px;
+  transition: background 0.2s ease, padding-left 0.2s;
+}
+
+.sidebar a:hover {
+  background-color: rgba(255,255,255,0.1);
+  padding-left: 25px;
+}
+
+/* ==================== MAIN ==================== */
+main.admin-main {
+  margin-left: 240px;
+  padding: 30px;
+}
+
+.admin-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #0A2A4D;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #104976;
+  transform: translateY(-2px);
+}
+
+.btn-accent {
+  background-color: #2CBFAE;
+  color: #0A2A4D;
+}
+
+.btn-accent:hover {
+  background-color: #24a998;
+  transform: translateY(-2px);
+}
+
+/* ==================== MODALS ==================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 42, 77, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(10, 42, 77, 0.3);
+  width: 400px;
+  max-width: 90%;
+  padding: 25px;
+  text-align: center;
+  position: relative;
+  animation: popUp 0.3s ease-out;
+}
+
+.modal h2 {
+  margin-bottom: 15px;
+  color: #0A2A4D;
+}
+
+.modal p {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.modal .modal-actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.modal .btn {
+  min-width: 100px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  color: #0A2A4D;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #b40000;
+}
+
+/* Modal Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ==================== UTILITIES ==================== */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mt-3 { margin-top: 30px; }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    box-shadow: none;
+  }
+
+  main.admin-main {
+    margin-left: 0;
+    padding: 20px;
+  }
+}

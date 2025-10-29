@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync Admin Portal')</title>
-    <link href="/css/sharplync.css" rel="stylesheet">
+    <link href="{{ asset('css/admin/sharplync-admin.css') }}" rel="stylesheet">
+
 </head>
 <body class="admin-portal">
     <header class="admin-header">
