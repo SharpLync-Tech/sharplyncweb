@@ -1,30 +1,53 @@
 <!-- 
   Page: test-threatpulse.blade.php
   Version: v1.0
-  Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: New
+  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Description: Test page for SharpLync Threat Pulse featuring live CISA RSS feed in ticker and card formats.
 -->
 
 @extends('layouts.base')
 
-@section('title', 'SharpLync | Home')
+@section('title', 'SharpLync | Threat Pulse Test')
 
 @section('content')
+
+<!-- ====================== HERO (from v1.8 base) ====================== -->
 <section class="hero">
     <div class="hero-text">
-        <h1>Old School Support.<br><span>Modern Results.</span></h1>
-        <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
+        <h1>SharpLync Threat Pulse<br><span>Live Security Intelligence</span></h1>
+        <p>Testing live CISA threat feed integration — displaying both ticker and card versions for evaluation.</p>
         <div class="hero-buttons">
-            <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
-            <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
+            <button class="btn-accent" onclick="window.location.href='/'">Back to Home</button>
         </div>
     </div>
-
     <div class="hero-image">
         <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero Image">
     </div>
 </section>
 
+<!-- ====================== THREAT PULSE SECTION ====================== -->
+<section id="threatpulse" class="threatpulse-section">
+
+    <h2 class="threatpulse-title">🛡️ SharpLync Threat Pulse — Live Feed Test</h2>
+
+    <!-- Version A: Scrolling Ticker -->
+    <div class="threat-ticker">
+        <div class="threat-ticker-track" id="tickerTrack">
+            <span>Loading live CISA feed...</span>
+        </div>
+    </div>
+
+    <!-- Version B: Animated Card -->
+    <div class="threat-card">
+        <h3>Latest Cybersecurity Alerts</h3>
+        <div id="threatCardContent" class="threat-card-content">
+            <p>Loading feed...</p>
+        </div>
+    </div>
+
+</section>
+
+<!-- ====================== REGULAR CONTENT BELOW ====================== -->
 <section id="services" class="tiles-section">
     <h2>What We Do Best</h2>
     <div class="tiles-wrapper">
@@ -46,24 +69,77 @@
     </div>
 </section>
 
-<!-- About area as card -->
 <section id="about" class="info-section">
     <div class="info-wrapper">
         <div class="info-card">
             <h2>About SharpLync</h2>
-            <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
+            <p>This test page showcases SharpLync’s ability to integrate real-time threat intelligence feeds — a glimpse into the next stage of proactive monitoring.</p>
         </div>
     </div>
 </section>
 
-<!-- Contact area as card -->
 <section id="contact" class="info-section">
     <div class="info-wrapper">
         <div class="info-card">
             <h2>Contact Us</h2>
-            <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
+            <p>Want to learn more about SharpLync Threat Pulse or IT security monitoring solutions?</p>
             <button class="btn">Get in Touch</button>
         </div>
     </div>
 </section>
+
+<!-- ====================== JS FEED SCRIPT ====================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://www.cisa.gov/news.xml';
+    const tickerTrack = document.getElementById('tickerTrack');
+    const cardContent = document.getElementById('threatCardContent');
+
+    const mockHeadlines = [
+        "🧠 SharpLync detects phishing domains impersonating Microsoft 365",
+        "🛡️ Trend Micro updates threat detection engine for new malware variant",
+        "⚙️ SharpLync systems report 99.98% uptime this week",
+        "📡 Increased ransomware activity detected in educational networks"
+    ];
+
+    function updateTicker(items) {
+        tickerTrack.innerHTML = items.map(i => `<span>${i}</span>`).join(' • ');
+    }
+
+    function updateCard(items) {
+        let index = 0;
+        cardContent.innerHTML = `<p>${items[index]}</p>`;
+        setInterval(() => {
+            index = (index + 1) % items.length;
+            cardContent.style.opacity = 0;
+            setTimeout(() => {
+                cardContent.innerHTML = `<p>${items[index]}</p>`;
+                cardContent.style.opacity = 1;
+            }, 400);
+        }, 5000);
+    }
+
+    async function loadFeed() {
+        try {
+            const response = await fetch(feedUrl);
+            const data = await response.json();
+            if (data && data.items && data.items.length > 0) {
+                const headlines = data.items.slice(0, 10).map(item => item.title);
+                updateTicker(headlines);
+                updateCard(headlines);
+            } else {
+                updateTicker(mockHeadlines);
+                updateCard(mockHeadlines);
+            }
+        } catch (err) {
+            console.error("Feed fetch failed, using mock data:", err);
+            updateTicker(mockHeadlines);
+            updateCard(mockHeadlines);
+        }
+    }
+
+    loadFeed();
+});
+</script>
+
 @endsection
