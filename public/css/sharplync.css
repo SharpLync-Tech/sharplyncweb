@@ -1,7 +1,8 @@
 /* 
   Page: sharplync.css
-  Version: v1.5
+  Version: v1.6
   Last updated: 29 Oct 2025 by Max (ChatGPT)
+  Description: Added teal glow hover effect to service tiles. All other functionality remains as in v1.5.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -144,11 +145,12 @@ body {
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(44,191,174,0); /* initial glow state */
 }
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(44,191,174,0.3));
+  box-shadow: 0 0 25px rgba(44,191,174,0.6); /* teal glow */
 }
 
 .tile-icon {
