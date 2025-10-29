@@ -1,12 +1,16 @@
 /* 
-  Page: sharplync.css
-  Version: v1.8
-  Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Removed trust bar styles, added button gap, reduced hero padding and adjusted image alignment. Full stylesheet.
+  Page: sharplync-test.css
+  Version: v2.2
+  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Description: Added small pulsating heart next to SharpLync Pulse text in feed card header.
 */
 
 /* ==================== GLOBAL ==================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -59,16 +63,15 @@ body {
 }
 
 /* ==================== HERO ==================== */
-/* NOTE: hero settings updated for v1.8: padding reduced, min-height lowered, CPU image adjusted */
 .hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4rem 10% 3rem; /* Reduced vertical space for v1.8 */
+  padding: 10rem 10%;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;
-  min-height: 75vh; /* Reduced height for balance */
+  min-height: 80vh;
 }
 
 .hero-text {
@@ -91,18 +94,13 @@ body {
   color: #e9f4f3;
 }
 
-/* Hero Buttons container (v1.8: added gap) */
-.hero-buttons {
-  display: flex;
-  gap: 1rem; /* Added spacing between buttons */
-  margin-top: 1.5rem;
-}
-
+/* Hero image */
 .hero-image img {
-  width: 380px;
-  max-width: 100%;
-  height: auto;
-  margin-top: -4rem; /* Adjusted from -8rem to rebalance space (v1.8) */
+  width: 800px;  /* Keep your bigger size */
+  max-width: 100%;  /* Responsive */
+  height: auto;  /* No distortion */
+  margin-top: -17rem;  /* More upward: was -7rem; try -12rem to touch the top blue */
+  margin-left: 10rem;   /* To the right: adjust to 8rem+ for more shift; 0 for centered */
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
 
@@ -114,10 +112,6 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 44px; /* touch target */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .btn {
@@ -128,6 +122,7 @@ body {
 .btn-accent {
   background-color: #2CBFAE;
   color: #0A2A4D;
+  margin-right: 0.8rem;
 }
 
 .btn:hover, .btn-accent:hover {
@@ -157,12 +152,12 @@ body {
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0); /* initial glow state */
+  box-shadow: 0 0 0 rgba(44,191,174,0);
 }
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6); /* teal glow */
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
 }
 
 .tile-icon {
@@ -176,13 +171,40 @@ body {
   transform: scale(1.05);
 }
 
-/* ==================== ABOUT & CONTACT (legacy classes kept) ==================== */
-.about-section,
-.contact-section {
-  text-align: center;
-  padding: 5rem 10%;
+/* ==================== INFO SECTIONS ==================== */
+.info-section {
   background-color: #F7F9FB;
   color: #0A2A4D;
+  padding: 5rem 10%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.info-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(10, 42, 77, 0.1);
+  transition: all 0.3s ease;
+  flex: 1 1 300px;
+  text-align: center;
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.4);
+}
+
+.info-card h2 {
+  color: #0A2A4D;
+  margin-bottom: 1rem;
+}
+
+.info-card p {
+  color: #333;
+  line-height: 1.6;
 }
 
 /* ==================== FOOTER ==================== */
@@ -205,9 +227,69 @@ footer {
   filter: drop-shadow(0 0 6px #2CBFAE);
 }
 
+/* ==================== HERO THREAT PULSE CARD ==================== */
+.hero-threat-card {
+  background: rgba(12, 49, 94, 0.95);
+  border: 2px solid rgba(44, 191, 174, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(44,191,174,0.4);
+  color: white;
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  max-width: 480px;
+  transition: all 0.4s ease;
+}
+
+.hero-threat-card:hover {
+  box-shadow: 0 0 35px rgba(44,191,174,0.8);
+  transform: translateY(-4px);
+}
+
+.hero-threat-card h3 {
+  color: #2CBFAE;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Small heart animation next to SharpLync Pulse */
+.pulse-heart-small {
+  width: 20px;
+  height: 20px;
+  animation: heartbeat-small 1.8s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 4px rgba(255, 60, 60, 0.4)) drop-shadow(0 0 2px rgba(44,191,174,0.8));
+}
+
+/* Balanced red pulse with teal accent */
+@keyframes heartbeat-small {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px rgba(255, 60, 60, 0.5)) drop-shadow(0 0 2px rgba(44,191,174,0.8));
+  }
+  25% {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 12px rgba(255, 60, 60, 0.9)) drop-shadow(0 0 4px rgba(44,191,174,1));
+  }
+  50% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(255, 60, 60, 0.6)) drop-shadow(0 0 3px rgba(44,191,174,0.9));
+  }
+  75% {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 10px rgba(255, 60, 60, 0.8)) drop-shadow(0 0 4px rgba(44,191,174,1));
+  }
+}
+
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
-  .hamburger { display: block; }
+  .hamburger {
+    display: block;
+  }
 
   nav ul {
     display: none !important;
@@ -240,87 +322,93 @@ footer {
   .hero {
     flex-direction: column;
     text-align: center;
-    padding: 3rem 5%;
-    min-height: auto;
+    min-height: 60vh;
   }
 
   .hero-image img {
-    width: 260px;
-    margin-top: 1rem;
+    display: none;  /* Hides the image completely on mobile */
+    /* Optional: Keep these if you want fallbacks, but they're now irrelevant */
+    /* width: 260px; */
+    /* margin-top: 1rem; */
   }
 
   .tiles-wrapper {
     flex-direction: column;
   }
 
-  .hero-buttons {
-    flex-direction: column;
+  .hero-threat-card {
+    max-width: 100%;
+    padding: 1.2rem 1rem;
+    margin-top: 1.5rem;
+  }  
+
+  /* ================================
+   SharpLync Admin Portal Styles
+   Version: 1.0
+   ================================ */
+body.admin-portal {
+    margin: 0;
+    font-family: "Comfortaa", sans-serif;
+    background-color: #f7f9fb;
+    color: #0A2A4D;
+}
+
+header.admin-header {
+    background-color: #0A2A4D;
+    color: white;
+    display: flex;
     align-items: center;
-    gap: 0.8rem;
-  }
+    justify-content: space-between;
+    padding: 10px 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ==================== INFO SECTION (v1.7 preserved) ==================== */
-.info-section {
-  background-color: #F7F9FB;
-  color: #0A2A4D;
-  text-align: center;
-  padding: 5rem 10%;
+header.admin-header h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: 0.5px;
 }
 
-.info-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: 2rem;
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 220px;
+    height: calc(100% - 60px);
+    background-color: #104946;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
-.info-card {
-  background: #0C315E;
-  color: white;
-  border-radius: 12px;
-  flex: 1 1 420px;
-  padding: 2rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0);
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.2s ease;
 }
 
-.info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+.sidebar a:hover {
+    background-color: rgba(255,255,255,0.1);
 }
 
-.info-card h2 {
-  color: #2CBFAE;
-  margin-bottom: 1rem;
+main.admin-main {
+    margin-left: 240px;
+    padding: 30px;
 }
 
-.info-card p {
-  line-height: 1.6;
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
+.logout-btn {
+    color: white;
+    text-decoration: none;
+    background: #b40000;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
 }
 
-.info-card .btn {
-  background-color: #2CBFAE;
-  color: #0A2A4D;
-  border: none;
-  padding: 0.7rem 1.6rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.logout-btn:hover {
+    background: #e60000;
 }
 
-.info-card .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 10px rgba(44,191,174,0.6);
-}
-
-/* ========== Responsive layout for info cards ========== */
-@media (max-width: 900px) {
-  .info-wrapper {
-    flex-direction: column;
-  }
 }
