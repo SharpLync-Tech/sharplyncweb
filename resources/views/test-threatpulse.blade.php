@@ -1,8 +1,8 @@
 <!-- 
   Page: test-threatpulse.blade.php
-  Version: v2.2
+  Version: v2.3
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: SharpLync Pulse with red–teal animated pulse icon and live feed card.
+  Description: SharpLync Pulse hero section with pulsating heart icon (non-functional update only).
 -->
 
 @extends('layouts.base')
@@ -12,10 +12,16 @@
 @section('content')
 <section class="hero">
   <div class="hero-text">
-    <h1>
-      <span class="pulse-dot"></span> SharpLync Pulse<br>
-      <span>Live Security Intelligence</span>
-    </h1>
+
+    <!-- Added heart icon + mixed case text styling -->
+    <div class="pulse-heading">
+      <img src="{{ asset('images/heart.png') }}" alt="SharpLync Pulse Heart" class="pulse-heart">
+      <div>
+        <h1>SharpLync <span>Pulse</span></h1>
+        <p class="subline">Live Security Intelligence</p>
+      </div>
+    </div>
+
     <p>Real-time insights from trusted cybersecurity and IT intelligence sources — refreshed automatically.</p>
     
     <div class="hero-buttons">

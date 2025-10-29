@@ -1,6 +1,6 @@
 <?php
 /*
-  File: proxy-intel.php
+  File: proxy-cisa.php
   Version: v1.0
   Last updated: 30 Oct 2025 by Max (ChatGPT)
   Description: SharpLync multi-source live intelligence feed aggregator

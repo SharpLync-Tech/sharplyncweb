@@ -1,9 +1,8 @@
 /* 
   Page: sharplync-test.css
-  Version: v2.0
+  Version: v2.1
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Full stylesheet including all SharpLync v1.7 base styles, v1.9 glow refinements, 
-  and new v2.0 Threat Pulse hero card integration for live CISA feed display.
+  Description: Added SharpLync Pulse heart animation and heading style (non-functional visual addition only).
 */
 
 /* ==================== GLOBAL ==================== */
@@ -93,6 +92,73 @@ body {
   margin: 1rem 0 1.5rem;
   font-size: 1.1rem;
   color: #e9f4f3;
+}
+
+/* ==================== SHARPLYNC PULSE HEADING ==================== */
+.pulse-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.pulse-heading h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: white;
+}
+
+.pulse-heading span {
+  color: #2CBFAE;
+}
+
+.subline {
+  color: #2CBFAE;
+  font-size: 1.4rem;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+/* Heart animation */
+.pulse-heart {
+  width: 42px;
+  height: 42px;
+  animation: heartbeat 1.8s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 6px rgba(44,191,174,0.6));
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(44,191,174,0.5));
+  }
+  25% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 10px rgba(44,191,174,0.8));
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.15);
+  }
+}
+
+/* Responsive tweak */
+@media (max-width: 600px) {
+  .pulse-heading {
+    justify-content: center;
+    text-align: center;
+    font-size: 2.3rem;
+  }
+  .pulse-heart {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 /* Hero image */
