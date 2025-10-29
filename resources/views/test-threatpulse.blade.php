@@ -58,7 +58,7 @@
 async function loadHeroThreats() {
     const contentEl = document.getElementById('heroThreatContent');
     try {
-        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.cisa.gov/news.xml');
+        const response = await fetch('/proxy-cisa.php');
         const data = await response.json();
         const items = data.items.slice(0, 10).map(i => i.title);
         let index = 0;
