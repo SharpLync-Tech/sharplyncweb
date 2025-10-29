@@ -1,6 +1,6 @@
 /* 
   Page: sharplync.css
-  Version: v1.4
+  Version: v1.5
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 */
 
@@ -55,40 +55,6 @@ body {
   cursor: pointer;
   background: none;
   border: none;
-}
-
-/* Mobile menu hidden by default */
-nav ul {
-  display: flex;
-}
-
-@media (max-width: 900px) {
-  nav ul {
-    display: none;
-    flex-direction: column;
-    background: rgba(10, 42, 77, 0.98);
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    padding: 1rem 0;
-    border-top: 2px solid #2CBFAE;
-  }
-
-  nav ul.show {
-    display: flex !important;
-    animation: slideDown 0.3s ease-out;
-  }
-
-  .hamburger {
-    display: block;
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 }
 
 /* ==================== HERO ==================== */
@@ -182,7 +148,7 @@ nav ul {
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(44,191,174,0.3);
+  box-shadow: 0 6px 20px rgba(44,191,174,0.3));
 }
 
 .tile-icon {
@@ -194,6 +160,15 @@ nav ul {
 
 .tile:hover .tile-icon {
   transform: scale(1.05);
+}
+
+/* ==================== ABOUT & CONTACT ==================== */
+.about-section,
+.contact-section {
+  text-align: center;
+  padding: 5rem 10%;
+  background-color: #F7F9FB;
+  color: #0A2A4D;
 }
 
 /* ==================== FOOTER ==================== */
@@ -214,4 +189,51 @@ footer {
 .social-icons img:hover {
   transform: scale(1.1);
   filter: drop-shadow(0 0 6px #2CBFAE);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .hamburger { display: block; }
+
+  nav ul {
+    display: none !important;
+    visibility: hidden;
+    opacity: 0;
+    flex-direction: column;
+    background: rgba(10, 42, 77, 0.98);
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding: 1rem 0;
+    border-top: 2px solid #2CBFAE;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  nav ul.show {
+    display: flex !important;
+    visibility: visible;
+    opacity: 1;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-image img {
+    width: 260px;
+    margin-top: 1rem;
+  }
+
+  .tiles-wrapper {
+    flex-direction: column;
+  }
 }

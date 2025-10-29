@@ -1,6 +1,6 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.4
+  Version: v1.5
   Last updated: 29 Oct 2025 by Max (ChatGPT)
 -->
 <!DOCTYPE html>
