@@ -68,7 +68,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem 10%;
+  padding: 10rem 10%;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;

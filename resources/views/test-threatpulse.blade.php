@@ -60,7 +60,10 @@ async function loadHeroThreats() {
     try {
         const response = await fetch('/proxy-cisa.php');
         const data = await response.json();
-        const items = data.items.slice(0, 10).map(i => i.title);
+        const items = (data?.channel?.item || [])
+            .slice(0, 10)
+            .map(i => i.title || "Untitled Alert");
+
         let index = 0;
 
         function updateCard() {
