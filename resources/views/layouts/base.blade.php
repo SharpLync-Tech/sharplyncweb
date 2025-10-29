@@ -11,7 +11,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+   
+    {{-- Load special stylesheet only for test-threatpulse page --}}
+        @if (Request::is('test-threatpulse'))
+                <link rel="stylesheet" href="{{ secure_asset('css/sharplync-test.css') }}">
+            @else
+                <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+        @endif
+
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 </head>
 <body>
