@@ -12,7 +12,7 @@ header('Access-Control-Allow-Origin: https://sharplync.com.au');
 header('Content-Type: application/json; charset=UTF-8');
 
 $feeds = [
-    'certat' => 'https://www.cert.at/tagesmeldungen/rss.xml',     // 🇦🇹 Austrian CERT feed
+    'certat' => 'https://newsroom.trendmicro.com/cyberthreat?pageTemplate=rss',     // 🇦🇹 Austrian CERT feed
     'enisa'  => 'https://www.enisa.europa.eu/news/enisa-news/RSS' // 🇪🇺 EU Cybersecurity Agency feed
 ];
 
