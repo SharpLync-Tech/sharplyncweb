@@ -20,12 +20,12 @@ Route::get('/mobile-preview', function () {
 
 });
 
-    Route::get('/test-logo', function () {
-    return view('test-logo');
+Route::get('/home', function () {
+    return view('home');
 
 });
 
-Route::get('/home', function () {
-    return view('home');
+Route::get('/test-threatpulse', function () {
+    return view('test-threatpulse');
 
 });
