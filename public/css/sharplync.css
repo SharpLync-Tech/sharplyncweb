@@ -99,7 +99,7 @@ body {
   width: 800px;  /* Keep your bigger size */
   max-width: 100%;  /* Responsive */
   height: auto;  /* No distortion */
-  margin-top: -17rem;  /* More upward: was -7rem; try -12rem to touch the top blue */
+  margin-top: -15rem;  /* More upward: was -7rem; try -12rem to touch the top blue */
   margin-left: 10rem;   /* To the right: adjust to 8rem+ for more shift; 0 for centered */
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
