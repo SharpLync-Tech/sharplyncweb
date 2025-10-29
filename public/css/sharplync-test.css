@@ -1,8 +1,9 @@
 /* 
-  Page: sharplync.css
-  Version: v1.8
-  Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Removed trust bar styles, added button gap, reduced hero padding and adjusted image alignment. Full stylesheet.
+  Page: sharplync-test.css
+  Version: v1.9
+  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Description: Experimental stylesheet for SharpLync Threat Pulse test page.
+               Adds live ticker and animated card feed styles. Base v1.8 structure preserved.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -59,16 +60,15 @@ body {
 }
 
 /* ==================== HERO ==================== */
-/* NOTE: hero settings updated for v1.8: padding reduced, min-height lowered, CPU image adjusted */
 .hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4rem 10% 3rem; /* Reduced vertical space for v1.8 */
+  padding: 4rem 10% 3rem;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;
-  min-height: 75vh; /* Reduced height for balance */
+  min-height: 75vh;
 }
 
 .hero-text {
@@ -91,10 +91,9 @@ body {
   color: #e9f4f3;
 }
 
-/* Hero Buttons container (v1.8: added gap) */
 .hero-buttons {
   display: flex;
-  gap: 1rem; /* Added spacing between buttons */
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 
@@ -102,7 +101,7 @@ body {
   width: 380px;
   max-width: 100%;
   height: auto;
-  margin-top: -4rem; /* Adjusted from -8rem to rebalance space (v1.8) */
+  margin-top: -4rem;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
 
@@ -114,10 +113,6 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 44px; /* touch target */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .btn {
@@ -157,12 +152,12 @@ body {
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0); /* initial glow state */
+  box-shadow: 0 0 0 rgba(44,191,174,0);
 }
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6); /* teal glow */
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
 }
 
 .tile-icon {
@@ -176,13 +171,46 @@ body {
   transform: scale(1.05);
 }
 
-/* ==================== ABOUT & CONTACT (legacy classes kept) ==================== */
-.about-section,
-.contact-section {
-  text-align: center;
-  padding: 5rem 10%;
+/* ==================== INFO SECTIONS ==================== */
+.info-section {
   background-color: #F7F9FB;
   color: #0A2A4D;
+  text-align: center;
+  padding: 5rem 10%;
+}
+
+.info-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.info-card {
+  background: #0C315E;
+  color: white;
+  border-radius: 12px;
+  flex: 1 1 420px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(44,191,174,0);
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+}
+
+.info-card h2 {
+  color: #2CBFAE;
+  margin-bottom: 1rem;
+}
+
+.info-card p {
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* ==================== FOOTER ==================== */
@@ -244,6 +272,12 @@ footer {
     min-height: auto;
   }
 
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
   .hero-image img {
     width: 260px;
     margin-top: 1rem;
@@ -252,75 +286,98 @@ footer {
   .tiles-wrapper {
     flex-direction: column;
   }
-
-  .hero-buttons {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-  }
 }
 
-/* ==================== INFO SECTION (v1.7 preserved) ==================== */
-.info-section {
-  background-color: #F7F9FB;
-  color: #0A2A4D;
+/* =====================================================================
+   THREAT PULSE SECTION (NEW)
+   ===================================================================== */
+
+.threatpulse-section {
+  background-color: #0A2A4D;
+  color: white;
   text-align: center;
-  padding: 5rem 10%;
+  padding: 4rem 10%;
 }
 
-.info-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: 2rem;
+.threatpulse-title {
+  font-size: 1.6rem;
+  color: #2CBFAE;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(44,191,174,0.8);
 }
 
-.info-card {
+/* ---- Ticker Bar ---- */
+.threat-ticker {
+  overflow: hidden;
+  position: relative;
+  border-top: 2px solid #2CBFAE;
+  border-bottom: 2px solid #2CBFAE;
+  background: rgba(12,49,94,0.9);
+  padding: 0.6rem 0;
+  margin-bottom: 3rem;
+  box-shadow: inset 0 0 10px rgba(44,191,174,0.5);
+}
+
+.threat-ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: tickerScroll 30s linear infinite;
+}
+
+.threat-ticker-track span {
+  margin: 0 2rem;
+  color: #2CBFAE;
+  font-weight: 500;
+  text-shadow: 0 0 8px rgba(44,191,174,0.7);
+}
+
+@keyframes tickerScroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+/* ---- Card Version ---- */
+.threat-card {
   background: #0C315E;
   color: white;
   border-radius: 12px;
-  flex: 1 1 420px;
   padding: 2rem;
+  margin-top: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 20px rgba(44,191,174,0.4);
   transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0);
 }
 
-.info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6);
-}
-
-.info-card h2 {
+.threat-card h3 {
   color: #2CBFAE;
   margin-bottom: 1rem;
 }
 
-.info-card p {
-  line-height: 1.6;
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
+.threat-card-content {
+  font-size: 1.1rem;
+  min-height: 50px;
+  transition: opacity 0.5s ease;
 }
 
-.info-card .btn {
-  background-color: #2CBFAE;
-  color: #0A2A4D;
-  border: none;
-  padding: 0.7rem 1.6rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.threat-card:hover {
+  box-shadow: 0 0 30px rgba(44,191,174,0.7);
+  transform: translateY(-5px);
 }
 
-.info-card .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 10px rgba(44,191,174,0.6);
-}
-
-/* ========== Responsive layout for info cards ========== */
+/* ---- Mobile ---- */
 @media (max-width: 900px) {
-  .info-wrapper {
-    flex-direction: column;
+  .threatpulse-section {
+    padding: 3rem 5%;
+  }
+
+  .threat-ticker-track span {
+    margin: 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  .threat-card {
+    padding: 1.5rem;
   }
 }
