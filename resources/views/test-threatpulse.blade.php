@@ -60,28 +60,31 @@ async function loadHeroThreats() {
     try {
         const response = await fetch('/proxy-cisa.php');
         const data = await response.json();
+
+        // Safely extract CISA items
         const items = (data?.channel?.item || [])
             .slice(0, 10)
             .map(i => i.title || "Untitled Alert");
 
-        let index = 0;
-
-        function updateCard() {
-            contentEl.style.opacity = 0;
-            setTimeout(() => {
-                contentEl.textContent = items[index];
-                contentEl.style.opacity = 1;
-                index = (index + 1) % items.length;
-            }, 400);
+        if (items.length === 0) {
+            contentEl.textContent = "No current alerts available.";
+            return;
         }
 
-        updateCard();
-        setInterval(updateCard, 6000);
-    } catch (error) {
-        console.error('Threat feed error:', error);
-        contentEl.textContent = "⚠ Unable to fetch live alerts. Please try again later.";
+        let index = 0;
+        function rotate() {
+            contentEl.textContent = items[index];
+            index = (index + 1) % items.length;
+        }
+
+        rotate();
+        setInterval(rotate, 6000); // rotate every 6 seconds
+    } catch (err) {
+        console.error("Threat feed error:", err);
+        contentEl.textContent = "Unable to fetch live alerts. Please try again later.";
     }
 }
+
 loadHeroThreats();
 </script>
 @endsection

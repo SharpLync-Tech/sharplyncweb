@@ -11,7 +11,7 @@ header('Access-Control-Allow-Origin: https://sharplync.com.au');
 header('Content-Type: application/json; charset=UTF-8');
 
 // CISA RSS feed source
-$feedUrl = 'https://www.cisa.gov/sites/default/files/feeds/alerts.xml';
+$feedUrl = 'https://catalog.data.gov/api/3/action/package_search?q=cisa+alerts';
 
 // Simple 10-minute cache to reduce load on CISA and your server
 $cacheFile = __DIR__ . '/cache_cisa_feed.json';
