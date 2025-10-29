@@ -7,19 +7,13 @@
 
 @extends('layouts.base')
 
-@section('title', 'SharpLync Pulse | Live Security Intelligence')
+@section('title', 'SharpLync | Home')
 
 @section('content')
 <section class="hero">
-  <div class="hero-text">
-
-    <!-- Restored clean heading (unchanged) -->
-    <h1>
-      <span class="pulse-dot"></span> SharpLync <span>Pulse</span><br>
-      <span>Live Security Intelligence</span>
-    </h1>
-
-    <p>Real-time insights from trusted cybersecurity and IT intelligence sources — refreshed automatically.</p>
+  <div class="hero-text">    
+    <h1>Old School Support.<br><span>Modern Results.</span></h1>
+    <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
     
     <div class="hero-buttons">
       <button class="btn-accent" onclick="window.location.href='/'">Back to Home</button>
