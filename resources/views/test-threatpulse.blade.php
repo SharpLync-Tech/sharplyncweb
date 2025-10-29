@@ -1,13 +1,13 @@
 <!-- 
   Page: test-threatpulse.blade.php
-  Version: v2.1
+  Version: v2.2
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Added SharpLync Pulse header with animated red-teal glow indicator.
+  Description: SharpLync Pulse with red–teal animated pulse icon and live feed card.
 -->
 
 @extends('layouts.base')
 
-@section('title', 'SharpLync Pulse | Live Intelligence')
+@section('title', 'SharpLync Pulse | Live Security Intelligence')
 
 @section('content')
 <section class="hero">
@@ -16,12 +16,13 @@
       <span class="pulse-dot"></span> SharpLync Pulse<br>
       <span>Live Security Intelligence</span>
     </h1>
-    <p>Real-time insights from trusted cybersecurity and IT intelligence sources.</p>
+    <p>Real-time insights from trusted cybersecurity and IT intelligence sources — refreshed automatically.</p>
+    
     <div class="hero-buttons">
       <button class="btn-accent" onclick="window.location.href='/'">Back to Home</button>
     </div>
 
-    <!-- Integrated Pulse Card -->
+    <!-- Integrated SharpLync Pulse Card -->
     <div class="hero-threat-card" id="heroThreatCard">
       <h3><span class="pulse-dot"></span> SharpLync Pulse</h3>
       <div class="hero-threat-content" id="heroThreatContent">
@@ -57,11 +58,11 @@
 </section>
 
 <script>
-// Fetch and rotate live items from proxy-intel.php
+// ===================== SharpLync Pulse Live Feed =====================
 async function loadHeroThreats() {
   const contentEl = document.getElementById('heroThreatContent');
   try {
-    const response = await fetch('/proxy-intel.php');
+    const response = await fetch('/proxy-intel.php'); // Adjust if filename differs
     const data = await response.json();
     const items = (data?.items || []).slice(0, 10);
 
