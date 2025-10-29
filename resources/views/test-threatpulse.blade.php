@@ -54,18 +54,14 @@
 </section>
 
 <script>
-// Fetch and rotate live CISA threats in card
 async function loadHeroThreats() {
     const contentEl = document.getElementById('heroThreatContent');
     try {
         const response = await fetch('/proxy-cisa.php');
         const data = await response.json();
 
-        // Safely extract CISA items
-        const items = (data?.channel?.item || [])
-            .slice(0, 10)
-            .map(i => i.title || "Untitled Alert");
-
+        // Read from JSON items array instead of XML-style
+        const items = (data?.items || []).slice(0, 10);
         if (items.length === 0) {
             contentEl.textContent = "No current alerts available.";
             return;
@@ -73,12 +69,18 @@ async function loadHeroThreats() {
 
         let index = 0;
         function rotate() {
-            contentEl.textContent = items[index];
+            const item = items[index];
+            contentEl.innerHTML = `
+                <a href="${item.link}" target="_blank" style="color:#00c2c7;text-decoration:none;">
+                    ${item.title}
+                </a><br>
+                <small style="color:#ccc;">${item.source} — ${new Date(item.date).toLocaleDateString()}</small>
+            `;
             index = (index + 1) % items.length;
         }
 
         rotate();
-        setInterval(rotate, 6000); // rotate every 6 seconds
+        setInterval(rotate, 8000); // rotate every 8 seconds
     } catch (err) {
         console.error("Threat feed error:", err);
         contentEl.textContent = "Unable to fetch live alerts. Please try again later.";
@@ -87,4 +89,5 @@ async function loadHeroThreats() {
 
 loadHeroThreats();
 </script>
+
 @endsection
