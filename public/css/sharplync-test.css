@@ -1,13 +1,17 @@
 /* 
   Page: sharplync-test.css
-  Version: v1.9
+  Version: v2.0
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Experimental stylesheet for SharpLync Threat Pulse test page.
-               Adds live ticker and animated card feed styles. Base v1.8 structure preserved.
+  Description: Full stylesheet including all SharpLync v1.7 base styles, v1.9 glow refinements, 
+  and new v2.0 Threat Pulse hero card integration for live CISA feed display.
 */
 
 /* ==================== GLOBAL ==================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -64,11 +68,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4rem 10% 3rem;
+  padding: 6rem 10%;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;
-  min-height: 75vh;
+  min-height: 80vh;
 }
 
 .hero-text {
@@ -91,17 +95,12 @@ body {
   color: #e9f4f3;
 }
 
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
+/* Hero image */
 .hero-image img {
-  width: 380px;
+  width: 400px;
   max-width: 100%;
   height: auto;
-  margin-top: -4rem;
+  margin-top: -6rem;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
 
@@ -123,6 +122,7 @@ body {
 .btn-accent {
   background-color: #2CBFAE;
   color: #0A2A4D;
+  margin-right: 0.8rem; /* Added spacing between buttons */
 }
 
 .btn:hover, .btn-accent:hover {
@@ -157,7 +157,7 @@ body {
 
 .tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+  box-shadow: 0 0 25px rgba(44,191,174,0.6); /* teal glow */
 }
 
 .tile-icon {
@@ -175,42 +175,36 @@ body {
 .info-section {
   background-color: #F7F9FB;
   color: #0A2A4D;
-  text-align: center;
   padding: 5rem 10%;
-}
-
-.info-wrapper {
   display: flex;
   justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
   gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .info-card {
-  background: #0C315E;
-  color: white;
+  background: #ffffff;
   border-radius: 12px;
-  flex: 1 1 420px;
   padding: 2rem;
+  box-shadow: 0 0 20px rgba(10, 42, 77, 0.1);
   transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0);
+  flex: 1 1 300px;
+  text-align: center;
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.4);
 }
 
 .info-card h2 {
-  color: #2CBFAE;
+  color: #0A2A4D;
   margin-bottom: 1rem;
 }
 
 .info-card p {
+  color: #333;
   line-height: 1.6;
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 /* ==================== FOOTER ==================== */
@@ -233,9 +227,44 @@ footer {
   filter: drop-shadow(0 0 6px #2CBFAE);
 }
 
+/* ==================== HERO THREAT PULSE CARD ==================== */
+.hero-threat-card {
+  background: rgba(12, 49, 94, 0.95);
+  border: 2px solid rgba(44, 191, 174, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(44,191,174,0.4);
+  color: white;
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  max-width: 480px;
+  transition: all 0.4s ease;
+}
+
+.hero-threat-card:hover {
+  box-shadow: 0 0 35px rgba(44,191,174,0.8);
+  transform: translateY(-4px);
+}
+
+.hero-threat-card h3 {
+  color: #2CBFAE;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-threat-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #e9f4f3;
+  transition: opacity 0.5s ease;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
-  .hamburger { display: block; }
+  .hamburger {
+    display: block;
+  }
 
   nav ul {
     display: none !important;
@@ -268,14 +297,7 @@ footer {
   .hero {
     flex-direction: column;
     text-align: center;
-    padding: 3rem 5%;
-    min-height: auto;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
+    min-height: 70vh;
   }
 
   .hero-image img {
@@ -286,98 +308,10 @@ footer {
   .tiles-wrapper {
     flex-direction: column;
   }
-}
 
-/* =====================================================================
-   THREAT PULSE SECTION (NEW)
-   ===================================================================== */
-
-.threatpulse-section {
-  background-color: #0A2A4D;
-  color: white;
-  text-align: center;
-  padding: 4rem 10%;
-}
-
-.threatpulse-title {
-  font-size: 1.6rem;
-  color: #2CBFAE;
-  margin-bottom: 2rem;
-  text-shadow: 0 0 10px rgba(44,191,174,0.8);
-}
-
-/* ---- Ticker Bar ---- */
-.threat-ticker {
-  overflow: hidden;
-  position: relative;
-  border-top: 2px solid #2CBFAE;
-  border-bottom: 2px solid #2CBFAE;
-  background: rgba(12,49,94,0.9);
-  padding: 0.6rem 0;
-  margin-bottom: 3rem;
-  box-shadow: inset 0 0 10px rgba(44,191,174,0.5);
-}
-
-.threat-ticker-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: tickerScroll 30s linear infinite;
-}
-
-.threat-ticker-track span {
-  margin: 0 2rem;
-  color: #2CBFAE;
-  font-weight: 500;
-  text-shadow: 0 0 8px rgba(44,191,174,0.7);
-}
-
-@keyframes tickerScroll {
-  from { transform: translateX(100%); }
-  to { transform: translateX(-100%); }
-}
-
-/* ---- Card Version ---- */
-.threat-card {
-  background: #0C315E;
-  color: white;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-top: 2rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 0 20px rgba(44,191,174,0.4);
-  transition: all 0.3s ease;
-}
-
-.threat-card h3 {
-  color: #2CBFAE;
-  margin-bottom: 1rem;
-}
-
-.threat-card-content {
-  font-size: 1.1rem;
-  min-height: 50px;
-  transition: opacity 0.5s ease;
-}
-
-.threat-card:hover {
-  box-shadow: 0 0 30px rgba(44,191,174,0.7);
-  transform: translateY(-5px);
-}
-
-/* ---- Mobile ---- */
-@media (max-width: 900px) {
-  .threatpulse-section {
-    padding: 3rem 5%;
-  }
-
-  .threat-ticker-track span {
-    margin: 0 1rem;
-    font-size: 0.9rem;
-  }
-
-  .threat-card {
-    padding: 1.5rem;
+  .hero-threat-card {
+    max-width: 100%;
+    padding: 1.2rem 1rem;
+    margin-top: 1.5rem;
   }
 }
