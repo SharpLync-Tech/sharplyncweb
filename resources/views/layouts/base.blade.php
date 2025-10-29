@@ -1,10 +1,9 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.7
+  Version: v1.8
   Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Layout identical to v1.5; no structural or functional changes.
+  Description: Layout identical to v1.5/v1.7; no structural or functional changes.
 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

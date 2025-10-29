@@ -1,8 +1,8 @@
 /* 
   Page: sharplync.css
-  Version: v1.7
+  Version: v1.8
   Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Added .info-section and .info-card styling for About/Contact cards; all base styling preserved.
+  Description: Removed trust bar styles, added button gap, reduced hero padding and adjusted image alignment. Full stylesheet.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -59,15 +59,16 @@ body {
 }
 
 /* ==================== HERO ==================== */
+/* NOTE: hero settings updated for v1.8: padding reduced, min-height lowered, CPU image adjusted */
 .hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem 10%;
+  padding: 4rem 10% 3rem; /* Reduced vertical space for v1.8 */
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   flex-wrap: wrap;
-  min-height: 85vh;
+  min-height: 75vh; /* Reduced height for balance */
 }
 
 .hero-text {
@@ -90,11 +91,18 @@ body {
   color: #e9f4f3;
 }
 
+/* Hero Buttons container (v1.8: added gap) */
+.hero-buttons {
+  display: flex;
+  gap: 1rem; /* Added spacing between buttons */
+  margin-top: 1.5rem;
+}
+
 .hero-image img {
-  width: 400px;
+  width: 380px;
   max-width: 100%;
   height: auto;
-  margin-top: -8rem;
+  margin-top: -4rem; /* Adjusted from -8rem to rebalance space (v1.8) */
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
 
@@ -106,6 +114,10 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px; /* touch target */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn {
@@ -164,7 +176,7 @@ body {
   transform: scale(1.05);
 }
 
-/* ==================== ABOUT & CONTACT ==================== */
+/* ==================== ABOUT & CONTACT (legacy classes kept) ==================== */
 .about-section,
 .contact-section {
   text-align: center;
@@ -228,6 +240,8 @@ footer {
   .hero {
     flex-direction: column;
     text-align: center;
+    padding: 3rem 5%;
+    min-height: auto;
   }
 
   .hero-image img {
@@ -238,9 +252,15 @@ footer {
   .tiles-wrapper {
     flex-direction: column;
   }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
 }
 
-/* ==================== INFO SECTION (NEW) ==================== */
+/* ==================== INFO SECTION (v1.7 preserved) ==================== */
 .info-section {
   background-color: #F7F9FB;
   color: #0A2A4D;

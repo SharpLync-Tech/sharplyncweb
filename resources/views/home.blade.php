@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.7
+  Version: v1.8
   Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Converted About and Contact sections into responsive cards consistent with service tiles.
+  Description: Removed trust bar, added button spacing, reduced hero vertical padding for better balance.
 -->
 
 @extends('layouts.base')
@@ -17,10 +17,6 @@
         <div class="hero-buttons">
             <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
             <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
-        </div>
-        <div class="trust-bar">
-            <div class="trust-item">🏆 20+ Years Experience</div>
-            <div class="trust-item">⏱️ 99.9% Uptime</div>
         </div>
     </div>
 
@@ -50,13 +46,19 @@
     </div>
 </section>
 
-<!-- Updated About & Contact Sections as Cards -->
-<section class="info-section">
+<!-- About area as card -->
+<section id="about" class="info-section">
     <div class="info-wrapper">
         <div class="info-card">
             <h2>About SharpLync</h2>
             <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
         </div>
+    </div>
+</section>
+
+<!-- Contact area as card -->
+<section id="contact" class="info-section">
+    <div class="info-wrapper">
         <div class="info-card">
             <h2>Contact Us</h2>
             <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
