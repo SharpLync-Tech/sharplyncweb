@@ -1,74 +1,79 @@
 <?php
 /*
-  File: proxy-trendmicro.php
+  File: proxy-intel.php
   Version: v1.0
   Last updated: 30 Oct 2025 by Max (ChatGPT)
-  Description: Server-side proxy to fetch and cache Trend Micro’s live Cyberthreat RSS feed
-               for SharpLync Threat Pulse. Returns feed in clean JSON format.
+  Description: SharpLync multi-source live intelligence feed aggregator
+               (The Hacker News, BleepingComputer, and DownDetector).
 */
 
 header('Access-Control-Allow-Origin: https://sharplync.com.au');
 header('Content-Type: application/json; charset=UTF-8');
 
-// === Configuration ===
-$feedUrl   = 'https://newsroom.trendmicro.com/cyberthreat?pageTemplate=rss';
-$cacheFile = __DIR__ . '/cache_trendmicro_feed.json';
-$cacheTime = 600; // 10 minutes
+// ---------- CONFIGURATION ----------
+$feeds = [
+    'HackerNews'      => 'https://feeds.feedburner.com/TheHackersNews',
+    'BleepingComputer'=> 'https://www.bleepingcomputer.com/feed/',
+    // DownDetector unofficial RSS (through feedparser.io mirror)
+    'DownDetector'    => 'https://rss.app/feeds/L8d2XTTT2YV8FyD9.xml' // replace with working mirror later
+];
 
-// === Serve cached copy if fresh ===
+$cacheFile = __DIR__ . '/cache_intel_feed.json';
+$cacheTime = 900; // 15 minutes
+
+// ---------- USE CACHE IF AVAILABLE ----------
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTime)) {
     echo file_get_contents($cacheFile);
     exit;
 }
 
-// === Fetch live RSS feed ===
-$context = stream_context_create([
-    'http' => [
-        'timeout' => 10,
-        'user_agent' => 'SharpLyncThreatPulse/1.0 (+https://sharplync.com.au)'
-    ]
-]);
+$allItems = [];
 
-$xmlData = @file_get_contents($feedUrl, false, $context);
+foreach ($feeds as $source => $url) {
+    $context = stream_context_create([
+        'http' => ['timeout' => 10, 'user_agent' => 'SharpLyncThreatPulse/1.0']
+    ]);
 
-if ($xmlData === false) {
-    // fallback if feed unreachable
-    echo json_encode([
-        'items' => [
-            [
-                'title' => 'Trend Micro feed unavailable — using fallback data.',
-                'link'  => 'https://newsroom.trendmicro.com/',
-                'date'  => date(DATE_RSS),
-                'source' => 'Trend Micro (fallback)'
-            ]
-        ]
-    ], JSON_PRETTY_PRINT);
-    exit;
+    $xmlData = @file_get_contents($url, false, $context);
+    if (!$xmlData) continue;
+
+    $xml = @simplexml_load_string($xmlData, "SimpleXMLElement", LIBXML_NOCDATA);
+    if (!$xml || !isset($xml->channel->item)) continue;
+
+    foreach ($xml->channel->item as $item) {
+        $allItems[] = [
+            'title'   => (string) $item->title,
+            'link'    => (string) $item->link,
+            'date'    => date('D, d M Y H:i:s O', strtotime((string)$item->pubDate ?? 'now')),
+            'source'  => $source
+        ];
+    }
 }
 
-// === Parse XML ===
-$xml = @simplexml_load_string($xmlData, "SimpleXMLElement", LIBXML_NOCDATA);
-if ($xml === false || empty($xml->channel->item)) {
-    echo json_encode(['error' => 'Invalid or empty RSS feed received.']);
-    exit;
-}
-
-// === Convert to JSON ===
-$items = [];
-foreach ($xml->channel->item as $entry) {
-    $items[] = [
-        'title'  => (string)$entry->title,
-        'link'   => (string)$entry->link,
-        'date'   => (string)$entry->pubDate,
-        'source' => 'Trend Micro'
+// ---------- FALLBACK ----------
+if (empty($allItems)) {
+    $allItems = [
+        ['title'=>'No live feeds available — showing fallback data.',
+         'link'=>'https://sharplync.com.au',
+         'date'=>date('D, d M Y H:i:s O'),
+         'source'=>'DEMO'],
+        ['title'=>'Check your network or feed URLs.',
+         'link'=>'https://sharplync.com.au',
+         'date'=>date('D, d M Y H:i:s O'),
+         'source'=>'DEMO']
     ];
 }
 
-$output = json_encode(['items' => $items], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+// ---------- SORT BY DATE ----------
+usort($allItems, function($a, $b) {
+    return strtotime($b['date']) - strtotime($a['date']);
+});
 
-// === Cache it ===
+$output = json_encode(['items'=>$allItems], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+// ---------- SAVE CACHE ----------
 file_put_contents($cacheFile, $output);
 
-// === Output ===
+// ---------- OUTPUT ----------
 echo $output;
 ?>
