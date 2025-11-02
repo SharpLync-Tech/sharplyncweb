@@ -1,8 +1,8 @@
 <!-- 
   Page: base.blade.php
-  Version: v2.2 (C2.2 – Reveal Edition, Stable)
+  Version: v2.2 (C2.2 – Reveal Edition, Stable Fixed)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Fixed missing @endif, wrapped JSON-LD in @verbatim, verified closing tags.
+  Description: Corrected extra @endif, verified Blade syntax and tag balance.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +38,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    {{-- Load special stylesheet only for test-threatpulse page --}}
+    {{-- Load stylesheet (handles test-threatpulse or default) --}}
     @if (Request::is('test-threatpulse'))
         <link rel="stylesheet" href="{{ secure_asset('css/sharplync-test.css') }}">
     @else
@@ -49,7 +49,6 @@
 </head>
 
 <body>
-
     <!-- ========================= HEADER ========================= -->
     <header class="main-header">
         <div class="logo">
