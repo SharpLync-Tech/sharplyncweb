@@ -1,8 +1,7 @@
-/* 
-  Page: sharplync-test.css
-  Version: v2.3
-  Last updated: 2 Nov 2025 by Max (ChatGPT)
-  Description: Fixed SharpLync logo display size for header; no other changes made.
+/* Page: sharplync-test.css
+  Version: v2.2
+  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Description: Added small pulsating heart next to SharpLync Pulse text in feed card header.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -32,12 +31,8 @@ body {
   z-index: 1000;
 }
 
-/* 🔧 FIXED LOGO SIZE */
-.main-header .logo img {
-  height: 100px;
-  width: auto;
-  max-height: none;
-  object-fit: contain;
+.main-header img {
+  height: 50px;
 }
 
 .main-header nav ul {
@@ -331,6 +326,9 @@ footer {
 
   .hero-image img {
     display: none;  /* Hides the image completely on mobile */
+    /* Optional: Keep these if you want fallbacks, but they're now irrelevant */
+    /* width: 260px; */
+    /* margin-top: 1rem; */
   }
 
   .tiles-wrapper {
@@ -341,9 +339,10 @@ footer {
     max-width: 100%;
     padding: 1.2rem 1rem;
     margin-top: 1.5rem;
-  }  
+  }
+} /* Closing bracket for @media (max-width: 900px) */
 
-  /* ================================
+/* ================================
    SharpLync Admin Portal Styles
    Version: 1.0
    ================================ */
@@ -410,6 +409,4 @@ main.admin-main {
 
 .logout-btn:hover {
     background: #e60000;
-}
-
 }
