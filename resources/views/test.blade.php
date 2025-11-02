@@ -7,9 +7,8 @@
     <h1>Coming Soon<br></h1> 
     
     <!-- Integrated SharpLync Pulse Card -->
-    <div class="hero-threat-card" id="heroThreatCard">
-      <div class="hero-threat-content" id="heroThreatContent">
-        
+    <div>
+      <div>        
       </div>
     </div>
   </div>
