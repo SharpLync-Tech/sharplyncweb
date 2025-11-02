@@ -1,8 +1,8 @@
 <!-- 
   Page: base.blade.php
-  Version: v2.2 (C2.2 – Reveal Edition, Stable Fixed)
+  Version: v2.3 (Simplified & Solid)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Corrected extra @endif, verified Blade syntax and tag balance.
+  Description: Removed conditional @if for stylesheets; verified clean syntax and stability.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -38,12 +38,8 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    {{-- Load stylesheet (handles test-threatpulse or default) --}}
-    @if (Request::is('test-threatpulse'))
-        <link rel="stylesheet" href="{{ secure_asset('css/sharplync-test.css') }}">
-    @else
-        <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
-    @endif
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
 
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
