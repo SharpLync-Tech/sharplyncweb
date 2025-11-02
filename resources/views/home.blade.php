@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v1.8
-  Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Removed trust bar, added button spacing, reduced hero vertical padding for better balance.
+  Version: v2.0 (C2)
+  Last updated: 03 Nov 2025 by Max (ChatGPT)
+  Description: Hero logo with pulse glow; updated for clean header with hamburger-only navigation.
 -->
 
 @extends('layouts.base')
@@ -11,6 +11,7 @@
 
 @section('content')
 <section class="hero">
+    <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
     <div class="hero-text">
         <h1>Old School Support.<br><span>Modern Results.</span></h1>
         <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
@@ -18,10 +19,6 @@
             <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
             <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
         </div>
-    </div>
-
-    <div class="hero-image">
-        <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero Image">
     </div>
 </section>
 
@@ -46,7 +43,6 @@
     </div>
 </section>
 
-<!-- About area as card -->
 <section id="about" class="info-section">
     <div class="info-wrapper">
         <div class="info-card">
@@ -56,7 +52,6 @@
     </div>
 </section>
 
-<!-- Contact area as card -->
 <section id="contact" class="info-section">
     <div class="info-wrapper">
         <div class="info-card">

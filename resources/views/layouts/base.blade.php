@@ -1,8 +1,8 @@
 <!-- 
   Page: base.blade.php
-  Version: v1.8
-  Last updated: 29 Oct 2025 by Max (ChatGPT)
-  Description: Layout identical to v1.5/v1.7; no structural or functional changes.
+  Version: v2.0 (C2)
+  Last updated: 03 Nov 2025 by Max (ChatGPT)
+  Description: Simplified header (logo + hamburger); added full-screen overlay navigation.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -11,14 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-   
-    {{-- Load special stylesheet only for test-threatpulse page --}}
-        @if (Request::is('test-threatpulse'))
-                <link rel="stylesheet" href="{{ secure_asset('css/sharplync-test.css') }}">
-            @else
-                <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
-        @endif
-
+    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
 <body>
@@ -26,26 +19,26 @@
     <!-- ========================= HEADER ========================= -->
     <header class="main-header">
         <div class="logo">
-            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" style="height: 50px;">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
         </div>
-
-        <!-- Hamburger menu (mobile only) -->
         <button class="hamburger" onclick="toggleMenu()">☰</button>
+    </header>
 
-        <nav>
-            <ul id="navLinks">
-                <li><a href="/">Home</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-            </ul>
-        </nav>
-    </header>    
+    <!-- ========================= OVERLAY MENU ========================= -->
+    <div id="overlayMenu" class="overlay-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#services" onclick="toggleMenu()">Services</a></li>
+            <li><a href="#about" onclick="toggleMenu()">About Us</a></li>
+            <li><a href="#contact" onclick="toggleMenu()">Contact Us</a></li>
+        </ul>
+    </div>
 
     <script>
     function toggleMenu() {
-        const navLinks = document.getElementById('navLinks');
-        navLinks.classList.toggle('show');
+        const overlay = document.getElementById('overlayMenu');
+        overlay.classList.toggle('show');
     }
     </script>
 
