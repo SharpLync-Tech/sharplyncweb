@@ -1,3 +1,4 @@
+@extends('layouts.testbase')
 @section('title', 'SharpLync | Home')
 
 @section('content')
