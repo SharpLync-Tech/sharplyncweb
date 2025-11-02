@@ -1,8 +1,8 @@
 /* 
   Page: sharplync.css 
-  Version: v2.1 (C2.1 – Glass Overlay + Larger Header Logo)
+  Version: v2.2 (C2.2 – The Reveal Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added transparent frosted overlay menu; increased header logo size with overlap; mobile scaling refined.
+  Description: Adds reveal animations, gradient hover effects, section fade-ins, and SEO structure support.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -17,6 +17,7 @@ body {
   color: #0A2A4D;
   background-color: #F7F9FB;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 /* ==================== HEADER ==================== */
@@ -36,7 +37,7 @@ body {
 .main-header .logo img {
   height: 80px;
   width: auto;
-  margin-bottom: -5px; /* slight overlap for stronger presence */
+  margin-bottom: -5px;
   transition: all 0.3s ease;
 }
 
@@ -130,19 +131,27 @@ body {
   width: 250px;
   height: auto;
   margin-bottom: 2rem;
-  animation: logoPulse 4s ease-in-out infinite;
+  animation: logoPulse 4s ease-in-out infinite, fadeUp 1s ease forwards;
+  animation-delay: 0.2s;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
 }
 
 @keyframes logoPulse {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
-  }
-  50% {
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 25px rgba(44,191,174,1));
-  }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(44,191,174,0.7)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(44,191,174,1)); }
+}
+
+/* Hero reveal animations */
+.hero-text, .hero-buttons {
+  opacity: 0;
+  transform: translateY(25px);
+  animation: fadeUp 1s ease forwards;
+}
+.hero-text { animation-delay: 0.6s; }
+.hero-buttons { animation-delay: 1.0s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .hero-text {
@@ -155,21 +164,12 @@ body {
   line-height: 1.2;
 }
 
-.hero-text h1 span {
-  color: #2CBFAE;
-}
+.hero-text h1 span { color: #2CBFAE; }
 
 .hero-text p {
   margin: 1rem 0 1.5rem;
   font-size: 1.1rem;
   color: #e9f4f3;
-}
-
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 /* ==================== BUTTONS ==================== */
@@ -197,7 +197,30 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* ==================== TILES ==================== */
+/* Animated gradient hover */
+.btn-accent:hover {
+  background: linear-gradient(90deg, #2CBFAE, #35E0C2, #2CBFAE);
+  background-size: 200%;
+  animation: gradientShift 2s linear infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0%; }
+  100% { background-position: 200%; }
+}
+
+/* ==================== SCROLL FADE SECTIONS ==================== */
+.fade-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==================== OTHER SECTIONS ==================== */
 .tiles-section {
   text-align: center;
   padding: 5rem 10%;
@@ -219,26 +242,13 @@ body {
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 0 0 rgba(44,191,174,0);
 }
 
-.tile:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.6);
-}
+.tile:hover { transform: translateY(-5px); box-shadow: 0 0 25px rgba(44,191,174,0.6); }
 
-.tile-icon {
-  width: 70px;
-  height: auto;
-  margin-bottom: 1rem;
-  transition: transform 0.3s ease;
-}
+.tile-icon { width: 70px; height: auto; margin-bottom: 1rem; }
 
-.tile:hover .tile-icon {
-  transform: scale(1.05);
-}
-
-/* ==================== INFO SECTIONS ==================== */
+/* ==================== INFO ==================== */
 .info-section {
   background-color: #F7F9FB;
   color: #0A2A4D;
@@ -259,20 +269,7 @@ body {
   text-align: center;
 }
 
-.info-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 25px rgba(44,191,174,0.4);
-}
-
-.info-card h2 {
-  color: #0A2A4D;
-  margin-bottom: 1rem;
-}
-
-.info-card p {
-  color: #333;
-  line-height: 1.6;
-}
+.info-card:hover { transform: translateY(-4px); box-shadow: 0 0 25px rgba(44,191,174,0.4); }
 
 /* ==================== FOOTER ==================== */
 footer {
@@ -296,62 +293,16 @@ footer {
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
-  .main-header .logo img {
-    height: 65px;
-  }
-
-  .hero {
-    padding: 5rem 6% 6rem;
-    min-height: 80vh;
-  }
-
-  .hero-logo {
-    width: 180px;
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-text h1 {
-    font-size: 2.3rem;
-  }
-
-  .hero-text p {
-    font-size: 1rem;
-  }
-
-  .tile {
-    flex: 1 1 90%;
-  }
-
-  .info-card {
-    flex: 1 1 100%;
-  }
-
-  .btn, .btn-accent {
-    width: 100%;
-    max-width: 250px;
-  }
+  .main-header .logo img { height: 65px; }
+  .hero { padding: 5rem 6% 6rem; }
+  .hero-logo { width: 180px; }
+  .hero-text h1 { font-size: 2.3rem; }
+  .tile { flex: 1 1 90%; }
+  .info-card { flex: 1 1 100%; }
 }
 
 @media (max-width: 500px) {
-  .main-header .logo img {
-    height: 60px;
-  }
-
-  .hero-text h1 {
-    font-size: 1.9rem;
-  }
-
-  .hero-logo {
-    width: 140px;
-  }
-
-  .overlay-menu a {
-    font-size: 1.3rem;
-  }
-
-  .close-menu {
-    top: 10px;
-    right: 15px;
-    font-size: 2rem;
-  }
+  .main-header .logo img { height: 60px; }
+  .hero-logo { width: 140px; }
+  .hero-text h1 { font-size: 1.9rem; }
 }
