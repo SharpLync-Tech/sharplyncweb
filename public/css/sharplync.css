@@ -31,6 +31,11 @@ body {
   z-index: 1000;
 }
 
+.main-header .logo img {
+  height: 80px; /* Adjust this value to your desired height (e.g., 80px) */
+  width: auto;  /* Ensures the width scales proportionally */
+}
+
 .main-header img {
   height: 50px;
 }

@@ -26,7 +26,7 @@
     <!-- ========================= HEADER ========================= -->
     <header class="main-header">
         <div class="logo">
-            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" style="height: 50px;">
         </div>
 
         <!-- Hamburger menu (mobile only) -->
