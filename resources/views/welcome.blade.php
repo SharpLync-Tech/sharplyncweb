@@ -20,7 +20,7 @@
     }
 
     img {
-      height: 85px;
+      height: 100px;
       width: auto;
       margin-bottom: 30px;
       filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
