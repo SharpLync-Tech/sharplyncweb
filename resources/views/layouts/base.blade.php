@@ -19,7 +19,7 @@
                 <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
         @endif
 
-    <link rel="icon" type="image/x-icon" href="{{ asset('css/favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
 <body>
 

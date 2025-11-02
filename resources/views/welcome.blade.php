@@ -45,7 +45,7 @@
 </head>
 
 <body>
-  <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+  <img src="{{ asset('images/logo1.png') }}" alt="SharpLync Logo">
   <h1>Coming Soon</h1>
 </body>
 </html>
