@@ -1,9 +1,3 @@
-<!-- 
-  Page: base.blade.php
-  Version: v2.3 (Simplified & Solid)
-  Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Removed conditional @if for stylesheets; verified clean syntax and stability.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
