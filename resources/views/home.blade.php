@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.0 (C2)
+  Version: v2.1 (C2.1)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Hero logo with pulse glow; updated for clean header with hamburger-only navigation.
+  Description: Matches glassy overlay update and larger top logo.
 -->
 
 @extends('layouts.base')

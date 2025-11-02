@@ -1,8 +1,8 @@
 <!-- 
   Page: base.blade.php
-  Version: v2.0 (C2)
+  Version: v2.1 (C2.1)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Simplified header (logo + hamburger); added full-screen overlay navigation.
+  Description: Added glassy overlay menu and larger logo with slight overlap.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -21,12 +21,12 @@
         <div class="logo">
             <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
         </div>
-        <button class="hamburger" onclick="toggleMenu()">☰</button>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
     </header>
 
     <!-- ========================= OVERLAY MENU ========================= -->
-    <div id="overlayMenu" class="overlay-menu">
-        <button class="close-menu" onclick="toggleMenu()">×</button>
+    <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
+        <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="#services" onclick="toggleMenu()">Services</a></li>
@@ -39,6 +39,7 @@
     function toggleMenu() {
         const overlay = document.getElementById('overlayMenu');
         overlay.classList.toggle('show');
+        document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
     }
     </script>
 
