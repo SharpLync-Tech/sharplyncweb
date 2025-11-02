@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       height: 100vh;
-      background: linear-gradient(135deg, #0A2A4D 0%, #104976 50%, #2CBFAE 100%);
+      background: linear-gradient(135deg, #0A2A4D 0%, #104976 45%, #2CBFAE 100%);
       font-family: 'Inter', 'Open Sans', system-ui, sans-serif;
       color: #ffffff;
       display: flex;
