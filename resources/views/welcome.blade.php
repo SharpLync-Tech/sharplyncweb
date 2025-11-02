@@ -34,7 +34,7 @@
 
     @media (max-width: 768px) {
       img {
-        height: 60px;
+        height: 120px;
       }
       h1 {
         font-size: clamp(1.5rem, 6vw, 2rem);
