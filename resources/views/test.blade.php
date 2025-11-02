@@ -4,12 +4,15 @@
 @section('content')
 <section class="hero">
   <div class="hero-text">    
-    <h1>Coming Soon<br></h1>
+    <h1>Coming Soon<br></h1> 
     
-    
-    <div class="hero-buttons">
-      <button class="btn-accent" onclick="window.location.href='/'">Back to Home</button>
-    </div>   
+    <!-- Integrated SharpLync Pulse Card -->
+    <div class="hero-threat-card" id="heroThreatCard">
+      <div class="hero-threat-content" id="heroThreatContent">
+        
+      </div>
+    </div>
+  </div>
 
   <div class="hero-image">
     <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Circuit Graphic">
