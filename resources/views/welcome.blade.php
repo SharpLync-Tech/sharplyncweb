@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SharpLync - Coming Soon</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <style>
     body {
       margin: 0;
@@ -34,7 +35,7 @@
 
     @media (max-width: 768px) {
       img {
-        height: 120px;
+        height: 160px;
       }
       h1 {
         font-size: clamp(1.5rem, 6vw, 2rem);
