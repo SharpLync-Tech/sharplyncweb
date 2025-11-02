@@ -34,7 +34,7 @@ body {
 
 /* 🔧 FIXED LOGO SIZE */
 .main-header .logo img {
-  height: 200px;
+  height: 150px;
   width: auto;
   max-height: none;
   object-fit: contain;
