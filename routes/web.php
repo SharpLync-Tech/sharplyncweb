@@ -38,6 +38,10 @@ Route::get('/test-threatpulse', function () {
     return view('test-threatpulse');
 });
 
+Route::get('/test', function () {
+    return view('test');
+});
+
 // ==============================
 // Admin Routes (modular include)
 // ==============================
