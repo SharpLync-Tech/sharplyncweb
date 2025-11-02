@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       height: 100vh;
-      background-color: #0A2A4D;
+      background: linear-gradient(135deg, #0A2A4D 0%, #00fff4 100%);
       font-family: 'Inter', 'Open Sans', system-ui, sans-serif;
       color: #ffffff;
       display: flex;
@@ -35,7 +35,7 @@
 
     @media (max-width: 768px) {
       img {
-        height: 160px;
+        height: 180px;
       }
       h1 {
         font-size: clamp(1.5rem, 6vw, 2rem);
