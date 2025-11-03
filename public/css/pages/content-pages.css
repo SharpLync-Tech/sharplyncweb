@@ -1,8 +1,8 @@
 /* 
   File: content-pages.css
-  Version: v1.8
+  Version: v1.9
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Larger readable about card with off-white background and navy text.
+  Description: Fixed off-white about card with navy text and better readability.
 */
 
 /* ===============================
@@ -12,7 +12,7 @@
   position: relative;
   overflow: hidden;
   text-align: center;
-  padding: 80px 0 120px 0; /* Balanced vertical spacing */
+  padding: 80px 0 120px 0;
   background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
   color: #FFFFFF;
 }
@@ -24,38 +24,38 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;     /* Centers the card horizontally */
+  justify-content: center;
   align-items: flex-start;
-  margin-top: 2rem;            /* Distance between heading and card */
+  margin-top: 2rem;
 }
 
-/* Main story card */
-.tile {
-  background-color: #F9FBFE;   /* ← Card background (off-white) */
+/* ✅ Dedicated About Card */
+.about-card {
+  background-color: #F9FBFE;    /* ← Card background (off-white) */
+  color: #0A2A4D;               /* ← SharpLync brand navy for text */
   border-radius: 16px;
-  padding: 3rem 4rem;          /* ← Inner padding (controls card height) */
-  width: 75%;                  /* ← Card width */
-  max-width: 950px;            /* ← Maximum size on large screens */
+  padding: 3rem 4rem;           /* ← Inner padding controls card height */
+  width: 75%;                   /* ← Card width */
+  max-width: 950px;             /* ← Maximum width */
   text-align: left;
-  color: #0A2A4D;              /* ← SharpLync brand navy text */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   transition: all 0.4s ease;
 }
 
-/* Optional subtle hover glow */
-.tile:hover {
-  box-shadow: 0 0 30px rgba(44, 191, 174, 0.4);
+/* Hover glow effect */
+.about-card:hover {
+  box-shadow: 0 0 35px rgba(44, 191, 174, 0.4);
 }
 
 /* Title inside card */
-.tile h3 {
+.about-card h3 {
   color: #2CBFAE;
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
 }
 
 /* Paragraphs inside card */
-.tile p {
+.about-card p {
   font-size: 1.1rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
@@ -65,23 +65,23 @@
    RESPONSIVE DESIGN
    =============================== */
 @media (max-width: 1024px) {
-  .tile {
+  .about-card {
     width: 90%;
     padding: 2.5rem 2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .tile {
+  .about-card {
     width: 92%;
     padding: 2rem 1.5rem;
   }
 
-  .tile h3 {
+  .about-card h3 {
     font-size: 1.5rem;
   }
 
-  .tile p {
+  .about-card p {
     font-size: 1rem;
   }
 }

@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v4.2 (Refined Card Layout – Clean & Readable)
+  Version: v4.3 (Readable Card Fix)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Larger readable card with off-white background and navy text, CPU image removed for a calmer look.
+  Description: Ensures the story card uses the new off-white background and navy text.
 -->
 
 @extends('layouts.base')
@@ -23,14 +23,13 @@
 
   <!-- ✅ Main story card -->
   <div class="hero-cards fade-section">
-    <div class="tile transparent">
+    <div class="about-card">  <!-- ← changed class name -->
       <h3>Our Story</h3>
       <p>
         Born in the heart of the Granite Belt, <strong>SharpLync</strong> was founded with one simple goal — 
         to make technology <em>human again</em>. What began as a local IT initiative has grown into a trusted regional partner 
         supporting Warwick, Stanthorpe, Tenterfield and beyond.
       </p>
-
       <p>
         We believe in community, reliability, and service that still means something. 
         Our promise is simple — real support, from real people, who genuinely care about helping others succeed. 
