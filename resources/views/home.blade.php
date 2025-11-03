@@ -46,23 +46,4 @@ Quick support, friendly faces, no fuss.<a href="/contact" class="learn-more">Lea
     </div>
   </div>
 </section>
-
-<section id="about" class="info-section fade-section">
-  <div class="info-wrapper">
-    <div class="info-card">
-      <h2>About SharpLync</h2>
-      <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="info-section fade-section">
-  <div class="info-wrapper">
-    <div class="info-card">
-      <h2>Contact Us</h2>
-      <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
-      <button class="btn">Get in Touch</button>
-    </div>
-  </div>
-</section>
 @endsection
