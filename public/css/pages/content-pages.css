@@ -36,9 +36,9 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;   /* ← Controls X (left-right) position of card */
+  justify-content: left;   /* ← Controls X (left-right) position of card */
   align-items: center;       /* ← Controls Y (vertical) alignment */
-  margin-top: 2rem;          /* ← Controls how far the card sits below hero text */
+  margin-top: -10rem;          /* ← Controls how far the card sits below hero text */
 }
 
 /* The main card itself */
