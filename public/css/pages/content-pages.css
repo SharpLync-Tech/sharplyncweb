@@ -1,205 +1,74 @@
-/* 
-  File: content-pages.css
-  Version: v9.0
-  Last updated: 04 Nov 2025 by Jannie & Max
-  Description: SharpLync content page layout with white card + testimonial carousel.
+/* File: content-pages.css
+   Version: v10.1
+   Description: Forces About/Content page styling to override global CSS.
 */
 
-/* ===============================
-   BASE LAYOUT
-   =============================== */
-.content-hero {
+section.content-hero {
   position: relative;
   min-height: 100vh;
-  padding: 100px 0;
+  padding: 100px 0 120px 0;
   text-align: center;
   background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
-  color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* ===============================
-   HEADER
-   =============================== */
-.content-header {
+/* HEADER */
+.content-hero .content-header {
   max-width: 900px;
   margin-bottom: 60px;
+  color: #fff;
 }
 
-.content-header h1 {
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.content-header p {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  opacity: 0.95;
-}
-
-/* ===============================
-   MAIN CARD
-   =============================== */
-.content-card {
-  background-color: #F9FBFE;     /* ✅ Solid off-white background */
-  color: #0A2A4D;                /* ✅ Navy text */
+/* STORY CARD */
+.content-hero .content-card {
+  background-color: #F9FBFE !important;     /* <-- Force solid off-white */
+  color: #0A2A4D !important;                /* <-- Navy text */
   border-radius: 16px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
   padding: 3rem 4rem;
   width: 75%;
   max-width: 950px;
   text-align: left;
   line-height: 1.8;
-  margin-bottom: 90px;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeUp 1.2s ease-out forwards;
+  animation: fadeUp 1s ease-out forwards;
 }
 
-.content-card h3 {
-  color: #2CBFAE;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-}
-
-.content-card p {
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-}
-
-/* ===============================
-   TESTIMONIALS
-   =============================== */
-.testimonials-section {
-  margin-top: 30px;
+/* TESTIMONIALS */
+.content-hero .testimonials-section {
+  margin-top: 90px;
   text-align: center;
   width: 100%;
-  color: #ffffff;
-  background: rgba(10, 42, 77, 0.2); /* ✅ Subtle overlay for separation */
-  padding: 60px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-.testimonials-section h3 {
+.content-hero .testimonials-section h3 {
   color: #2CBFAE;
   font-size: 1.8rem;
   margin-bottom: 2rem;
 }
 
-.testimonial-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 85%;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.testimonial-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  min-height: 160px;
-}
-
-.testimonial {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.testimonial.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.testimonial p {
-  font-size: 1.2rem;
-  line-height: 1.7;
-  font-style: italic;
-  color: #F9FBFE;
-}
-
-.testimonial span {
-  display: block;
-  margin-top: 1rem;
-  color: #2CBFAE;
-  font-weight: 500;
-}
-
-/* ===============================
-   ARROWS
-   =============================== */
-.nav-btn {
+/* NAV BUTTONS */
+.content-hero .nav-btn {
   background: none;
   border: 2px solid #2CBFAE;
   color: #2CBFAE;
   font-size: 2rem;
-  cursor: pointer;
   border-radius: 50%;
   width: 45px;
   height: 45px;
   margin: 0 15px;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
-
-.nav-btn:hover {
+.content-hero .nav-btn:hover {
   background-color: #2CBFAE;
   color: #0A2A4D;
 }
 
-/* ===============================
-   ANIMATIONS
-   =============================== */
+/* FADE ANIMATION */
 @keyframes fadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===============================
-   RESPONSIVE
-   =============================== */
-@media (max-width: 1024px) {
-  .content-card {
-    width: 90%;
-    padding: 2.5rem 2rem;
-  }
-  .testimonial-wrapper {
-    width: 90%;
-  }
-}
-
-@media (max-width: 768px) {
-  .content-card {
-    width: 92%;
-    padding: 2rem 1.5rem;
-  }
-  .nav-btn {
-    font-size: 1.5rem;
-    width: 35px;
-    height: 35px;
-  }
-  .testimonial p {
-    font-size: 1rem;
-  }
-  .content-header h1 {
-    font-size: 2rem;
-  }
-  .content-header p {
-    font-size: 1rem;
-  }
+  0% { opacity: 0; transform: translateY(25px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
