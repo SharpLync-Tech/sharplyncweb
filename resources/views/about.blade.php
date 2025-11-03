@@ -10,7 +10,7 @@
   </div>
 
   <!-- ===================== -->
-  <!-- My Story Section -->
+  <!-- My Story Section v2 -->
   <!-- ===================== -->
   <div class="content-card fade-section">
     <h3>My Story: From Tools to Technology</h3>
