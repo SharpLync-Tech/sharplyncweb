@@ -29,7 +29,7 @@
   <!-- ✅ Main centered card -->
   <div class="hero-cards fade-section">
     <div class="tile transparent">
-      <img src="{{ asset('images/sample-icon.png') }}" alt="Feature Icon" class="tile-icon">
+      <!-- <img src="{{ asset('images/sample-icon.png') }}" alt="Feature Icon" class="tile-icon"> -->
       <h3>Our Story</h3>
       <p>
         Born in the heart of the Granite Belt, SharpLync was founded with one simple goal — to make technology human again. 
