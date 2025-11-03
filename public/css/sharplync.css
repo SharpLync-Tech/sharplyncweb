@@ -1,8 +1,8 @@
 /*
   Page: sharplync.css
-  Version: v2.3.5 (CPU Visibility Fixed)
+  Version: v2.3.8 (CPU Hidden on Mobile)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Corrected CPU layering; now visible above hero gradient but below hero content.
+  Description: Keeps all functions intact; CPU image hidden on mobile while remaining visible on desktop/tablet.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -102,24 +102,26 @@ body {
   overflow: hidden;
 }
 
-/* ✅ CPU image now correctly visible */
+/* ✅ CPU image visible on desktop/tablet only */
 .hero-cpu-bg {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 0; /* 👈 visible above background but below text/logo */
+  top: 0;
+  right: 0;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   pointer-events: none;
+  z-index: 0;
 }
 
 .hero-cpu-bg img {
-  width: 420px;
-  max-width: 80%;
-  opacity: 0.5;
-  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
+  width: 800px;
+  max-width: 100%;
+  height: auto;
+  margin-top: -17rem;
+  margin-right: -10rem;
+  opacity: 0.45;
+  filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
   animation: fadeUp 1.8s ease forwards;
 }
 
@@ -255,13 +257,20 @@ footer {
   .hero { padding: 5rem 6% 6rem; }
   .hero-logo { width: 180px; }
   .hero-text h1 { font-size: 2.3rem; }
-  .hero-cpu-bg img { width: 320px; }
+  .hero-cpu-bg img {
+    width: 450px;
+    margin-top: -8rem;
+    margin-right: -2rem;
+    opacity: 0.4;
+  }
   .hero-cards { gap: 1.5rem; }
   .tile { flex: 1 1 90%; }
 }
+
+/* ✅ Completely hide CPU image on mobile */
 @media (max-width: 500px) {
   .main-header .logo img { height: 60px; }
   .hero-logo { width: 140px; }
   .hero-text h1 { font-size: 1.9rem; }
-  .hero-cpu-bg img { width: 240px; }
+  .hero-cpu-bg { display: none !important; }
 }
