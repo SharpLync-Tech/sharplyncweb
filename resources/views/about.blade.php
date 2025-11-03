@@ -1,8 +1,7 @@
 <!-- 
   Page: about.blade.php
-  Version: v7.0 (Final – with working testimonial carousel)
+  Version: v8.0 (Polished – verified visual + functional)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Clean SharpLync content page with solid card and responsive testimonial carousel.
 -->
 
 @extends('layouts.base')
@@ -27,19 +26,21 @@
   <!-- ===================== -->
   <!-- Story Card -->
   <!-- ===================== -->
-  <div class="content-card">
-    <h3>Our Story</h3>
-    <p>
-      Born in the heart of the Granite Belt, <strong>SharpLync</strong> was founded with one simple goal —
-      to make technology <em>human again</em>. What began as a small local IT initiative has grown into a trusted 
-      regional partner supporting Warwick, Stanthorpe, Tenterfield, and beyond.
-    </p>
+  <div class="content-card-wrapper">
+    <div class="content-card">
+      <h3>Our Story</h3>
+      <p>
+        Born in the heart of the Granite Belt, <strong>SharpLync</strong> was founded with one simple goal —
+        to make technology <em>human again</em>. What began as a small local IT initiative has grown into a trusted 
+        regional partner supporting Warwick, Stanthorpe, Tenterfield, and beyond.
+      </p>
 
-    <p>
-      We believe in community, reliability, and service that still means something. 
-      Our promise is simple — real support, from real people, who genuinely care about helping others succeed. 
-      From the bush to the cloud, SharpLync continues to build connections that matter.
-    </p>
+      <p>
+        We believe in community, reliability, and service that still means something. 
+        Our promise is simple — real support, from real people, who genuinely care about helping others succeed. 
+        From the bush to the cloud, SharpLync continues to build connections that matter.
+      </p>
+    </div>
   </div>
 
   <!-- ===================== -->
