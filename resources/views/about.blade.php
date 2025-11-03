@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v3.7 (Hero Card Layout)
+  Version: v3.8 (Fixed Hero Card Layout)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Adds glowing content card on the left of the CPU hero image.
+  Description: Clean layout using base hero CPU background and a single glowing card on the left.
 -->
 
 @extends('layouts.base')
@@ -15,29 +15,22 @@
 
 @section('content')
 <section class="hero about-hero">
-  <!-- ✅ CPU background -->
-  <div class="hero-cpu-bg">
-    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
-  </div>
+  <!-- ✅ CPU background already provided by base layout -->
 
-  <!-- ✅ Intro -->
+  <!-- ✅ Hero intro text -->
   <div class="hero-text">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — we’re bridging the gap between people and technology with old school support and modern results.</p>
   </div>
 
-  <!-- ✅ Card + CPU layout -->
-  <div class="about-flex fade-section">
-    <!-- Left glowing card -->
-    <div class="about-card">
-      <h3>Card Title</h3>
-      <p>Card content goes here...</p>
-    </div>
-
-    <!-- Right CPU image -->
-    <div class="about-image-container">
-      <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Illustration" class="about-cpu-image">
-    </div>
+  <!-- ✅ Left-side glowing card -->
+  <div class="about-card fade-section">
+    <h3>Our Story</h3>
+    <p>
+      Born in the heart of the Granite Belt, SharpLync was founded with one simple goal — 
+      to make technology human again. What began as a local IT initiative has grown into 
+      a trusted technology partner supporting Warwick, Stanthorpe, Tenterfield and beyond.
+    </p>
   </div>
 </section>
 @endsection
