@@ -1,11 +1,15 @@
 <!-- 
-  Page: template.blade.php
+  Page: about.blade.php
   Version: v3.0 (Base Page Template)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
   Description: Core layout for SharpLync pages. Includes CPU background, header, footer, and consistent styling.
 -->
 
 @extends('layouts.base')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/pages/content-pages.css') }}">
+@endpush
 
 @section('title', 'SharpLync | Page Title')
 
