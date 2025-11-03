@@ -1,36 +1,37 @@
 <!-- 
-  Page: about.blade.php
-  Version: v3.8 (Fixed Hero Card Layout)
+  Page: template.blade.php
+  Version: v3.0 (Base Page Template)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Clean layout using base hero CPU background and a single glowing card on the left.
+  Description: Core layout for SharpLync pages. Includes CPU background, header, footer, and consistent styling.
 -->
 
 @extends('layouts.base')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/pages/content-pages.css') }}">
-@endpush
-
-@section('title', 'SharpLync | About')
+@section('title', 'SharpLync | Page Title')
 
 @section('content')
-<section class="hero about-hero">
-  <!-- ✅ CPU background already provided by base layout -->
-
-  <!-- ✅ Hero intro text -->
-  <div class="hero-text">
-    <h1>About <span class="highlight">SharpLync</span></h1>
-    <p>From the Granite Belt to the Cloud — we’re bridging the gap between people and technology with old school support and modern results.</p>
+<section class="hero">
+  <!-- ✅ CPU image visible behind content -->
+  <div class="hero-cpu-bg">
+    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
   </div>
 
-  <!-- ✅ Left-side glowing card -->
-  <div class="about-card fade-section">
-    <h3>Our Story</h3>
-    <p>
-      Born in the heart of the Granite Belt, SharpLync was founded with one simple goal — 
-      to make technology human again. What began as a local IT initiative has grown into 
-      a trusted technology partner supporting Warwick, Stanthorpe, Tenterfield and beyond.
-    </p>
+  <!-- ✅ Page heading/logo area (replace or remove as needed) -->
+  <div class="hero-text">
+    <h1>Page Title Here</h1>
+    <p>Intro text or short description can go here. Replace with page-specific content.</p>
+  </div>
+
+  <!-- ✅ Page content/cards area -->
+  <div class="hero-cards fade-section">
+    <div class="tile transparent">
+      <img src="{{ asset('images/sample-icon.png') }}" alt="Feature Icon" class="tile-icon">
+      <h3>Section Heading</h3>
+      <p>
+        Add your page content here. This layout is designed to stay consistent with the SharpLync brand look.
+      </p>
+      <a href="#" class="learn-more">Learn more →</a>
+    </div>    
   </div>
 </section>
 @endsection
