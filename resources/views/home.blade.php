@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.3.3 (CPU Edge Edition)
+  Version: v2.3.4 (CPU Edge – Stable Build)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added anchored CPU image at lower hero edge. All other functions retained.
+  Description: Restored verified working build with anchored CPU image added.
 -->
 
 @extends('layouts.base')
@@ -11,18 +11,21 @@
 
 @section('content')
 <section class="hero">
+  <!-- Hero logo -->
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
 
+  <!-- Hero text -->
   <div class="hero-text">
     <h1>Old School Support.<br><span class="highlight">Modern Results.</span></h1>
     <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
   </div>
 
-  <!-- Anchored CPU Image -->
+  <!-- Anchored CPU image -->
   <div class="hero-cpu">
     <img src="{{ asset('images/cpu.png') }}" alt="SharpLync CPU Image">
   </div>
 
+  <!-- Hero cards -->
   <div class="hero-cards">
     <div class="tile">
       <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
