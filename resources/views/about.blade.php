@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v4.3 (Readable Card Fix)
+  Version: v4.4 (Final Off-White Card)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Ensures the story card uses the new off-white background and navy text.
+  Description: Refined About page with solid off-white card, navy text, and a welcoming tone.
 -->
 
 @extends('layouts.base')
@@ -23,13 +23,14 @@
 
   <!-- ✅ Main story card -->
   <div class="hero-cards fade-section">
-    <div class="about-card">  <!-- ← changed class name -->
+    <div class="about-card">
       <h3>Our Story</h3>
       <p>
         Born in the heart of the Granite Belt, <strong>SharpLync</strong> was founded with one simple goal — 
         to make technology <em>human again</em>. What began as a local IT initiative has grown into a trusted regional partner 
         supporting Warwick, Stanthorpe, Tenterfield and beyond.
       </p>
+
       <p>
         We believe in community, reliability, and service that still means something. 
         Our promise is simple — real support, from real people, who genuinely care about helping others succeed. 

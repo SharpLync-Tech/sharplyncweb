@@ -1,8 +1,8 @@
 /* 
   File: content-pages.css
-  Version: v1.9
+  Version: v2.0 (Final Off-White Card Layout)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Fixed off-white about card with navy text and better readability.
+  Description: Clean, high-contrast About page design with solid off-white card and SharpLync navy text.
 */
 
 /* ===============================
@@ -29,27 +29,27 @@
   margin-top: 2rem;
 }
 
-/* ✅ Dedicated About Card */
+/* ✅ About Card — solid, warm, and readable */
 .about-card {
   background-color: #F9FBFE;    /* ← Card background (off-white) */
   color: #0A2A4D;               /* ← SharpLync brand navy for text */
   border-radius: 16px;
-  padding: 3rem 4rem;           /* ← Inner padding controls card height */
+  padding: 3rem 4rem;           /* ← Controls card height & internal spacing */
   width: 75%;                   /* ← Card width */
-  max-width: 950px;             /* ← Maximum width */
+  max-width: 950px;             /* ← Max width on desktop */
   text-align: left;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   transition: all 0.4s ease;
 }
 
-/* Hover glow effect */
+/* Subtle hover glow */
 .about-card:hover {
   box-shadow: 0 0 35px rgba(44, 191, 174, 0.4);
 }
 
-/* Title inside card */
+/* Card heading */
 .about-card h3 {
-  color: #2CBFAE;
+  color: #2CBFAE;               /* ← Accent teal */
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
 }
@@ -85,3 +85,21 @@
     font-size: 1rem;
   }
 }
+
+/* ===============================
+   QUICK ADJUSTMENT NOTES
+   =============================== */
+/*
+  To change X/Y positioning:
+    .hero-cards { margin-top: Xrem; }   ← Moves card up/down
+    .about-card { width: X%; }          ← Controls horizontal width
+
+  To change background color:
+    .about-card { background-color: #F9FBFE; }
+
+  To change text color:
+    .about-card { color: #0A2A4D; }
+
+  To adjust padding (card height & spacing):
+    .about-card { padding: 3rem 4rem; }
+*/
