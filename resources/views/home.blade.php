@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.3 (Hero Fusion Edition)
+  Version: v2.3.3 (Hero CPU Top – Stable)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Merged service cards into hero section, removed buttons and "What We Do Best", updated tagline and underline animation.
+  Description: Identical to v2.3.2 Seamless Blend, with hero-cpu image added at top of hero section.
 -->
 
 @extends('layouts.base')
@@ -11,13 +11,22 @@
 
 @section('content')
 <section class="hero">
+
+  <!-- CPU image anchored at top of hero -->
+  <div class="hero-cpu-top">
+    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero CPU">
+  </div>
+
+  <!-- SharpLync logo -->
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
 
+  <!-- Hero text -->
   <div class="hero-text">
     <h1>Old School Support.<br><span class="highlight">Modern Results.</span></h1>
     <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
   </div>
 
+  <!-- Hero cards -->
   <div class="hero-cards fade-section">
     <div class="tile transparent">
       <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
