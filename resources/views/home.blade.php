@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.3 (Hero Fusion Edition)
+  Version: v2.3.3 (CPU Edge Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Merged service cards into hero section, removed buttons and "What We Do Best", updated tagline and underline animation.
+  Description: Added anchored CPU image at lower hero edge. All other functions retained.
 -->
 
 @extends('layouts.base')
@@ -18,20 +18,25 @@
     <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
   </div>
 
-  <div class="hero-cards fade-section">
-    <div class="tile transparent">
+  <!-- Anchored CPU Image -->
+  <div class="hero-cpu">
+    <img src="{{ asset('images/cpu.png') }}" alt="SharpLync CPU Image">
+  </div>
+
+  <div class="hero-cards">
+    <div class="tile">
       <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
       <h3>IT Support & Cloud</h3>
       <p>Reliable, responsive, and scalable support solutions for your business.</p>
     </div>
 
-    <div class="tile transparent">
+    <div class="tile">
       <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
       <h3>Security & Backup</h3>
       <p>Proactive protection and secure backup strategies for peace of mind.</p>
     </div>
 
-    <div class="tile transparent">
+    <div class="tile">
       <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
       <h3>Infrastructure Design</h3>
       <p>Tailored networks built for reliability and long-term performance.</p>
