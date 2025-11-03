@@ -1,0 +1,47 @@
+/* 
+  File: content-pages.css
+  Version: v1.0
+  Last updated: 03 Nov 2025 by Max (ChatGPT)
+  Description: Shared layout for story-based pages (About, Services, Team, etc.)
+*/
+
+/* General content layout */
+.content-page {
+  max-width: 1100px;
+  margin: 60px auto;
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  padding: 0 2rem;
+}
+
+.content-page p {
+  margin-bottom: 1.8rem;
+  text-align: justify;
+}
+
+/* Image wrap-around */
+.content-image {
+  width: 45%;
+  border-radius: 12px;
+  margin: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.content-image.left {
+  float: left;
+}
+
+.content-image.right {
+  float: right;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 900px) {
+  .content-image {
+    float: none;
+    width: 100%;
+    display: block;
+    margin: 1.5rem 0;
+  }
+}
