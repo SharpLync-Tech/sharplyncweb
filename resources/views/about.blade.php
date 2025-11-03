@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v6.0 (With Testimonials)
+  Version: v7.0 (Final – with working testimonial carousel)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: SharpLync content layout with solid story card and cycling testimonial section.
+  Description: Clean SharpLync content page with solid card and responsive testimonial carousel.
 -->
 
 @extends('layouts.base')
@@ -16,13 +16,17 @@
 @section('content')
 <section class="content-hero fade-in">
 
-  <!-- ✅ Page heading -->
+  <!-- ===================== -->
+  <!-- Page Heading -->
+  <!-- ===================== -->
   <div class="content-header">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
   </div>
 
-  <!-- ✅ Our Story Card -->
+  <!-- ===================== -->
+  <!-- Story Card -->
+  <!-- ===================== -->
   <div class="content-card">
     <h3>Our Story</h3>
     <p>
@@ -38,40 +42,81 @@
     </p>
   </div>
 
-  <!-- ✅ Testimonials Section -->
+  <!-- ===================== -->
+  <!-- Testimonials Section -->
+  <!-- ===================== -->
   <section class="testimonials-section fade-in">
     <h3>What People Say</h3>
 
-    <div class="testimonial-container">
-      <div class="testimonial active">
-        <p>"Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."</p>
-        <span>— Former Principal, The Industry School</span>
+    <div class="testimonial-wrapper">
+      <button class="nav-btn prev" aria-label="Previous testimonial">❮</button>
+
+      <div class="testimonial-container">
+        <div class="testimonial active">
+          <p>"Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."</p>
+          <span>— Former Principal, The Industry School</span>
+        </div>
+
+        <div class="testimonial">
+          <p>"His knowledge and community-first attitude make SharpLync something special."</p>
+          <span>— Tech Director, Regional Education Partner</span>
+        </div>
+
+        <div class="testimonial">
+          <p>"A great communicator and problem solver — highly recommended for small business support."</p>
+          <span>— Local Business Owner, Stanthorpe</span>
+        </div>
       </div>
 
-      <div class="testimonial">
-        <p>"His knowledge and community-first attitude make SharpLync something special."</p>
-        <span>— Tech Director, Regional Education Partner</span>
-      </div>
-
-      <div class="testimonial">
-        <p>"A great communicator and problem solver — highly recommended for small business support."</p>
-        <span>— Local Business Owner, Stanthorpe</span>
-      </div>
+      <button class="nav-btn next" aria-label="Next testimonial">❯</button>
     </div>
   </section>
+
 </section>
 
-<!-- ✅ Simple cycling script -->
+<!-- ===================== -->
+<!-- Testimonial Carousel Script -->
+<!-- ===================== -->
 @push('scripts')
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     const testimonials = document.querySelectorAll('.testimonial');
+    const nextBtn = document.querySelector('.nav-btn.next');
+    const prevBtn = document.querySelector('.nav-btn.prev');
     let index = 0;
-    setInterval(() => {
-      testimonials[index].classList.remove('active');
+    let interval;
+
+    const showTestimonial = (i) => {
+      testimonials.forEach((t, idx) => {
+        t.classList.toggle('active', idx === i);
+      });
+    };
+
+    const startAutoCycle = () => {
+      interval = setInterval(() => {
+        index = (index + 1) % testimonials.length;
+        showTestimonial(index);
+      }, 7000);
+    };
+
+    const stopAutoCycle = () => clearInterval(interval);
+
+    nextBtn.addEventListener('click', () => {
+      stopAutoCycle();
       index = (index + 1) % testimonials.length;
-      testimonials[index].classList.add('active');
-    }, 6000);
+      showTestimonial(index);
+      startAutoCycle();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      stopAutoCycle();
+      index = (index - 1 + testimonials.length) % testimonials.length;
+      showTestimonial(index);
+      startAutoCycle();
+    });
+
+    showTestimonial(index);
+    startAutoCycle();
   });
 </script>
 @endpush

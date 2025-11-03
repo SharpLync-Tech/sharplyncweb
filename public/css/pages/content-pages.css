@@ -1,12 +1,12 @@
 /* 
   File: content-pages.css
-  Version: v6.0 (Content Page + Testimonials)
+  Version: v7.0
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Shared styling for SharpLync content pages with story card and testimonial cycling section.
+  Description: SharpLync content-page base with story card and testimonial carousel.
 */
 
 /* ===============================
-   PAGE STRUCTURE
+   GENERAL PAGE LAYOUT
    =============================== */
 .content-hero {
   position: relative;
@@ -18,7 +18,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
 }
 
 /* ===============================
@@ -42,11 +41,11 @@
 }
 
 /* ===============================
-   STORY CARD
+   MAIN CARD
    =============================== */
 .content-card {
-  background-color: #F9FBFE;        /* Solid off-white background */
-  color: #0A2A4D;                   /* SharpLync brand navy */
+  background-color: #F9FBFE;
+  color: #0A2A4D;
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
   padding: 3rem 4rem;
@@ -54,14 +53,13 @@
   max-width: 950px;
   text-align: left;
   line-height: 1.8;
-  animation: fadeUp 1s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.3s ease;
+  animation: fadeUp 1s ease-out forwards;
 }
 
 .content-card h3 {
-  color: #2CBFAE; /* Accent teal */
+  color: #2CBFAE;
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
 }
@@ -79,10 +77,10 @@
    TESTIMONIALS
    =============================== */
 .testimonials-section {
-  margin-top: 80px;
+  margin-top: 90px;
   text-align: center;
   width: 100%;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .testimonials-section h3 {
@@ -91,11 +89,20 @@
   margin-bottom: 2rem;
 }
 
+.testimonial-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 85%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .testimonial-container {
   position: relative;
-  width: 80%;
-  max-width: 800px;
-  margin: 0 auto;
+  overflow: hidden;
+  width: 100%;
   min-height: 160px;
 }
 
@@ -105,11 +112,13 @@
   left: 0;
   right: 0;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s ease;
 }
 
 .testimonial.active {
   opacity: 1;
+  transform: translateY(0);
 }
 
 .testimonial p {
@@ -124,6 +133,25 @@
   margin-top: 1rem;
   color: #2CBFAE;
   font-weight: 500;
+}
+
+/* Arrows */
+.nav-btn {
+  background: none;
+  border: 2px solid #2CBFAE;
+  color: #2CBFAE;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  margin: 0 15px;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background-color: #2CBFAE;
+  color: #0A2A4D;
 }
 
 /* ===============================
@@ -148,12 +176,7 @@
     width: 90%;
     padding: 2.5rem 2rem;
   }
-
-  .content-header h1 {
-    font-size: 2.4rem;
-  }
-
-  .testimonial-container {
+  .testimonial-wrapper {
     width: 90%;
   }
 }
@@ -163,16 +186,18 @@
     width: 92%;
     padding: 2rem 1.5rem;
   }
-
+  .nav-btn {
+    font-size: 1.5rem;
+    width: 35px;
+    height: 35px;
+  }
+  .testimonial p {
+    font-size: 1rem;
+  }
   .content-header h1 {
     font-size: 2rem;
   }
-
   .content-header p {
-    font-size: 1rem;
-  }
-
-  .testimonial p {
     font-size: 1rem;
   }
 }
