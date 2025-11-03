@@ -32,7 +32,7 @@
       <p>From there, I stepped into the corporate world as a Systems Administrator, managing infrastructure and supporting teams that relied on technology every day. That role led to a new chapter, one that would last over a decade in education.</p>
 
       <h3>Establishing Expertise at Scale</h3>
-      <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT foundations for four new ones—everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
+      <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT infrastructure for four new ones—everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
 
       <h3>The Launch of SharpLync: Seizing an Opportunity</h3>
       <p>After more than a decade managing complex, multi-site infrastructure, I had a unique vantage point. I saw clearly what high-level, practical IT support looks like, and what was often missing for growing businesses. It became obvious that many organisations struggle to access proven, enterprise-level expertise without the massive price tag. They deserve better than generic fixes.</p>
