@@ -1,41 +1,113 @@
-/* File: content-pages.css
-   Version: v10.3 (Verified)
-   Description: Stand-alone content page styling for SharpLync About/Contact/etc.
+/* 
+  File: content-pages.css
+  Version: v2.0
+  Last updated: 04 Nov 2025 by Jannie & Max
+  Description: Full SharpLync look replicated for content pages.
 */
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Poppins', sans-serif;
+  color: #0A2A4D;
+  background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
   overflow-x: hidden;
 }
 
-/* ============= HERO BACKGROUND ============= */
-.content-hero {
-  min-height: 100vh;
-  padding: 120px 0;
-  background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
-  color: #fff;
-  text-align: center;
+/* ========================= HEADER ========================= */
+.main-header {
+  background-color: #0A2A4D;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.main-header img {
+  height: 50px;
+}
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* ========================= OVERLAY MENU ========================= */
+.overlay-menu {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  background-color: rgba(10, 42, 77, 0.97);
+  overflow-x: hidden;
+  transition: 0.4s;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+}
+.overlay-menu.show {
+  width: 100%;
+}
+.overlay-menu ul {
+  list-style: none;
+  text-align: center;
+}
+.overlay-menu ul li {
+  margin: 1.5rem 0;
+}
+.overlay-menu ul a {
+  color: white;
+  font-size: 1.5rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.overlay-menu ul a:hover {
+  color: #2CBFAE;
+}
+.close-menu {
+  position: absolute;
+  top: 25px;
+  right: 40px;
+  font-size: 3rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-/* ============= HEADER ============= */
+/* ========================= CONTENT AREA ========================= */
+.content-hero {
+  min-height: 100vh;
+  padding: 120px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
 .content-header {
   max-width: 900px;
   margin-bottom: 60px;
 }
 .content-header h1 {
   font-size: 2.8rem;
+  color: white;
   font-weight: 700;
 }
 .content-header p {
   font-size: 1.2rem;
+  line-height: 1.6;
   opacity: 0.95;
 }
 
-/* ============= STORY CARD ============= */
+/* ========================= CARD ========================= */
 .content-card {
   background-color: #F9FBFE;
   color: #0A2A4D;
@@ -57,11 +129,8 @@ body {
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
 }
-.content-card:hover {
-  box-shadow: 0 0 35px rgba(44, 191, 174, 0.35);
-}
 
-/* ============= TESTIMONIALS ============= */
+/* ========================= TESTIMONIALS ========================= */
 .testimonials-section {
   margin-top: 90px;
   text-align: center;
@@ -74,7 +143,6 @@ body {
   margin-bottom: 2rem;
 }
 .testimonial-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,18 +178,16 @@ body {
   color: #2CBFAE;
   font-weight: 500;
 }
-
-/* Arrows */
 .nav-btn {
   background: none;
   border: 2px solid #2CBFAE;
   color: #2CBFAE;
   font-size: 2rem;
-  cursor: pointer;
   border-radius: 50%;
   width: 45px;
   height: 45px;
   margin: 0 15px;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 .nav-btn:hover {
@@ -129,16 +195,38 @@ body {
   color: #0A2A4D;
 }
 
-/* Animation */
+/* ========================= FOOTER ========================= */
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+.footer-content p {
+  font-size: 0.9rem;
+}
+.social-icons a img {
+  height: 28px;
+  width: 28px;
+  margin: 0 8px;
+}
+
+/* ========================= ANIMATIONS ========================= */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+/* ========================= RESPONSIVE ========================= */
 @media (max-width: 768px) {
+  .main-header { padding: 1rem 2rem; }
   .content-card { width: 90%; padding: 2rem; }
-  .nav-btn { font-size: 1.5rem; width: 35px; height: 35px; }
   .content-header h1 { font-size: 2rem; }
   .content-header p { font-size: 1rem; }
 }

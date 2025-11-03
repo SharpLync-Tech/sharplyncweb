@@ -1,7 +1,9 @@
 <!-- 
   Layout: content.blade.php
-  Version: v1.2 (Verified)
-  Description: Same as base.blade.php but isolated stylesheet for About/Services pages.
+  Version: v2.0
+  Last updated: 04 Nov 2025 by Jannie & Max
+  Description: Dedicated layout for content pages (About, Services, Contact) 
+               identical to home page style but isolated from base.blade.php.
 -->
 
 <!DOCTYPE html>
@@ -15,7 +17,7 @@
   <meta name="keywords" content="SharpLync, IT Support, Cloud Services, Managed IT, Granite Belt, Warwick, Stanthorpe, Tenterfield">
   <meta name="author" content="SharpLync Pty Ltd">
 
-  {{-- ✅ JSON-LD --}}
+  {{-- ✅ Structured Data --}}
   @verbatim
   <script type="application/ld+json">
   {
@@ -37,9 +39,7 @@
   <!-- ✅ Dedicated Content Stylesheet -->
   <link rel="stylesheet" href="{{ secure_asset('css/pages/content-pages.css') }}">
 
-  <!-- ✅ Allow per-page styles -->
   @stack('styles')
-
   <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
 
@@ -52,9 +52,9 @@
     <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
   </header>
 
-  <!-- ========================= MENU ========================= -->
-  <div id="overlayMenu" class="overlay-menu" role="navigation">
-    <button class="close-menu" onclick="toggleMenu()">×</button>
+  <!-- ========================= OVERLAY MENU ========================= -->
+  <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
+    <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/services" onclick="toggleMenu()">Services</a></li>
@@ -83,13 +83,25 @@
     </div>
   </footer>
 
-  <!-- ========================= JS ========================= -->
+  <!-- ========================= SCRIPTS ========================= -->
   <script>
+    // ✅ Toggle overlay menu
     function toggleMenu() {
       const overlay = document.getElementById('overlayMenu');
       overlay.classList.toggle('show');
       document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
     }
+
+    // ✅ Fade-in animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.15 });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
+    });
   </script>
 
   @stack('scripts')
