@@ -34,6 +34,8 @@
 
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+    <!-- Additional page-specific styles -->
+    @stack('styles')
 
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
@@ -95,6 +97,7 @@
             document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
         });
     </script>
+    @stack('scripts')
 
 </body>
 </html>

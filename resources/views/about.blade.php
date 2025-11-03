@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v9.0 (Stable & Verified)
+  Version: v10.0 (Confirmed working with style injection)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Clean About page with solid story card + testimonial carousel.
+  Description: Fully functional About page with solid white story card and testimonial carousel.
 -->
 
 @extends('layouts.base')
@@ -55,10 +55,12 @@
           <p>"Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."</p>
           <span>— Former Principal, The Industry School</span>
         </div>
+
         <div class="testimonial">
           <p>"His knowledge and community-first attitude make SharpLync something special."</p>
           <span>— Tech Director, Regional Education Partner</span>
         </div>
+
         <div class="testimonial">
           <p>"A great communicator and problem solver — highly recommended for small business support."</p>
           <span>— Local Business Owner, Stanthorpe</span>
