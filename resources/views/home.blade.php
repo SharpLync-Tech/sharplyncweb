@@ -1,63 +1,47 @@
-<!-- 
-  Page: home.blade.php
-  Version: v2.2 (C2.2)
-  Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added fade sections for scroll reveal and smooth hero animation.
--->
-
 @extends('layouts.base')
 
-@section('title', 'SharpLync | Home')
+@section('title', 'SharpLync | IT Support & Cloud Services')
 
 @section('content')
-<section class="hero">
-  <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
-  <div class="hero-text">
-    <h1>Old School Support.<br><span>Modern Results.</span></h1>
-    <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
-    <div class="hero-buttons">
-      <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
-      <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
+<!-- ==================== HERO ==================== -->
+<section class="hero-section">
+  <div class="hero-content">
+    <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="hero-logo">
+
+    <div class="hero-text">
+      <h1>
+        Old School Support.<br>
+        <span>Modern Results.</span>
+      </h1>
+      <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn btn-primary">Contact Us</a>
+        <a href="#services" class="btn btn-secondary">Learn More</a>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="services" class="tiles-section fade-section">
+<!-- ==================== SERVICES ==================== -->
+<section id="services" class="services-section">
   <h2>What We Do Best</h2>
-  <div class="tiles-wrapper">
-    <div class="tile">
-      <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
+  <div class="service-cards">
+    <div class="service-card">
+      <img src="{{ asset('images/icon-support.svg') }}" alt="Support Icon">
       <h3>IT Support & Cloud</h3>
       <p>Reliable, responsive, and scalable support solutions for your business.</p>
     </div>
-    <div class="tile">
-      <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
+
+    <div class="service-card">
+      <img src="{{ asset('images/icon-security.svg') }}" alt="Security Icon">
       <h3>Security & Backup</h3>
       <p>Proactive protection and secure backup strategies for peace of mind.</p>
     </div>
-    <div class="tile">
-      <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
+
+    <div class="service-card">
+      <img src="{{ asset('images/icon-infra.svg') }}" alt="Infrastructure Icon">
       <h3>Infrastructure Design</h3>
       <p>Tailored networks built for reliability and long-term performance.</p>
-    </div>
-  </div>
-</section>
-
-<section id="about" class="info-section fade-section">
-  <div class="info-wrapper">
-    <div class="info-card">
-      <h2>About SharpLync</h2>
-      <p>We believe in keeping things personal. SharpLync blends dependable, old-school service with cutting-edge technology — so you get modern results, delivered with real human support.</p>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="info-section fade-section">
-  <div class="info-wrapper">
-    <div class="info-card">
-      <h2>Contact Us</h2>
-      <p>Need IT support or advice? Reach out and we’ll get back to you within a business day.</p>
-      <button class="btn">Get in Touch</button>
     </div>
   </div>
 </section>
