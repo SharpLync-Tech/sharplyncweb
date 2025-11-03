@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.2 (C2.2)
+  Version: v2.3 (Hero Fusion Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added fade sections for scroll reveal and smooth hero animation.
+  Description: Merged service cards into hero section, removed buttons and "What We Do Best", updated tagline and underline animation.
 -->
 
 @extends('layouts.base')
@@ -12,30 +12,26 @@
 @section('content')
 <section class="hero">
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
-  <div class="hero-text">
-    <h1>Old School Support.<br><span>Modern Results.</span></h1>
-    <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
-    <div class="hero-buttons">
-      <button class="btn-accent" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Contact Us</button>
-      <button class="btn" onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });">Learn More</button>
-    </div>
-  </div>
-</section>
 
-<section id="services" class="tiles-section fade-section">
-  <h2>What We Do Best</h2>
-  <div class="tiles-wrapper">
-    <div class="tile">
+  <div class="hero-text">
+    <h1>Old School Support.<br><span class="highlight">Modern Results.</span></h1>
+    <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
+  </div>
+
+  <div class="hero-cards fade-section">
+    <div class="tile transparent">
       <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
       <h3>IT Support & Cloud</h3>
       <p>Reliable, responsive, and scalable support solutions for your business.</p>
     </div>
-    <div class="tile">
+
+    <div class="tile transparent">
       <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
       <h3>Security & Backup</h3>
       <p>Proactive protection and secure backup strategies for peace of mind.</p>
     </div>
-    <div class="tile">
+
+    <div class="tile transparent">
       <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
       <h3>Infrastructure Design</h3>
       <p>Tailored networks built for reliability and long-term performance.</p>

@@ -1,16 +1,12 @@
-/* 
+/*
   Page: sharplync.css 
-  Version: v2.2 (C2.2 – The Reveal Edition)
+  Version: v2.3 (Hero Fusion Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Adds reveal animations, gradient hover effects, section fade-ins, and SEO structure support.
+  Description: Service cards merged into hero, buttons removed, tagline + underline animation added, full responsiveness preserved.
 */
 
 /* ==================== GLOBAL ==================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -50,81 +46,52 @@ body {
   padding: 0.5rem;
   transition: opacity 0.2s;
 }
-
-.hamburger:hover {
-  opacity: 0.8;
-}
+.hamburger:hover { opacity: 0.8; }
 
 /* ==================== FULLSCREEN OVERLAY MENU ==================== */
 .overlay-menu {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(10, 42, 77, 0.75);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  visibility: hidden;
+  opacity: 0; visibility: hidden;
   transition: opacity 0.4s ease, visibility 0.4s ease;
   z-index: 2000;
 }
+.overlay-menu.show { opacity: 1; visibility: visible; }
 
-.overlay-menu.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.overlay-menu ul {
-  list-style: none;
-  text-align: center;
-  padding: 0;
-}
-
-.overlay-menu li {
-  margin: 1.4rem 0;
-}
-
+.overlay-menu ul { list-style: none; text-align: center; padding: 0; }
+.overlay-menu li { margin: 1.4rem 0; }
 .overlay-menu a {
   color: white;
   font-size: 1.8rem;
   text-decoration: none;
   transition: color 0.3s;
 }
+.overlay-menu a:hover { color: #2CBFAE; }
 
-.overlay-menu a:hover {
-  color: #2CBFAE;
-}
-
-/* Close button */
 .close-menu {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 2.4rem;
-  color: #2CBFAE;
-  cursor: pointer;
-  border: none;
-  background: none;
+  position: absolute; top: 20px; right: 30px;
+  font-size: 2.4rem; color: #2CBFAE;
+  cursor: pointer; border: none; background: none;
 }
 
 /* ==================== HERO ==================== */
 .hero {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 6rem 10% 8rem;
+  padding: 6rem 10% 4rem;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
   text-align: center;
-  min-height: 90vh;
-  overflow: hidden;
+  min-height: 100vh;
+  position: relative;
 }
 
 .hero-logo {
@@ -132,7 +99,6 @@ body {
   height: auto;
   margin-bottom: 2rem;
   animation: logoPulse 4s ease-in-out infinite, fadeUp 1s ease forwards;
-  animation-delay: 0.2s;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
 }
 
@@ -141,112 +107,73 @@ body {
   50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(44,191,174,1)); }
 }
 
-/* Hero reveal animations */
-.hero-text, .hero-buttons {
-  opacity: 0;
-  transform: translateY(25px);
-  animation: fadeUp 1s ease forwards;
-}
-.hero-text { animation-delay: 0.6s; }
-.hero-buttons { animation-delay: 1.0s; }
-
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.hero-text {
-  max-width: 600px;
-  z-index: 2;
-}
-
+.hero-text { max-width: 700px; animation: fadeUp 1s ease forwards; animation-delay: 0.4s; opacity: 0; transform: translateY(25px); }
 .hero-text h1 {
   font-size: 3rem;
   line-height: 1.2;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
-
-.hero-text h1 span { color: #2CBFAE; }
+.hero-text .highlight {
+  color: #2CBFAE;
+  position: relative;
+  display: inline-block;
+}
+.hero-text .highlight::after {
+  content: "";
+  position: absolute;
+  bottom: -6px; left: 0;
+  height: 3px; width: 0;
+  background-color: #2CBFAE;
+  animation: underline 1.5s ease-out 1s forwards;
+}
+@keyframes underline { to { width: 100%; } }
 
 .hero-text p {
-  margin: 1rem 0 1.5rem;
+  margin: 1rem auto 2rem;
   font-size: 1.1rem;
   color: #e9f4f3;
+  line-height: 1.6;
 }
 
-/* ==================== BUTTONS ==================== */
-.btn, .btn-accent {
-  border: none;
-  border-radius: 6px;
-  padding: 0.8rem 1.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-.btn {
-  background-color: #0A2A4D;
-  color: white;
-}
-
-.btn-accent {
-  background-color: #2CBFAE;
-  color: #0A2A4D;
-}
-
-.btn:hover, .btn-accent:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-/* Animated gradient hover */
-.btn-accent:hover {
-  background: linear-gradient(90deg, #2CBFAE, #35E0C2, #2CBFAE);
-  background-size: 200%;
-  animation: gradientShift 2s linear infinite;
-}
-@keyframes gradientShift {
-  0% { background-position: 0%; }
-  100% { background-position: 200%; }
-}
-
-/* ==================== SCROLL FADE SECTIONS ==================== */
-.fade-section {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.fade-section.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ==================== OTHER SECTIONS ==================== */
-.tiles-section {
-  text-align: center;
-  padding: 5rem 10%;
-  background-color: #0A2A4D;
-  color: white;
-}
-
-.tiles-wrapper {
+/* ==================== HERO CARDS ==================== */
+.hero-cards {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 2rem;
+  margin-top: 2rem;
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 1s;
+  opacity: 0;
+  transform: translateY(25px);
 }
 
 .tile {
-  background: #0C315E;
   border-radius: 12px;
   flex: 1 1 250px;
   text-align: center;
   padding: 2rem;
   transition: all 0.3s ease;
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.tile:hover { transform: translateY(-5px); box-shadow: 0 0 25px rgba(44,191,174,0.6); }
+.tile.transparent { background: rgba(255,255,255,0.05); }
 
-.tile-icon { width: 70px; height: auto; margin-bottom: 1rem; }
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+}
+
+.tile-icon {
+  width: 70px;
+  height: auto;
+  margin-bottom: 1rem;
+}
 
 /* ==================== INFO ==================== */
 .info-section {
@@ -268,7 +195,6 @@ body {
   flex: 1 1 300px;
   text-align: center;
 }
-
 .info-card:hover { transform: translateY(-4px); box-shadow: 0 0 25px rgba(44,191,174,0.4); }
 
 /* ==================== FOOTER ==================== */
@@ -278,14 +204,11 @@ footer {
   text-align: center;
   padding: 2rem 10%;
 }
-
 .social-icons img {
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   margin: 0 0.5rem;
   transition: transform 0.3s, filter 0.3s;
 }
-
 .social-icons img:hover {
   transform: scale(1.1);
   filter: drop-shadow(0 0 6px #2CBFAE);
@@ -297,10 +220,9 @@ footer {
   .hero { padding: 5rem 6% 6rem; }
   .hero-logo { width: 180px; }
   .hero-text h1 { font-size: 2.3rem; }
+  .hero-cards { gap: 1.5rem; }
   .tile { flex: 1 1 90%; }
-  .info-card { flex: 1 1 100%; }
 }
-
 @media (max-width: 500px) {
   .main-header .logo img { height: 60px; }
   .hero-logo { width: 140px; }
