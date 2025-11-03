@@ -1,15 +1,11 @@
 <!-- 
   Page: about.blade.php
-  Version: v10.0 (Confirmed working with style injection)
+  Version: v11.0
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Fully functional About page with solid white story card and testimonial carousel.
+  Description: About SharpLync — uses the new content layout with dedicated CSS and testimonial carousel.
 -->
 
-@extends('layouts.base')
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/pages/content-pages.css') }}">
-@endpush
+@extends('layouts.content')
 
 @section('title', 'SharpLync | About')
 
@@ -19,7 +15,7 @@
   <!-- ===================== -->
   <!-- Page Header -->
   <!-- ===================== -->
-  <div class="content-header">
+  <div class="content-header fade-section">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
   </div>
@@ -27,7 +23,7 @@
   <!-- ===================== -->
   <!-- Story Card -->
   <!-- ===================== -->
-  <div class="content-card fade-in">
+  <div class="content-card fade-section">
     <h3>Our Story</h3>
     <p>
       Born in the heart of the Granite Belt, <strong>SharpLync</strong> was founded with one simple goal — 
@@ -44,7 +40,7 @@
   <!-- ===================== -->
   <!-- Testimonials -->
   <!-- ===================== -->
-  <section class="testimonials-section fade-in">
+  <section class="testimonials-section fade-section">
     <h3>What People Say</h3>
 
     <div class="testimonial-wrapper">
