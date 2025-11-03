@@ -1,8 +1,8 @@
 /*
   Page: sharplync.css
-  Version: v2.3.4 (Hero CPU Fixed Edition)
+  Version: v2.3.5 (CPU Visibility Fixed)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Reintegrated CPU image correctly behind hero; maintained full layout and responsive integrity.
+  Description: Corrected CPU layering; now visible above hero gradient but below hero content.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -102,24 +102,23 @@ body {
   overflow: hidden;
 }
 
-/* CPU image sits behind everything, fixed to hero */
+/* ✅ CPU image now correctly visible */
 .hero-cpu-bg {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  z-index: -1;
+  z-index: 0; /* 👈 visible above background but below text/logo */
   width: 100%;
   display: flex;
   justify-content: center;
   pointer-events: none;
-  opacity: 0.8;
 }
+
 .hero-cpu-bg img {
-  width: 380px;
+  width: 420px;
   max-width: 80%;
-  opacity: 0.65;
-  transform: translateY(0);
+  opacity: 0.5;
   filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
   animation: fadeUp 1.8s ease forwards;
 }
@@ -131,6 +130,7 @@ body {
   margin-bottom: 2rem;
   animation: logoPulse 4s ease-in-out infinite, fadeUp 1s ease forwards;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
+  z-index: 1;
 }
 
 @keyframes logoPulse {
@@ -144,6 +144,7 @@ body {
   animation-delay: 0.4s; 
   opacity: 0; 
   transform: translateY(25px); 
+  z-index: 1;
 }
 .hero-text h1 {
   font-size: 3rem;
@@ -184,6 +185,7 @@ body {
   animation-delay: 1s;
   opacity: 0;
   transform: translateY(25px);
+  z-index: 1;
 }
 
 .tile {
@@ -253,7 +255,7 @@ footer {
   .hero { padding: 5rem 6% 6rem; }
   .hero-logo { width: 180px; }
   .hero-text h1 { font-size: 2.3rem; }
-  .hero-cpu-bg img { width: 300px; }
+  .hero-cpu-bg img { width: 320px; }
   .hero-cards { gap: 1.5rem; }
   .tile { flex: 1 1 90%; }
 }
