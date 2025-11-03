@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.3.4 (CPU Edge – Stable Build)
+  Version: v2.3 (Hero Fusion Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Restored verified working build with anchored CPU image added.
+  Description: Merged service cards into hero section, removed buttons and "What We Do Best", updated tagline and underline animation.
 -->
 
 @extends('layouts.base')
@@ -11,35 +11,27 @@
 
 @section('content')
 <section class="hero">
-  <!-- Hero logo -->
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
 
-  <!-- Hero text -->
   <div class="hero-text">
     <h1>Old School Support.<br><span class="highlight">Modern Results.</span></h1>
     <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
   </div>
 
-  <!-- Anchored CPU image -->
-  <div class="hero-cpu">
-    <img src="{{ asset('images/cpu.png') }}" alt="SharpLync CPU Image">
-  </div>
-
-  <!-- Hero cards -->
-  <div class="hero-cards">
-    <div class="tile">
+  <div class="hero-cards fade-section">
+    <div class="tile transparent">
       <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
       <h3>IT Support & Cloud</h3>
       <p>Reliable, responsive, and scalable support solutions for your business.</p>
     </div>
 
-    <div class="tile">
+    <div class="tile transparent">
       <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
       <h3>Security & Backup</h3>
       <p>Proactive protection and secure backup strategies for peace of mind.</p>
     </div>
 
-    <div class="tile">
+    <div class="tile transparent">
       <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
       <h3>Infrastructure Design</h3>
       <p>Tailored networks built for reliability and long-term performance.</p>
