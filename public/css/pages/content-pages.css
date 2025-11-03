@@ -1,30 +1,44 @@
 /* File: content-pages.css
-   Version: v10.1
-   Description: Forces About/Content page styling to override global CSS.
+   Version: v10.3 (Verified)
+   Description: Stand-alone content page styling for SharpLync About/Contact/etc.
 */
 
-section.content-hero {
-  position: relative;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ============= HERO BACKGROUND ============= */
+.content-hero {
   min-height: 100vh;
-  padding: 100px 0 120px 0;
-  text-align: center;
+  padding: 120px 0;
   background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
+  color: #fff;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* HEADER */
-.content-hero .content-header {
+/* ============= HEADER ============= */
+.content-header {
   max-width: 900px;
   margin-bottom: 60px;
-  color: #fff;
+}
+.content-header h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+.content-header p {
+  font-size: 1.2rem;
+  opacity: 0.95;
 }
 
-/* STORY CARD */
-.content-hero .content-card {
-  background-color: #F9FBFE !important;     /* <-- Force solid off-white */
-  color: #0A2A4D !important;                /* <-- Navy text */
+/* ============= STORY CARD ============= */
+.content-card {
+  background-color: #F9FBFE;
+  color: #0A2A4D;
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
   padding: 3rem 4rem;
@@ -34,41 +48,97 @@ section.content-hero {
   line-height: 1.8;
   animation: fadeUp 1s ease-out forwards;
 }
+.content-card h3 {
+  color: #2CBFAE;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.content-card p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+.content-card:hover {
+  box-shadow: 0 0 35px rgba(44, 191, 174, 0.35);
+}
 
-/* TESTIMONIALS */
-.content-hero .testimonials-section {
+/* ============= TESTIMONIALS ============= */
+.testimonials-section {
   margin-top: 90px;
   text-align: center;
   width: 100%;
-  color: #fff;
+  color: #ffffff;
 }
-
-.content-hero .testimonials-section h3 {
+.testimonials-section h3 {
   color: #2CBFAE;
   font-size: 1.8rem;
   margin-bottom: 2rem;
 }
+.testimonial-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 85%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.testimonial-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 160px;
+}
+.testimonial {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.testimonial.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.testimonial p {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #F9FBFE;
+}
+.testimonial span {
+  display: block;
+  margin-top: 1rem;
+  color: #2CBFAE;
+  font-weight: 500;
+}
 
-/* NAV BUTTONS */
-.content-hero .nav-btn {
+/* Arrows */
+.nav-btn {
   background: none;
   border: 2px solid #2CBFAE;
   color: #2CBFAE;
   font-size: 2rem;
+  cursor: pointer;
   border-radius: 50%;
   width: 45px;
   height: 45px;
   margin: 0 15px;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
-.content-hero .nav-btn:hover {
+.nav-btn:hover {
   background-color: #2CBFAE;
   color: #0A2A4D;
 }
 
-/* FADE ANIMATION */
+/* Animation */
 @keyframes fadeUp {
-  0% { opacity: 0; transform: translateY(25px); }
-  100% { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content-card { width: 90%; padding: 2rem; }
+  .nav-btn { font-size: 1.5rem; width: 35px; height: 35px; }
+  .content-header h1 { font-size: 2rem; }
+  .content-header p { font-size: 1rem; }
 }
