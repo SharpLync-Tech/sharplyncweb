@@ -1,12 +1,12 @@
 /*
   Page: sharplync.css
-  Version: v2.6 (Hero Fusion & Raised Services)
+  Version: v2.7 (Functional Stability + Hero Fusion)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
   Description:
-  - Added subtle animated underline & floating hero logo
-  - Raised service cards (Option A)
-  - Refined hover glow and responsive balance
-  - Mobile friendly + consistent typography
+  - Restored working nav and hamburger behavior
+  - Removed hero buttons
+  - Kept floating logo + raised services
+  - Verified mobile + responsive consistency
 */
 
 /* ==================== GLOBAL ==================== */
@@ -34,7 +34,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -49,7 +49,6 @@ a {
   transform: scale(1.05);
 }
 
-/* Navigation */
 .main-header nav ul {
   list-style: none;
   display: flex;
@@ -59,14 +58,14 @@ a {
 .main-header nav a {
   color: white;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .main-header nav a:hover {
   color: #2CBFAE;
 }
 
-/* Mobile Hamburger */
+/* ========== MOBILE NAVIGATION ========== */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -79,6 +78,36 @@ a {
   background: white;
   margin: 4px 0;
   border-radius: 2px;
+}
+
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background: rgba(10, 42, 77, 0.95);
+  position: absolute;
+  top: 70px;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  padding: 1rem 0;
+  z-index: 999;
+}
+
+.mobile-nav a {
+  color: white;
+  padding: 1rem;
+  display: block;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.2s ease;
+}
+
+.mobile-nav a:hover {
+  background: rgba(44,191,174,0.1);
+}
+
+/* Active mobile nav class */
+.mobile-nav.active {
+  display: flex;
 }
 
 @media (max-width: 900px) {
@@ -101,10 +130,8 @@ a {
   background: linear-gradient(135deg, #0A2A4D 0%, #2CBFAE 100%);
   color: white;
   position: relative;
-  overflow: hidden;
 }
 
-/* Floating glow around logo */
 .hero-logo {
   width: 160px;
   margin-bottom: 1.5rem;
@@ -117,7 +144,6 @@ a {
   50% { transform: translateY(-6px); }
 }
 
-/* Hero Text */
 .hero-text h1 {
   font-size: 2.8rem;
   font-weight: 700;
@@ -130,7 +156,6 @@ a {
   position: relative;
 }
 
-/* Animated underline for Modern Results */
 .hero-text h1 span::after {
   content: "";
   position: absolute;
@@ -148,53 +173,16 @@ a {
 
 .hero-text p {
   max-width: 640px;
-  margin: 1rem auto 2rem;
+  margin: 1rem auto 0;
   color: #e6f8f7;
   line-height: 1.6;
   font-size: 1rem;
 }
 
-.hero-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-/* Buttons */
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #2CBFAE;
-  color: #0A2A4D;
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #25a997;
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background-color: #0A2A4D;
-  color: white;
-  border: 1px solid #2CBFAE;
-}
-
-.btn-secondary:hover {
-  background-color: #123a64;
-  transform: translateY(-2px);
-}
-
 /* ==================== SERVICES ==================== */
 .services-section {
   position: relative;
-  margin-top: -100px; /* Lifts section upward for visual fusion */
+  margin-top: -100px;
   padding: 6rem 2rem 8rem;
   background-color: #0A2A4D;
   z-index: 5;
@@ -205,7 +193,6 @@ a {
   font-size: 1.8rem;
   color: white;
   margin-bottom: 2.5rem;
-  letter-spacing: 0.5px;
 }
 
 .service-cards {
@@ -312,10 +299,5 @@ footer {
 
   .service-card {
     width: 100%;
-  }
-
-  .btn {
-    padding: 0.65rem 1.2rem;
-    font-size: 0.95rem;
   }
 }

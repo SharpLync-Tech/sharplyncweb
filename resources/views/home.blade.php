@@ -14,10 +14,6 @@
         <span>Modern Results.</span>
       </h1>
       <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
-      <div class="hero-buttons">
-        <a href="#contact" class="btn btn-primary">Contact Us</a>
-        <a href="#services" class="btn btn-secondary">Learn More</a>
-      </div>
     </div>
   </div>
 </section>
