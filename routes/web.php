@@ -38,8 +38,8 @@ Route::get('/test-threatpulse', function () {
     return view('test-threatpulse');
 });
 
-Route::get('/test', function () {
-    return view('test');
+Route::get('/about', function () {
+    return view('about');
 });
 
 // ==============================
