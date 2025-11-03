@@ -24,26 +24,39 @@
   </div>
 
   <div class="hero-cards fade-section">
-    <div class="tile transparent">
-      <img src="{{ asset('images/about.png') }}" alt="About SharpLync" class="tile-icon">
-      <h3>About SharpLync</h3>
-      <p>We’re your tech partner! Great service never goes out of style. Reliable people, smarter systems, and genuine care for getting IT right. <a href="/about" class="learn-more">Learn more →</a></p>
-    </div>
 
-    <div class="tile transparent">
-      <img src="{{ asset('images/what_we_do.png') }}" alt="What We Do" class="tile-icon">
-      <h3>What We Do</h3>
-      <p>From cloud and security to on-site infrastructure. SharpLync keeps your business connected, protected, and performing at its best.
-Real solutions, real people, real results. <a href="/services" class="learn-more">Learn more →</a></p>
-    </div>
+  <div class="tile transparent">
+    <img src="{{ asset('images/about.png') }}" alt="About SharpLync" class="tile-icon">
+    <h3>About SharpLync</h3>
+    <p>
+      We’re your tech partner! Great service never goes out of style.
+      Reliable people, smarter systems, and genuine care for getting IT right.
+    </p>
+    <a href="/about" class="learn-more">Learn more →</a>
+  </div>
 
-    <div class="tile transparent">
-      <img src="{{ asset('images/contact_us.png') }}" alt="Contact Us" class="tile-icon">
-      <h3>Contact Us</h3>
-      <p>Need help or advice?
-Reach out anytime. Proudly based in the Granite Belt — proudly supporting clients nationwide..
-Quick support, friendly faces, no fuss.<a href="/contact" class="learn-more">Learn more →</a></p>
-    </div>
+  <div class="tile transparent">
+    <img src="{{ asset('images/what_we_do.png') }}" alt="What We Do" class="tile-icon">
+    <h3>What We Do</h3>
+    <p>
+      From cloud and security to on-site infrastructure. SharpLync keeps your business connected,
+      protected, and performing at its best. Real solutions, real people, real results.
+    </p>
+    <a href="/services" class="learn-more">Learn more →</a>
+  </div>
+
+  <div class="tile transparent">
+    <img src="{{ asset('images/contact_us.png') }}" alt="Contact Us" class="tile-icon">
+    <h3>Contact Us</h3>
+    <p>
+      Need help or advice? Reach out anytime. Proudly based in the Granite Belt —
+      proudly supporting clients nationwide. Quick support, friendly faces, no fuss.
+    </p>
+    <a href="/contact" class="learn-more">Learn more →</a>
+  </div>
+
+</div>
+
   </div>
 </section>
 @endsection
