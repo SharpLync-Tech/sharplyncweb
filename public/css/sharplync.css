@@ -1,8 +1,8 @@
 /*
   Page: sharplync.css
-  Version: v2.3.1 (Frosted Clarity)
+  Version: v2.3.2 (Seamless Blend)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added frosted glass header and dark frosted hero cards.
+  Description: Transparent header blending with hero background; all functions preserved.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -27,15 +27,14 @@ body {
   padding: 0.8rem 1.5rem;
   color: white;
 
-  /* Gradient + Frost effect */
-  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  /* Transparent blend with hero background */
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
   transition: background 0.3s ease;
 }
-
 
 .main-header .logo img {
   height: 80px;
@@ -115,7 +114,13 @@ body {
   50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(44,191,174,1)); }
 }
 
-.hero-text { max-width: 700px; animation: fadeUp 1s ease forwards; animation-delay: 0.4s; opacity: 0; transform: translateY(25px); }
+.hero-text { 
+  max-width: 700px; 
+  animation: fadeUp 1s ease forwards; 
+  animation-delay: 0.4s; 
+  opacity: 0; 
+  transform: translateY(25px); 
+}
 .hero-text h1 {
   font-size: 3rem;
   line-height: 1.2;
