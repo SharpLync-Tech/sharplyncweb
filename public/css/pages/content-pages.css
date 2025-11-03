@@ -1,30 +1,24 @@
 /* 
   File: content-pages.css
-  Version: v1.2
+  Version: v1.3
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Shared layout for story-based pages (About, Services, Team, etc.) with corrected layering.
+  Description: Adds glowing content card and fixes hero layout alignment.
 */
 
 /* ===============================
-   GENERAL CONTENT LAYOUT
+   HERO BASE FIX
    =============================== */
 .about-hero {
   position: relative;
   overflow: hidden;
-  text-align: left; /* override global hero center alignment */
-}
-
-.about-hero .hero-text {
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto 60px auto;
+  text-align: left;
 }
 
 .about-hero .hero-cpu-bg {
   position: absolute;
   top: 0;
   right: 0;
-  opacity: 0.15;
+  opacity: 0.12;
   z-index: 0;
 }
 
@@ -34,7 +28,7 @@
 }
 
 /* ===============================
-   TWO-COLUMN FLEX LAYOUT
+   FLEX LAYOUT
    =============================== */
 .about-flex {
   position: relative;
@@ -42,33 +36,43 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 60px;
+  gap: 80px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 80px auto;
   padding: 0 3rem;
   flex-wrap: wrap;
 }
 
-.about-text {
-  flex: 1 1 55%;
+/* ===============================
+   GLOWING CARD
+   =============================== */
+.about-card {
+  flex: 1 1 45%;
+  background-color: rgba(10, 42, 77, 0.85);
+  border: 2px solid rgba(44, 191, 174, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(44, 191, 174, 0.3),
+              inset 0 0 15px rgba(44, 191, 174, 0.2);
+  padding: 2rem;
   color: #fff;
-  font-size: 1.1rem;
-  line-height: 1.8;
+  transition: box-shadow 0.5s ease, transform 0.5s ease;
 }
 
-.about-text h3 {
+.about-card:hover {
+  box-shadow: 0 0 40px rgba(44, 191, 174, 0.6),
+              inset 0 0 25px rgba(44, 191, 174, 0.3);
+  transform: translateY(-3px);
+}
+
+.about-card h3 {
   color: #2CBFAE;
-  font-weight: 600;
-  margin-bottom: 1.2rem;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.about-text p {
-  margin-bottom: 1.6rem;
-  text-align: justify;
-}
-
-/* CPU Image Column */
+/* ===============================
+   CPU IMAGE
+   =============================== */
 .about-image-container {
   flex: 1 1 40%;
   display: flex;
@@ -85,45 +89,30 @@
 }
 
 .about-cpu-image:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
   filter: drop-shadow(0 0 22px rgba(44, 191, 174, 0.6));
 }
 
 /* ===============================
    RESPONSIVE DESIGN
    =============================== */
-@media (max-width: 1024px) {
-  .about-flex {
-    gap: 30px;
-  }
-}
-
 @media (max-width: 900px) {
   .about-flex {
     flex-direction: column-reverse;
     text-align: center;
     margin-top: 40px;
+    gap: 40px;
   }
 
-  .about-text {
+  .about-card {
     flex: 1 1 100%;
-    padding: 0;
-  }
-
-  .about-image-container {
-    flex: 1 1 100%;
-    margin-bottom: 2rem;
   }
 
   .about-cpu-image {
-    max-width: 320px;
-  }
-
-  .about-text h3 {
-    margin-top: 1rem;
+    max-width: 300px;
   }
 
   .about-hero .hero-cpu-bg {
-    opacity: 0.1;
+    opacity: 0.08;
   }
 }
