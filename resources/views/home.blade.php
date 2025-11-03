@@ -19,7 +19,7 @@
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo" class="hero-logo">
 
   <div class="hero-text">
-    <h1>Old School Support.<br><span class="highlight">Modern Results.</span></h1>
+    <h1>Old School Support<br><span class="highlight">Modern Results</span></h1>
     <p>From the Granite Belt to the Cloud — smart tech, local heart, and real people who care about getting IT right.</p>
   </div>
 
