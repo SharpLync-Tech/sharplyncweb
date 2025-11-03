@@ -1,8 +1,8 @@
 /*
   Page: sharplync.css
-  Version: v2.3.3 (Hero CPU Top – Stable)
+  Version: v2.3.4 (Hero CPU Fixed Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Added hero-cpu.png anchored at top of hero; all functions and layout from v2.3.2 preserved.
+  Description: Reintegrated CPU image correctly behind hero; maintained full layout and responsive integrity.
 */
 
 /* ==================== GLOBAL ==================== */
@@ -34,6 +34,13 @@ body {
   border: none;
   box-shadow: none;
   transition: background 0.3s ease;
+}
+
+.main-header .logo img {
+  height: 80px;
+  width: auto;
+  margin-bottom: -5px;
+  transition: all 0.3s ease;
 }
 
 .hamburger {
@@ -86,6 +93,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   padding: 6rem 10% 4rem;
   background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: white;
@@ -95,23 +103,26 @@ body {
   overflow: hidden;
 }
 
-/* ==================== HERO CPU IMAGE ==================== */
-.hero-cpu-top {
+/* CPU image sits behind everything, fixed to hero */
+.hero-cpu-bg {
   position: absolute;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
   width: 100%;
   display: flex;
   justify-content: center;
   pointer-events: none;
-  z-index: 0;
+  opacity: 0.8;
 }
-.hero-cpu-top img {
-  width: 600px;
-  max-width: 90%;
-  opacity: 0.75;
-  transform: translateY(-40px);
+.hero-cpu-bg img {
+  width: 380px;
+  max-width: 80%;
+  opacity: 0.65;
+  transform: translateY(0);
   filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
-  animation: fadeUp 1.5s ease forwards;
+  animation: fadeUp 1.8s ease forwards;
 }
 
 /* ==================== HERO CONTENT ==================== */
@@ -243,7 +254,7 @@ footer {
   .hero { padding: 5rem 6% 6rem; }
   .hero-logo { width: 180px; }
   .hero-text h1 { font-size: 2.3rem; }
-  .hero-cpu-top img { width: 400px; transform: translateY(-30px); }
+  .hero-cpu-bg img { width: 300px; }
   .hero-cards { gap: 1.5rem; }
   .tile { flex: 1 1 90%; }
 }
@@ -251,5 +262,5 @@ footer {
   .main-header .logo img { height: 60px; }
   .hero-logo { width: 140px; }
   .hero-text h1 { font-size: 1.9rem; }
-  .hero-cpu-top img { width: 280px; transform: translateY(-20px); }
+  .hero-cpu-bg img { width: 240px; }
 }

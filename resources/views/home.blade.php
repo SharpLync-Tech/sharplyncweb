@@ -1,8 +1,8 @@
 <!-- 
   Page: home.blade.php
-  Version: v2.3.3 (Hero CPU Top – Stable)
+  Version: v2.3.4 (Hero CPU Fixed Edition)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Identical to v2.3.2 Seamless Blend, with hero-cpu image added at top of hero section.
+  Description: Adds hero-cpu.png behind logo without affecting layout or scaling. All other functions unchanged.
 -->
 
 @extends('layouts.base')
@@ -12,9 +12,9 @@
 @section('content')
 <section class="hero">
 
-  <!-- CPU image anchored at top of hero -->
-  <div class="hero-cpu-top">
-    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync Hero CPU">
+  <!-- Hero CPU background image (anchored, non-intrusive) -->
+  <div class="hero-cpu-bg">
+    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
   </div>
 
   <!-- SharpLync logo -->
