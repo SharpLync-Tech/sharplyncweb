@@ -25,21 +25,24 @@
 
   <div class="hero-cards fade-section">
     <div class="tile transparent">
-      <img src="{{ asset('images/support.png') }}" alt="IT Support & Cloud Icon" class="tile-icon">
-      <h3>IT Support & Cloud</h3>
-      <p>Reliable, responsive, and scalable support solutions for your business.</p>
+      <img src="{{ asset('images/about.png') }}" alt="About SharpLync" class="tile-icon">
+      <h3>About SharpLync</h3>
+      <p>We’re your local tech partner — because great service never goes out of style. Reliable people, smarter systems, and genuine care for getting IT right.</p>
     </div>
 
     <div class="tile transparent">
-      <img src="{{ asset('images/security.png') }}" alt="Security & Backup Icon" class="tile-icon">
-      <h3>Security & Backup</h3>
-      <p>Proactive protection and secure backup strategies for peace of mind.</p>
+      <img src="{{ asset('images/what_we_do.png') }}" alt="What We Do" class="tile-icon">
+      <h3>What We Do</h3>
+      <p>From cloud and security to on-site infrastructure — SharpLync keeps your business connected, protected, and performing at its best.
+Real solutions, real people, real results.</p>
     </div>
 
     <div class="tile transparent">
-      <img src="{{ asset('images/infrastructure.png') }}" alt="Infrastructure Design Icon" class="tile-icon">
-      <h3>Infrastructure Design</h3>
-      <p>Tailored networks built for reliability and long-term performance.</p>
+      <img src="{{ asset('images/cantact_us.png') }}" alt="Contact Us" class="tile-icon">
+      <h3>Contact Us</h3>
+      <p>Need help or advice?
+Reach out anytime — we’re based in the Granite Belt and here when you need us most.
+Quick support, friendly faces, no fuss.</p>
     </div>
   </div>
 </section>
