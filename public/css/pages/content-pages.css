@@ -1,8 +1,8 @@
 /* 
   File: content-pages.css
-  Version: v1.6
-  Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Restored centered hero card layout with clear notes for position, size, and color adjustments.
+  Version: v1.8
+  Last updated: 04 Nov 2025 by Jannie & Max
+  Description: Larger readable about card with off-white background and navy text.
 */
 
 /* ===============================
@@ -12,21 +12,9 @@
   position: relative;
   overflow: hidden;
   text-align: center;
-  padding-bottom: 100px;
-}
-
-/* CPU background placement */
-.about-hero .hero-cpu-bg {
-  position: absolute;
-  top: 0;
-  right: 0;
-  opacity: 0.15;
-  z-index: 0;
-}
-
-.about-hero .hero-cpu-bg img {
-  width: 900px;
-  height: auto;
+  padding: 80px 0 120px 0; /* Balanced vertical spacing */
+  background: linear-gradient(180deg, #0A2A4D 0%, #104946 100%);
+  color: #FFFFFF;
 }
 
 /* ===============================
@@ -36,70 +24,64 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: left;   /* ← Controls X (left-right) position of card */
-  align-items: center;       /* ← Controls Y (vertical) alignment */
-  margin-top: -10rem;          /* ← Controls how far the card sits below hero text */
+  justify-content: center;     /* Centers the card horizontally */
+  align-items: flex-start;
+  margin-top: 2rem;            /* Distance between heading and card */
 }
 
-/* The main card itself */
+/* Main story card */
 .tile {
-  background-color: rgba(213, 223, 235, 0.85);  /* ← CARD BACKGROUND COLOR */
-  border-radius: 12px;
-  padding: 2rem 3rem;                        /* ← Inner padding (controls card height & internal spacing) */
-  width: 60%;                                /* ← CARD WIDTH (change to 70% or px for fixed width) */
-  max-width: 750px;                          /* ← Max card size on large screens */
-  text-align: center;
-  color: navy;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  background-color: #F9FBFE;   /* ← Card background (off-white) */
+  border-radius: 16px;
+  padding: 3rem 4rem;          /* ← Inner padding (controls card height) */
+  width: 75%;                  /* ← Card width */
+  max-width: 950px;            /* ← Maximum size on large screens */
+  text-align: left;
+  color: #0A2A4D;              /* ← SharpLync brand navy text */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   transition: all 0.4s ease;
 }
 
-/* Transparent variation for hero cards */
-.tile.transparent {
-  background: rgba(245, 246, 247, 0.8);         /* ← Adjust transparency here */
+/* Optional subtle hover glow */
+.tile:hover {
+  box-shadow: 0 0 30px rgba(44, 191, 174, 0.4);
 }
 
-/* Hover effect for glow */
-.tile.transparent:hover {
-  box-shadow: 0 0 30px rgba(44, 191, 174, 0.5);
-}
-
-/* Icon inside card */
-.tile-icon {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 1rem;
-  opacity: 0.9;
-}
-
-/* Card heading */
+/* Title inside card */
 .tile h3 {
   color: #2CBFAE;
-  margin-bottom: 0.75rem;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Card paragraph */
+/* Paragraphs inside card */
 .tile p {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
 }
 
 /* ===============================
    RESPONSIVE DESIGN
    =============================== */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .tile {
-    width: 85%;              /* Makes card wider on smaller screens */
-    padding: 1.8rem;         /* Reduces internal height */
+    width: 90%;
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tile {
+    width: 92%;
+    padding: 2rem 1.5rem;
   }
 
-  .tile-icon {
-    width: 50px;
-    height: 50px;
+  .tile h3 {
+    font-size: 1.5rem;
   }
 
-  .about-hero .hero-cpu-bg img {
-    width: 600px;
-    opacity: 0.1;
+  .tile p {
+    font-size: 1rem;
   }
 }
