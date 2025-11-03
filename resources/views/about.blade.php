@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ asset('css/pages/content-pages.css') }}">
 @endpush
 
-@section('title', 'SharpLync | Page Title')
+@section('title', 'SharpLync | About')
 
 @section('content')
 <section class="hero">
@@ -22,7 +22,7 @@
 
   <!-- ✅ Page heading/logo area (replace or remove as needed) -->
   <div class="hero-text">
-    <h1>Page Title Here</h1>
+    <h1>Abount SharpLync</h1>
     <p>Intro text or short description can go here. Replace with page-specific content.</p>
   </div>
 
@@ -34,7 +34,7 @@
       <p>
         Add your page content here. This layout is designed to stay consistent with the SharpLync brand look.
       </p>
-      <a href="#" class="learn-more">Learn more →</a>
+      <!-- <a href="#" class="learn-more">Learn more →</a> -->
     </div>    
   </div>
 </section>
