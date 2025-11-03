@@ -38,7 +38,7 @@ Real solutions, real people, real results.</p>
     </div>
 
     <div class="tile transparent">
-      <img src="{{ asset('images/cantact_us.png') }}" alt="Contact Us" class="tile-icon">
+      <img src="{{ asset('images/contact_us.png') }}" alt="Contact Us" class="tile-icon">
       <h3>Contact Us</h3>
       <p>Need help or advice?
 Reach out anytime — we’re based in the Granite Belt and here when you need us most.
