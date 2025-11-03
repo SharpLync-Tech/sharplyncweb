@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v3.0 (Base Page Template)
+  Version: v4.0 (Stable Left Glowing Card Layout)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Core layout for SharpLync pages. Includes CPU background, header, footer, and consistent styling.
+  Description: Correctly styled About page with glowing left-side card and annotated controls.
 -->
 
 @extends('layouts.base')
@@ -14,28 +14,27 @@
 @section('title', 'SharpLync | About')
 
 @section('content')
-<section class="hero">
-  <!-- ✅ CPU image visible behind content -->
+<section class="hero about-hero">
+  <!-- ✅ CPU background (from base) -->
   <div class="hero-cpu-bg">
     <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
   </div>
 
-  <!-- ✅ Page heading/logo area (replace or remove as needed) -->
+  <!-- ✅ Page header -->
   <div class="hero-text">
-    <h1>Abount SharpLync</h1>
-    <p>Intro text or short description can go here. Replace with page-specific content.</p>
+    <h1>About <span class="highlight">SharpLync</span></h1>
+    <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
   </div>
 
-  <!-- ✅ Page content/cards area -->
+  <!-- ✅ Glowing Card -->
   <div class="hero-cards fade-section">
-    <div class="tile transparent">
-      <img src="{{ asset('images/sample-icon.png') }}" alt="Feature Icon" class="tile-icon">
-      <h3>Section Heading</h3>
+    <div class="about-card">
+      <h3>Our Story</h3>
       <p>
-        Add your page content here. This layout is designed to stay consistent with the SharpLync brand look.
+        Born in the heart of the Granite Belt, SharpLync was founded with one simple goal — to make technology human again. 
+        What began as a local IT initiative has grown into a trusted regional partner supporting Warwick, Stanthorpe, Tenterfield and beyond.
       </p>
-      <!-- <a href="#" class="learn-more">Learn more →</a> -->
-    </div>    
+    </div>
   </div>
 </section>
 @endsection
