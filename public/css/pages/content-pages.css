@@ -235,3 +235,35 @@ footer {
   .content-header h1 { font-size: 2rem; }
   .content-header p { font-size: 1rem; }
 }
+
+/* Expandable Story Section */
+#storyFull.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.7s ease;
+}
+
+#storyFull {
+  max-height: 5000px; /* safe upper bound */
+  opacity: 1;
+  transition: all 0.7s ease;
+}
+
+.toggle-btn {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  border: 2px solid #2CBFAE;
+  background: none;
+  color: #2CBFAE;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #2CBFAE;
+  color: #0A2A4D;
+}
