@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v4.4 (Final Off-White Card)
+  Version: v4.5 (Transparency Fix)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Refined About page with solid off-white card, navy text, and a welcoming tone.
+  Description: Fixed solid card background overriding transparent tile class.
 -->
 
 @extends('layouts.base')
@@ -15,14 +15,13 @@
 
 @section('content')
 <section class="hero about-hero">
-  <!-- ✅ Hero heading -->
   <div class="hero-text">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
   </div>
 
-  <!-- ✅ Main story card -->
   <div class="hero-cards fade-section">
+    <!-- ✅ Removed .tile.transparent -->
     <div class="about-card">
       <h3>Our Story</h3>
       <p>
@@ -30,13 +29,12 @@
         to make technology <em>human again</em>. What began as a local IT initiative has grown into a trusted regional partner 
         supporting Warwick, Stanthorpe, Tenterfield and beyond.
       </p>
-
       <p>
         We believe in community, reliability, and service that still means something. 
         Our promise is simple — real support, from real people, who genuinely care about helping others succeed. 
         From the bush to the cloud, SharpLync continues to build connections that matter.
       </p>
-    </div>    
+    </div>
   </div>
 </section>
 @endsection

@@ -1,13 +1,10 @@
 /* 
   File: content-pages.css
-  Version: v2.0 (Final Off-White Card Layout)
+  Version: v2.1 (Transparency Fix)
   Last updated: 04 Nov 2025 by Jannie & Max
-  Description: Clean, high-contrast About page design with solid off-white card and SharpLync navy text.
+  Description: Forces solid off-white background and navy text for About card.
 */
 
-/* ===============================
-   HERO BASE SETTINGS
-   =============================== */
 .about-hero {
   position: relative;
   overflow: hidden;
@@ -17,9 +14,7 @@
   color: #FFFFFF;
 }
 
-/* ===============================
-   CARD SECTION
-   =============================== */
+/* Card Section */
 .hero-cards {
   position: relative;
   z-index: 2;
@@ -29,41 +24,36 @@
   margin-top: 2rem;
 }
 
-/* ✅ About Card — solid, warm, and readable */
+/* ✅ Solid, clean card — no transparency */
 .about-card {
-  background-color: #F9FBFE;    /* ← Card background (off-white) */
-  color: #0A2A4D;               /* ← SharpLync brand navy for text */
+  background-color: #F9FBFE !important;  /* ← Forces solid background */
+  color: #0A2A4D !important;             /* ← SharpLync navy text */
   border-radius: 16px;
-  padding: 3rem 4rem;           /* ← Controls card height & internal spacing */
-  width: 75%;                   /* ← Card width */
-  max-width: 950px;             /* ← Max width on desktop */
+  padding: 3rem 4rem;
+  width: 75%;
+  max-width: 950px;
   text-align: left;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   transition: all 0.4s ease;
 }
 
-/* Subtle hover glow */
 .about-card:hover {
   box-shadow: 0 0 35px rgba(44, 191, 174, 0.4);
 }
 
-/* Card heading */
 .about-card h3 {
-  color: #2CBFAE;               /* ← Accent teal */
+  color: #2CBFAE;
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
 }
 
-/* Paragraphs inside card */
 .about-card p {
   font-size: 1.1rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
 }
 
-/* ===============================
-   RESPONSIVE DESIGN
-   =============================== */
+/* Responsive */
 @media (max-width: 1024px) {
   .about-card {
     width: 90%;
@@ -85,21 +75,3 @@
     font-size: 1rem;
   }
 }
-
-/* ===============================
-   QUICK ADJUSTMENT NOTES
-   =============================== */
-/*
-  To change X/Y positioning:
-    .hero-cards { margin-top: Xrem; }   ← Moves card up/down
-    .about-card { width: X%; }          ← Controls horizontal width
-
-  To change background color:
-    .about-card { background-color: #F9FBFE; }
-
-  To change text color:
-    .about-card { color: #0A2A4D; }
-
-  To adjust padding (card height & spacing):
-    .about-card { padding: 3rem 4rem; }
-*/
