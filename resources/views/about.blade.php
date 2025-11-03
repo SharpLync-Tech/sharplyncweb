@@ -15,12 +15,7 @@
 
 @section('content')
 <section class="hero about-hero">
-  <!-- ✅ CPU background behind content -->
-  <div class="hero-cpu-bg">
-    <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
-  </div>
-
-  <!-- ✅ Hero heading -->
+   <!-- ✅ Hero heading -->
   <div class="hero-text">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
