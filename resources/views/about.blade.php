@@ -1,8 +1,8 @@
 <!-- 
   Page: about.blade.php
-  Version: v4.0 (Stable Left Glowing Card Layout)
+  Version: v4.1 (Template Card Layout with Position Notes)
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Correctly styled About page with glowing left-side card and annotated controls.
+  Description: Restores original centered card design with clear controls in stylesheet.
 -->
 
 @extends('layouts.base')
@@ -15,26 +15,27 @@
 
 @section('content')
 <section class="hero about-hero">
-  <!-- ✅ CPU background (from base) -->
+  <!-- ✅ CPU background behind content -->
   <div class="hero-cpu-bg">
     <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
   </div>
 
-  <!-- ✅ Page header -->
+  <!-- ✅ Hero heading -->
   <div class="hero-text">
     <h1>About <span class="highlight">SharpLync</span></h1>
     <p>From the Granite Belt to the Cloud — bridging the gap between people and technology with old school support and modern results.</p>
   </div>
 
-  <!-- ✅ Glowing Card -->
+  <!-- ✅ Main centered card -->
   <div class="hero-cards fade-section">
-    <div class="about-card">
+    <div class="tile transparent">
+      <img src="{{ asset('images/sample-icon.png') }}" alt="Feature Icon" class="tile-icon">
       <h3>Our Story</h3>
       <p>
         Born in the heart of the Granite Belt, SharpLync was founded with one simple goal — to make technology human again. 
         What began as a local IT initiative has grown into a trusted regional partner supporting Warwick, Stanthorpe, Tenterfield and beyond.
       </p>
-    </div>
+    </div>    
   </div>
 </section>
 @endsection

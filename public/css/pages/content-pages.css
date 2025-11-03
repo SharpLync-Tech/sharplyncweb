@@ -1,21 +1,21 @@
 /* 
   File: content-pages.css
-  Version: v1.5
+  Version: v1.6
   Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Shared styling for content-based pages with left-aligned glowing card (fully annotated).
+  Description: Restored centered hero card layout with clear notes for position, size, and color adjustments.
 */
 
 /* ===============================
-   HERO SECTION
+   HERO BASE SETTINGS
    =============================== */
 .about-hero {
   position: relative;
   overflow: hidden;
-  text-align: left;
+  text-align: center;
   padding-bottom: 100px;
 }
 
-/* Background CPU position */
+/* CPU background placement */
 .about-hero .hero-cpu-bg {
   position: absolute;
   top: 0;
@@ -29,65 +29,73 @@
   height: auto;
 }
 
-/* Heading text above CPU */
-.about-hero .hero-text {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  margin-bottom: 80px;
-}
-
 /* ===============================
-   GLOWING CARD
+   CARD SECTION
    =============================== */
-.about-card {
+.hero-cards {
   position: relative;
   z-index: 2;
-  width: 45%;               /* ← Controls CARD WIDTH (X-axis size) */
-  max-width: 500px;         /* ← Limits maximum width on large screens */
-  background-color: rgba(10, 42, 77, 0.9); /* ← CARD BACKGROUND COLOR */
-  border: 2px solid rgba(44, 191, 174, 0.5);
-  border-radius: 20px;
-  box-shadow: 
-    0 0 25px rgba(44, 191, 174, 0.3),
-    inset 0 0 15px rgba(44, 191, 174, 0.2);
-  padding: 2rem 2.5rem;     /* ← Controls CARD HEIGHT (Y-axis spacing inside card) */
-  color: #fff;
-  margin-left: 8%;          /* ← Controls X POSITION (distance from left side) */
-  margin-top: 0;            /* ← Controls Y POSITION (distance from top of hero) */
-  backdrop-filter: blur(8px);
-  transition: box-shadow 0.4s ease, transform 0.3s ease;
+  display: flex;
+  justify-content: center;   /* ← Controls X (left-right) position of card */
+  align-items: center;       /* ← Controls Y (vertical) alignment */
+  margin-top: 2rem;          /* ← Controls how far the card sits below hero text */
 }
 
-.about-card:hover {
-  box-shadow: 
-    0 0 40px rgba(44, 191, 174, 0.6),
-    inset 0 0 25px rgba(44, 191, 174, 0.3);
-  transform: translateY(-4px);
+/* The main card itself */
+.tile {
+  background-color: rgba(10, 42, 77, 0.85);  /* ← CARD BACKGROUND COLOR */
+  border-radius: 12px;
+  padding: 2rem 3rem;                        /* ← Inner padding (controls card height & internal spacing) */
+  width: 60%;                                /* ← CARD WIDTH (change to 70% or px for fixed width) */
+  max-width: 750px;                          /* ← Max card size on large screens */
+  text-align: center;
+  color: white;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s ease;
 }
 
-/* Card Title */
-.about-card h3 {
-  color: #2CBFAE;
-  font-size: 1.5rem;
+/* Transparent variation for hero cards */
+.tile.transparent {
+  background: rgba(10, 42, 77, 0.8);         /* ← Adjust transparency here */
+}
+
+/* Hover effect for glow */
+.tile.transparent:hover {
+  box-shadow: 0 0 30px rgba(44, 191, 174, 0.5);
+}
+
+/* Icon inside card */
+.tile-icon {
+  width: 60px;
+  height: 60px;
   margin-bottom: 1rem;
+  opacity: 0.9;
 }
 
-/* Card Paragraphs */
-.about-card p {
-  font-size: 1.05rem;
+/* Card heading */
+.tile h3 {
+  color: #2CBFAE;
+  margin-bottom: 0.75rem;
+}
+
+/* Card paragraph */
+.tile p {
+  font-size: 1rem;
   line-height: 1.7;
-  text-align: justify;
 }
 
 /* ===============================
    RESPONSIVE DESIGN
    =============================== */
 @media (max-width: 900px) {
-  .about-card {
-    width: 90%;              /* Card takes full width on mobile */
-    margin: 0 auto;          /* Centers the card horizontally */
-    padding: 1.8rem;         /* Adjusts inner height for smaller screens */
+  .tile {
+    width: 85%;              /* Makes card wider on smaller screens */
+    padding: 1.8rem;         /* Reduces internal height */
+  }
+
+  .tile-icon {
+    width: 50px;
+    height: 50px;
   }
 
   .about-hero .hero-cpu-bg img {
