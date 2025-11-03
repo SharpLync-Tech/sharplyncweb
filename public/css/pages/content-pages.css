@@ -43,13 +43,13 @@
 
 /* The main card itself */
 .tile {
-  background-color: rgba(10, 42, 77, 0.85);  /* ← CARD BACKGROUND COLOR */
+  background-color: rgba(213, 223, 235, 0.85);  /* ← CARD BACKGROUND COLOR */
   border-radius: 12px;
   padding: 2rem 3rem;                        /* ← Inner padding (controls card height & internal spacing) */
   width: 60%;                                /* ← CARD WIDTH (change to 70% or px for fixed width) */
   max-width: 750px;                          /* ← Max card size on large screens */
   text-align: center;
-  color: white;
+  color: navy;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
   transition: all 0.4s ease;
 }
