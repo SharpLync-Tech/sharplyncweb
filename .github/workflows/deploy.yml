@@ -39,28 +39,25 @@ jobs:
         with:
           files: 'composer.json'
 
-      # ✅ 4. Install all dependencies (Laravel + Microsoft Graph SDK)
+      # ✅ 4. Install dependencies
       - name: Install Laravel dependencies
         if: steps.check_files.outputs.files_exists == 'true'
         run: |
           echo "📦 Installing PHP dependencies..."
           composer install --prefer-dist --no-progress --no-interaction --no-dev
 
-          echo "📦 Adding Microsoft Graph SDK..."
-          composer require microsoft/microsoft-graph --no-interaction || echo "⚠️ Graph install skipped (already installed)."
+          echo "📦 Ensuring Microsoft Graph SDK..."
+          composer require microsoft/microsoft-graph --no-interaction || echo "⚠️ Already installed."
 
-          echo "🧹 Clearing Laravel caches..."
+          echo "🧹 Clearing and caching Laravel..."
           php artisan config:clear || true
           php artisan route:clear || true
           php artisan view:clear || true
-
-          
-          echo "⚙️ Caching Laravel configuration..."
           php artisan config:cache || true
           php artisan route:cache || true
           php artisan view:cache || true
 
-      # ✅5. Upload artifact for deployment
+      # ✅ 5. Upload artifact for deployment
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
