@@ -3,7 +3,6 @@
 # ============================================
 # Builds and deploys Laravel/PHP app to Azure Web App
 # using a single AZURE_CREDENTIALS secret.
-# 
 # ============================================
 
 name: Build and deploy PHP app to Azure Web App - sharplyncweb
@@ -21,32 +20,49 @@ jobs:
       contents: read
 
     steps:
+      # ✅ 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ✅ 2. Setup PHP with Composer installed
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          extensions: mbstring, bcmath, intl, mysql, dom, curl, gd, xml
+          tools: composer
 
+      # ✅ 3. Validate composer.json exists
       - name: Check if composer.json exists
         id: check_files
         uses: andstor/file-existence-action@v2
         with:
           files: 'composer.json'
 
-      - name: Run composer install if composer.json exists
+      # ✅ 4. Install all dependencies (Laravel + Microsoft Graph SDK)
+      - name: Install Laravel dependencies
         if: steps.check_files.outputs.files_exists == 'true'
         run: |
-          echo "📦 Adding Microsoft Graph SDK..."
-          composer require microsoft/microsoft-graph --no-interaction --no-update
           echo "📦 Installing PHP dependencies..."
           composer install --prefer-dist --no-progress --no-interaction --no-dev
+
+          echo "📦 Adding Microsoft Graph SDK..."
+          composer require microsoft/microsoft-graph --no-interaction || echo "⚠️ Graph install skipped (already installed)."
+
+          echo "🧹 Clearing Laravel caches..."
+          php artisan config:clear || true
+          php artisan route:clear || true
+          php artisan view:clear || true
+
+          echo "🔑 Generating application key..."
           php artisan key:generate || true
+
+          echo "⚙️ Caching Laravel configuration..."
           php artisan config:cache || true
           php artisan route:cache || true
           php artisan view:cache || true
 
+      # ✅ 5. Upload artifact for deployment
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
@@ -61,21 +77,26 @@ jobs:
       contents: read
 
     steps:
+      # ✅ 6. Download artifact from build job
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: php-app
 
-      # ✅ Azure login using AZURE_CREDENTIALS secret
+      # ✅ 7. Azure login using stored secret
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # ✅ Deploy app to Azure Web App
+      # ✅ 8. Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'sharplyncweb'
           slot-name: 'Production'
           package: .
+
+      # ✅ 9. Post-deploy cleanup log
+      - name: Deployment summary
+        run: echo "✅ SharpLync successfully deployed to Azure Web App (Production Slot)."
