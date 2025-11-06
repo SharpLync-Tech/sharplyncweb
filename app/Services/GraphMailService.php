@@ -2,82 +2,51 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
-use Illuminate\Mail\Transport\Transport;
-use Swift_Mime_SimpleMessage;
 use Microsoft\Graph\Graph;
+use Illuminate\Mail\Transport\Transport;
+use Symfony\Component\Mailer\SentMessage;
+use Symfony\Component\Mime\Email;
 
 class GraphMailService extends Transport
 {
-    protected $accessToken;
     protected $graph;
 
     public function __construct()
     {
-        $this->accessToken = $this->getAccessToken();
-
         $this->graph = new Graph();
-        $this->graph->setAccessToken($this->accessToken);
+        $this->graph->setAccessToken(env('GRAPH_ACCESS_TOKEN'));
     }
 
     /**
-     * Get an access token using client credentials flow.
+     * Send the given Symfony Email message via Microsoft Graph.
      */
-    private function getAccessToken()
+    public function send(SentMessage $message, ?\Symfony\Component\Mailer\Transport\Smtp\TransportInterface $transport = null): void
     {
-        $tenantId = env('GRAPH_TENANT_ID');
-        $clientId = env('GRAPH_CLIENT_ID');
-        $clientSecret = env('GRAPH_CLIENT_SECRET');
+        $email = $message->getOriginalMessage();
+        $subject = $email->getSubject();
+        $to = implode(',', array_map(fn($addr) => $addr->getAddress(), $email->getTo()));
+        $body = $email->getHtmlBody() ?: $email->getTextBody();
 
-        $client = new Client();
-
-        $response = $client->post("https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token", [
-            'form_params' => [
-                'client_id' => $clientId,
-                'client_secret' => $clientSecret,
-                'scope' => 'https://graph.microsoft.com/.default',
-                'grant_type' => 'client_credentials',
-            ],
-        ]);
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        return $data['access_token'];
-    }
-
-    /**
-     *   Send the message through Microsoft Graph API.
-     */
-    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
-    {
-        $to = array_map(function ($addr) {
-            return ['emailAddress' => ['address' => $addr]];
-        }, array_keys($message->getTo() ?? []));
-
-        $subject = $message->getSubject();
-        $body = $message->getBody();
-
-        $payload = [
+        $graphMessage = [
             'message' => [
                 'subject' => $subject,
                 'body' => [
                     'contentType' => 'HTML',
                     'content' => $body,
                 ],
-                'toRecipients' => $to,
+                'toRecipients' => array_map(fn($addr) => [
+                    'emailAddress' => ['address' => $addr->getAddress()]
+                ], $email->getTo()),
             ],
-            'saveToSentItems' => false,
+            'saveToSentItems' => true,
         ];
 
         try {
-            $this->graph->createRequest(
-                'POST',
-                '/users/' . env('GRAPH_SENDER_EMAIL') . '/sendMail'
-            )->attachBody($payload)->execute();
-
-            return $this->numberOfRecipients($message);
+            $this->graph->createRequest('POST', '/users/' . env('GRAPH_SENDER_EMAIL') . '/sendMail')
+                ->attachBody($graphMessage)
+                ->execute();
         } catch (\Throwable $e) {
-            \Log::error('Graph Mail Error: ' . $e->getMessage());
-            throw $e;
+            \Log::error("Graph Mail Error: " . $e->getMessage());
         }
     }
 }
