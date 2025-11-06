@@ -1,0 +1,113 @@
+# ============================================
+# SharpLync Web Deployment Workflow
+# ============================================
+# Builds and deploys Laravel/PHP app to Azure Web App
+# using a single AZURE_CREDENTIALS secret.
+# ============================================
+
+name: Build and deploy PHP app to Azure Web App - sharplyncweb
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # ✅ 1) Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ✅ 2) Setup PHP + Composer
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, intl, mysql, dom, curl, gd, xml
+          tools: composer
+
+      # ✅ 3) Confirm composer.json exists
+      - name: Check if composer.json exists
+        id: check_files
+        uses: andstor/file-existence-action@v2
+        with:
+          files: 'composer.json'
+
+      # ✅ 4) Install dependencies (Laravel + Graph SDK)
+      - name: Install Laravel dependencies
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: |
+          echo "📦 Installing PHP dependencies..."
+          composer install --prefer-dist --no-progress --no-interaction --no-dev
+
+          echo "📦 Ensuring Microsoft Graph SDK..."
+          composer require microsoft/microsoft-graph --no-interaction || echo "⚠️ Already installed."
+
+          echo "🧹 Clearing & caching Laravel..."
+          php artisan config:clear || true
+          php artisan route:clear || true
+          php artisan view:clear || true
+          php artisan config:cache || true
+          php artisan route:cache || true
+          php artisan view:cache || true
+
+      # ✅ 5) Upload build artifact
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-app
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # ✅ 6) Download build artifact
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: php-app
+
+      # ✅ 7) Azure login
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ✅ 8) STOP the web app to clear OneDeploy locks
+      - name: Stop Web App (avoid OneDeploy 409)
+        run: |
+          az webapp stop \
+            --name sharplyncweb \
+            --resource-group SharpLync-RG
+          echo "⏳ Waiting 10s for stop to settle..."
+          sleep 10
+
+      # ✅ 9) Deploy to Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'sharplyncweb'
+          slot-name: 'Production'
+          package: .
+
+      # ✅ 10) START the web app after deploy
+      - name: Start Web App
+        run: |
+          az webapp start \
+            --name sharplyncweb \
+            --resource-group SharpLync-RG
+
+      # ✅ 11) Summary
+      - name: Deployment summary
+        run: echo "✅ SharpLync deployed successfully (app stopped → deployed → started)."

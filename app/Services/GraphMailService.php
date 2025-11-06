@@ -45,7 +45,7 @@ class GraphMailService extends Transport
     }
 
     /**
-     *  Send the message through Microsoft Graph API.
+     * Send the message through Microsoft Graph API.
      */
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
