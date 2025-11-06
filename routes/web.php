@@ -9,6 +9,7 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
 
 // ==============================
 // Public Routes
@@ -41,6 +42,14 @@ Route::get('/test-threatpulse', function () {
 Route::get('/about', function () {
     return view('about');
 });
+
+
+// ==============================
+// Customer Routes
+// ==============================
+Route::get('/onboard', [CustomerController::class, 'create'])->name('customers.create');
+Route::post('/onboard', [CustomerController::class, 'store'])->name('customers.store');
+
 
 // ==============================
 // Admin Routes (modular include)
