@@ -18,7 +18,7 @@ class GraphMailService extends Transport
     }
 
     /**
-     * Send the given Symfony Email message via Microsoft Graph.
+     *  Send the given Symfony Email message via Microsoft Graph.
      */
     public function send(SentMessage $message, ?\Symfony\Component\Mailer\Transport\Smtp\TransportInterface $transport = null): void
     {
