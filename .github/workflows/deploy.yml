@@ -72,13 +72,6 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D789D8A638234D77BB7F727BDC5DABA1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9D05DB8E752345C184AD17941455D4CC }}
 
-      # ---- Stop app to clear any OneDeploy lock ----
-      - name: Stop Web App
-        run: |
-          az webapp stop --name sharplyncweb --resource-group SharpLync-RG
-          echo "⏳ Sleeping 20s to allow stop to complete..."
-          sleep 20
-
       # ---- Deploy from artifact ZIP (not .) ----
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -88,12 +81,7 @@ jobs:
           slot-name: 'Production'
           package: ./build_artifact
 
-      # ---- Always restart app ----
-      - name: Start Web App (always)
-        if: always()
-        run: |
-          az webapp start --name sharplyncweb --resource-group SharpLync-RG
-
+      
       - name: Deployment summary
         if: always()
         run: echo "✅ SharpLync deployed (artifact push). App restarted successfully."
