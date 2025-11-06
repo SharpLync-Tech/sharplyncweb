@@ -38,10 +38,14 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: |
-          composer validate --no-check-publish
+          echo "📦 Adding Microsoft Graph SDK..."
+          composer require microsoft/microsoft-graph --no-interaction --no-update
+          echo "📦 Installing PHP dependencies..."
           composer install --prefer-dist --no-progress --no-interaction --no-dev
+          php artisan key:generate || true
           php artisan config:cache || true
           php artisan route:cache || true
+          php artisan view:cache || true
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
