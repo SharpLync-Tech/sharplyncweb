@@ -54,9 +54,7 @@ jobs:
           php artisan route:clear || true
           php artisan view:clear || true
 
-          echo "🔑 Generating application key..."
-          php artisan key:generate || true
-
+          
           echo "⚙️ Caching Laravel configuration..."
           php artisan config:cache || true
           php artisan route:cache || true
