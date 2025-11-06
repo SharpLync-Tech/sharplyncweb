@@ -60,7 +60,7 @@ jobs:
           php artisan route:cache || true
           php artisan view:cache || true
 
-      # ✅ 5. Upload artifact for deployment
+      # ✅5. Upload artifact for deployment
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
