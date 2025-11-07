@@ -1,0 +1,382 @@
+{
+    "items": [
+        {
+            "title": "Penn hacker claims to have stolen 1.2 million donor records in data breach",
+            "link": "https://www.bleepingcomputer.com/news/security/university-of-pennsylvania-hacker-claims-1.2-million-donor-data-breach/",
+            "date": "Sun, 02 Nov 2025 22:07:14 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "Open VSX rotates access tokens used in supply-chain malware attack",
+            "link": "https://www.bleepingcomputer.com/news/security/open-vsx-rotates-tokens-used-in-supply-chain-malware-attack/",
+            "date": "Sun, 02 Nov 2025 15:09:19 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "OpenAI is going Meta route, as it considers memory-based ads on ChatGPT",
+            "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-is-going-meta-route-as-it-considers-memory-based-ads-on-chatgpt/",
+            "date": "Sat, 01 Nov 2025 20:00:00 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "Google confirms AI search will have ads, but they may look different",
+            "link": "https://www.bleepingcomputer.com/news/google/google-confirms-ai-search-will-have-ads-but-they-may-look-different/",
+            "date": "Sat, 01 Nov 2025 16:56:00 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "Windows 11 Build 26220.7051 released with \u201cAsk Copilot\u201d feature",
+            "link": "https://www.bleepingcomputer.com/news/microsoft/windows-11-build-262207051-released-with-ask-copilot-feature/",
+            "date": "Sat, 01 Nov 2025 16:17:22 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "China-linked hackers exploited Lanscope flaw as a zero-day in attacks",
+            "link": "https://www.bleepingcomputer.com/news/security/china-linked-hackers-exploited-lanscope-flaw-as-a-zero-day-in-attacks/",
+            "date": "Sat, 01 Nov 2025 14:16:26 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "ASD Warns of Ongoing BADCANDY Attacks Exploiting Cisco IOS XE Vulnerability",
+            "link": "https://thehackernews.com/2025/11/asd-warns-of-ongoing-badcandy-attacks.html",
+            "date": "Sat, 01 Nov 2025 13:43:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Windows 11 tests shared Bluetooth audio support, but only for AI PCs",
+            "link": "https://www.bleepingcomputer.com/news/microsoft/windows-11-tests-shared-bluetooth-audio-support-but-only-for-ai-pcs/",
+            "date": "Fri, 31 Oct 2025 20:59:02 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "\u2018We got hacked\u2019 emails threaten to leak University of Pennsylvania data",
+            "link": "https://www.bleepingcomputer.com/news/security/offensive-we-got-hacked-emails-sent-in-penn-security-incident/",
+            "date": "Fri, 31 Oct 2025 18:32:39 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "OpenAI Unveils Aardvark: GPT-5 Agent That Finds and Fixes Code Flaws Automatically",
+            "link": "https://thehackernews.com/2025/10/openai-unveils-aardvark-gpt-5-agent.html",
+            "date": "Fri, 31 Oct 2025 17:19:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Microsoft Edge gets scareware sensor for faster scam detection",
+            "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-edge-gets-scareware-sensor-for-faster-scam-detection/",
+            "date": "Fri, 31 Oct 2025 17:15:06 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "Nation-State Hackers Deploy New Airstalk Malware in Suspected Supply Chain Attack",
+            "link": "https://thehackernews.com/2025/10/nation-state-hackers-deploy-new.html",
+            "date": "Fri, 31 Oct 2025 16:08:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Australia warns of BadCandy infections on unpatched Cisco devices",
+            "link": "https://www.bleepingcomputer.com/news/security/australia-warns-of-badcandy-infections-on-unpatched-cisco-devices/",
+            "date": "Fri, 31 Oct 2025 15:38:55 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "Why password controls still matter in cybersecurity",
+            "link": "https://www.bleepingcomputer.com/news/security/why-password-controls-still-matter-in-cybersecurity/",
+            "date": "Fri, 31 Oct 2025 14:02:12 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "China-Linked Hackers Exploit Windows Shortcut Flaw to Target European Diplomats",
+            "link": "https://thehackernews.com/2025/10/china-linked-hackers-exploit-windows.html",
+            "date": "Fri, 31 Oct 2025 13:57:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Alleged Meduza Stealer malware admins arrested after hacking Russian org",
+            "link": "https://www.bleepingcomputer.com/news/security/alleged-meduza-stealer-malware-admins-arrested-after-hacking-russian-org/",
+            "date": "Fri, 31 Oct 2025 13:45:17 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "China-Linked Tick Group Exploits Lanscope Zero-Day to Hijack Corporate Systems",
+            "link": "https://thehackernews.com/2025/10/china-linked-tick-group-exploits.html",
+            "date": "Fri, 31 Oct 2025 13:26:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "CISA: High-severity Linux flaw now exploited by ransomware gangs",
+            "link": "https://www.bleepingcomputer.com/news/security/cisa-linux-privilege-escalation-flaw-now-exploited-in-ransomware-attacks/",
+            "date": "Fri, 31 Oct 2025 13:05:49 +0000",
+            "source": "BleepingComputer"
+        },
+        {
+            "title": "The MSP Cybersecurity Readiness Guide: Turning Security into Growth",
+            "link": "https://thehackernews.com/2025/10/the-msp-cybersecurity-readiness-guide.html",
+            "date": "Fri, 31 Oct 2025 11:30:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "CISA and NSA Issue Urgent Guidance to Secure WSUS and Microsoft Exchange Servers",
+            "link": "https://thehackernews.com/2025/10/cisa-and-nsa-issue-urgent-guidance-to.html",
+            "date": "Fri, 31 Oct 2025 08:46:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Eclipse Foundation Revokes Leaked Open VSX Tokens Following Wiz Discovery",
+            "link": "https://thehackernews.com/2025/10/eclipse-foundation-revokes-leaked-open.html",
+            "date": "Fri, 31 Oct 2025 08:02:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "CISA Flags VMware Zero-Day Exploited by China-Linked Hackers in Active Attacks",
+            "link": "https://thehackernews.com/2025/10/cisa-flags-vmware-zero-day-exploited-by.html",
+            "date": "Fri, 31 Oct 2025 07:09:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "A New Security Layer for macOS Takes Aim at Admin Errors Before Hackers Do",
+            "link": "https://thehackernews.com/2025/10/a-new-security-layer-for-macos-takes.html",
+            "date": "Fri, 31 Oct 2025 03:37:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Google's Built-In AI Defenses on Android Now Block 10 Billion Scam Messages a Month",
+            "link": "https://thehackernews.com/2025/10/googles-built-in-ai-defenses-on-android.html",
+            "date": "Thu, 30 Oct 2025 17:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Russian Ransomware Gangs Weaponize Open-Source AdaptixC2 for Advanced Attacks",
+            "link": "https://thehackernews.com/2025/10/russian-ransomware-gangs-weaponize-open.html",
+            "date": "Thu, 30 Oct 2025 16:40:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "New \"Brash\" Exploit Crashes Chromium Browsers Instantly with a Single Malicious URL",
+            "link": "https://thehackernews.com/2025/10/new-brash-exploit-crashes-chromium.html",
+            "date": "Thu, 30 Oct 2025 14:45:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "The Death of the Security Checkbox: BAS Is the Power Behind Real Defense",
+            "link": "https://thehackernews.com/2025/10/the-death-of-security-checkbox-bas-is.html",
+            "date": "Thu, 30 Oct 2025 11:55:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "ThreatsDay Bulletin: DNS Poisoning Flaw, Supply-Chain Heist, Rust Malware Trick and New RATs Rising",
+            "link": "https://thehackernews.com/2025/10/threatsday-bulletin-dns-poisoning-flaw.html",
+            "date": "Thu, 30 Oct 2025 10:54:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "PhantomRaven Malware Found in 126 npm Packages Stealing GitHub Tokens From Devs",
+            "link": "https://thehackernews.com/2025/10/phantomraven-malware-found-in-126-npm.html",
+            "date": "Thu, 30 Oct 2025 10:16:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Experts Reports Sharp Increase in Automated Botnet Attacks Targeting PHP Servers and IoT Devices",
+            "link": "https://thehackernews.com/2025/10/experts-reports-sharp-increase-in.html",
+            "date": "Wed, 29 Oct 2025 15:38:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "New AI-Targeted Cloaking Attack Tricks AI Crawlers Into Citing Fake Info as Verified Facts",
+            "link": "https://thehackernews.com/2025/10/new-ai-targeted-cloaking-attack-tricks.html",
+            "date": "Wed, 29 Oct 2025 14:57:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Discover Practical AI Tactics for GRC \u2014 Join the Free Expert Webinar",
+            "link": "https://thehackernews.com/2025/10/discover-practical-ai-tactics-for-grc.html",
+            "date": "Wed, 29 Oct 2025 11:58:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Preparing for the Digital Battlefield of 2026: Ghost Identities, Poisoned Accounts, & AI Agent Havoc",
+            "link": "https://thehackernews.com/2025/10/preparing-for-digital-battlefield-of.html",
+            "date": "Wed, 29 Oct 2025 11:55:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Russian Hackers Target Ukrainian Organizations Using Stealthy Living-Off-the-Land Tactics",
+            "link": "https://thehackernews.com/2025/10/russian-hackers-target-ukrainian.html",
+            "date": "Wed, 29 Oct 2025 11:51:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "10 npm Packages Caught Stealing Developer Credentials on Windows, macOS, and Linux",
+            "link": "https://thehackernews.com/2025/10/10-npm-packages-caught-stealing.html",
+            "date": "Wed, 29 Oct 2025 08:34:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Active Exploits Hit Dassault and XWiki \u2014 CISA Confirms Critical Flaws Under Attack",
+            "link": "https://thehackernews.com/2025/10/active-exploits-hit-dassault-and-xwiki.html",
+            "date": "Wed, 29 Oct 2025 07:44:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "New TEE.Fail Side-Channel Attack Extracts Secrets from Intel and AMD DDR5 Secure Enclaves",
+            "link": "https://thehackernews.com/2025/10/new-teefail-side-channel-attack.html",
+            "date": "Tue, 28 Oct 2025 19:16:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "New Android Trojan 'Herodotus' Outsmarts Anti-Fraud Systems by Typing Like a Human",
+            "link": "https://thehackernews.com/2025/10/new-android-trojan-herodotus-outsmarts.html",
+            "date": "Tue, 28 Oct 2025 16:33:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Researchers Expose GhostCall and GhostHire: BlueNoroff's New Malware Chains",
+            "link": "https://thehackernews.com/2025/10/researchers-expose-ghostcall-and.html",
+            "date": "Tue, 28 Oct 2025 16:12:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Why Early Threat Detection Is a Must for Long-Term Business Growth",
+            "link": "https://thehackernews.com/2025/10/why-early-threat-detection-is-must-for.html",
+            "date": "Tue, 28 Oct 2025 11:55:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Is Your Google Workspace as Secure as You Think it is?",
+            "link": "https://thehackernews.com/2025/10/is-your-google-workspace-as-secure-as.html",
+            "date": "Tue, 28 Oct 2025 10:30:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Chrome Zero-Day Exploited to Deliver Italian Memento Labs' LeetAgent Spyware",
+            "link": "https://thehackernews.com/2025/10/chrome-zero-day-exploited-to-deliver.html",
+            "date": "Tue, 28 Oct 2025 08:22:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "SideWinder Adopts New ClickOnce-Based Attack Chain Targeting South Asian Diplomats",
+            "link": "https://thehackernews.com/2025/10/sidewinder-adopts-new-clickonce-based.html",
+            "date": "Tue, 28 Oct 2025 04:01:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "X Warns Users With Security Keys to Re-Enroll Before November 10 to Avoid Lockouts",
+            "link": "https://thehackernews.com/2025/10/x-warns-users-with-security-keys-to-re.html",
+            "date": "Mon, 27 Oct 2025 16:12:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "New ChatGPT Atlas Browser Exploit Lets Attackers Plant Persistent Hidden Commands",
+            "link": "https://thehackernews.com/2025/10/new-chatgpt-atlas-browser-exploit-lets.html",
+            "date": "Mon, 27 Oct 2025 14:31:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "\u26a1 Weekly Recap: WSUS Exploited, LockBit 5.0 Returns, Telegram Backdoor, F5 Breach Widens",
+            "link": "https://thehackernews.com/2025/10/weekly-recap-wsus-exploited-lockbit-50.html",
+            "date": "Mon, 27 Oct 2025 12:51:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Qilin Ransomware Combines Linux Payload With BYOVD Exploit in Hybrid Attack",
+            "link": "https://thehackernews.com/2025/10/qilin-ransomware-combines-linux-payload.html",
+            "date": "Mon, 27 Oct 2025 08:55:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "ChatGPT Atlas Browser Can Be Tricked by Fake URLs into Executing Hidden Commands",
+            "link": "https://thehackernews.com/2025/10/chatgpt-atlas-browser-can-be-tricked-by.html",
+            "date": "Mon, 27 Oct 2025 07:29:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Smishing Triad Linked to 194,000 Malicious Domains in Global Phishing Operation",
+            "link": "https://thehackernews.com/2025/10/smishing-triad-linked-to-194000.html",
+            "date": "Fri, 24 Oct 2025 18:35:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Newly Patched Critical Microsoft WSUS Flaw Comes Under Active Exploitation",
+            "link": "https://thehackernews.com/2025/10/microsoft-issues-emergency-patch-for.html",
+            "date": "Fri, 24 Oct 2025 16:30:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "APT36 Targets Indian Government with Golang-Based DeskRAT Malware Campaign",
+            "link": "https://thehackernews.com/2025/10/apt36-targets-indian-government-with.html",
+            "date": "Fri, 24 Oct 2025 14:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "The Cybersecurity Perception Gap: Why Executives and Practitioners See Risk Differently",
+            "link": "https://thehackernews.com/2025/10/the-cybersecurity-perception-gap-why.html",
+            "date": "Fri, 24 Oct 2025 11:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "3,000 YouTube Videos Exposed as Malware Traps in Massive Ghost Network Operation",
+            "link": "https://thehackernews.com/2025/10/3000-youtube-videos-exposed-as-malware.html",
+            "date": "Fri, 24 Oct 2025 10:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Self-Spreading 'GlassWorm' Infects VS Code Extensions in Widespread Supply Chain Attack",
+            "link": "https://thehackernews.com/2025/10/self-spreading-glassworm-infects-vs.html",
+            "date": "Fri, 24 Oct 2025 07:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "North Korean Hackers Lure Defense Engineers With Fake Jobs to Steal Drone Secrets",
+            "link": "https://thehackernews.com/2025/10/north-korean-hackers-lure-defense.html",
+            "date": "Thu, 23 Oct 2025 15:29:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Secure AI at Scale and Speed \u2014 Learn the Framework in this Free Webinar",
+            "link": "https://thehackernews.com/2025/10/secure-ai-at-scale-and-speed-learn.html",
+            "date": "Thu, 23 Oct 2025 11:55:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "ThreatsDay Bulletin: $176M Crypto Fine, Hacking Formula 1, Chromium Vulns, AI Hijack & More",
+            "link": "https://thehackernews.com/2025/10/threatsday-bulletin-176m-crypto-fine.html",
+            "date": "Thu, 23 Oct 2025 11:30:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Why Organizations Are Abandoning Static Secrets for Managed Identities",
+            "link": "https://thehackernews.com/2025/10/why-organizations-are-abandoning-static.html",
+            "date": "Thu, 23 Oct 2025 11:00:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "'Jingle Thief' Hackers Exploit Cloud Infrastructure to Steal Millions in Gift Cards",
+            "link": "https://thehackernews.com/2025/10/jingle-thief-hackers-exploit-cloud.html",
+            "date": "Thu, 23 Oct 2025 07:52:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Over 250 Magento Stores Hit Overnight as Hackers Exploit New Adobe Commerce Flaw",
+            "link": "https://thehackernews.com/2025/10/over-250-magento-stores-hit-overnight.html",
+            "date": "Thu, 23 Oct 2025 05:47:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Critical Lanscope Endpoint Manager Bug Exploited in Ongoing Cyberattacks, CISA Confirms",
+            "link": "https://thehackernews.com/2025/10/critical-lanscope-endpoint-manager-bug.html",
+            "date": "Thu, 23 Oct 2025 05:37:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Iran-Linked MuddyWater Targets 100+ Organisations in Global Espionage Campaign",
+            "link": "https://thehackernews.com/2025/10/iran-linked-muddywater-targets-100.html",
+            "date": "Wed, 22 Oct 2025 17:21:00 +0000",
+            "source": "HackerNews"
+        },
+        {
+            "title": "Ukraine Aid Groups Targeted Through Fake Zoom Meetings and Weaponized PDF Files",
+            "link": "https://thehackernews.com/2025/10/ukraine-aid-groups-targeted-through.html",
+            "date": "Wed, 22 Oct 2025 16:55:00 +0000",
+            "source": "HackerNews"
+        }
+    ]
+}

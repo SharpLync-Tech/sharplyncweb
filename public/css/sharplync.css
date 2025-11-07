@@ -1,0 +1,294 @@
+/*
+  Page: sharplync.css
+  Version: v2.3.9 (Link Spacing Update)
+  Last updated: 03 Nov 2025 by Max (ChatGPT)
+  Description: Adds consistent spacing and alignment for 'Learn more →' links inside cards; no other changes made.
+*/
+
+/* ==================== GLOBAL ==================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #0A2A4D;
+  background-color: #F7F9FB;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
+  color: white;
+  background: linear-gradient(135deg, rgba(10, 42, 77, 0.85) 0%, rgba(16, 73, 118, 0.65) 40%, rgba(44, 191, 174, 0.45) 100%);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: none;
+  box-shadow: none;
+  transition: background 0.3s ease;
+}
+
+.main-header .logo img {
+  height: 80px;
+  width: auto;
+  margin-bottom: -5px;
+  transition: all 0.3s ease;
+}
+
+.hamburger {
+  font-size: 2rem;
+  color: navy;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  transition: opacity 0.2s;
+}
+.hamburger:hover { opacity: 0.8; }
+
+/* ==================== OVERLAY MENU ==================== */
+.overlay-menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 42, 77, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 2000;
+}
+.overlay-menu.show { opacity: 1; visibility: visible; }
+
+.overlay-menu ul { list-style: none; text-align: center; padding: 0; }
+.overlay-menu li { margin: 1.4rem 0; }
+.overlay-menu a {
+  color: white;
+  font-size: 1.8rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.overlay-menu a:hover { color: #2CBFAE; }
+
+.close-menu {
+  position: absolute; top: 20px; right: 30px;
+  font-size: 2.4rem; color: #2CBFAE;
+  cursor: pointer; border: none; background: none;
+}
+
+/* ==================== HERO ==================== */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 6rem 10% 4rem;
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+  color: white;
+  text-align: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ✅ CPU image visible on desktop/tablet only */
+.hero-cpu-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-cpu-bg img {
+  width: 680px;
+  max-width: 100%;
+  height: auto;
+  margin-top: -1rem;
+  margin-left: 10rem;
+  opacity: 0.35;
+  filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
+  animation: fadeUp 1.8s ease forwards;
+}
+
+/* ==================== HERO CONTENT ==================== */
+.hero-logo {
+  width: 250px;
+  height: auto;
+  margin-bottom: 2rem;
+  animation: logoPulse 4s ease-in-out infinite, fadeUp 1s ease forwards;
+  filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
+  z-index: 1;
+}
+
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(44,191,174,0.7)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(44,191,174,1)); }
+}
+
+.hero-text { 
+  max-width: 700px; 
+  animation: fadeUp 1s ease forwards; 
+  animation-delay: 0.4s; 
+  opacity: 0; 
+  transform: translateY(25px); 
+  z-index: 1;
+}
+.hero-text h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+.hero-text .highlight {
+  color: #2CBFAE;
+  position: relative;
+  display: inline-block;
+}
+.hero-text .highlight::after {
+  content: "";
+  position: absolute;
+  bottom: -6px; left: 0;
+  height: 3px; width: 0;
+  background-color: #2CBFAE;
+  animation: underline 1.5s ease-out 1s forwards;
+}
+@keyframes underline { to { width: 100%; } }
+
+.hero-text p {
+  margin: 1rem auto 2rem;
+  font-size: 1.1rem;
+  color: #e9f4f3;
+  line-height: 1.6;
+}
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* ==================== HERO CARDS ==================== */
+.hero-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 1s;
+  opacity: 0;
+  transform: translateY(25px);
+  z-index: 1;
+}
+
+.tile {
+  border-radius: 12px;
+  flex: 1 1 250px;
+  text-align: center;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  background: rgba(10, 42, 77, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(44,191,174,0.6);
+}
+.tile-icon {
+  width: 70px;
+  height: auto;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 8px rgba(44,191,174,0.5));
+}
+
+/* ✅ Link spacing inside cards */
+.tile p {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.tile a.learn-more {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #2CBFAE;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.tile a.learn-more:hover {
+  color: #35E0C2;
+  text-decoration: underline;
+}
+
+/* ==================== INFO ==================== */
+.info-section {
+  background-color: #F7F9FB;
+  color: #0A2A4D;
+  padding: 5rem 10%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.info-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(10, 42, 77, 0.1);
+  transition: all 0.3s ease;
+  flex: 1 1 300px;
+  text-align: center;
+}
+.info-card:hover { transform: translateY(-4px); box-shadow: 0 0 25px rgba(44,191,174,0.4); }
+
+/* ==================== FOOTER ==================== */
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 2rem 10%;
+}
+.social-icons img {
+  width: 28px; height: 28px;
+  margin: 0 0.5rem;
+  transition: transform 0.3s, filter 0.3s;
+}
+.social-icons img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px #2CBFAE);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .main-header .logo img { height: 65px; }
+  .hero { padding: 5rem 6% 6rem; }
+  .hero-logo { width: 180px; }
+  .hero-text h1 { font-size: 2.3rem; }
+  .hero-cpu-bg img {
+    width: 450px;
+    margin-top: -8rem;
+    margin-right: -2rem;
+    opacity: 0.4;
+  }
+  .hero-cards { gap: 1.5rem; }
+  .tile { flex: 1 1 90%; }
+}
+
+/* ✅ Completely hide CPU image on mobile */
+@media (max-width: 500px) {
+  .main-header .logo img { height: 60px; }
+  .hero-logo { width: 140px; }
+  .hero-text h1 { font-size: 1.9rem; }
+  .hero-cpu-bg { display: none !important; }
+}

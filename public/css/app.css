@@ -1,0 +1,562 @@
+/* ------------------------------
+   SharpLync Global Stylesheet
+   Theme: Deep Tech Blue (#0A2A4D) + Accent Teal (#2CBFAE)
+   Font: Inter / Open Sans (Fallback: system-ui)
+   ------------------------------ */
+
+/* === Base Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Open Sans', system-ui, sans-serif;
+  background-color: #f8f9fb;
+  color: #1b1b1b;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* === Layout === */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+/* === Header & Navigation === */
+header {
+  background-color: #0A2A4D;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* Animated Gradient Border */
+header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #2CBFAE, #0A2A4D, #2CBFAE);
+  background-size: 200% 100%;
+  animation: gradient-move 6s ease infinite;
+}
+
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+header img.logo {
+  height: 45px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s, border-bottom 0.2s;
+  padding-bottom: 2px;
+}
+
+nav a:hover,
+nav a:focus-visible {
+  color: #2CBFAE;
+  border-bottom: 2px solid #2CBFAE;
+  outline: none;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5 {
+  color: #0A2A4D;
+  font-weight: 600;
+}
+
+h1 span, h2 span, h3 span {
+  color: #2CBFAE;
+}
+
+p {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* === Buttons === */
+.btn {
+  background-color: #0A2A4D;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn:hover {
+  background-color: #104976;
+  transform: translateY(-1px);
+}
+
+.btn:focus-visible {
+  outline: 3px solid rgba(44, 191, 174, 0.4);
+  outline-offset: 2px;
+}
+
+/* --- Secondary Button --- */
+.btn-secondary {
+  background-color: transparent;
+  color: #0A2A4D;
+  border: 2px solid #2CBFAE;
+  padding: 0.6rem 1.3rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #2CBFAE;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:focus-visible {
+  outline: 3px solid rgba(44, 191, 174, 0.4);
+  outline-offset: 2px;
+}
+
+/* --- Accent Button --- */
+.btn-accent {
+  background-color: #2CBFAE;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-accent:hover {
+  background-color: #25a997;
+  transform: translateY(-1px);
+}
+
+/* === Cards === */
+.card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 4px solid #2CBFAE;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0A2A4D;
+  margin-bottom: 0.5rem;
+}
+
+/* === Tabs === */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #0A2A4D;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s;
+}
+
+.tab.active {
+  border-bottom: 3px solid #2CBFAE;
+  color: #2CBFAE;
+  background-color: #eefaf8;
+}
+
+/* === Tables === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background-color: #f3f6fa;
+  color: #0A2A4D;
+  font-weight: 600;
+}
+
+tr:hover td {
+  background-color: #f0fffc;
+}
+
+/* === Utility Classes === */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.shadow-sm { box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.rounded { border-radius: 10px; }
+.text-accent { color: #2CBFAE; }
+
+/* === Footer === */
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+footer a {
+  color: #2CBFAE;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   MODALS
+   ========================================================== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 42, 77, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  border-top: 5px solid #2CBFAE;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+  color: #0A2A4D;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #2CBFAE;
+}
+
+.modal-body {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* === Modal Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* === Fixed Header & Footer === */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* === SharpLync Test Logo Page === */
+.tiles-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  background-color: #f8f9fb;
+  min-height: calc(100vh - 160px);
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.tile {
+  width: 250px;
+  height: 150px;
+  background-color: #ffffff;
+  border-top: 4px solid #2CBFAE;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  color: #0A2A4D;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* === SharpLync Responsive Fix for Tiles === */
+@media (max-width: 992px) {
+  .tiles-wrapper {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 4rem 1rem;
+  }
+
+  .tile {
+    flex: 0 1 45%;
+    height: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tiles-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem 1rem;
+  }
+
+  .tile {
+    width: 90%;
+    height: 130px;
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================================
+   HERO SECTION
+   ========================================================== */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8rem 2rem 4rem;
+  background-color: #f8f9fb;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero h1 {
+  color: #0A2A4D;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.hero h1 span {
+  color: #2CBFAE;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.hero-graphic {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cpu-placeholder {
+  width: 300px;
+  height: 300px;
+  border: 2px dashed #2CBFAE;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #0A2A4D;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* ==========================================================
+   FEATURE TILE SECTION
+   ========================================================== */
+.feature-tiles {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.feature-tiles .tile {
+  flex: 1 1 250px;
+  background-color: #ffffff;
+  border-top: 4px solid #2CBFAE;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-tiles .tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tile-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #2CBFAE;
+}
+
+.tile-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0A2A4D;
+  margin-bottom: 0.5rem;
+}
+
+.tile-text {
+  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ==========================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================== */
+@media (max-width: 992px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-graphic {
+    margin-top: 2rem;
+  }
+
+  .feature-tiles {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .feature-tiles .tile {
+    flex: 1 1 100%;
+    padding: 1.5rem;
+  }
+}
