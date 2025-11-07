@@ -1,0 +1,55 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # =========================================
+    # 🔒 SECURITY ENHANCEMENTS
+    # =========================================
+
+    # --- Force HTTPS (Prevents cloning via HTTP redirects) ---
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # --- Prevent Hotlinking of Images (Stops other sites using your logo or assets) ---
+    RewriteCond %{HTTP_REFERER} !^https://(www\.)?sharplync\.com\.au/ [NC]
+    RewriteCond %{HTTP_REFERER} !^https://(www\.)?sharplink\.com\.au/ [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F,NC,L]
+
+    # --- Prevent Directory Listing (Stops snooping) ---
+    Options -Indexes
+
+    # --- Security Headers (Fallback if middleware not loaded) ---
+    <IfModule mod_headers.c>
+        Header always set X-Frame-Options "SAMEORIGIN"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set X-XSS-Protection "1; mode=block"
+        Header always set Referrer-Policy "no-referrer-when-downgrade"
+        Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    </IfModule>
+
+    # =========================================
+    # 🧭 STANDARD LARAVEL ROUTING
+    # =========================================
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
