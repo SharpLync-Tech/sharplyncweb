@@ -1,3 +1,13 @@
+{{-- 
+  Page: customers/dashboard.blade.php
+  Version: v3.0 (Customer Portal Integration)
+  Last updated: 11 Nov 2025 by Max
+--}}
+
+@extends('layouts.base')
+@section('title', 'Customer Portal')
+@section('content')
+
 <section class="portal-hero">
   <h1>Welcome back, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}!</h1>
   <p>Manage your SharpLync services and account details below.</p>
@@ -65,3 +75,5 @@ document.querySelectorAll('.portal-tabs button').forEach(btn=>{
   });
 });
 </script>
+
+@endsection
