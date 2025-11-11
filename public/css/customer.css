@@ -1,12 +1,12 @@
 /*
   Page: customer.css
-  Version: v1.5 (Glass Header + Refined Portal Layout)
+  Version: v1.6 (Mobile Optimization + Glass Header)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Keeps gradient background consistent sitewide
-  - Fixed glass-effect header that stays visible while scrolling
-  - Removed redundant nav links; only welcome + logout remain
-  - Maintains SharpLync brand look (navy + teal gradient)
+  - Unified from v1.5 base + full mobile optimization
+  - Fixed glass-effect sticky header (scroll active state)
+  - Smarter mobile layout for smaller screens
+  - Confirmed logo: /images/sharplync-logo.png
 */
 
 /* ===== Base ===== */
@@ -42,6 +42,11 @@ html, body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   color: #E9F4F3;
   transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.customer-header.scrolled {
+  background: rgba(10, 42, 77, 0.75);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
 }
 
 .customer-header .logo img {
@@ -200,12 +205,99 @@ html, body {
 @keyframes fadeUp { from {opacity:0; transform: translateY(16px);} to {opacity:1; transform: translateY(0);} }
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
-/* ===== Responsive ===== */
+/* ============================================================
+   MOBILE OPTIMIZATION
+   ============================================================ */
+
+/* ===== Tablets & Small Laptops ===== */
+@media (max-width: 1024px) {
+  .portal-main-card { max-width: 95%; padding: 2rem; }
+}
+
+/* ===== General Mobile Layout (≤768px) ===== */
 @media (max-width: 768px) {
-  .customer-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-  .nav-right { width: 100%; justify-content: space-between; }
-  .portal-main-card { padding: 1.25rem; margin: 1.5rem auto; }
-  .portal-tabs { overflow-x: auto; justify-content: flex-start; }
-  .portal-tabs button { flex: 0 0 auto; white-space: nowrap; }
-  .portal-header-inner h2 { font-size: 1.05rem; }
+  .customer-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .customer-header .logo img {
+    height: 60px;
+    width: auto;
+    margin-bottom: 0.25rem;
+  }
+
+  .nav-welcome {
+    display: block;
+    font-size: 0.95rem;
+    margin: 0.2rem 0;
+  }
+
+  .logout-inline button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+
+  .portal-wrapper { padding: 1.25rem; }
+
+  .portal-main-card {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .portal-tabs {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .portal-tabs button {
+    width: 90%;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    justify-content: center;
+  }
+
+  .portal-tabs button img {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+  }
+
+  .portal-content h3 {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .portal-content p {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* ===== Small Devices (≤480px) ===== */
+@media (max-width: 480px) {
+  .customer-header { padding: 0.8rem; }
+  .portal-main-card { padding: 1.25rem; }
+  .portal-tabs button {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.9rem;
+  }
+  .btn-primary {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.2rem;
+  }
 }
