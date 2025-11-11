@@ -24,7 +24,7 @@
     <div class="tile transparent single-reg-card" style="width: 500px; max-width: 90%; flex: none; padding: 2.5rem;">
       <!-- Login icon, title, subtitle -->
       <div class="onboard-icon" style="text-align: center; margin-bottom: 1rem;">
-        <img src="{{ asset('images/icons/login-lock.png') }}" alt="Login Icon" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
+        <img src="{{ asset('images/login-lock.png') }}" alt="Login Icon" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
       </div>
       <h1 class="onboard-title" style="color: white; margin-bottom: 0.5rem; text-align: center;">Welcome Back</h1>
       <p class="onboard-subtitle" style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 1.5rem;">Log in to your SharpLync account to continue where you left off.</p>
