@@ -54,8 +54,6 @@
             <h3>Account Details</h3>
             <p>View and update your personal and company information.</p>
             <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
-
-            <p class="smallprint">SharpLync – Old School Support, <strong>Modern Results</strong></p>
       </div>
 
 

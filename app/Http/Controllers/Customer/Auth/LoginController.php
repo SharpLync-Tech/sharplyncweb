@@ -47,7 +47,7 @@ class LoginController extends Controller
 
             Log::info('LOGIN SUCCESS', ['id' => $user->id, 'email' => $user->email]);
 
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/portal');
         }
 
         Log::warning('LOGIN FAILED', ['email' => $request->email]);
