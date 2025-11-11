@@ -1,12 +1,12 @@
 /*
   Page: customer.css
-  Version: v1.4 (Portal Visual Refinement)
+  Version: v1.5 (Glass Header + Refined Portal Layout)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Removed bottom logout button (redundant)
-  - Transparent “Account Portal” banner
-  - Improved top navigation color contrast
-  - Gradient background kept consistent through layout
+  - Keeps gradient background consistent sitewide
+  - Fixed glass-effect header that stays visible while scrolling
+  - Removed redundant nav links; only welcome + logout remain
+  - Maintains SharpLync brand look (navy + teal gradient)
 */
 
 /* ===== Base ===== */
@@ -25,53 +25,64 @@ html, body {
   visibility: hidden !important;
 }
 
-/* ===== Customer Header ===== */
+/* ===== Fixed Glass Header ===== */
 .customer-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  width: 100%;
   z-index: 1000;
-  background: rgba(10, 42, 77, 0.65);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 1.5rem;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 42, 77, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  color: #E9F4F3;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .customer-header .logo img {
-  height: 54px;
+  height: 50px;
   width: auto;
 }
 
-.customer-nav {
+.nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.customer-nav a {
-  color: #E9F4F3;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 0.35rem 0.7rem;
-  border-radius: 6px;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.customer-nav a:hover { color: #2CBFAE; }
-.customer-nav a.active { background: rgba(255,255,255,0.15); }
-
 .nav-welcome {
-  color: #E9F4F3;
   font-weight: 600;
+  color: #E9F4F3;
   font-size: 0.95rem;
-  margin-right: 1rem;
 }
 
-/* ===== Portal Header (transparent now) ===== */
+.logout-inline button {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.logout-inline button:hover {
+  background: rgba(44, 191, 174, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Add spacing so content isn't hidden behind fixed header */
+.customer-main {
+  padding-top: 90px;
+}
+
+/* ===== Portal Header (Transparent) ===== */
 .portal-header {
   background: transparent;
   color: #ffffff;
@@ -192,8 +203,8 @@ html, body {
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .customer-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-  .customer-nav { flex-wrap: wrap; gap: 0.6rem; }
-  .portal-main-card { padding: 1.25rem; }
+  .nav-right { width: 100%; justify-content: space-between; }
+  .portal-main-card { padding: 1.25rem; margin: 1.5rem auto; }
   .portal-tabs { overflow-x: auto; justify-content: flex-start; }
   .portal-tabs button { flex: 0 0 auto; white-space: nowrap; }
   .portal-header-inner h2 { font-size: 1.05rem; }
