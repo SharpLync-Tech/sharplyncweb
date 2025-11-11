@@ -50,11 +50,14 @@
       </div>
 
       {{-- Details --}}
-      <div class="portal-content active" id="details">
-          <h3>Account Details</h3>
-          <p>View and update your personal and company information.</p>
-          <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
+      <div id="details" class="portal-content active">
+            <h3>Account Details</h3>
+            <p>View and update your personal and company information.</p>
+            <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
+
+            <p class="smallprint">SharpLync – Old School Support, <strong>Modern Results</strong></p>
       </div>
+
 
       {{-- Financial --}}
       <div class="portal-content" id="financial">
@@ -83,12 +86,6 @@
           <p>Need help? Contact SharpLync Support or open a service ticket.</p>
           <a href="{{ route('customer.support') }}" class="btn-primary">Get Support</a>
       </div>
-
-      {{-- Logout --}}
-      <form action="{{ route('customer.logout') }}" method="POST" class="logout-form">
-          @csrf
-          <button type="submit" class="btn-primary w-full">Log Out</button>
-      </form>
 
       <p class="portal-note">
           SharpLync – Old School Support, <span class="highlight">Modern Results</span>
