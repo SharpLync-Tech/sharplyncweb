@@ -9,8 +9,6 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-    // ... constructor/other methods if any
-
     /**
      * Handle login attempt (POST /login)
      */
@@ -21,15 +19,16 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // Explicitly use 'customer' guard
+        // Explicitly use the 'customer' guard
         if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate(); // Fresh session
-            $this->logLoginSuccess($request); // Optional: Your logging
+            $request->session()->regenerate(); // Prevent session fixation
+            $this->logLoginSuccess($request); // Optional logging
 
-            return redirect()->intended(route('customers.dashboard')); // Post-login redirect
+            // ✅ Redirect to the new /portal route
+            return redirect()->intended(route('customer.portal'));
         }
 
-        // Failed: Back with error
+        // ❌ Login failed
         throw ValidationException::withMessages([
             'email' => ['The provided credentials do not match our records.'],
         ]);
@@ -40,16 +39,23 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::guard('customer')->logout(); // Clear customer session
+        // ✅ Explicitly log out of the 'customer' guard
+        Auth::guard('customer')->logout();
+
+        // Invalidate and regenerate session token
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect(route('customer.login')); // Or home
+        // ✅ Redirect back to the customer login page
+        return redirect()->to('/');
     }
 
-    // Optional: Log success (integrate your RegistrationLog if needed)
+    /**
+     * Optional: Custom login success logger
+     */
     private function logLoginSuccess(Request $request): void
     {
-        // e.g., RegistrationLog::create([... 'status' => 'login_success']);
+        // Example placeholder for future logging feature
+        // RegistrationLog::create([... 'status' => 'login_success']);
     }
 }
