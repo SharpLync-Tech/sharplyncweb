@@ -1,50 +1,48 @@
 /*
   Page: customer.css
-  Version: v1.3 (Header restore + Isolation + Refined Portal)
+  Version: v1.4 (Portal Visual Refinement)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Restores .customer-header styles so logo is constrained.
-  - Keeps portal isolated from main site visuals.
-  - Welcome moved to top nav; slim gradient band above card.
+  - Removed bottom logout button (redundant)
+  - Transparent “Account Portal” banner
+  - Improved top navigation color contrast
+  - Gradient background kept consistent through layout
 */
 
-/* ===== Base / Isolation ===== */
+/* ===== Base ===== */
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
-  background: #F7F9FB;
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
   color: #0A2A4D;
   overflow-x: hidden;
 }
 
-/* (Safety) If any main-site hero bits sneak in, hide them in portal context */
+/* Hide main-site heroes if they leak */
 .hero, .hero-cpu-bg, .hero-logo {
   display: none !important;
   visibility: hidden !important;
-  height: 0 !important;
-  overflow: hidden !important;
 }
 
-/* ===== Customer Header (restored) ===== */
+/* ===== Customer Header ===== */
 .customer-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, rgba(10,42,77,0.9) 0%, rgba(16,73,118,0.75) 40%, rgba(44,191,174,0.55) 100%);
-  color: #fff;
+  background: rgba(10, 42, 77, 0.65);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 1.25rem;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  padding: 0.7rem 1.5rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .customer-header .logo img {
-  height: 56px;       /* <-- Key fix: constrain the SVG logo */
+  height: 54px;
   width: auto;
-  display: block;
 }
 
 .customer-nav {
@@ -54,71 +52,59 @@ html, body {
 }
 
 .customer-nav a {
-  color: #0A2A4D;
+  color: #E9F4F3;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  padding: 0.3rem 0.4rem;
+  padding: 0.35rem 0.7rem;
   border-radius: 6px;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .customer-nav a:hover { color: #2CBFAE; }
-
-.customer-nav a.active {
-  background: rgba(255,255,255,0.12);
-}
+.customer-nav a.active { background: rgba(255,255,255,0.15); }
 
 .nav-welcome {
-  color: #0A2A4D;
+  color: #E9F4F3;
   font-weight: 600;
-  margin-left: 0.5rem;
+  font-size: 0.95rem;
+  margin-right: 1rem;
 }
 
-.logout-inline {
-  display: inline-block;
-  margin-left: 0.25rem;
-}
-.logout-inline button {
-  background: transparent;
-  color: #0A2A4D;
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.logout-inline button:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-/* ===== Portal band (slim gradient header strip) ===== */
+/* ===== Portal Header (transparent now) ===== */
 .portal-header {
-  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-  color: white;
+  background: transparent;
+  color: #ffffff;
   text-align: center;
-  padding: 1.5rem 1rem;     /* slim band */
+  padding: 1.5rem 1rem 0.5rem;
 }
 
 .portal-header-inner h2 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   margin: 0;
-  letter-spacing: 0.2px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== Main wrapper & card ===== */
+/* ===== Portal Wrapper ===== */
 .portal-wrapper {
-  padding: 1.5rem 1rem 4rem;
+  padding: 2rem 1rem 4rem;
+  min-height: 80vh;
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  position: relative;
 }
 
+/* ===== Main Card ===== */
 .portal-main-card {
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(10, 42, 77, 0.1);
-  max-width: 100px;
-  margin: -1.25rem auto 2rem;   /* overlaps the slim band slightly */
-  padding: 2rem;
-  animation: fadeUp 0.5s ease;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  animation: fadeUp 0.6s ease;
 }
 
 /* ===== Tabs ===== */
@@ -139,22 +125,39 @@ html, body {
   color: #0A2A4D;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.portal-tabs button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 .portal-tabs button.active {
   background: #0A2A4D;
   color: #ffffff;
-  box-shadow: 0 0 10px rgba(44, 191, 174, 0.4);
+  box-shadow: 0 0 10px rgba(44, 191, 174, 0.5);
 }
 
 .portal-tabs button:hover:not(.active) { background: #D4E9E7; }
 
-/* ===== Tab content ===== */
-.portal-content { display: none; animation: fadeIn 0.25s ease; }
+/* ===== Tab Content ===== */
+.portal-content { display: none; animation: fadeIn 0.3s ease; }
 .portal-content.active { display: block; }
 
-.portal-content h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-.portal-content p { margin-bottom: 1.1rem; color: #555; line-height: 1.6; }
+.portal-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #0A2A4D;
+}
+.portal-content p {
+  margin-bottom: 1.1rem;
+  color: #555;
+  line-height: 1.6;
+}
 
 /* ===== Buttons ===== */
 .btn-primary {
@@ -194,26 +197,4 @@ html, body {
   .portal-tabs { overflow-x: auto; justify-content: flex-start; }
   .portal-tabs button { flex: 0 0 auto; white-space: nowrap; }
   .portal-header-inner h2 { font-size: 1.05rem; }
-}
-
-/* ===== Portal Wrapper (Now with Gradient Background) ===== */
-.portal-wrapper {
-  padding: 2rem 1rem 4rem;
-  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-  background-attachment: fixed;
-  background-size: cover;
-  position: relative;
-  z-index: 1;
-}
-
-.portal-main-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2.5rem;
-  animation: fadeUp 0.6s ease;
-  position: relative;
-  z-index: 2;
 }
