@@ -9,13 +9,7 @@
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.12",
-        "laravel/tinker": "^2.10.1",
-        "microsoft/microsoft-graph": "^2.49",
-        "socialiteproviders/facebook": "^4.1",
-        "socialiteproviders/google": "^4.1",
-        "socialiteproviders/linkedin": "^5.0",
-        "socialiteproviders/manager": "^4.8",
-        "socialiteproviders/microsoft-azure": "^5.2",
+        "laravel/tinker": "^2.10.1",        
         "xeroapi/xero-php-oauth2": "^4.0"
     }
 ,
