@@ -1,12 +1,12 @@
 /*
   Page: customer.css
-  Version: v1.6 (Mobile Optimization + Glass Header)
+  Version: v1.7 (Glass Header + Power Icon Logout)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Unified from v1.5 base + full mobile optimization
-  - Fixed glass-effect sticky header (scroll active state)
-  - Smarter mobile layout for smaller screens
-  - Confirmed logo: /images/sharplync-logo.png
+  - Adds SharpLync glass header that stays visible while scrolling
+  - Replaces Logout text with Sharp teal ⏻ icon
+  - Mobile-optimized layout and spacing
+  - Maintains SharpLync gradient branding and consistency
 */
 
 /* ===== Base ===== */
@@ -19,7 +19,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Hide main-site heroes if they leak */
+/* Hide main-site hero elements if they leak */
 .hero, .hero-cpu-bg, .hero-logo {
   display: none !important;
   visibility: hidden !important;
@@ -44,11 +44,6 @@ html, body {
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.customer-header.scrolled {
-  background: rgba(10, 42, 77, 0.75);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
-}
-
 .customer-header .logo img {
   height: 50px;
   width: auto;
@@ -66,20 +61,42 @@ html, body {
   font-size: 0.95rem;
 }
 
+/* ===== Logout Button (Glass Power Icon) ===== */
+.logout-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .logout-inline button {
-  background: rgba(255, 255, 255, 0.15);
-  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
-  padding: 0.4rem 0.9rem;
-  font-weight: 600;
+  padding: 0.45rem 0.6rem;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(10, 42, 77, 0.1);
+}
+
+.logout-inline button img {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.7));
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .logout-inline button:hover {
-  background: rgba(44, 191, 174, 0.4);
+  background: rgba(44, 191, 174, 0.25);
+  border-color: rgba(44, 191, 174, 0.6);
   transform: translateY(-1px);
+}
+
+.logout-inline button:hover img {
+  filter: drop-shadow(0 0 6px rgba(44, 191, 174, 1));
+  transform: scale(1.1);
 }
 
 /* Add spacing so content isn't hidden behind fixed header */
@@ -177,18 +194,23 @@ html, body {
 
 /* ===== Buttons ===== */
 .btn-primary {
-  background-color: #104946;
+  background: linear-gradient(135deg, #0A2A4D, #2CBFAE);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  padding: 0.9rem 1.6rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 10px rgba(44, 191, 174, 0.4);
 }
-.btn-primary:hover { background-color: #0A2A4D; transform: translateY(-1px); }
+.btn-primary:hover {
+  background: linear-gradient(135deg, #104976, #35E0C2);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(44, 191, 174, 0.6);
+}
 .w-full { width: 100%; }
 
 /* ===== Footer ===== */
@@ -205,47 +227,26 @@ html, body {
 @keyframes fadeUp { from {opacity:0; transform: translateY(16px);} to {opacity:1; transform: translateY(0);} }
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
-/* ============================================================
-   MOBILE OPTIMIZATION
-   ============================================================ */
-
-/* ===== Tablets & Small Laptops ===== */
-@media (max-width: 1024px) {
-  .portal-main-card { max-width: 95%; padding: 2rem; }
-}
-
-/* ===== General Mobile Layout (≤768px) ===== */
+/* ===== Responsive ===== */
+/* === Mobile Layout Adjustments === */
 @media (max-width: 768px) {
   .customer-header {
     flex-direction: column;
     align-items: center;
+    gap: 0.6rem;
     text-align: center;
-    gap: 0.5rem;
     padding: 1rem;
   }
 
   .customer-header .logo img {
     height: 60px;
     width: auto;
-    margin-bottom: 0.25rem;
   }
 
-  .nav-welcome {
-    display: block;
-    font-size: 0.95rem;
-    margin: 0.2rem 0;
+  .nav-right {
+    flex-direction: column;
+    gap: 0.4rem;
   }
-
-  .logout-inline button {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    border-radius: 8px;
-  }
-
-  .portal-wrapper { padding: 1.25rem; }
 
   .portal-main-card {
     padding: 1.5rem;
@@ -288,14 +289,21 @@ html, body {
   }
 }
 
-/* ===== Small Devices (≤480px) ===== */
+/* === Small Devices (<= 480px) === */
 @media (max-width: 480px) {
-  .customer-header { padding: 0.8rem; }
-  .portal-main-card { padding: 1.25rem; }
+  .customer-header {
+    padding: 0.8rem;
+  }
+
+  .portal-main-card {
+    padding: 1.25rem;
+  }
+
   .portal-tabs button {
     font-size: 0.85rem;
     padding: 0.6rem 0.9rem;
   }
+
   .btn-primary {
     font-size: 0.9rem;
     padding: 0.75rem 1.2rem;
