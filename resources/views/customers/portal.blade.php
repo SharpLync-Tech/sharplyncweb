@@ -74,9 +74,35 @@
         {{-- ===== LOGOUT BUTTON (BOTTOM ICON) ===== --}}
         <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline portal-logout">
             @csrf
-            <button type="submit" title="Log out">
-                <img src="/images/logout.png" alt="Logout">
-            </button>
+            <button type="submit" title="Log out"
+    style="
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        transition: all 0.25s ease;
+    "
+    onmouseover="this.style.background='rgba(44,191,174,0.25)'; this.style.borderColor='rgba(44,191,174,0.6)'; this.style.transform='translateY(-2px)';"
+    onmouseout="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';">
+    <img src="/images/logout.png" alt="Logout"
+        style="
+            width: 22px !important;
+            height: 22px !important;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.7));
+            pointer-events: none;
+        ">
+</button>
         </form>
     </div>
 </div>
