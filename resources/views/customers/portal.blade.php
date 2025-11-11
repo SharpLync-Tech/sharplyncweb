@@ -1,10 +1,10 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v1.2
+  Version: v1.3
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  Refined Customer Portal design — hero removed, integrated welcome in top nav,
-  gradient background for main content, and elevated white card sections.
+  Refined Customer Portal layout — hero removed, isolated background,
+  and visually separated gradient header with white content cards.
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -15,7 +15,7 @@
 
 <section class="portal-wrapper">
 
-  {{-- ===== PORTAL HEADER (now gradient background) ===== --}}
+  {{-- ===== PORTAL HEADER ===== --}}
   <div class="portal-header">
       <div class="portal-header-inner">
           <h2>Account Portal</h2>
@@ -76,7 +76,9 @@
           <button type="submit" class="btn-primary w-full">Log Out</button>
       </form>
 
-      <p class="portal-note">SharpLync – Old School Support, <span class="highlight">Modern Results</span></p>
+      <p class="portal-note">
+          SharpLync – Old School Support, <span class="highlight">Modern Results</span>
+      </p>
   </div>
 
 </section>
