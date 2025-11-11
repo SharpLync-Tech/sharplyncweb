@@ -1,10 +1,10 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v1.3
+  Version: v1.4
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  Refined Customer Portal layout — hero removed, isolated background,
-  and visually separated gradient header with white content cards.
+  Refined Customer Portal design — welcome moved to top nav,
+  slim gradient band retained, elevated white content card.
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -15,18 +15,17 @@
 
 <section class="portal-wrapper">
 
-  {{-- ===== PORTAL HEADER ===== --}}
+  {{-- Slim gradient band (no hero, no welcome text here) --}}
   <div class="portal-header">
       <div class="portal-header-inner">
           <h2>Account Portal</h2>
-          <p>Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }} 👋</p>
       </div>
   </div>
 
-  {{-- ===== MAIN PORTAL CARD ===== --}}
+  {{-- Main card --}}
   <div class="portal-main-card">
 
-      {{-- TABS NAVIGATION --}}
+      {{-- Tabs --}}
       <div class="portal-tabs">
           <button class="active" data-tab="details">🧍 Details</button>
           <button data-tab="financial">💳 Financial</button>
@@ -35,42 +34,42 @@
           <button data-tab="support">💬 Support</button>
       </div>
 
-      {{-- TAB: DETAILS --}}
+      {{-- Details --}}
       <div class="portal-content active" id="details">
           <h3>Account Details</h3>
           <p>View and update your personal and company information.</p>
           <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
       </div>
 
-      {{-- TAB: FINANCIAL --}}
+      {{-- Financial --}}
       <div class="portal-content" id="financial">
           <h3>Financial Overview</h3>
           <p>Review invoices, payment history, and manage billing preferences.</p>
           <a href="{{ route('customer.billing') }}" class="btn-primary">View Billing</a>
       </div>
 
-      {{-- TAB: SECURITY --}}
+      {{-- Security --}}
       <div class="portal-content" id="security">
           <h3>Security Settings</h3>
           <p>Manage passwords, enable two-factor authentication, and track login history.</p>
           <a href="{{ route('customer.security') }}" class="btn-primary">Manage Security</a>
       </div>
 
-      {{-- TAB: DOCUMENTS --}}
+      {{-- Documents --}}
       <div class="portal-content" id="documents">
           <h3>Your Documents</h3>
           <p>Access signed agreements, policies, and uploaded files.</p>
           <a href="{{ route('customer.documents') }}" class="btn-primary">View Documents</a>
       </div>
 
-      {{-- TAB: SUPPORT --}}
+      {{-- Support --}}
       <div class="portal-content" id="support">
           <h3>Support & Helpdesk</h3>
           <p>Need help? Contact SharpLync Support or open a service ticket.</p>
           <a href="{{ route('customer.support') }}" class="btn-primary">Get Support</a>
       </div>
 
-      {{-- LOGOUT --}}
+      {{-- Logout --}}
       <form action="{{ route('customer.logout') }}" method="POST" class="logout-form">
           @csrf
           <button type="submit" class="btn-primary w-full">Log Out</button>

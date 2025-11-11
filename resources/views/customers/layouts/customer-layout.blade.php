@@ -1,7 +1,7 @@
 {{-- 
   Layout: customers/layouts/customer-layout.blade.php
-  Version: v1.0
-  Last updated: 12 Nov 2025 by Max (ChatGPT)
+  Version: v1.2
+  Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
   Dedicated layout for the SharpLync Customer Portal ecosystem.
   Completely isolated from the main site layout.
@@ -20,23 +20,24 @@
 </head>
 
 <body>
-    {{-- ===== CUSTOMER HEADER ===== --}}
+    {{-- ===== CUSTOMER HEADER (own ecosystem) ===== --}}
     <header class="customer-header">
         <div class="logo">
             <a href="{{ route('customer.portal') }}">
-                <img src="/images/sharplync-logo.png" alt="SharpLync Logo">
+                <img src="/images/logo-white.svg" alt="SharpLync Logo">
             </a>
         </div>
 
-        <nav>
-            <a href="{{ route('customer.portal') }}">Portal</a>
-            <a href="{{ route('customer.billing') }}">Billing</a>
-            <a href="{{ route('customer.security') }}">Security</a>
-            <a href="{{ route('customer.support') }}">Support</a>
+        <nav class="customer-nav">
+            <a href="{{ route('customer.portal') }}" class="{{ request()->routeIs('customer.portal') ? 'active' : '' }}">Portal</a>
+            <a href="{{ route('customer.billing') }}" class="{{ request()->routeIs('customer.billing') ? 'active' : '' }}">Billing</a>
+            <a href="{{ route('customer.security') }}" class="{{ request()->routeIs('customer.security') ? 'active' : '' }}">Security</a>
+            <a href="{{ route('customer.support') }}" class="{{ request()->routeIs('customer.support') ? 'active' : '' }}">Support</a>
 
+            <span class="nav-welcome">Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }} 👋</span>
 
             {{-- Logout --}}
-            <form action="{{ route('customer.logout') }}" method="POST" style="display:inline;">
+            <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline">
                 @csrf
                 <button type="submit">Logout</button>
             </form>

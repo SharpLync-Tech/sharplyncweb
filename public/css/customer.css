@@ -1,69 +1,178 @@
 /*
   Page: customer.css
-  Version: v1.0 (Customer Portal Core Styles)
-  Last updated: 12 Nov 2025 by Max (ChatGPT)
+  Version: v1.3 (Header restore + Isolation + Refined Portal)
+  Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Dedicated stylesheet for the SharpLync Customer Portal ecosystem.
-  - Fully isolated from main sharplync.css.
-  - Retains brand identity (colors, fonts, gradients, CPU hero aesthetic).
-  - Optimized for responsiveness and light performance footprint.
+  - Restores .customer-header styles so logo is constrained.
+  - Keeps portal isolated from main site visuals.
+  - Welcome moved to top nav; slim gradient band above card.
 */
 
-/* ==================== GLOBAL ==================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
+/* ===== Base / Isolation ===== */
+html, body {
+  margin: 0;
+  padding: 0;
   font-family: 'Poppins', sans-serif;
+  background: #F7F9FB;
   color: #0A2A4D;
-  background-color: #F7F9FB;
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
-/* ==================== LAYOUT ==================== */
+/* (Safety) If any main-site hero bits sneak in, hide them in portal context */
+.hero, .hero-cpu-bg, .hero-logo {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ===== Customer Header (restored) ===== */
 .customer-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, rgba(10,42,77,0.9) 0%, rgba(16,73,118,0.7) 40%, rgba(44,191,174,0.55) 100%);
-  color: white;
+  background: linear-gradient(135deg, rgba(10,42,77,0.9) 0%, rgba(16,73,118,0.75) 40%, rgba(44,191,174,0.55) 100%);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.25rem;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
+
 .customer-header .logo img {
-  height: 60px;
+  height: 56px;       /* <-- Key fix: constrain the SVG logo */
   width: auto;
+  display: block;
 }
-.customer-header nav {
+
+.customer-nav {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-.customer-header nav a,
-.customer-header nav button {
-  color: white;
+
+.customer-nav a {
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  background: none;
-  border: none;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.customer-nav a:hover { color: #2CBFAE; }
+
+.customer-nav a.active {
+  background: rgba(255,255,255,0.12);
+}
+
+.nav-welcome {
+  color: #CFEFEA;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.logout-inline {
+  display: inline-block;
+  margin-left: 0.25rem;
+}
+.logout-inline button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s ease;
 }
-.customer-header nav a:hover,
-.customer-header nav button:hover {
-  color: #2CBFAE;
+.logout-inline button:hover {
+  background: rgba(255,255,255,0.12);
 }
 
-.customer-main {
-  padding-top: 1rem;
-  min-height: calc(100vh - 150px);
+/* ===== Portal band (slim gradient header strip) ===== */
+.portal-header {
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+  color: white;
+  text-align: center;
+  padding: 1.5rem 1rem;     /* slim band */
 }
 
+.portal-header-inner h2 {
+  font-size: 1.2rem;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+/* ===== Main wrapper & card ===== */
+.portal-wrapper {
+  padding: 1.5rem 1rem 4rem;
+}
+
+.portal-main-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(10, 42, 77, 0.1);
+  max-width: 900px;
+  margin: -1.25rem auto 2rem;   /* overlaps the slim band slightly */
+  padding: 2rem;
+  animation: fadeUp 0.5s ease;
+}
+
+/* ===== Tabs ===== */
+.portal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.portal-tabs button {
+  background-color: #E8F2F1;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  color: #0A2A4D;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.portal-tabs button.active {
+  background: #104946;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(44, 191, 174, 0.4);
+}
+
+.portal-tabs button:hover:not(.active) { background: #D4E9E7; }
+
+/* ===== Tab content ===== */
+.portal-content { display: none; animation: fadeIn 0.25s ease; }
+.portal-content.active { display: block; }
+
+.portal-content h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+.portal-content p { margin-bottom: 1.1rem; color: #555; line-height: 1.6; }
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background-color: #104946;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover { background-color: #0A2A4D; transform: translateY(-1px); }
+.w-full { width: 100%; }
+
+/* ===== Footer ===== */
 .customer-footer {
   background-color: #0A2A4D;
   color: white;
@@ -71,165 +180,18 @@ body {
   padding: 1.5rem;
   font-size: 0.9rem;
 }
+.customer-footer .highlight { color: #2CBFAE; font-weight: 600; }
 
-/* ==================== HERO SECTION ==================== */
-.portal-hero {
-  position: relative;
-  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-  color: white;
-  text-align: center;
-  padding: 5rem 1.5rem 6rem;
-  overflow: hidden;
-}
-.portal-hero::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: url('/images/cpu-bg.jpg') center/cover no-repeat;
-  opacity: 0.25;
-  filter: drop-shadow(0 0 20px rgba(44,191,174,0.4));
-  z-index: 0;
-}
-.portal-hero h1 {
-  position: relative;
-  z-index: 1;
-  font-size: 2.3rem;
-  font-weight: 700;
-  margin-bottom: 0.7rem;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-.portal-hero p {
-  position: relative;
-  z-index: 1;
-  opacity: 0.9;
-  font-size: 1.05rem;
-  line-height: 1.5;
-}
-.portal-hero .shimmer-line {
-  position: relative;
-  z-index: 1;
-  width: 160px;
-  height: 3px;
-  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(44,191,174,1), rgba(255,255,255,0));
-  margin: 1.3rem auto 0;
-  animation: shimmer 2.5s linear infinite;
-}
-@keyframes shimmer {
-  from { transform: translateX(-50%); opacity: 0.5; }
-  50% { opacity: 1; }
-  to { transform: translateX(50%); opacity: 0.5; }
-}
+/* ===== Animations ===== */
+@keyframes fadeUp { from {opacity:0; transform: translateY(16px);} to {opacity:1; transform: translateY(0);} }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
-/* ==================== PORTAL BODY ==================== */
-.portal-container {
-  display: flex;
-  justify-content: center;
-  padding: 3rem 1rem 4rem;
-  background-color: #F7F9FB;
-}
-.portal-card {
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.08);
-  width: 100%;
-  max-width: 900px;
-  padding: 2.5rem;
-}
-
-/* ==================== TABS ==================== */
-.portal-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-bottom: 2rem;
-}
-.portal-tabs button {
-  background: #E9EEF2;
-  color: #0A2A4D;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-.portal-tabs button.active {
-  background: #104946;
-  color: #fff;
-  box-shadow: 0 0 10px rgba(16,73,70,0.4);
-}
-.portal-tabs button:hover {
-  transform: translateY(-2px);
-}
-
-/* ==================== CONTENT AREAS ==================== */
-.portal-content {
-  display: none;
-  animation: fadeInPortal 0.4s ease;
-}
-.portal-content.active { display: block; }
-@keyframes fadeInPortal {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.portal-content h3 {
-  color: #0A2A4D;
-  margin-bottom: 0.6rem;
-}
-.portal-content p {
-  color: #4A5A6A;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-/* ==================== BUTTONS ==================== */
-.btn-primary {
-  display: inline-block;
-  background-color: #104946;
-  color: #fff;
-  border: none;
-  padding: 0.9rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-.btn-primary:hover {
-  background-color: #0A2A4D;
-  transform: translateY(-1px);
-}
-.w-full { width: 100%; }
-
-/* ==================== FOOTER NOTES ==================== */
-.portal-note {
-  text-align: center;
-  margin-top: 1.8rem;
-  font-size: 0.9rem;
-  color: #5B6B7C;
-}
-.highlight {
-  color: #104946;
-  font-weight: 600;
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 900px) {
-  .portal-hero { padding: 4rem 1rem 5rem; }
-  .portal-hero h1 { font-size: 1.8rem; }
-  .portal-card { padding: 2rem 1.2rem; }
-}
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .customer-header .logo img { height: 50px; }
-  .portal-tabs { flex-direction: column; }
-  .portal-tabs button { width: 100%; text-align: center; }
-  .portal-content p { font-size: 0.95rem; }
-}
-@media (max-width: 480px) {
-  .portal-hero h1 { font-size: 1.5rem; }
-  .portal-hero p { font-size: 0.9rem; }
-  .customer-header { flex-direction: column; gap: 0.5rem; }
-  .customer-header nav { flex-wrap: wrap; justify-content: center; }
+  .customer-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .customer-nav { flex-wrap: wrap; gap: 0.6rem; }
+  .portal-main-card { padding: 1.25rem; }
+  .portal-tabs { overflow-x: auto; justify-content: flex-start; }
+  .portal-tabs button { flex: 0 0 auto; white-space: nowrap; }
+  .portal-header-inner h2 { font-size: 1.05rem; }
 }
