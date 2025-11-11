@@ -34,7 +34,7 @@
 
       <!-- Lock icon -->
       <div class="onboard-icon" style="text-align: center; margin-bottom: 1rem;">
-        <img src="{{ asset('images/icons/login-lock.png') }}" alt="Login Icon"
+        <img src="{{ asset('images/login-lock.png') }}" alt="Login Icon"
              style="width: 80px; height: auto; filter: drop-shadow(0 0 4px rgba(44,191,174,0.3));">
       </div>
 
