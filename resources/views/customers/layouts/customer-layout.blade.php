@@ -19,7 +19,7 @@
   {{-- ===== CUSTOMER HEADER ===== --}}
   <header class="customer-header glass-header">
     <div class="logo">
-      <img src="/images/logo-white.svg" alt="SharpLync Logo">
+      <img src="/images/sharplync-logo.png" alt="SharpLync Logo">
     </div>
 
     <div class="nav-right">
