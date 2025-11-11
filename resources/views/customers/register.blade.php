@@ -51,10 +51,7 @@
       </form>
 
       <div class="onboard-divider" style="color: rgba(255,255,255,0.8);">or</div>
-      <div class="oauth-buttons">
-        <a href="{{ route('customer.google.redirect') }}" class="btn-oauth google">Continue with Google</a>
-        <a href="{{ route('customer.microsoft.redirect') }}" class="btn-oauth microsoft">Continue with Microsoft</a>
-      </div>
+      
     </div>
   </div>
 </section>
