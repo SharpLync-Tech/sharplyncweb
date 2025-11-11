@@ -50,30 +50,45 @@
   <!-- ===================== -->
   <section class="testimonials-section fade-section">
     <h3>What People Say</h3>
+
     <div class="testimonial-wrapper">
-      <button class="nav-btn prev" aria-label="Previous testimonial">❮</button>
+      <button class="nav-btn prev" aria-label="Previous testimonial">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M13.5 7.5 9 12l4.5 4.5"></path>
+              </svg>
+      </button>
+
       <div class="testimonial-container">
-        <div class="testimonial active">
-          <p>"Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."</p>
-          <span>— Former Principal, The Industry School</span>
-        </div>
-        <div class="testimonial">
-          <p>"His knowledge and community-first attitude make SharpLync something special."</p>
-          <span>— Tech Director, Regional Education Partner</span>
-        </div>
-        <div class="testimonial">
-          <p>"A great communicator and problem solver. Highly recommended for small business support."</p>
-          <span>— Local Business Owner, Stanthorpe</span>
-        </div>
+        @forelse($testimonials as $t)
+          @php
+            $who = trim(($t->customer_position ? $t->customer_position : '') .
+                        (($t->customer_position && $t->customer_company) ? ' — ' : '') .
+                        ($t->customer_company ? $t->customer_company : ''));
+          @endphp
+          <div class="testimonial {{ $loop->first ? 'active' : '' }}">
+            <p>"{{ $t->testimonial_text }}"</p>
+            <span>— {{ $t->customer_name }}@if($who), {{ $who }}@endif</span>
+          </div>
+        @empty
+          {{-- Fallback if no testimonials in DB --}}
+          <div class="testimonial active">
+            <p>"Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."</p>
+            <span>— Former Principal, The Industry School</span>
+          </div>
+        @endforelse
       </div>
-      <button class="nav-btn next" aria-label="Next testimonial">❯</button>
+
+      <button class="nav-btn next" aria-label="Next testimonial">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M10.5 7.5 15 12l-4.5 4.5"></path>
+              </svg>
+      </button>
     </div>
   </section>
 </section>
 
-<!-- ===================== -->
-<!-- Scripts -->
-<!-- ===================== -->
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -88,26 +103,54 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story +';
   });
 
-  // === Testimonials Carousel ===
+  // === Testimonials Carousel (DB-backed) ===
   const testimonials = document.querySelectorAll('.testimonial');
   const nextBtn = document.querySelector('.nav-btn.next');
   const prevBtn = document.querySelector('.nav-btn.prev');
+  const container = document.querySelector('.testimonial-container');
   let index = 0, interval;
 
-  const showTestimonial = (i) => {
+  // Auto-size the container to the tallest testimonial so text never clips
+  function sizeCarousel() {
+    if (!container || !testimonials.length) return;
+    let maxH = 0;
+    testimonials.forEach(card => {
+      const wasActive = card.classList.contains('active');
+      const prevStyle = card.getAttribute('style') || '';
+      card.style.position = 'absolute';
+      card.style.visibility = 'hidden';
+      card.style.display = 'block';
+      card.classList.add('active');
+      maxH = Math.max(maxH, card.scrollHeight);
+      card.setAttribute('style', prevStyle);
+      if (!wasActive) card.classList.remove('active');
+    });
+    container.style.minHeight = (maxH + 24) + 'px';
+  }
+
+  function showTestimonial(i) {
     testimonials.forEach((t, idx) => t.classList.toggle('active', idx === i));
-  };
-  const startCycle = () => interval = setInterval(() => {
-    index = (index + 1) % testimonials.length;
+  }
+  function startCycle() {
+    interval = setInterval(() => {
+      index = (index + 1) % testimonials.length;
+      showTestimonial(index);
+    }, 6000);
+  }
+  function stopCycle() { clearInterval(interval); }
+
+  if (testimonials.length) {
     showTestimonial(index);
-  }, 6000);
-  const stopCycle = () => clearInterval(interval);
+    sizeCarousel();
+    startCycle();
+    window.addEventListener('resize', () => {
+      clearTimeout(window.__tc);
+      window.__tc = setTimeout(sizeCarousel, 150);
+    });
 
-  nextBtn.addEventListener('click', () => { stopCycle(); index = (index + 1) % testimonials.length; showTestimonial(index); startCycle(); });
-  prevBtn.addEventListener('click', () => { stopCycle(); index = (index - 1 + testimonials.length) % testimonials.length; showTestimonial(index); startCycle(); });
-
-  showTestimonial(index);
-  startCycle();
+    nextBtn.addEventListener('click', () => { stopCycle(); index = (index + 1) % testimonials.length; showTestimonial(index); startCycle(); });
+    prevBtn.addEventListener('click', () => { stopCycle(); index = (index - 1 + testimonials.length) % testimonials.length; showTestimonial(index); startCycle(); });
+  }
 });
 </script>
 @endpush

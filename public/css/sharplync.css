@@ -1,8 +1,10 @@
 /*
   Page: sharplync.css
-  Version: v2.3.9 (Link Spacing Update)
-  Last updated: 03 Nov 2025 by Max (ChatGPT)
-  Description: Adds consistent spacing and alignment for 'Learn more →' links inside cards; no other changes made.
+  Version: v2.4.1 (Onboarding Integration + About Testimonials Styles)
+  Last updated: 08 Nov 2025 by Max (ChatGPT)
+  Description:
+  - Merges v2.4 Onboarding Styles (register, verify, set-password, setup-profile, complete)
+  - Keeps all existing site visuals and responsive rules intact
 */
 
 /* ==================== GLOBAL ==================== */
@@ -217,7 +219,6 @@ body {
   margin-bottom: 0.75rem;
   line-height: 1.5;
 }
-
 .tile a.learn-more {
   display: inline-block;
   margin-top: 0.5rem;
@@ -269,12 +270,211 @@ footer {
   filter: drop-shadow(0 0 6px #2CBFAE);
 }
 
+/* ==================== ABOUT — TESTIMONIALS (scoped) ==================== */
+.testimonials-section .testimonial-container .testimonial p{
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.testimonials-section .testimonial-container .testimonial span{
+  color: rgba(233, 244, 243, .8);
+  display: inline-block;
+  margin-top: .6rem;
+}
+
+/* Chevron buttons (brand teal on navy) */
+.testimonials-section .nav-btn{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 54px; height: 54px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.testimonials-section .nav-btn svg{
+  width: 100%; height: 100%;
+  fill: none;
+  stroke: #2CBFAE;
+  stroke-width: 2.5;
+}
+.testimonials-section .nav-btn svg circle{
+  opacity: .35;
+}
+.testimonials-section .nav-btn:hover{ transform: translateY(-1px); }
+.testimonials-section .nav-btn:active{ transform: translateY(0); opacity: .9; }
+
+/* ==================== ONBOARDING STYLES (v2.4.1) ==================== */
+
+.onboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem;
+  min-height: 80vh;
+  background-color: #F7F9FB;
+}
+
+.onboard-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+.onboard-card.text-left { text-align: left; }
+.onboard-card.text-center { text-align: center; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.onboard-title {
+  font-size: 1.8rem;
+  color: #0A2A4D;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.onboard-subtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 1.8rem;
+  line-height: 1.6;
+}
+
+.onboard-note {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 1.2rem;
+}
+
+.onboard-icon img {
+  width: 80px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+.onboard-icon.success img { filter: drop-shadow(0 0 4px rgba(16, 73, 70, 0.2)); }
+
+.onboard-form { text-align: left; }
+.onboard-form .form-group { margin-bottom: 1.2rem; }
+.onboard-form label {
+  display: block;
+  font-weight: 600;
+  color: #0A2A4D;
+  margin-bottom: 0.4rem;
+}
+
+.onboard-form input,
+.onboard-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #CCD3DB;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.onboard-form input:focus {
+  border-color: #104946;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 73, 70, 0.15);
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.3rem;
+}
+
+.optional {
+  color: #6c757d;
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.btn-primary {
+  display: inline-block;
+  background-color: #104946;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover {
+  background-color: #0A2A4D;
+  transform: translateY(-1px);
+}
+.w-full { width: 100%; }
+
+.alert {
+  border-radius: 8px;
+  padding: 0.9rem 1.2rem;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.alert-success { background-color: #D8F3DC; color: #104946; }
+.alert-error { background-color: #FFE3E3; color: #A00; }
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.btn-oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+}
+.btn-oauth.google { background-color: #DB4437; }
+.btn-oauth.microsoft { background-color: #2F2F2F; }
+.btn-oauth:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.onboard-divider {
+  text-align: center;
+  position: relative;
+  margin: 1.8rem 0;
+  color: #6c757d;
+  font-weight: 500;
+}
+.onboard-divider::before,
+.onboard-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background-color: #CCD3DB;
+}
+.onboard-divider::before { left: 0; }
+.onboard-divider::after { right: 0; }
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
   .main-header .logo img { height: 65px; }
   .hero { padding: 5rem 6% 6rem; }
   .hero-logo { width: 180px; }
-  .hero-text h1 { font-size: 2.3rem; }
   .hero-cpu-bg img {
     width: 450px;
     margin-top: -8rem;
@@ -284,8 +484,14 @@ footer {
   .hero-cards { gap: 1.5rem; }
   .tile { flex: 1 1 90%; }
 }
-
-/* ✅ Completely hide CPU image on mobile */
+@media (max-width: 640px){
+  .testimonials-section .nav-btn{ width: 44px; height: 44px; }
+}
+@media (max-width: 600px) {
+  .onboard-card { padding: 2rem 1.5rem; }
+  .onboard-title { font-size: 1.5rem; }
+  .onboard-subtitle { font-size: 0.95rem; }
+}
 @media (max-width: 500px) {
   .main-header .logo img { height: 60px; }
   .hero-logo { width: 140px; }

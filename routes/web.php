@@ -1,58 +1,30 @@
 <?php
-/**
- * SharpLync Web Routes
- * Version: 1.1
- * Description:
- *  - Base public routes for SharpLync website
- *  - Added admin route inclusion (routes/admin.php)
- *  - Ensures modular structure for future admin portal
- */
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\Auth\VerifyController;
+use App\Http\Controllers\Admin\LogViewerController;
 
-// ==============================
-// Public Routes
-// ==============================
+Route::get('/', fn() => view('welcome'));
+Route::get('/style-preview', fn() => view('style-preview'));
+Route::get('/mobile-preview', fn() => view('mobile-preview'));
+Route::get('/components', fn() => view('components'));
+Route::get('/home', fn() => view('home'));
+Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 
-Route::get('/style-preview', function () {
-    return view('style-preview');
-});
+// ✅ Always bind verify to VerifyController
+Route::get('/verify/{token}', [VerifyController::class, 'verify'])->name('verify.email');
 
-Route::get('/mobile-preview', function () {
-    return view('mobile-preview');
-});
+// Log Test - Remove in Prod
 
-Route::get('/components', function () {
-    return view('components');
-});
-
-Route::get('/home', function () {
-    return view('home');
-});
-
-Route::get('/test-threatpulse', function () {
-    return view('test-threatpulse');
-});
-
-Route::get('/about', function () {
-    return view('about');
-});
+Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
+Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
 
 
-// ==============================
-// Customer Routes
-// ==============================
-Route::get('/onboard', [CustomerController::class, 'create'])->name('customers.create');
-Route::post('/onboard', [CustomerController::class, 'store'])->name('customers.store');
 
-
-// ==============================
-// Admin Routes (modular include)
-// ==============================
-
-require __DIR__ . '/admin.php';
+require __DIR__.'/facilities.php';
+require __DIR__.'/admin.php';
+require __DIR__.'/customers.php';

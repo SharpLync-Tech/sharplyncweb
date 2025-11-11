@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', 'https://sharplync.com.au/customer/google/callback'),
+    ],
+
+    'microsoft_customer' => [
+    'client_id' => env('MICROSOFT_CUSTOMER_CLIENT_ID'),
+    'client_secret' => env('MICROSOFT_CUSTOMER_CLIENT_SECRET'),
+    'tenant_id' => env('MICROSOFT_CUSTOMER_TENANT_ID'),
+    'redirect' => env('MICROSOFT_CUSTOMER_REDIRECT_URI', 'https://sharplync.com.au/customer/microsoft/callback'),
+    ],
+
 ];

@@ -1,222 +1,141 @@
 /* 
   File: sharplync-admin.css
-  Version: v1.0
-  Last updated: 30 Oct 2025 by Max (ChatGPT)
+  Version: v1.1
+  Last updated: 07 Nov 2025 by Max (ChatGPT)
   Description:
-  SharpLync Admin Portal Base Stylesheet.
-  Includes layout, navigation, buttons, modals, and SharpLync brand colors.
+  SharpLync Admin Portal stylesheet (brand: Navy #0A2A4D, Teal #2CBFAE).
+  Clean layout, sidebar, header, tables, forms, buttons, modals.
 */
 
-/* ==================== GLOBAL ==================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ==================== CSS VARIABLES ==================== */
+:root{
+  --sl-navy:#0A2A4D;
+  --sl-navy-600:#0E3863;
+  --sl-navy-700:#0B3056;
+  --sl-navy-800:#06223C;
+  --sl-teal:#2CBFAE;
+  --sl-teal-600:#24A998;
+  --sl-bg:#F7F9FB;
+  --sl-white:#ffffff;
+  --sl-text:#0A2A4D;
+  --sl-muted:#6b7a90;
+  --sl-danger:#C62828;
+  --sl-danger-600:#AC1F1F;
+  --shadow:0 2px 8px rgba(0,0,0,0.06);
 }
 
-body.admin-portal {
-  font-family: 'Comfortaa', sans-serif;
-  color: #0A2A4D;
-  background-color: #F7F9FB;
-  overflow-x: hidden;
-}
+/* ==================== GLOBAL ==================== */
+*{margin:0;padding:0;box-sizing:border-box;}
+body.admin-portal{font-family:'Comfortaa', sans-serif;color:var(--sl-text);background:var(--sl-bg);overflow-x:hidden;}
+
+/* Headings spacing */
+h1,h2,h3{line-height:1.25}
+h2{font-size:28px;margin-bottom:16px}
 
 /* ==================== HEADER ==================== */
-header.admin-header {
-  background-color: #0A2A4D;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 25px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+header.admin-header{
+  background:var(--sl-navy);
+  color:var(--sl-white);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px; box-shadow:var(--shadow);
 }
-
-header.admin-header h1 {
-  font-size: 20px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  letter-spacing: 0.5px;
+header.admin-header h1{font-size:20px;letter-spacing:.4px;margin:0}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-profile{display:flex;align-items:center;gap:8px}
+.header-profile img{width:36px;height:36px;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,.15)}
+.logout-btn{
+  color:#fff;text-decoration:none;background:var(--sl-danger);
+  padding:6px 12px;border-radius:8px;font-size:14px;transition:.2s;
 }
-
-header.admin-header .logout-btn {
-  color: white;
-  text-decoration: none;
-  background: #b40000;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-header.admin-header .logout-btn:hover {
-  background: #e60000;
-}
+.logout-btn:hover{background:var(--sl-danger-600)}
 
 /* ==================== SIDEBAR ==================== */
-.sidebar {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  width: 220px;
-  height: calc(100% - 60px);
-  background-color: #104946;
-  padding-top: 20px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+.sidebar{
+  position:fixed;top:60px;left:0;width:220px;height:calc(100% - 60px);
+  background:var(--sl-navy-800);padding-top:20px;box-shadow:2px 0 5px rgba(0,0,0,.08);
 }
-
-.sidebar a {
-  display: block;
-  color: white;
-  padding: 12px 20px;
-  text-decoration: none;
-  font-size: 15px;
-  transition: background 0.2s ease, padding-left 0.2s;
+.sidebar a{
+  display:block;color:#e6eef6;text-decoration:none;
+  padding:12px 18px;font-size:15px;transition:background .2s, padding-left .2s;
 }
-
-.sidebar a:hover {
-  background-color: rgba(255,255,255,0.1);
-  padding-left: 25px;
-}
+.sidebar a:hover{background:rgba(255,255,255,.08);padding-left:24px;}
+.sidebar a.active{background:rgba(44,191,174,.18);color:#fff}
 
 /* ==================== MAIN ==================== */
-main.admin-main {
-  margin-left: 240px;
-  padding: 30px;
-}
+main.admin-main{margin-left:240px;padding:28px}
+.admin-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:20px}
 
-.admin-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  padding: 20px;
-  margin-bottom: 20px;
+/* Flash/alerts */
+.alert{padding:12px 14px;border-left:4px solid var(--sl-teal);background:#e8fffa;border-radius:10px;color:#063b35}
+
+/* ==================== TABLES ==================== */
+.table{width:100%;border-collapse:collapse}
+.table thead th{
+  background:var(--sl-navy-700);color:#fff;text-align:left;padding:12px;border:none;font-weight:700
 }
+.table tbody td{padding:12px;border-bottom:1px solid #e8eef3;vertical-align:top}
+.table tr:hover td{background:#f4f8fb}
+
+/* ==================== FORMS ==================== */
+.form-control{
+  width:100%;padding:10px 12px;border:1px solid #d5dde6;border-radius:10px;
+  outline:none;transition:border .2s, box-shadow .2s;background:#fff
+}
+.form-control:focus{border-color:var(--sl-teal);box-shadow:0 0 0 3px rgba(44,191,174,.18)}
+.form-row{display:flex;gap:16px;flex-wrap:wrap}
+.form-col{flex:1;min-width:220px}
+.form-help{color:var(--sl-muted);font-size:12px;margin-top:6px}
 
 /* ==================== BUTTONS ==================== */
-.btn {
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1.4rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.btn{
+  border:none;border-radius:10px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;
+  transition:transform .2s, box-shadow .2s, background .2s, opacity .2s;
 }
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-primary{background:var(--sl-navy);color:#fff}
+.btn-primary:hover{background:var(--sl-navy-600);transform:translateY(-1px)}
+.btn-accent{background:var(--sl-teal);color:var(--sl-navy)}
+.btn-accent:hover{background:var(--sl-teal-600);transform:translateY(-1px)}
+.btn-danger{background:var(--sl-danger);color:#fff}
+.btn-danger:hover{background:var(--sl-danger-600);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--sl-navy);border:1px solid #d5dde6}
+.btn-ghost:hover{background:#f2f6fb}
 
-.btn-primary {
-  background-color: #0A2A4D;
-  color: white;
-}
+/* Action group */
+.actions{display:flex;gap:8px;align-items:center}
 
-.btn-primary:hover {
-  background-color: #104976;
-  transform: translateY(-2px);
-}
-
-.btn-accent {
-  background-color: #2CBFAE;
-  color: #0A2A4D;
-}
-
-.btn-accent:hover {
-  background-color: #24a998;
-  transform: translateY(-2px);
-}
+/* Badges */
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.badge-on{background:rgba(44,191,174,.15);color:#0b4a43}
+.badge-off{background:#edf1f6;color:#6b7a90}
 
 /* ==================== MODALS ==================== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 42, 77, 0.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(6,34,60,.65);
+  display:none;justify-content:center;align-items:center;z-index:2000
 }
+.modal-overlay.active{display:flex;animation:fadeIn .2s}
+.modal{
+  background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.18);
+  width:460px;max-width:92%;padding:22px 22px 18px;position:relative;animation:popUp .16s ease-out
+}
+.modal h2{margin-bottom:8px;color:var(--sl-navy)}
+.modal p{margin:8px 0 16px;color:#2d394a}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px}
+.modal-close{position:absolute;top:10px;right:14px;font-size:22px;color:var(--sl-navy);cursor:pointer}
+.modal-close:hover{color:var(--sl-danger)}
 
-.modal-overlay.active {
-  display: flex;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(10, 42, 77, 0.3);
-  width: 400px;
-  max-width: 90%;
-  padding: 25px;
-  text-align: center;
-  position: relative;
-  animation: popUp 0.3s ease-out;
-}
-
-.modal h2 {
-  margin-bottom: 15px;
-  color: #0A2A4D;
-}
-
-.modal p {
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.modal .modal-actions {
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.modal .btn {
-  min-width: 100px;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 20px;
-  color: #0A2A4D;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.modal-close:hover {
-  color: #b40000;
-}
-
-/* Modal Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes popUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popUp{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
 
 /* ==================== UTILITIES ==================== */
-.text-center { text-align: center; }
-.mt-1 { margin-top: 10px; }
-.mt-2 { margin-top: 20px; }
-.mt-3 { margin-top: 30px; }
+.text-center{text-align:center}
+.mt-1{margin-top:10px}
+.mt-2{margin-top:20px}
+.mt-3{margin-top:30px}
 
 /* ==================== RESPONSIVE ==================== */
-@media (max-width: 900px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    box-shadow: none;
-  }
-
-  main.admin-main {
-    margin-left: 0;
-    padding: 20px;
-  }
+@media (max-width:900px){
+  .sidebar{width:100%;height:auto;position:relative;box-shadow:none}
+  main.admin-main{margin-left:0;padding:20px}
 }

@@ -4,24 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync Admin Portal')</title>
-    <link href="{{ asset('css/admin/sharplync-admin.css') }}" rel="stylesheet">
-
+    <link href="{{ asset('css/admin/sharplync-admin.css') }}?v=1.1" rel="stylesheet">
 </head>
 <body class="admin-portal">
-    <header class="admin-header">
-        <h1>⚡ SharpLync Admin Portal</h1>
+<header class="admin-header">
+    <h1>SharpLync Admin Portal</h1>
+
+    <div class="header-right">
+        <div class="header-profile">
+            <img
+                src="https://ui-avatars.com/api/?name={{ urlencode(session('admin_user')['displayName'] ?? 'SharpLync Admin') }}&background=0A2A4D&color=fff&size=36"
+                alt="Profile">
+            <span style="font-weight:700;">
+                {{ session('admin_user')['displayName'] ?? 'SharpLync Admin' }}
+            </span>
+        </div>
         <a href="{{ url('/admin/logout') }}" class="logout-btn">Logout</a>
-    </header>
+    </div>
+</header>
 
-    <aside class="sidebar">
-        <a href="{{ url('/admin/dashboard') }}">🏠 Dashboard</a>
-        <a href="#">💬 Pulse Feed</a>
-        <a href="#">🧩 Components</a>
-        <a href="#">⚙️ Settings</a>
-    </aside>
+<aside class="sidebar">
+    <a href="{{ url('/admin/dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">Dashboard</a>
+    <a href="{{ route('admin.testimonials.index') }}" class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">Testimonials</a>
+    <a href="#">Pulse Feed</a>
+    <a href="#">Components</a>
+    <a href="#">Settings</a>
+</aside>
 
-    <main class="admin-main">
-        @yield('content')
-    </main>
+<main class="admin-main">
+    @yield('content')
+</main>
 </body>
 </html>

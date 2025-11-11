@@ -54,8 +54,10 @@
         <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="#services" onclick="toggleMenu()">Services</a></li>
-            <li><a href="#about" onclick="toggleMenu()">About Us</a></li>
+            <li><a href="/login" onclick="toggleMenu()">Login</a></li>
+            <li><a href="/register" onclick="toggleMenu()">Register</a></li>
+            <li><a href="/about" onclick="toggleMenu()">About Us</a></li>
+            <li><a href="/testimonials" onclick="toggleMenu()">Testimonials</a></li>
             <li><a href="#contact" onclick="toggleMenu()">Contact Us</a></li>
         </ul>
     </div>
@@ -98,6 +100,12 @@
         });
     </script>
     @stack('scripts')
-
+    <!-- ==================== SharpLync Chatbot ==================== -->
+    <script type="text/javascript" 
+        src="https://res.public.onecdn.static.microsoft/customerconnect/v1/7dttl/init.js"
+        id="chatbot"
+        environmentId="57be5f9e-a694-ec8b-aecc-f80d412e15c8"
+        crossorigin="anonymous">
+    </script>
 </body>
 </html>
