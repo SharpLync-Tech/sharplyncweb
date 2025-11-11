@@ -24,7 +24,7 @@
     <header class="customer-header">
         <div class="logo">
             <a href="{{ route('customer.portal') }}">
-                <img src="/images/logo-white.svg" alt="SharpLync Logo">
+                <img src="/images/sharlync-logo.png" alt="SharpLync Logo">
             </a>
         </div>
 
