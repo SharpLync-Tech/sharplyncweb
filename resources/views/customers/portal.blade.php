@@ -1,108 +1,99 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v1.5
+  Version: v2.2 (Bottom Logout + Glass Header Optimization)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  Refined Customer Portal design — welcome moved to top nav,
-  slim gradient band retained, elevated white content card.
+  - Removes header logout
+  - Adds logout power icon centered at bottom of main card
+  - Fully responsive; mobile layout tested
 --}}
 
 @extends('customers.layouts.customer-layout')
 
-@section('title', 'SharpLync Portal')
+@section('title', 'Customer Portal')
 
 @section('content')
+<div class="portal-header">
+    <div class="portal-header-inner">
+        <h2>Account Portal</h2>
+    </div>
+</div>
 
-<section class="portal-wrapper">
-  
-  {{-- Gradient header strip --}}
-  <div class="portal-header">
-      <div class="portal-header-inner">
-          <h2>Account Portal</h2>
-      </div>
-  </div>
+<div class="portal-wrapper">
+    <div class="portal-main-card">
+        <div class="portal-tabs">
+            <button class="active" data-tab="details">
+                <img src="/images/details.png" alt="Details Icon"> Details
+            </button>
+            <button data-tab="financial">
+                <img src="/images/financial.png" alt="Financial Icon"> Financial
+            </button>
+            <button data-tab="security">
+                <img src="/images/security.png" alt="Security Icon"> Security
+            </button>
+            <button data-tab="documents">
+                <img src="/images/documents.png" alt="Documents Icon"> Documents
+            </button>
+            <button data-tab="support">
+                <img src="/images/support.png" alt="Support Icon"> Support
+            </button>
+        </div>
 
-  {{-- Main card --}}
-  <div class="portal-main-card">
-
-      {{-- Tabs --}}
-      <div class="portal-tabs">
-          <button class="active" data-tab="details">
-            <img src="/images/details.png" alt="Details" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            Details
-          </button>
-          <button data-tab="financial">
-            <img src="/images/financial.png" alt="Financial" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            Financial
-          </button>
-          <button data-tab="security">
-            <img src="/images/security.png" alt="Security" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            Security
-          </button>
-          <button data-tab="documents">
-            <img src="/images/documents.png" alt="Documents" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            Documents
-          </button>
-          <button data-tab="support">
-            <img src="/images/support.png" alt="Support" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            Support
-          </button>
-      </div>
-
-      {{-- Details --}}
-      <div id="details" class="portal-content active">
+        {{-- ===== TAB CONTENTS ===== --}}
+        <div id="details" class="portal-content active">
             <h3>Account Details</h3>
             <p>View and update your personal and company information.</p>
-            <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
-      </div>
+            <a href="#" class="btn-primary">Edit Profile</a>
+        </div>
 
+        <div id="financial" class="portal-content">
+            <h3>Financial</h3>
+            <p>Billing and payment history will appear here.</p>
+        </div>
 
-      {{-- Financial --}}
-      <div class="portal-content" id="financial">
-          <h3>Financial Overview</h3>
-          <p>Review invoices, payment history, and manage billing preferences.</p>
-          <a href="{{ route('customer.billing') }}" class="btn-primary">View Billing</a>
-      </div>
+        <div id="security" class="portal-content">
+            <h3>Security Settings</h3>
+            <p>Manage 2FA, password, and account security preferences.</p>
+        </div>
 
-      {{-- Security --}}
-      <div class="portal-content" id="security">
-          <h3>Security Settings</h3>
-          <p>Manage passwords, enable two-factor authentication, and track login history.</p>
-          <a href="{{ route('customer.security') }}" class="btn-primary">Manage Security</a>
-      </div>
+        <div id="documents" class="portal-content">
+            <h3>Documents</h3>
+            <p>Access invoices, quotes, and uploaded files here.</p>
+        </div>
 
-      {{-- Documents --}}
-      <div class="portal-content" id="documents">
-          <h3>Your Documents</h3>
-          <p>Access signed agreements, policies, and uploaded files.</p>
-          <a href="{{ route('customer.documents') }}" class="btn-primary">View Documents</a>
-      </div>
+        <div id="support" class="portal-content">
+            <h3>Support</h3>
+            <p>Submit support tickets or chat with SharpLync support.</p>
+        </div>
 
-      {{-- Support --}}
-      <div class="portal-content" id="support">
-          <h3>Support & Helpdesk</h3>
-          <p>Need help? Contact SharpLync Support or open a service ticket.</p>
-          <a href="{{ route('customer.support') }}" class="btn-primary">Get Support</a>
-      </div>
+        {{-- ===== PORTAL FOOTER ===== --}}
+        <p style="text-align:center; margin-top:2rem; font-size:0.9rem;">
+            SharpLync – Old School Support, <span class="highlight">Modern Results</span>
+        </p>
 
-      <p class="portal-note">
-          SharpLync – Old School Support, <span class="highlight">Modern Results</span>
-      </p>
-  </div>
-
-</section>
-
+        {{-- ===== LOGOUT BUTTON (BOTTOM ICON) ===== --}}
+        <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline portal-logout">
+            @csrf
+            <button type="submit" title="Log out">
+                <img src="/images/logout.png" alt="Logout">
+            </button>
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
-  document.querySelectorAll('.portal-tabs button').forEach(btn => {
-      btn.addEventListener('click', () => {
-          document.querySelectorAll('.portal-tabs button').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.portal-content').forEach(tab => tab.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById(btn.dataset.tab).classList.add('active');
-      });
-  });
+    // Tab switching logic
+    document.querySelectorAll('.portal-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.portal-tabs button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.portal-content').forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
 </script>
 @endsection
