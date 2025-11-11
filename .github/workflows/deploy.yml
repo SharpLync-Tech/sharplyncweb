@@ -1,13 +1,12 @@
 # ============================================
-# SharpLync Fast Incremental Deployment
+# SharpLync Stable Deployment (Optimized)
 # ============================================
-# Deploys Laravel app to Azure Web App (Production)
-# using OneDeploy (incremental + fast) method.
-# Automatically clears and rebuilds Laravel caches
-# after deployment for consistency.
+# Deploys Laravel app to Azure Web App using
+# ZIP artifact method (safe, reliable).
+# Rebuilds Laravel caches automatically.
 # ============================================
 
-name: Deploy SharpLync (Fast Incremental + Auto Cache Clear)
+name: Deploy SharpLync Web App (Stable + Auto Cache)
 
 on:
   push:
@@ -23,11 +22,11 @@ jobs:
       contents: read
 
     steps:
-      # ✅ Checkout repository
+      # ✅ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ✅ Setup PHP environment
+      # ✅ Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -39,26 +38,25 @@ jobs:
       - name: Install dependencies
         run: |
           composer install --no-dev --prefer-dist --no-progress --no-interaction
-          php artisan config:clear || true
-          php artisan cache:clear || true
-          php artisan route:clear || true
-          php artisan view:clear || true
+          php artisan optimize:clear || true
+          php artisan config:cache || true
+          php artisan route:cache || true
+          php artisan view:cache || true
 
-      # ✅ Prepare artifact (only essential app files)
-      - name: Prepare artifact
+      # ✅ Package artifact (exclude junk)
+      - name: Prepare deployment package
         run: |
           mkdir deploy_package
-          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='vendor' --exclude='storage/logs' ./ ./deploy_package/
+          rsync -av --exclude='.git*' --exclude='node_modules' --exclude='storage/logs' --exclude='tests' ./ ./deploy_package/
 
-      # ✅ Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: php-app
+          name: sharplyncweb
           path: deploy_package
 
   deploy:
-    name: Deploy to Azure Web App (Incremental)
+    name: Deploy to Azure Web App
     runs-on: ubuntu-latest
     needs: build
     permissions:
@@ -66,14 +64,13 @@ jobs:
       contents: read
 
     steps:
-      # ✅ Download built artifact
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: php-app
+          name: sharplyncweb
           path: ./deploy_package
 
-      # ✅ Login to Azure
+      # ✅ Login to Azure (Service Principal)
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -81,22 +78,27 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D789D8A638234D77BB7F727BDC5DABA1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9D05DB8E752345C184AD17941455D4CC }}
 
-      # ✅ Fast incremental deploy (no stop/start)
-      - name: OneDeploy incremental deployment
+      # ✅ Deploy ZIP artifact to Azure
+      - name: Deploy to Azure Web App (ZIP)
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'sharplyncweb'
           slot-name: 'Production'
           package: ./deploy_package
-          clean: false    # keeps existing files, uploads only changed ones
 
-      # ✅ Clear + rebuild Laravel caches remotely
-      - name: Refresh Laravel caches
+      # ✅ Clear & rebuild Laravel caches remotely
+      - name: Refresh Laravel cache on Azure
         run: |
-          echo "⚙️ Running Laravel cache refresh on Azure..."
-          az webapp ssh --name sharplyncweb --resource-group SharpLync-RG --command "cd /home/site/wwwroot && php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+          echo "⚙️ Rebuilding Laravel cache remotely..."
+          az webapp ssh --name sharplyncweb --resource-group SharpLync-RG --command "
+            cd /home/site/wwwroot &&
+            php artisan optimize:clear &&
+            php artisan config:cache &&
+            php artisan route:cache &&
+            php artisan view:cache
+          "
         continue-on-error: true
 
-      # ✅ Final confirmation
+      # ✅ Summary
       - name: Deployment summary
-        run: echo "🚀 SharpLync deployed incrementally & caches rebuilt successfully."
+        run: echo "🚀 SharpLync deployed successfully — caches rebuilt, no downtime."

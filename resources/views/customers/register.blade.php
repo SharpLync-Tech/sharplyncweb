@@ -1,10 +1,10 @@
-{{--
-  Page: customers/register.blade.php
-  Version: v3.5 (Navy Success Text)
-  Description: Updated success alert text to navy (#0A2A4D) for better brand alignment on light green bg.
-  - Inline style tweak only; preserves all registration functionality (submission, errors, OAuth, CSRF, old() repopulation, verification process unchanged).
-  Last updated: 09 Nov 2025 by Grok
+{{--  
+  Page: customers/register.blade.php  
+  Version: v3.6 (OAuth Buttons Removed)  
+  Description: Removed Google and Microsoft login actions for streamlined email-only registration.  
+  Last updated: 11 Nov 2025 by Max  
 --}}
+
 @extends('layouts.base')
 @section('title', 'Create Your SharpLync Account')
 @section('content')
@@ -49,9 +49,6 @@
         </div>
         <button type="submit" class="btn-primary w-full" style="background-color: #2CBFAE; color: white;">Send Verification Email</button>
       </form>
-
-      <div class="onboard-divider" style="color: rgba(255,255,255,0.8);">or</div>
-      
     </div>
   </div>
 </section>
