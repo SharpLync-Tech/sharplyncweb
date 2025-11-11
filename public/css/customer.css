@@ -1,11 +1,11 @@
 /*
   Page: customer.css
-  Version: v1.6 (Bottom Logout Icon + Mobile Polish)
-  Last updated: 13 Nov 2025 by Max (ChatGPT)
+  Version: v1.7 (Compact Logout Icon + Mobile Refinement)
+  Last updated: 12 Nov 2025 by Max (ChatGPT)
   Description:
-  - Moves logout icon to bottom of portal card
-  - Removes header logout
-  - Refines mobile layout & glass header spacing
+  - Fixed logout icon scaling
+  - Moved logout to bottom of portal card
+  - Improved mobile responsiveness
 */
 
 /* ===== Base ===== */
@@ -18,7 +18,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Hide main-site heroes */
+/* Hide main-site heroes if they leak */
 .hero, .hero-cpu-bg, .hero-logo {
   display: none !important;
   visibility: hidden !important;
@@ -178,7 +178,7 @@ html, body {
 }
 .w-full { width: 100%; }
 
-/* ===== Bottom Logout Button ===== */
+/* ===== Bottom Logout Button (Fixed Icon Size) ===== */
 .portal-logout {
   display: flex;
   justify-content: center;
@@ -186,25 +186,41 @@ html, body {
 }
 
 .portal-logout button {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
-  padding: 0.7rem;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   cursor: pointer;
   transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .portal-logout button img {
-  width: 26px;
-  height: 26px;
+  width: 22px !important;
+  height: 22px !important;
+  object-fit: contain;
+  display: block;
+  margin: 0;
   filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.7));
+  pointer-events: none;
 }
 
 .portal-logout button:hover {
-  background: rgba(44, 191, 174, 0.3);
+  background: rgba(44, 191, 174, 0.25);
   border-color: rgba(44, 191, 174, 0.6);
   transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(44, 191, 174, 0.25);
+}
+
+.portal-logout button:active {
+  transform: scale(0.95);
 }
 
 /* ===== Footer ===== */
@@ -230,9 +246,8 @@ html, body {
   to {opacity: 1;}
 }
 
-/* ===== Responsive (MOBILE-FOCUSED SECTIONS) ===== */
+/* ===== Responsive (Mobile-Specific Sections) ===== */
 @media (max-width: 768px) {
-  /* 🔹 Mobile header spacing fix */
   .customer-header {
     flex-direction: column;
     align-items: center;
@@ -254,8 +269,12 @@ html, body {
     justify-content: center;
   }
 
+  .portal-logout button {
+    width: 54px;
+    height: 54px;
+  }
   .portal-logout button img {
-    width: 28px;
-    height: 28px;
+    width: 26px !important;
+    height: 26px !important;
   }
 }
