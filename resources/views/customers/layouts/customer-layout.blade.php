@@ -28,13 +28,13 @@
             </a>
         </div>
 
+        <span class="nav-welcome">Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}</span>
+        
         <nav class="customer-nav">
             <a href="{{ route('customer.portal') }}" class="{{ request()->routeIs('customer.portal') ? 'active' : '' }}">Portal</a>
             <a href="{{ route('customer.billing') }}" class="{{ request()->routeIs('customer.billing') ? 'active' : '' }}">Billing</a>
             <a href="{{ route('customer.security') }}" class="{{ request()->routeIs('customer.security') ? 'active' : '' }}">Security</a>
             <a href="{{ route('customer.support') }}" class="{{ request()->routeIs('customer.support') ? 'active' : '' }}">Support</a>
-
-            <span class="nav-welcome">Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }} 👋</span>
 
             {{-- Logout --}}
             <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline">
