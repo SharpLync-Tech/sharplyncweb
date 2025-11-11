@@ -48,26 +48,6 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('customer.
 Route::post('/login', [LoginController::class, 'login'])->name('customer.login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('customer.logout');
 
-// ==========================================
-// Customer Login & OAuth
-// ==========================================
-use App\Http\Controllers\Customer\Auth\GoogleCustomerController;
-use App\Http\Controllers\Customer\Auth\MicrosoftCustomerController;
-
-Route::prefix('customer')->name('customer.')->group(function () {
-    // ✅ Google OAuth
-    Route::get('/google/redirect', [GoogleCustomerController::class, 'redirect'])
-        ->name('google.redirect');
-    Route::get('/google/callback', [GoogleCustomerController::class, 'callback'])
-        ->name('google.callback');
-
-    // ✅ Microsoft OAuth
-    Route::get('/microsoft/redirect', [MicrosoftCustomerController::class, 'redirect'])
-        ->name('microsoft.redirect');
-    Route::get('/microsoft/callback', [MicrosoftCustomerController::class, 'callback'])
-        ->name('microsoft.callback');
-});
-
 // Customer Dashboard route
 Route::get('/dashboard', function () {
     return view('customers.dashboard');

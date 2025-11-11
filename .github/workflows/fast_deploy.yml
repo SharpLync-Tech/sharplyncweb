@@ -1,0 +1,60 @@
+# ============================================
+# SharpLync Ultra-Fast Dev Deployment 🚀
+# ============================================
+# Deploys directly from repo (no build zip).
+# For design/dev phase: skips composer install,
+# no restarts, just updates files + clears cache.
+# ============================================
+
+name: SharpLync Fast Dev Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # ✅ Checkout current code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ✅ Login to Azure (fast auth)
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B4715CA5DED04B79BA440450D1A6A411 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D789D8A638234D77BB7F727BDC5DABA1 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9D05DB8E752345C184AD17941455D4CC }}
+
+      # ✅ Super-fast deploy using OneDeploy (incremental)
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'sharplyncweb'
+          slot-name: 'Production'
+          package: .
+          clean: false   # ⚡ Upload only changed files
+
+      # ✅ Quick cache clear to prevent stale views/config
+      - name: Clear Laravel cache remotely
+        run: |
+          echo "⚙️ Running quick Laravel cache clear..."
+          az webapp ssh --name sharplyncweb --resource-group SharpLync-RG --command "
+            cd /home/site/wwwroot && 
+            php artisan optimize:clear &&
+            php artisan config:cache &&
+            php artisan route:cache &&
+            php artisan view:cache
+          "
+        continue-on-error: true
+
+      - name: Done
+        run: echo "✅ Fast deploy complete. No composer build. No restart. Enjoy!"
