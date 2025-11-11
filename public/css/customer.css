@@ -54,7 +54,7 @@ html, body {
 }
 
 .customer-nav a {
-  color: #fff;
+  color: #0A2A4D;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -70,7 +70,7 @@ html, body {
 }
 
 .nav-welcome {
-  color: #CFEFEA;
+  color: #0A2A4D;
   font-weight: 600;
   margin-left: 0.5rem;
 }
@@ -81,7 +81,7 @@ html, body {
 }
 .logout-inline button {
   background: transparent;
-  color: #fff;
+  color: #0A2A4D;
   border: 1px solid rgba(255,255,255,0.35);
   border-radius: 8px;
   padding: 0.4rem 0.8rem;
@@ -115,7 +115,7 @@ html, body {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(10, 42, 77, 0.1);
-  max-width: 900px;
+  max-width: 100px;
   margin: -1.25rem auto 2rem;   /* overlaps the slim band slightly */
   padding: 2rem;
   animation: fadeUp 0.5s ease;
@@ -142,7 +142,7 @@ html, body {
 }
 
 .portal-tabs button.active {
-  background: #104946;
+  background: #0A2A4D;
   color: #ffffff;
   box-shadow: 0 0 10px rgba(44, 191, 174, 0.4);
 }
@@ -194,4 +194,26 @@ html, body {
   .portal-tabs { overflow-x: auto; justify-content: flex-start; }
   .portal-tabs button { flex: 0 0 auto; white-space: nowrap; }
   .portal-header-inner h2 { font-size: 1.05rem; }
+}
+
+/* ===== Portal Wrapper (Now with Gradient Background) ===== */
+.portal-wrapper {
+  padding: 2rem 1rem 4rem;
+  background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  position: relative;
+  z-index: 1;
+}
+
+.portal-main-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  animation: fadeUp 0.6s ease;
+  position: relative;
+  z-index: 2;
 }

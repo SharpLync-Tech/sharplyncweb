@@ -1,6 +1,6 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v1.4
+  Version: v1.5
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
   Refined Customer Portal design — welcome moved to top nav,
@@ -14,8 +14,8 @@
 @section('content')
 
 <section class="portal-wrapper">
-
-  {{-- Slim gradient band (no hero, no welcome text here) --}}
+  
+  {{-- Gradient header strip --}}
   <div class="portal-header">
       <div class="portal-header-inner">
           <h2>Account Portal</h2>
@@ -27,32 +27,27 @@
 
       {{-- Tabs --}}
       <div class="portal-tabs">
-            <button class="active" data-tab="details">
-                <img src="/images/details.png" alt="Details" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-                Details
-            </button>
-
-            <button data-tab="financial">
-                <img src="/images/financial.png" alt="Financial" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-                Financial
-            </button>
-
-            <button data-tab="security">
-                <img src="/images/security.png" alt="Security" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-                Security
-            </button>
-
-            <button data-tab="documents">
-                <img src="/images/documents.png" alt="Documents" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-                Documents
-            </button>
-
-            <button data-tab="support">
-                <img src="/images/support.png" alt="Support" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-                Support
-            </button>
-            </div>
-
+          <button class="active" data-tab="details">
+            <img src="/images/details.png" alt="Details" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            Details
+          </button>
+          <button data-tab="financial">
+            <img src="/images/financial.png" alt="Financial" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            Financial
+          </button>
+          <button data-tab="security">
+            <img src="/images/security.png" alt="Security" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            Security
+          </button>
+          <button data-tab="documents">
+            <img src="/images/documents.png" alt="Documents" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            Documents
+          </button>
+          <button data-tab="support">
+            <img src="/images/support.png" alt="Support" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            Support
+          </button>
+      </div>
 
       {{-- Details --}}
       <div class="portal-content active" id="details">
