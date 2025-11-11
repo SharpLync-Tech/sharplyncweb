@@ -30,44 +30,41 @@
       <p class="onboard-subtitle" style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 1.5rem;">Log in to your SharpLync account to continue where you left off.</p>
 
       <!-- Success / error messages (white text via inline for dark bg) -->
-      
         @if (session('error'))
-            <div class="alert alert-error" 
-                style="color: white; background-color: rgba(255, 227, 227, 0.9); 
-                        border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem;">
-              {{ session('error') }}
-            </div>
-          @endif
-
-          @if (session('status'))
-            <div class="alert alert-success" 
-                style="display: flex; align-items: center; justify-content: center; 
-                        gap: 0.5rem; color: #0A2A4D; font-weight: 600; text-align: center; 
-                        background-color: rgba(216, 243, 220, 0.95); 
-                        border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem; 
-                        padding: 0.75rem 1rem; border-radius: 6px;">
-              
-              <!-- Animated tick icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-                  fill="none" stroke="#2CBFAE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" 
-                  style="width: 22px; height: 22px; animation: tickFade 0.8s ease-in-out;">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-              
-              <span>{{ session('status') }}</span>
-            </div>
-
-            <style>
-              @keyframes tickFade {
-                0% { opacity: 0; transform: scale(0.6) rotate(-10deg); }
-                60% { opacity: 1; transform: scale(1.05) rotate(3deg); }
-                100% { opacity: 1; transform: scale(1) rotate(0deg); }
-              }
-            </style>
-            @endif
-
-            </div>
+          <div class="alert alert-error" 
+              style="color: white; background-color: rgba(255, 227, 227, 0.9); 
+                      border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem;">
+            {{ session('error') }}
+          </div>
         @endif
+
+        @if (session('status'))
+          <div class="alert alert-success" 
+              style="display: flex; align-items: center; justify-content: center; 
+                      gap: 0.5rem; color: #0A2A4D; font-weight: 600; text-align: center; 
+                      background-color: rgba(216, 243, 220, 0.95); 
+                      border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem; 
+                      padding: 0.75rem 1rem; border-radius: 6px;">
+            
+            <!-- Animated tick icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
+                fill="none" stroke="#2CBFAE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" 
+                style="width: 22px; height: 22px; animation: tickFade 0.8s ease-in-out;">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            
+            <span>{{ session('status') }}</span>
+          </div>
+
+          <style>
+            @keyframes tickFade {
+              0% { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+              60% { opacity: 1; transform: scale(1.05) rotate(3deg); }
+              100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            }
+          </style>
+        @endif
+
 
 
       <!-- Login form with white text overrides -->
