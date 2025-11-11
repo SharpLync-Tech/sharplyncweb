@@ -59,11 +59,7 @@
         <button type="submit" class="btn-primary w-full" style="background-color: #2CBFAE; color: white;">Log In</button>
       </form>
 
-      <div class="onboard-divider" style="color: rgba(255,255,255,0.8);">or</div>
-      <div class="oauth-buttons">
-        <a href="{{ route('customer.google.redirect') }}" class="btn-oauth google">Continue with Google</a>
-        <a href="{{ route('customer.microsoft.redirect') }}" class="btn-oauth microsoft">Continue with Microsoft</a>
-      </div>
+      <div class="onboard-divider" style="color: rgba(255,255,255,0.8);">or</div>      
 
       <p class="onboard-note" style="color: rgba(255,255,255,0.8); text-align: center; margin-top: 1.5rem;">
         Don’t have an account yet?
