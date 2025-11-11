@@ -38,12 +38,12 @@
              style="width: 80px; height: auto; filter: drop-shadow(0 0 4px rgba(44,191,174,0.3));">
       </div>
 
-      <!-- Title + Subtitle -->      
-      <p class="onboard-subtitle"
-         style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 1.5rem;">
+      <!-- Title + Subtitle -->
+      <h1 class="onboard-title"
+          style="color: white; margin-bottom: 0.5rem; text-align: center;">
         Sign In to Your Account
-      </p>
-
+      </h1>
+      
       <!-- Alerts -->
       @if (session('error'))
         <div class="alert alert-error"
