@@ -1,15 +1,21 @@
 <?php
 /**
  * SharpLync Customer Routes
- * Version: 2.0 (Portal Integration)
- * Last updated: 12 Nov 2025 by Max (ChatGPT)
+ * Version: 2.1 (Portal Ecosystem + Download Integration)
+ * Last updated: 13 Nov 2025 by Max (ChatGPT)
  * 
  * Description:
- *  Fully modular routing system for the SharpLync Customer environment.
- *  - Part 1: Registration, onboarding, and profile management
- *  - Part 2: Isolated Customer Portal ecosystem (/portal)
+ *  Unified routing system for the SharpLync Customer environment.
+ *  This file governs:
+ *   - Registration & onboarding (linked to CRM)
+ *   - Authentication (login / logout)
+ *   - The standalone Customer Portal ecosystem (/portal)
  * 
- *  The portal now operates independently of the main site and other modules.
+ *  Notes:
+ *   • The portal now loads via DashboardController for dynamic data ($user, $profile)
+ *   • Support & Security views exist as modular placeholders
+ *   • Includes secure TeamViewer Quick Support download endpoint
+ *   • Future-ready structure for billing, documents, and expansions
  */
 
 use Illuminate\Support\Facades\Route;
@@ -41,30 +47,30 @@ Route::get('/customer/setup-profile', [ProfileController::class, 'create'])
 Route::post('/customer/setup-profile', [ProfileController::class, 'store'])
     ->name('profile.store');
 
-// Edit existing customer profile
+// Edit existing customer profile (after onboarding)
 Route::get('/profile/edit', [ProfileController::class, 'edit'])
-    ->name('    ');
+    ->name('customer.profile.edit');
 Route::post('/profile/update', [ProfileController::class, 'update'])
-    ->name('profile.update');
+    ->name('customer.profile.update');
 
-// Onboarding complete screen
+// Onboarding completion screen
 Route::get('/customer/onboard-complete', function () {
     return view('customers.onboard-complete');
 })->name('onboard.complete');
 
-// Temporary testing route (legacy)
+// Legacy test routes (safe to remove later)
 Route::get('/onboard', [CustomerController::class, 'create'])
     ->name('customers.create');
 Route::post('/onboard', [CustomerController::class, 'store'])
     ->name('customers.store');
 
-// routes/customer.php (add this one line just to test safely)
+// Temporary standalone / testing variants
 Route::get('/portal-standalone', fn() => view('customers.portal-standalone'))
     ->name('customer.portal.standalone')
     ->middleware('auth:customer');
-// Test
+
 Route::get('/portal_test', fn() => view('customers.portal_test'))
-     ->name('customer.portal_test');
+    ->name('customer.portal_test');
 
 
 // ======================================================
@@ -78,40 +84,42 @@ Route::post('/login', [LoginController::class, 'login'])
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('customer.logout');
 
+
 // ======================================================
 // PART 3 — CUSTOMER PORTAL (ISOLATED ECOSYSTEM)
 // ======================================================
-// All routes within this section are authenticated and 
-// belong exclusively to the /portal environment.
-// The portal uses its own layout, stylesheet, and views 
-// under /resources/views/customers/*
+// All routes below require authentication via the "customer" guard.
+// The portal uses its own layout, stylesheet, and modular view files
+// located under /resources/views/customers/*
 
 Route::middleware(['auth:customer'])->group(function () {
 
     // ===== Main Portal Landing =====
     Route::get('/portal', [DashboardController::class, 'index'])
-            ->name('customer.portal');
+        ->name('customer.portal');
 
-    // ===== Subsections (future-proof placeholders) =====
-    Route::get('/portal/billing', fn() => view('customers.billing'))
-        ->name('customer.billing');
-
+    // ===== Portal Sections =====
     Route::get('/portal/security', fn() => view('customers.security'))
         ->name('customer.security');
 
     Route::get('/portal/support', fn() => view('customers.support'))
         ->name('customer.support');
 
-    // Optional additional areas
+    Route::get('/portal/account', fn() => view('customers.account'))
+        ->name('customer.account');
+
+    Route::get('/portal/billing', fn() => view('customers.billing'))
+        ->name('customer.billing');
+
     Route::get('/portal/documents', fn() => view('customers.documents'))
         ->name('customer.documents');
 
     // ======================================================
-    // PART 4 — DOWNLOADS
+    // PART 4 — FILE DOWNLOADS & TOOLS
     // ======================================================
-
+    // TeamViewer Quick Support executable download.
+    // Adjust file path if stored elsewhere under /public/downloads
     Route::get('/portal/teamviewer-download', function () {
-        // Adjust the path if you store your QuickSupport executable elsewhere
         $file = public_path('downloads/SharpLync_QuickSupport.exe');
 
         if (file_exists($file)) {
@@ -120,5 +128,4 @@ Route::middleware(['auth:customer'])->group(function () {
 
         abort(404, 'Quick Support tool not found.');
     })->name('customer.teamviewer.download');
-
 });
