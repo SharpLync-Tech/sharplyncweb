@@ -1,11 +1,10 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v2.4 (Clean Power Icon Logout)
-  Last updated: 12 Nov 2025 by Max (ChatGPT)
+  Version: v2.4.2 (Image-Lock Update)
+  Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Removed logout image button
-  - Replaced with ⏻ Unicode power icon
-  - Maintains SharpLync brand style
+  - Fixed icon sizes to prevent scaling (Hulk mode).
+  - Clean layout; logout handled via layout.
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -25,19 +24,19 @@
     {{-- ===== Tabs ===== --}}
     <div class="portal-tabs">
       <button class="active" data-tab="details">
-        <img src="/images/details.png" alt="Details Icon"> Details
+        <img class="icon-18" src="/images/details.png" alt="Details Icon"> Details
       </button>
       <button data-tab="financial">
-        <img src="/images/financial.png" alt="Financial Icon"> Financial
+        <img class="icon-18" src="/images/financial.png" alt="Financial Icon"> Financial
       </button>
       <button data-tab="security">
-        <img src="/images/security.png" alt="Security Icon"> Security
+        <img class="icon-18" src="/images/security.png" alt="Security Icon"> Security
       </button>
       <button data-tab="documents">
-        <img src="/images/documents.png" alt="Documents Icon"> Documents
+        <img class="icon-18" src="/images/documents.png" alt="Documents Icon"> Documents
       </button>
       <button data-tab="support">
-        <img src="/images/support.png" alt="Support Icon"> Support
+        <img class="icon-18" src="/images/support.png" alt="Support Icon"> Support
       </button>
     </div>
 
@@ -68,18 +67,9 @@
       <p>Submit support tickets or chat with SharpLync support.</p>
     </div>
 
-    {{-- ===== FOOTER + LOGOUT ICON ===== --}}
     <p style="text-align:center; margin-top:2rem; font-size:0.9rem;">
       SharpLync – Old School Support, <span class="highlight">Modern Results</span>
     </p>
-
-    <form action="{{ route('customer.logout') }}" method="POST">
-      @csrf
-      <button type="submit" title="Log out">
-    <img src="/images/logout.png" alt="Logout" style="width: 24px; height: 24px;">
-</button>
-    </form>
-
   </div>
 </div>
 @endsection
