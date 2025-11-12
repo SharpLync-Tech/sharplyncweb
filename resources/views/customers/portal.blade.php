@@ -1,13 +1,11 @@
 {{-- 
-  Page: customers/portal.blade.php
-  Version: v2.0 (Live Customer Portal Base)
-  Description:
-  - Cleaned up demo placeholders, keeping full grid layout and customer CSS style.
-  - Renamed and restructured right-hand cards: Security / Support / Account Summary.
-  - Left profile section updated to use dynamic data placeholders.
-  - Added Logout button (same style as Edit Profile).
-  - "Customer Details" → "Customer Portal".
-  - "13/11/2025 - 6:41am"
+  Page: resources/views/customers/portal.blade.php
+  Version: v2.0.1 (Live Portal Base – $user-safe)
+  Changes:
+  - Switched from $customer -> $user (matches your users table schema).
+  - Added safe fallbacks & null checks (no more "Undefined variable").
+  - Preserves existing layout/classes/styles exactly.
+  - Sections: Security / Support / Account Summary.
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -15,6 +13,25 @@
 @section('title', 'Customer Portal')
 
 @section('content')
+
+@php
+    // Prefer an explicitly-passed $user, fall back to Auth::user()
+    $u = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
+
+    // Build display helpers safely
+    $fullName = $u ? trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) : 'Customer Name';
+    if ($fullName === '') $fullName = 'Customer Name';
+
+    $email = $u->email ?? null;
+    $phone = $u->phone ?? null;            // if you store it elsewhere, adjust later
+    $address = $u->address ?? null;        // same here
+    $status = $u->account_status ?? 'Active Customer';
+    $since  = $u && $u->created_at ? $u->created_at->format('F Y') : null;
+    $photo  = $u->profile_photo ?? null;
+
+    // One-letter avatar placeholder
+    $avatarLetter = strtoupper(mb_substr($fullName, 0, 1));
+@endphp
 
 <div class="cp-pagehead">
     <h2>Customer Portal</h2>
@@ -26,30 +43,34 @@
     <div class="cp-profile-card">
         <div class="cp-profile-header">
             <div class="cp-avatar">
-                {{-- Optional: Display customer photo if available --}}
-                @if(!empty($customer->photo))
-                    <img src="{{ asset('storage/' . $customer->photo) }}" alt="{{ $customer->name }}">
+                @if(!empty($photo))
+                    <img src="{{ Str::startsWith($photo, ['http://','https://','/']) ? $photo : asset('storage/'.$photo) }}" alt="{{ $fullName }}">
                 @else
-                    <div class="cp-avatar-placeholder">{{ strtoupper(substr($customer->name, 0, 1)) }}</div>
+                    <div class="cp-avatar-placeholder">{{ $avatarLetter }}</div>
                 @endif
             </div>
 
             <div class="cp-name-group">
-                <h3>{{ $customer->name ?? 'Customer Name' }}</h3>
-                <p class="cp-member-status">{{ $customer->membership_level ?? 'Active Customer' }}</p>
+                <h3>{{ $fullName }}</h3>
+                <p class="cp-member-status">{{ ucfirst($status) }}</p>
             </div>
         </div>
         
         <div class="cp-contact-details">
-            <p><strong>Email:</strong> <a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a></p>
-            @if(!empty($customer->phone))
-                <p><strong>Phone:</strong> {{ $customer->phone }}</p>
+            @if($email)
+                <p><strong>Email:</strong> <a href="mailto:{{ $email }}">{{ $email }}</a></p>
             @endif
-            @if(!empty($customer->address))
-                <p><strong>Address:</strong> {{ $customer->address }}</p>
+
+            @if($phone)
+                <p><strong>Phone:</strong> {{ $phone }}</p>
             @endif
-            @if(!empty($customer->created_at))
-                <p class="cp-member-since">Customer Since: {{ $customer->created_at->format('F Y') }}</p>
+
+            @if($address)
+                <p><strong>Address:</strong> {{ $address }}</p>
+            @endif
+
+            @if($since)
+                <p class="cp-member-since">Customer since: {{ $since }}</p>
             @endif
         </div>
         
@@ -77,7 +98,7 @@
         {{-- SUPPORT CARD --}}
         <div class="cp-activity-card cp-support-card">
             <h4>Support</h4>
-            <p>Need help? Access your support tickets or connect for remote assistance.</p>
+            <p>Need help? View support tickets or connect for remote assistance.</p>
             <div class="cp-support-footer">
                 <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-navy-btn">Open Support</a>
                 <a href="{{ route('customer.teamviewer.download') }}" class="cp-btn cp-small-btn cp-outline-btn">Download Quick Support</a>
@@ -87,7 +108,7 @@
         {{-- ACCOUNT SUMMARY CARD --}}
         <div class="cp-activity-card cp-account-card">
             <h4>Account Summary</h4>
-            <p>Review your current account status, service plan, and payment details.</p>
+            <p>Review your account status, services, and billing details.</p>
             <div class="cp-account-footer">
                 <a href="{{ route('customer.account') }}" class="cp-btn cp-small-btn cp-teal-btn">View Account</a>
             </div>
