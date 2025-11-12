@@ -57,6 +57,12 @@ Route::get('/onboard', [CustomerController::class, 'create'])
 Route::post('/onboard', [CustomerController::class, 'store'])
     ->name('customers.store');
 
+// routes/customer.php (add this one line just to test safely)
+Route::get('/portal-standalone', fn() => view('customers.portal-standalone'))
+    ->name('customer.portal.standalone')
+    ->middleware('auth:customer');
+
+
 // ======================================================
 // PART 2 — AUTHENTICATION (LOGIN / LOGOUT)
 // ======================================================
