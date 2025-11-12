@@ -1,11 +1,12 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v2.2 (Brand Polish + Responsive + Avatar Initials)
+   Version: v2.3 (Mobile FAB + Brand Consistency + Polish)
    Updated: 13 Nov 2025 by Max (ChatGPT)
    Description:
-   - Unified SharpLync brand palette (navy/blue/teal)
-   - Initials avatar instead of photo
-   - Improved profile detail and mobile layout
+   - Replaces inline mobile logout with floating ⏻ FAB
+   - Adds spacing between stacked buttons on small screens
+   - Keeps teal for brand accents, navy/blue as core buttons
+   - Fully responsive with consistent style and readability
 =================================================================== */
 
 /* ------------------------------------------------------------------- */
@@ -55,7 +56,9 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
 }
 
-/* Buttons */
+/* ------------------------------------------------------------------- */
+/* ===== Buttons (Base + Brand Variants) ===== */
+/* ------------------------------------------------------------------- */
 .cp-btn {
     display: inline-block;
     text-decoration: none;
@@ -77,8 +80,10 @@
     padding: .4rem .9rem;
     font-size: .85rem;
 }
+
+/* Brand color variations */
 .cp-teal-btn {
-    background: var(--teal);
+    background: var(--teal); /* ✅ Brand teal stays for highlight actions */
 }
 .cp-teal-btn:hover {
     background: #20A694;
@@ -167,8 +172,6 @@
 /* ------------------------------------------------------------------- */
 /* ===== Profile Card (Left Column) ===== */
 /* ------------------------------------------------------------------- */
-.cp-profile-card { }
-
 .cp-profile-header {
     display: flex;
     align-items: center;
@@ -178,7 +181,7 @@
     border-bottom: 1px solid #eee;
 }
 
-/* Avatar: initials only */
+/* Avatar — now initials only (no photo) */
 .cp-avatar {
     width: 90px;
     height: 90px;
@@ -229,9 +232,12 @@
     color: var(--muted);
 }
 
-/* Edit Profile / Logout */
+/* Profile action buttons */
+.cp-profile-actions .cp-btn {
+    margin-right: .5rem;
+}
 .cp-edit-profile {
-    background: #E9EEF5;
+    background: #E9EEF5; /* Light navy tint */
     color: var(--blue);
     font-size: .9rem;
     padding: .6rem 1.1rem;
@@ -244,14 +250,13 @@
 }
 .cp-logout-btn {
     background: var(--navy);
-    margin-left: .5rem;
 }
 .cp-logout-btn:hover {
     background: var(--blue);
 }
 
 /* ------------------------------------------------------------------- */
-/* ===== Activity Column (Right) ===== */
+/* ===== Activity Column (Right Column) ===== */
 /* ------------------------------------------------------------------- */
 .cp-activity-column {
     display: flex;
@@ -269,16 +274,16 @@
     font-size: 1.2rem;
     color: var(--ink);
 }
-
-/* Example borders for visual categories */
 .cp-invoice-card { border-left: 4px solid var(--teal); }
 .cp-ticket-card { border-left: 4px solid var(--navy); }
 .cp-plan-card { border-left: 4px solid var(--teal); }
 
 /* ------------------------------------------------------------------- */
-/* ===== Responsive Adjustments (Mobile) ===== */
+/* ===== Responsive Adjustments (Mobile Enhancements) ===== */
 /* ------------------------------------------------------------------- */
 @media (max-width: 768px) {
+
+    /* Header */
     .cp-header {
         flex-direction: column;
         gap: .5rem;
@@ -292,6 +297,8 @@
     .cp-logo img {
         height: 56px;
     }
+
+    /* Layout + Cards */
     .cp-main {
         padding: 1rem .75rem 4rem;
     }
@@ -310,8 +317,62 @@
     .cp-avatar {
         margin-bottom: 1rem;
     }
+
+    /* Buttons full-width + spacing between */
     .cp-btn {
         width: 100%;
         text-align: center;
+    }
+    .cp-profile-actions .cp-btn,
+    .cp-support-footer .cp-btn {
+        margin-bottom: 0.6rem; /* ✅ Adds breathing room */
+    }
+
+    /* Hide inline logout button */
+    .cp-logout-btn {
+        display: none;
+    }
+
+    /* -------------------------------------------------------------------
+       Floating Logout (FAB) — Mobile Only
+       Appears bottom-right with power icon ⏻
+    ------------------------------------------------------------------- */
+    .cp-fab-logout {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease;
+        z-index: 1001;
+    }
+    .cp-fab-logout:hover {
+        background: var(--blue);
+        transform: translateY(-2px);
+    }
+
+    /* Optional teal pulse animation (SharpLync flair) */
+    .cp-fab-logout::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(44, 191, 174, 0.2);
+        animation: cpPulse 2s infinite ease-in-out;
+    }
+    @keyframes cpPulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        70% { transform: scale(1.4); opacity: 0; }
+        100% { transform: scale(1); opacity: 0; }
     }
 }
