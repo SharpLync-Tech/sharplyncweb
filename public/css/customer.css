@@ -1,11 +1,11 @@
 /*
   File: public/css/customer.css
-  Version: v2.2 (Viewport Balance Update)
-  Date locked: 12 Nov 2025, 7:08 PM
+  Version: v2.3 (Mobile Optimization Update)
+  Date locked: 12 Nov 2025, 7:36 PM
   Notes:
-  - Adjusted vertical spacing for consistent bottom margin
-  - Footer now has better contrast and breathing room
-  - Maintains all SharpLync v2.1 layout and responsiveness
+  - Fixed mobile stacking layout
+  - Adjusted padding, spacing, and shadow for smaller screens
+  - Desktop layout unchanged (still v2.2 baseline)
 */
 
 /* ===== Core Colors ===== */
@@ -90,7 +90,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:flex-start;
-  padding:6vh 1rem 10vh; /* bottom increased for balanced layout */
+  padding:6vh 1rem 10vh;
 }
 
 /* ===== Outer Card ===== */
@@ -234,7 +234,6 @@ body {
 .cp-footer .cp-hl { color:var(--teal); font-weight:700; }
 .cp-footer p { margin:0; }
 
-/* Footnote inside card (optional text above footer) */
 .cp-footnote {
   text-align:center;
   margin-top:2rem;
@@ -249,10 +248,38 @@ body {
   .cp-kv-row { grid-template-columns:1fr; }
   .cp-tile-grid { grid-template-columns:1fr; }
 }
+
+/* ===== Mobile Refinements ===== */
 @media (max-width:600px){
-  .cp-def-grid { grid-template-columns:140px 1fr; }
-  .cp-tabs { flex-direction:column; align-items:center; }
-  .cp-tabs button { width:92%; justify-content:center; }
+  .cp-main {
+    padding:4vh 0.8rem 8vh;
+  }
+  .cp-card {
+    padding:1rem 1rem 1.5rem;
+    border-radius:12px;
+  }
+  .cp-grid {
+    gap:1rem;
+  }
+  .cp-card-panel {
+    padding:1rem;
+    border-radius:10px;
+  }
+  .cp-def-grid {
+    grid-template-columns:130px 1fr;
+  }
+  .cp-tabs {
+    flex-direction:column;
+    align-items:center;
+  }
+  .cp-tabs button {
+    width:94%;
+    justify-content:center;
+  }
+  .cp-tabs button img {
+    width:20px;
+    height:20px;
+  }
 }
 
 /* ===== Animations ===== */
