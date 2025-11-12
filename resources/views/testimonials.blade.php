@@ -13,72 +13,81 @@
     <style>
           /* Container */
           .testimonial-carousel {
-            position: relative;
-            max-width: 940px;
-            margin: 0 auto;
-            overflow: hidden;
-            padding: 460px;
-          }
+              position: relative;
+              max-width: 940px;
+              margin: 0 auto;
+              overflow: hidden;
+              padding: 10px;
+              min-height: 460px; /* keeps steady height */
+            }
 
-          /* Each card (we'll fade between them) */
-          .testimonial-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
-          }
+            /* Stack all slides on top of each other, same width */
+            .testimonial-slide {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;                /* ✅ ensures full width */
+              opacity: 0;
+              z-index: 1;
+              transition: opacity 1s ease-in-out;
+            }
 
-          .testimonial-slide.active {
-            opacity: 1;
-            visibility: visible;
-            position: relative; /* fixes the ghost overlay artifact */
-          }
+            /* Active slide fully visible */
+            .testimonial-slide.active {
+              opacity: 1;
+              z-index: 2;
+            }
 
-          .testimonial-card blockquote {
-            margin: 0;
-            line-height: 1.7;
-          }
+            /* Inside the card */
+            .testimonial-card {
+              width: 100%;
+              max-width: 940px;
+              margin: 0 auto;
+            }
 
-          .testimonial-card .who {
-            display: block;
-            margin-top: 12px;
-            opacity: 0.85;
-          }
+            .testimonial-card blockquote {
+              margin: 0;
+              line-height: 1.7;
+            }
 
-          .testimonial-card .rating {
-            margin-top: 10px;
-            font-weight: 700;
-            letter-spacing: .5px;
-          }
+            .testimonial-card .who {
+              display: block;
+              margin-top: 12px;
+              opacity: 0.85;
+            }
 
-          /* Dots */
-          .testimonial-dots {
-            text-align: center;
-            margin-top: 22px;
-          }
+            .testimonial-card .rating {
+              margin-top: 10px;
+              font-weight: 700;
+              letter-spacing: .5px;
+            }
 
-          .dot {
-            height: 12px;
-            width: 12px;
-            margin: 0 5px;
-            background-color: transparent;
-            border: 2px solid #104946;
-            border-radius: 50%;
-            display: inline-block;
-            cursor: pointer;
-            transition: background-color 0.3s;
-          }
+            /* Pagination dots */
+            .testimonial-dots {
+              text-align: center;
+              margin-top: 22px;
+            }
 
-          .dot.active {
-            background-color: #104946;
-          }
+            .dot {
+              height: 12px;
+              width: 12px;
+              margin: 0 5px;
+              background-color: transparent;
+              border: 2px solid #104946;
+              border-radius: 50%;
+              display: inline-block;
+              cursor: pointer;
+              transition: background-color 0.3s;
+            }
 
-          @media (max-width: 980px){
-            .testimonial-card { padding: 0 10px; }
-          }
+            .dot.active {
+              background-color: #104946;
+            }
+
+            @media (max-width: 980px){
+              .testimonial-card { padding: 0 10px; }
+            }
+
         </style>
 
         <div class="testimonial-carousel" id="testimonialCarousel">
