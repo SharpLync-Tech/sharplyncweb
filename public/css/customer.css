@@ -1,12 +1,11 @@
 /*
   File: public/css/customer.css
-  Version: v2.1 (Polish & Alignment Update)
-  Date locked: 12 Nov 2025, 6:42 PM
+  Version: v2.2 (Viewport Balance Update)
+  Date locked: 12 Nov 2025, 7:08 PM
   Notes:
-  - Adjusted logo sizing
-  - Improved logout icon alignment
-  - Added vertical spacing for full viewport balance
-  - Minor shadow + padding tweaks
+  - Adjusted vertical spacing for consistent bottom margin
+  - Footer now has better contrast and breathing room
+  - Maintains all SharpLync v2.1 layout and responsiveness
 */
 
 /* ===== Core Colors ===== */
@@ -25,6 +24,9 @@ body {
   color:var(--ink);
   background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 40%,var(--teal) 100%);
   margin:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
 /* ===== Header ===== */
@@ -84,8 +86,11 @@ body {
 
 /* ===== Main wrapper ===== */
 .cp-main {
-  padding-top:6vh;
-  padding-bottom:4vh;
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:6vh 1rem 10vh; /* bottom increased for balanced layout */
 }
 
 /* ===== Outer Card ===== */
@@ -94,7 +99,7 @@ body {
   border-radius:16px;
   box-shadow:var(--shadow);
   max-width:1100px;
-  margin:0 auto;
+  width:100%;
   padding:1.5rem 1.5rem 2rem;
 }
 
@@ -217,8 +222,24 @@ body {
 .cp-link { color:var(--teal); font-weight:600; text-decoration:none; }
 .cp-link[aria-disabled="true"] { opacity:.55; pointer-events:none; }
 
-/* Footer */
-.cp-footnote { text-align:center; margin-top:1.4rem; font-size:.9rem; }
+/* ===== Footer ===== */
+.cp-footer {
+  background:var(--ink);
+  color:#fff;
+  text-align:center;
+  padding:1.5rem 1rem;
+  margin-top:auto;
+  font-size:.95rem;
+}
+.cp-footer .cp-hl { color:var(--teal); font-weight:700; }
+.cp-footer p { margin:0; }
+
+/* Footnote inside card (optional text above footer) */
+.cp-footnote {
+  text-align:center;
+  margin-top:2rem;
+  font-size:.9rem;
+}
 .cp-hl { color:var(--teal); font-weight:700; }
 
 /* ===== Responsive ===== */
@@ -234,5 +255,5 @@ body {
   .cp-tabs button { width:92%; justify-content:center; }
 }
 
-/* Fade animation */
+/* ===== Animations ===== */
 @keyframes cpFade { from{opacity:0;} to{opacity:1;} }
