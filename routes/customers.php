@@ -43,7 +43,7 @@ Route::post('/customer/setup-profile', [ProfileController::class, 'store'])
 
 // Edit existing customer profile
 Route::get('/profile/edit', [ProfileController::class, 'edit'])
-    ->name('profile.edit');
+    ->name('    ');
 Route::post('/profile/update', [ProfileController::class, 'update'])
     ->name('profile.update');
 
@@ -105,4 +105,20 @@ Route::middleware(['auth:customer'])->group(function () {
     // Optional additional areas
     Route::get('/portal/documents', fn() => view('customers.documents'))
         ->name('customer.documents');
+
+    // ======================================================
+    // PART 4 — DOWNLOADS
+    // ======================================================
+
+    Route::get('/portal/teamviewer-download', function () {
+        // Adjust the path if you store your QuickSupport executable elsewhere
+        $file = public_path('downloads/SharpLync_QuickSupport.exe');
+
+        if (file_exists($file)) {
+            return response()->download($file);
+        }
+
+        abort(404, 'Quick Support tool not found.');
+    })->name('customer.teamviewer.download');
+
 });
