@@ -166,38 +166,6 @@ html, body {
 }
 .w-full { width: 100%; }
 
-/* ===== Logout Power Icon ===== */
-.portal-logout {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
-.logout-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2CBFAE;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.logout-btn:hover {
-  background: rgba(44, 191, 174, 0.25);
-  border-color: rgba(44, 191, 174, 0.6);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(44, 191, 174, 0.25);
-}
 
 /* ===== Footer ===== */
 .customer-footer {
@@ -243,11 +211,5 @@ html, body {
 
   .portal-tabs button {
     justify-content: center;
-  }
-
-  .logout-btn {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-  }
+  }  
 }
