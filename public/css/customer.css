@@ -1,134 +1,73 @@
 /*
   Page: customer.css
-  Version: v1.8 (Final Stable Scoped Styles)
+  Version: v1.9 (Account Details Grid Integration)
+  Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Scoped with .cp-* to prevent site bleed
-  - Matches working standalone layout exactly
+  - Adds .cp-info-grid two-column responsive layout
+  - Adds .cp-badge for account status styling
+  - Adds .cp-update-link styling
 */
 
-/* ===== Base ===== */
-.cp-root {
-  --navy: #0A2A4D;
-  --blue: #104976;
-  --teal: #2CBFAE;
-  --ink: #0A2A4D;
-  --card: #ffffff;
-  --muted: #6b7a89;
-  --shadow: 0 10px 30px rgba(0,0,0,.25);
-
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 40%, var(--teal) 100%);
-  color: var(--ink);
-  font-family: 'Poppins', sans-serif;
+/* ===== NEW v1.9: Account Details Grid ===== */
+.cp-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
-/* ===== Header ===== */
-.cp-header {
-  position: sticky; top: 0; z-index: 1000;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: .75rem 1.25rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(10, 42, 77, .55);
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  color: #E9F4F3;
-}
-.cp-logo img { height: 48px; width: auto; }
-.cp-welcome { font-weight: 600; }
-
-/* Desktop logout */
-.cp-logout-inline button {
-  width: 34px; height: 34px; border-radius: 8px;
-  cursor: pointer; border: 1px solid rgba(255,255,255,.28);
-  background: rgba(255,255,255,.15); color: #fff; font-size: 16px;
-  line-height: 1; transition: transform .12s ease, background .2s ease;
-}
-.cp-logout-inline button:hover {
-  background: rgba(44,191,174,.45); transform: translateY(-1px);
+.cp-info-grid div {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-/* ===== Page Header ===== */
-.cp-pagehead { text-align: center; color: #fff; padding: 1.25rem 1rem .5rem; }
-.cp-pagehead h2 { margin: 0; font-size: 1.25rem; text-shadow: 0 2px 4px rgba(0,0,0,.3); }
-
-/* ===== Main / Card ===== */
-.cp-main { padding: 1.5rem 1rem 4rem; }
-.cp-card {
-  background: var(--card);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  max-width: 900px; margin: 0 auto;
-  padding: 2rem;
+.cp-info-grid strong {
+  font-weight: 600;
+  color: #0A2A4D;
+  font-size: 0.95rem;
 }
 
-/* ===== Tabs ===== */
-.cp-tabs { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-bottom: 1.25rem; }
-.cp-tabs button {
-  display: inline-flex; align-items: center; gap: .5rem;
-  background: #E8F2F1; border: 0; border-radius: 10px;
-  padding: .6rem 1.1rem; font-weight: 600; color: var(--ink);
-  cursor: pointer; transition: background .2s ease, box-shadow .2s ease;
-}
-.cp-tabs button img {
-  width: 18px; height: 18px; object-fit: contain; display: inline-block;
-  flex: 0 0 18px;
-}
-.cp-tabs button:hover { background: #D4E9E7; }
-.cp-tabs button.cp-active {
-  background: var(--ink); color: #fff;
-  box-shadow: 0 0 12px rgba(44,191,174,.5);
+.cp-info-grid span {
+  color: #333;
+  font-size: 0.95rem;
+  margin-top: 0.2rem;
 }
 
-/* ===== Panes ===== */
-.cp-pane { display: none; animation: cpFade .25s ease; }
-.cp-pane.cp-show { display: block; }
-.cp-pane h3 { margin: .25rem 0 .5rem; font-size: 1.25rem; }
-.cp-pane p { color: #555; line-height: 1.6; margin: 0 0 1rem; }
-
-/* ===== Buttons ===== */
-.cp-btn {
-  display: inline-block; text-decoration: none; cursor: pointer;
-  border: 0; border-radius: 10px; padding: .85rem 1.25rem;
-  font-weight: 600; background: #104946; color: #fff;
-  transition: background .2s ease, transform .1s ease;
+/* ===== NEW: Account Status Badge ===== */
+.cp-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
 }
-.cp-btn:hover { background: var(--ink); transform: translateY(-1px); }
+.cp-badge.active { background: #2CBFAE; }
+.cp-badge.pending { background: #FFB347; color: #333; }
+.cp-badge.suspended { background: #A33; }
 
-/* ===== Footnotes ===== */
-.cp-footnote { text-align: center; margin-top: 2rem; font-size: .9rem; }
-.cp-hl { color: var(--teal); font-weight: 700; }
-
-/* ===== Floating Logout (Mobile) ===== */
-.cp-logout-fab {
-  position: fixed; right: 20px; bottom: 20px; z-index: 1100; display: none;
+/* ===== NEW: Update Link ===== */
+.cp-update-link {
+  text-align: right;
+  margin-top: 1rem;
 }
-.cp-logout-fab button {
-  width: 48px; height: 48px; border-radius: 50%; border: none;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(10,42,77,.9); color: #fff; font-size: 18px;
-  line-height: 1; box-shadow: 0 6px 18px rgba(0,0,0,.35);
-  transition: transform .12s ease, background .2s ease;
+.cp-update-link a {
+  color: #2CBFAE;
+  font-weight: 600;
+  text-decoration: none;
 }
-.cp-logout-fab button:hover {
-  transform: translateY(-1px); background: #0D375A;
+.cp-update-link a:hover {
+  text-decoration: underline;
 }
 
-/* ===== Footer ===== */
-.cp-footer {
-  background: var(--ink); color: #fff;
-  text-align: center; padding: 1.25rem; font-size: .95rem; margin-top: 2rem;
-}
-.cp-footer .cp-hl { color: var(--teal); font-weight: 700; }
-
-/* ===== Responsive ===== */
+/* ===== Responsive Fix for Mobile Layout ===== */
 @media (max-width: 768px) {
-  .cp-header { flex-direction: column; gap: .5rem; padding: 1rem; text-align: center; }
-  .cp-logo img { height: 56px; }
-  .cp-logout-inline { display: none; }
-  .cp-logout-fab { display: block; }
-  .cp-tabs { flex-direction: column; align-items: center; }
-  .cp-tabs button { width: 92%; justify-content: center; }
-  .cp-tabs button img { width: 20px; height: 20px; }
+  .cp-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .cp-update-link { text-align: center; }
 }
-
-@keyframes cpFade { from { opacity: 0 } to { opacity: 1 } }
