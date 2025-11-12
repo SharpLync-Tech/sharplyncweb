@@ -1,11 +1,11 @@
 /*
   Page: customer.css
-  Version: v1.7 (Compact Logout Icon + Mobile Refinement)
+  Version: v1.8 (Power Icon Cleanup)
   Last updated: 12 Nov 2025 by Max (ChatGPT)
   Description:
-  - Fixed logout icon scaling
-  - Moved logout to bottom of portal card
-  - Improved mobile responsiveness
+  - Removed logout image button
+  - Added ⏻ Unicode logout icon styling
+  - Fixed mobile spacing and layout
 */
 
 /* ===== Base ===== */
@@ -18,7 +18,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Hide main-site heroes if they leak */
+/* Hide any main-site heroes */
 .hero, .hero-cpu-bg, .hero-logo {
   display: none !important;
   visibility: hidden !important;
@@ -45,18 +45,6 @@ html, body {
 .customer-header .logo img {
   height: 50px;
   width: auto;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.nav-welcome {
-  font-weight: 600;
-  color: #E9F4F3;
-  font-size: 0.95rem;
 }
 
 /* Add spacing so content isn't hidden behind fixed header */
@@ -178,7 +166,38 @@ html, body {
 }
 .w-full { width: 100%; }
 
+/* ===== Logout Power Icon ===== */
+.portal-logout {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
 
+.logout-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2CBFAE;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:hover {
+  background: rgba(44, 191, 174, 0.25);
+  border-color: rgba(44, 191, 174, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(44, 191, 174, 0.25);
+}
 
 /* ===== Footer ===== */
 .customer-footer {
@@ -203,7 +222,7 @@ html, body {
   to {opacity: 1;}
 }
 
-/* ===== Responsive (Mobile-Specific Sections) ===== */
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .customer-header {
     flex-direction: column;
@@ -226,12 +245,9 @@ html, body {
     justify-content: center;
   }
 
-  .portal-logout button {
-    width: 54px;
-    height: 54px;
-  }
-  .portal-logout button img {
-    width: 26px !important;
-    height: 26px !important;
+  .logout-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
   }
 }
