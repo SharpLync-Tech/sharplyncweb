@@ -1,12 +1,12 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v2.3 (Mobile FAB + Brand Consistency + Polish)
+   Version: v2.4 (Uniform Mobile Buttons + FAB)
    Updated: 13 Nov 2025 by Max (ChatGPT)
    Description:
-   - Replaces inline mobile logout with floating ⏻ FAB
-   - Adds spacing between stacked buttons on small screens
+   - All mobile buttons now share Edit Profile’s width & height
+   - Replaces inline logout with floating ⏻ FAB
    - Keeps teal for brand accents, navy/blue as core buttons
-   - Fully responsive with consistent style and readability
+   - Fully responsive and brand-consistent
 =================================================================== */
 
 /* ------------------------------------------------------------------- */
@@ -83,7 +83,7 @@
 
 /* Brand color variations */
 .cp-teal-btn {
-    background: var(--teal); /* ✅ Brand teal stays for highlight actions */
+    background: var(--teal);
 }
 .cp-teal-btn:hover {
     background: #20A694;
@@ -181,7 +181,7 @@
     border-bottom: 1px solid #eee;
 }
 
-/* Avatar — now initials only (no photo) */
+/* Avatar — initials only */
 .cp-avatar {
     width: 90px;
     height: 90px;
@@ -237,7 +237,7 @@
     margin-right: .5rem;
 }
 .cp-edit-profile {
-    background: #E9EEF5; /* Light navy tint */
+    background: #E9EEF5;
     color: var(--blue);
     font-size: .9rem;
     padding: .6rem 1.1rem;
@@ -318,27 +318,27 @@
         margin-bottom: 1rem;
     }
 
-    /* Buttons full-width + spacing between */
+    /* --- Uniform mobile button sizing (match Edit Profile) --- */
     .cp-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    /* EXCEPTION: keep Edit Profile compact on mobile */
-    .cp-edit-profile {
         width: auto;
         min-width: 160px;
+        padding: 0.6rem 1.1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
         display: inline-block;
         text-align: center;
-        margin: 0 auto;
     }
 
-    .cp-profile-actions {
-    text-align: center;
+    .cp-profile-actions,
+    .cp-support-footer,
+    .cp-security-footer,
+    .cp-account-footer {
+        text-align: center;
     }
-    .cp-profile-actions .cp-btn,
+
+    /* Stack spacing for multi-button groups */
     .cp-support-footer .cp-btn {
-        margin-bottom: 0.6rem; /* ✅ Adds breathing room */
+        margin-bottom: 0.5rem;
     }
 
     /* Hide inline logout button */
@@ -348,7 +348,6 @@
 
     /* -------------------------------------------------------------------
        Floating Logout (FAB) — Mobile Only
-       Appears bottom-right with power icon ⏻
     ------------------------------------------------------------------- */
     .cp-fab-logout {
         position: fixed;

@@ -18,7 +18,7 @@
     <div class="cp-logo"><img src="/images/sharplync-logo.png" alt="SharpLync Logo"></div>
     <div class="cp-welcome">
       Welcome, {{ Auth::user()->first_name ?? 'User' }}
-      <form method="POST" action="{{ route('logout') }}" class="cp-logout-inline">@csrf
+      <form method="POST" action="{{ route('customer.logout') }}" class="cp-logout-inline">@csrf
         <button type="submit">⏻</button>
       </form>
     </div>
