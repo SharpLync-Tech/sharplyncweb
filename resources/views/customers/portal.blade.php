@@ -17,11 +17,21 @@
   <div class="cp-card">
     {{-- ===== Tabs ===== --}}
     <div class="cp-tabs" id="cpTabs">
-      <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
-      <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
-      <button data-cp-target="cp-security"><img src="/images/security.png" alt="">Security</button>
-      <button data-cp-target="cp-documents"><img src="/images/documents.png" alt="">Documents</button>
-      <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
+      <button class="cp-active" data-cp-target="cp-details">
+        <img src="/images/details.png" alt="">Details
+      </button>
+      <button data-cp-target="cp-financial">
+        <img src="/images/financial.png" alt="">Financial
+      </button>
+      <button data-cp-target="cp-security">
+        <img src="/images/security.png" alt="">Security
+      </button>
+      <button data-cp-target="cp-documents">
+        <img src="/images/documents.png" alt="">Documents
+      </button>
+      <button data-cp-target="cp-support">
+        <img src="/images/support.png" alt="">Support
+      </button>
     </div>
 
     {{-- ===== Tab Panes ===== --}}
@@ -58,14 +68,14 @@
 @endsection
 
 @section('scripts')
-<script>
-  document.querySelectorAll('#cpTabs button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#cpTabs button').forEach(b => b.classList.remove('cp-active'));
-      document.querySelectorAll('.cp-pane').forEach(p => p.classList.remove('cp-show'));
-      btn.classList.add('cp-active');
-      document.getElementById(btn.dataset.cpTarget).classList.add('cp-show');
+  <script>
+    document.querySelectorAll('#cpTabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#cpTabs button').forEach(b => b.classList.remove('cp-active'));
+        document.querySelectorAll('.cp-pane').forEach(p => p.classList.remove('cp-show'));
+        btn.classList.add('cp-active');
+        document.getElementById(btn.dataset.cpTarget).classList.add('cp-show');
+      });
     });
-  });
-</script>
+  </script>
 @endsection
