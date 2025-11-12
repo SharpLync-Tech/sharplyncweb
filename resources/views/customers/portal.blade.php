@@ -75,29 +75,12 @@
         <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline portal-logout">
             @csrf
             <button type="submit" title="Log out"
-    style="
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50%;
-        width: 44px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #2CBFAE;
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        transition: all 0.25s ease;
-    "
-    onmouseover="this.style.background='rgba(44,191,174,0.25)'; this.style.borderColor='rgba(44,191,174,0.6)'; this.style.transform='translateY(-2px)';"
-    onmouseout="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';"
->
-    ⏻
-</button>
+    
+                onmouseover="this.style.background='rgba(44,191,174,0.25)'; this.style.borderColor='rgba(44,191,174,0.6)'; this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';"
+            >
+                ⏻
+            </button>
 
         </form>
     </div>
