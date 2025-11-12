@@ -1,15 +1,35 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v2.7 (Account Details Data Integration)
-  Last updated: 13 Nov 2025 by Max (ChatGPT)
-  Description:
-  - Adds real user info grid to Details tab
-  - Removes green button
-  - Fully responsive (auto-stacks on mobile)
+  Version: v3.0 (Two-Column Dashboard Details)
+  Date locked: 12 Nov 2025, 2:19 PM
+  Notes:
+  - Keeps existing header/footer and tabs
+  - Details tab now uses a professional two-column card layout
+  - No profile image as requested
 --}}
 
 @extends('customers.layouts.customer-layout')
 @section('title', 'Customer Portal')
+
+@php
+  /** @var \App\Models\Customer $user */
+  $user = Auth::guard('customer')->user();
+
+  // Shorthands & helpers
+  $fullName   = trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: '—';
+  $email      = $user->email ?? '—';
+  $altEmail   = $user->alt_email ?? '—';
+  $status     = $user->account_status ?? '—';
+  $provider   = $user->auth_provider ?? '—';
+  $verified   = $user->email_verified_at ? 'Yes' : 'No';
+  $lastLogin  = $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('d M Y, h:i A') : '—';
+  $loginIp    = $user->login_ip ?? '—';
+  $twoFA      = $user->two_factor_secret ? 'Enabled' : 'No';
+  $twoFAConf  = $user->two_factor_confirmed_at ? \Carbon\Carbon::parse($user->two_factor_confirmed_at)->format('d M Y, h:i A') : '—';
+  $accepted   = $user->accepted_terms_at ? \Carbon\Carbon::parse($user->accepted_terms_at)->format('d M Y, h:i A') : '—';
+  $refCode    = $user->referral_code ?? '—';
+  $sspin      = $user->sspin ?? '—';
+@endphp
 
 @section('content')
   <div class="cp-pagehead">
@@ -17,7 +37,7 @@
   </div>
 
   <div class="cp-card">
-    {{-- ===== Tabs ===== --}}
+    {{-- ===== Tabs (kept for future sections) ===== --}}
     <div class="cp-tabs" id="cpTabs">
       <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
       <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
@@ -26,33 +46,77 @@
       <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
     </div>
 
-    {{-- ===== Tab Panes ===== --}}
+    {{-- ===== DETAILS (Two-Column Dashboard) ===== --}}
     <section id="cp-details" class="cp-pane cp-show">
-      <h3>Account Details</h3>
+      <div class="cp-grid">
+        {{-- LEFT: Customer Details --}}
+        <div class="cp-card-panel">
+          <div class="cp-panel-head">
+            <h3>Customer Details</h3>
+            <a href="{{ route('profile.edit') }}" class="cp-btn sm">Edit Profile</a>
+          </div>
 
-      {{-- [NEW SECTION: Customer Info Table - 13 Nov 2025] --}}
-      @php $user = Auth::guard('customer')->user(); @endphp
-      <div class="cp-info-grid">
-        <div><strong>Full Name:</strong><span>{{ $user->first_name ?? '—' }} {{ $user->last_name ?? '' }}</span></div>
-        <div><strong>Email:</strong><span>{{ $user->email ?? '—' }}</span></div>
-        @if(!empty($user->alt_email))
-          <div><strong>Alternate Email:</strong><span>{{ $user->alt_email }}</span></div>
-        @endif
-        <div><strong>Account Status:</strong><span class="cp-badge {{ strtolower($user->account_status ?? 'active') }}">{{ ucfirst($user->account_status ?? 'Active') }}</span></div>
-        <div><strong>Auth Provider:</strong><span>{{ $user->auth_provider ?? 'Local' }}</span></div>
-        <div><strong>Verified:</strong><span>{{ $user->email_verified_at ? '✅ Yes' : '❌ No' }}</span></div>
-        <div><strong>Last Login:</strong><span>{{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('d M Y, h:i A') : '—' }}</span></div>
-        <div><strong>Login IP:</strong><span>{{ $user->login_ip ?? '—' }}</span></div>
-        <div><strong>2FA Enabled:</strong><span>{{ $user->two_factor_secret ? 'Yes' : 'No' }}</span></div>
-        @if(!empty($user->referral_code))
-          <div><strong>Referral Code:</strong><span>{{ $user->referral_code }}</span></div>
-        @endif
+          <dl class="cp-def-grid">
+            <dt>Full Name</dt><dd>{{ $fullName }}</dd>
+            <dt>Email</dt><dd>{{ $email }}</dd>
+            <dt>Alt Email</dt><dd>{{ $altEmail }}</dd>
+            <dt>Account Status</dt><dd>{{ ucfirst($status) }}</dd>
+            <dt>Auth Provider</dt><dd>{{ $provider }}</dd>
+            <dt>Verified</dt><dd>{{ $verified }}</dd>
+            <dt>Accepted Terms</dt><dd>{{ $accepted }}</dd>
+            <dt>Referral Code</dt><dd>{{ $refCode }}</dd>
+            <dt>SSPIN</dt><dd>{{ $sspin }}</dd>
+          </dl>
+        </div>
+
+        {{-- RIGHT: Recent Activity / Security Snapshot --}}
+        <div class="cp-card-panel">
+          <div class="cp-panel-head">
+            <h3>Recent Activity</h3>
+          </div>
+
+          <div class="cp-kv-row">
+            <div class="cp-kv">
+              <span class="cp-kv-label">Last Login</span>
+              <span class="cp-kv-value">{{ $lastLogin }}</span>
+            </div>
+            <div class="cp-kv">
+              <span class="cp-kv-label">Login IP</span>
+              <span class="cp-kv-value">{{ $loginIp }}</span>
+            </div>
+          </div>
+
+          <div class="cp-divider"></div>
+
+          <div class="cp-kv-row">
+            <div class="cp-kv">
+              <span class="cp-kv-label">2FA Status</span>
+              <span class="cp-badge {{ $twoFA === 'Enabled' ? 'ok' : 'muted' }}">{{ $twoFA }}</span>
+            </div>
+            <div class="cp-kv">
+              <span class="cp-kv-label">2FA Confirmed</span>
+              <span class="cp-kv-value">{{ $twoFAConf }}</span>
+            </div>
+          </div>
+
+          {{-- Placeholder tiles for upcoming modules (kept subtle & professional) --}}
+          <div class="cp-tile-grid">
+            <div class="cp-tile">
+              <div class="cp-tile-title">Latest Invoice</div>
+              <div class="cp-tile-sub">Coming soon</div>
+              <a class="cp-link" href="javascript:void(0)" aria-disabled="true">View details</a>
+            </div>
+            <div class="cp-tile">
+              <div class="cp-tile-title">Support Tickets</div>
+              <div class="cp-tile-sub">Coming soon</div>
+              <a class="cp-link" href="javascript:void(0)" aria-disabled="true">Open portal</a>
+            </div>
+          </div>
+        </div>
       </div>
-      {{-- [END NEW SECTION] --}}
-
-      <p class="cp-update-link"><a href="#">✎ Update my details</a></p>
     </section>
 
+    {{-- ===== Other tabs unchanged (placeholders) ===== --}}
     <section id="cp-financial" class="cp-pane">
       <h3>Financial</h3>
       <p>Billing and payment history will appear here.</p>
@@ -73,14 +137,13 @@
       <p>Submit support tickets or chat with SharpLync support.</p>
     </section>
 
-    <p class="cp-footnote">
-      SharpLync – Old School Support, <span class="cp-hl">Modern Results</span>
-    </p>
+    <p class="cp-footnote">SharpLync — Old School Support, <span class="cp-hl">Modern Results</span></p>
   </div>
 @endsection
 
 @section('scripts')
 <script>
+  // Tab switcher (unchanged)
   document.querySelectorAll('#cpTabs button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#cpTabs button').forEach(b => b.classList.remove('cp-active'));
