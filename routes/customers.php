@@ -61,6 +61,9 @@ Route::post('/onboard', [CustomerController::class, 'store'])
 Route::get('/portal-standalone', fn() => view('customers.portal-standalone'))
     ->name('customer.portal.standalone')
     ->middleware('auth:customer');
+// Test
+Route::get('/portal_test', fn() => view('customers.portal_test'))
+     ->name('customer.portal_test');
 
 
 // ======================================================
