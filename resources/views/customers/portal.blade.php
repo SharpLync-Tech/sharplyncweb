@@ -1,11 +1,10 @@
 {{-- 
-  File: customers/portal.blade.php
-  Version: v2.6 (Confirmed Stable Baseline)
-  Date: 12 Nov 2025, 2:19 PM
-  Notes:
-  - Restores last known fully functional layout
-  - Keeps responsive behavior verified as stable
-  - Desktop and mobile confirmed working
+  Page: customers/portal.blade.php
+  Version: v2.6.1 (Restored Background & Layout Integrity)
+  Description:
+  - Restores .cp-root background container
+  - Fixes white-screen bug and full background loss
+  - Maintains responsive baseline verified as stable
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -24,18 +23,29 @@
   $loginIp    = $user->login_ip ?? '—';
   $twoFA      = $user->two_factor_secret ? 'Enabled' : 'No';
   $twoFAConf  = $user->two_factor_confirmed_at ? \Carbon\Carbon::parse($user->two_factor_confirmed_at)->format('d M Y, h:i A') : '—';
-  $accepted   = $user->accepted_terms_at ? \Carbon\Carbon::parse($user->accepted_terms_at)->format('d M Y, h:i A') : '—';
-  $refCode    = $user->referral_code ?? '—';
-  $sspin      = $user->sspin ?? '—';
 @endphp
 
 @section('content')
-  <div class="cp-pagehead">
-    <h2>Account Portal</h2>
-  </div>
+<div class="cp-root">
+  <header class="cp-header">
+    <div class="cp-logo">
+      <img src="/images/logo-light.png" alt="SharpLync Logo">
+    </div>
+    <div class="cp-welcome">
+      Welcome, {{ explode(' ', $fullName)[0] ?? 'User' }}
+      <form method="POST" action="{{ route('logout') }}" class="cp-logout-inline">
+        @csrf
+        <button type="submit" title="Log out">⏻</button>
+      </form>
+    </div>
+  </header>
 
-  <div class="cp-main">
+  <main class="cp-main">
     <div class="cp-card">
+      <div class="cp-pagehead">
+        <h2>Account Portal</h2>
+      </div>
+
       {{-- Tabs --}}
       <div class="cp-tabs">
         <button class="cp-active" data-cp-target="cp-details">Details</button>
@@ -61,9 +71,6 @@
               <dt>Account Status</dt><dd>{{ ucfirst($status) }}</dd>
               <dt>Auth Provider</dt><dd>{{ $provider }}</dd>
               <dt>Verified</dt><dd>{{ $verified }}</dd>
-              <dt>Accepted Terms</dt><dd>{{ $accepted }}</dd>
-              <dt>Referral Code</dt><dd>{{ $refCode }}</dd>
-              <dt>SSPIN</dt><dd>{{ $sspin }}</dd>
             </dl>
           </div>
 
@@ -95,23 +102,11 @@
                 <span class="cp-kv-value">{{ $twoFAConf }}</span>
               </div>
             </div>
-
-            <div class="cp-tile-grid">
-              <div class="cp-tile">
-                <div class="cp-tile-title">Latest Invoice</div>
-                <div class="cp-tile-sub">Coming soon</div>
-                <a class="cp-link" href="javascript:void(0)" aria-disabled="true">View details</a>
-              </div>
-              <div class="cp-tile">
-                <div class="cp-tile-title">Support Tickets</div>
-                <div class="cp-tile-sub">Coming soon</div>
-                <a class="cp-link" href="javascript:void(0)" aria-disabled="true">Open portal</a>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
+      {{-- Other Tabs --}}
       <section id="cp-financial" class="cp-pane">
         <h3>Financial</h3>
         <p>Billing and payment history will appear here.</p>
@@ -132,11 +127,10 @@
         <p>Submit support tickets or chat with SharpLync support.</p>
       </section>
 
-      <p class="cp-footnote">
-        SharpLync — Old School Support, <span class="cp-hl">Modern Results</span>
-      </p>
+      <p class="cp-footnote">SharpLync — Old School Support, <span class="cp-hl">Modern Results</span></p>
     </div>
-  </div>
+  </main>
+</div>
 @endsection
 
 @section('scripts')
