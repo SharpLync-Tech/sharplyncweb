@@ -75,12 +75,38 @@
         z-index: 1;
       }
 
+      /* Enhanced Name & Title Styling */
       .testimonial-card .who {
         display: block;
-        margin-top: 14px;
-        font-weight: 500;
-        color: #dff9f6;
+        margin-top: 18px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #ffffff;
         opacity: 0.95;
+        position: relative;
+        padding-top: 12px;
+      }
+
+      /* Thin teal accent line */
+      .testimonial-card .who::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #2CBFAE 0%, #00E6BE 100%);
+        border-radius: 2px;
+      }
+
+      /* Subtitle role/company */
+      .testimonial-card .who span {
+        display: block;
+        font-weight: 400;
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+        color: rgba(223, 249, 246, 0.85);
+        margin-top: 4px;
       }
 
       .testimonial-card .rating {
@@ -90,45 +116,12 @@
         color: #2CBFAE;
       }
 
-      /* Enhance name & title */
-            .testimonial-card .who {
-              display: block;
-              margin-top: 18px;
-              font-weight: 600;
-              font-size: 1.05rem;
-              color: #ffffff;
-              opacity: 0.95;
-              position: relative;
-              padding-top: 12px;
-            }
-
-            /* Thin teal accent line */
-            .testimonial-card .who::before {
-              content: "";
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 60px;
-              height: 2px;
-              background: linear-gradient(90deg, #2CBFAE 0%, #00E6BE 100%);
-              border-radius: 2px;
-            }
-
-            /* Lighter, elegant subtitle look */
-            .testimonial-card .who span {
-              display: block;
-              font-weight: 400;
-              font-size: 0.9rem;
-              letter-spacing: 0.3px;
-              color: rgba(223, 249, 246, 0.85);
-              margin-top: 4px;
-            }
-
-
-      /* === Dots === */
+      /* === Dots (moved to top) === */
       .testimonial-dots {
         text-align: center;
-        margin-top: 26px;
+        margin-bottom: 24px;
+        position: relative;
+        z-index: 5;
       }
 
       .dot {
@@ -156,23 +149,34 @@
     </style>
 
     <div class="testimonial-carousel" id="testimonialCarousel">
+
+      {{-- Moved dots to top --}}
+      <div class="testimonial-dots" id="testimonialDots">
+        @foreach($testimonials as $index => $t)
+          <span class="dot {{ $loop->first ? 'active' : '' }}" data-index="{{ $index }}"></span>
+        @endforeach
+      </div>
+
+      {{-- Testimonial slides --}}
       <div class="testimonial-track" id="testimonialTrack">
         @forelse($testimonials as $t)
-          @php
-            $who = trim(($t->customer_name ?: '') .
-                        (($t->customer_position || $t->customer_company) ? ' — ' : '') .
-                        ($t->customer_position ?: '') .
-                        (($t->customer_position && $t->customer_company) ? ' — ' : '') .
-                        ($t->customer_company ?: ''));
-            $stars = $t->rating ? str_repeat('★', (int)$t->rating) . str_repeat('☆', 5 - (int)$t->rating) : null;
-          @endphp
-
           <div class="testimonial-slide {{ $loop->first ? 'active' : '' }}">
             <article class="content-card testimonial-card">
               <blockquote>“{{ $t->testimonial_text }}”</blockquote>
-              <span class="who">{{ $who }}</span>
-              @if($stars)
-                <div class="rating" aria-label="Rating: {{ $t->rating }} out of 5">{{ $stars }}</div>
+              <span class="who">
+                {{ $t->customer_name }}
+                @if($t->customer_position || $t->customer_company)
+                  <span>
+                    {{ $t->customer_position }}
+                    @if($t->customer_position && $t->customer_company) — @endif
+                    {{ $t->customer_company }}
+                  </span>
+                @endif
+              </span>
+              @if($t->rating)
+                <div class="rating" aria-label="Rating: {{ $t->rating }} out of 5">
+                  {{ str_repeat('★', (int)$t->rating) . str_repeat('☆', 5 - (int)$t->rating) }}
+                </div>
               @endif
             </article>
           </div>
@@ -183,12 +187,6 @@
             </article>
           </div>
         @endforelse
-      </div>
-
-      <div class="testimonial-dots" id="testimonialDots">
-        @foreach($testimonials as $index => $t)
-          <span class="dot {{ $loop->first ? 'active' : '' }}" data-index="{{ $index }}"></span>
-        @endforeach
       </div>
     </div>
 
@@ -220,11 +218,9 @@
         clearInterval(autoSlide);
       }
 
-      // Pause on hover
       carousel.addEventListener('mouseenter', stopAutoSlide);
       carousel.addEventListener('mouseleave', startAutoSlide);
 
-      // Dots click
       dots.forEach(dot => {
         dot.addEventListener('click', () => {
           const index = parseInt(dot.getAttribute('data-index'));
