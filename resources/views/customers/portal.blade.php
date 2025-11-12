@@ -42,7 +42,7 @@
 
     {{-- ===== TAB CONTENT ===== --}}
     <div id="details" class="portal-content active">
-      <h3>Account Details</h3>
+      <h3>Account Details v1</h3>
       <p>View and update your personal and company information.</p>
       <a href="#" class="btn-primary">Edit Profile</a>
     </div>
