@@ -75,7 +75,7 @@
         </div>
         
         <div class="cp-profile-actions">
-            <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
+            <a href="{{ route('profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
             <form method="POST" action="{{ route('customer.logout') }}" style="display:inline;">
                 @csrf
                 <button type="submit" class="cp-btn cp-logout-btn">Log Out</button>

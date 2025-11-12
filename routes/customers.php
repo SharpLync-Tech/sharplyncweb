@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\Auth\LoginController;
+use App\Http\Controllers\Customer\DashboardController;
 
 // ======================================================
 // PART 1 — CUSTOMER REGISTRATION & ONBOARDING
@@ -88,8 +89,8 @@ Route::post('/logout', [LoginController::class, 'logout'])
 Route::middleware(['auth:customer'])->group(function () {
 
     // ===== Main Portal Landing =====
-    Route::get('/portal', fn() => view('customers.portal'))
-        ->name('customer.portal');
+    Route::get('/portal', [DashboardController::class, 'index'])
+            ->name('customer.portal');
 
     // ===== Subsections (future-proof placeholders) =====
     Route::get('/portal/billing', fn() => view('customers.billing'))
