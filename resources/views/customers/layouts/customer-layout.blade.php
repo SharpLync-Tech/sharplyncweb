@@ -36,9 +36,7 @@
             {{-- Logout form with Sharp power icon --}}
             <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline">
                 @csrf
-                <button type="submit" title="Log out">
-                    <img src="/images/logout.png" alt="Logout">
-                </button>
+                <button type="submit" title="Log out">⏻</button>
             </form>
         </div>
     </header>
