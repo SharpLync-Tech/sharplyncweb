@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Testimonial extends Model
 {
-    protected $connection = 'sharplync_cms'; // ✅ matches your CMS DB
+    // ✅ use existing MySQL (CMS) connection
+    protected $connection = 'mysql';
+
+    // ✅ correct table name
     protected $table = 'testimonials';
 
+    // ✅ correct field names based on your current table
     protected $fillable = [
         'customer_name',
         'customer_position',
@@ -23,7 +27,7 @@ class Testimonial extends Model
 
     public $timestamps = true;
 
-    // Optional: handy scope
+    // ✅ optional convenience scope
     public function scopeActive($query)
     {
         return $query->where('is_active', 1);

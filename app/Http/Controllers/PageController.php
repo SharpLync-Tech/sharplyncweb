@@ -8,7 +8,6 @@ class PageController extends Controller
 {
     public function about()
     {
-        // Only show active testimonials, newest first
         $testimonials = Testimonial::where('is_active', 1)
             ->orderByDesc('created_at')
             ->get();
@@ -18,7 +17,6 @@ class PageController extends Controller
 
     public function testimonials()
     {
-        // Same logic, can sort by display_order first
         $testimonials = Testimonial::where('is_active', 1)
             ->orderBy('display_order', 'asc')
             ->orderByDesc('created_at')

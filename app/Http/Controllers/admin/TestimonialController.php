@@ -14,7 +14,7 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        $testimonials = DB::connection('sharplync_cms')
+        $testimonials = DB::connection('mysql')
             ->table('testimonials')
             ->orderBy('display_order', 'asc')
             ->orderByDesc('created_at')
@@ -49,7 +49,7 @@ class TestimonialController extends Controller
             $createdBy = null; // BIGINT only
         }
 
-        DB::connection('sharplync_cms')->table('testimonials')->insert([
+        DB::connection('mysql')->table('testimonials')->insert([
             'customer_name'     => $validated['customer_name'],
             'customer_position' => $validated['customer_position'] ?? null,
             'customer_company'  => $validated['customer_company'] ?? null,
@@ -68,7 +68,7 @@ class TestimonialController extends Controller
 
     public function edit($id)
     {
-        $t = DB::connection('sharplync_cms')->table('testimonials')->where('id', $id)->first();
+        $t = DB::connection('mysql')->table('testimonials')->where('id', $id)->first();
         abort_if(!$t, 404);
         return view('admin.testimonials.edit', compact('t'));
     }
@@ -89,7 +89,7 @@ class TestimonialController extends Controller
         $isFeatured = $request->boolean('is_featured') ? 1 : 0;
         $isActive   = $request->boolean('is_active', true) ? 1 : 0;
 
-        DB::connection('sharplync_cms')->table('testimonials')->where('id', $id)->update([
+        DB::connection('mysql')->table('testimonials')->where('id', $id)->update([
             'customer_name'     => $validated['customer_name'],
             'customer_position' => $validated['customer_position'] ?? null,
             'customer_company'  => $validated['customer_company'] ?? null,
@@ -106,7 +106,7 @@ class TestimonialController extends Controller
 
     public function destroy($id)
     {
-        DB::connection('sharplync_cms')->table('testimonials')->where('id', $id)->delete();
+        DB::connection('mysql')->table('testimonials')->where('id', $id)->delete();
         return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial deleted.');
     }
 }
