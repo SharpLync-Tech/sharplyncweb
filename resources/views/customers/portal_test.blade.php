@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="cp-pagehead">
-    <h2>Customer Details</h2>
+    <h2>Customer Portal</h2>
 </div>
 
 {{-- The main card uses the cp-dashboard-grid class to create the two-column layout on desktop --}}
@@ -30,6 +30,7 @@
         </div>
         
         <button class="cp-btn cp-edit-profile">Edit Profile</button>
+        <button class="cp-btn cp-edit-profile">Log Out</button>
     </div>
 
     {{-- RIGHT COLUMN: Recent Activity Stack --}}
@@ -37,7 +38,7 @@
         
         {{-- Latest Invoice Card (Teal border) --}}
         <div class="cp-activity-card cp-invoice-card">
-            <h4>Latest Invoice</h4>
+            <h4>Security</h4>
             <p class="cp-invoice-date">October 26, 2023</p>
             <div class="cp-invoice-footer">
                 <span class="cp-invoice-amount">$120.50</span>
