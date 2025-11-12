@@ -237,7 +237,7 @@
     margin-right: .5rem;
 }
 .cp-edit-profile {
-    background: #0A2A4D;
+    background: #E9EEF5; /* Light navy tint */
     color: var(--blue);
     font-size: .9rem;
     padding: .6rem 1.1rem;
