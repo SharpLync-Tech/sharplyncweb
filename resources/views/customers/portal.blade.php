@@ -75,7 +75,7 @@
         </div>
         
         <div class="cp-profile-actions">
-            <a href="{{ route('profile.update') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
+            <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
             <form method="POST" action="{{ route('customer.logout') }}" style="display:inline;">
                 @csrf
                 <button type="submit" class="cp-btn cp-logout-btn">Log Out</button>
@@ -101,7 +101,10 @@
             <p>Need help? View support tickets or connect for remote assistance.</p>
             <div class="cp-support-footer">
                 <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-navy-btn">Open Support</a>
-                <a href="{{ route('customer.teamviewer.download') }}" class="cp-btn cp-small-btn cp-outline-btn">Download Quick Support</a>
+                <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
+                class="cp-btn cp-small-btn cp-outline-btn">
+                Download Quick Support
+                </a>
             </div>
         </div>
 
