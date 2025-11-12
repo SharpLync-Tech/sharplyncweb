@@ -1,275 +1,226 @@
-/* 
-  Page: customer.css
-  Version: v1.8 (Final Stable Scoped Styles)
-  Description:
-  - Scoped with .cp-* to prevent site bleed
-  - Matches working standalone layout exactly
-*/
+/* --- Dashboard Specific Styles (to be added to customer_test.css) --- */
 
-/* ===== Base ===== */
-.cp-root {
-  --navy: #0A2A4D;
-  --blue: #104976;
-  --teal: #2CBFAE;
-  --ink: #0A2A4D;
-  --card: #ffffff;
-  --muted: #6b7a89;
-  --shadow: 0 10px 30px rgba(0, 0, 0, .25);
-
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 40%, var(--teal) 100%);
-  color: var(--ink);
-  font-family: 'Poppins', sans-serif;
+/* Grid for Dashboard layout */
+.cp-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column for mobile */
+    gap: 2rem;
+    padding: 1.5rem; /* Adjust padding for better card spacing */
 }
 
-/* ===== Header ===== */
-.cp-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: .75rem 1.25rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(10, 42, 77, .55);
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
-  color: #E9F4F3;
+@media (min-width: 769px) {
+    .cp-dashboard-grid {
+        grid-template-columns: 3fr 2fr; /* Two columns for desktop (left wider) */
+        gap: 2.5rem;
+    }
 }
 
-.cp-logo img {
-  height: 48px;
-  width: auto;
-}
-
-.cp-welcome {
-  font-weight: 600;
-}
-
-/* ===== Desktop Logout ===== */
-.cp-logout-inline button {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, .28);
-  background: rgba(255, 255, 255, .15);
-  color: #fff;
-  font-size: 16px;
-  line-height: 1;
-  transition: transform .12s ease, background .2s ease;
-}
-
-.cp-logout-inline button:hover {
-  background: rgba(44, 191, 174, .45);
-  transform: translateY(-1px);
-}
-
-/* ===== Page Header ===== */
-.cp-pagehead {
-  text-align: center;
-  color: #fff;
-  padding: 1.25rem 1rem .5rem;
-}
-
-.cp-pagehead h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
-}
-
-/* ===== Main / Card ===== */
-.cp-main {
-  padding: 1.5rem 1rem 4rem;
-}
-
-.cp-card {
-  background: var(--card);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-/* ===== Tabs ===== */
-.cp-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.cp-tabs button {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  background: #E8F2F1;
-  border: 0;
-  border-radius: 10px;
-  padding: .6rem 1.1rem;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-  transition: background .2s ease, box-shadow .2s ease;
-}
-
-.cp-tabs button img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  display: inline-block;
-  flex: 0 0 18px;
-}
-
-.cp-tabs button:hover {
-  background: #D4E9E7;
-}
-
-.cp-tabs button.cp-active {
-  background: var(--ink);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(44, 191, 174, .5);
-}
-
-/* ===== Panes ===== */
-.cp-pane {
-  display: none;
-  animation: cpFade .25s ease;
-}
-
-.cp-pane.cp-show {
-  display: block;
-}
-
-.cp-pane h3 {
-  margin: .25rem 0 .5rem;
-  font-size: 1.25rem;
-}
-
-.cp-pane p {
-  color: #555;
-  line-height: 1.6;
-  margin: 0 0 1rem;
-}
-
-/* ===== Buttons ===== */
-.cp-btn {
-  display: inline-block;
-  text-decoration: none;
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-  padding: .85rem 1.25rem;
-  font-weight: 600;
-  background: #0A2A4D;
-  color: #fff;
-  transition: background .2s ease, transform .1s ease;
-}
-
-.cp-btn:hover {
-  background: var(--ink);
-  transform: translateY(-1px);
-}
-
-/* ===== Footnotes ===== */
-.cp-footnote {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: .9rem;
-}
-
-.cp-hl {
-  color: var(--teal);
-  font-weight: 700;
-}
-
-/* ===== Floating Logout (Mobile) ===== */
-.cp-logout-fab {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 1100;
-  display: none;
-}
-
-.cp-logout-fab button {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(10, 42, 77, .9);
-  color: #fff;
-  font-size: 18px;
-  line-height: 1;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
-  transition: transform .12s ease, background .2s ease;
-}
-
-.cp-logout-fab button:hover {
-  transform: translateY(-1px);
-  background: #0D375A;
-}
-
-/* ===== Footer ===== */
-.cp-footer {
-  background: var(--ink);
-  color: #fff;
-  text-align: center;
-  padding: 1.25rem;
-  font-size: .95rem;
-  margin-top: 2rem;
-}
-
-.cp-footer .cp-hl {
-  color: var(--teal);
-  font-weight: 700;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .cp-header {
-    flex-direction: column;
-    gap: .5rem;
+/* --- Profile Card (Left side) --- */
+.cp-profile-card {
+    background: #fff;
     padding: 1rem;
-    text-align: center;
-  }
-
-  .cp-logo img {
-    height: 56px;
-  }
-
-  .cp-logout-inline {
-    display: none;
-  }
-
-  .cp-logout-fab {
-    display: block;
-  }
-
-  .cp-tabs {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .cp-tabs button {
-    width: 92%;
-    justify-content: center;
-  }
-
-  .cp-tabs button img {
-    width: 20px;
-    height: 20px;
-  }
 }
 
-/* ===== Animations ===== */
-@keyframes cpFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.cp-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.cp-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    overflow: hidden;
+    /* This simulates the look from the image using the provided image tag */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cp-profile-header h3 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: var(--ink);
+}
+
+.cp-member-status {
+    color: var(--teal);
+    font-weight: 600;
+    margin: 0;
+}
+
+.cp-contact-details p {
+    margin: .5rem 0;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.cp-contact-details a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cp-member-since {
+    margin-top: 1.5rem !important;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #eee;
+    font-size: .95rem;
+}
+
+.cp-edit-profile {
+    background: #E8F2F1;
+    color: var(--teal);
+    font-size: .9rem;
+    padding: .5rem 1rem;
+    margin-top: 1rem;
+    border: 1px solid var(--teal);
+}
+
+.cp-edit-profile:hover {
+    background: #D4E9E7;
+    transform: none;
+}
+
+/* --- Activity Column (Right side) --- */
+.cp-activity-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.cp-activity-card {
+    background: #f9f9f9;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--blue);
+}
+
+.cp-activity-card h4 {
+    margin: 0 0 .5rem;
+    font-size: 1.1rem;
+    color: var(--ink);
+}
+
+/* Invoice Card */
+.cp-invoice-card {
+    border-left-color: var(--teal);
+}
+
+.cp-invoice-date {
+    color: var(--muted);
+    font-size: .9rem;
+    margin: 0;
+}
+
+.cp-invoice-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid #eee;
+}
+
+.cp-invoice-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.cp-small-btn {
+    padding: .4rem .8rem;
+    font-size: .85rem;
+}
+
+.cp-teal-btn {
+    background: var(--teal);
+}
+
+.cp-teal-btn:hover {
+    background: #20A694;
+    transform: translateY(-1px);
+}
+
+/* Ticket Card */
+.cp-ticket-card {
+    border-left-color: var(--navy);
+}
+
+.cp-ticket-status {
+    font-style: italic;
+    color: var(--muted);
+    font-size: .9rem;
+    margin-bottom: .5rem;
+}
+
+.cp-ticket-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+.cp-progress-bar {
+    flex-grow: 1;
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 8px;
+    position: relative;
+}
+
+.cp-progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 4px;
+    transition: width .4s ease;
+}
+
+.cp-progress-label {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font-size: .8rem;
+    color: var(--muted);
+}
+
+.cp-track-btn {
+    background: var(--blue);
+    white-space: nowrap;
+}
+
+/* Plan Card */
+.cp-plan-card {
+    border-left-color: var(--teal);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cp-plan-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cp-current-plan {
+    font-size: 1rem;
+    color: var(--ink);
+}
+
+.cp-upgrade-btn {
+    color: var(--teal);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: .9rem;
+}
+
+.cp-upgrade-btn:hover {
+    text-decoration: underline;
 }
