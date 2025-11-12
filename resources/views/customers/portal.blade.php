@@ -73,7 +73,7 @@
       SharpLync – Old School Support, <span class="highlight">Modern Results</span>
     </p>
 
-    <form action="{{ route('customer.logout') }}" method="POST" class="portal-logout">
+    <form action="{{ route('customer.logout') }}" method="POST">
       @csrf
       <button type="submit" title="Log out">
     <img src="/images/logout.png" alt="Logout" style="width: 24px; height: 24px;">
