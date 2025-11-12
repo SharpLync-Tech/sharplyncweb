@@ -15,7 +15,7 @@
 </head>
 <body class="cp-root">
   <header class="cp-header">
-    <div class="cp-logo"><img src="/images/logo-light.png" alt="SharpLync Logo"></div>
+    <div class="cp-logo"><img src="/images/sharplync-logo.png" alt="SharpLync Logo"></div>
     <div class="cp-welcome">
       Welcome, {{ Auth::user()->first_name ?? 'User' }}
       <form method="POST" action="{{ route('logout') }}" class="cp-logout-inline">@csrf
