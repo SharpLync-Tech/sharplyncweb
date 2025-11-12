@@ -1,11 +1,10 @@
 {{-- 
   Layout: customers/layouts/customer-layout.blade.php
-  Version: v1.7 (Glass Header + Power Icon Logout)
+  Version: v1.8 (Dual Logout: Header + Floating for Mobile)
   Last updated: 13 Nov 2025 by Max (ChatGPT)
   Description:
-  - Adds SharpLync-branded glass header with logo and power icon logout.
-  - Fully isolated from main site layout.
-  - Uses /public/css/customer.css for all styling.
+  - Keeps glass header logout for desktop.
+  - Adds floating ⏻ logout button for mobile view.
 --}}
 
 <!DOCTYPE html>
@@ -31,7 +30,13 @@
         <div class="nav-right">
             <span class="nav-welcome">
                 Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}
-            </span>            
+            </span>
+
+            {{-- Desktop Logout (Header) --}}
+            <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline desktop-only">
+                @csrf
+                <button type="submit" title="Log out" class="logout-icon">⏻</button>
+            </form>
         </div>
     </header>
 
@@ -45,6 +50,12 @@
         <p>© {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
         <p>Old School Support, <span class="highlight">Modern Results</span></p>
     </footer>
+
+    {{-- ===== MOBILE FLOATING LOGOUT ===== --}}
+    <form action="{{ route('customer.logout') }}" method="POST" class="logout-float mobile-only">
+        @csrf
+        <button type="submit" title="Log out" class="logout-fab">⏻</button>
+    </form>
 
     @yield('scripts')
 </body>
