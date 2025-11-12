@@ -1,3 +1,15 @@
+{{-- 
+  Page: customers/portal.blade.php
+  Version: v2.0 (Live Customer Portal Base)
+  Description:
+  - Cleaned up demo placeholders, keeping full grid layout and customer CSS style.
+  - Renamed and restructured right-hand cards: Security / Support / Account Summary.
+  - Left profile section updated to use dynamic data placeholders.
+  - Added Logout button (same style as Edit Profile).
+  - "Customer Details" → "Customer Portal".
+  - "13/11/2025 - 6:41am"
+--}}
+
 @extends('customers.layouts.customer-layout')
 
 @section('title', 'Customer Portal')
@@ -5,72 +17,83 @@
 @section('content')
 
 <div class="cp-pagehead">
-    <h2>Customer Details</h2>
+    <h2>Customer Portal</h2>
 </div>
 
-{{-- The main card uses the cp-dashboard-grid class to create the two-column layout on desktop --}}
 <div class="cp-card cp-dashboard-grid">
     
-    {{-- LEFT COLUMN: Customer Profile Details --}}
+    {{-- LEFT COLUMN: Customer Profile --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
-            {{-- The cp-avatar class handles the image/placeholder --}}
-            <div class="cp-avatar"></div> 
+            <div class="cp-avatar">
+                {{-- Optional: Display customer photo if available --}}
+                @if(!empty($customer->photo))
+                    <img src="{{ asset('storage/' . $customer->photo) }}" alt="{{ $customer->name }}">
+                @else
+                    <div class="cp-avatar-placeholder">{{ strtoupper(substr($customer->name, 0, 1)) }}</div>
+                @endif
+            </div>
+
             <div class="cp-name-group">
-                <h3>Jane Doe</h3>
-                <p class="cp-member-status">Premium Member</p>
+                <h3>{{ $customer->name ?? 'Customer Name' }}</h3>
+                <p class="cp-member-status">{{ $customer->membership_level ?? 'Active Customer' }}</p>
             </div>
         </div>
         
         <div class="cp-contact-details">
-            <p><strong>Email:</strong> <a href="mailto:jane.doe@email.com">jane.doe@email.com</a></p>
-            <p><strong>Phone:</strong> +1 (555) 123-567</p>
-            <p><strong>Address:</strong> 123 Maple Street, Anytown, CA 1034</p>
-            <p class="cp-member-since">Member Since: January 2020</p>
+            <p><strong>Email:</strong> <a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a></p>
+            @if(!empty($customer->phone))
+                <p><strong>Phone:</strong> {{ $customer->phone }}</p>
+            @endif
+            @if(!empty($customer->address))
+                <p><strong>Address:</strong> {{ $customer->address }}</p>
+            @endif
+            @if(!empty($customer->created_at))
+                <p class="cp-member-since">Customer Since: {{ $customer->created_at->format('F Y') }}</p>
+            @endif
         </div>
         
-        <button class="cp-btn cp-edit-profile">Edit Profile</button>
+        <div class="cp-profile-actions">
+            <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
+            <form method="POST" action="{{ route('customer.logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="cp-btn cp-logout-btn">Log Out</button>
+            </form>
+        </div>
     </div>
 
-    {{-- RIGHT COLUMN: Recent Activity Stack --}}
+    {{-- RIGHT COLUMN: Portal Cards --}}
     <div class="cp-activity-column">
         
-        {{-- Latest Invoice Card (Teal border) --}}
-        <div class="cp-activity-card cp-invoice-card">
-            <h4>Latest Invoice</h4>
-            <p class="cp-invoice-date">October 26, 2023</p>
-            <div class="cp-invoice-footer">
-                <span class="cp-invoice-amount">$120.50</span>
-                <a href="#" class="cp-btn cp-small-btn cp-teal-btn">View Details</a>
+        {{-- SECURITY CARD --}}
+        <div class="cp-activity-card cp-security-card">
+            <h4>Security</h4>
+            <p>Manage your login security and two-factor authentication options.</p>
+            <div class="cp-security-footer">
+                <a href="{{ route('customer.security') }}" class="cp-btn cp-small-btn cp-teal-btn">Manage Security</a>
             </div>
         </div>
 
-        {{-- Support Tickets Card (Navy border) --}}
-        <div class="cp-activity-card cp-ticket-card">
-            <h4>Support Tickets (Open)</h4>
-            <p>Ticket ID: Service Interruption</p>
-            <p class="cp-ticket-status">Status: In Progress</p>
-            <div class="cp-ticket-footer">
-                <div class="cp-progress-container">
-                    <span class="cp-progress-label">75% of 100GB Used</span>
-                    <div class="cp-progress-bar">
-                        <div class="cp-progress-fill" style="width: 75%;"></div>
-                    </div>
-                </div>
-                <a href="#" class="cp-btn cp-small-btn cp-track-btn">Track Ticket</a>
+        {{-- SUPPORT CARD --}}
+        <div class="cp-activity-card cp-support-card">
+            <h4>Support</h4>
+            <p>Need help? Access your support tickets or connect for remote assistance.</p>
+            <div class="cp-support-footer">
+                <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-navy-btn">Open Support</a>
+                <a href="{{ route('customer.teamviewer.download') }}" class="cp-btn cp-small-btn cp-outline-btn">Download Quick Support</a>
             </div>
         </div>
 
-        {{-- Plan Details Card (Teal border) --}}
-        <div class="cp-activity-card cp-plan-card">
-            <h4>Plan Details</h4>
-            <div class="cp-plan-footer">
-                <span class="cp-current-plan">Current Plan: <strong>Platinum</strong></span>
-                <a href="#" class="cp-upgrade-btn">Upgrade Plan</a>
+        {{-- ACCOUNT SUMMARY CARD --}}
+        <div class="cp-activity-card cp-account-card">
+            <h4>Account Summary</h4>
+            <p>Review your current account status, service plan, and payment details.</p>
+            <div class="cp-account-footer">
+                <a href="{{ route('customer.account') }}" class="cp-btn cp-small-btn cp-teal-btn">View Account</a>
             </div>
         </div>
+
     </div>
 </div>
-
 
 @endsection
