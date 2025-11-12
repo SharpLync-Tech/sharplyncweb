@@ -75,7 +75,9 @@
 
     <form action="{{ route('customer.logout') }}" method="POST" class="portal-logout">
       @csrf
-      <button type="submit" title="Log out">⏻</button>
+      <button type="submit" title="Log out">
+                <img src="/images/logout.png" alt="Logout">
+            </button>
     </form>
 
   </div>
