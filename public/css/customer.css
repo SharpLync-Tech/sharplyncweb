@@ -1,69 +1,142 @@
 /*
   File: public/css/customer.css
-  Version: v2.0 (Two-Column Dashboard Details)
-  Date locked: 12 Nov 2025, 2:19 PM
+  Version: v2.1 (Polish & Alignment Update)
+  Date locked: 12 Nov 2025, 6:42 PM
   Notes:
-  - Preserves SharpLync gradient, header, buttons, and tabs
-  - Adds professional two-column layout for Details tab
+  - Adjusted logo sizing
+  - Improved logout icon alignment
+  - Added vertical spacing for full viewport balance
+  - Minor shadow + padding tweaks
 */
 
-/* ===== Theme Vars / Base ===== */
+/* ===== Core Colors ===== */
 :root {
   --navy:#0A2A4D;
   --blue:#104976;
   --teal:#2CBFAE;
   --ink:#0A2A4D;
-  --card:#ffffff;
+  --card:#fff;
   --muted:#6b7a89;
-  --ring:0 0 0 3px rgba(44,191,174,.2);
   --shadow:0 10px 30px rgba(0,0,0,.12);
 }
 
-html,body{margin:0;padding:0;font-family:'Poppins',sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 40%,var(--teal) 100%);}
+body {
+  font-family:'Poppins',sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 40%,var(--teal) 100%);
+  margin:0;
+}
 
-/* Keep your existing header/footer from layout (unchanged) */
+/* ===== Header ===== */
+.cp-header {
+  position:sticky;
+  top:0;
+  z-index:1000;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:.75rem 1.25rem;
+  background:rgba(10,42,77,.55);
+  backdrop-filter:blur(12px);
+  color:#fff;
+}
+.cp-logo img {
+  height:48px;
+  width:auto;
+  max-width:160px;
+}
+@media (max-width:768px){
+  .cp-logo img {
+    height:42px;
+    max-width:140px;
+  }
+}
 
-/* ===== Page Header ===== */
-.cp-pagehead{color:#fff;text-align:center;padding:1.25rem 1rem .5rem}
-.cp-pagehead h2{margin:0;font-size:1.25rem;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+/* ===== Logout button ===== */
+.cp-logout-inline button {
+  margin-left:0.4rem;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:15px;
+  border-radius:8px;
+  width:32px;
+  height:32px;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.cp-logout-inline button:hover {
+  background:rgba(44,191,174,.35);
+  box-shadow:0 0 6px rgba(44,191,174,.4);
+}
 
-/* ===== Outer Card holding tabs & panes ===== */
-.cp-card{
+/* ===== Page Head ===== */
+.cp-pagehead {
+  color:#fff;
+  text-align:center;
+  padding:1.25rem 1rem .5rem;
+}
+.cp-pagehead h2 {
+  margin:0;
+  font-size:1.25rem;
+  text-shadow:0 2px 4px rgba(0,0,0,.3);
+}
+
+/* ===== Main wrapper ===== */
+.cp-main {
+  padding-top:6vh;
+  padding-bottom:4vh;
+}
+
+/* ===== Outer Card ===== */
+.cp-card {
   background:var(--card);
   border-radius:16px;
   box-shadow:var(--shadow);
   max-width:1100px;
-  margin:0 auto 1.75rem;
+  margin:0 auto;
   padding:1.5rem 1.5rem 2rem;
 }
 
-/* ===== Tabs (kept) ===== */
-.cp-tabs{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1rem}
-.cp-tabs button{
-  display:inline-flex;align-items:center;gap:.5rem;
-  background:#E8F2F1;border:0;border-radius:10px;
-  padding:.55rem 1rem;font-weight:600;color:var(--ink);
-  cursor:pointer;transition:background .2s,box-shadow .2s
+/* ===== Tabs ===== */
+.cp-tabs {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  justify-content:center;
+  margin-bottom:1rem;
 }
-.cp-tabs button img{width:18px;height:18px;object-fit:contain;flex:0 0 18px}
-.cp-tabs button:hover{background:#D4E9E7}
-.cp-tabs button.cp-active{background:var(--ink);color:#fff;box-shadow:0 0 12px rgba(44,191,174,.45)}
+.cp-tabs button {
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  background:#E8F2F1;
+  border:0;
+  border-radius:10px;
+  padding:.55rem 1rem;
+  font-weight:600;
+  color:var(--ink);
+  cursor:pointer;
+  transition:background .2s,box-shadow .2s;
+}
+.cp-tabs button img {
+  width:18px;
+  height:18px;
+}
+.cp-tabs button:hover { background:#D4E9E7; }
+.cp-tabs button.cp-active {
+  background:var(--ink);
+  color:#fff;
+  box-shadow:0 0 12px rgba(44,191,174,.45);
+}
 
-/* ===== Generic panes ===== */
-.cp-pane{display:none;animation:cpFade .25s ease}
-.cp-pane.cp-show{display:block}
-.cp-pane h3{margin:.25rem 0 .75rem}
-.cp-pane p{color:#555;line-height:1.6}
-
-/* ===== NEW: Two-Column Grid for Details ===== */
-.cp-grid{
+/* ===== Two Column Grid ===== */
+.cp-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:1.25rem;
 }
-
-/* panels inside the grid */
-.cp-card-panel{
+.cp-card-panel {
   background:#fff;
   border:1px solid rgba(10,42,77,.06);
   border-radius:14px;
@@ -71,83 +144,95 @@ html,body{margin:0;padding:0;font-family:'Poppins',sans-serif;color:var(--ink);b
   padding:1.25rem 1.25rem 1rem;
 }
 
-.cp-panel-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem
+/* Panel Head */
+.cp-panel-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:.75rem;
 }
-.cp-panel-head h3{margin:0;font-size:1.05rem}
+.cp-panel-head h3 { margin:0; font-size:1.05rem; }
 
-/* definition list grid for clean label/value alignment */
-.cp-def-grid{
+/* Definition grid */
+.cp-def-grid {
   display:grid;
   grid-template-columns:180px 1fr;
   row-gap:.55rem;
   column-gap:1rem;
   margin:0;
 }
-.cp-def-grid dt{
+.cp-def-grid dt {
   margin:0;
   color:#5a6775;
   font-weight:600;
   font-size:.92rem;
 }
-.cp-def-grid dd{
+.cp-def-grid dd {
   margin:0;
   font-size:.98rem;
 }
 
-/* compact button for panel header */
-.cp-btn{
-  display:inline-block;text-decoration:none;border:0;border-radius:10px;
-  padding:.75rem 1.1rem;font-weight:600;background:#104946;color:#fff;
-  transition:background .2s,transform .1s
+/* Buttons */
+.cp-btn {
+  display:inline-block;
+  text-decoration:none;
+  border:0;
+  border-radius:10px;
+  padding:.75rem 1.1rem;
+  font-weight:600;
+  background:#104946;
+  color:#fff;
+  transition:background .2s,transform .1s;
 }
-.cp-btn:hover{background:var(--ink);transform:translateY(-1px)}
-.cp-btn.sm{padding:.5rem .8rem;font-size:.9rem;border-radius:8px}
+.cp-btn:hover { background:var(--ink); transform:translateY(-1px); }
+.cp-btn.sm { padding:.5rem .8rem; font-size:.9rem; border-radius:8px; }
 
-/* key-value rows on the right side */
-.cp-kv-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.25rem 0 .75rem}
-.cp-kv{background:#f7faf9;border:1px solid rgba(10,42,77,.06);border-radius:10px;padding:.7rem .8rem}
-.cp-kv-label{display:block;color:#5a6775;font-size:.85rem;margin-bottom:.25rem}
-.cp-kv-value{font-weight:600}
+/* Key-value rows */
+.cp-kv-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:.25rem 0 .75rem; }
+.cp-kv { background:#f7faf9; border:1px solid rgba(10,42,77,.06); border-radius:10px; padding:.7rem .8rem; }
+.cp-kv-label { display:block; color:#5a6775; font-size:.85rem; margin-bottom:.25rem; }
+.cp-kv-value { font-weight:600; }
 
-/* simple divider */
-.cp-divider{height:1px;background:rgba(10,42,77,.08);margin:.9rem 0}
+/* Divider */
+.cp-divider { height:1px; background:rgba(10,42,77,.08); margin:.9rem 0; }
 
-/* badges */
-.cp-badge{
-  display:inline-block;padding:.2rem .5rem;border-radius:999px;font-size:.8rem;font-weight:700;
-  background:#eef5f4;color:#3b4b57;border:1px solid rgba(10,42,77,.08)
+/* Badge */
+.cp-badge {
+  display:inline-block;
+  padding:.2rem .5rem;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:700;
+  background:#eef5f4;
+  color:#3b4b57;
 }
-.cp-badge.ok{background:rgba(44,191,174,.12);color:#0a5c56;border-color:rgba(44,191,174,.35)}
-.cp-badge.muted{background:#f1f3f6;color:#6b7a89}
+.cp-badge.ok { background:rgba(44,191,174,.12); color:#0a5c56; }
+.cp-badge.muted { background:#f1f3f6; color:#6b7a89; }
 
-/* small “coming soon” tiles */
-.cp-tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.5rem}
-.cp-tile{border:1px solid rgba(10,42,77,.06);border-radius:10px;padding:.8rem .9rem;background:#fff}
-.cp-tile-title{font-weight:700;margin-bottom:.25rem}
-.cp-tile-sub{color:#6b7a89;font-size:.9rem;margin-bottom:.35rem}
-.cp-link{color:var(--teal);font-weight:600;text-decoration:none}
-.cp-link[aria-disabled="true"]{opacity:.55;pointer-events:none}
+/* Tiles */
+.cp-tile-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:.5rem; }
+.cp-tile { border:1px solid rgba(10,42,77,.06); border-radius:10px; padding:.8rem .9rem; background:#fff; }
+.cp-tile-title { font-weight:700; margin-bottom:.25rem; }
+.cp-tile-sub { color:#6b7a89; font-size:.9rem; margin-bottom:.35rem; }
+.cp-link { color:var(--teal); font-weight:600; text-decoration:none; }
+.cp-link[aria-disabled="true"] { opacity:.55; pointer-events:none; }
 
-/* footnote */
-.cp-footnote{text-align:center;margin-top:1.4rem;font-size:.9rem}
-.cp-hl{color:var(--teal);font-weight:700}
+/* Footer */
+.cp-footnote { text-align:center; margin-top:1.4rem; font-size:.9rem; }
+.cp-hl { color:var(--teal); font-weight:700; }
 
 /* ===== Responsive ===== */
-@media (max-width: 1024px){
-  .cp-card{max-width:960px}
+@media (max-width:900px){
+  .cp-grid { grid-template-columns:1fr; }
+  .cp-def-grid { grid-template-columns:160px 1fr; }
+  .cp-kv-row { grid-template-columns:1fr; }
+  .cp-tile-grid { grid-template-columns:1fr; }
 }
-@media (max-width: 900px){
-  .cp-grid{grid-template-columns:1fr} /* stack panels */
-  .cp-def-grid{grid-template-columns:160px 1fr}
-  .cp-kv-row{grid-template-columns:1fr}
-  .cp-tile-grid{grid-template-columns:1fr}
-}
-@media (max-width: 600px){
-  .cp-def-grid{grid-template-columns:140px 1fr}
-  .cp-tabs{flex-direction:column;align-items:center}
-  .cp-tabs button{width:92%;justify-content:center}
+@media (max-width:600px){
+  .cp-def-grid { grid-template-columns:140px 1fr; }
+  .cp-tabs { flex-direction:column; align-items:center; }
+  .cp-tabs button { width:92%; justify-content:center; }
 }
 
-/* ===== Animations ===== */
-@keyframes cpFade{from{opacity:0}to{opacity:1}}
+/* Fade animation */
+@keyframes cpFade { from{opacity:0;} to{opacity:1;} }
