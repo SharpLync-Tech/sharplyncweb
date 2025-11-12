@@ -1,72 +1,70 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v2.5 (Clean Card + Tab Reset)
+  Version: v2.6 (Final Stable Portal Page)
   Description:
-  - Restores solid white card and gradient background
-  - Tabs normal again, no transparency bleed
+  - Uses cp-* scoped CSS
+  - Includes tab navigation and responsive layout
 --}}
 
 @extends('customers.layouts.customer-layout')
-@section('title','Customer Portal')
+@section('title', 'Customer Portal')
 
 @section('content')
-<div class="portal-header">
-  <div class="portal-header-inner">
+  <div class="cp-pagehead">
     <h2>Account Portal</h2>
   </div>
-</div>
 
-<div class="portal-wrapper">
-  <div class="portal-main-card">
-    <div class="portal-tabs">
-      <button class="active" data-tab="details"><img src="/images/details.png" alt="">Details</button>
-      <button data-tab="financial"><img src="/images/financial.png" alt="">Financial</button>
-      <button data-tab="security"><img src="/images/security.png" alt="">Security</button>
-      <button data-tab="documents"><img src="/images/documents.png" alt="">Documents</button>
-      <button data-tab="support"><img src="/images/support.png" alt="">Support</button>
+  <div class="cp-card">
+    {{-- ===== Tabs ===== --}}
+    <div class="cp-tabs" id="cpTabs">
+      <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
+      <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
+      <button data-cp-target="cp-security"><img src="/images/security.png" alt="">Security</button>
+      <button data-cp-target="cp-documents"><img src="/images/documents.png" alt="">Documents</button>
+      <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
     </div>
 
-    <div id="details" class="portal-content active">
+    {{-- ===== Tab Panes ===== --}}
+    <section id="cp-details" class="cp-pane cp-show">
       <h3>Account Details v1</h3>
       <p>View and update your personal and company information.</p>
-      <a href="#" class="btn-primary">Edit Profile</a>
-    </div>
+      <a href="#" class="cp-btn">Edit Profile</a>
+    </section>
 
-    <div id="financial" class="portal-content">
+    <section id="cp-financial" class="cp-pane">
       <h3>Financial</h3>
       <p>Billing and payment history will appear here.</p>
-    </div>
+    </section>
 
-    <div id="security" class="portal-content">
+    <section id="cp-security" class="cp-pane">
       <h3>Security Settings</h3>
       <p>Manage 2FA, password, and account security preferences.</p>
-    </div>
+    </section>
 
-    <div id="documents" class="portal-content">
+    <section id="cp-documents" class="cp-pane">
       <h3>Documents</h3>
       <p>Access invoices, quotes, and uploaded files here.</p>
-    </div>
+    </section>
 
-    <div id="support" class="portal-content">
+    <section id="cp-support" class="cp-pane">
       <h3>Support</h3>
       <p>Submit support tickets or chat with SharpLync support.</p>
-    </div>
+    </section>
 
-    <p class="portal-footer-note">
-      SharpLync – Old School Support, <span class="highlight">Modern Results</span>
+    <p class="cp-footnote">
+      SharpLync – Old School Support, <span class="cp-hl">Modern Results</span>
     </p>
   </div>
-</div>
 @endsection
 
 @section('scripts')
 <script>
-  document.querySelectorAll('.portal-tabs button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.portal-tabs button').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.portal-content').forEach(c=>c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
+  document.querySelectorAll('#cpTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#cpTabs button').forEach(b => b.classList.remove('cp-active'));
+      document.querySelectorAll('.cp-pane').forEach(p => p.classList.remove('cp-show'));
+      btn.classList.add('cp-active');
+      document.getElementById(btn.dataset.cpTarget).classList.add('cp-show');
     });
   });
 </script>

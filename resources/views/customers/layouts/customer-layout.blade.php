@@ -1,10 +1,11 @@
 {{-- 
   Layout: customers/layouts/customer-layout.blade.php
-  Version: v1.9 (Stabilized Header + Dual Logout)
+  Version: v2.0 (Final Stable Portal Layout)
   Description:
-  - Keeps header glass effect stable
-  - Desktop logout ⏻ in header
-  - Mobile floating logout bottom-right
+  - Matches standalone portal visuals
+  - Desktop logout (⏻) in header
+  - Mobile floating logout FAB
+  - All .cp-* classes scoped to avoid conflicts
 --}}
 
 <!DOCTYPE html>
@@ -12,47 +13,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yield('title', 'SharpLync Customer Portal')</title>
-  <meta name="description" content="Access your SharpLync customer portal for account details, billing, and support.">
+  <title>@yield('title', 'SharpLync Portal')</title>
   <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
   <link rel="icon" type="image/png" href="/images/favicon.png">
 </head>
 
-<body class="customer-portal-body">
-  <header class="customer-header">
-    <div class="logo">
-      <a href="{{ route('customer.portal') }}">
-        <img src="/images/sharplync-logo.png" alt="SharpLync Logo">
-      </a>
-    </div>
+<body class="cp-root">
 
-    <div class="nav-right">
-      <span class="nav-welcome">
-        Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}
-      </span>
+  {{-- ===== HEADER ===== --}}
+  <header class="cp-header">
+    <a class="cp-logo" href="{{ route('customer.portal') }}">
+      <img src="/images/sharplync-logo.png" alt="SharpLync Logo">
+    </a>
 
-      {{-- Desktop logout --}}
-      <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline desktop-only">
-        @csrf
-        <button type="submit" class="logout-icon" title="Log out">⏻</button>
-      </form>
+    <div style="display:flex; align-items:center; gap:.75rem;">
+      <span class="cp-welcome">Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}</span>
+      <div class="cp-logout-inline">
+        <form action="{{ route('customer.logout') }}" method="POST">
+          @csrf
+          <button type="submit" title="Log out">⏻</button>
+        </form>
+      </div>
     </div>
   </header>
 
-  <main class="customer-main">
+  {{-- ===== MAIN CONTENT ===== --}}
+  <main class="cp-main">
     @yield('content')
   </main>
 
-  <footer class="customer-footer">
-    <p>© {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-    <p>Old School Support, <span class="highlight">Modern Results</span></p>
-  </footer>
-
-  {{-- Floating mobile logout --}}
-  <form action="{{ route('customer.logout') }}" method="POST" class="logout-float mobile-only">
+  {{-- ===== FLOATING MOBILE LOGOUT ===== --}}
+  <form action="{{ route('customer.logout') }}" method="POST" class="cp-logout-fab">
     @csrf
-    <button type="submit" title="Log out" class="logout-fab">⏻</button>
+    <button type="submit" title="Log out">⏻</button>
   </form>
+
+  {{-- ===== FOOTER ===== --}}
+  <footer class="cp-footer">
+    <p>© {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+    <p>Old School Support, <span class="cp-hl">Modern Results</span></p>
+  </footer>
 
   @yield('scripts')
 </body>
