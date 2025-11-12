@@ -17,7 +17,7 @@
             max-width: 940px;
             margin: 0 auto;
             overflow: hidden;
-            padding: 10px;
+            padding: 460px;
           }
 
           /* Each card (we'll fade between them) */
