@@ -31,13 +31,7 @@
         <div class="nav-right">
             <span class="nav-welcome">
                 Welcome, {{ Auth::guard('customer')->user()->first_name ?? 'User' }}
-            </span>
-
-            {{-- Logout form with Sharp power icon --}}
-            <form action="{{ route('customer.logout') }}" method="POST" class="logout-inline">
-                @csrf
-                <button type="submit" title="Log out">⏻</button>
-            </form>
+            </span>            
         </div>
     </header>
 
