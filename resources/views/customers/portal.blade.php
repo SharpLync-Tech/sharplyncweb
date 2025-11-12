@@ -1,11 +1,11 @@
 {{-- 
-  Page: customers/portal.blade.php
-  Version: v2.5 (SharpLync Mobile Dashboard Refresh)
-  Date locked: 12 Nov 2025, 8:04 PM
+  File: customers/portal.blade.php
+  Version: v2.6 (Confirmed Stable Baseline)
+  Date: 12 Nov 2025, 2:19 PM
   Notes:
-  - Adds fully responsive two-column desktop / one-column mobile layout
-  - Scrollable tab bar for mobile
-  - Modern card design with breathing room
+  - Restores last known fully functional layout
+  - Keeps responsive behavior verified as stable
+  - Desktop and mobile confirmed working
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -36,23 +36,21 @@
 
   <div class="cp-main">
     <div class="cp-card">
-      {{-- ===== Tabs ===== --}}
-      <div class="cp-tabs-scroll">
-        <div class="cp-tabs" id="cpTabs">
-          <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
-          <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
-          <button data-cp-target="cp-security"><img src="/images/security.png" alt="">Security</button>
-          <button data-cp-target="cp-documents"><img src="/images/documents.png" alt="">Documents</button>
-          <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
-        </div>
+      {{-- Tabs --}}
+      <div class="cp-tabs">
+        <button class="cp-active" data-cp-target="cp-details">Details</button>
+        <button data-cp-target="cp-financial">Financial</button>
+        <button data-cp-target="cp-security">Security</button>
+        <button data-cp-target="cp-documents">Documents</button>
+        <button data-cp-target="cp-support">Support</button>
       </div>
 
-      {{-- ===== Details Tab ===== --}}
+      {{-- Details --}}
       <section id="cp-details" class="cp-pane cp-show">
         <div class="cp-grid">
           <div class="cp-card-panel">
             <div class="cp-panel-head">
-              <h3>Customer Details</h3>
+              <h3>Account Details</h3>
               <a href="{{ route('profile.edit') }}" class="cp-btn sm">Edit Profile</a>
             </div>
 
@@ -134,16 +132,18 @@
         <p>Submit support tickets or chat with SharpLync support.</p>
       </section>
 
-      <p class="cp-footnote">SharpLync — Old School Support, <span class="cp-hl">Modern Results</span></p>
+      <p class="cp-footnote">
+        SharpLync — Old School Support, <span class="cp-hl">Modern Results</span>
+      </p>
     </div>
   </div>
 @endsection
 
 @section('scripts')
 <script>
-  document.querySelectorAll('#cpTabs button').forEach(btn => {
+  document.querySelectorAll('.cp-tabs button').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('#cpTabs button').forEach(b => b.classList.remove('cp-active'));
+      document.querySelectorAll('.cp-tabs button').forEach(b => b.classList.remove('cp-active'));
       document.querySelectorAll('.cp-pane').forEach(p => p.classList.remove('cp-show'));
       btn.classList.add('cp-active');
       document.getElementById(btn.dataset.cpTarget).classList.add('cp-show');
