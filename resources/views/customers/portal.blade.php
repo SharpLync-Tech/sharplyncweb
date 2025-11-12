@@ -79,12 +79,14 @@
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 50%;
-        width: 46px;
-        height: 46px;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
+        color: #2CBFAE;
+        font-size: 20px;
+        font-weight: bold;
         cursor: pointer;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
@@ -92,17 +94,11 @@
         transition: all 0.25s ease;
     "
     onmouseover="this.style.background='rgba(44,191,174,0.25)'; this.style.borderColor='rgba(44,191,174,0.6)'; this.style.transform='translateY(-2px)';"
-    onmouseout="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';">
-    <img src="/images/logout.png" alt="Logout"
-        style="
-            width: 22px !important;
-            height: 22px !important;
-            object-fit: contain;
-            display: block;
-            filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.7));
-            pointer-events: none;
-        ">
+    onmouseout="this.style.background='rgba(255,255,255,0.12)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';"
+>
+    ⏻
 </button>
+
         </form>
     </div>
 </div>
