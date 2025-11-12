@@ -1,11 +1,11 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v3.1 (UI Polish & Alignment Update)
-  Date locked: 12 Nov 2025, 6:42 PM
+  Version: v2.5 (SharpLync Mobile Dashboard Refresh)
+  Date locked: 12 Nov 2025, 8:04 PM
   Notes:
-  - Retains two-column layout
-  - Minor spacing, alignment and header refinements
-  - No structural or functional changes
+  - Adds fully responsive two-column desktop / one-column mobile layout
+  - Scrollable tab bar for mobile
+  - Modern card design with breathing room
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -37,18 +37,19 @@
   <div class="cp-main">
     <div class="cp-card">
       {{-- ===== Tabs ===== --}}
-      <div class="cp-tabs" id="cpTabs">
-        <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
-        <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
-        <button data-cp-target="cp-security"><img src="/images/security.png" alt="">Security</button>
-        <button data-cp-target="cp-documents"><img src="/images/documents.png" alt="">Documents</button>
-        <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
+      <div class="cp-tabs-scroll">
+        <div class="cp-tabs" id="cpTabs">
+          <button class="cp-active" data-cp-target="cp-details"><img src="/images/details.png" alt="">Details</button>
+          <button data-cp-target="cp-financial"><img src="/images/financial.png" alt="">Financial</button>
+          <button data-cp-target="cp-security"><img src="/images/security.png" alt="">Security</button>
+          <button data-cp-target="cp-documents"><img src="/images/documents.png" alt="">Documents</button>
+          <button data-cp-target="cp-support"><img src="/images/support.png" alt="">Support</button>
+        </div>
       </div>
 
       {{-- ===== Details Tab ===== --}}
       <section id="cp-details" class="cp-pane cp-show">
         <div class="cp-grid">
-          {{-- LEFT PANEL --}}
           <div class="cp-card-panel">
             <div class="cp-panel-head">
               <h3>Customer Details</h3>
@@ -68,7 +69,6 @@
             </dl>
           </div>
 
-          {{-- RIGHT PANEL --}}
           <div class="cp-card-panel">
             <div class="cp-panel-head">
               <h3>Recent Activity</h3>
@@ -114,7 +114,6 @@
         </div>
       </section>
 
-      {{-- ===== Other Tabs (unchanged placeholders) ===== --}}
       <section id="cp-financial" class="cp-pane">
         <h3>Financial</h3>
         <p>Billing and payment history will appear here.</p>

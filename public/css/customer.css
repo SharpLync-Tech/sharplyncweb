@@ -1,14 +1,12 @@
 /*
-  File: public/css/customer.css
-  Version: v2.3 (Mobile Optimization Update)
-  Date locked: 12 Nov 2025, 7:36 PM
+  File: customer.css
+  Version: v2.5 (SharpLync Mobile Dashboard Refresh)
+  Date locked: 12 Nov 2025, 8:04 PM
   Notes:
-  - Fixed mobile stacking layout
-  - Adjusted padding, spacing, and shadow for smaller screens
-  - Desktop layout unchanged (still v2.2 baseline)
+  - Redesigned mobile experience (scrollable tabs, clean cards, better spacing)
+  - Desktop experience unchanged
 */
 
-/* ===== Core Colors ===== */
 :root {
   --navy:#0A2A4D;
   --blue:#104976;
@@ -29,258 +27,105 @@ body {
   flex-direction:column;
 }
 
-/* ===== Header ===== */
+/* HEADER */
 .cp-header {
-  position:sticky;
-  top:0;
-  z-index:1000;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  position:sticky;top:0;z-index:1000;
+  display:flex;justify-content:space-between;align-items:center;
   padding:.75rem 1.25rem;
-  background:rgba(10,42,77,.55);
-  backdrop-filter:blur(12px);
+  background:rgba(10,42,77,.55);backdrop-filter:blur(12px);
   color:#fff;
 }
-.cp-logo img {
-  height:48px;
-  width:auto;
-  max-width:160px;
-}
-@media (max-width:768px){
-  .cp-logo img {
-    height:42px;
-    max-width:140px;
-  }
-}
-
-/* ===== Logout button ===== */
-.cp-logout-inline button {
-  margin-left:0.4rem;
+.cp-logo img{height:48px;width:auto;max-width:160px;}
+.cp-logout-inline button{
   border:1px solid rgba(255,255,255,.25);
   background:rgba(255,255,255,.15);
-  color:#fff;
-  font-size:15px;
-  border-radius:8px;
-  width:32px;
-  height:32px;
-  cursor:pointer;
-  transition:all .2s ease;
+  color:#fff;border-radius:8px;width:32px;height:32px;
+  cursor:pointer;transition:all .2s ease;
 }
-.cp-logout-inline button:hover {
-  background:rgba(44,191,174,.35);
-  box-shadow:0 0 6px rgba(44,191,174,.4);
-}
+.cp-logout-inline button:hover{background:rgba(44,191,174,.35);}
 
-/* ===== Page Head ===== */
-.cp-pagehead {
-  color:#fff;
-  text-align:center;
-  padding:1.25rem 1rem .5rem;
-}
-.cp-pagehead h2 {
-  margin:0;
-  font-size:1.25rem;
-  text-shadow:0 2px 4px rgba(0,0,0,.3);
-}
+/* PAGE HEADER */
+.cp-pagehead{text-align:center;color:#fff;padding:1.25rem 1rem .5rem;}
+.cp-pagehead h2{margin:0;font-size:1.3rem;text-shadow:0 2px 4px rgba(0,0,0,.3);}
 
-/* ===== Main wrapper ===== */
-.cp-main {
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:6vh 1rem 10vh;
-}
+/* MAIN */
+.cp-main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:5vh 1rem 8vh;}
 
-/* ===== Outer Card ===== */
-.cp-card {
+/* CARD */
+.cp-card{
   background:var(--card);
-  border-radius:16px;
+  border-radius:18px;
   box-shadow:var(--shadow);
   max-width:1100px;
   width:100%;
   padding:1.5rem 1.5rem 2rem;
 }
 
-/* ===== Tabs ===== */
-.cp-tabs {
-  display:flex;
-  flex-wrap:wrap;
-  gap:.5rem;
-  justify-content:center;
-  margin-bottom:1rem;
+/* SCROLLABLE TABS */
+.cp-tabs-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:1rem;}
+.cp-tabs{display:flex;gap:.5rem;min-width:max-content;padding-bottom:.25rem;}
+.cp-tabs button{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:#E8F2F1;border:0;border-radius:10px;
+  padding:.55rem 1rem;font-weight:600;color:var(--ink);
+  cursor:pointer;transition:background .2s,box-shadow .2s;
+  flex-shrink:0;
 }
-.cp-tabs button {
-  display:inline-flex;
-  align-items:center;
-  gap:.5rem;
-  background:#E8F2F1;
-  border:0;
-  border-radius:10px;
-  padding:.55rem 1rem;
-  font-weight:600;
-  color:var(--ink);
-  cursor:pointer;
-  transition:background .2s,box-shadow .2s;
-}
-.cp-tabs button img {
-  width:18px;
-  height:18px;
-}
-.cp-tabs button:hover { background:#D4E9E7; }
-.cp-tabs button.cp-active {
-  background:var(--ink);
-  color:#fff;
-  box-shadow:0 0 12px rgba(44,191,174,.45);
+.cp-tabs button.cp-active{background:var(--ink);color:#fff;box-shadow:0 0 12px rgba(44,191,174,.45);}
+.cp-tabs button img{width:18px;height:18px;}
+
+/* GRID LAYOUT */
+.cp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.cp-card-panel{
+  background:#fff;border:1px solid rgba(10,42,77,.06);
+  border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.05);
+  padding:1.25rem;
 }
 
-/* ===== Two Column Grid ===== */
-.cp-grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1.25rem;
-}
-.cp-card-panel {
-  background:#fff;
-  border:1px solid rgba(10,42,77,.06);
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
-  padding:1.25rem 1.25rem 1rem;
-}
+/* TITLES & HEADS */
+.cp-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.cp-panel-head h3{margin:0;font-size:1.05rem;}
 
-/* Panel Head */
-.cp-panel-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:.75rem;
+/* INFO GRID */
+.cp-def-grid{display:grid;grid-template-columns:180px 1fr;row-gap:.55rem;column-gap:1rem;margin:0;}
+.cp-def-grid dt{color:#5a6775;font-weight:600;font-size:.92rem;}
+.cp-def-grid dd{margin:0;font-size:.98rem;}
+
+/* BUTTONS */
+.cp-btn{display:inline-block;text-decoration:none;border:0;border-radius:10px;padding:.75rem 1.1rem;font-weight:600;background:#104946;color:#fff;transition:background .2s;}
+.cp-btn:hover{background:var(--ink);}
+.cp-btn.sm{padding:.5rem .8rem;font-size:.9rem;border-radius:8px;}
+
+/* CARDS AND DATA */
+.cp-kv-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.25rem 0 .75rem;}
+.cp-kv{background:#f8fbfb;border:1px solid rgba(10,42,77,.06);border-radius:10px;padding:.7rem .8rem;}
+.cp-kv-label{display:block;color:#5a6775;font-size:.85rem;margin-bottom:.25rem;}
+.cp-kv-value{font-weight:600;}
+.cp-divider{height:1px;background:rgba(10,42,77,.08);margin:.9rem 0;}
+.cp-badge{display:inline-block;padding:.2rem .5rem;border-radius:999px;font-size:.8rem;font-weight:700;}
+.cp-badge.ok{background:rgba(44,191,174,.15);color:#0a5c56;}
+.cp-badge.muted{background:#f1f3f6;color:#6b7a89;}
+.cp-tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.5rem;}
+.cp-tile{border:1px solid rgba(10,42,77,.06);border-radius:10px;padding:.8rem .9rem;background:#fff;}
+.cp-tile-title{font-weight:700;margin-bottom:.25rem;}
+.cp-tile-sub{color:#6b7a89;font-size:.9rem;margin-bottom:.35rem;}
+.cp-link{color:var(--teal);font-weight:600;text-decoration:none;}
+
+/* FOOTER */
+.cp-footnote{text-align:center;margin-top:2rem;font-size:.9rem;}
+.cp-hl{color:var(--teal);font-weight:700;}
+
+/* ===== MOBILE VIEW ===== */
+@media (max-width:768px){
+  .cp-card{padding:1rem;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);}
+  .cp-grid{grid-template-columns:1fr;gap:1rem;}
+  .cp-card-panel{border-radius:12px;padding:1rem 1rem 1.25rem;}
+  .cp-def-grid{grid-template-columns:140px 1fr;}
+  .cp-kv-row{grid-template-columns:1fr;}
+  .cp-tile-grid{grid-template-columns:1fr;}
+  .cp-tabs-scroll{margin-bottom:1.25rem;}
+  .cp-tabs button{padding:.65rem 1.2rem;border-radius:12px;font-size:.95rem;}
+  .cp-tabs button img{width:20px;height:20px;}
+  .cp-main{padding:3vh 0.6rem 8vh;}
+  .cp-pagehead h2{font-size:1.2rem;}
 }
-.cp-panel-head h3 { margin:0; font-size:1.05rem; }
-
-/* Definition grid */
-.cp-def-grid {
-  display:grid;
-  grid-template-columns:180px 1fr;
-  row-gap:.55rem;
-  column-gap:1rem;
-  margin:0;
-}
-.cp-def-grid dt {
-  margin:0;
-  color:#5a6775;
-  font-weight:600;
-  font-size:.92rem;
-}
-.cp-def-grid dd {
-  margin:0;
-  font-size:.98rem;
-}
-
-/* Buttons */
-.cp-btn {
-  display:inline-block;
-  text-decoration:none;
-  border:0;
-  border-radius:10px;
-  padding:.75rem 1.1rem;
-  font-weight:600;
-  background:#104946;
-  color:#fff;
-  transition:background .2s,transform .1s;
-}
-.cp-btn:hover { background:var(--ink); transform:translateY(-1px); }
-.cp-btn.sm { padding:.5rem .8rem; font-size:.9rem; border-radius:8px; }
-
-/* Key-value rows */
-.cp-kv-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:.25rem 0 .75rem; }
-.cp-kv { background:#f7faf9; border:1px solid rgba(10,42,77,.06); border-radius:10px; padding:.7rem .8rem; }
-.cp-kv-label { display:block; color:#5a6775; font-size:.85rem; margin-bottom:.25rem; }
-.cp-kv-value { font-weight:600; }
-
-/* Divider */
-.cp-divider { height:1px; background:rgba(10,42,77,.08); margin:.9rem 0; }
-
-/* Badge */
-.cp-badge {
-  display:inline-block;
-  padding:.2rem .5rem;
-  border-radius:999px;
-  font-size:.8rem;
-  font-weight:700;
-  background:#eef5f4;
-  color:#3b4b57;
-}
-.cp-badge.ok { background:rgba(44,191,174,.12); color:#0a5c56; }
-.cp-badge.muted { background:#f1f3f6; color:#6b7a89; }
-
-/* Tiles */
-.cp-tile-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:.5rem; }
-.cp-tile { border:1px solid rgba(10,42,77,.06); border-radius:10px; padding:.8rem .9rem; background:#fff; }
-.cp-tile-title { font-weight:700; margin-bottom:.25rem; }
-.cp-tile-sub { color:#6b7a89; font-size:.9rem; margin-bottom:.35rem; }
-.cp-link { color:var(--teal); font-weight:600; text-decoration:none; }
-.cp-link[aria-disabled="true"] { opacity:.55; pointer-events:none; }
-
-/* ===== Footer ===== */
-.cp-footer {
-  background:var(--ink);
-  color:#fff;
-  text-align:center;
-  padding:1.5rem 1rem;
-  margin-top:auto;
-  font-size:.95rem;
-}
-.cp-footer .cp-hl { color:var(--teal); font-weight:700; }
-.cp-footer p { margin:0; }
-
-.cp-footnote {
-  text-align:center;
-  margin-top:2rem;
-  font-size:.9rem;
-}
-.cp-hl { color:var(--teal); font-weight:700; }
-
-/* ===== Responsive ===== */
-@media (max-width:900px){
-  .cp-grid { grid-template-columns:1fr; }
-  .cp-def-grid { grid-template-columns:160px 1fr; }
-  .cp-kv-row { grid-template-columns:1fr; }
-  .cp-tile-grid { grid-template-columns:1fr; }
-}
-
-/* ===== Mobile Refinements ===== */
-@media (max-width:600px){
-  .cp-main {
-    padding:4vh 0.8rem 8vh;
-  }
-  .cp-card {
-    padding:1rem 1rem 1.5rem;
-    border-radius:12px;
-  }
-  .cp-grid {
-    gap:1rem;
-  }
-  .cp-card-panel {
-    padding:1rem;
-    border-radius:10px;
-  }
-  .cp-def-grid {
-    grid-template-columns:130px 1fr;
-  }
-  .cp-tabs {
-    flex-direction:column;
-    align-items:center;
-  }
-  .cp-tabs button {
-    width:94%;
-    justify-content:center;
-  }
-  .cp-tabs button img {
-    width:20px;
-    height:20px;
-  }
-}
-
-/* ===== Animations ===== */
-@keyframes cpFade { from{opacity:0;} to{opacity:1;} }
