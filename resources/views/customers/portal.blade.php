@@ -1,15 +1,13 @@
 {{-- 
   Page: customers/portal.blade.php
-  Version: v2.4.2 (Image-Lock Update)
-  Last updated: 13 Nov 2025 by Max (ChatGPT)
+  Version: v2.5 (Clean Card + Tab Reset)
   Description:
-  - Fixed icon sizes to prevent scaling (Hulk mode).
-  - Clean layout; logout handled via layout.
+  - Restores solid white card and gradient background
+  - Tabs normal again, no transparency bleed
 --}}
 
 @extends('customers.layouts.customer-layout')
-
-@section('title', 'Customer Portal')
+@section('title','Customer Portal')
 
 @section('content')
 <div class="portal-header">
@@ -20,27 +18,14 @@
 
 <div class="portal-wrapper">
   <div class="portal-main-card">
-
-    {{-- ===== Tabs ===== --}}
     <div class="portal-tabs">
-      <button class="active" data-tab="details">
-        <img class="icon-18" src="/images/details.png" alt="Details Icon"> Details
-      </button>
-      <button data-tab="financial">
-        <img class="icon-18" src="/images/financial.png" alt="Financial Icon"> Financial
-      </button>
-      <button data-tab="security">
-        <img class="icon-18" src="/images/security.png" alt="Security Icon"> Security
-      </button>
-      <button data-tab="documents">
-        <img class="icon-18" src="/images/documents.png" alt="Documents Icon"> Documents
-      </button>
-      <button data-tab="support">
-        <img class="icon-18" src="/images/support.png" alt="Support Icon"> Support
-      </button>
+      <button class="active" data-tab="details"><img src="/images/details.png" alt="">Details</button>
+      <button data-tab="financial"><img src="/images/financial.png" alt="">Financial</button>
+      <button data-tab="security"><img src="/images/security.png" alt="">Security</button>
+      <button data-tab="documents"><img src="/images/documents.png" alt="">Documents</button>
+      <button data-tab="support"><img src="/images/support.png" alt="">Support</button>
     </div>
 
-    {{-- ===== TAB CONTENT ===== --}}
     <div id="details" class="portal-content active">
       <h3>Account Details v1</h3>
       <p>View and update your personal and company information.</p>
@@ -67,7 +52,7 @@
       <p>Submit support tickets or chat with SharpLync support.</p>
     </div>
 
-    <p style="text-align:center; margin-top:2rem; font-size:0.9rem;">
+    <p class="portal-footer-note">
       SharpLync – Old School Support, <span class="highlight">Modern Results</span>
     </p>
   </div>
@@ -76,10 +61,10 @@
 
 @section('scripts')
 <script>
-  document.querySelectorAll('.portal-tabs button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.portal-tabs button').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.portal-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.portal-tabs button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.portal-tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.portal-content').forEach(c=>c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
     });
