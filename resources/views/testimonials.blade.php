@@ -90,6 +90,41 @@
         color: #2CBFAE;
       }
 
+      /* Enhance name & title */
+            .testimonial-card .who {
+              display: block;
+              margin-top: 18px;
+              font-weight: 600;
+              font-size: 1.05rem;
+              color: #ffffff;
+              opacity: 0.95;
+              position: relative;
+              padding-top: 12px;
+            }
+
+            /* Thin teal accent line */
+            .testimonial-card .who::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 60px;
+              height: 2px;
+              background: linear-gradient(90deg, #2CBFAE 0%, #00E6BE 100%);
+              border-radius: 2px;
+            }
+
+            /* Lighter, elegant subtitle look */
+            .testimonial-card .who span {
+              display: block;
+              font-weight: 400;
+              font-size: 0.9rem;
+              letter-spacing: 0.3px;
+              color: rgba(223, 249, 246, 0.85);
+              margin-top: 4px;
+            }
+
+
       /* === Dots === */
       .testimonial-dots {
         text-align: center;
