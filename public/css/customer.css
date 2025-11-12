@@ -1,44 +1,83 @@
-/* ========== FIXED PORTAL ROOT ========== */
+/*
+  Page: sharplync.css
+  Version: v1.8 (Customer Portal Scoped Styles)
+  Locked: 12 Nov 2025 @ 2:19 PM
+*/
+
 .cp-root {
   --navy:#0A2A4D;
   --blue:#104976;
   --teal:#2CBFAE;
-  min-height:100vh;
-  background:linear-gradient(135deg, var(--navy) 0%, var(--blue) 40%, var(--teal) 100%);
+  background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 40%,var(--teal) 100%);
   color:#0A2A4D;
   font-family:'Poppins',sans-serif;
-  display:flex;
-  flex-direction:column;
+  min-height:100vh;
 }
 
 .cp-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:rgba(10,42,77,.55);
-  backdrop-filter:blur(10px);
-  padding:.8rem 1.5rem;
+  position:sticky;top:0;z-index:1000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.75rem 1.25rem;
+  background:rgba(10,42,77,.55);backdrop-filter:blur(10px);
   color:#fff;
 }
 
-.cp-logo img { height:42px; }
+.cp-logo img{height:48px;}
+.cp-welcome{font-weight:600;}
 
-.cp-welcome { font-weight:500; }
-.cp-logout-inline button {
-  margin-left:.5rem;
-  border:none;
-  background:rgba(255,255,255,.15);
-  border-radius:8px;
-  color:#fff;
-  width:32px;
-  height:32px;
-  cursor:pointer;
-  font-size:15px;
-  transition:all .2s ease;
+.cp-logout-inline button{
+  width:34px;height:34px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.15);color:#fff;
+  font-size:16px;cursor:pointer;
 }
-.cp-logout-inline button:hover {
-  background:rgba(44,191,174,.4);
-  transform:translateY(-1px);
+.cp-logout-inline button:hover{
+  background:rgba(44,191,174,.45);
 }
 
-/* Keep rest of the cp-* classes as per v1.8 baseline — no need to change */
+.cp-pagehead{text-align:center;color:#fff;padding:1.25rem 1rem .5rem;}
+.cp-pagehead h2{margin:0;font-size:1.25rem;text-shadow:0 2px 4px rgba(0,0,0,.3);}
+
+.cp-card{
+  background:#fff;border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  max-width:900px;margin:0 auto;padding:2rem;
+}
+
+.cp-tabs{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  justify-content:center;margin-bottom:1.25rem;
+}
+.cp-tabs button{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:#E8F2F1;border:0;border-radius:10px;
+  padding:.6rem 1.1rem;font-weight:600;color:#0A2A4D;
+  cursor:pointer;transition:background .2s,box-shadow .2s;
+}
+.cp-tabs button:hover{background:#D4E9E7;}
+.cp-tabs button.cp-active{
+  background:#0A2A4D;color:#fff;
+  box-shadow:0 0 12px rgba(44,191,174,.5);
+}
+
+.cp-pane{display:none;animation:cpFade .25s ease;}
+.cp-pane.cp-show{display:block;}
+.cp-pane h3{margin:.25rem 0 .5rem;font-size:1.25rem;}
+.cp-pane p{color:#555;line-height:1.6;margin:0 0 1rem;}
+
+.cp-btn{
+  display:inline-block;text-decoration:none;
+  border-radius:10px;padding:.85rem 1.25rem;
+  font-weight:600;background:#104946;color:#fff;
+}
+.cp-btn:hover{background:#0A2A4D;}
+
+.cp-footnote{text-align:center;margin-top:2rem;font-size:.9rem;}
+.cp-hl{color:#2CBFAE;font-weight:700;}
+
+@keyframes cpFade{from{opacity:0}to{opacity:1}}
+@media (max-width:768px){
+  .cp-tabs{flex-direction:column;align-items:center;}
+  .cp-tabs button{width:92%;justify-content:center;}
+  .cp-card{padding:1.25rem;}
+}
