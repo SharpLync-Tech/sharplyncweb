@@ -1,11 +1,7 @@
 {{-- 
   Page: resources/views/customers/portal.blade.php
-  Version: v2.0.1 (Live Portal Base – $user-safe)
-  Changes:
-  - Switched from $customer -> $user (matches your users table schema).
-  - Added safe fallbacks & null checks (no more "Undefined variable").
-  - Preserves existing layout/classes/styles exactly.
-  - Sections: Security / Support / Account Summary.
+  Version: v2.2 (Initials Avatar + Detail + Mobile Polish)
+  Updated: 13 Nov 2025 by Max (ChatGPT)
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -13,24 +9,21 @@
 @section('title', 'Customer Portal')
 
 @section('content')
-
 @php
-    // Prefer an explicitly-passed $user, fall back to Auth::user()
+    use Illuminate\Support\Str;
     $u = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
-
-    // Build display helpers safely
     $fullName = $u ? trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) : 'Customer Name';
     if ($fullName === '') $fullName = 'Customer Name';
-
     $email = $u->email ?? null;
-    $phone = $u->phone ?? null;            // if you store it elsewhere, adjust later
-    $address = $u->address ?? null;        // same here
-    $status = $u->account_status ?? 'Active Customer';
-    $since  = $u && $u->created_at ? $u->created_at->format('F Y') : null;
-    $photo  = $u->profile_photo ?? null;
+    $status = ucfirst($u->account_status ?? 'Active');
+    $since = $u && $u->created_at ? $u->created_at->format('F Y') : null;
 
-    // One-letter avatar placeholder
-    $avatarLetter = strtoupper(mb_substr($fullName, 0, 1));
+    // Generate initials (e.g., "JB")
+    $nameParts = explode(' ', trim($fullName));
+    $initials = '';
+    foreach ($nameParts as $p) {
+        $initials .= strtoupper(Str::substr($p, 0, 1));
+    }
 @endphp
 
 <div class="cp-pagehead">
@@ -38,42 +31,20 @@
 </div>
 
 <div class="cp-card cp-dashboard-grid">
-    
-    {{-- LEFT COLUMN: Customer Profile --}}
+    {{-- LEFT COLUMN: Profile --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
-            <div class="cp-avatar">
-                @if(!empty($photo))
-                    <img src="{{ Str::startsWith($photo, ['http://','https://','/']) ? $photo : asset('storage/'.$photo) }}" alt="{{ $fullName }}">
-                @else
-                    <div class="cp-avatar-placeholder">{{ $avatarLetter }}</div>
-                @endif
-            </div>
-
+            <div class="cp-avatar">{{ $initials }}</div>
             <div class="cp-name-group">
                 <h3>{{ $fullName }}</h3>
-                <p class="cp-member-status">{{ ucfirst($status) }}</p>
+                <p class="cp-member-status">{{ $status }}</p>
+                <p class="cp-detail-line">Email: <a href="mailto:{{ $email }}">{{ $email }}</a></p>
+                @if($since)
+                    <p class="cp-detail-line">Customer since: {{ $since }}</p>
+                @endif
             </div>
         </div>
-        
-        <div class="cp-contact-details">
-            @if($email)
-                <p><strong>Email:</strong> <a href="mailto:{{ $email }}">{{ $email }}</a></p>
-            @endif
 
-            @if($phone)
-                <p><strong>Phone:</strong> {{ $phone }}</p>
-            @endif
-
-            @if($address)
-                <p><strong>Address:</strong> {{ $address }}</p>
-            @endif
-
-            @if($since)
-                <p class="cp-member-since">Customer since: {{ $since }}</p>
-            @endif
-        </div>
-        
         <div class="cp-profile-actions">
             <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
             <form method="POST" action="{{ route('customer.logout') }}" style="display:inline;">
@@ -83,9 +54,9 @@
         </div>
     </div>
 
-    {{-- RIGHT COLUMN: Portal Cards --}}
+    {{-- RIGHT COLUMN: Cards --}}
     <div class="cp-activity-column">
-        
+
         {{-- SECURITY CARD --}}
         <div class="cp-activity-card cp-security-card">
             <h4>Security</h4>
@@ -102,8 +73,8 @@
             <div class="cp-support-footer">
                 <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-navy-btn">Open Support</a>
                 <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
-                class="cp-btn cp-small-btn cp-outline-btn">
-                Download Quick Support
+                   class="cp-btn cp-small-btn cp-outline-btn">
+                    Download Quick Support
                 </a>
             </div>
         </div>
@@ -119,5 +90,4 @@
 
     </div>
 </div>
-
 @endsection

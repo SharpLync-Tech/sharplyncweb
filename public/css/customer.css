@@ -1,3 +1,13 @@
+/* ===================================================================
+   SharpLync Customer Portal Stylesheet
+   Version: v2.2 (Brand Polish + Responsive + Avatar Initials)
+   Updated: 13 Nov 2025 by Max (ChatGPT)
+   Description:
+   - Unified SharpLync brand palette (navy/blue/teal)
+   - Initials avatar instead of photo
+   - Improved profile detail and mobile layout
+=================================================================== */
+
 /* ------------------------------------------------------------------- */
 /* ===== Base Variables and Body Styling ===== */
 /* ------------------------------------------------------------------- */
@@ -29,7 +39,7 @@
     background: var(--card);
     border-radius: 16px;
     box-shadow: var(--shadow);
-    max-width: 1000px; /* Increased max width for better desktop fit */
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -39,13 +49,13 @@
     color: #fff;
     padding: 1.25rem 1rem .5rem;
 }
-
 .cp-pagehead h2 {
     margin: 0;
     font-size: 1.75rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
 }
 
+/* Buttons */
 .cp-btn {
     display: inline-block;
     text-decoration: none;
@@ -59,28 +69,29 @@
     transition: background .2s ease, transform .1s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
 }
-
 .cp-btn:hover {
     background: var(--blue);
     transform: translateY(-1px);
 }
-
 .cp-small-btn {
     padding: .4rem .9rem;
     font-size: .85rem;
 }
-
 .cp-teal-btn {
     background: var(--teal);
 }
-
 .cp-teal-btn:hover {
     background: #20A694;
-    transform: translateY(-1px);
+}
+.cp-navy-btn {
+    background: var(--navy);
+}
+.cp-navy-btn:hover {
+    background: var(--blue);
 }
 
 /* ------------------------------------------------------------------- */
-/* ===== Header and Footer Styling ===== */
+/* ===== Header and Footer ===== */
 /* ------------------------------------------------------------------- */
 .cp-header {
     position: sticky;
@@ -96,19 +107,16 @@
     border-bottom: 1px solid rgba(255, 255, 255, .08);
     color: #E9F4F3;
 }
-
 .cp-logo img {
     height: 48px;
     width: auto;
 }
-
 .cp-welcome {
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 1rem;
 }
-
 .cp-logout-inline button {
     width: 34px;
     height: 34px;
@@ -121,12 +129,10 @@
     line-height: 1;
     transition: transform .12s ease, background .2s ease;
 }
-
 .cp-logout-inline button:hover {
     background: rgba(44, 191, 174, .45);
     transform: translateY(-1px);
 }
-
 .cp-footer {
     background: var(--ink);
     color: #fff;
@@ -135,7 +141,6 @@
     font-size: .95rem;
     margin-top: 2rem;
 }
-
 .cp-footer .cp-hl {
     color: var(--teal);
     font-weight: 700;
@@ -144,28 +149,25 @@
 /* ------------------------------------------------------------------- */
 /* ===== Dashboard Layout (Two-Column Grid) ===== */
 /* ------------------------------------------------------------------- */
-
 .cp-dashboard-grid {
-    /* Default to single column (stacked) for mobile */
     display: flex;
     flex-direction: column;
     gap: 2rem; 
     padding: 2rem;
 }
-
 @media (min-width: 769px) {
     .cp-dashboard-grid {
         display: grid;
-        grid-template-columns: 3fr 2fr; /* Creates the two-column split */
+        grid-template-columns: 3fr 2fr;
         gap: 2.5rem;
         padding: 2.5rem;
     }
 }
 
-/* --- Profile Card (Left Column) --- */
-.cp-profile-card {
-    /* Profile content will be the first item in the grid, taking up 3fr */
-}
+/* ------------------------------------------------------------------- */
+/* ===== Profile Card (Left Column) ===== */
+/* ------------------------------------------------------------------- */
+.cp-profile-card { }
 
 .cp-profile-header {
     display: flex;
@@ -176,14 +178,21 @@
     border-bottom: 1px solid #eee;
 }
 
+/* Avatar: initials only */
 .cp-avatar {
     width: 90px;
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    /* Using a placeholder image URL for the mockup */
-    background: url('https://placehold.co/90x90/58679d/ffffff?text=JD') center/cover;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
 }
 
 .cp-profile-header h3 {
@@ -191,11 +200,15 @@
     font-size: 1.75rem;
     color: var(--ink);
 }
-
 .cp-member-status {
     color: var(--teal);
     font-weight: 600;
     margin: 0;
+}
+.cp-name-group p.cp-detail-line {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    color: var(--muted);
 }
 
 .cp-contact-details p {
@@ -203,13 +216,11 @@
     color: var(--muted);
     line-height: 1.5;
 }
-
 .cp-contact-details a {
     color: var(--blue);
     text-decoration: none;
     font-weight: 500;
 }
-
 .cp-member-since {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
@@ -218,156 +229,55 @@
     color: var(--muted);
 }
 
+/* Edit Profile / Logout */
 .cp-edit-profile {
-    background: #E8F2F1;
-    color: var(--teal);
+    background: #E9EEF5;
+    color: var(--blue);
     font-size: .9rem;
     padding: .6rem 1.1rem;
     margin-top: 1.5rem;
-    border: 1px solid var(--teal);
+    border: 1px solid var(--blue);
     box-shadow: none;
 }
-
 .cp-edit-profile:hover {
-    background: #D4E9E7;
-    transform: none;
+    background: #D6E1F0;
+}
+.cp-logout-btn {
+    background: var(--navy);
+    margin-left: .5rem;
+}
+.cp-logout-btn:hover {
+    background: var(--blue);
 }
 
-/* --- Activity Column (Right Column Stack) --- */
+/* ------------------------------------------------------------------- */
+/* ===== Activity Column (Right) ===== */
+/* ------------------------------------------------------------------- */
 .cp-activity-column {
-    /* This will be the second item in the grid, taking up 2fr */
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
-
 .cp-activity-card {
     background: #f9f9f9;
     padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
 }
-
 .cp-activity-card h4 {
     margin: 0 0 .5rem;
     font-size: 1.2rem;
     color: var(--ink);
 }
 
-/* Invoice Card */
-.cp-invoice-card {
-    border-left: 4px solid var(--teal);
-}
-
-.cp-invoice-date {
-    color: var(--muted);
-    font-size: .9rem;
-    margin: 0;
-}
-
-.cp-invoice-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: .75rem;
-    padding-top: .75rem;
-    border-top: 1px solid #eee;
-}
-
-.cp-invoice-amount {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--ink);
-}
-
-/* Ticket Card */
-.cp-ticket-card {
-    border-left: 4px solid var(--navy);
-}
-
-.cp-ticket-status {
-    font-style: italic;
-    color: var(--muted);
-    font-size: .9rem;
-    margin-bottom: .5rem;
-}
-
-.cp-ticket-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    gap: 1rem;
-}
-
-.cp-progress-container {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-}
-
-.cp-progress-bar {
-    width: 100%;
-    background: #e0e0e0;
-    border-radius: 4px;
-    height: 8px;
-}
-
-.cp-progress-fill {
-    height: 100%;
-    background: var(--teal);
-    border-radius: 4px;
-    transition: width .4s ease;
-}
-
-.cp-progress-label {
-    font-size: .8rem;
-    color: var(--muted);
-    margin-bottom: 5px;
-}
-
-.cp-track-btn {
-    background: var(--blue);
-    white-space: nowrap;
-}
-
-/* Plan Card */
-.cp-plan-card {
-    border-left: 4px solid var(--teal);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.cp-plan-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: .5rem;
-}
-
-.cp-current-plan {
-    font-size: 1rem;
-    color: var(--ink);
-}
-
-.cp-upgrade-btn {
-    color: var(--teal);
-    font-weight: 600;
-    text-decoration: none;
-    font-size: .95rem;
-}
-
-.cp-upgrade-btn:hover {
-    text-decoration: underline;
-}
+/* Example borders for visual categories */
+.cp-invoice-card { border-left: 4px solid var(--teal); }
+.cp-ticket-card { border-left: 4px solid var(--navy); }
+.cp-plan-card { border-left: 4px solid var(--teal); }
 
 /* ------------------------------------------------------------------- */
-/* ===== Responsive Adjustments (Mobile/Small Screen) ===== */
+/* ===== Responsive Adjustments (Mobile) ===== */
 /* ------------------------------------------------------------------- */
-
 @media (max-width: 768px) {
     .cp-header {
         flex-direction: column;
@@ -375,26 +285,33 @@
         padding: 1rem;
         text-align: center;
     }
-
     .cp-welcome {
         flex-direction: column;
         gap: 0;
     }
-
     .cp-logo img {
         height: 56px;
     }
-
-    .cp-logout-inline {
-        /* Hide inline logout on mobile if using a floating button (FAB) */
-        display: none;
-    }
-
     .cp-main {
         padding: 1rem .75rem 4rem;
     }
-
     .cp-card {
         padding: 1.5rem 1rem;
+    }
+    .cp-dashboard-grid {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem 1rem;
+    }
+    .cp-profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .cp-avatar {
+        margin-bottom: 1rem;
+    }
+    .cp-btn {
+        width: 100%;
+        text-align: center;
     }
 }
