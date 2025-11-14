@@ -1,10 +1,9 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.1
+   Version: 1.2
    Notes:
    - My Story section redesigned (v1.0)
-   - Tagline under "About SharpLync" styled (v1.1)
-   - Testimonials + Modal untouched
+   - Tagline now applies correctly (v1.2)
    ============================================================ */
 
 body.about-body {
@@ -63,35 +62,38 @@ body.about-body {
 }
 
 /* ============================================================
-   ★ NEW SECTION ADDED — "ABOUT SUBTITLE" UNDER MAIN HEADING ★
-   Version 1.1
+   ★ TAGLINE (v1.2 — FIXED)
+   Applies styling BOTH via .about-subtitle
+   AND inside .content-header p.about-subtitle
    ============================================================ */
 
-.about-subtitle {
+.about-subtitle,
+.content-header p.about-subtitle {
     max-width: 900px;
     margin: 0.5rem auto 2.2rem auto;
     text-align: center;
-    font-size: 1.15rem;
+
+    font-size: 1.25rem;
     font-weight: 300;
-    color: rgba(233, 244, 243, 0.92);
+    color: rgba(233, 244, 243, 0.95);
+
     line-height: 1.6;
     letter-spacing: 0.3px;
-    opacity: 0.95;
 
-    /* SharpLync glow */
-    text-shadow: 0 0 8px rgba(44,191,174,0.18);
+    text-shadow: 0 0 10px rgba(44,191,174,0.25);
+    opacity: 1;
 }
 
 @media (max-width: 768px) {
-    .about-subtitle {
-        font-size: 1rem;
+    .about-subtitle,
+    .content-header p.about-subtitle {
+        font-size: 1.05rem;
         padding: 0 1rem;
-        line-height: 1.55;
     }
 }
 
 /* ============================================================
-   ★ NEW SECTION ADDED — MY STORY CARD (v1.0)
+   ★ MY STORY CARD (v1.0)
    ============================================================ */
 
 .about-story-card {
@@ -120,12 +122,10 @@ body.about-body {
     color: #e9f4f3;
 }
 
-/* collapsed */
 #storyFull.collapsed {
     display: none;
 }
 
-/* Toggle button */
 #toggleStory {
     margin-top: 1.5rem;
     display: inline-block;
@@ -147,15 +147,12 @@ body.about-body {
         padding: 1.5rem;
         margin: 2rem 1rem;
     }
-
     .about-story-card h3 {
         font-size: 1.45rem;
     }
-
     .about-story-content p {
         font-size: 1rem;
     }
-
     #toggleStory {
         font-size: 0.95rem;
         padding: 0.5rem 1rem;
@@ -163,7 +160,7 @@ body.about-body {
 }
 
 /* ============================================================
-   TESTIMONIAL SLIDER (UNCHANGED)
+   TESTIMONIALS + MODAL (unchanged)
    ============================================================ */
 
 .testimonials-section {
@@ -197,7 +194,6 @@ body.about-body {
     transform: translateY(0);
 }
 
-/* Name + role */
 .testimonial-meta h4 {
     margin-bottom: 0.25rem;
     font-weight: 600;
@@ -207,14 +203,12 @@ body.about-body {
     opacity: 0.85;
 }
 
-/* Preview text */
 .testimonial-preview {
     margin-top: 1rem;
     font-weight: 400;
     line-height: 1.6;
 }
 
-/* Read More button */
 .testimonial-read-more {
     margin-top: 1rem;
     padding: 0.35rem 0.75rem;
@@ -228,7 +222,6 @@ body.about-body {
     background: rgba(44,191,174,0.5);
 }
 
-/* Dots */
 .testimonial-dots {
     margin-top: 1.5rem;
     display: flex;
@@ -248,10 +241,7 @@ body.about-body {
     background: #2CBFAE;
 }
 
-/* ============================================================
-   MODAL (UNCHANGED)
-   ============================================================ */
-
+/* Modal styles left unchanged */
 .testimonial-modal {
     position: fixed;
     inset: 0;
