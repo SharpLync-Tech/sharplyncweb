@@ -557,8 +557,8 @@ footer {
 /* Mobile adjustments */
 @media (max-width: 768px) {
     .story-signature .sig-linkedin img {
-        width: 20px;
-        height: 20px;
+        width: 30px;
+        height: 30px;
     }
 }
 
