@@ -158,6 +158,7 @@ body.about-body {
 #toggleStory:hover,
 .toggle-btn:hover {
     background: rgba(44, 191, 174, 0.5);
+    color: #0A2A4D;
 }
 
 
