@@ -70,8 +70,9 @@
               <div class="sig-name">Jannie Brits</div>
               <div class="sig-role">Founder & Lead Engineer</div>
 
-              <a class="sig-linkedin" href="https://www.linkedin.com/in/jcbrits/" target="_blank">
-                  <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn">
+              <a href="https://www.linkedin.com/in/jcbrits/" 
+                class="sig-linkedin" target="_blank">
+        <       img src="/images/linkedin.png" alt="LinkedIn">
               </a>
           </div>
 
