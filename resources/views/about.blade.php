@@ -1,6 +1,6 @@
 <!-- =====================
      Works on Desktop & Mobile.
-     Hamburge menu issue and story not colapsing. 
+     Hamburge menu not overlaying. 
      Modals working.    
      ===================== -->
 
@@ -21,11 +21,7 @@
   <div class="about-title-wrapper fade-section">
       <h1 class="about-title">
           About <span class="gradient">SharpLync</span>
-      </h1>
-      <p class="about-subtitle">
-          From the Granite Belt to the Cloud, bridging the gap between people and technology
-          with old school support and modern results.
-      </p>
+      </h1>      
   </div>
 
   {{-- =============================================== --}}
@@ -70,7 +66,7 @@
               <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
           </div>
 
-          <button id="toggleStory" class="toggle-btn">Continue My Story +</button>
+          <button id="toggleStory" class="toggle-btn">Continue My Story...</button>
       </div>
   </div>
 
@@ -175,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => {
       expanded = !expanded;
       storyFull.classList.toggle('collapsed', !expanded);
-      toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story +';
+      toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story...';
     });
   }
 

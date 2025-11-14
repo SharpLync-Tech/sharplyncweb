@@ -233,6 +233,7 @@ body.about-body {
 
 .testimonial.active {
     position: relative;
+    background: #ffffff;
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
