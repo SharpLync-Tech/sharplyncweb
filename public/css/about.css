@@ -267,7 +267,7 @@ body.about-body {
 
 .testimonial-dots {
     margin-top: 1.5rem;
-    margin-bottom: 3rem;
+    margin-bottom: 6rem;
     display: flex;
     justify-content: center;
     gap: 0.7rem;
@@ -375,6 +375,20 @@ body.about-body {
     position: relative;
     z-index: 1;
 }
+
+.testimonial-modal-quote {
+    white-space: nowrap; /* Prevents stray quotes / line breaks */
+}
+
+.testimonial-modal-inner::before {
+    content: "❝";
+    font-size: 4rem;
+    color: rgba(255,255,255,0.18);
+    position: absolute;
+    top: -10px;
+    left: 30px;
+}
+
 
 /* Teal accent separator (thin line) */
 .testimonial-modal-separator {
