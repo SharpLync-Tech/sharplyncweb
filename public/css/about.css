@@ -543,8 +543,8 @@ footer {
 
 /* LinkedIn icon */
 .story-signature .sig-linkedin img {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     opacity: 0.85;
     transition: 0.2s ease;
 }
@@ -557,8 +557,8 @@ footer {
 /* Mobile adjustments */
 @media (max-width: 768px) {
     .story-signature .sig-linkedin img {
-        width: 30px;
-        height: 30px;
+        width: 20px;
+        height: 20px;
     }
 }
 
