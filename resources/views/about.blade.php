@@ -286,15 +286,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const name     = fromCard?.dataset.name || '';
     const who      = fromCard?.dataset.who || '';
 
+    // === Option A Fix — remove stray opening quote ===
     if (modalText) {
-    // Remove a leading quote: " or “ or ”
-    const cleaned = fullText.replace(/^["“”]/, "");
-    modalText.textContent = cleaned;
-  }
+        const cleaned = fullText.replace(/^["“”]/, "");
+        modalText.textContent = cleaned;
+    }
+
     if (modalName) modalName.textContent = name;
     if (modalRole) {
-      modalRole.textContent = who;
-      modalRole.style.display = who ? 'block' : 'none';
+        modalRole.textContent = who;
+        modalRole.style.display = who ? 'block' : 'none';
     }
 
     stopCycle();
@@ -302,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
     modal.setAttribute('aria-hidden', 'false');
   }
+
 
   function closeModal() {
     if (!modal) return;
