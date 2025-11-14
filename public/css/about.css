@@ -344,7 +344,15 @@ body.about-body {
 }
 
 /* Decorative quote mark */
-
+.testimonial-modal-dialog::before {
+    content: "❝";
+    font-size: 120px;
+    color: rgba(255, 255, 255, 0.09);
+    position: absolute;
+    top: -45px;
+    left: 25px;
+    z-index: 0;
+}
 
 /* Close button */
 .testimonial-modal-close {
@@ -369,16 +377,7 @@ body.about-body {
 }
 
  /* Decorative quote mark */
-.testimonial-modal-quote {
-    font-size: 110px;
-    color: rgba(255, 255, 255, 0.08);
-    position: absolute;
-    top: -45px;
-    left: 25px;
-    z-index: 0;
-    pointer-events: none;
-    white-space: nowrap;
-}
+
 
 @media (max-width: 768px) {
     .testimonial-modal-quote {
