@@ -1,5 +1,6 @@
 @extends('layouts.about-base')
 
+
 @section('title', 'SharpLync | About')
 
 @php
