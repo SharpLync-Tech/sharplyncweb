@@ -136,6 +136,12 @@ body.about-body {
     text-align: center;
 }
 
+/* My Story collapse control */
+#storyFull.collapsed {
+    display: none !important;
+}
+
+
 /* Subtitle heading */
 .story-text h3 {
     text-align: center;
