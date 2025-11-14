@@ -344,15 +344,7 @@ body.about-body {
 }
 
 /* Decorative quote mark */
-.testimonial-modal-dialog::before {
-    content: "❝";
-    font-size: 120px;
-    color: rgba(255, 255, 255, 0.09);
-    position: absolute;
-    top: -45px;
-    left: 25px;
-    z-index: 0;
-}
+
 
 /* Close button */
 .testimonial-modal-close {
