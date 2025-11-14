@@ -27,6 +27,8 @@ class SecurityHeaders
             'Content-Security-Policy',
             "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; ".
             "img-src 'self' data: https: http:; ".
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
+            "font-src 'self' data: https://fonts.gstatic.com; ".
             "style-src 'self' 'unsafe-inline'; ".
             "font-src 'self' data:; ".
             "script-src 'self' 'unsafe-inline' https:;"
