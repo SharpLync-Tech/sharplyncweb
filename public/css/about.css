@@ -267,6 +267,7 @@ body.about-body {
 
 .testimonial-dots {
     margin-top: 1.5rem;
+    margin-bottom: 3rem;
     display: flex;
     justify-content: center;
     gap: 0.7rem;
@@ -300,29 +301,53 @@ body.about-body {
     display: flex;
 }
 
+/* Dark backdrop */
 .testimonial-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(5, 18, 35, 0.72);
-    backdrop-filter: blur(10px);
+    background: rgba(5, 18, 35, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
+/* === GLASSY DIALOG CARD === */
 .testimonial-modal-dialog {
     position: relative;
     max-width: 850px;
     width: 92%;
-    background: rgba(10, 42, 77, 0.95);
-    border-radius: 22px;
+
+    /* Frosted Glass */
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
     padding: 2.5rem 2.8rem;
-    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
     animation: modalIn 0.25s ease;
+    color: #fff;
 }
 
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+/* Soft glow when open (optional but NICE) */
+.testimonial-modal.open .testimonial-modal-dialog {
+    box-shadow: 0 0 24px rgba(44, 191, 174, 0.45);
+    transform: scale(1.01);
 }
 
+/* Decorative quote mark */
+.testimonial-modal-dialog::before {
+    content: "❝";
+    font-size: 120px;
+    color: rgba(255, 255, 255, 0.09);
+    position: absolute;
+    top: -45px;
+    left: 25px;
+    z-index: 0;
+}
+
+/* Close button */
 .testimonial-modal-close {
     position: absolute;
     right: 18px;
@@ -332,28 +357,51 @@ body.about-body {
     border: none;
     color: #fff;
     cursor: pointer;
+    z-index: 10;
 }
 
+/* Modal text */
 .testimonial-modal-text {
-    margin-top: 1.5rem;
+    margin-top: 1.2rem;
     line-height: 1.7;
+    font-size: 1.05rem;
+    position: relative;
+    z-index: 1;
 }
 
+/* Teal accent separator (thin line) */
 .testimonial-modal-separator {
-    width: 80px;
-    height: 3px;
-    background: #2CBFAE;
+    width: 70px;
+    height: 2px;
+    background: linear-gradient(90deg, #2CBFAE, #00E6BE);
     margin: 2rem 0 1rem;
+    border-radius: 2px;
+    position: relative;
+    z-index: 1;
 }
 
+/* Name / Who styling */
 .testimonial-modal-name {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
+    position: relative;
+    z-index: 1;
 }
 
+/* Role / Company */
 .testimonial-modal-role {
     font-size: 0.9rem;
+    letter-spacing: 0.3px;
     opacity: 0.85;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Animation */
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ============================================================
