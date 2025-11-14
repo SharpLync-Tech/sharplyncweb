@@ -1,5 +1,5 @@
 <!-- =====================
-     Works on Mobile. Desktop My Story not formatted correctly
+     Works on Mobile. Hamburger not working.
      ===================== -->
 
 <!DOCTYPE html>
@@ -12,6 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/about.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
+
+    <!-- ============================================== -->
+    <!-- FORCE OVERLAY MENU HIDDEN (fix hamburger issue) -->
+    <!-- ============================================== -->
+    <style>
+        #overlayMenu {
+            display: none !important;
+        }
+        #overlayMenu.show {
+            display: flex !important;
+        }
+    </style>
 </head>
 
 <body class="about-body">

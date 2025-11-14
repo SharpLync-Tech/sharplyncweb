@@ -1,3 +1,9 @@
+<!-- =====================
+     Works on Desktop & Mobile.
+     Hamburge menu issue and story not colapsing. 
+     Modals working.    
+     ===================== -->
+
 @extends('layouts.about-base')
 
 @section('title', 'SharpLync | About')

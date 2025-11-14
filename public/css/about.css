@@ -1,10 +1,9 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
    Version: 1.3
-   - About SharpLync centered + gradient title
-   - Split-layout white card for My Story
-   - Script font for "My Story" heading (Great Vibes)
-   - Image hidden fully on mobile
+        Works on Desktop & Mobile.
+        Hamburge menu issue and story not colapsing. 
+        Modals working.  
    ============================================================ */
 
 body.about-body {
