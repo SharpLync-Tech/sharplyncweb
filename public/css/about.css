@@ -317,8 +317,8 @@ body.about-body {
     width: 92%;
 
     /* Frosted Glass */
-    background: rgba(10, 42, 77, 0.95);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -329,6 +329,7 @@ body.about-body {
     animation: modalIn 0.25s ease;
     color: #fff;
 }
+
 
 /* Soft glow when open (optional but NICE) */
 .testimonial-modal.open .testimonial-modal-dialog {
