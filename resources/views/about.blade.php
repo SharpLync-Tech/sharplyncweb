@@ -70,10 +70,13 @@
               <div class="sig-name">Jannie Brits</div>
               <div class="sig-role">Founder & Lead Engineer</div>
 
-              <a href="https://www.linkedin.com/in/jcbrits/" 
-                class="sig-linkedin" target="_blank">
-                <img src="/images/linkedin.png" alt="LinkedIn">
+              <a href="https://www.linkedin.com/in/jcbrits/" target="_blank" class="sig-linkedin" aria-label="LinkedIn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2">
+                <circle cx="12" cy="12" r="12"/>
+                <path fill="#FFFFFF" d="M17 17h-2.4v-4.2c0-1-.02-2.3-1.4-2.3-1.4 0-1.6 1.1-1.6 2.2V17H9v-7h2.3v1h.03c.32-.6 1.1-1.2 2.3-1.2 2.4 0 2.8 1.6 2.8 3.7V17zM7.6 9c-.8 0-1.4-.7-1.4-1.4 0-.8.6-1.4 1.4-1.4s1.4.6 1.4 1.4c0 .7-.6 1.4-1.4 1.4zM8.8 17H6.3v-7h2.5v7z"/>
+                </svg>
               </a>
+
           </div>
 
 
