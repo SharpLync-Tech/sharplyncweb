@@ -286,7 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const name     = fromCard?.dataset.name || '';
     const who      = fromCard?.dataset.who || '';
 
-    if (modalText) modalText.textContent = fullText;
+    if (modalText) {
+    // Remove a leading quote: " or “ or ”
+    const cleaned = fullText.replace(/^["“”]/, "");
+    modalText.textContent = cleaned;
+  }
     if (modalName) modalName.textContent = name;
     if (modalRole) {
       modalRole.textContent = who;

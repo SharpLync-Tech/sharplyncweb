@@ -325,9 +325,15 @@ body.about-body {
 
     padding: 2.5rem 2.8rem;
 
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    box-shadow: inset 0 0 35px rgba(255, 255, 255, 0.08);
     animation: modalIn 0.25s ease;
     color: #fff;
+}
+
+.testimonial-modal-text,
+.testimonial-modal-name,
+.testimonial-modal-role {
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
 
