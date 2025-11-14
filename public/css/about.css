@@ -328,3 +328,58 @@ body.about-body {
     font-size: 0.9rem;
     opacity: 0.85;
 }
+
+/* ============================================================
+   OVERLAY MENU — FORCED OVERRIDES (fixes bullets + top-left issue)
+   ============================================================ */
+
+.overlay-menu {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(10, 42, 77, 0.85) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+
+    display: none !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    z-index: 99999 !important;
+}
+
+/* When opened */
+.overlay-menu.show {
+    display: flex !important;
+}
+
+/* Close button */
+.overlay-menu .close-menu {
+    position: absolute !important;
+    top: 20px !important;
+    right: 30px !important;
+    background: none !important;
+    border: none !important;
+    color: #2CBFAE !important;
+    font-size: 2.4rem !important;
+    cursor: pointer !important;
+}
+
+/* Remove bullets, align center */
+.overlay-menu ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+.overlay-menu ul li {
+    margin: 1.4rem 0 !important;
+}
+
+.overlay-menu ul li a {
+    color: #ffffff !important;
+    font-size: 1.8rem !important;
+    text-decoration: none !important;
+}
+
