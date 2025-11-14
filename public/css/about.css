@@ -380,14 +380,6 @@ body.about-body {
     white-space: nowrap; /* Prevents stray quotes / line breaks */
 }
 
-.testimonial-modal-inner::before {
-    content: "❝";
-    font-size: 4rem;
-    color: rgba(255,255,255,0.18);
-    position: absolute;
-    top: -10px;
-    left: 30px;
-}
 
 
 /* Teal accent separator (thin line) */
