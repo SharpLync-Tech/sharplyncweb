@@ -50,7 +50,7 @@ body.about-body {
     padding: 4rem 1.5rem;
 }
 
-.about-main h1, 
+.about-main h1,
 .about-main h3 {
     text-align: center;
 }
@@ -223,4 +223,71 @@ body.about-body {
 .testimonial-modal-role {
     font-size: 0.9rem;
     opacity: 0.85;
+}
+
+/* ============================================================
+   MY STORY SECTION — About Page Card (Standalone)
+   ============================================================ */
+
+.about-story-card {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: rgba(10, 42, 77, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.about-story-card h3 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+}
+
+.about-story-content p {
+    line-height: 1.7;
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+    color: #e9f4f3;
+}
+
+#storyFull.collapsed {
+    display: none;
+}
+
+#toggleStory {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 0.55rem 1.2rem;
+    background: rgba(44,191,174,0.25);
+    border-radius: 6px;
+    border: 1px solid rgba(44,191,174,0.4);
+    color: #ffffff;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+#toggleStory:hover {
+    background: rgba(44,191,174,0.45);
+}
+
+@media (max-width: 768px) {
+    .about-story-card {
+        padding: 1.5rem;
+        margin: 2rem 1rem;
+    }
+    .about-story-card h3 {
+        font-size: 1.45rem;
+    }
+    .about-story-content p {
+        font-size: 1rem;
+    }
+    #toggleStory {
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
 }
