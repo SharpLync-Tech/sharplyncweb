@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intervalId || testimonials.length <= 1) return;
     intervalId = setInterval(() => {
       goTo(index + 1);
-    }, 16000); // 16 seconds per slide
+    }, 20000); // 20 seconds per slide
   }
 
   function stopCycle() {
