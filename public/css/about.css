@@ -495,3 +495,25 @@ footer {
   transform: scale(1.1);
   filter: drop-shadow(0 0 6px #2CBFAE);
 }
+
+/* MOBILE FIX — prevent tall modal from going off-screen */
+@media (max-width: 768px) {
+
+    .testimonial-modal-dialog {
+        max-height: 85vh;         /* modal never exceeds mobile screen */
+        overflow-y: auto;         /* scrolls inside */
+        -webkit-overflow-scrolling: touch;
+        padding-top: 3.5rem;      /* ensures close button never overlaps text */
+    }
+
+    .testimonial-modal-close {
+        position: sticky !important;
+        top: 0;
+        right: 12px;
+        z-index: 9999;
+        background: rgba(10, 42, 77, 0.85);  /* keeps it readable even over text */
+        backdrop-filter: blur(6px);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+}
