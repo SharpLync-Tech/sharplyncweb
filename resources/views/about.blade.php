@@ -72,7 +72,7 @@
 
               <a href="https://www.linkedin.com/in/jcbrits/" 
                 class="sig-linkedin" target="_blank">
-        <       img src="/images/linkedin.png" alt="LinkedIn">
+                <img src="/images/linkedin.png" alt="LinkedIn">
               </a>
           </div>
 
