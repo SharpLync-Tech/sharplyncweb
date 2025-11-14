@@ -99,13 +99,6 @@
             document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
         });
     </script>
-    @stack('scripts')
-    <!-- ==================== SharpLync Chatbot ==================== -->
-    <script type="text/javascript" 
-        src="https://res.public.onecdn.static.microsoft/customerconnect/v1/7dttl/init.js"
-        id="chatbot"
-        environmentId="57be5f9e-a694-ec8b-aecc-f80d412e15c8"
-        crossorigin="anonymous">
-    </script>
+    @stack('scripts')   
 </body>
 </html>

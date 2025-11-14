@@ -271,39 +271,229 @@ footer {
 }
 
 /* ==================== ABOUT — TESTIMONIALS (scoped) ==================== */
-.testimonials-section .testimonial-container .testimonial p{
+/* ==================== ABOUT — TESTIMONIALS (scoped) ==================== */
+
+.testimonials-section {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.testimonials-section h3 {
+  color: #e9f4f3;
+}
+
+.testimonial-wrapper {
+  max-width: 960px;
+  margin: 2rem auto 0;
+  position: relative;
+}
+
+/* Container holds one active testimonial at a time */
+.testimonials-section .testimonial-container {
+  position: relative;
+}
+
+/* Individual slide */
+.testimonials-section .testimonial-container .testimonial {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.testimonials-section .testimonial-container .testimonial.active {
+  position: relative;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Name + role above text */
+.testimonials-section .testimonial-meta h4 {
+  font-weight: 600;
+  margin-bottom: 0.1rem;
+  color: #e9f4f3;
+}
+
+.testimonials-section .testimonial-meta .testimonial-role {
+  font-size: 0.9rem;
+  color: rgba(233, 244, 243, 0.8);
+  margin-bottom: 1rem;
+}
+
+/* Preview text */
+.testimonials-section .testimonial-container .testimonial p.testimonial-preview {
   font-style: normal;
   font-weight: 500;
   line-height: 1.6;
-}
-.testimonials-section .testimonial-container .testimonial span{
-  color: rgba(233, 244, 243, .8);
-  display: inline-block;
-  margin-top: .6rem;
+  color: #e9f4f3;
 }
 
-/* Chevron buttons (brand teal on navy) */
-.testimonials-section .nav-btn{
+/* Read more button */
+.testimonials-section .testimonial-read-more {
+  margin-top: 0.75rem;
   background: transparent;
-  border: 0;
-  padding: 0;
-  width: 54px; height: 54px;
-  display: inline-flex;
-  align-items: center; justify-content: center;
+  border: none;
+  color: #2CBFAE;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform .15s ease, opacity .15s ease;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0;
 }
-.testimonials-section .nav-btn svg{
-  width: 100%; height: 100%;
-  fill: none;
-  stroke: #2CBFAE;
-  stroke-width: 2.5;
+
+.testimonials-section .testimonial-read-more:hover {
+  text-decoration: underline;
 }
-.testimonials-section .nav-btn svg circle{
-  opacity: .35;
+
+/* Dot navigation */
+.testimonial-dots {
+  margin-top: 1.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.65rem;
 }
-.testimonials-section .nav-btn:hover{ transform: translateY(-1px); }
-.testimonials-section .nav-btn:active{ transform: translateY(0); opacity: .9; }
+
+.testimonial-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #2CBFAE;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+  opacity: 0.9;
+}
+
+.testimonial-dot.active {
+  background-color: #2CBFAE;
+  opacity: 1;
+}
+
+.testimonial-dot:hover {
+  transform: translateY(-1px);
+}
+
+/* ===== Testimonial Modal (Version A) ===== */
+
+.testimonial-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2100;
+}
+
+.testimonial-modal.open {
+  display: flex;
+}
+
+.testimonial-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 15, 30, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.testimonial-modal-dialog {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  width: 92%;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 42, 77, 0.96),
+    rgba(16, 73, 118, 0.96)
+  );
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  padding: 2.75rem 3rem;
+  color: #e9f4f3;
+}
+
+/* Close button */
+.testimonial-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 1.8rem;
+  background: transparent;
+  border: none;
+  color: rgba(233, 244, 243, 0.75);
+  cursor: pointer;
+  padding: 0;
+}
+
+.testimonial-modal-close:hover {
+  color: #ffffff;
+}
+
+/* Inner layout */
+.testimonial-modal-inner {
+  position: relative;
+}
+
+/* Big quote icon */
+.testimonial-modal-quote {
+  position: absolute;
+  top: -10px;
+  left: -4px;
+  font-size: 3.4rem;
+  color: rgba(233, 244, 243, 0.18);
+  line-height: 1;
+}
+
+/* Full text */
+.testimonial-modal-text {
+  margin-top: 1.4rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Teal separator line */
+.testimonial-modal-separator {
+  width: 80px;
+  height: 3px;
+  background-color: #2CBFAE;
+  margin: 2rem 0 1rem;
+  border-radius: 999px;
+}
+
+/* Name + role */
+.testimonial-modal-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.testimonial-modal-role {
+  font-size: 0.9rem;
+  color: rgba(233, 244, 243, 0.8);
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .testimonial-modal-dialog {
+    padding: 2.25rem 1.6rem 2rem;
+  }
+
+  .testimonial-modal-quote {
+    font-size: 2.8rem;
+    top: -4px;
+    left: -2px;
+  }
+
+  .testimonial-modal-text {
+    font-size: 0.95rem;
+  }
+}
 
 /* ==================== ONBOARDING STYLES (v2.4.1) ==================== */
 
