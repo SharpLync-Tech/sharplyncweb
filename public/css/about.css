@@ -1,9 +1,6 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.2
-   Notes:
-   - My Story section redesigned (v1.0)
-   - Tagline now applies correctly (v1.2)
+   Version: 1.1 (Top Bar Fix + Subtitle Style + My Story Card)
    ============================================================ */
 
 body.about-body {
@@ -14,153 +11,174 @@ body.about-body {
 }
 
 /* ============================================================
-   HEADER
+   TOP HEADER (MATCH MAIN SHARPLYNC STYLE)
    ============================================================ */
 
 .about-header {
+    position: sticky;
+    top: 0;
+    z-index: 2000;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.5rem;
-    background: rgba(10, 42, 77, 0.85);
-    backdrop-filter: blur(6px);
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg,
+        rgba(10,42,77,0.85) 0%,
+        rgba(16,73,118,0.65) 40%,
+        rgba(44,191,174,0.45) 100%
+    );
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: none;
+    box-shadow: none;
 }
 
 .about-header .logo img {
-    height: 70px;
+    height: 80px;
+    width: auto;
+    margin-bottom: -5px;
+    transition: all 0.3s ease;
 }
 
-/* Overlay menu */
+.hamburger {
+    font-size: 2rem;
+    color: #2CBFAE;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: opacity 0.2s ease;
+}
+.hamburger:hover { opacity: 0.8; }
+
+@media (max-width: 900px) {
+    .about-header .logo img { height: 65px; }
+}
+
+@media (max-width: 500px) {
+    .about-header .logo img { height: 58px; }
+    .hamburger { font-size: 1.8rem; }
+}
+
+/* ============================================================
+   OVERLAY MENU
+   ============================================================ */
+
 .overlay-menu {
     position: fixed;
     inset: 0;
     background: rgba(10, 42, 77, 0.85);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display: none;
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    z-index: 3000;
 }
 .overlay-menu.show {
     display: flex;
 }
+
+.overlay-menu .close-menu {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #2CBFAE;
+    font-size: 2.4rem;
+    cursor: pointer;
+}
+.overlay-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.overlay-menu ul li { margin: 1.4rem 0; }
 .overlay-menu ul li a {
     font-size: 1.8rem;
     color: white;
     text-decoration: none;
-    margin: 1rem 0;
 }
 
-/* Main wrapper */
+/* ============================================================
+   MAIN CONTENT WRAPPER
+   ============================================================ */
+
 .about-main {
     padding: 4rem 1.5rem;
-}
-
-.about-main h1, 
-.about-main h3 {
-    text-align: center;
-}
-
-/* ============================================================
-   ★ TAGLINE (v1.2 — FIXED)
-   Applies styling BOTH via .about-subtitle
-   AND inside .content-header p.about-subtitle
-   ============================================================ */
-
-.about-subtitle,
-.content-header p.about-subtitle {
-    max-width: 900px;
-    margin: 0.5rem auto 2.2rem auto;
-    text-align: center;
-
-    font-size: 1.25rem;
-    font-weight: 300;
-    color: rgba(233, 244, 243, 0.95);
-
-    line-height: 1.6;
-    letter-spacing: 0.3px;
-
-    text-shadow: 0 0 10px rgba(44,191,174,0.25);
-    opacity: 1;
-}
-
-@media (max-width: 768px) {
-    .about-subtitle,
-    .content-header p.about-subtitle {
-        font-size: 1.05rem;
-        padding: 0 1rem;
-    }
-}
-
-/* ============================================================
-   ★ MY STORY CARD (v1.0)
-   ============================================================ */
-
-.about-story-card {
     max-width: 1100px;
-    margin: 3rem auto;
-    padding: 2.5rem;
-    background: rgba(10, 42, 77, 0.6);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    margin: 0 auto;
 }
 
-.about-story-card h3 {
+/* ============================================================
+   SUBTITLE (BELOW "ABOUT SHARPLYNC" HEADER)
+   ============================================================ */
+
+.about-subtitle {
+    font-size: 1.1rem;
     text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+    margin: 10px auto 35px;
+    max-width: 960px;
+    color: rgba(233, 244, 243, 0.85);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+    padding: 0 1rem;
+}
+
+/* ============================================================
+   MY STORY CARD (DESKTOP + MOBILE)
+   ============================================================ */
+
+.story-card {
+    background: rgba(10,42,77,0.65);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 2.2rem 2rem;
+    max-width: 950px;
+    margin: 2rem auto;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.story-card h3 {
+    text-align: center;
+    margin-bottom: 1.3rem;
+    font-weight: 600;
     color: #ffffff;
 }
 
-.about-story-content p {
-    line-height: 1.7;
-    font-size: 1.05rem;
-    margin-bottom: 1.2rem;
-    color: #e9f4f3;
+.story-card p {
+    margin-bottom: 1rem;
+    line-height: 1.65;
+    font-weight: 300;
+}
+
+.toggle-btn {
+    display: block;
+    margin: 1.3rem auto 0;
+    padding: 0.6rem 1.2rem;
+    background: rgba(44,191,174,0.3);
+    color: white;
+    border: 1px solid rgba(44,191,174,0.6);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s ease;
+}
+.toggle-btn:hover {
+    background: rgba(44,191,174,0.5);
 }
 
 #storyFull.collapsed {
     display: none;
 }
 
-#toggleStory {
-    margin-top: 1.5rem;
-    display: inline-block;
-    padding: 0.55rem 1.2rem;
-    background: rgba(44,191,174,0.25);
-    border-radius: 6px;
-    border: 1px solid rgba(44,191,174,0.4);
-    color: #ffffff;
-    cursor: pointer;
-    transition: 0.25s ease;
-}
-
-#toggleStory:hover {
-    background: rgba(44,191,174,0.45);
-}
-
-@media (max-width: 768px) {
-    .about-story-card {
-        padding: 1.5rem;
-        margin: 2rem 1rem;
-    }
-    .about-story-card h3 {
-        font-size: 1.45rem;
-    }
-    .about-story-content p {
-        font-size: 1rem;
-    }
-    #toggleStory {
-        font-size: 0.95rem;
-        padding: 0.5rem 1rem;
-    }
-}
-
 /* ============================================================
-   TESTIMONIALS + MODAL (unchanged)
+   TESTIMONIALS — SLIDER + MODAL (UNCHANGED FUNCTIONALITY)
    ============================================================ */
 
 .testimonials-section {
@@ -194,6 +212,7 @@ body.about-body {
     transform: translateY(0);
 }
 
+/* Name + role */
 .testimonial-meta h4 {
     margin-bottom: 0.25rem;
     font-weight: 600;
@@ -203,12 +222,14 @@ body.about-body {
     opacity: 0.85;
 }
 
+/* Preview text */
 .testimonial-preview {
     margin-top: 1rem;
     font-weight: 400;
     line-height: 1.6;
 }
 
+/* Read More button */
 .testimonial-read-more {
     margin-top: 1rem;
     padding: 0.35rem 0.75rem;
@@ -222,6 +243,7 @@ body.about-body {
     background: rgba(44,191,174,0.5);
 }
 
+/* Dots */
 .testimonial-dots {
     margin-top: 1.5rem;
     display: flex;
@@ -241,7 +263,10 @@ body.about-body {
     background: #2CBFAE;
 }
 
-/* Modal styles left unchanged */
+/* ============================================================
+   MODAL (Version A)
+   ============================================================ */
+
 .testimonial-modal {
     position: fixed;
     inset: 0;
@@ -278,6 +303,7 @@ body.about-body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Close button */
 .testimonial-modal-close {
     position: absolute;
     right: 18px;
@@ -289,17 +315,20 @@ body.about-body {
     cursor: pointer;
 }
 
+/* Big quote icon */
 .testimonial-modal-quote {
     font-size: 3.2rem;
     color: rgba(255,255,255,0.2);
 }
 
+/* Modal text */
 .testimonial-modal-text {
     margin-top: 1.5rem;
     line-height: 1.7;
     font-size: 1rem;
 }
 
+/* Teal separator */
 .testimonial-modal-separator {
     width: 80px;
     height: 3px;
@@ -307,6 +336,7 @@ body.about-body {
     margin: 2rem 0 1rem;
 }
 
+/* Author details */
 .testimonial-modal-name {
     font-weight: 600;
     font-size: 1.1rem;
