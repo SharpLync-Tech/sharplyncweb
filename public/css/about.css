@@ -1,225 +1,57 @@
-/* ============================================================
-   ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.0 (Standalone About + Testimonials Modal)
-   ============================================================ */
+/* About page specific styles */
 
-body.about-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #e9f4f3;
+/* Ensure modals display above any other elements (fixes any z-index overlap issues) */
+.modal {
+    z-index: 2000 !important;
+}
+.modal-backdrop {
+    z-index: 1990 !important;
 }
 
-/* Header (copied visual style) */
-.about-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    background: rgba(10, 42, 77, 0.85);
-    backdrop-filter: blur(6px);
+/* My Story section styling */
+.my-story-section .card {
+    /* Add a subtle shadow to the card for emphasis (matches WOW reveal nicely) */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.about-header .logo img {
-    height: 70px;
+/* Testimonial snippet styling */
+.testimonials-section .testimonial.card {
+    /* Make testimonial cards look distinct (white background, light border) */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+}
+.testimonials-section .testimonial p {
+    font-style: italic;  /* italicize testimonial text to denote quote */
 }
 
-/* Overlay menu */
-.overlay-menu {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 42, 77, 0.85);
-    backdrop-filter: blur(10px);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-.overlay-menu.show {
-    display: flex;
-}
-.overlay-menu ul li a {
-    font-size: 1.8rem;
-    color: white;
+/* Style the "Read more..." link button */
+.testimonials-section .btn-link {
     text-decoration: none;
-    margin: 1rem 0;
+    font-weight: bold;
+    padding-left: 0;
 }
+/* Optionally, add an arrow icon after the link (if desired)
+.testimonials-section .btn-link::after {
+    content: ' \2192';  /\* right-arrow symbol *\/
+    margin-left: 4px;
+} */
 
-.about-main {
-    padding: 4rem 1.5rem;
+/* Responsive and layout tweaks (if any additional adjustments needed) */
+/* ... (Bootstrap’s grid and utilities handle most responsiveness) ... */
+
+/* Header/Footer overrides: match main site theme if needed */
+/* For example, if the main header had a dark background and white text, you can add:
+.navbar {
+    background-color: #004080;
 }
-
-.about-main h1, 
-.about-main h3 {
-    text-align: center;
-}
-
-/* ===============================
-   TESTIMONIAL SLIDER
-   =============================== */
-
-.testimonials-section {
-    margin-top: 4rem;
-    text-align: center;
-}
-
-.testimonial-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    margin-top: 2.5rem;
-}
-
-.testimonial-container {
-    position: relative;
-}
-
-.testimonial {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-}
-
-.testimonial.active {
-    position: relative;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-}
-
-/* Name + role */
-.testimonial-meta h4 {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-.testimonial-role {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
-/* Preview text */
-.testimonial-preview {
-    margin-top: 1rem;
-    font-weight: 400;
-    line-height: 1.6;
-}
-
-/* Read More button */
-.testimonial-read-more {
-    margin-top: 1rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 4px;
-    border: none;
+.navbar .nav-link, .navbar .navbar-brand {
     color: #fff;
-    background: rgba(44,191,174,0.3);
-    cursor: pointer;
 }
-.testimonial-read-more:hover {
-    background: rgba(44,191,174,0.5);
+.footer {
+    background-color: #f8f9fa;
 }
-
-/* Dots */
-.testimonial-dots {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.7rem;
+.footer a {
+    color: #004080;
 }
-
-.testimonial-dot {
-    width: 12px;
-    height: 12px;
-    border: 2px solid #2CBFAE;
-    border-radius: 50%;
-    background: transparent;
-    cursor: pointer;
-}
-.testimonial-dot.active {
-    background: #2CBFAE;
-}
-
-/* ===============================
-   MODAL (Version A)
-   =============================== */
-
-.testimonial-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-}
-.testimonial-modal.open {
-    display: flex;
-}
-
-.testimonial-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(5, 18, 35, 0.72);
-    backdrop-filter: blur(10px);
-}
-
-.testimonial-modal-dialog {
-    position: relative;
-    max-width: 850px;
-    width: 92%;
-    background: rgba(10, 42, 77, 0.95);
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 2.5rem 2.8rem;
-    z-index: 20;
-    animation: modalIn 0.25s ease;
-}
-
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Close button */
-.testimonial-modal-close {
-    position: absolute;
-    right: 18px;
-    top: 15px;
-    border: none;
-    background: transparent;
-    color: #fff;
-    font-size: 1.7rem;
-    cursor: pointer;
-}
-
-/* Big quote icon */
-.testimonial-modal-quote {
-    font-size: 3.2rem;
-    color: rgba(255,255,255,0.2);
-}
-
-/* Modal text */
-.testimonial-modal-text {
-    margin-top: 1.5rem;
-    line-height: 1.7;
-    font-size: 1rem;
-}
-
-/* Teal separator */
-.testimonial-modal-separator {
-    width: 80px;
-    height: 3px;
-    background: #2CBFAE;
-    margin: 2rem 0 1rem;
-}
-
-/* Author details */
-.testimonial-modal-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.testimonial-modal-role {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
+*/
