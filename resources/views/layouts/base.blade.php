@@ -34,6 +34,7 @@
 
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/about.css') }}">    
     <!-- Additional page-specific styles -->
     @stack('styles')
 
