@@ -123,6 +123,43 @@ body.about-body {
 }
 
 /* ============================================================
+   ⭐ NEW — STYLES FOR "ABOUT SHARPLYNC" HEADING
+   ============================================================ */
+
+.about-title {
+    text-align: center;
+    margin: 0 auto 1.2rem;
+    font-weight: 600;
+    font-size: 3rem;
+    line-height: 1.15;
+}
+
+.about-title .about-main-word {
+    color: #ffffff;
+    display: inline-block;
+    margin-right: 0.4rem;
+}
+
+.about-title .about-brand {
+    display: inline-block;
+    background: linear-gradient(135deg, #4acfd9 0%, #1cd4a8 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .about-title {
+        font-size: 2.4rem;
+        line-height: 1.2;
+    }
+    .about-title .about-main-word {
+        display: block;
+        margin-right: 0;
+    }
+}
+
+/* ============================================================
    SUBTITLE UNDER "ABOUT SHARPLYNC"
    ============================================================ */
 
@@ -140,9 +177,6 @@ body.about-body {
 
 /* ============================================================
    MY STORY CARD (RESTORED + ROBUST)
-   - Supports either:
-   - <div class="about-story-card">...</div>
-   - or <div class="content-card fade-section">...</div>
    ============================================================ */
 
 .about-story-card,
@@ -218,6 +252,7 @@ body.about-body {
 /* ============================================================
    TESTIMONIALS — SLIDER
    ============================================================ */
+/* (UNCHANGED — keeping your working code) */
 
 .testimonials-section {
     margin-top: 4rem;
@@ -304,6 +339,7 @@ body.about-body {
 /* ============================================================
    MODAL (Version A)
    ============================================================ */
+/* (UNCHANGED) */
 
 .testimonial-modal {
     position: fixed;
