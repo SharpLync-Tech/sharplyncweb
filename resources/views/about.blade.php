@@ -37,7 +37,7 @@
       {{-- Right column: script title + content --}}
       <div class="story-text">
           <div class="story-script-title">My Story</div>
-          <h3>My Story: From Tools to Technology</h3>
+          <h3>From Tools to Technology</h3>
 
           <div id="storyIntro">
               <p>My journey into technology didn’t start in a lab or an office. It started with a set of tools, cables, and a good dose of curiosity.</p>
