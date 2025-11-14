@@ -1,10 +1,10 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.4
-   - Top bar matches main SharpLync header
-   - Subtitle styles
-   - My Story: Split layout added (desktop only)
-   - Image hidden on mobile
+   Version: 1.3
+   - About SharpLync centered + gradient title
+   - Split-layout white card for My Story
+   - Script font for "My Story" heading (Great Vibes)
+   - Image hidden fully on mobile
    ============================================================ */
 
 body.about-body {
@@ -14,8 +14,11 @@ body.about-body {
     color: #e9f4f3;
 }
 
+/* Load script font */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
 /* ============================================================
-   TOP HEADER (MATCH MAIN SHARPLYNC STYLE)
+   TOP HEADER (UNCHANGED)
    ============================================================ */
 
 .about-header {
@@ -34,8 +37,6 @@ body.about-body {
     );
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    border: none;
-    box-shadow: none;
 }
 
 .about-header .logo img {
@@ -45,18 +46,12 @@ body.about-body {
     transition: all 0.3s ease;
 }
 
-/* Hamburger */
 .hamburger {
     font-size: 2rem;
     color: #2CBFAE;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
-    transition: opacity 0.2s ease;
-}
-.hamburger:hover {
-    opacity: 0.8;
 }
 
 @media (max-width: 900px) {
@@ -68,61 +63,25 @@ body.about-body {
 }
 
 /* ============================================================
-   OVERLAY MENU
+   SUBTITLE + HEADING FIX (CENTER + GRADIENT)
    ============================================================ */
 
-.overlay-menu {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 42, 77, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
+.about-title-wrapper {
     text-align: center;
-    z-index: 3000;
-}
-.overlay-menu.show {
-    display: flex;
-}
-.overlay-menu .close-menu {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    background: none;
-    border: none;
-    color: #2CBFAE;
-    font-size: 2.4rem;
-    cursor: pointer;
-}
-.overlay-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.overlay-menu ul li {
-    margin: 1.4rem 0;
-}
-.overlay-menu ul li a {
-    font-size: 1.8rem;
-    color: #ffffff;
-    text-decoration: none;
+    margin-top: 1.5rem;
 }
 
-/* ============================================================
-   MAIN CONTENT WRAPPER
-   ============================================================ */
-
-.about-main {
-    padding: 4rem 1.5rem;
-    max-width: 1100px;
-    margin: 0 auto;
+.about-title {
+    font-size: 2.7rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
 }
 
-/* ============================================================
-   SUBTITLE UNDER "ABOUT SHARPLYNC"
-   ============================================================ */
+.about-title .gradient {
+    background: linear-gradient(90deg, #2CBFAE, #4df0d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 .about-subtitle {
     font-size: 1.1rem;
@@ -131,115 +90,95 @@ body.about-body {
     max-width: 960px;
     color: rgba(233, 244, 243, 0.85);
     font-weight: 300;
-    letter-spacing: 0.3px;
     line-height: 1.5;
-    padding: 0 1rem;
 }
 
 /* ============================================================
-   MY STORY CARD (BASE STYLES — UNCHANGED)
+   SPLIT-LAYOUT MY STORY CARD (WHITE CARD)
    ============================================================ */
 
-.about-story-card,
-.about-main .content-card {
-    background: rgba(10, 42, 77, 0.65);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 18px;
-    padding: 2.2rem 2rem;
-    max-width: 950px;
-    margin: 2rem auto;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+.story-card-split {
+    display: flex;
+    gap: 2rem;
+    background: #ffffff;
+    color: #0A2A4D;
+    border-radius: 20px;
+    padding: 2rem 2.2rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    max-width: 1100px;
+    margin: 0 auto 3rem;
 }
 
-.about-story-card h3,
-.about-main .content-card h3 {
+/* Left image */
+.story-image {
+    width: 43%;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.story-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Right content */
+.story-text {
+    flex: 1;
+}
+
+/* Script heading */
+.story-text .story-script-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.3rem;
+    color: #2CBFAE;
     text-align: center;
-    margin-bottom: 1.3rem;
-    font-weight: 600;
-    color: #ffffff;
 }
 
-.about-story-content p,
-.about-main .content-card p {
+/* Subtitle heading */
+.story-text h3 {
+    text-align: center;
+    margin-bottom: 1.1rem;
+    color: #0A2A4D;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.story-text p {
     margin-bottom: 1rem;
     line-height: 1.65;
     font-weight: 300;
 }
 
-/* Toggle button */
-#toggleStory,
-.toggle-btn {
+/* Center the Continue button */
+.story-text .toggle-btn,
+#toggleStory {
+    margin-top: 1.3rem;
     display: block;
-    margin: 1.3rem auto 0;
-    padding: 0.6rem 1.2rem;
-    background: rgba(44, 191, 174, 0.3);
-    color: #ffffff;
-    border: 1px solid rgba(44, 191, 174, 0.6);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.3s ease;
-}
-#toggleStory:hover,
-.toggle-btn:hover {
-    background: rgba(44,191,174,0.5);
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Hidden full story */
-#storyFull.collapsed {
-    display: none;
-}
-
-/* ============================================================
-   >>> ADDED: SPLIT LAYOUT FOR MY STORY (DESKTOP ONLY)
-   ============================================================ */
-
-.story-split {
-    display: flex;
-    gap: 2rem;
-    align-items: stretch;
-}
-
-.story-image {
-    flex: 0 0 40%;
-    background-image: url('/images/mystory.png');
-    background-size: cover;
-    background-position: center;
-    border-radius: 14px;
-}
-
-.story-text {
-    flex: 1 1 60%;
-}
-
-/* Hide image + stack vertically on mobile */
+/* Hide image on mobile & stack layout */
 @media (max-width: 768px) {
-    .story-split {
+    .story-card-split {
         flex-direction: column;
+        padding: 1.6rem 1.2rem;
     }
+
     .story-image {
         display: none;
     }
-    .about-story-card,
-    .about-main .content-card {
-        padding: 1.6rem 1.4rem;
-        margin: 1.8rem 0.5rem;
-    }
-    .about-story-card h3,
-    .about-main .content-card h3 {
-        font-size: 1.45rem;
-    }
-    .about-story-content p,
-    .about-main .content-card p {
-        font-size: 0.98rem;
+
+    .story-text .story-script-title {
+        font-size: 2.4rem;
     }
 }
 
 /* ============================================================
-   TESTIMONIALS — SLIDER
-   (UNCHANGED)
+   TESTIMONIALS (UNCHANGED)
    ============================================================ */
 
 .testimonials-section {
@@ -284,7 +223,6 @@ body.about-body {
 
 .testimonial-preview {
     margin-top: 1rem;
-    font-weight: 400;
     line-height: 1.6;
 }
 
@@ -295,9 +233,10 @@ body.about-body {
     border: none;
     color: #ffffff;
     background: rgba(44, 191, 174, 0.3);
+    cursor: pointer;
 }
 .testimonial-read-more:hover {
-    background: rgba(44,191,174,0.5);
+    background: rgba(44, 191, 174, 0.5);
 }
 
 .testimonial-dots {
@@ -315,7 +254,6 @@ body.about-body {
     background: transparent;
     cursor: pointer;
 }
-
 .testimonial-dot.active {
     background: #2CBFAE;
 }
@@ -347,10 +285,10 @@ body.about-body {
     position: relative;
     max-width: 850px;
     width: 92%;
-    background: rgba(10,42,77,0.95);
+    background: rgba(10, 42, 77, 0.95);
     border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.08);
     padding: 2.5rem 2.8rem;
+    border: 1px solid rgba(255,255,255,0.08);
     animation: modalIn 0.25s ease;
 }
 
@@ -363,22 +301,16 @@ body.about-body {
     position: absolute;
     right: 18px;
     top: 15px;
-    border: none;
-    background: transparent;
-    color: #ffffff;
     font-size: 1.7rem;
+    background: none;
+    border: none;
+    color: #fff;
     cursor: pointer;
-}
-
-.testimonial-modal-quote {
-    font-size: 3.2rem;
-    color: rgba(255,255,255,0.2);
 }
 
 .testimonial-modal-text {
     margin-top: 1.5rem;
     line-height: 1.7;
-    font-size: 1rem;
 }
 
 .testimonial-modal-separator {
@@ -389,8 +321,8 @@ body.about-body {
 }
 
 .testimonial-modal-name {
-    font-weight: 600;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .testimonial-modal-role {

@@ -1,7 +1,3 @@
-<!-- ===================== -->
-<!-- Works on Mobile. Desktop My Story not formatted correctly -->
-<!-- ===================== -->
-
 @extends('layouts.about-base')
 
 @section('title', 'SharpLync | About')
@@ -13,68 +9,68 @@
 @section('content')
 <section class="content-hero fade-in">
 
-  <div class="content-header fade-section">
+  {{-- ===================== --}}
+  {{-- About SharpLync Title --}}
+  {{-- ===================== --}}
+  <div class="about-title-wrapper fade-section">
       <h1 class="about-title">
-          <span class="about-main-word">About</span>
-          <span class="about-brand">SharpLync</span>
+          About <span class="gradient">SharpLync</span>
       </h1>
-
       <p class="about-subtitle">
-          From the Granite Belt to the Cloud, bridging the gap between people and technology with old school support and modern results.
+          From the Granite Belt to the Cloud, bridging the gap between people and technology
+          with old school support and modern results.
       </p>
   </div>
 
-  <!-- ===================== -->
-<!-- My Story Section v4   -->
-<!-- Split Layout (Desktop), Image Hidden on Mobile -->
-<!-- ===================== -->
+  {{-- =============================================== --}}
+  {{-- My Story — Split Layout White Card (Option A)   --}}
+  {{-- =============================================== --}}
+  <div class="story-card-split fade-section">
 
-<div class="about-story-card story-split">
+      {{-- Left image (hidden on mobile via CSS) --}}
+      <div class="story-image">
+          <img src="{{ asset('images/mystory.png') }}" alt="My Story">
+      </div>
 
-    <!-- LEFT SIDE IMAGE (desktop only, hidden on mobile) -->
-    <div class="story-image"></div>
+      {{-- Right column: script title + content --}}
+      <div class="story-text">
+          <div class="story-script-title">My Story</div>
+          <h3>My Story: From Tools to Technology</h3>
 
-    <!-- RIGHT SIDE: EXISTING STORY CONTENT (unchanged) -->
-    <div class="story-text">
+          <div id="storyIntro">
+              <p>My journey into technology didn’t start in a lab or an office. It started with a set of tools, cables, and a good dose of curiosity.</p>
 
-        <h3>My Story: From Tools to Technology</h3>
+              <p>I began my career as an Electrical Fitter, learning the value of precision, safety, and doing things properly the first time. From there, my interest naturally shifted toward the growing world of data and communication, where I started working on network cabling, PABX phone systems, and fibre optics. It was hands-on, practical work that taught me how every wire and connection plays a part in keeping a business running smoothly.</p>
 
-        <div id="storyIntro">
-            <p>My journey into technology didn’t start in a lab or an office. It started with a set of tools, cables, and a good dose of curiosity.</p>
+              <p>As technology evolved, so did I. I moved into the IT world, working as a Computer Technician for Harvey Norman, helping people get their systems up and running, and just as importantly, making sure they actually understood how to use them.</p>
+          </div>
 
-            <p>I began my career as an Electrical Fitter, learning the value of precision, safety, and doing things properly the first time. From there, my interest naturally shifted toward the growing world of data and communication, where I started working on network cabling, PABX phone systems, and fibre optics. It was hands-on, practical work that taught me how every wire and connection plays a part in keeping a business running smoothly.</p>
+          {{-- Hidden full story --}}
+          <div id="storyFull" class="collapsed">
+              <p>That experience showed me how much people appreciate honest, down-to-earth support, the kind that doesn’t rely on jargon.</p>
 
-            <p>As technology evolved, so did I. I moved into the IT world, working as a Computer Technician for Harvey Norman, helping people get their systems up and running, and just as importantly, making sure they actually understood how to use them.</p>
-        </div>
+              <p>In the early 2000s, I took a leap and started my own business. It grew quickly, built on trust, reliability, and word-of-mouth, the old-fashioned way. Things went so well that the business was amalgamated into a larger company, giving me the chance to see how IT operates at scale.</p>
 
-        <div id="storyFull" class="collapsed">
-            <p>That experience showed me how much people appreciate honest, down-to-earth support, the kind that doesn’t rely on jargon.</p>
+              <p>From there, I stepped into the corporate world as a Systems Administrator, managing infrastructure and supporting teams that relied on technology every day. That role led to a new chapter, one that would last over a decade in education.</p>
 
-            <p>In the early 2000s, I took a leap and started my own business. It grew quickly, built on trust, reliability, and word-of-mouth, the old-fashioned way. Things went so well that the business was amalgamated into a larger company, giving me the chance to see how IT operates at scale.</p>
+              <h3>Establishing Expertise at Scale</h3>
+              <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT infrastructure for four new ones, everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
 
-            <p>From there, I stepped into the corporate world as a Systems Administrator, managing infrastructure and supporting teams that relied on technology every day. That role led to a new chapter, one that would last over a decade in education.</p>
+              <h3>The Launch of SharpLync: Seizing an Opportunity</h3>
+              <p>After more than a decade managing complex, multi-site infrastructure, I had a unique vantage point. I saw clearly what high-level, practical IT support looks like, and what was often missing for growing businesses. It became obvious that many organisations struggle to access proven, enterprise-level expertise without the massive price tag. They deserve better than generic fixes.</p>
 
-            <h3>Establishing Expertise at Scale</h3>
-            <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT infrastructure for four new ones, everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
+              <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
 
-            <h3>The Launch of SharpLync: Seizing an Opportunity</h3>
-            <p>After more than a decade managing complex, multi-site infrastructure, I had a unique vantage point. I saw clearly what high-level, practical IT support looks like, and what was often missing for growing businesses. It became obvious that many organisations struggle to access proven, enterprise-level expertise without the massive price tag. They deserve better than generic fixes.</p>
+              <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
+          </div>
 
-            <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
+          <button id="toggleStory" class="toggle-btn">Continue My Story +</button>
+      </div>
+  </div>
 
-            <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
-        </div>
-
-        <button id="toggleStory" class="toggle-btn">Continue My Story +</button>
-
-    </div> <!-- end .story-text -->
-
-</div> <!-- end .story-split -->
-
-
-  <!-- ===================== -->
-  <!-- Testimonials Section -->
-  <!-- ===================== -->
+  {{-- ===================== --}}
+  {{-- Testimonials Section --}}
+  {{-- ===================== --}}
   <section class="testimonials-section fade-section">
     <h3>What People Say</h3>
 
@@ -88,6 +84,7 @@
               ($t->customer_company ? $t->customer_company : '')
             );
 
+            // Short preview for About page (adjust 320 if you want more/less)
             $preview = Str::limit(strip_tags($t->testimonial_text), 320);
           @endphp
 
@@ -111,7 +108,13 @@
             </button>
           </div>
         @empty
-          <div class="testimonial active" data-fulltext="Jannie is one of the most dependable and dedicated IT professionals I’ve worked with." data-name="Former Principal" data-who="The Industry School">
+          {{-- Fallback if no testimonials in DB --}}
+          <div
+            class="testimonial active"
+            data-fulltext="Jannie is one of the most dependable and dedicated IT professionals I’ve worked with."
+            data-name="Former Principal"
+            data-who="The Industry School"
+          >
             <div class="testimonial-meta">
               <h4>Former Principal</h4>
               <p class="testimonial-role">The Industry School</p>
@@ -126,10 +129,14 @@
         @endforelse
       </div>
 
+      {{-- Dot navigation --}}
       <div class="testimonial-dots" aria-label="Testimonial navigation"></div>
     </div>
   </section>
 
+  {{-- ===================== --}}
+  {{-- Testimonial Modal     --}}
+  {{-- ===================== --}}
   <div id="testimonialModal" class="testimonial-modal" aria-hidden="true">
     <div class="testimonial-modal-backdrop"></div>
 
@@ -153,169 +160,172 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  // === Expandable Story ===
+  const toggleBtn = document.getElementById('toggleStory');
+  const storyFull = document.getElementById('storyFull');
+  let expanded = false;
 
-    /* ===========================================
-       STORY TOGGLE — unchanged except container
-       =========================================== */
-    const toggleBtn = document.getElementById('toggleStory');
-    const storyFull = document.getElementById('storyFull');
-    let expanded = false;
+  if (toggleBtn && storyFull) {
+    toggleBtn.addEventListener('click', () => {
+      expanded = !expanded;
+      storyFull.classList.toggle('collapsed', !expanded);
+      toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story +';
+    });
+  }
 
-    if (toggleBtn && storyFull) {
-        toggleBtn.addEventListener('click', () => {
-            expanded = !expanded;
-            storyFull.classList.toggle('collapsed', !expanded);
-            toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story +';
-        });
+  // === Testimonials Slider (slower + dots) ===
+  const testimonials = document.querySelectorAll('.testimonials-section .testimonial');
+  const container    = document.querySelector('.testimonials-section .testimonial-container');
+  const dotsHolder   = document.querySelector('.testimonials-section .testimonial-dots');
+
+  let index = 0;
+  let intervalId = null;
+  let dots = [];
+
+  function sizeCarousel() {
+    if (!container || !testimonials.length) return;
+    let maxH = 0;
+
+    testimonials.forEach(card => {
+      const wasActive = card.classList.contains('active');
+      const prevStyle = card.getAttribute('style') || '';
+
+      card.style.position = 'absolute';
+      card.style.visibility = 'hidden';
+      card.style.display = 'block';
+      card.classList.add('active');
+
+      maxH = Math.max(maxH, card.scrollHeight);
+
+      card.setAttribute('style', prevStyle);
+      if (!wasActive) card.classList.remove('active');
+    });
+
+    container.style.minHeight = (maxH + 24) + 'px';
+  }
+
+  function goTo(i) {
+    if (!testimonials.length) return;
+    index = (i + testimonials.length) % testimonials.length;
+
+    testimonials.forEach((card, idx) => {
+      card.classList.toggle('active', idx === index);
+    });
+
+    if (dots.length) {
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === index);
+      });
     }
+  }
 
-    /* ===========================================
-       TESTIMONIAL SLIDER — unchanged
-       =========================================== */
-    const testimonials = document.querySelectorAll('.testimonials-section .testimonial');
-    const container    = document.querySelector('.testimonials-section .testimonial-container');
-    const dotsHolder   = document.querySelector('.testimonials-section .testimonial-dots');
-    let index = 0;
-    let intervalId = null;
-    let dots = [];
+  function startCycle() {
+    if (intervalId || testimonials.length <= 1) return;
+    intervalId = setInterval(() => {
+      goTo(index + 1);
+    }, 16000); // 16 seconds per slide
+  }
 
-    function sizeCarousel() {
-        if (!container || !testimonials.length) return;
-        let maxH = 0;
+  function stopCycle() {
+    if (!intervalId) return;
+    clearInterval(intervalId);
+    intervalId = null;
+  }
 
-        testimonials.forEach(card => {
-            const wasActive = card.classList.contains('active');
-            const prevStyle = card.getAttribute('style') || '';
+  function buildDots() {
+    if (!dotsHolder || !testimonials.length) return;
 
-            card.style.position = 'absolute';
-            card.style.visibility = 'hidden';
-            card.style.display = 'block';
-            card.classList.add('active');
+    dotsHolder.innerHTML = '';
+    dots = [];
 
-            maxH = Math.max(maxH, card.scrollHeight);
+    testimonials.forEach((card, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'testimonial-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Show testimonial ' + (i + 1));
+      dot.dataset.index = i;
 
-            card.setAttribute('style', prevStyle);
-            if (!wasActive) card.classList.remove('active');
-        });
-
-        container.style.minHeight = (maxH + 24) + 'px';
-    }
-
-    function goTo(i) {
-        if (!testimonials.length) return;
-        index = (i + testimonials.length) % testimonials.length;
-
-        testimonials.forEach((card, idx) => {
-            card.classList.toggle('active', idx === index);
-        });
-
-        if (dots.length) {
-            dots.forEach((dot, idx) => {
-                dot.classList.toggle('active', idx === index);
-            });
-        }
-    }
-
-    function startCycle() {
-        if (intervalId || testimonials.length <= 1) return;
-        intervalId = setInterval(() => {
-            goTo(index + 1);
-        }, 16000);
-    }
-
-    function stopCycle() {
-        if (!intervalId) return;
-        clearInterval(intervalId);
-        intervalId = null;
-    }
-
-    function buildDots() {
-        if (!dotsHolder || !testimonials.length) return;
-
-        dotsHolder.innerHTML = '';
-        dots = [];
-
-        testimonials.forEach((card, i) => {
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'testimonial-dot' + (i === 0 ? ' active' : '');
-            dot.dataset.index = i;
-
-            dot.addEventListener('click', () => {
-                stopCycle();
-                goTo(i);
-                startCycle();
-            });
-
-            dotsHolder.appendChild(dot);
-            dots.push(dot);
-        });
-    }
-
-    if (testimonials.length) {
-        goTo(0);
-        sizeCarousel();
-        buildDots();
-        startCycle();
-
-        window.addEventListener('resize', () => {
-            clearTimeout(window.__aboutTestimonialsResize);
-            window.__aboutTestimonialsResize = setTimeout(sizeCarousel, 150);
-        });
-    }
-
-    /* ===========================================
-       MODAL FIX — FULLY RESTORED
-       =========================================== */
-    const modal     = document.getElementById('testimonialModal');
-    const modalText = document.getElementById('testimonialModalText');
-    const modalName = document.getElementById('testimonialModalName');
-    const modalRole = document.getElementById('testimonialModalRole');
-    const closeBtn  = modal ? modal.querySelector('.testimonial-modal-close') : null;
-    const backdrop  = modal ? modal.querySelector('.testimonial-modal-backdrop') : null;
-
-    const readMoreBtns = document.querySelectorAll('.testimonials-section .testimonial-read-more');
-
-    function openModal(card) {
-        if (!modal) return;
-
-        modalText.textContent = card.dataset.fulltext || '';
-        modalName.textContent = card.dataset.name || '';
-
-        if (card.dataset.who) {
-            modalRole.textContent = card.dataset.who;
-            modalRole.style.display = 'block';
-        } else {
-            modalRole.style.display = 'none';
-        }
-
+      dot.addEventListener('click', () => {
         stopCycle();
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        modal.classList.remove('open');
-        document.body.style.overflow = '';
+        goTo(i);
         startCycle();
+      });
+
+      dotsHolder.appendChild(dot);
+      dots.push(dot);
+    });
+  }
+
+  if (testimonials.length) {
+    goTo(0);
+    sizeCarousel();
+    buildDots();
+    startCycle();
+
+    window.addEventListener('resize', () => {
+      clearTimeout(window.__aboutTestimonialsResize);
+      window.__aboutTestimonialsResize = setTimeout(sizeCarousel, 150);
+    });
+  }
+
+  // === Modal (Version A) ===
+  const modal        = document.getElementById('testimonialModal');
+  const modalText    = document.getElementById('testimonialModalText');
+  const modalName    = document.getElementById('testimonialModalName');
+  const modalRole    = document.getElementById('testimonialModalRole');
+  const closeBtn     = modal ? modal.querySelector('.testimonial-modal-close') : null;
+  const backdrop     = modal ? modal.querySelector('.testimonial-modal-backdrop') : null;
+  const readMoreBtns = document.querySelectorAll('.testimonial-read-more');
+
+  function openModal(fromCard) {
+    if (!modal) return;
+
+    const fullText = fromCard?.dataset.fulltext || '';
+    const name     = fromCard?.dataset.name || '';
+    const who      = fromCard?.dataset.who || '';
+
+    if (modalText) modalText.textContent = fullText;
+    if (modalName) modalName.textContent = name;
+    if (modalRole) {
+      modalRole.textContent = who;
+      modalRole.style.display = who ? 'block' : 'none';
     }
 
+    stopCycle();
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    modal.setAttribute('aria-hidden', 'true');
+    startCycle();
+  }
+
+  if (readMoreBtns.length && modal) {
     readMoreBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const card = e.currentTarget.closest('.testimonial');
-            if (card) openModal(card);
-        });
+      btn.addEventListener('click', (e) => {
+        const card = e.currentTarget.closest('.testimonial');
+        if (!card) return;
+        openModal(card);
+      });
     });
+  }
 
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (backdrop) backdrop.addEventListener('click', closeModal);
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
-            closeModal();
-        }
-    });
-
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+  if (backdrop) {
+    backdrop.addEventListener('click', closeModal);
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('open')) {
+      closeModal();
+    }
+  });
 });
 </script>
 @endpush
