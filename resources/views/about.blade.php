@@ -11,7 +11,10 @@
 <section class="content-hero fade-in">
   <div class="content-header fade-section">
     <h1>About <span class="highlight">SharpLync</span></h1>
-    <p>From the Granite Belt to the Cloud, bridging the gap between people and technology with old school support and modern results.</p>
+    <p class="about-subtitle">
+      From the Granite Belt to the Cloud, bridging the gap between people and technology with old school support and modern results.
+    </p>
+
   </div>
 
   <!-- ===================== -->
