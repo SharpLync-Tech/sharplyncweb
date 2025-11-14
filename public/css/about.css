@@ -1,7 +1,10 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.0 (Standalone About + Testimonials Modal)
-   Works on Mobile. Desktop My Story not formatted correctly
+   Version: 1.1
+   Notes:
+   - My Story section redesigned (v1.0)
+   - Tagline under "About SharpLync" styled (v1.1)
+   - Testimonials + Modal untouched
    ============================================================ */
 
 body.about-body {
@@ -11,7 +14,10 @@ body.about-body {
     color: #e9f4f3;
 }
 
-/* Header (copied visual style) */
+/* ============================================================
+   HEADER
+   ============================================================ */
+
 .about-header {
     display: flex;
     align-items: center;
@@ -46,18 +52,119 @@ body.about-body {
     margin: 1rem 0;
 }
 
+/* Main wrapper */
 .about-main {
     padding: 4rem 1.5rem;
 }
 
-.about-main h1,
+.about-main h1, 
 .about-main h3 {
     text-align: center;
 }
 
-/* ===============================
-   TESTIMONIAL SLIDER
-   =============================== */
+/* ============================================================
+   ★ NEW SECTION ADDED — "ABOUT SUBTITLE" UNDER MAIN HEADING ★
+   Version 1.1
+   ============================================================ */
+
+.about-subtitle {
+    max-width: 900px;
+    margin: 0.5rem auto 2.2rem auto;
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(233, 244, 243, 0.92);
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    opacity: 0.95;
+
+    /* SharpLync glow */
+    text-shadow: 0 0 8px rgba(44,191,174,0.18);
+}
+
+@media (max-width: 768px) {
+    .about-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+        line-height: 1.55;
+    }
+}
+
+/* ============================================================
+   ★ NEW SECTION ADDED — MY STORY CARD (v1.0)
+   ============================================================ */
+
+.about-story-card {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: rgba(10, 42, 77, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.about-story-card h3 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+}
+
+.about-story-content p {
+    line-height: 1.7;
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+    color: #e9f4f3;
+}
+
+/* collapsed */
+#storyFull.collapsed {
+    display: none;
+}
+
+/* Toggle button */
+#toggleStory {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 0.55rem 1.2rem;
+    background: rgba(44,191,174,0.25);
+    border-radius: 6px;
+    border: 1px solid rgba(44,191,174,0.4);
+    color: #ffffff;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+#toggleStory:hover {
+    background: rgba(44,191,174,0.45);
+}
+
+@media (max-width: 768px) {
+    .about-story-card {
+        padding: 1.5rem;
+        margin: 2rem 1rem;
+    }
+
+    .about-story-card h3 {
+        font-size: 1.45rem;
+    }
+
+    .about-story-content p {
+        font-size: 1rem;
+    }
+
+    #toggleStory {
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* ============================================================
+   TESTIMONIAL SLIDER (UNCHANGED)
+   ============================================================ */
 
 .testimonials-section {
     margin-top: 4rem;
@@ -141,9 +248,9 @@ body.about-body {
     background: #2CBFAE;
 }
 
-/* ===============================
-   MODAL (Version A)
-   =============================== */
+/* ============================================================
+   MODAL (UNCHANGED)
+   ============================================================ */
 
 .testimonial-modal {
     position: fixed;
@@ -181,7 +288,6 @@ body.about-body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Close button */
 .testimonial-modal-close {
     position: absolute;
     right: 18px;
@@ -193,20 +299,17 @@ body.about-body {
     cursor: pointer;
 }
 
-/* Big quote icon */
 .testimonial-modal-quote {
     font-size: 3.2rem;
     color: rgba(255,255,255,0.2);
 }
 
-/* Modal text */
 .testimonial-modal-text {
     margin-top: 1.5rem;
     line-height: 1.7;
     font-size: 1rem;
 }
 
-/* Teal separator */
 .testimonial-modal-separator {
     width: 80px;
     height: 3px;
@@ -214,7 +317,6 @@ body.about-body {
     margin: 2rem 0 1rem;
 }
 
-/* Author details */
 .testimonial-modal-name {
     font-weight: 600;
     font-size: 1.1rem;
@@ -223,71 +325,4 @@ body.about-body {
 .testimonial-modal-role {
     font-size: 0.9rem;
     opacity: 0.85;
-}
-
-/* ============================================================
-   MY STORY SECTION — About Page Card (Standalone)
-   ============================================================ */
-
-.about-story-card {
-    max-width: 1100px;
-    margin: 3rem auto;
-    padding: 2.5rem;
-    background: rgba(10, 42, 77, 0.6);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-}
-
-.about-story-card h3 {
-    text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    color: #ffffff;
-}
-
-.about-story-content p {
-    line-height: 1.7;
-    font-size: 1.05rem;
-    margin-bottom: 1.2rem;
-    color: #e9f4f3;
-}
-
-#storyFull.collapsed {
-    display: none;
-}
-
-#toggleStory {
-    margin-top: 1.5rem;
-    display: inline-block;
-    padding: 0.55rem 1.2rem;
-    background: rgba(44,191,174,0.25);
-    border-radius: 6px;
-    border: 1px solid rgba(44,191,174,0.4);
-    color: #ffffff;
-    cursor: pointer;
-    transition: 0.25s ease;
-}
-
-#toggleStory:hover {
-    background: rgba(44,191,174,0.45);
-}
-
-@media (max-width: 768px) {
-    .about-story-card {
-        padding: 1.5rem;
-        margin: 2rem 1rem;
-    }
-    .about-story-card h3 {
-        font-size: 1.45rem;
-    }
-    .about-story-content p {
-        font-size: 1rem;
-    }
-    #toggleStory {
-        font-size: 0.95rem;
-        padding: 0.5rem 1rem;
-    }
 }
