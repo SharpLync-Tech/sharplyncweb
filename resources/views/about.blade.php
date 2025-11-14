@@ -146,7 +146,8 @@
       <button type="button" class="testimonial-modal-close" aria-label="Close testimonial">&times;</button>
 
       <div class="testimonial-modal-inner">
-        <div class="testimonial-modal-quote"></div>
+        <div class="testimonial-modal-quote">“</div>
+
         <p class="testimonial-modal-text" id="testimonialModalText"></p>
 
         <div class="testimonial-modal-separator"></div>

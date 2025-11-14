@@ -377,8 +377,7 @@ body.about-body {
 }
 
  /* Decorative quote mark */
-.testimonial-modal-quote::before {
-    content: "❝";
+.testimonial-modal-quote {
     font-size: 110px;
     color: rgba(255, 255, 255, 0.08);
     position: absolute;
