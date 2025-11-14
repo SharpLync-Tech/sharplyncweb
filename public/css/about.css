@@ -1,9 +1,8 @@
 /* ============================================================
    ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.2
-   - Top bar matches main SharpLync header
-   - My Story card styling restored (no class name mismatch)
-   - Subtitle styling under "About SharpLync"
+   Version: 1.3
+   - My Story card now has a desktop background image (mystory.png)
+   - Image is fully hidden on mobile (≤ 768px)
    ============================================================ */
 
 body.about-body {
@@ -123,43 +122,6 @@ body.about-body {
 }
 
 /* ============================================================
-   ⭐ NEW — STYLES FOR "ABOUT SHARPLYNC" HEADING
-   ============================================================ */
-
-.about-title {
-    text-align: center;
-    margin: 0 auto 1.2rem;
-    font-weight: 600;
-    font-size: 3rem;
-    line-height: 1.15;
-}
-
-.about-title .about-main-word {
-    color: #ffffff;
-    display: inline-block;
-    margin-right: 0.4rem;
-}
-
-.about-title .about-brand {
-    display: inline-block;
-    background: linear-gradient(135deg, #4acfd9 0%, #1cd4a8 70%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .about-title {
-        font-size: 2.4rem;
-        line-height: 1.2;
-    }
-    .about-title .about-main-word {
-        display: block;
-        margin-right: 0;
-    }
-}
-
-/* ============================================================
    SUBTITLE UNDER "ABOUT SHARPLYNC"
    ============================================================ */
 
@@ -176,9 +138,10 @@ body.about-body {
 }
 
 /* ============================================================
-   MY STORY CARD (RESTORED + ROBUST)
+   MY STORY CARD — DESKTOP IMAGE + MOBILE HIDDEN
    ============================================================ */
 
+/* 🔧 BEGIN MODIFICATION — A1/A2/A3 EXACT REQUEST */
 .about-story-card,
 .about-main .content-card {
     background: rgba(10, 42, 77, 0.65);
@@ -190,7 +153,49 @@ body.about-body {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
+    /* Desktop background image */
+    background-image: url('/images/mystory.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    /* Dark overlay for readability */
+    position: relative;
+    overflow: hidden;
 }
+
+.about-story-card::before,
+.about-main .content-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 42, 77, 0.75); /* overlay darkness */
+    backdrop-filter: blur(2px);
+    z-index: 0;
+}
+
+/* ensure card text sits above overlay */
+.about-story-card > *,
+.about-main .content-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Hide background image entirely on mobile */
+@media (max-width: 768px) {
+    .about-story-card,
+    .about-main .content-card {
+        background-image: none !important;
+    }
+
+    .about-story-card::before,
+    .about-main .content-card::before {
+        background: none; /* remove overlay on mobile */
+    }
+}
+/* 🔧 END MODIFICATION */
+/* ============================================================ */
 
 .about-story-card h3,
 .about-main .content-card h3 {
@@ -214,11 +219,11 @@ body.about-body {
     margin: 1.3rem auto 0;
     padding: 0.6rem 1.2rem;
     background: rgba(44, 191, 174, 0.3);
-    color: #ffffff;
     border: 1px solid rgba(44, 191, 174, 0.6);
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
+    color: #ffffff;
     transition: background 0.3s ease;
 }
 #toggleStory:hover,
@@ -226,7 +231,6 @@ body.about-body {
     background: rgba(44, 191, 174, 0.5);
 }
 
-/* Collapsed extra story */
 #storyFull.collapsed {
     display: none;
 }
@@ -252,7 +256,6 @@ body.about-body {
 /* ============================================================
    TESTIMONIALS — SLIDER
    ============================================================ */
-/* (UNCHANGED — keeping your working code) */
 
 .testimonials-section {
     margin-top: 4rem;
@@ -285,7 +288,6 @@ body.about-body {
     transform: translateY(0);
 }
 
-/* Name + role */
 .testimonial-meta h4 {
     margin-bottom: 0.25rem;
     font-weight: 600;
@@ -295,14 +297,12 @@ body.about-body {
     opacity: 0.85;
 }
 
-/* Preview text */
 .testimonial-preview {
     margin-top: 1rem;
     font-weight: 400;
     line-height: 1.6;
 }
 
-/* Read More button */
 .testimonial-read-more {
     margin-top: 1rem;
     padding: 0.35rem 0.75rem;
@@ -316,7 +316,6 @@ body.about-body {
     background: rgba(44, 191, 174, 0.5);
 }
 
-/* Dots */
 .testimonial-dots {
     margin-top: 1.5rem;
     display: flex;
@@ -339,7 +338,6 @@ body.about-body {
 /* ============================================================
    MODAL (Version A)
    ============================================================ */
-/* (UNCHANGED) */
 
 .testimonial-modal {
     position: fixed;
@@ -377,7 +375,6 @@ body.about-body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Close button */
 .testimonial-modal-close {
     position: absolute;
     right: 18px;
@@ -389,20 +386,17 @@ body.about-body {
     cursor: pointer;
 }
 
-/* Big quote icon */
 .testimonial-modal-quote {
     font-size: 3.2rem;
     color: rgba(255, 255, 255, 0.2);
 }
 
-/* Modal text */
 .testimonial-modal-text {
     margin-top: 1.5rem;
     line-height: 1.7;
     font-size: 1rem;
 }
 
-/* Teal separator */
 .testimonial-modal-separator {
     width: 80px;
     height: 3px;
@@ -410,7 +404,6 @@ body.about-body {
     margin: 2rem 0 1rem;
 }
 
-/* Author details */
 .testimonial-modal-name {
     font-weight: 600;
     font-size: 1.1rem;
