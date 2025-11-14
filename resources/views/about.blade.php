@@ -25,39 +25,52 @@
   </div>
 
   <!-- ===================== -->
-  <!-- My Story Section v3 -->
-  <!-- ===================== -->
-  <div class="content-card fade-section">
-    <h3>My Story: From Tools to Technology</h3>
+<!-- My Story Section v4   -->
+<!-- Split Layout (Desktop), Image Hidden on Mobile -->
+<!-- ===================== -->
 
-    <div id="storyIntro">
-      <p>My journey into technology didn’t start in a lab or an office. It started with a set of tools, cables, and a good dose of curiosity.</p>
+<div class="about-story-card story-split">
 
-      <p>I began my career as an Electrical Fitter, learning the value of precision, safety, and doing things properly the first time. From there, my interest naturally shifted toward the growing world of data and communication, where I started working on network cabling, PABX phone systems, and fibre optics. It was hands-on, practical work that taught me how every wire and connection plays a part in keeping a business running smoothly.</p>
+    <!-- LEFT SIDE IMAGE (desktop only, hidden on mobile) -->
+    <div class="story-image"></div>
 
-      <p>As technology evolved, so did I. I moved into the IT world, working as a Computer Technician for Harvey Norman, helping people get their systems up and running, and just as importantly, making sure they actually understood how to use them.</p>
-    </div>
+    <!-- RIGHT SIDE: EXISTING STORY CONTENT (unchanged) -->
+    <div class="story-text">
 
-    <div id="storyFull" class="collapsed">
-      <p>That experience showed me how much people appreciate honest, down-to-earth support, the kind that doesn’t rely on jargon.</p>
+        <h3>My Story: From Tools to Technology</h3>
 
-      <p>In the early 2000s, I took a leap and started my own business. It grew quickly, built on trust, reliability, and word-of-mouth, the old-fashioned way. Things went so well that the business was amalgamated into a larger company, giving me the chance to see how IT operates at scale.</p>
+        <div id="storyIntro">
+            <p>My journey into technology didn’t start in a lab or an office. It started with a set of tools, cables, and a good dose of curiosity.</p>
 
-      <p>From there, I stepped into the corporate world as a Systems Administrator, managing infrastructure and supporting teams that relied on technology every day. That role led to a new chapter, one that would last over a decade in education.</p>
+            <p>I began my career as an Electrical Fitter, learning the value of precision, safety, and doing things properly the first time. From there, my interest naturally shifted toward the growing world of data and communication, where I started working on network cabling, PABX phone systems, and fibre optics. It was hands-on, practical work that taught me how every wire and connection plays a part in keeping a business running smoothly.</p>
 
-      <h3>Establishing Expertise at Scale</h3>
-      <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT infrastructure for four new ones, everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
+            <p>As technology evolved, so did I. I moved into the IT world, working as a Computer Technician for Harvey Norman, helping people get their systems up and running, and just as importantly, making sure they actually understood how to use them.</p>
+        </div>
 
-      <h3>The Launch of SharpLync: Seizing an Opportunity</h3>
-      <p>After more than a decade managing complex, multi-site infrastructure, I had a unique vantage point. I saw clearly what high-level, practical IT support looks like, and what was often missing for growing businesses. It became obvious that many organisations struggle to access proven, enterprise-level expertise without the massive price tag. They deserve better than generic fixes.</p>
+        <div id="storyFull" class="collapsed">
+            <p>That experience showed me how much people appreciate honest, down-to-earth support, the kind that doesn’t rely on jargon.</p>
 
-      <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
+            <p>In the early 2000s, I took a leap and started my own business. It grew quickly, built on trust, reliability, and word-of-mouth, the old-fashioned way. Things went so well that the business was amalgamated into a larger company, giving me the chance to see how IT operates at scale.</p>
 
-      <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
-    </div>
+            <p>From there, I stepped into the corporate world as a Systems Administrator, managing infrastructure and supporting teams that relied on technology every day. That role led to a new chapter, one that would last over a decade in education.</p>
 
-    <button id="toggleStory" class="toggle-btn">Continue My Story +</button>
-  </div>
+            <h3>Establishing Expertise at Scale</h3>
+            <p>During my time working for a large school network, I helped upgrade two existing campuses and build the IT infrastructure for four new ones, everything from networking and servers to Wi-Fi, printers, cloud infrastructure, and device management. It was a massive challenge, but it shaped the way I see technology: not just as wires and code, but as something that connects people and helps them learn, grow, and succeed.</p>
+
+            <h3>The Launch of SharpLync: Seizing an Opportunity</h3>
+            <p>After more than a decade managing complex, multi-site infrastructure, I had a unique vantage point. I saw clearly what high-level, practical IT support looks like, and what was often missing for growing businesses. It became obvious that many organisations struggle to access proven, enterprise-level expertise without the massive price tag. They deserve better than generic fixes.</p>
+
+            <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
+
+            <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
+        </div>
+
+        <button id="toggleStory" class="toggle-btn">Continue My Story +</button>
+
+    </div> <!-- end .story-text -->
+
+</div> <!-- end .story-split -->
+
 
   <!-- ===================== -->
   <!-- Testimonials Section -->
@@ -138,6 +151,172 @@
 </section>
 
 @push('scripts')
-{{-- JS unchanged --}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    /* ===========================================
+       STORY TOGGLE — unchanged except container
+       =========================================== */
+    const toggleBtn = document.getElementById('toggleStory');
+    const storyFull = document.getElementById('storyFull');
+    let expanded = false;
+
+    if (toggleBtn && storyFull) {
+        toggleBtn.addEventListener('click', () => {
+            expanded = !expanded;
+            storyFull.classList.toggle('collapsed', !expanded);
+            toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story +';
+        });
+    }
+
+    /* ===========================================
+       TESTIMONIAL SLIDER — unchanged
+       =========================================== */
+    const testimonials = document.querySelectorAll('.testimonials-section .testimonial');
+    const container    = document.querySelector('.testimonials-section .testimonial-container');
+    const dotsHolder   = document.querySelector('.testimonials-section .testimonial-dots');
+    let index = 0;
+    let intervalId = null;
+    let dots = [];
+
+    function sizeCarousel() {
+        if (!container || !testimonials.length) return;
+        let maxH = 0;
+
+        testimonials.forEach(card => {
+            const wasActive = card.classList.contains('active');
+            const prevStyle = card.getAttribute('style') || '';
+
+            card.style.position = 'absolute';
+            card.style.visibility = 'hidden';
+            card.style.display = 'block';
+            card.classList.add('active');
+
+            maxH = Math.max(maxH, card.scrollHeight);
+
+            card.setAttribute('style', prevStyle);
+            if (!wasActive) card.classList.remove('active');
+        });
+
+        container.style.minHeight = (maxH + 24) + 'px';
+    }
+
+    function goTo(i) {
+        if (!testimonials.length) return;
+        index = (i + testimonials.length) % testimonials.length;
+
+        testimonials.forEach((card, idx) => {
+            card.classList.toggle('active', idx === index);
+        });
+
+        if (dots.length) {
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === index);
+            });
+        }
+    }
+
+    function startCycle() {
+        if (intervalId || testimonials.length <= 1) return;
+        intervalId = setInterval(() => {
+            goTo(index + 1);
+        }, 16000);
+    }
+
+    function stopCycle() {
+        if (!intervalId) return;
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
+    function buildDots() {
+        if (!dotsHolder || !testimonials.length) return;
+
+        dotsHolder.innerHTML = '';
+        dots = [];
+
+        testimonials.forEach((card, i) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'testimonial-dot' + (i === 0 ? ' active' : '');
+            dot.dataset.index = i;
+
+            dot.addEventListener('click', () => {
+                stopCycle();
+                goTo(i);
+                startCycle();
+            });
+
+            dotsHolder.appendChild(dot);
+            dots.push(dot);
+        });
+    }
+
+    if (testimonials.length) {
+        goTo(0);
+        sizeCarousel();
+        buildDots();
+        startCycle();
+
+        window.addEventListener('resize', () => {
+            clearTimeout(window.__aboutTestimonialsResize);
+            window.__aboutTestimonialsResize = setTimeout(sizeCarousel, 150);
+        });
+    }
+
+    /* ===========================================
+       MODAL FIX — FULLY RESTORED
+       =========================================== */
+    const modal     = document.getElementById('testimonialModal');
+    const modalText = document.getElementById('testimonialModalText');
+    const modalName = document.getElementById('testimonialModalName');
+    const modalRole = document.getElementById('testimonialModalRole');
+    const closeBtn  = modal ? modal.querySelector('.testimonial-modal-close') : null;
+    const backdrop  = modal ? modal.querySelector('.testimonial-modal-backdrop') : null;
+
+    const readMoreBtns = document.querySelectorAll('.testimonials-section .testimonial-read-more');
+
+    function openModal(card) {
+        if (!modal) return;
+
+        modalText.textContent = card.dataset.fulltext || '';
+        modalName.textContent = card.dataset.name || '';
+
+        if (card.dataset.who) {
+            modalRole.textContent = card.dataset.who;
+            modalRole.style.display = 'block';
+        } else {
+            modalRole.style.display = 'none';
+        }
+
+        stopCycle();
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        startCycle();
+    }
+
+    readMoreBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.currentTarget.closest('.testimonial');
+            if (card) openModal(card);
+        });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+            closeModal();
+        }
+    });
+
+});
+</script>
 @endpush
 @endsection
