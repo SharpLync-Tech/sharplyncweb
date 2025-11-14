@@ -141,6 +141,26 @@ body.about-body {
     display: none !important;
 }
 
+#toggleStory,
+.toggle-btn {
+    display: block;
+    margin: 1.3rem auto 0;
+    padding: 0.6rem 1.2rem;
+    background: rgba(44, 191, 174, 0.3);
+    color: #ffffff;
+    border: 1px solid rgba(44, 191, 174, 0.6);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s ease;
+}
+
+#toggleStory:hover,
+.toggle-btn:hover {
+    background: rgba(44, 191, 174, 0.5);
+}
+
+
 
 /* Subtitle heading */
 .story-text h3 {
