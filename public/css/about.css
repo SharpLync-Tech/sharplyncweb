@@ -376,11 +376,16 @@ body.about-body {
     z-index: 1;
 }
 
-.testimonial-modal-quote {
-    white-space: nowrap; /* Prevents stray quotes / line breaks */
-}
-
-
+ /* Decorative quote mark */
+      .testimonial-card::before {
+        content: "❝";
+        font-size: 110px;
+        color: rgba(255, 255, 255, 0.08);
+        position: absolute;
+        top: -45px;
+        left: 25px;
+        z-index: 0;
+      }
 
 /* Teal accent separator (thin line) */
 .testimonial-modal-separator {
