@@ -518,48 +518,56 @@ footer {
     }
 }
 
-.story-signoff {
-    margin-top: 2.5rem;
-    border-top: 1px solid rgba(0,0,0,0.08);
-    padding-top: 1.5rem;
-    text-align: left;
+
+/* Signature block (About page) ------------------ */
+.story-signature {
+    margin-top: 1.4rem;
+    text-align: left; /* change to center if preferred */
 }
 
-.signoff-name {
-    color: #2CBFAE; /* SharpLync teal */
+/* Name */
+.story-signature .sig-name {
     font-weight: 600;
-    font-size: 1.25rem;
-    margin: 0 0 4px;
+    font-size: 1.1rem;
+    color: #2CBFAE; /* SharpLync teal */
+    margin-bottom: 4px; /* tighter spacing */
 }
 
-.signoff-title {
+/* Role */
+.story-signature .sig-role {
+    font-size: 0.95rem;
     color: #0A2A4D;
-    font-size: 1rem;
-    margin: 0 0 12px;
     opacity: 0.85;
+    margin-bottom: 6px;
 }
 
-.signoff-linkedin img {
-    width: 34px;
-    height: 34px;
-    opacity: 0.9;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+/* LinkedIn icon */
+.story-signature .sig-linkedin img {
+    width: 24px;
+    height: 24px;
+    opacity: 0.85;
+    transition: 0.2s ease;
 }
 
-.signoff-linkedin:hover img {
+.story-signature .sig-linkedin img:hover {
     opacity: 1;
-    transform: scale(1.06);
+    transform: scale(1.08);
 }
 
+/* Mobile adjustments */
 @media (max-width: 768px) {
-    .signoff-name {
-        font-size: 1.2rem;
+    .story-signature .sig-linkedin img {
+        width: 20px;
+        height: 20px;
     }
-    .signoff-title {
-        font-size: 0.95rem;
-    }
-    .signoff-linkedin img {
-        width: 30px;
-        height: 30px;
-    }
+}
+
+/* Teal divider line above signature */
+.story-divider,
+.story-text hr {
+    border: none;
+    border-top: 2px solid #2CBFAE; /* SharpLync teal */
+    width: 100%;
+    margin: 1.8rem 0 1rem;
+    opacity: 0.6; /* tweak if needed */
 }

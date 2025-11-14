@@ -65,17 +65,16 @@
 
               <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
           </div>
-          <div class="story-signoff">
-              <p class="signoff-name">Jannie Brits</p>
-              <p class="signoff-title">Founder & Lead Engineer</p>
+          <hr class="story-divider">
+          <div class="story-signature">
+              <div class="sig-name">Jannie Brits</div>
+              <div class="sig-role">Founder & Lead Engineer</div>
 
-              <a href="https://www.linkedin.com/in/jcbrits/" 
-                target="_blank" 
-                rel="noopener" 
-                class="signoff-linkedin">
-                  <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn" />
+              <a class="sig-linkedin" href="https://www.linkedin.com/in/jcbrits/" target="_blank">
+                  <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn">
               </a>
           </div>
+
 
           <button id="toggleStory" class="toggle-btn">Continue My Story...</button>
       </div>
