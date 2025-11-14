@@ -1,4 +1,4 @@
-@extends('layouts.content')
+@extends('layouts.about-base')
 
 @section('title', 'SharpLync | About')
 
