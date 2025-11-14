@@ -14,7 +14,7 @@ body.about-body {
 }
 
 /* Load script font */
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+/* Moved to about-base blade - @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 /* ============================================================
    TOP HEADER (UNCHANGED)
