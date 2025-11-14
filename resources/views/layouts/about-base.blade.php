@@ -52,11 +52,16 @@
     @yield('content')
 </main>
 
-<footer class="about-footer">
-    <div class="footer-content">
-        <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-    </div>
-</footer>
+<footer>
+        <div class="footer-content">
+            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
+                <a href="https://www.facebook.com/SharpLync"><img src="{{ asset('images/facebook.png') }}" alt="Facebook"></a>
+                <a href="mailto:info@sharplync.com.au"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
+            </div>
+        </div>
+    </footer>
 
 <script>
     function toggleMenu() {

@@ -64,6 +64,16 @@
               <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
 
               <p>I believe in old school support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
+              <div class="story-signoff">
+                      <p class="signoff-name">Jannie Brits</p>
+                      <p class="signoff-title">Founder & Lead Engineer</p>
+
+                      <a href="https://www.linkedin.com/in/jcbrits/" 
+                        target="_blank" 
+                        rel="noopener" 
+                        class="signoff-linkedin">
+                          <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn" />
+                      </a>
           </div>
 
           <button id="toggleStory" class="toggle-btn">Continue My Story...</button>

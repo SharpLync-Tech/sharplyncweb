@@ -517,3 +517,49 @@ footer {
         border-radius: 6px;
     }
 }
+
+.story-signoff {
+    margin-top: 2.5rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 1.5rem;
+    text-align: left;
+}
+
+.signoff-name {
+    color: #2CBFAE; /* SharpLync teal */
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0 0 4px;
+}
+
+.signoff-title {
+    color: #0A2A4D;
+    font-size: 1rem;
+    margin: 0 0 12px;
+    opacity: 0.85;
+}
+
+.signoff-linkedin img {
+    width: 34px;
+    height: 34px;
+    opacity: 0.9;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.signoff-linkedin:hover img {
+    opacity: 1;
+    transform: scale(1.06);
+}
+
+@media (max-width: 768px) {
+    .signoff-name {
+        font-size: 1.2rem;
+    }
+    .signoff-title {
+        font-size: 0.95rem;
+    }
+    .signoff-linkedin img {
+        width: 30px;
+        height: 30px;
+    }
+}
