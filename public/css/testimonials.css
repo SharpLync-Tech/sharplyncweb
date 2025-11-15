@@ -128,7 +128,7 @@
 
 /* --- Slide --- */
 .tl-slide {
-    flex: 0 0 100%;
+    flex: 0 0 85%;
     padding: 0 18px;
     display: flex;
     justify-content: center;
@@ -136,7 +136,11 @@
 }
 
 .tl-slide.active {
-    transform: scale(1.03);
+    transform: scale(1.05);
+}
+
+.tl-track {
+    gap: 40px;
 }
 
 /* --- Testimonial Card --- */
