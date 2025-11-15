@@ -9,6 +9,11 @@
     overflow-x: hidden;
 }
 
+main {
+    overflow: visible !important;
+}
+
+
 .tl-header {
     display: flex;
     justify-content: space-between;
