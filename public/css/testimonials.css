@@ -118,7 +118,7 @@
 .tl-carousel {
     max-width: 1000px;
     margin: 0 auto;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .tl-track {
