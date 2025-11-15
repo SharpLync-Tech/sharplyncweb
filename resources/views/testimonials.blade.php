@@ -97,140 +97,44 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ===== Carousel basics =====
-    const track   = document.getElementById('tlTrack');
-    const slides  = Array.from(document.querySelectorAll('.tl-slide'));
-    const dots    = Array.from(document.querySelectorAll('#tlDots .tl-dot'));
-    const carousel = document.getElementById('tlCarousel');
-
+    const track = document.getElementById('testimonialTrack');
+    const dots = document.querySelectorAll('#testimonialDots .dot');
+    const carousel = document.getElementById('testimonialCarousel');
     let currentIndex = 0;
-    let autoTimer = null;
+    let autoSlide;
 
-    function goTo(index) {
+    function showSlide(index) {
+        const slides = document.querySelectorAll('.testimonial-slide');
         if (!slides.length) return;
 
-        const count = slides.length;
-        currentIndex = (index + count) % count;
+        currentIndex = (index + slides.length) % slides.length;
 
-        // Move track
         track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-        // Active slide scale
-        slides.forEach((slide, i) => {
-            slide.classList.toggle('active', i === currentIndex);
-        });
-
-        // Active dot
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentIndex);
-        });
+        slides.forEach((slide, i) =>
+            slide.classList.toggle('active', i === currentIndex)
+        );
+        dots.forEach((dot, i) =>
+            dot.classList.toggle('active', i === currentIndex)
+        );
     }
 
-    function nextSlide() {
-        goTo(currentIndex + 1);
-    }
+    function nextSlide() { showSlide(currentIndex + 1); }
+    function startAutoSlide() { autoSlide = setInterval(nextSlide, 6000); }
+    function stopAutoSlide() { clearInterval(autoSlide); }
 
-    function startAuto() {
-        if (autoTimer || slides.length <= 1) return;
-        autoTimer = setInterval(nextSlide, 16000); // ~16s per testimonial
-    }
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
 
-    function stopAuto() {
-        if (!autoTimer) return;
-        clearInterval(autoTimer);
-        autoTimer = null;
-    }
-
-    // Dot click
-    dots.forEach((dot, i) => {
+    dots.forEach(dot => {
         dot.addEventListener('click', () => {
-            stopAuto();
-            goTo(i);
-            startAuto();
+            const index = parseInt(dot.getAttribute('data-index'));
+            showSlide(index);
         });
     });
 
-    // Pause on hover (desktop)
-    if (carousel) {
-        carousel.addEventListener('mouseenter', stopAuto);
-        carousel.addEventListener('mouseleave', startAuto);
-    }
-
-    // Init
-    goTo(0);
-    startAuto();
-
-    // ===== Modal logic =====
-    const modal      = document.getElementById('testimonialModal');
-    const modalText  = document.getElementById('modalText');
-    const modalName  = document.getElementById('modalName');
-    const modalRole  = document.getElementById('modalRole');
-    const closeBtn   = modal ? modal.querySelector('.modal-close') : null;
-
-    function openModal(fromCard) {
-        if (!modal || !fromCard) return;
-
-        const fullText = fromCard.dataset.fulltext || '';
-        const name     = fromCard.dataset.name || '';
-        const who      = fromCard.dataset.who || '';
-
-        // Clean leading quote if present
-        const cleaned = fullText.replace(/^["“”]/, '');
-
-        modalText.textContent = cleaned;
-        modalName.textContent = name;
-
-        if (who) {
-            modalRole.textContent = who;
-            modalRole.style.display = 'block';
-        } else {
-            modalRole.textContent = '';
-            modalRole.style.display = 'none';
-        }
-
-        stopAuto();
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        if (!modal) return;
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        startAuto();
-    }
-
-    // Clicking card opens modal
-    slides.forEach(slide => {
-        const card = slide.querySelector('.tl-card');
-        if (!card) return;
-
-        card.addEventListener('click', () => openModal(card));
-    });
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
-
-    // Close on Esc
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
-            closeModal();
-        }
-    });
-
-    // Close when clicking outside dialog
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    }
-});
+    startAutoSlide();
 </script>
+
 @endpush
 @endsection
