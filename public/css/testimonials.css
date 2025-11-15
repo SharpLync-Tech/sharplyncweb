@@ -1,43 +1,41 @@
 /* ============================================================
-   PAGE BACKGROUND + BASE
+   PAGE SHELL
    ============================================================ */
 .testimonials-body {
-    margin: 0;
-    padding: 0;
     font-family: 'Poppins', sans-serif;
+    margin: 0;
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #fff;
+    color: #e9f4f3;
     overflow-x: hidden;
 }
 
-/* ============================================================
-   HEADER
-   ============================================================ */
-.testimonials-header {
-    width: 100%;
-    padding: 22px 32px;
+.tl-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.8rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+    background: rgba(10, 42, 77, 0.6);
+    backdrop-filter: blur(10px);
 }
 
-.testimonials-header .logo img {
-    height: 72px;
+.tl-header .logo img {
+    height: 80px;
 }
 
 .hamburger {
-    font-size: 2.4rem;
+    font-size: 2rem;
     color: #2CBFAE;
     background: none;
     border: none;
     cursor: pointer;
 }
 
-/* ============================================================
-   OVERLAY MENU
-   ============================================================ */
+/* Overlay menu */
 .overlay-menu {
-    position: fixed !important;
+    position: fixed;
     inset: 0;
     background: rgba(10, 42, 77, 0.85);
     backdrop-filter: blur(10px);
@@ -45,152 +43,194 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
+    z-index: 99999;
 }
 
-.overlay-menu.show {
-    display: flex;
-}
-
-.overlay-menu .close-menu {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    background: none;
-    border: none;
-    color: #2CBFAE;
-    font-size: 2.4rem;
-    cursor: pointer;
-}
+.overlay-menu.show { display: flex; }
 
 .overlay-menu ul {
     list-style: none;
     padding: 0;
-    margin: 0;
     text-align: center;
 }
 
-.overlay-menu li {
-    margin: 16px 0;
-}
-
-.overlay-menu a {
+.overlay-menu li a {
+    display: block;
+    padding: 10px 0;
     color: #fff;
-    font-size: 1.5rem;
-    text-decoration: none;
+    font-size: 1.4rem;
+}
+
+.close-menu {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #2CBFAE;
+    font-size: 2.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* ============================================================
-   CONTENT AREA
-   ============================================================ */
-.testimonials-main {
-    padding: 40px 22px 80px;
-}
-
-/* ============================================================
-   CAROUSEL + CARDS (YOUR STYLES MOVED HERE)
+   TESTIMONIALS SECTION
    ============================================================ */
 
-.testimonial-carousel {
-    max-width: 940px;
-    margin: 0 auto;
+.testimonials-title {
     text-align: center;
+    margin-top: 2.5rem;
 }
 
-.testimonial-dots {
-    margin-bottom: 24px;
+.testimonials-title h1 {
+    font-size: 2.6rem;
+    margin-bottom: 0.3rem;
 }
 
-.dot {
+.testimonials-title p {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+/* --- Dots ABOVE cards --- */
+.tl-dots {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.tl-dot {
     height: 12px;
     width: 12px;
     margin: 0 5px;
-    background-color: transparent;
+    background: transparent;
     border: 2px solid #2CBFAE;
     border-radius: 50%;
     display: inline-block;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
 }
 
-.dot.active {
-    background-color: #2CBFAE;
-    transform: scale(1.15);
+.tl-dot.active {
+    background: #2CBFAE;
+    transform: scale(1.2);
+    box-shadow: 0 0 12px rgba(44, 191, 174, 0.8);
 }
 
-.testimonial-track {
+/* --- Carousel track --- */
+.tl-carousel {
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.tl-track {
     display: flex;
-    transition: transform 0.8s ease;
+    transition: transform 0.7s ease-in-out;
 }
 
-.testimonial-slide {
+/* --- Slide --- */
+.tl-slide {
     flex: 0 0 100%;
-    padding: 0 20px;
+    padding: 0 18px;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.35s;
 }
 
-.testimonial-card {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    padding: 2.2rem;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+.tl-slide.active {
+    transform: scale(1.03);
+}
+
+/* --- Testimonial Card --- */
+.tl-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 2px solid #2CBFAE;
+    padding: 2rem 2.4rem;
+    max-width: 900px;
+    color: #0A2A4D;
     position: relative;
-    transition: box-shadow 0.5s ease, transform 0.5s ease;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.30);
 }
 
-.testimonial-card::before {
+/* Decorative large quote */
+.tl-card::before {
     content: "❝";
+    font-size: 90px;
+    color: rgba(10,42,77,0.06);
     position: absolute;
-    top: -45px;
+    top: -30px;
     left: 25px;
-    font-size: 110px;
-    color: rgba(255,255,255,0.08);
 }
 
-.testimonial-slide.active .testimonial-card {
-    box-shadow: 0 0 24px rgba(44,191,174,0.45);
-    transform: scale(1.01);
-}
-
-.testimonial-card blockquote {
-    margin: 0;
-    line-height: 1.7;
-    font-size: 1.05rem;
-}
-
-.testimonial-card .who {
-    display: block;
-    margin-top: 18px;
-    font-weight: 600;
-    font-size: 1.05rem;
-    color: #fff;
-    position: relative;
-    padding-top: 12px;
-}
-
-.testimonial-card .who::before {
-    content: "";
+/* --- Initial Bubble --- */
+.initial-badge {
     width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, #2CBFAE, #00E6BE);
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #2CBFAE;
+    color: #2CBFAE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.3rem;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: -30px;
+    left: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.testimonial-card .who span {
-    display: block;
-    margin-top: 4px;
-    color: rgba(223,249,246,0.85);
+blockquote {
+    margin: 2rem 0 1.2rem;
+    line-height: 1.75;
+    font-size: 1.05rem;
+}
+
+.tl-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0A2A4D;
+}
+
+.tl-role {
+    font-size: 0.95rem;
+    opacity: 0.8;
 }
 
 /* ============================================================
-   FOOTER
+   MODAL
    ============================================================ */
-.testimonials-footer {
-    text-align: center;
-    padding: 28px;
-    font-size: 0.9rem;
-    opacity: 0.85;
+#testimonialModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(5,18,35,0.72);
+    backdrop-filter: blur(10px);
+    z-index: 999999;
 }
+
+#testimonialModal.open { display: flex; }
+
+.modal-dialog {
+    background: rgba(10, 42, 77, 0.97);
+    padding: 2.4rem 2.6rem;
+    border-radius: 20px;
+    max-width: 850px;
+    width: 92%;
+    color: #fff;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
