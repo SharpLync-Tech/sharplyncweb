@@ -97,44 +97,144 @@
 
 @push('scripts')
 <script>
-    const track = document.getElementById('testimonialTrack');
-    const dots = document.querySelectorAll('#testimonialDots .dot');
-    const carousel = document.getElementById('testimonialCarousel');
-    let currentIndex = 0;
-    let autoSlide;
+document.addEventListener("DOMContentLoaded", () => {
+    const track = document.querySelector(".tl-track");
+    const slides = Array.from(document.querySelectorAll(".tl-slide"));
+    const dots = Array.from(document.querySelectorAll(".tl-dot"));
 
-    function showSlide(index) {
-        const slides = document.querySelectorAll('.testimonial-slide');
-        if (!slides.length) return;
+    let current = 0;
+    let slideWidth = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    let animationID = 0;
+    let autoTimer;
 
-        currentIndex = (index + slides.length) % slides.length;
+    /* -------------------------------------------------------
+       Get actual slide width (because slides are ±85%)
+    -------------------------------------------------------- */
+    function updateSlideWidth() {
+        slideWidth = slides[0].offsetWidth + 40; // your gap: 40px
+    }
 
-        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    /* -------------------------------------------------------
+       Move to slide i
+    -------------------------------------------------------- */
+    function goTo(i) {
+        current = (i + slides.length) % slides.length;
+        currentTranslate = -(current * slideWidth);
+        prevTranslate = currentTranslate;
 
-        slides.forEach((slide, i) =>
-            slide.classList.toggle('active', i === currentIndex)
+        setSliderPosition();
+
+        slides.forEach((s, idx) =>
+            s.classList.toggle("active", idx === current)
         );
-        dots.forEach((dot, i) =>
-            dot.classList.toggle('active', i === currentIndex)
+        dots.forEach((d, idx) =>
+            d.classList.toggle("active", idx === current)
         );
     }
 
-    function nextSlide() { showSlide(currentIndex + 1); }
-    function startAutoSlide() { autoSlide = setInterval(nextSlide, 6000); }
-    function stopAutoSlide() { clearInterval(autoSlide); }
+    /* -------------------------------------------------------
+       Auto slide
+    -------------------------------------------------------- */
+    function startAuto() {
+        stopAuto();
+        autoTimer = setInterval(() => goTo(current + 1), 7000);
+    }
+    function stopAuto() {
+        clearInterval(autoTimer);
+    }
 
-    carousel.addEventListener('mouseenter', stopAutoSlide);
-    carousel.addEventListener('mouseleave', startAutoSlide);
+    /* -------------------------------------------------------
+       Touch + Drag Support
+    -------------------------------------------------------- */
+    slides.forEach((slide, index) => {
+        // Disable default image drag
+        slide.addEventListener("dragstart", e => e.preventDefault());
 
-    dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-            const index = parseInt(dot.getAttribute('data-index'));
-            showSlide(index);
-        });
+        // Touch start
+        slide.addEventListener("touchstart", touchStart(index));
+        slide.addEventListener("touchend", touchEnd);
+        slide.addEventListener("touchmove", touchMove);
+
+        // Mouse drag
+        slide.addEventListener("mousedown", touchStart(index));
+        slide.addEventListener("mouseup", touchEnd);
+        slide.addEventListener("mousemove", touchMove);
+        slide.addEventListener("mouseleave", touchEnd);
     });
 
-    startAutoSlide();
+    function touchStart(index) {
+        return function (e) {
+            stopAuto();
+
+            isDragging = true;
+            startX = getX(e);
+            animationID = requestAnimationFrame(animation);
+        };
+    }
+
+    function touchMove(e) {
+        if (!isDragging) return;
+        const x = getX(e);
+        const delta = x - startX;
+        currentTranslate = prevTranslate + delta;
+    }
+
+    function touchEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        cancelAnimationFrame(animationID);
+
+        const movedBy = currentTranslate - prevTranslate;
+
+        // threshold: must drag at least 30px
+        if (movedBy < -30) goTo(current + 1);
+        else if (movedBy > 30) goTo(current - 1);
+        else goTo(current); // snap back
+
+        startAuto();
+    }
+
+    function getX(e) {
+        return e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+    }
+
+    function animation() {
+        setSliderPosition();
+        if (isDragging) requestAnimationFrame(animation);
+    }
+
+    function setSliderPosition() {
+        track.style.transform = `translateX(${currentTranslate}px)`;
+    }
+
+    /* -------------------------------------------------------
+       Clickable dots
+    -------------------------------------------------------- */
+    dots.forEach((dot, index) =>
+        dot.addEventListener("click", () => {
+            goTo(index);
+            startAuto();
+        })
+    );
+
+    /* -------------------------------------------------------
+       Init
+    -------------------------------------------------------- */
+    updateSlideWidth();
+    goTo(0);
+    startAuto();
+
+    window.addEventListener("resize", () => {
+        updateSlideWidth();
+        goTo(current);
+    });
+});
 </script>
+
 
 @endpush
 @endsection
