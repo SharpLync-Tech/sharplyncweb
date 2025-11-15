@@ -123,6 +123,7 @@
 
 .tl-track {
     display: flex;
+    gap: 40px; 
     transition: transform 0.7s ease-in-out;
 }
 
@@ -137,10 +138,6 @@
 
 .tl-slide.active {
     transform: scale(1.05);
-}
-
-.tl-track {
-    gap: 40px;
 }
 
 /* --- Testimonial Card --- */
