@@ -115,26 +115,30 @@ document.addEventListener("DOMContentLoaded", () => {
        Get actual slide width (because slides are ±85%)
     -------------------------------------------------------- */
     function updateSlideWidth() {
-        slideWidth = slides[0].offsetWidth + 40; // your gap: 40px
-    }
+    if (slides.length === 0) return;
+    const slide = slides[0];
+    const style = window.getComputedStyle(slide);
+    const marginLeft = parseFloat(style.marginLeft);
+    const marginRight = parseFloat(style.marginRight);
+    slideWidth = slide.offsetWidth + marginLeft + marginRight + 30; // 30 = gap
+}
 
     /* -------------------------------------------------------
        Move to slide i
     -------------------------------------------------------- */
     function goTo(i) {
-        current = (i + slides.length) % slides.length;
-        currentTranslate = -(current * slideWidth);
-        prevTranslate = currentTranslate;
+    current = (i + slides.length) % slides.length;
 
-        setSliderPosition();
+    // This centers the active slide perfectly
+    const offset = (track.parentNode.offsetWidth - slides[0].offsetWidth) / 2;
+    currentTranslate = offset - (current * slideWidth);
+    
+    prevTranslate = currentTranslate;
+    setSliderPosition();
 
-        slides.forEach((s, idx) =>
-            s.classList.toggle("active", idx === current)
-        );
-        dots.forEach((d, idx) =>
-            d.classList.toggle("active", idx === current)
-        );
-    }
+    slides.forEach((s, idx) => s.classList.toggle("active", idx === current));
+    dots.forEach((d, idx) => d.classList.toggle("active", idx === current));
+}
 
     /* -------------------------------------------------------
        Auto slide
