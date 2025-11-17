@@ -20,64 +20,68 @@
     <p><strong>Last Audit:</strong> {{ optional($device->last_audit_at)->format('d M Y H:i') }}</p>
 </div>
 
-{{-- Customer Assignment --}}
-<div class="admin-card">
-    <h3>Customer Assignment</h3>
+        {{-- Customer Assignment --}}
+        <div class="admin-card">
+            <h3>Customer Assignment</h3>
 
-    @if(session('status'))
-        <div class="alert">{{ session('status') }}</div>
-    @endif
+            @if(session('status'))
+                <div class="alert">{{ session('status') }}</div>
+            @endif
 
-    <p><strong>Current:</strong>
-        @if($device->customerProfile)
-            {{ $device->customerProfile->business_name }}
-        @else
-            <span class="badge badge-off">Unassigned</span>
-        @endif
-    </p>
+            <p><strong>Current:</strong>
+                @if($device->customerProfile)
+                    {{ $device->customerProfile->business_name }}
+                @else
+                    <span class="badge badge-off">Unassigned</span>
+                @endif
+            </p>
 
-    <form method="POST" action="{{ route('admin.devices.assign', $device->id) }}" style="max-width:400px;">
-        @csrf
+            <form method="POST"
+                action="{{ route('admin.devices.assign', $device->id) }}"
+                style="max-width:400px;">
+                @csrf
 
-        <label>Select customer</label>
-        <select name="customer_profile_id" class="form-control">
-            <option value="">-- Select --</option>
+                <label>Select customer</label>
+                <select name="customer_profile_id" class="form-control">
+                    <option value="">-- Select --</option>
 
-            @foreach($customers as $cust)
-                <option value="{{ $cust->id }}"
-                    @selected($device->customer_profile_id === $cust->id)>
-                    {{ $cust->business_name }}
-                </option>
-            @endforeach
-        </select>
+                    @foreach($customers as $cust)
+                        <option value="{{ $cust->id }}"
+                            @selected($device->customer_profile_id === $cust->id)>
+                            {{ $cust->business_name }}
+                        </option>
+                    @endforeach
+                </select>
 
-        <button class="btn btn-primary" style="margin-top:10px;">Save Assignment</button>
+                <button class="btn btn-primary" style="margin-top:10px;">
+                    Save Assignment
+                </button>
+            </form>
+        </div>
+
+        {{-- Danger Zone --}}
         <div class="admin-card" style="border:2px solid #ffdddd;">
+            <h3 style="color:#b30000;">Danger Zone</h3>
+            <p>Deleting this device will remove:</p>
+            <ul>
+                <li>All audit logs</li>
+                <li>All installed apps records</li>
+                <li>The device record itself</li>
+            </ul>
 
-                <h3 style="color:#b30000;">Danger Zone</h3>
-                <p>Deleting this device will remove:</p>
-                <ul>
-                    <li>All audit logs</li>
-                    <li>All installed apps records</li>
-                    <li>The device record itself</li>
-                </ul>
+            <form action="{{ route('admin.devices.destroy', $device->id) }}"
+                method="POST"
+                onsubmit="return confirm('Are you sure you want to permanently delete this device and all audit data?');">
 
-                <form action="{{ route('admin.devices.destroy', $device->id) }}"
-                    method="POST"
-                    onsubmit="return confirm('Are you sure you want to permanently delete this device and all audit data?');">
+                @csrf
+                @method('DELETE')
 
-                    @csrf
-                    @method('DELETE')
+                <button class="btn btn-danger" style="margin-top:10px;">
+                    Delete Device
+                </button>
+            </form>
+        </div>
 
-                    <button class="btn btn-danger" style="margin-top:10px;">
-                        Delete Device
-                    </button>
-                </form>
-
-            </div>
-
-                </form>
-            </div>
 
 {{-- Apps --}}
 <div class="admin-card">
