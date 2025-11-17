@@ -36,9 +36,12 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
         Route::get('/unassigned', [DeviceController::class, 'unassigned'])->name('admin.devices.unassigned');
         Route::get('/{device}', [DeviceController::class, 'show'])->name('admin.devices.show');
         Route::post('/{device}/assign', [DeviceController::class, 'assign'])->name('admin.devices.assign');
-
         Route::get('/{device}/audits', [DeviceAuditController::class, 'index'])->name('admin.devices.audits.index');
         Route::get('/{device}/audits/{audit}', [DeviceAuditController::class, 'show'])->name('admin.devices.audits.show');
+        // Device Import
+        Route::get('/devices/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
+        Route::post('/devices/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
+
     });
 
 });

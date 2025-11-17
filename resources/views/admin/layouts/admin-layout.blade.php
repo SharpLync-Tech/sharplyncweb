@@ -48,6 +48,11 @@
         Devices – Unassigned
     </a>
 
+    <a href="{{ route('admin.devices.import') }}"
+       class="{{ request()->is('admin/devices/import') ? 'active' : '' }}">
+       Devices – Import Audit
+    </a>
+
     {{-- Pulse Feed --}}
     <a href="#" class="">Pulse Feed</a>
 
