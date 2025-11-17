@@ -7,73 +7,56 @@
 @endphp
 
 @section('content')
-<section class="testimonials-page">
+<section class="testimonials-grid-section">
+    <div class="container">
+        {{-- Page heading --}}
+        <div class="testimonials-header">
+            <h1>What Our Customers Say</h1>
+            <p>Real experiences from the people and organisations we've partnered with to deliver exceptional connectivity solutions and build trust.</p>
+        </div>
 
-    {{-- Page heading --}}
-    <div class="testimonials-title">
-        <h1>Customer Testimonials</h1>
-        <p>Real words from the people and organisations we’ve supported.</p>
-    </div>
-
-    {{-- Dots above the carousel --}}
-    <div class="tl-dots" id="tlDots">
-        @foreach($testimonials as $index => $t)
-            <span class="tl-dot {{ $loop->first ? 'active' : '' }}" data-index="{{ $index }}"></span>
-        @endforeach
-    </div>
-
-    {{-- Carousel --}}
-    <div class="tl-carousel" id="tlCarousel">
-        <div class="tl-track" id="tlTrack">
+        {{-- Grid Container --}}
+        <div class="grid-container">
             @forelse($testimonials as $t)
                 @php
                     // Build "who" line - position and company
-                    $parts = [];
-                    if ($t->customer_position) { $parts[] = $t->customer_position; }
-                    if ($t->customer_company)  { $parts[] = $t->customer_company;  }
-                    $who = implode(' — ', $parts);
+                    $who = collect([$t->customer_position, $t->customer_company])->filter()->implode(' — ');
 
                     // Initials from customer name
                     $nameParts = preg_split('/\s+/', trim($t->customer_name));
                     $initials = '';
                     foreach ($nameParts as $p) {
-                        if ($p !== '') {
-                            $initials .= mb_substr($p, 0, 1);
-                        }
+                        if ($p !== '') { $initials .= mb_substr($p, 0, 1); }
                     }
 
-                    // Preview text for card body
-                    $preview = Str::limit(strip_tags($t->testimonial_text), 260);
+                    // Card content
+                    $text = strip_tags($t->testimonial_text);
+                    $preview = Str::limit($text, 280, '... <a href="#" class="expand-link" data-open-modal>Read more</a>');
                 @endphp
 
-                <div class="tl-slide {{ $loop->first ? 'active' : '' }}">
-                    <article
-                        class="tl-card"
-                        data-fulltext="{{ e($t->testimonial_text) }}"
-                        data-name="{{ e($t->customer_name) }}"
-                        data-who="{{ e($who) }}"
-                    >
-                        <div class="initial-badge">{{ $initials }}</div>
+                <article 
+                    class="testimonial-card"
+                    data-fulltext="{{ e($t->testimonial_text) }}"
+                    data-name="{{ e($t->customer_name) }}"
+                    data-who="{{ e($who) }}"
+                >
+                    <div class="initial-badge">{{ $initials }}</div>
 
-                        <blockquote>“{{ $preview }}”</blockquote>
+                    <blockquote>
+                        {{-- Output the preview text; if full text is short, it will display the whole thing --}}
+                        <p class="quote-text">{!! $preview !!}</p>
+                    </blockquote>
 
-                        <div class="tl-name">{{ $t->customer_name }}</div>
-
+                    <footer class="author-info">
+                        <strong class="tl-name">{{ $t->customer_name }}</strong>
                         @if($who)
-                            <div class="tl-role">{{ $who }}</div>
+                            <span class="tl-role">{{ $who }}</span>
                         @endif
-                    </article>
-                </div>
+                    </footer>
+                </article>
             @empty
-                <div class="tl-slide active">
-                    <article class="tl-card">
-                        <blockquote>
-                            “No testimonials are available yet. Please check back soon —
-                            we’re just getting started.”
-                        </blockquote>
-                        <div class="tl-name">SharpLync</div>
-                        <div class="tl-role">Old school support, modern results.</div>
-                    </article>
+                <div class="empty-state">
+                    <p>No testimonials available yet. Please check back soon.</p>
                 </div>
             @endforelse
         </div>
@@ -83,158 +66,64 @@
     <div id="testimonialModal" aria-hidden="true">
         <div class="modal-dialog" role="dialog" aria-modal="true">
             <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
-
             <p id="modalText" class="modal-text"></p>
-
             <div class="modal-separator"></div>
-
             <p id="modalName" class="modal-name"></p>
             <p id="modalRole" class="modal-role"></p>
         </div>
     </div>
-
 </section>
+@endsection
 
 @push('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const track = document.querySelector(".tl-track");
-    const slides = Array.from(document.querySelectorAll(".tl-slide"));
-    const dots = Array.from(document.querySelectorAll(".tl-dot"));
-
-    let current = 0;
-    let slideWidth = 0;
-    let isDragging = false;
-    let startX = 0;
-    let currentTranslate = 0;
-    let prevTranslate = 0;
-    let animationID = 0;
-    let autoTimer;
-
-    /* -------------------------------------------------------
-       Get actual slide width (because slides are ±85%)
-    -------------------------------------------------------- */
-    function updateSlideWidth() {
-        slideWidth = slides[0].offsetWidth + 40; // your gap: 40px
-    }
-
-    /* -------------------------------------------------------
-       Move to slide i
-    -------------------------------------------------------- */
-    function goTo(i) {
-        current = (i + slides.length) % slides.length;
-        currentTranslate = -(current * slideWidth);
-        prevTranslate = currentTranslate;
-
-        setSliderPosition();
-
-        slides.forEach((s, idx) =>
-            s.classList.toggle("active", idx === current)
-        );
-        dots.forEach((d, idx) =>
-            d.classList.toggle("active", idx === current)
-        );
-    }
-
-    /* -------------------------------------------------------
-       Auto slide
-    -------------------------------------------------------- */
-    function startAuto() {
-        stopAuto();
-        autoTimer = setInterval(() => goTo(current + 1), 7000);
-    }
-    function stopAuto() {
-        clearInterval(autoTimer);
-    }
-
-    /* -------------------------------------------------------
-       Touch + Drag Support
-    -------------------------------------------------------- */
-    slides.forEach((slide, index) => {
-        // Disable default image drag
-        slide.addEventListener("dragstart", e => e.preventDefault());
-
-        // Touch start
-        slide.addEventListener("touchstart", touchStart(index));
-        slide.addEventListener("touchend", touchEnd);
-        slide.addEventListener("touchmove", touchMove);
-
-        // Mouse drag
-        slide.addEventListener("mousedown", touchStart(index));
-        slide.addEventListener("mouseup", touchEnd);
-        slide.addEventListener("mousemove", touchMove);
-        slide.addEventListener("mouseleave", touchEnd);
+// Modal Logic (simplified from your original)
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('testimonialModal');
+    const modalClose = modal.querySelector('.modal-close');
+    const modalText = document.getElementById('modalText');
+    const modalName = document.getElementById('modalName');
+    const modalRole = document.getElementById('modalRole');
+    
+    // Open Modal
+    document.querySelectorAll('[data-open-modal]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const card = e.target.closest('.testimonial-card');
+            if (card) {
+                modalText.innerHTML = card.dataset.fulltext.replace(/\n/g, '<br>'); // preserve line breaks
+                modalName.textContent = card.dataset.name;
+                modalRole.textContent = card.dataset.who;
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        });
     });
 
-    function touchStart(index) {
-        return function (e) {
-            stopAuto();
-
-            isDragging = true;
-            startX = getX(e);
-            animationID = requestAnimationFrame(animation);
-        };
+    // Close Modal
+    function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
     }
-
-    function touchMove(e) {
-        if (!isDragging) return;
-        const x = getX(e);
-        const delta = x - startX;
-        currentTranslate = prevTranslate + delta;
-    }
-
-    function touchEnd() {
-        if (!isDragging) return;
-        isDragging = false;
-        cancelAnimationFrame(animationID);
-
-        const movedBy = currentTranslate - prevTranslate;
-
-        // threshold: must drag at least 30px
-        if (movedBy < -30) goTo(current + 1);
-        else if (movedBy > 30) goTo(current - 1);
-        else goTo(current); // snap back
-
-        startAuto();
-    }
-
-    function getX(e) {
-        return e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
-    }
-
-    function animation() {
-        setSliderPosition();
-        if (isDragging) requestAnimationFrame(animation);
-    }
-
-    function setSliderPosition() {
-        track.style.transform = `translateX(${currentTranslate}px)`;
-    }
-
-    /* -------------------------------------------------------
-       Clickable dots
-    -------------------------------------------------------- */
-    dots.forEach((dot, index) =>
-        dot.addEventListener("click", () => {
-            goTo(index);
-            startAuto();
-        })
-    );
-
-    /* -------------------------------------------------------
-       Init
-    -------------------------------------------------------- */
-    updateSlideWidth();
-    goTo(0);
-    startAuto();
-
-    window.addEventListener("resize", () => {
-        updateSlideWidth();
-        goTo(current);
+    
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+        if (e.target === modal) {
+            closeModal();
+        }
     });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+            closeModal();
+        }
+    });
+
+    // Menu toggle logic (moved from layout)
+    window.toggleMenu = function() {
+        const overlay = document.getElementById('overlayMenu');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : '';
+    }
 });
 </script>
-
-
 @endpush
-@endsection

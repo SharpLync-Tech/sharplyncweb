@@ -1,10 +1,10 @@
 /* ============================================================
-   PAGE SHELL
-   ============================================================ */
+    PAGE SHELL
+    ============================================================ */
 .testimonials-body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    /* Removed fixed background on body, applying it only to the section container for better control */
     color: #e9f4f3;
     overflow-x: hidden;
 }
@@ -78,155 +78,179 @@ main {
 }
 
 /* ============================================================
-   TESTIMONIALS SECTION
-   ============================================================ */
+    TESTIMONIALS SECTION (GRID LAYOUT)
+    ============================================================ */
 
-.testimonials-title {
-    text-align: center;
-    margin-top: 2.5rem;
+.testimonials-grid-section {
+    padding: 60px 0 140px;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    min-height: 100vh;
 }
 
-.testimonials-title h1 {
-    font-size: 2.6rem;
-    margin-bottom: 0.3rem;
-}
-
-.testimonials-title p {
-    font-size: 1.1rem;
-    opacity: 0.85;
-}
-
-/* --- Dots ABOVE cards --- */
-.tl-dots {
-    text-align: center;
-    margin: 1.5rem 0;
-}
-
-.tl-dot {
-    height: 12px;
-    width: 12px;
-    margin: 0 5px;
-    background: transparent;
-    border: 2px solid #2CBFAE;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tl-dot.active {
-    background: #2CBFAE;
-    transform: scale(1.2);
-    box-shadow: 0 0 12px rgba(44, 191, 174, 0.8);
-}
-
-/* --- Carousel track --- */
-.tl-carousel {
-    max-width: 1000px;
+.testimonials-grid-section .container {
+    max-width: 1400px;
     margin: 0 auto;
-    overflow: visible;
+    padding: 0 1.5rem;
+    padding-top: 80px;
 }
 
-.tl-track {
-    display: flex;
-    gap: 40px; 
-    transition: transform 0.7s ease-in-out;
+.testimonials-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 80px;
 }
 
-/* --- Slide --- */
-.tl-slide {
-    flex: 0 0 85%;
-    padding: 0 18px;
-    display: flex;
-    justify-content: center;
-    transition: transform 0.35s;
+.testimonials-header h1 {
+    font-size: 3.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #c0f0ec);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; /* Makes the heading gradient text */
 }
 
-.tl-slide.active {
-    transform: scale(1.05);
+.testimonials-header p {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    opacity: 0.92;
 }
 
-/* --- Testimonial Card --- */
-.tl-card {
+/* --- Grid Container --- */
+.grid-container {
+    display: grid;
+    /* Desktop: Two columns of equal size */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    align-items: stretch; /* Makes all cards fill the row height */
+    margin-top: 40px;
+}
+
+/* --- Testimonial Card (Now Grid Item) --- */
+.testimonial-card {
     background: #fff;
     border-radius: 20px;
-    border: 2px solid #2CBFAE;
-    padding: 2rem 2.4rem;
-    max-width: 900px;
+    /* Enhanced styling for a more modern, layered look */
+    border-top: 6px solid #2CBFAE;
+    padding: 2.5rem 2.8rem 2.5rem;
     color: #0A2A4D;
     position: relative;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.30);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Decorative large quote */
-.tl-card::before {
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+}
+
+/* Decorative large quote (Tuned for new card style) */
+.testimonial-card::before {
     content: "❝";
-    font-size: 60px;
-    color: rgba(10,42,77,0.06);
+    font-size: 80px;
+    color: rgba(10,42,77,0.08);
     position: absolute;
     top: 20px;
-    left: 20px;
+    right: 20px; /* Moved to top right */
+    line-height: 1;
 }
 
 /* --- Initial Bubble --- */
 .initial-badge {
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid #2CBFAE;
-    color: #2CBFAE;
+    background: #2CBFAE; /* Primary color background */
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 1.3rem;
+    font-weight: 700;
+    font-size: 1.4rem;
     position: absolute;
-    top: -30px;
-    left: 32px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    top: -32px; /* Pull it outside the card */
+    left: 28px;
+    box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
 }
 
 blockquote {
-    margin: 2rem 0 1.2rem;
-    line-height: 1.75;
-    font-size: 1.05rem;
+    margin: 2.5rem 0 1.2rem;
+    line-height: 1.7;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: #2c2c2c;
+}
+
+.quote-text {
+    margin: 0;
+}
+
+.expand-link {
+    color: #2CBFAE;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.expand-link:hover {
+    color: #1a8b79;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
 }
 
 .tl-name {
     font-size: 1.25rem;
     font-weight: 600;
     color: #0A2A4D;
+    line-height: 1.2;
 }
 
 .tl-role {
     font-size: 0.95rem;
-    opacity: 0.8;
+    opacity: 0.7;
+    margin-top: 0.2rem;
 }
 
+
 /* ============================================================
-   MODAL
-   ============================================================ */
+    MODAL STYLES (Retained & Tidied)
+    ============================================================ */
 #testimonialModal {
     position: fixed;
     inset: 0;
     display: none;
     justify-content: center;
     align-items: center;
-    background: rgba(5,18,35,0.72);
+    background: rgba(5,18,35,0.85);
     backdrop-filter: blur(10px);
     z-index: 999999;
+    overflow-y: auto; /* Allow scrolling inside the modal */
+    padding: 20px;
 }
 
 #testimonialModal.open { display: flex; }
 
 .modal-dialog {
-    background: rgba(10, 42, 77, 0.97);
-    padding: 2.4rem 2.6rem;
+    background: #0A2A4D; /* Solid dark blue for better contrast */
+    padding: 3rem 2.8rem;
     border-radius: 20px;
     max-width: 850px;
-    width: 92%;
+    width: 100%;
     color: #fff;
     position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.95);
+    animation: modalScaleIn 0.3s ease-out forwards;
+}
+
+@keyframes modalScaleIn {
+    to { transform: scale(1); }
 }
 
 .modal-close {
@@ -236,7 +260,89 @@ blockquote {
     font-size: 1.8rem;
     background: none;
     border: none;
-    color: #fff;
+    color: #2CBFAE;
     cursor: pointer;
+    line-height: 1;
 }
 
+.modal-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    white-space: pre-line; /* Handle line breaks from database */
+    margin-bottom: 2rem;
+}
+
+.modal-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 1.5rem 0;
+}
+
+.modal-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.modal-role {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+.empty-state {
+    grid-column: 1 / -1; /* Span full width on desktop if empty */
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.3rem;
+    opacity: 0.8;
+}
+
+/* ============================================================
+    RESPONSIVE BREAKPOINTS
+    ============================================================ */
+
+/* Tablet View (992px to 641px): Stack cards but keep them wide */
+@media (max-width: 992px) {
+    .grid-container {
+        /* Switch to a single column grid for medium screens */
+        grid-template-columns: 1fr; 
+        max-width: 700px; /* Constrain the overall width slightly */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+/* Mobile View (max-width: 640px): Stacked and narrow */
+@media (max-width: 640px) {
+    .testimonials-header h1 {
+        font-size: 2.4rem;
+    }
+    .testimonials-header p {
+        font-size: 1.1rem;
+    }
+
+    .testimonials-grid-section .container {
+        padding: 0 1rem;
+    }
+    
+    .testimonial-card {
+        padding: 4rem 1.5rem 2rem;
+    }
+
+    /* Reset the badge position for narrow screens */
+    .initial-badge {
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .tl-header .logo img {
+        height: 60px; /* Smaller logo on mobile */
+    }
+
+    .modal-dialog {
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+    }
+}

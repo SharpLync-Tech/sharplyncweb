@@ -73,4 +73,10 @@ class CustomerProfile extends Model
     {
         return "{$this->account_number} - {$this->business_name}";
     }
+
+    public function contacts()
+    {
+        return $this->hasMany(\App\Models\CRM\CustomerContact::class, 'customer_profile_id');
+    }
+
 }
