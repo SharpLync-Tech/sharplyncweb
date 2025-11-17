@@ -3,89 +3,102 @@
 @section('title', 'Edit Customer')
 
 @section('content')
-  {{-- Header --}}
-  <div class="admin-top-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-    <h2>Edit: {{ $customer->company_name ?? 'Customer' }}</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <a class="btn btn-accent" href="{{ route('admin.customers.show', $customer->id) }}">← Cancel</a>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <h2>Edit Customer</h2>
+        <a href="{{ route('admin.customers.show', $customer->id) }}" class="btn btn-accent">← Back to Profile</a>
     </div>
-  </div>
 
-  {{-- Validation errors --}}
-  @if ($errors->any())
-    <div class="admin-card" style="border-left:4px solid #b40000;">
-      <strong>There were some problems with your input:</strong>
-      <ul style="margin-top:8px; padding-left:18px;">
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-    </div>
-  @endif
+    {{-- Validation errors --}}
+    @if ($errors->any())
+        <div class="admin-card" style="border-left:4px solid #b40000;margin-bottom:16px;">
+            <strong>There were some problems with your input:</strong>
+            <ul style="margin-top:8px; padding-left:18px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-  {{-- Form --}}
-  <div class="admin-card">
-    <form method="POST" action="{{ route('admin.customers.update', $customer->id) }}" style="display:grid;gap:16px;">
-      @csrf
-      @method('PUT')
+    <form action="{{ route('admin.customers.update', $customer->id) }}" method="POST" class="admin-card" style="max-width:980px;">
+        @csrf
+        @method('PUT')
 
-      {{-- optimistic concurrency token --}}
-      <input type="hidden" name="updated_at" value="{{ optional($customer->updated_at)->format('Y-m-d H:i:s') }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            {{-- Company --}}
+            <div>
+                <label for="company_name" style="font-weight:600;">Company <span style="color:#b40000">*</span></label>
+                <input id="company_name" name="company_name" type="text" required
+                       value="{{ old('company_name', $customer->company_name) }}"
+                       class="sl-input">
+            </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
-        <div>
-          <label for="company_name" style="display:block;font-weight:600;margin-bottom:6px;">Company Name *</label>
-          <input id="company_name" name="company_name" type="text" required
-                 value="{{ old('company_name', $customer->company_name) }}"
-                 style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;">
+            {{-- Contact --}}
+            <div>
+                <label for="contact_name" style="font-weight:600;">Contact</label>
+                <input id="contact_name" name="contact_name" type="text"
+                       value="{{ old('contact_name', $customer->contact_name) }}"
+                       class="sl-input">
+            </div>
+
+            {{-- Email --}}
+            <div>
+                <label for="email" style="font-weight:600;">Email</label>
+                <input id="email" name="email" type="email"
+                       value="{{ old('email', $customer->email) }}"
+                       class="sl-input">
+            </div>
+
+            {{-- Mobile --}}
+            <div>
+                <label for="mobile_number" style="font-weight:600;">Mobile</label>
+                <input id="mobile_number" name="mobile_number" type="text"
+                       value="{{ old('mobile_number', $customer->mobile_number) }}"
+                       class="sl-input">
+            </div>
+
+            {{-- Landline --}}
+            <div>
+                <label for="landline_number" style="font-weight:600;">Landline</label>
+                <input id="landline_number" name="landline_number" type="text"
+                       value="{{ old('landline_number', $customer->landline_number) }}"
+                       class="sl-input">
+            </div>
+
+            {{-- Status --}}
+            <div style="display:flex;align-items:center;gap:10px;margin-top:26px;">
+                <input id="setup_completed" name="setup_completed" type="checkbox" value="1"
+                       {{ old('setup_completed', (int)($customer->setup_completed ?? 0)) ? 'checked' : '' }}>
+                <label for="setup_completed" style="user-select:none;">Mark as active (setup completed)</label>
+            </div>
+
+            {{-- Notes (full width) --}}
+            <div style="grid-column:1 / -1;">
+                <label for="notes" style="font-weight:600;">Notes</label>
+                <textarea id="notes" name="notes" rows="5" class="sl-input" style="resize:vertical;">{{ old('notes', $customer->notes) }}</textarea>
+            </div>
         </div>
 
-        <div>
-          <label for="contact_name" style="display:block;font-weight:600;margin-bottom:6px;">Contact Name</label>
-          <input id="contact_name" name="contact_name" type="text"
-                 value="{{ old('contact_name', $customer->contact_name) }}"
-                 style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;">
+        <div style="display:flex;gap:12px;margin-top:18px;">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{{ route('admin.customers.show', $customer->id) }}" class="btn btn-accent">Cancel</a>
         </div>
-
-        <div>
-          <label for="email" style="display:block;font-weight:600;margin-bottom:6px;">Email</label>
-          <input id="email" name="email" type="email"
-                 value="{{ old('email', $customer->email) }}"
-                 style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;">
-        </div>
-
-        <div>
-          <label for="phone" style="display:block;font-weight:600;margin-bottom:6px;">Phone</label>
-          <input id="phone" name="phone" type="text"
-                 value="{{ old('phone', $customer->phone) }}"
-                 style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;">
-        </div>
-
-        <div>
-          <label for="status" style="display:block;font-weight:600;margin-bottom:6px;">Status</label>
-          <select id="status" name="status"
-                  style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;background:#fff;">
-            @php
-              $status = old('status', $customer->status ?? 'active');
-              $options = ['active' => 'Active', 'inactive' => 'Inactive', 'prospect' => 'Prospect'];
-            @endphp
-            @foreach($options as $val => $label)
-              <option value="{{ $val }}" @selected($status === $val)>{{ $label }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <div style="grid-column:1/-1;">
-          <label for="notes" style="display:block;font-weight:600;margin-bottom:6px;">Notes</label>
-          <textarea id="notes" name="notes" rows="5"
-                    style="width:100%;padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;">{{ old('notes', $customer->notes) }}</textarea>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
-        <button class="btn btn-primary" type="submit">Save Changes</button>
-        <a class="btn btn-accent" href="{{ route('admin.customers.show', $customer->id) }}">Cancel</a>
-      </div>
     </form>
-  </div>
+
+    {{-- Tiny input style helper so it matches admin theme --}}
+    <style>
+        .sl-input{
+            width:100%;
+            padding:.65rem .8rem;
+            border:1px solid rgba(10,42,77,.15);
+            border-radius:8px;
+            background:#fff;
+            outline:none;
+            transition:border-color .15s ease, box-shadow .15s ease;
+        }
+        .sl-input:focus{
+            border-color:#2CBFAE;
+            box-shadow:0 0 0 3px rgba(44,191,174,.15);
+        }
+    </style>
 @endsection
