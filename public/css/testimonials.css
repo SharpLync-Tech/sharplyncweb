@@ -1,5 +1,5 @@
 /* ============================================================
-    TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION
+    TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION (CORRECTED)
     ============================================================ */
 
 .tl-header{
@@ -98,6 +98,19 @@
 /* ============================================================
     MOBILE – CARDS ARE NOW NARROW & CENTERED (THIS IS THE FIX)
     ============================================================ */
+
+/* TABLET/MID-SIZE SCREENS: All cards span 12 columns for a better flow */
+@media (max-width: 1024px) {
+    /* Target all size classes and the base card class */
+    .testimonial-card,
+    .testimonial-card.featured,
+    .testimonial-card.large,
+    .testimonial-card.small {
+        grid-column: span 12 !important;
+    }
+}
+
+/* MOBILE PHONE SCREENS: Stacked, narrow, and centered */
 @media (max-width: 640px) {
     .testimonials-grid {
         padding: 40px 0 100px;
@@ -115,28 +128,31 @@
         font-size: 1.15rem;
     }
 
-    /* FORCE cards to be narrow and perfectly centered */
+    /* 1. Change layout model for the grid container to allow centering */
     .grid-container {
-        display: flex;
+        display: flex; /* Switch from grid to flex for stacking */
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* This centers the cards */
         gap: 2.5rem;
     }
 
-    /* 👇 THIS IS THE KEY FIX: Resetting the desktop grid spans 👇 */
-    .testimonial-card.featured,
-    .testimonial-card.large,
-    .testimonial-card.small {
-        grid-column: auto !important;
-    }
-
+    /* 2. Apply the narrow width and remove conflicting grid property */
     .testimonial-card {
         width: 100%;
-        max-width: 360px !important;  /* ← This can now take effect horizontally */
+        max-width: 360px; /* This is the ultimate narrow constraint */
         margin: 0 auto;
         padding: 4.5rem 2rem 2rem;
         border-radius: 26px;
+        /* Remove explicit grid-column if it somehow persists, though flex should handle it */
+        grid-column: unset !important; 
     }
+    /* Re-target the size classes to ensure they don't apply any grid logic on mobile */
+     .testimonial-card.featured,
+     .testimonial-card.large,
+     .testimonial-card.small {
+         grid-column: unset !important; /* The most critical change */
+     }
+
 
     .initials {
         width: 68px;
@@ -145,12 +161,6 @@
         top: -44px;
         left: 50%;
         transform: translateX(-50%);
-    }
-}
-
-@media (max-width: 1024px) and (min-width: 641px) {
-    .testimonial-card {
-        grid-column: span 12 !important;
     }
 }
 

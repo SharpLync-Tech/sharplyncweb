@@ -38,9 +38,13 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
         Route::post('/{device}/assign', [DeviceController::class, 'assign'])->name('admin.devices.assign');
         Route::get('/{device}/audits', [DeviceAuditController::class, 'index'])->name('admin.devices.audits.index');
         Route::get('/{device}/audits/{audit}', [DeviceAuditController::class, 'show'])->name('admin.devices.audits.show');
-        // Device Import
-        Route::get('/devices/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
-        Route::post('/devices/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
+        
+    // Device Import      
+        
+        Route::get('/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
+        Route::post('/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
+
+
 
         Route::delete('/{device}/delete', [DeviceController::class, 'destroy'])
         ->name('admin.devices.destroy');
