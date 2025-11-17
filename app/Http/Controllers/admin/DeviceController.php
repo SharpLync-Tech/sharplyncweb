@@ -70,8 +70,9 @@ class DeviceController extends Controller
         public function importProcess(Request $request)
         {
             $request->validate([
-                'audit_file' => ['required', 'file', 'mimes:json', 'max:5120'] // 5MB
+            'audit_file' => ['required', 'file', 'max:5120']
             ]);
+
 
             $json = json_decode(file_get_contents($request->file('audit_file')->getRealPath()), true);
 
