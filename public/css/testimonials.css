@@ -1,173 +1,242 @@
 /* ============================================================
-    TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION (CORRECTED)
-    ============================================================ */
-
-.tl-header{
-    display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;position:sticky;top:0;z-index:10000!important;background:rgba(10,42,77,.95);backdrop-filter:blur(12px)
-}
-.tl-header .logo img{height:80px}
-.hamburger{font-size:2rem;color:#2CBFAE;background:none;border:none;cursor:pointer}
-
-.overlay-menu{position:fixed;inset:0;background:rgba(10,42,77,.92);backdrop-filter:blur(10px);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:99999}
-.overlay-menu.show{display:flex}
-.overlay-menu ul{list-style:none;padding:0;text-align:center}
-.overlay-menu li a{display:block;padding:14px 0;color:#fff;font-size:1.6rem}
-.close-menu{position:absolute;top:20px;right:30px;color:#2CBFAE;font-size:2.6rem;background:none;border:none;cursor:pointer}
-
-.testimonials-grid{
-    padding:60px 0 140px;
-    background:linear-gradient(135deg,#0A2A4D 0%,#104976 40%,#2CBFAE 100%);
-    color:#e9f4f3;
-    min-height:100vh;
-    font-family:'Poppins',sans-serif
+   PAGE SHELL
+   ============================================================ */
+.testimonials-body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    color: #e9f4f3;
+    overflow-x: hidden;
 }
 
-.testimonials-grid .container{
-    max-width:1400px;
-    margin:0 auto;
-    padding:0 1.5rem;
-    padding-top:120px
+main {
+    overflow: visible !important;
 }
 
-.testimonials-header{
-    text-align:center;
-    max-width:900px;
-    margin:0 auto 80px
-}
-.testimonials-header h1{
-    font-size:3.2rem;font-weight:600;margin-bottom:1rem;
-    background:linear-gradient(to right,#fff,#c0f0ec);
-    -webkit-background-clip:text;background-clip:text;color:transparent
-}
-.testimonials-header p{font-size:1.3rem;line-height:1.7;opacity:.92}
 
-.grid-container{
-    display:grid;
-    grid-template-columns:repeat(12,1fr);
-    gap:2.8rem;
-    align-items:start;
-    margin-top:40px
+.tl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+    background: rgba(10, 42, 77, 0.6);
+    backdrop-filter: blur(10px);
 }
 
-.testimonial-card{
-    background:rgba(255,255,255,.98);
-    color:#0A2A4D;
-    border-radius:28px;
-    padding:5rem 3rem 2.5rem;
-    position:relative;
-    overflow:visible;
-    box-shadow:0 20px 50px rgba(0,0,0,.22);
-    transition:all .4s ease;
-    backdrop-filter:blur(10px)
-}
-.testimonial-card:hover{
-    transform:translateY(-10px);
-    box-shadow:0 34px 70px rgba(0,0,0,.32)
+.tl-header .logo img {
+    height: 80px;
 }
 
-.testimonial-card.featured{grid-column:span 7}
-.testimonial-card.large{grid-column:span 5}
-.testimonial-card.small{grid-column:span 4}
-
-.initials{
-    position:absolute;
-    z-index:10;
-    background:#2CBFAE;
-    color:white;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    box-shadow:0 12px 32px rgba(44,191,174,.45);
-    width:78px;height:78px;font-size:1.8rem;top:-50px;left:32px
+.hamburger {
+    font-size: 2rem;
+    color: #2CBFAE;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
-.quote-text{font-size:1.18rem;line-height:1.88;margin:1.8rem 0}
-.more{font-weight:600;color:#2CBFAE;opacity:.9}
-.expand-link{color:#2CBFAE;text-decoration:none;font-weight:600;border-bottom:1.5px solid transparent;transition:border .3s}
-.expand-link:hover{border-bottom:1.5px solid #2CBFAE}
-.full-text{display:none;margin-top:2rem;padding-top:2rem;border-top:1px solid #e2e8f0;font-size:1.16rem;line-height:1.92;animation:fadeIn .5s ease}
-.testimonial-card.expanded .more{display:none}
-.testimonial-card.expanded .full-text{display:block}
+/* Overlay menu */
+.overlay-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 42, 77, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
 
-.author{margin-top:1.8rem}
-.author .name{display:block;font-size:1.38rem;font-weight:600;color:#0A2A4D}
-.author .role{display:block;margin-top:.4rem;opacity:.82;font-size:1rem}
+.overlay-menu.show { display: flex; }
+
+.overlay-menu ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+
+.overlay-menu li a {
+    display: block;
+    padding: 10px 0;
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.close-menu {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #2CBFAE;
+    font-size: 2.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
 
 /* ============================================================
-    MOBILE – CARDS ARE NOW NARROW & CENTERED (THIS IS THE FIX)
-    ============================================================ */
+   TESTIMONIALS SECTION
+   ============================================================ */
 
-/* TABLET/MID-SIZE SCREENS: All cards span 12 columns for a better flow */
-@media (max-width: 1024px) {
-    /* Target all size classes and the base card class */
-    .testimonial-card,
-    .testimonial-card.featured,
-    .testimonial-card.large,
-    .testimonial-card.small {
-        grid-column: span 12 !important;
-    }
+.testimonials-title {
+    text-align: center;
+    margin-top: 2.5rem;
 }
 
-/* MOBILE PHONE SCREENS: Stacked, narrow, and centered */
-@media (max-width: 640px) {
-    .testimonials-grid {
-        padding: 40px 0 100px;
-    }
-    
-    .testimonials-grid .container {
-        padding: 0 1rem;
-        padding-top: 80px;
-    }
-
-    .testimonials-header h1 {
-        font-size: 2.4rem;
-    }
-    .testimonials-header p {
-        font-size: 1.15rem;
-    }
-
-    /* 1. Change layout model for the grid container to allow centering */
-    .grid-container {
-        display: flex; /* Switch from grid to flex for stacking */
-        flex-direction: column;
-        align-items: center; /* This centers the cards */
-        gap: 2.5rem;
-    }
-
-    /* 2. Apply the narrow width and remove conflicting grid property */
-    .testimonial-card {
-        width: 100%;
-        max-width: 360px; /* This is the ultimate narrow constraint */
-        margin: 0 auto;
-        padding: 4.5rem 2rem 2rem;
-        border-radius: 26px;
-        /* Remove explicit grid-column if it somehow persists, though flex should handle it */
-        grid-column: unset !important; 
-    }
-    /* Re-target the size classes to ensure they don't apply any grid logic on mobile */
-     .testimonial-card.featured,
-     .testimonial-card.large,
-     .testimonial-card.small {
-         grid-column: unset !important; /* The most critical change */
-     }
-
-
-    .initials {
-        width: 68px;
-        height: 68px;
-        font-size: 1.5rem;
-        top: -44px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+.testimonials-title h1 {
+    font-size: 2.6rem;
+    margin-bottom: 0.3rem;
 }
 
-@keyframes fadeIn{
-    from{opacity:0;transform:translateY(10px)}
-    to{opacity:1;transform:translateY(0)}
+.testimonials-title p {
+    font-size: 1.1rem;
+    opacity: 0.85;
 }
 
-.empty-state{grid-column:1/-1;text-align:center;padding:4rem;font-size:1.3rem;opacity:.8}
-.tl-footer{margin-top:80px;text-align:center;padding:2rem 0;font-size:.95rem;opacity:.9}
+/* --- Dots ABOVE cards --- */
+.tl-dots {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.tl-dot {
+    height: 12px;
+    width: 12px;
+    margin: 0 5px;
+    background: transparent;
+    border: 2px solid #2CBFAE;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tl-dot.active {
+    background: #2CBFAE;
+    transform: scale(1.2);
+    box-shadow: 0 0 12px rgba(44, 191, 174, 0.8);
+}
+
+/* --- Carousel track --- */
+.tl-carousel {
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+.tl-track {
+    display: flex;
+    gap: 40px; 
+    transition: transform 0.7s ease-in-out;
+}
+
+/* --- Slide --- */
+.tl-slide {
+    flex: 0 0 85%;
+    padding: 0 18px;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.35s;
+}
+
+.tl-slide.active {
+    transform: scale(1.05);
+}
+
+/* --- Testimonial Card --- */
+.tl-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 2px solid #2CBFAE;
+    padding: 2rem 2.4rem;
+    max-width: 900px;
+    color: #0A2A4D;
+    position: relative;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.30);
+}
+
+/* Decorative large quote */
+.tl-card::before {
+    content: "❝";
+    font-size: 60px;
+    color: rgba(10,42,77,0.06);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* --- Initial Bubble --- */
+.initial-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #2CBFAE;
+    color: #2CBFAE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.3rem;
+    position: absolute;
+    top: -30px;
+    left: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+blockquote {
+    margin: 2rem 0 1.2rem;
+    line-height: 1.75;
+    font-size: 1.05rem;
+}
+
+.tl-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0A2A4D;
+}
+
+.tl-role {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+#testimonialModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(5,18,35,0.72);
+    backdrop-filter: blur(10px);
+    z-index: 999999;
+}
+
+#testimonialModal.open { display: flex; }
+
+.modal-dialog {
+    background: rgba(10, 42, 77, 0.97);
+    padding: 2.4rem 2.6rem;
+    border-radius: 20px;
+    max-width: 850px;
+    width: 92%;
+    color: #fff;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+

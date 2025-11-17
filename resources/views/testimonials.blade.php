@@ -1,70 +1,240 @@
 @extends('layouts.testimonials-base')
+
 @section('title', 'SharpLync | Testimonials')
 
-@section('content')
-<section class="testimonials-grid">
-    <div class="container">
-        <!-- Header -->
-        <div class="testimonials-header">
-            <h1>What Our Customers Say</h1>
-            <p>Real experiences from the people and organisations we've partnered with to deliver exceptional connectivity solutions.</p>
-        </div>
+@php
+    use Illuminate\Support\Str;
+@endphp
 
-        <!-- Grid -->
-        <div class="grid-container">
+@section('content')
+<section class="testimonials-page">
+
+    {{-- Page heading --}}
+    <div class="testimonials-title">
+        <h1>Customer Testimonials</h1>
+        <p>Real words from the people and organisations we’ve supported.</p>
+    </div>
+
+    {{-- Dots above the carousel --}}
+    <div class="tl-dots" id="tlDots">
+        @foreach($testimonials as $index => $t)
+            <span class="tl-dot {{ $loop->first ? 'active' : '' }}" data-index="{{ $index }}"></span>
+        @endforeach
+    </div>
+
+    {{-- Carousel --}}
+    <div class="tl-carousel" id="tlCarousel">
+        <div class="tl-track" id="tlTrack">
             @forelse($testimonials as $t)
                 @php
-                    // Build "Position — Company"
-                    $who = collect([$t->customer_position, $t->customer_company])->filter()->implode(' — ');
+                    // Build "who" line - position and company
+                    $parts = [];
+                    if ($t->customer_position) { $parts[] = $t->customer_position; }
+                    if ($t->customer_company)  { $parts[] = $t->customer_company;  }
+                    $who = implode(' — ', $parts);
 
-                    // Initials
-                    $initials = collect(preg_split('/\s+/', trim($t->customer_name)))
-                                    ->map(fn($p) => mb_substr($p, 0, 1))
-                                    ->join('');
+                    // Initials from customer name
+                    $nameParts = preg_split('/\s+/', trim($t->customer_name));
+                    $initials = '';
+                    foreach ($nameParts as $p) {
+                        if ($p !== '') {
+                            $initials .= mb_substr($p, 0, 1);
+                        }
+                    }
 
-                    // Card sizing
-                    $size = $loop->first ? 'featured' : ($loop->iteration <= 3 ? 'large' : 'small');
+                    // Preview text for card body
+                    $preview = Str::limit(strip_tags($t->testimonial_text), 260);
                 @endphp
 
-                <article class="testimonial-card {{ $size }} {{ $loop->first ? 'first-card' : '' }}">
-                    <div class="initials">{{ $initials }}</div>
+                <div class="tl-slide {{ $loop->first ? 'active' : '' }}">
+                    <article
+                        class="tl-card"
+                        data-fulltext="{{ e($t->testimonial_text) }}"
+                        data-name="{{ e($t->customer_name) }}"
+                        data-who="{{ e($who) }}"
+                    >
+                        <div class="initial-badge">{{ $initials }}</div>
 
-                    <blockquote>
-                        <p class="quote-text">
-                            {!! Str::limit(strip_tags($t->testimonial_text), $loop->iteration <= 3 ? 520 : 240, '<span class="more">… <a href="#" class="expand-link">Read more</a></span>') !!}
-                        </p>
+                        <blockquote>“{{ $preview }}”</blockquote>
 
-                        @if(strlen(strip_tags($t->testimonial_text)) > ($loop->iteration <= 3 ? 520 : 240))
-                            <div class="full-text">{!! nl2br(e($t->testimonial_text)) !!}</div>
+                        <div class="tl-name">{{ $t->customer_name }}</div>
+
+                        @if($who)
+                            <div class="tl-role">{{ $who }}</div>
                         @endif
-                    </blockquote>
-
-                    <footer class="author">
-                        <strong class="name">{{ $t->customer_name }}</strong>
-                        @if($who)<span class="role">{{ $who }}</span>@endif
-                    </footer>
-                </article>
-
+                    </article>
+                </div>
             @empty
-                <div class="empty-state">
-                    <p>No testimonials yet — we're just getting started on delivering amazing results.</p>
+                <div class="tl-slide active">
+                    <article class="tl-card">
+                        <blockquote>
+                            “No testimonials are available yet. Please check back soon —
+                            we’re just getting started.”
+                        </blockquote>
+                        <div class="tl-name">SharpLync</div>
+                        <div class="tl-role">Old school support, modern results.</div>
+                    </article>
                 </div>
             @endforelse
         </div>
     </div>
+
+    {{-- Modal for full testimonial --}}
+    <div id="testimonialModal" aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true">
+            <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
+
+            <p id="modalText" class="modal-text"></p>
+
+            <div class="modal-separator"></div>
+
+            <p id="modalName" class="modal-name"></p>
+            <p id="modalRole" class="modal-role"></p>
+        </div>
+    </div>
+
 </section>
-@endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.expand-link').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            const card = link.closest('.testimonial-card');
-            card.classList.toggle('expanded');
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const track = document.querySelector(".tl-track");
+    const slides = Array.from(document.querySelectorAll(".tl-slide"));
+    const dots = Array.from(document.querySelectorAll(".tl-dot"));
+
+    let current = 0;
+    let slideWidth = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    let animationID = 0;
+    let autoTimer;
+
+    /* -------------------------------------------------------
+       Get actual slide width (because slides are ±85%)
+    -------------------------------------------------------- */
+    function updateSlideWidth() {
+        slideWidth = slides[0].offsetWidth + 40; // your gap: 40px
+    }
+
+    /* -------------------------------------------------------
+       Move to slide i
+    -------------------------------------------------------- */
+    function goTo(i) {
+        current = (i + slides.length) % slides.length;
+        currentTranslate = -(current * slideWidth);
+        prevTranslate = currentTranslate;
+
+        setSliderPosition();
+
+        slides.forEach((s, idx) =>
+            s.classList.toggle("active", idx === current)
+        );
+        dots.forEach((d, idx) =>
+            d.classList.toggle("active", idx === current)
+        );
+    }
+
+    /* -------------------------------------------------------
+       Auto slide
+    -------------------------------------------------------- */
+    function startAuto() {
+        stopAuto();
+        autoTimer = setInterval(() => goTo(current + 1), 7000);
+    }
+    function stopAuto() {
+        clearInterval(autoTimer);
+    }
+
+    /* -------------------------------------------------------
+       Touch + Drag Support
+    -------------------------------------------------------- */
+    slides.forEach((slide, index) => {
+        // Disable default image drag
+        slide.addEventListener("dragstart", e => e.preventDefault());
+
+        // Touch start
+        slide.addEventListener("touchstart", touchStart(index));
+        slide.addEventListener("touchend", touchEnd);
+        slide.addEventListener("touchmove", touchMove);
+
+        // Mouse drag
+        slide.addEventListener("mousedown", touchStart(index));
+        slide.addEventListener("mouseup", touchEnd);
+        slide.addEventListener("mousemove", touchMove);
+        slide.addEventListener("mouseleave", touchEnd);
+    });
+
+    function touchStart(index) {
+        return function (e) {
+            stopAuto();
+
+            isDragging = true;
+            startX = getX(e);
+            animationID = requestAnimationFrame(animation);
+        };
+    }
+
+    function touchMove(e) {
+        if (!isDragging) return;
+        const x = getX(e);
+        const delta = x - startX;
+        currentTranslate = prevTranslate + delta;
+    }
+
+    function touchEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        cancelAnimationFrame(animationID);
+
+        const movedBy = currentTranslate - prevTranslate;
+
+        // threshold: must drag at least 30px
+        if (movedBy < -30) goTo(current + 1);
+        else if (movedBy > 30) goTo(current - 1);
+        else goTo(current); // snap back
+
+        startAuto();
+    }
+
+    function getX(e) {
+        return e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+    }
+
+    function animation() {
+        setSliderPosition();
+        if (isDragging) requestAnimationFrame(animation);
+    }
+
+    function setSliderPosition() {
+        track.style.transform = `translateX(${currentTranslate}px)`;
+    }
+
+    /* -------------------------------------------------------
+       Clickable dots
+    -------------------------------------------------------- */
+    dots.forEach((dot, index) =>
+        dot.addEventListener("click", () => {
+            goTo(index);
+            startAuto();
+        })
+    );
+
+    /* -------------------------------------------------------
+       Init
+    -------------------------------------------------------- */
+    updateSlideWidth();
+    goTo(0);
+    startAuto();
+
+    window.addEventListener("resize", () => {
+        updateSlideWidth();
+        goTo(current);
     });
 });
 </script>
+
+
 @endpush
+@endsection
