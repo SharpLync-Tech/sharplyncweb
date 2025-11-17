@@ -7,7 +7,7 @@
   <div class="admin-top-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
     <h2>{{ $customer->company_name ?? 'Customer' }}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <a class="btn btn-accent" href="{{ route('admin.customers.index') }}">← Back to Customers</a>
+      <a class="btn btn-accent" href="{{ route('admin.customers.index') }}">Back to Customers</a>
       <a class="btn btn-primary" href="{{ route('admin.customers.edit', $customer->id) }}">Edit Customer</a>
     </div>
   </div>
