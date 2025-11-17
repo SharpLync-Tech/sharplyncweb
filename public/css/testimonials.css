@@ -1,8 +1,8 @@
 /* ============================================================
-   TESTIMONIALS GRID – PERFECTED 2025 STYLE
+   TESTIMONIALS GRID – FINAL VERSION (Desktop + Mobile Perfect)
    ============================================================ */
 
-/* Header (keep your existing styles) */
+/* Header – keep your existing navigation working */
 .tl-header {
     display: flex;
     justify-content: space-between;
@@ -11,32 +11,22 @@
     position: sticky;
     top: 0;
     z-index: 10000 !important;
-    background: rgba(10, 42, 77, 0.9);
+    background: rgba(10, 42, 77, 0.95);
     backdrop-filter: blur(12px);
 }
-
 .tl-header .logo img { height: 80px; }
 .hamburger { font-size: 2rem; color: #2CBFAE; background: none; border: none; cursor: pointer; }
 
-/* Overlay menu (keep your existing styles) */
-.overlay-menu {
-    position: fixed; inset: 0;
-    background: rgba(10, 42, 77, 0.85);
-    backdrop-filter: blur(10px);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-}
+/* Overlay menu */
+.overlay-menu { position: fixed; inset: 0; background: rgba(10,42,77,.92); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; }
 .overlay-menu.show { display: flex; }
 .overlay-menu ul { list-style: none; padding: 0; text-align: center; }
-.overlay-menu li a { display: block; padding: 10px 0; color: #fff; font-size: 1.4rem; }
-.close-menu { position: absolute; top: 20px; right: 30px; color: #2CBFAE; font-size: 2.4rem; background: none; border: none; cursor: pointer; }
+.overlay-menu li a { display: block; padding: 14px 0; color: #fff; font-size: 1.6rem; }
+.close-menu { position: absolute; top: 20px; right: 30px; color: #2CBFAE; font-size: 2.6rem; background: none; border: none; cursor: pointer; }
 
-/* Main testimonials section */
+/* Main section */
 .testimonials-grid {
-    padding: 80px 0 140px;                    /* FIXED: reduced top padding */
+    padding: 60px 0 140px;
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
     color: #e9f4f3;
     min-height: 100vh;
@@ -46,17 +36,17 @@
 .testimonials-grid .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 2rem;
-    padding-top: 100px;                        /* FIXED: space for initials badge */
+    padding: 0 1.5rem;
+    /* Space for initials badge */
+    padding-top: 120px;
 }
 
-/* Header */
+/* Header text */
 .testimonials-header {
     text-align: center;
     max-width: 900px;
     margin: 0 auto 80px;
 }
-
 .testimonials-header h1 {
     font-size: 3.2rem;
     font-weight: 600;
@@ -66,7 +56,6 @@
     background-clip: text;
     color: transparent;
 }
-
 .testimonials-header p {
     font-size: 1.3rem;
     line-height: 1.7;
@@ -79,7 +68,7 @@
     grid-template-columns: repeat(12, 1fr);
     gap: 2.8rem;
     align-items: start;
-    margin-top: 40px;                         /* FIXED: proper spacing */
+    margin-top: 40px;
 }
 
 /* Cards */
@@ -87,51 +76,50 @@
     background: rgba(255, 255, 255, 0.98);
     color: #0A2A4D;
     border-radius: 28px;
-    padding: 3rem 3rem 2.5rem;               /* FIXED: top padding for badge */
+    padding: 5rem 3rem 2.5rem;          /* top padding = badge space */
     position: relative;
-    overflow: hidden;
+    overflow: visible;                  /* important! */
     box-shadow: 0 20px 50px rgba(0,0,0,0.22);
     transition: all 0.4s ease;
     backdrop-filter: blur(10px);
-    cursor: pointer;
 }
-
 .testimonial-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 32px 70px rgba(0,0,0,0.3);
+    transform: translateY(-10px);
+    box-shadow: 0 34px 70px rgba(0,0,0,0.32);
 }
 
 /* Card sizes */
 .testimonial-card.featured { grid-column: span 7; }
-.testimonial-card.large   { grid-column: span 5; }
-.testimonial-card.small   { grid-column: span 4; }
+.testimonial-card.large    { grid-column: span 5; }
+.testimonial-card.small    { grid-column: span 4; }
 
-/* FIXED: Initials badge – perfectly positioned */
+/* Initials badge – perfectly positioned on all devices */
 .initials {
     position: absolute;
-    top: 10px;                               /* FIXED: sits perfectly on card */
-    left: 32px;
-    width: 74px;
-    height: 74px;
+    z-index: 10;
     background: #2CBFAE;
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.7rem;
     font-weight: 700;
-    box-shadow: 0 10px 30px rgba(44,191,174,0.4);
-    z-index: 10;
+    box-shadow: 0 12px 32px rgba(44,191,174,0.45);
+    
+    /* Desktop */
+    width: 78px;
+    height: 78px;
+    font-size: 1.8rem;
+    top: -50px;
+    left: 32px;
 }
 
 /* Quote */
 .quote-text {
     font-size: 1.18rem;
-    line-height: 1.85;
-    margin: 2rem 0;
+    line-height: 1.88;
+    margin: 1.8rem 0;
 }
-
 .more { font-weight: 600; color: #2CBFAE; opacity: 0.9; }
 .expand-link {
     color: #2CBFAE;
@@ -144,51 +132,75 @@
 
 .full-text {
     display: none;
-    margin-top: 1.8rem;
-    padding-top: 1.8rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
     border-top: 1px solid #e2e8f0;
-    font-size: 1.15rem;
-    line-height: 1.9;
+    font-size: 1.16rem;
+    line-height: 1.92;
     animation: fadeIn 0.5s ease;
 }
-
 .testimonial-card.expanded .more { display: none; }
 .testimonial-card.expanded .full-text { display: block; }
 
 /* Author */
-.author {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-}
+.author { margin-top: 1.8rem; }
 .author .name {
     display: block;
-    font-size: 1.35rem;
+    font-size: 1.38rem;
     font-weight: 600;
     color: #0A2A4D;
 }
 .author .role {
     display: block;
-    margin-top: 0.3rem;
-    opacity: 0.8;
+    margin-top: 0.4rem;
+    opacity: 0.82;
     font-size: 1rem;
 }
 
-/* Responsive */
+/* ============================================================
+   RESPONSIVE – MOBILE & TABLET (perfect now)
+   ============================================================ */
 @media (max-width: 1024px) {
     .testimonial-card { grid-column: span 12 !important; }
+    .testimonials-grid .container { padding-top: 90px; }
     .testimonials-header h1 { font-size: 2.8rem; }
-    .initials { width: 68px; height: 68px; font-size: 1.5rem; top: -34px; left: 28px; }
+    .testimonials-header { margin-bottom: 60px; }
+    
+    .initials {
+        width: 70px;
+        height: 70px;
+        font-size: 1.5rem;
+        top: -45px;
+        left: 24px;
+    }
+    .testimonial-card { padding: 4.5rem 2.5rem 2rem; }
 }
 
 @media (max-width: 640px) {
-    .testimonials-grid { padding: 60px 0 100px; }
-    .testimonials-header { margin-bottom: 60px; padding: 0 1rem; }
+    .testimonials-grid { padding: 50px 0 100px; }
+    .testimonials-grid .container {
+        padding-top: 70px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
     .testimonials-header h1 { font-size: 2.4rem; }
-    .testimonial-card { padding: 2.5rem; }
-    .initials { top: -32px; left: 24px; width: 64px; height: 64px; font-size: 1.4rem; }
+    .testimonials-header p { font-size: 1.15rem; }
+    
+    .initials {
+        width: 64px;
+        height: 64px;
+        font-size: 1.4rem;
+        top: -40px;
+        left: 18px;
+    }
+    .testimonial-card {
+        padding: 4rem 1.8rem 2rem;
+        border-radius: 22px;
+    }
+    .quote-text { font-size: 1.12rem; }
 }
 
-/* Animations */
+/* Animation */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -202,5 +214,10 @@
     opacity: 0.8;
 }
 
-/* Footer */
-.tl-footer { margin-top: 60px; text-align: center; padding: 2rem 0; font-size: .95rem; opacity: .9; }
+.tl-footer {
+    margin-top: 80px;
+    text-align: center;
+    padding: 2rem 0;
+    font-size: .95rem;
+    opacity: .9;
+}

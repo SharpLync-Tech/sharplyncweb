@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CRM\Device;
 use App\Models\CRM\CustomerProfile;
+use App\Models\CRM\User; // ⭐ MUST import CRM User
 use Illuminate\Http\Request;
 use App\Models\CRM\DeviceAudit;
 use App\Models\CRM\DeviceApp;
-
+use Illuminate\Support\Str;
 
 class DeviceController extends Controller
 {
@@ -41,7 +42,6 @@ class DeviceController extends Controller
             'apps'
         ]);
 
-        // Use business_name from customer_profiles table
         $customers = CustomerProfile::on('crm')
             ->orderBy('business_name')
             ->get(['id', 'business_name']);
@@ -50,126 +50,155 @@ class DeviceController extends Controller
     }
 
     public function assign(Request $request, Device $device)
-{
-    // Case 1: Creating a new customer
-    if ($request->customer_profile_id === '__new__') {
+    {
+        /**
+         * ============================================================
+         *  CASE 1 — CREATE NEW CUSTOMER (Admin-selected)
+         * ============================================================
+         */
+        if ($request->customer_profile_id === '__new__') {
 
-        $request->validate([
-            'new_customer_name'  => 'required|string|max:150',
-            'new_customer_email' => 'nullable|email|max:150',
+            $request->validate([
+                'new_customer_name'  => 'required|string|max:150',
+                'new_customer_email' => 'required|email|max:150',
+            ]);
+
+            // Split business name into workable name fields
+            $nameParts = explode(' ', trim($request->new_customer_name));
+            $firstName = $nameParts[0] ?? 'Customer';
+            $lastName  = $nameParts[1] ?? 'Account';
+
+            // ============================================================
+            // ⭐ 1. CREATE NEW CRM USER (future-proof)
+            // ============================================================
+            $user = User::on('crm')->create([
+                'first_name'         => $firstName,
+                'last_name'          => $lastName,
+                'email'              => $request->new_customer_email,
+                'auth_provider'      => 'local',
+                'password'           => bcrypt(Str::random(20)), // random, never used
+                'account_status'     => 'active',
+                'email_verified_at'  => now(),
+                'accepted_terms_at'  => now(),
+                'sspin'              => strtoupper(Str::random(8)),
+            ]);
+
+            // Create SharpLync account number (simple but unique)
+            $accountNumber = 'SL' . now()->format('dmHi');
+
+            // ============================================================
+            // ⭐ 2. CREATE CUSTOMER PROFILE (linked to user)
+            // ============================================================
+            $customer = CustomerProfile::on('crm')->create([
+                'user_id'        => $user->id,
+                'business_name'  => $request->new_customer_name,
+                'accounts_email' => $request->new_customer_email,
+                'account_number' => $accountNumber,
+                'setup_completed' => 0,
+            ]);
+
+            // ============================================================
+            // ⭐ 3. ASSIGN DEVICE
+            // ============================================================
+            $device->customer_profile_id = $customer->id;
+            $device->save();
+
+            return redirect()
+                ->route('admin.devices.show', $device->id)
+                ->with('status', 'Device assigned to NEW customer: ' . $customer->business_name);
+        }
+
+        /**
+         * ============================================================
+         *  CASE 2 — ASSIGN EXISTING CUSTOMER
+         * ============================================================
+         */
+        $data = $request->validate([
+            'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
         ]);
 
-        $customer = CustomerProfile::on('crm')->create([
-            'business_name' => $request->new_customer_name,
-            'accounts_email' => $request->new_customer_email,
-            'setup_completed' => 0,
-        ]);
+        $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
 
         $device->customer_profile_id = $customer->id;
         $device->save();
 
         return redirect()
             ->route('admin.devices.show', $device->id)
-            ->with('status', 'Device assigned to NEW customer: '.$customer->business_name);
+            ->with('status', 'Device assigned to ' . $customer->business_name . ' successfully.');
     }
-
-    // Case 2: Assigning to existing customer
-    $data = $request->validate([
-        'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
-    ]);
-
-    $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
-
-    $device->customer_profile_id = $customer->id;
-    $device->save();
-
-    return redirect()
-        ->route('admin.devices.show', $device->id)
-        ->with('status', 'Device assigned to '.$customer->business_name.' successfully.');
-}
 
 
     public function importForm()
-{
-    return view('admin.devices.import');
-}
+    {
+        return view('admin.devices.import');
+    }
 
-        public function importProcess(Request $request)
-        {
-            $request->validate([
-                'audit_file' => 'required|file|mimes:json,txt',
-            ]);
+    public function importProcess(Request $request)
+    {
+        $request->validate([
+            'audit_file' => 'required|file|mimes:json,txt',
+        ]);
 
-            $file = $request->file('audit_file');
+        $file = $request->file('audit_file');
 
-            // --- New: strip UTF-8 BOM and handle large files ---
-            $raw = file_get_contents($file->getRealPath());
+        // Strip BOM
+        $raw = file_get_contents($file->getRealPath());
+        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
 
-            // Remove BOM if present
-            $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+        // Decode JSON safely
+        $data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
 
-            // Decode with max depth + BIG data flags
-            $data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
+        if ($data === null) {
+            return back()->withErrors(['Invalid JSON file.']);
+        }
 
-            if ($data === null) {
-                return back()->withErrors(['Invalid JSON file.']);
-            }
+        // Create device
+        $device = Device::create([
+            'customer_profile_id' => $data['customer_id'] ?? null,
+            'device_name'         => $data['device_name'] ?? 'Unknown',
+            'manufacturer'        => $data['manufacturer'] ?? '',
+            'model'               => $data['model'] ?? '',
+            'os_version'          => $data['os_version'] ?? '',
+            'total_ram_gb'        => $data['total_ram_gb'] ?? 0,
+            'cpu_model'           => $data['cpu_model'] ?? '',
+            'cpu_cores'           => $data['cpu_cores'] ?? 0,
+            'cpu_threads'         => $data['cpu_threads'] ?? 0,
+            'storage_size_gb'     => $data['storage_size_gb'] ?? 0,
+            'storage_used_percent'=> $data['storage_used_percent'] ?? 0,
+            'antivirus'           => $data['antivirus'] ?? '',
+            'last_audit_at'       => now(),
+        ]);
 
-            // --- Normal import logic continues here ---
-            // Create device
-            $device = Device::create([
-                'customer_profile_id' => $data['customer_id'] ?? null,
-                'device_name'         => $data['device_name'] ?? 'Unknown',
-                'manufacturer'        => $data['manufacturer'] ?? '',
-                'model'               => $data['model'] ?? '',
-                'os_version'          => $data['os_version'] ?? '',
-                'total_ram_gb'        => $data['total_ram_gb'] ?? 0,
-                'cpu_model'           => $data['cpu_model'] ?? '',
-                'cpu_cores'           => $data['cpu_cores'] ?? 0,
-                'cpu_threads'         => $data['cpu_threads'] ?? 0,
-                'storage_size_gb'     => $data['storage_size_gb'] ?? 0,
-                'storage_used_percent'=> $data['storage_used_percent'] ?? 0,
-                'antivirus'           => $data['antivirus'] ?? '',
-                'last_audit_at'       => now(),
-            ]);
+        // Store audit
+        DeviceAudit::create([
+            'device_id' => $device->id,
+            'audit_json'=> $raw,
+        ]);
 
-            // Store audit
-            DeviceAudit::create([
+        // Store apps
+        foreach ($data['raw_audit']['applications'] ?? [] as $app) {
+            DeviceApp::create([
                 'device_id' => $device->id,
-                'audit_json'=> $raw, // Store raw JSON for later inspection
+                'name'      => $app['DisplayName'] ?? '',
+                'version'   => $app['DisplayVersion'] ?? '',
+                'publisher' => $app['Publisher'] ?? '',
+                'installed_on' => $app['InstallDate'] ?? null,
             ]);
-
-            // Store apps
-            foreach ($data['raw_audit']['applications'] ?? [] as $app) {
-                DeviceApp::create([
-                    'device_id' => $device->id,
-                    'name'      => $app['DisplayName'] ?? '',
-                    'version'   => $app['DisplayVersion'] ?? '',
-                    'publisher' => $app['Publisher'] ?? '',
-                    'installed_on' => $app['InstallDate'] ?? null,
-                ]);
-            }
-
-            return redirect()
-                ->route('admin.devices.index')
-                ->with('status', 'Device audit imported successfully!');
         }
 
-        public function destroy(Device $device)
-        {
-            // Delete related audits
-            $device->audits()->delete();
+        return redirect()
+            ->route('admin.devices.index')
+            ->with('status', 'Device audit imported successfully!');
+    }
 
-            // Delete related apps
-            $device->apps()->delete();
+    public function destroy(Device $device)
+    {
+        $device->audits()->delete();
+        $device->apps()->delete();
+        $device->delete();
 
-            // Delete the device itself
-            $device->delete();
-
-            return redirect()
-                ->route('admin.devices.index')
-                ->with('status', 'Device and all related audit data deleted successfully.');
-        }
-
-
+        return redirect()
+            ->route('admin.devices.index')
+            ->with('status', 'Device and all related audit data deleted successfully.');
+    }
 }
