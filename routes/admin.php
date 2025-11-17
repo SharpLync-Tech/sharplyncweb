@@ -36,13 +36,14 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::put('/testimonials/{id}', [TestimonialController::class, 'update'])->name('admin.testimonials.update');
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy'])->name('admin.testimonials.destroy');
 
-    // Customers (Step 1: routes only; controllers/views arrive in Steps 2–3)
-    Route::get('/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
-    Route::get('/customers/{id}', [CustomerController::class, 'show'])
+    // Customers
+    Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])
+        ->name('admin.customers.index');
+    Route::get('/customers/{id}', [\App\Http\Controllers\Admin\CustomerController::class, 'show'])
         ->whereNumber('id')->name('admin.customers.show');
-    Route::get('/customers/{id}/edit', [CustomerController::class, 'edit'])
+    Route::get('/customers/{id}/edit', [\App\Http\Controllers\Admin\CustomerController::class, 'edit'])
         ->whereNumber('id')->name('admin.customers.edit');
-    Route::put('/customers/{id}', [CustomerController::class, 'update'])
+    Route::put('/customers/{id}', [\App\Http\Controllers\Admin\CustomerController::class, 'update'])
         ->whereNumber('id')->name('admin.customers.update');
 
 
