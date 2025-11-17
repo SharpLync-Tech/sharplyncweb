@@ -1,5 +1,5 @@
 /* ============================================================
-   TESTIMONIALS GRID – FINAL MOBILE-FRIENDLY VERSION
+   TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION
    ============================================================ */
 
 .tl-header{
@@ -26,7 +26,7 @@
     max-width:1400px;
     margin:0 auto;
     padding:0 1.5rem;
-    padding-top:120px          /* space for badge */
+    padding-top:120px
 }
 
 .testimonials-header{
@@ -80,7 +80,6 @@
     justify-content:center;
     font-weight:700;
     box-shadow:0 12px 32px rgba(44,191,174,.45);
-    /* Desktop */
     width:78px;height:78px;font-size:1.8rem;top:-50px;left:32px
 }
 
@@ -97,46 +96,54 @@
 .author .role{display:block;margin-top:.4rem;opacity:.82;font-size:1rem}
 
 /* ============================================================
-   RESPONSIVE – MOBILE PERFECT (cards no longer full-width)
+   MOBILE – CARDS ARE NOW NARROW & CENTERED (THIS IS THE FIX)
    ============================================================ */
-@media (max-width:1024px){
-    .testimonial-card{grid-column:span 12!important}
-    .testimonials-grid .container{padding-top:90px}
-    .testimonials-header h1{font-size:2.8rem}
-    .testimonials-header{margin-bottom:60px}
-    .initials{width:70px;height:70px;font-size:1.5rem;top:-45px;left:24px}
-    .testimonial-card{padding:4.5rem 2.5rem 2rem}
-}
-
-@media (max-width:640px){
-    .testimonials-grid{padding:40px 0 100px}
-    .testimonials-grid .container{
-        padding:0 1rem;
-        padding-top:70px
-    }
-    .testimonials-header h1{font-size:2.4rem}
-    .testimonials-header p{font-size:1.15rem}
-    
-    /* ←←← THIS IS THE KEY FIX ←←← */
-    .testimonial-card{
-        max-width:380px;           /* ← never wider than 380px */
-        margin-left:auto;
-        margin-right:auto;
-        padding:4rem 2rem 2rem;
-        border-radius:24px
+@media (max-width: 640px) {
+    .testimonials-grid {
+        padding: 40px 0 100px;
     }
     
-    .initials{
-        width:66px;height:66px;font-size:1.4rem;
-        top:-42px;left:50%;transform:translateX(-50%)
+    .testimonials-grid .container {
+        padding: 0 1rem;
+        padding-top: 80px;
+    }
+
+    .testimonials-header h1 {
+        font-size: 2.4rem;
+    }
+    .testimonials-header p {
+        font-size: 1.15rem;
+    }
+
+    /* FORCE cards to be narrow and perfectly centered */
+    .grid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+    }
+
+    .testimonial-card {
+        width: 100%;
+        max-width: 360px !important;   /* ← THIS IS THE KEY */
+        margin: 0 auto;
+        padding: 4.5rem 2rem 2rem;
+        border-radius: 26px;
+    }
+
+    .initials {
+        width: 68px;
+        height: 68px;
+        font-size: 1.5rem;
+        top: -44px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 }
 
-/* Center initials on mobile */
-@media (max-width:640px){
-    .testimonial-card .initials{
-        left:50%!important;
-        transform:translateX(-50%)
+@media (max-width: 1024px) and (min-width: 641px) {
+    .testimonial-card {
+        grid-column: span 12 !important;
     }
 }
 

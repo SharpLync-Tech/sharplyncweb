@@ -149,4 +149,100 @@
         });
     </script>
 
+    <!-- ============================
+     CREATE NEW CUSTOMER MODAL
+    ============================= -->
+<div id="newCustomerModal" class="modal-overlay">
+    <div class="modal wider-modal">
+        <span class="modal-close" onclick="closeNewCustomerModal()">&times;</span>
+
+        <h2>Create New Customer</h2>
+
+        <form id="newCustomerForm" method="POST" action="{{ route('admin.devices.assign', $device->id) }}">
+            @csrf
+
+            <input type="hidden" name="customer_profile_id" value="__new__">
+
+            <!-- Customer Type -->
+            <label style="font-weight:600;">Customer Type</label>
+            <select name="cust_type" id="custTypeSelect" class="form-control" required>
+                <option value="">-- Select Type --</option>
+                <option value="individual">Individual</option>
+                <option value="business">Business / Company</option>
+            </select>
+
+            <!-- INDIVIDUAL SECTION -->
+            <div id="individualFields" style="display:none; margin-top:15px;">
+                <label>First Name</label>
+                <input type="text" class="form-control" name="ind_first_name">
+
+                <label style="margin-top:10px;">Last Name</label>
+                <input type="text" class="form-control" name="ind_last_name">
+
+                <label style="margin-top:10px;">Email</label>
+                <input type="email" class="form-control" name="ind_email">
+            </div>
+
+            <!-- BUSINESS SECTION -->
+            <div id="businessFields" style="display:none; margin-top:15px;">
+                <label>Business Name</label>
+                <input type="text" class="form-control" name="biz_name">
+
+                <label style="margin-top:10px;">ABN (optional)</label>
+                <input type="text" class="form-control" name="biz_abn">
+
+                <label style="margin-top:10px;">Primary Contact First Name</label>
+                <input type="text" class="form-control" name="biz_first_name">
+
+                <label style="margin-top:10px;">Primary Contact Last Name</label>
+                <input type="text" class="form-control" name="biz_last_name">
+
+                <label style="margin-top:10px;">Contact Email</label>
+                <input type="email" class="form-control" name="biz_email">
+            </div>
+
+            <!-- Welcome Email -->
+            <div style="margin-top:15px;">
+                <label>
+                    <input type="checkbox" name="send_welcome_email" value="1">
+                    Send Welcome Email (invite customer to set password & profile)
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2" style="margin-top:20px;">
+                Create Customer & Assign Device
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .wider-modal {
+        width: 600px !important;
+        max-width: 95%;
+    }
+</style>
+
+<script>
+    function openNewCustomerModal() {
+        document.getElementById('newCustomerModal').classList.add('active');
+    }
+
+    function closeNewCustomerModal() {
+        document.getElementById('newCustomerModal').classList.remove('active');
+    }
+
+    document.getElementById('custTypeSelect').addEventListener('change', function () {
+        let type = this.value;
+
+        document.getElementById('individualFields').style.display =
+            type === 'individual' ? 'block' : 'none';
+
+        document.getElementById('businessFields').style.display =
+            type === 'business' ? 'block' : 'none';
+    });
+</script>
+
+
+
 @endsection
