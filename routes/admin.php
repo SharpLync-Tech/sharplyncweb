@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Auth\MicrosoftController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\LogViewerController;
+use App\Http\Controllers\Admin\DeviceController;
+use App\Http\Controllers\Admin\DeviceAuditController;
 
 Route::get('/admin/signin', fn () => view('admin.auth.login'))->name('admin.signin');
 Route::get('/admin/login', [MicrosoftController::class, 'redirectToMicrosoft'])->name('login');
@@ -27,4 +29,16 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::get('/testimonials/{id}/edit', [TestimonialController::class, 'edit'])->name('admin.testimonials.edit');
     Route::put('/testimonials/{id}', [TestimonialController::class, 'update'])->name('admin.testimonials.update');
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy'])->name('admin.testimonials.destroy');
+
+    // Devices
+    Route::prefix('devices')->group(function () {
+        Route::get('/', [DeviceController::class, 'index'])->name('admin.devices.index');
+        Route::get('/unassigned', [DeviceController::class, 'unassigned'])->name('admin.devices.unassigned');
+        Route::get('/{device}', [DeviceController::class, 'show'])->name('admin.devices.show');
+        Route::post('/{device}/assign', [DeviceController::class, 'assign'])->name('admin.devices.assign');
+
+        Route::get('/{device}/audits', [DeviceAuditController::class, 'index'])->name('admin.devices.audits.index');
+        Route::get('/{device}/audits/{audit}', [DeviceAuditController::class, 'show'])->name('admin.devices.audits.show');
+    });
+
 });

@@ -133,128 +133,154 @@
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const track      = document.querySelector(".tl-track");
-    const slides     = document.querySelectorAll(".tl-slide");
-    const dots       = document.querySelectorAll(".tl-dot");
-    const realCount  = dots.length;                     // actual testimonials
-    let current      = 0;                               // index among real slides (0 = first real)
-    let slideWidth   = 0;
-    let isDragging   = false;
-    let startX       = 0;
+    const track   = document.querySelector(".tl-track");
+    const slides  = document.querySelectorAll(".tl-slide");
+    const dots    = document.querySelectorAll(".tl-dot");
+    const realCount = dots.length;           // actual testimonials
+    let current   = 0;                       // 0 = first real testimonial
+    let slideWidth = 0;
     let currentTranslate = 0;
     let prevTranslate    = 0;
-    let animationID;
+    let isDragging = false;
+    let startX = 0;
     let autoTimer;
 
-    // 1 clone (last) at the beginning + 1 clone (first) at the end → total slides = realCount + 2
+    // There are realCount + 2 slides (clone last → real slides → clone first)
     const totalSlides = slides.length;
 
     function updateSlideWidth() {
         if (!slides.length) return;
         const s = slides[0];
         const style = getComputedStyle(s);
-        slideWidth = s.offsetWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight) + 30;
+        slideWidth = s.offsetWidth + 
+                     parseFloat(style.marginLeft || 0) + 
+                     parseFloat(style.marginRight || 0) + 
+                     30; // gap
     }
 
     function setPosition() {
-        track.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+        track.style.transition = "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)";
         track.style.transform = `translateX(${currentTranslate}px)`;
     }
 
-    function goTo(index) {
-        current = index;
+    function goTo(realIndex) {
+        current = realIndex;
 
-        // Calculate position using the duplicated slides
-        const position = current + 1; // +1 because of the leading clone (last testimonial)
-        currentTranslate = -position * slideWidth;
+        // Position = clone-last + real slides + clone-first → we add +1 because of the leading clone
+        const visualIndex = current + 1;
+        currentTranslate = -visualIndex * slideWidth;
         prevTranslate = currentTranslate;
+
         setPosition();
 
-        // Update active classes
-        slides.forEach((slide, i) => {
-            const realIndex = (i - 1 + realCount) % realCount; // map visual slide → real testimonial
-            slide.classList.toggle('active', realIndex === (current % realCount));
-        });
+        // Active class on the correct visual slide
+        slides.forEach((s, i) => s.classList.toggle("active", i === visualIndex));
 
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === (current % realCount)));
+        // Dots always reflect real index
+        dots.forEach((d, i) => d.classList.toggle("active", i === current));
     }
 
-    function loopForward() {
+    // Seamless infinite loop when reaching the end
+    function checkBoundaries() {
+        const visualIndex = current + 1;
+
+        // Reached the cloned first slide at the end → jump to real first without transition
+        if (visualIndex >= realCount + 1) {
+            current = 0;
+            track.style.transition = "none";
+            currentTranslate = -slideWidth;           // position of first real slide
+            setPosition();
+            requestAnimationFrame(() => {
+                track.style.transition = "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)";
+                goTo(0);
+            });
+        }
+
+        // Went before the first real slide → jump to cloned last slide at the beginning
+        if (visualIndex < 1) {
+            current = realCount - 1;
+            track.style.transition = "none";
+            currentTranslate = -(realCount * slideWidth);
+            setPosition();
+            requestAnimationFrame(() => {
+                track.style.transition = "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)";
+                goTo(current);
+            });
+        }
+    }
+
+    function next() {
         current++;
         goTo(current);
+        checkBoundaries();
+    }
+
+    function prev() {
+        current--;
+        goTo(current);
+        checkBoundaries();
     }
 
     function startAuto() {
         stopAuto();
-        autoTimer = setInterval(loopForward, 7000);
+        autoTimer = setInterval(next, 7000);
     }
     function stopAuto() { clearInterval(autoTimer); }
 
-    // ——— Drag / Touch ———
+    // Drag / Touch
     function touchStart(e) {
         stopAuto();
         isDragging = true;
-        startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
-        animationID = requestAnimationFrame(animation);
+        startX = e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+        prevTranslate = currentTranslate;
     }
     function touchMove(e) {
         if (!isDragging) return;
-        const x = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+        const x = e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
         currentTranslate = prevTranslate + (x - startX);
-        track.style.transition = 'none';
+        track.style.transition = "none";
         track.style.transform = `translateX(${currentTranslate}px)`;
     }
     function touchEnd() {
         if (!isDragging) return;
         isDragging = false;
-        cancelAnimationFrame(animationID);
 
         const movedBy = currentTranslate - prevTranslate;
         if (Math.abs(movedBy) > 50) {
-            current += movedBy < 0 ? 1 : -1;
+            movedBy < 0 ? next() : prev();
+        } else {
+            goTo(current);
         }
-        goTo(current);
         startAuto();
     }
 
-    function animation() {
-        track.style.transform = `translateX(${currentTranslate}px)`;
-        if (isDragging) requestAnimationFrame(animation);
-    }
-
     slides.forEach(slide => {
-        slide.addEventListener('dragstart', e => e.preventDefault());
-        slide.addEventListener('mousedown', touchStart);
-        slide.addEventListener('mousemove', touchMove);
-        slide.addEventListener('mouseup', touchEnd);
-        slide.addEventListener('mouseleave', touchEnd);
-        slide.addEventListener('touchstart', touchStart);
-        slide.addEventListener('touchmove', touchMove);
-        slide.addEventListener('touchend', touchEnd);
+        slide.addEventListener("dragstart", e => e.preventDefault());
+        slide.addEventListener("mousedown", touchStart);
+        slide.addEventListener("mousemove", touchMove);
+        slide.addEventListener("mouseup", touchEnd);
+        slide.addEventListener("mouseleave", touchEnd);
+        slide.addEventListener("touchstart", touchStart);
+        slide.addEventListener("touchmove", touchMove);
+        slide.addEventListener("touchend", touchEnd);
     });
 
-    // ——— Dots ———
-    dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-            current = i;
-            goTo(current);
-            startAuto();
-        });
-    });
+    // Dots
+    dots.forEach((dot, i) => dot.addEventListener("click", () => {
+        current = i;
+        goTo(current);
+        startAuto();
+    }));
 
-    // ——— Init ———
+    // Init
     updateSlideWidth();
-
-    // Start with first real slide perfectly centered (last clone is visible on the left)
-    currentTranslate = -slideWidth;
+    currentTranslate = -slideWidth;   // first real slide centered (last clone visible on left)
     prevTranslate = currentTranslate;
     setPosition();
-
-    // Show first real slide as active
     goTo(0);
     startAuto();
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
         updateSlideWidth();
         goTo(current);
     });

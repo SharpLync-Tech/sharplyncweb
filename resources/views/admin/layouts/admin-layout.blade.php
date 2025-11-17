@@ -24,15 +24,44 @@
 </header>
 
 <aside class="sidebar">
-    <a href="{{ url('/admin/dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">Dashboard</a>
-    <a href="{{ route('admin.testimonials.index') }}" class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">Testimonials</a>
-    <a href="#">Pulse Feed</a>
-    <a href="#">Components</a>
-    <a href="#">Settings</a>
+
+    {{-- Dashboard --}}
+    <a href="{{ url('/admin/dashboard') }}"
+       class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
+        Dashboard
+    </a>
+
+    {{-- Testimonials --}}
+    <a href="{{ route('admin.testimonials.index') }}"
+       class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">
+        Testimonials
+    </a>
+
+    {{-- Devices --}}
+    <a href="{{ route('admin.devices.index') }}"
+       class="{{ request()->is('admin/devices') ? 'active' : '' }}">
+        Devices – All
+    </a>
+
+    <a href="{{ route('admin.devices.unassigned') }}"
+       class="{{ request()->is('admin/devices/unassigned') ? 'active' : '' }}">
+        Devices – Unassigned
+    </a>
+
+    {{-- Pulse Feed --}}
+    <a href="#" class="">Pulse Feed</a>
+
+    {{-- Components --}}
+    <a href="#" class="">Components</a>
+
+    {{-- Settings --}}
+    <a href="#" class="">Settings</a>
+
 </aside>
 
 <main class="admin-main">
     @yield('content')
 </main>
+
 </body>
 </html>
