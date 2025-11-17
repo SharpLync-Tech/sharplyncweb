@@ -46,6 +46,12 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::put('/customers/{id}', [\App\Http\Controllers\Admin\CustomerController::class, 'update'])
         ->whereNumber('id')->name('admin.customers.update');
 
+       // Send password reset email for a customer
+    Route::post('/customers/{id}/send-reset', [\App\Http\Controllers\Admin\CustomerController::class, 'sendReset'])
+    ->whereNumber('id')
+    ->name('admin.customers.sendReset');
+ 
+
 
     // Devices
     Route::prefix('devices')->group(function () {

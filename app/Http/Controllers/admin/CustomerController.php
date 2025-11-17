@@ -158,4 +158,31 @@ class CustomerController extends Controller
             ->route('admin.customers.show', $id)
             ->with('status', 'Customer updated.');
     }
+
+        public function sendReset(Request $request, int $id)
+    {
+        // pull the profile from CRM
+        $customer = DB::connection('crm')->table('customer_profiles')->where('id', $id)->first();
+
+        if (!$customer) {
+            return redirect()->route('admin.customers.index')->withErrors(['general' => 'Customer not found.']);
+        }
+
+        // Decide which email to use (accounts email is what you’ve been storing)
+        $email = $customer->accounts_email ?? null;
+
+        if (!$email) {
+            return back()->withErrors(['email' => 'No email on file for this customer.']);
+        }
+
+        // Uses the "customers" password broker (see config step below if you don’t have it yet)
+        $status = Password::broker('customers')->sendResetLink(['email' => $email]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', "Password reset link sent to {$email}.");
+        }
+
+        // Bubble up the framework message (e.g. "We can't find a user with that email address.")
+        return back()->withErrors(['email' => __($status)]);
+    }
 }

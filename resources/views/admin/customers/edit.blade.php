@@ -72,6 +72,28 @@
                 <label for="setup_completed" style="user-select:none;">Mark as active (setup completed)</label>
             </div>
 
+            {{-- Account tools --}}
+            <div class="admin-card" style="max-width:980px; margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+                <div>
+                    <div style="font-weight:700; margin-bottom:4px;">Account Tools</div>
+                    <div style="color:#6b7a89;">
+                        Send a password reset email to: <strong>{{ $customer->email }}</strong>
+                    </div>
+                </div>
+
+                <form action="{{ route('admin.customers.sendReset', $customer->id) }}" method="POST" onsubmit="return confirm('Send a password reset email to {{ $customer->email }}?');">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Send Password Reset</button>
+                </form>
+            </div>
+
+            {{-- flash message helper (optional if you don’t already show it on this page) --}}
+            @if (session('status'))
+            <div class="admin-card" style="border-left:4px solid #2CBFAE;margin-top:12px;max-width:980px;">
+                {{ session('status') }}
+            </div>
+            @endif
+
             {{-- Notes (full width) --}}
             <div style="grid-column:1 / -1;">
                 <label for="notes" style="font-weight:600;">Notes</label>
