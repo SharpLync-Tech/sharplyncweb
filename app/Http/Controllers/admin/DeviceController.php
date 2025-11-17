@@ -50,157 +50,123 @@ class DeviceController extends Controller
     }
 
     public function assign(Request $request, Device $device)
-    {
-        /**
-         * ============================================================
-         *  CASE 1 — CREATE NEW CUSTOMER (Admin-selected)
-         * ============================================================
-         */
-        if ($request->customer_profile_id === '__new__') {
+{
+    //
+    // CASE 1: Creating a new customer through the modal
+    //
+    if ($request->customer_profile_id === '__new__') {
+
+        $request->validate([
+            'cust_type' => 'required|in:individual,business',
+        ]);
+
+        // --------------------------------------------
+        // INDIVIDUAL CUSTOMER
+        // --------------------------------------------
+        if ($request->cust_type === 'individual') {
 
             $request->validate([
-                'new_customer_name'  => 'required|string|max:150',
-                'new_customer_email' => 'required|email|max:150',
+                'ind_first_name' => 'required|string|max:50',
+                'ind_last_name'  => 'required|string|max:50',
+                'ind_email'      => 'required|email|max:150',
             ]);
 
-            // Split business name into workable name fields
-            $nameParts = explode(' ', trim($request->new_customer_name));
-            $firstName = $nameParts[0] ?? 'Customer';
-            $lastName  = $nameParts[1] ?? 'Account';
-
-            // ============================================================
-            // ⭐ 1. CREATE NEW CRM USER (future-proof)
-            // ============================================================
-            $user = User::on('crm')->create([
-                'first_name'         => $firstName,
-                'last_name'          => $lastName,
-                'email'              => $request->new_customer_email,
-                'auth_provider'      => 'local',
-                'password'           => bcrypt(Str::random(20)), // random, never used
-                'account_status'     => 'active',
-                'email_verified_at'  => now(),
-                'accepted_terms_at'  => now(),
-                'sspin'              => strtoupper(Str::random(8)),
+            // 1) Create CRM user
+            $user = \App\Models\CRM\User::on('crm')->create([
+                'first_name' => $request->ind_first_name,
+                'last_name'  => $request->ind_last_name,
+                'email'      => $request->ind_email,
+                'auth_provider' => 'local',
+                'account_status' => 'pending',
             ]);
 
-            // Create SharpLync account number (simple but unique)
-            $accountNumber = 'SL' . now()->format('dmHi');
-
-            // ============================================================
-            // ⭐ 2. CREATE CUSTOMER PROFILE (linked to user)
-            // ============================================================
-            $customer = CustomerProfile::on('crm')->create([
+            // 2) Create CRM profile
+            $profile = CustomerProfile::on('crm')->create([
                 'user_id'        => $user->id,
-                'business_name'  => $request->new_customer_name,
-                'accounts_email' => $request->new_customer_email,
-                'account_number' => $accountNumber,
-                'mobile_number'       => '',   // required by DB
-                'landline_number'     => '',   // required by DB
+                'business_name'  => $request->ind_first_name . ' ' . $request->ind_last_name,
+                'accounts_email' => $request->ind_email,
                 'setup_completed' => 0,
             ]);
 
-            // ============================================================
-            // ⭐ 3. ASSIGN DEVICE
-            // ============================================================
-            $device->customer_profile_id = $customer->id;
-            $device->save();
-
-            return redirect()
-                ->route('admin.devices.show', $device->id)
-                ->with('status', 'Device assigned to NEW customer: ' . $customer->business_name);
-        }
-
-        /**
-         * ============================================================
-         *  CASE 2 — ASSIGN EXISTING CUSTOMER
-         * ============================================================
-         */
-        $data = $request->validate([
-            'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
-        ]);
-
-        $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
-
-        $device->customer_profile_id = $customer->id;
-        $device->save();
-
-        return redirect()
-            ->route('admin.devices.show', $device->id)
-            ->with('status', 'Device assigned to ' . $customer->business_name . ' successfully.');
-    }
-
-
-    public function importForm()
-    {
-        return view('admin.devices.import');
-    }
-
-    public function importProcess(Request $request)
-    {
-        $request->validate([
-            'audit_file' => 'required|file|mimes:json,txt',
-        ]);
-
-        $file = $request->file('audit_file');
-
-        // Strip BOM
-        $raw = file_get_contents($file->getRealPath());
-        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
-
-        // Decode JSON safely
-        $data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
-
-        if ($data === null) {
-            return back()->withErrors(['Invalid JSON file.']);
-        }
-
-        // Create device
-        $device = Device::create([
-            'customer_profile_id' => $data['customer_id'] ?? null,
-            'device_name'         => $data['device_name'] ?? 'Unknown',
-            'manufacturer'        => $data['manufacturer'] ?? '',
-            'model'               => $data['model'] ?? '',
-            'os_version'          => $data['os_version'] ?? '',
-            'total_ram_gb'        => $data['total_ram_gb'] ?? 0,
-            'cpu_model'           => $data['cpu_model'] ?? '',
-            'cpu_cores'           => $data['cpu_cores'] ?? 0,
-            'cpu_threads'         => $data['cpu_threads'] ?? 0,
-            'storage_size_gb'     => $data['storage_size_gb'] ?? 0,
-            'storage_used_percent'=> $data['storage_used_percent'] ?? 0,
-            'antivirus'           => $data['antivirus'] ?? '',
-            'last_audit_at'       => now(),
-        ]);
-
-        // Store audit
-        DeviceAudit::create([
-            'device_id' => $device->id,
-            'audit_json'=> $raw,
-        ]);
-
-        // Store apps
-        foreach ($data['raw_audit']['applications'] ?? [] as $app) {
-            DeviceApp::create([
-                'device_id' => $device->id,
-                'name'      => $app['DisplayName'] ?? '',
-                'version'   => $app['DisplayVersion'] ?? '',
-                'publisher' => $app['Publisher'] ?? '',
-                'installed_on' => $app['InstallDate'] ?? null,
+            // 3) Create contact
+            $profile->contacts()->create([
+                'contact_name' => $request->ind_first_name . ' ' . $request->ind_last_name,
+                'email'        => $request->ind_email,
+                'is_primary'   => 1,
             ]);
         }
 
+        // --------------------------------------------
+        // BUSINESS CUSTOMER
+        // --------------------------------------------
+        if ($request->cust_type === 'business') {
+
+            $request->validate([
+                'biz_name'        => 'required|string|max:150',
+                'biz_first_name'  => 'required|string|max:50',
+                'biz_last_name'   => 'required|string|max:50',
+                'biz_email'       => 'required|email|max:150',
+            ]);
+
+            // 1) Create CRM user (primary contact)
+            $user = \App\Models\CRM\User::on('crm')->create([
+                'first_name' => $request->biz_first_name,
+                'last_name'  => $request->biz_last_name,
+                'email'      => $request->biz_email,
+                'auth_provider' => 'local',
+                'account_status' => 'pending',
+            ]);
+
+            // 2) Create CRM customer profile
+            $profile = CustomerProfile::on('crm')->create([
+                'user_id'        => $user->id,
+                'business_name'  => $request->biz_name,
+                'accounts_email' => $request->biz_email,
+                'setup_completed' => 0,
+            ]);
+
+            // 3) Primary contact entry
+            $profile->contacts()->create([
+                'contact_name' => $request->biz_first_name . ' ' . $request->biz_last_name,
+                'email'        => $request->biz_email,
+                'is_primary'   => 1,
+            ]);
+        }
+
+        // --------------------------------------------
+        // ASSIGN DEVICE
+        // --------------------------------------------
+        $device->customer_profile_id = $profile->id;
+        $device->save();
+
+        // --------------------------------------------
+        // OPTIONAL: send welcome email later
+        // --------------------------------------------
+        if ($request->has('send_welcome_email')) {
+            // TODO: send email hook here
+        }
+
         return redirect()
-            ->route('admin.devices.index')
-            ->with('status', 'Device audit imported successfully!');
+            ->route('admin.devices.show', $device->id)
+            ->with('status', "Customer created & device assigned to {$profile->business_name}");
     }
 
-    public function destroy(Device $device)
-    {
-        $device->audits()->delete();
-        $device->apps()->delete();
-        $device->delete();
 
-        return redirect()
-            ->route('admin.devices.index')
-            ->with('status', 'Device and all related audit data deleted successfully.');
-    }
+                //
+                // CASE 2: Assign to existing customer
+                //
+                $data = $request->validate([
+                    'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
+                ]);
+
+                $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
+
+                $device->customer_profile_id = $customer->id;
+                $device->save();
+
+                return redirect()
+                    ->route('admin.devices.show', $device->id)
+                    ->with('status', "Device assigned to {$customer->business_name}.");
+            }
+
 }
