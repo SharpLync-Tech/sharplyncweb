@@ -11,8 +11,8 @@
     <div class="container">
         {{-- Page heading --}}
         <div class="testimonials-header">
-            <h1>What Our Customers Say</h1>
-            <p>Real experiences from the people and organisations we've partnered with to deliver exceptional connectivity solutions and build trust.</p>
+            <h1>The Foundation of SharpLync: Trusted Expertise</h1>
+            <p>Endorsements from industry leaders, colleagues, and partners who vouch for our founder's track record, technical integrity, and commitment to exceptional service.</p>
         </div>
 
         {{-- Grid Container --}}
