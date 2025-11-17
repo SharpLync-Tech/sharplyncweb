@@ -5,7 +5,7 @@
 @section('content')
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
         <h2>Edit Customer</h2>
-        <a href="{{ route('admin.customers.show', $customer->id) }}" class="btn btn-accent">← Back to Profile</a>
+        <a href="{{ route('admin.customers.show', $customer->id) }}" class="btn btn-accent">Back to Profile</a>
     </div>
 
     {{-- Validation errors --}}

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Models\CRM\Customer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 
 
 class CustomerController extends Controller
@@ -176,7 +177,7 @@ class CustomerController extends Controller
         }
 
         // Uses the "customers" password broker (see config step below if you don’t have it yet)
-        $status = Password::broker('customers')->sendResetLink(['email' => $email]);
+        $status = Password::broker('crm_users')->sendResetLink(['email' => $loginEmail]);
 
         if ($status === Password::RESET_LINK_SENT) {
             return back()->with('status', "Password reset link sent to {$email}.");
