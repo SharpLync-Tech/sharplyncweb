@@ -109,7 +109,7 @@
 /* FIXED: Initials badge – perfectly positioned */
 .initials {
     position: absolute;
-    top: -28px;                               /* FIXED: sits perfectly on card */
+    top: -18px;                               /* FIXED: sits perfectly on card */
     left: 32px;
     width: 74px;
     height: 74px;
