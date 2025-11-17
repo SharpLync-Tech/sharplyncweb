@@ -121,7 +121,6 @@
     <a href="{{ route('admin.devices.audits.index', $device->id) }}">View audit history</a>
 </div>
 
-
 {{-- ============================================================
      NEW CUSTOMER CREATION MODAL
 ============================================================ --}}
@@ -195,7 +194,6 @@
     }
 </style>
 
-{{-- JS --}}
 <script>
 document.getElementById('customerSelect').addEventListener('change', function () {
     if (this.value === '__new__') {
