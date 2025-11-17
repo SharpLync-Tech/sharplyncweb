@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="testimonials-header">
             <h1>What Our Customers Say</h1>
-            <p>Real experiences from the people and organisations we’ve partnered with to deliver exceptional connectivity solutions.</p>
+            <p>Real experiences from the people and organisations we've partnered with to deliver exceptional connectivity solutions.</p>
         </div>
 
         <!-- Grid -->
@@ -22,12 +22,11 @@
                                     ->map(fn($p) => mb_substr($p, 0, 1))
                                     ->join('');
 
-                    // Decide card size: first = featured, next two = large, rest = small
+                    // Card sizing
                     $size = $loop->first ? 'featured' : ($loop->iteration <= 3 ? 'large' : 'small');
                 @endphp
 
-                <article class="testimonial-card {{ $size }} {{ $loop->first ? 'first-card' : '' }}"
-                         data-full="{{ e($t->testimonial_text) }}">
+                <article class="testimonial-card {{ $size }} {{ $loop->first ? 'first-card' : '' }}">
                     <div class="initials">{{ $initials }}</div>
 
                     <blockquote>
@@ -48,7 +47,7 @@
 
             @empty
                 <div class="empty-state">
-                    <p>No testimonials yet — we’re just getting started on delivering amazing results.</p>
+                    <p>No testimonials yet — we're just getting started on delivering amazing results.</p>
                 </div>
             @endforelse
         </div>
