@@ -35,9 +35,9 @@
     @yield('content')
 </main>
 
-<footer class="tl-footer">
-    <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-</footer>
+<footer class="cp-footer">
+    © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, <span class="cp-hl">Modern Results</span>
+  </footer>
 
 <script>
 function toggleMenu() {
