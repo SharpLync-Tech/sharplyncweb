@@ -1,6 +1,6 @@
 /* ============================================================
-   TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION
-   ============================================================ */
+    TESTIMONIALS GRID – FINAL MOBILE-PERFECT VERSION
+    ============================================================ */
 
 .tl-header{
     display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;position:sticky;top:0;z-index:10000!important;background:rgba(10,42,77,.95);backdrop-filter:blur(12px)
@@ -96,8 +96,8 @@
 .author .role{display:block;margin-top:.4rem;opacity:.82;font-size:1rem}
 
 /* ============================================================
-   MOBILE – CARDS ARE NOW NARROW & CENTERED (THIS IS THE FIX)
-   ============================================================ */
+    MOBILE – CARDS ARE NOW NARROW & CENTERED (THIS IS THE FIX)
+    ============================================================ */
 @media (max-width: 640px) {
     .testimonials-grid {
         padding: 40px 0 100px;
@@ -123,9 +123,16 @@
         gap: 2.5rem;
     }
 
+    /* 👇 THIS IS THE KEY FIX: Resetting the desktop grid spans 👇 */
+    .testimonial-card.featured,
+    .testimonial-card.large,
+    .testimonial-card.small {
+        grid-column: auto !important;
+    }
+
     .testimonial-card {
         width: 100%;
-        max-width: 360px !important;   /* ← THIS IS THE KEY */
+        max-width: 360px !important;  /* ← This can now take effect horizontally */
         margin: 0 auto;
         padding: 4.5rem 2rem 2rem;
         border-radius: 26px;
