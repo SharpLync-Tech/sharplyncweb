@@ -20,88 +20,70 @@
     <p><strong>Last Audit:</strong> {{ optional($device->last_audit_at)->format('d M Y H:i') }}</p>
 </div>
 
-        {{-- Customer Assignment --}}
-        <div class="admin-card">
-            <h3>Customer Assignment</h3>
+{{-- Customer Assignment --}}
+<div class="admin-card">
+    <h3>Customer Assignment</h3>
 
-            @if(session('status'))
-                <div class="alert">{{ session('status') }}</div>
-            @endif
+    @if(session('status'))
+        <div class="alert">{{ session('status') }}</div>
+    @endif
 
-            <p><strong>Current:</strong>
-                @if($device->customerProfile)
-                    {{ $device->customerProfile->business_name }}
-                @else
-                    <span class="badge badge-off">Unassigned</span>
-                @endif
-            </p>
+    <p><strong>Current:</strong>
+        @if($device->customerProfile)
+            {{ $device->customerProfile->business_name }}
+        @else
+            <span class="badge badge-off">Unassigned</span>
+        @endif
+    </p>
 
-            <form method="POST"
-                action="{{ route('admin.devices.assign', $device->id) }}"
-                style="max-width:400px;">
-                @csrf
+    <form method="POST"
+        action="{{ route('admin.devices.assign', $device->id) }}"
+        style="max-width:400px;">
+        @csrf
 
-                <label>Select customer</label>
-                <select name="customer_profile_id" id="customerSelect" class="form-control">
-                    <option value="">-- Select --</option>
+        <label>Select customer</label>
+        <select name="customer_profile_id"
+                id="customerSelect"
+                class="form-control">
+            <option value="">-- Select --</option>
 
-                    <option value="__new__">-- Create New Customer --</option>
+            <option value="__new__">-- Create New Customer --</option>
 
-                    @foreach($customers as $cust)
-                        <option value="{{ $cust->id }}"
-                        @selected($device->customer_profile_id === $cust->id)>
-                        {{ $cust->business_name }}
-                    </option>
-                @endforeach
-                </select>
+            @foreach($customers as $cust)
+                <option value="{{ $cust->id }}"
+                    @selected($device->customer_profile_id === $cust->id)>
+                    {{ $cust->business_name }}
+                </option>
+            @endforeach
+        </select>
 
-                <div id="newCustomerForm" style="display:none; margin-top:20px;">
-                    <h4>Create New Customer</h4>
+        <button class="btn btn-primary" style="margin-top:10px;">
+            Save Assignment
+        </button>
+    </form>
+</div>
 
-                    <label>Business Name</label>
-                    <input type="text"
-                        name="new_customer_name"
-                        class="form-control"
-                        placeholder="Enter business name">
+{{-- Danger Zone --}}
+<div class="admin-card" style="border:2px solid #ffdddd;">
+    <h3 style="color:#b30000;">Danger Zone</h3>
+    <p>Deleting this device will remove:</p>
+    <ul>
+        <li>All audit logs</li>
+        <li>All installed apps records</li>
+        <li>The device record itself</li>
+    </ul>
 
-                    <label style="margin-top:10px;">Account Email</label>
-                    <input type="email"
-                        name="new_customer_email"
-                        class="form-control"
-                        placeholder="email@example.com">
-                </div>
+    <form action="{{ route('admin.devices.destroy', $device->id) }}"
+        method="POST"
+        onsubmit="return confirm('Are you sure you want to permanently delete this device and all audit data?');">
+        @csrf
+        @method('DELETE')
 
-
-
-                <button class="btn btn-primary" style="margin-top:10px;">
-                    Save Assignment
-                </button>
-            </form>
-        </div>
-
-        {{-- Danger Zone --}}
-        <div class="admin-card" style="border:2px solid #ffdddd;">
-            <h3 style="color:#b30000;">Danger Zone</h3>
-            <p>Deleting this device will remove:</p>
-            <ul>
-                <li>All audit logs</li>
-                <li>All installed apps records</li>
-                <li>The device record itself</li>
-            </ul>
-
-            <form action="{{ route('admin.devices.destroy', $device->id) }}"
-                method="POST"
-                onsubmit="return confirm('Are you sure you want to permanently delete this device and all audit data?');">
-
-                @csrf
-                @method('DELETE')
-
-                <button class="btn btn-danger" style="margin-top:10px;">
-                    Delete Device
-                </button>
-            </form>
-        </div>
-
+        <button class="btn btn-danger" style="margin-top:10px;">
+            Delete Device
+        </button>
+    </form>
+</div>
 
 {{-- Apps --}}
 <div class="admin-card">
@@ -138,27 +120,20 @@
     <h3>Audit History</h3>
     <a href="{{ route('admin.devices.audits.index', $device->id) }}">View audit history</a>
 </div>
-    <script>
-        document.getElementById('customerSelect').addEventListener('change', function () {
-            let form = document.getElementById('newCustomerForm');
-            if (this.value === '__new__') {
-                form.style.display = 'block';
-            } else {
-                form.style.display = 'none';
-            }
-        });
-    </script>
 
-    <!-- ============================
-     CREATE NEW CUSTOMER MODAL
-    ============================= -->
+
+{{-- ============================================================
+     NEW CUSTOMER CREATION MODAL
+============================================================ --}}
 <div id="newCustomerModal" class="modal-overlay">
     <div class="modal wider-modal">
         <span class="modal-close" onclick="closeNewCustomerModal()">&times;</span>
 
         <h2>Create New Customer</h2>
 
-        <form id="newCustomerForm" method="POST" action="{{ route('admin.devices.assign', $device->id) }}">
+        <form id="newCustomerForm"
+              method="POST"
+              action="{{ route('admin.devices.assign', $device->id) }}">
             @csrf
 
             <input type="hidden" name="customer_profile_id" value="__new__">
@@ -171,7 +146,7 @@
                 <option value="business">Business / Company</option>
             </select>
 
-            <!-- INDIVIDUAL SECTION -->
+            <!-- INDIVIDUAL -->
             <div id="individualFields" style="display:none; margin-top:15px;">
                 <label>First Name</label>
                 <input type="text" class="form-control" name="ind_first_name">
@@ -183,13 +158,10 @@
                 <input type="email" class="form-control" name="ind_email">
             </div>
 
-            <!-- BUSINESS SECTION -->
+            <!-- BUSINESS -->
             <div id="businessFields" style="display:none; margin-top:15px;">
                 <label>Business Name</label>
                 <input type="text" class="form-control" name="biz_name">
-
-                <label style="margin-top:10px;">ABN (optional)</label>
-                <input type="text" class="form-control" name="biz_abn">
 
                 <label style="margin-top:10px;">Primary Contact First Name</label>
                 <input type="text" class="form-control" name="biz_first_name">
@@ -205,7 +177,7 @@
             <div style="margin-top:15px;">
                 <label>
                     <input type="checkbox" name="send_welcome_email" value="1">
-                    Send Welcome Email (invite customer to set password & profile)
+                    Send Welcome Email
                 </label>
             </div>
 
@@ -223,26 +195,32 @@
     }
 </style>
 
+{{-- JS --}}
 <script>
-    function openNewCustomerModal() {
-        document.getElementById('newCustomerModal').classList.add('active');
+document.getElementById('customerSelect').addEventListener('change', function () {
+    if (this.value === '__new__') {
+        openNewCustomerModal();
+        this.value = "";
     }
+});
 
-    function closeNewCustomerModal() {
-        document.getElementById('newCustomerModal').classList.remove('active');
-    }
+function openNewCustomerModal() {
+    document.getElementById('newCustomerModal').classList.add('active');
+}
 
-    document.getElementById('custTypeSelect').addEventListener('change', function () {
-        let type = this.value;
+function closeNewCustomerModal() {
+    document.getElementById('newCustomerModal').classList.remove('active');
+}
 
-        document.getElementById('individualFields').style.display =
-            type === 'individual' ? 'block' : 'none';
+document.getElementById('custTypeSelect').addEventListener('change', function () {
+    let type = this.value;
 
-        document.getElementById('businessFields').style.display =
-            type === 'business' ? 'block' : 'none';
-    });
+    document.getElementById('individualFields').style.display =
+        (type === 'individual') ? 'block' : 'none';
+
+    document.getElementById('businessFields').style.display =
+        (type === 'business') ? 'block' : 'none';
+});
 </script>
-
-
 
 @endsection
