@@ -47,7 +47,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
-    padding-top: 60px;                        /* FIXED: space for initials badge */
+    padding-top: 100px;                        /* FIXED: space for initials badge */
 }
 
 /* Header */
@@ -109,7 +109,7 @@
 /* FIXED: Initials badge – perfectly positioned */
 .initials {
     position: absolute;
-    top: -38px;                               /* FIXED: sits perfectly on card */
+    top: -48px;                               /* FIXED: sits perfectly on card */
     left: 32px;
     width: 74px;
     height: 74px;
