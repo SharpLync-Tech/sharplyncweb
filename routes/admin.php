@@ -36,27 +36,37 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::put('/testimonials/{id}', [TestimonialController::class, 'update'])->name('admin.testimonials.update');
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy'])->name('admin.testimonials.destroy');
 
-    /** Devices */
+    // Customers (Step 1: routes only; controllers/views arrive in Steps 2–3)
+    Route::get('/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
+    Route::get('/customers/{id}', [CustomerController::class, 'show'])
+        ->whereNumber('id')->name('admin.customers.show');
+    Route::get('/customers/{id}/edit', [CustomerController::class, 'edit'])
+        ->whereNumber('id')->name('admin.customers.edit');
+    Route::put('/customers/{id}', [CustomerController::class, 'update'])
+        ->whereNumber('id')->name('admin.customers.update');
+
+
+    // Devices
     Route::prefix('devices')->group(function () {
 
-        // Listing routes
-        Route::get('/', [DeviceController::class, 'index'])->name('admin.devices.index');
-        Route::get('/unassigned', [DeviceController::class, 'unassigned'])->name('admin.devices.unassigned');
+    // Listing routes
+    Route::get('/', [DeviceController::class, 'index'])->name('admin.devices.index');
+    Route::get('/unassigned', [DeviceController::class, 'unassigned'])->name('admin.devices.unassigned');
 
-        // Import routes (must be BEFORE dynamic route)
-        Route::get('/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
-        Route::post('/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
+    // Import routes (must be BEFORE dynamic route)
+    Route::get('/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
+    Route::post('/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
 
-        // Audit routes
-        Route::get('/{device}/audits', [DeviceAuditController::class, 'index'])->name('admin.devices.audits.index');
-        Route::get('/{device}/audits/{audit}', [DeviceAuditController::class, 'show'])->name('admin.devices.audits.show');
+    // Audit routes
+    Route::get('/{device}/audits', [DeviceAuditController::class, 'index'])->name('admin.devices.audits.index');
+    Route::get('/{device}/audits/{audit}', [DeviceAuditController::class, 'show'])->name('admin.devices.audits.show');
 
-        // Assignment + delete
-        Route::post('/{device}/assign', [DeviceController::class, 'assign'])->name('admin.devices.assign');
-        Route::delete('/{device}/delete', [DeviceController::class, 'destroy'])->name('admin.devices.destroy');
+    // Assignment + delete
+    Route::post('/{device}/assign', [DeviceController::class, 'assign'])->name('admin.devices.assign');
+    Route::delete('/{device}/delete', [DeviceController::class, 'destroy'])->name('admin.devices.destroy');
 
-        // ⚠ MUST COME LAST — or it will swallow all routes like /import
-        Route::get('/{device}', [DeviceController::class, 'show'])->name('admin.devices.show');
+    // ⚠ MUST COME LAST — or it will swallow all routes like /import
+    Route::get('/{device}', [DeviceController::class, 'show'])->name('admin.devices.show');
     });
 
 });
