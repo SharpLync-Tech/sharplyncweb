@@ -70,83 +70,63 @@ class DeviceController extends Controller
         public function importProcess(Request $request)
         {
             $request->validate([
-            'audit_file' => ['required', 'file', 'max:5120']
+                'audit_file' => 'required|file|mimes:json,txt',
             ]);
 
+            $file = $request->file('audit_file');
 
-            $json = json_decode(file_get_contents($request->file('audit_file')->getRealPath()), true);
+            // --- New: strip UTF-8 BOM and handle large files ---
+            $raw = file_get_contents($file->getRealPath());
 
-            if (!$json) {
-                return back()->withErrors(['audit_file' => 'Invalid JSON file.']);
+            // Remove BOM if present
+            $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+
+            // Decode with max depth + BIG data flags
+            $data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
+
+            if ($data === null) {
+                return back()->withErrors(['Invalid JSON file.']);
             }
 
-            // Extract required fields
-            $deviceName  = $json['Device'] ?? $json['device_name'] ?? null;
-            $manufacturer = $json['System Information']['Computer System']['Manufacturer'] ?? null;
-            $model        = $json['System Information']['Computer System']['Model'] ?? null;
-            $osVersion    = $json['System Information']['Operating System']['Caption'] ?? null;
-
-            $totalRam     = $json['System Information']['Computer System']['TotalPhysicalMemoryGB'] ?? null;
-            $cpuModel     = $json['System Information']['Processor']['Name'] ?? null;
-            $cpuCores     = $json['System Information']['Processor']['NumberOfCores'] ?? null;
-            $cpuThreads   = $json['System Information']['Processor']['NumberOfLogicalProcessors'] ?? null;
-
-            $diskUsedPct  = $json['Disk Usage']['UsedPercent'] ?? null;
-            $diskSize     = $json['Disk Usage']['SizeGB'] ?? null;
-
-            $antivirus    = $json['Antivirus Status']['displayName'] ?? null;
-
-            // Try match device
-            $device = Device::where('device_name', $deviceName)
-                ->where('model', $model)
-                ->where('manufacturer', $manufacturer)
-                ->first();
-
-            if (!$device) {
-                $device = new Device();
-            }
-
-            $device->device_name          = $deviceName;
-            $device->manufacturer         = $manufacturer;
-            $device->model                = $model;
-            $device->os_version           = $osVersion;
-            $device->total_ram_gb         = $totalRam;
-            $device->cpu_model            = $cpuModel;
-            $device->cpu_cores            = $cpuCores;
-            $device->cpu_threads          = $cpuThreads;
-            $device->storage_size_gb      = $diskSize;
-            $device->storage_used_percent = $diskUsedPct;
-            $device->antivirus            = $json['Antivirus']['Name'] ?? null;
-            $device->last_audit_at        = now();
-
-            $device->save();
-
-            // Save raw audit JSON
-            $audit = DeviceAudit::create([
-                'device_id'  => $device->id,
-                'audit_json' => $json
+            // --- Normal import logic continues here ---
+            // Create device
+            $device = Device::create([
+                'customer_profile_id' => $data['customer_id'] ?? null,
+                'device_name'         => $data['device_name'] ?? 'Unknown',
+                'manufacturer'        => $data['manufacturer'] ?? '',
+                'model'               => $data['model'] ?? '',
+                'os_version'          => $data['os_version'] ?? '',
+                'total_ram_gb'        => $data['total_ram_gb'] ?? 0,
+                'cpu_model'           => $data['cpu_model'] ?? '',
+                'cpu_cores'           => $data['cpu_cores'] ?? 0,
+                'cpu_threads'         => $data['cpu_threads'] ?? 0,
+                'storage_size_gb'     => $data['storage_size_gb'] ?? 0,
+                'storage_used_percent'=> $data['storage_used_percent'] ?? 0,
+                'antivirus'           => $data['antivirus'] ?? '',
+                'last_audit_at'       => now(),
             ]);
 
-            // Save apps (if present)
-            if (isset($json['Installed Applications']) && is_array($json['Installed Applications'])) {
-                DeviceApp::where('device_id', $device->id)->delete();
+            // Store audit
+            DeviceAudit::create([
+                'device_id' => $device->id,
+                'audit_json'=> $raw, // Store raw JSON for later inspection
+            ]);
 
-                foreach ($json['Installed Applications'] as $app) {
-                    DeviceApp::create([
-                        'device_id' => $device->id,
-                        'name'      => $app['DisplayName'] ?? 'Unknown',
-                        'version'   => $app['DisplayVersion'] ?? null,
-                        'publisher' => $app['Publisher'] ?? null,
-                        'installed_on' => isset($app['InstallDate'])
-                            ? \Carbon\Carbon::parse($app['InstallDate'])
-                            : null,
-                    ]);
-                }
+            // Store apps
+            foreach ($data['raw_audit']['applications'] ?? [] as $app) {
+                DeviceApp::create([
+                    'device_id' => $device->id,
+                    'name'      => $app['DisplayName'] ?? '',
+                    'version'   => $app['DisplayVersion'] ?? '',
+                    'publisher' => $app['Publisher'] ?? '',
+                    'installed_on' => $app['InstallDate'] ?? null,
+                ]);
             }
 
             return redirect()
                 ->route('admin.devices.index')
-                ->with('status', 'Device audit imported successfully.');
+                ->with('status', 'Device audit imported successfully!');
         }
+
 
 }
