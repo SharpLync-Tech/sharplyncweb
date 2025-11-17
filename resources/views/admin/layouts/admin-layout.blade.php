@@ -31,6 +31,12 @@
         Dashboard
     </a>
 
+    {{-- Customers (NEW) --}}
+    <a href="{{ route('admin.customers.index') }}"
+       class="{{ request()->is('admin/customers*') ? 'active' : '' }}">
+        Customers
+    </a>
+
     {{-- Testimonials --}}
     <a href="{{ route('admin.testimonials.index') }}"
        class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">
@@ -50,7 +56,7 @@
 
     <a href="{{ route('admin.devices.import') }}"
        class="{{ request()->is('admin/devices/import') ? 'active' : '' }}">
-       Devices – Import Audit
+        Devices – Import Audit
     </a>
 
     {{-- Pulse Feed --}}
