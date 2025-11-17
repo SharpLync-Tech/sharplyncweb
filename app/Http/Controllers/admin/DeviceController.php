@@ -10,6 +10,8 @@ use App\Models\CRM\DeviceAudit;
 use App\Models\CRM\DeviceApp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyEmail;
 
 class DeviceController extends Controller
 {
@@ -69,13 +71,15 @@ class DeviceController extends Controller
                     'ind_email'      => 'required|email|max:150',
                 ]);
 
-                // Create CRM user
+                // Create CRM user (with verification token + expiry)
                 $user = User::on('crm')->create([
-                    'first_name'     => $request->ind_first_name,
-                    'last_name'      => $request->ind_last_name,
-                    'email'          => $request->ind_email,
-                    'auth_provider'  => 'local',
-                    'account_status' => 'pending',
+                    'first_name'              => $request->ind_first_name,
+                    'last_name'               => $request->ind_last_name,
+                    'email'                   => $request->ind_email,
+                    'auth_provider'           => 'local',
+                    'account_status'          => 'pending',
+                    'verification_token'      => bin2hex(random_bytes(32)),
+                    'verification_expires_at' => now()->addHour(),
                 ]);
 
                 // Create profile
@@ -111,13 +115,15 @@ class DeviceController extends Controller
                     'biz_email'       => 'required|email|max:150',
                 ]);
 
-                // Create CRM user (primary contact)
+                // Create CRM user (primary contact, with verification token + expiry)
                 $user = User::on('crm')->create([
-                    'first_name'     => $request->biz_first_name,
-                    'last_name'      => $request->biz_last_name,
-                    'email'          => $request->biz_email,
-                    'auth_provider'  => 'local',
-                    'account_status' => 'pending',
+                    'first_name'              => $request->biz_first_name,
+                    'last_name'               => $request->biz_last_name,
+                    'email'                   => $request->biz_email,
+                    'auth_provider'           => 'local',
+                    'account_status'          => 'pending',
+                    'verification_token'      => bin2hex(random_bytes(32)),
+                    'verification_expires_at' => now()->addHour(),
                 ]);
 
                 // Create business customer profile
@@ -145,9 +151,14 @@ class DeviceController extends Controller
             $device->customer_profile_id = $profile->id;
             $device->save();
 
+            // Send verification email only if checkbox ticked
+            if ($request->boolean('send_welcome_email')) {
+                Mail::to($user->email)->send(new VerifyEmail($user));
+            }
+
             return redirect()
                 ->route('admin.devices.show', $device->id)
-                ->with('status', "Customer created & device assigned to {$profile->business_name}");
+                ->with('status', "Customer created & device assigned to {$profile->business_name}" . ($request->boolean('send_welcome_email') ? ' (verification email sent)' : ''));
         }
 
         //
