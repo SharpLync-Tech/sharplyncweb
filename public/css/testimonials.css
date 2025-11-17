@@ -1,223 +1,149 @@
 /* ============================================================
-   TESTIMONIALS GRID – FINAL VERSION (Desktop + Mobile Perfect)
+   TESTIMONIALS GRID – FINAL MOBILE-FRIENDLY VERSION
    ============================================================ */
 
-/* Header – keep your existing navigation working */
-.tl-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 10000 !important;
-    background: rgba(10, 42, 77, 0.95);
-    backdrop-filter: blur(12px);
+.tl-header{
+    display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;position:sticky;top:0;z-index:10000!important;background:rgba(10,42,77,.95);backdrop-filter:blur(12px)
 }
-.tl-header .logo img { height: 80px; }
-.hamburger { font-size: 2rem; color: #2CBFAE; background: none; border: none; cursor: pointer; }
+.tl-header .logo img{height:80px}
+.hamburger{font-size:2rem;color:#2CBFAE;background:none;border:none;cursor:pointer}
 
-/* Overlay menu */
-.overlay-menu { position: fixed; inset: 0; background: rgba(10,42,77,.92); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; }
-.overlay-menu.show { display: flex; }
-.overlay-menu ul { list-style: none; padding: 0; text-align: center; }
-.overlay-menu li a { display: block; padding: 14px 0; color: #fff; font-size: 1.6rem; }
-.close-menu { position: absolute; top: 20px; right: 30px; color: #2CBFAE; font-size: 2.6rem; background: none; border: none; cursor: pointer; }
+.overlay-menu{position:fixed;inset:0;background:rgba(10,42,77,.92);backdrop-filter:blur(10px);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:99999}
+.overlay-menu.show{display:flex}
+.overlay-menu ul{list-style:none;padding:0;text-align:center}
+.overlay-menu li a{display:block;padding:14px 0;color:#fff;font-size:1.6rem}
+.close-menu{position:absolute;top:20px;right:30px;color:#2CBFAE;font-size:2.6rem;background:none;border:none;cursor:pointer}
 
-/* Main section */
-.testimonials-grid {
-    padding: 60px 0 140px;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #e9f4f3;
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif;
+.testimonials-grid{
+    padding:60px 0 140px;
+    background:linear-gradient(135deg,#0A2A4D 0%,#104976 40%,#2CBFAE 100%);
+    color:#e9f4f3;
+    min-height:100vh;
+    font-family:'Poppins',sans-serif
 }
 
-.testimonials-grid .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    /* Space for initials badge */
-    padding-top: 120px;
+.testimonials-grid .container{
+    max-width:1400px;
+    margin:0 auto;
+    padding:0 1.5rem;
+    padding-top:120px          /* space for badge */
 }
 
-/* Header text */
-.testimonials-header {
-    text-align: center;
-    max-width: 900px;
-    margin: 0 auto 80px;
+.testimonials-header{
+    text-align:center;
+    max-width:900px;
+    margin:0 auto 80px
 }
-.testimonials-header h1 {
-    font-size: 3.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    background: linear-gradient(to right, #fff, #c0f0ec);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+.testimonials-header h1{
+    font-size:3.2rem;font-weight:600;margin-bottom:1rem;
+    background:linear-gradient(to right,#fff,#c0f0ec);
+    -webkit-background-clip:text;background-clip:text;color:transparent
 }
-.testimonials-header p {
-    font-size: 1.3rem;
-    line-height: 1.7;
-    opacity: 0.92;
+.testimonials-header p{font-size:1.3rem;line-height:1.7;opacity:.92}
+
+.grid-container{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:2.8rem;
+    align-items:start;
+    margin-top:40px
 }
 
-/* Grid */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 2.8rem;
-    align-items: start;
-    margin-top: 40px;
+.testimonial-card{
+    background:rgba(255,255,255,.98);
+    color:#0A2A4D;
+    border-radius:28px;
+    padding:5rem 3rem 2.5rem;
+    position:relative;
+    overflow:visible;
+    box-shadow:0 20px 50px rgba(0,0,0,.22);
+    transition:all .4s ease;
+    backdrop-filter:blur(10px)
+}
+.testimonial-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 34px 70px rgba(0,0,0,.32)
 }
 
-/* Cards */
-.testimonial-card {
-    background: rgba(255, 255, 255, 0.98);
-    color: #0A2A4D;
-    border-radius: 28px;
-    padding: 5rem 3rem 2.5rem;          /* top padding = badge space */
-    position: relative;
-    overflow: visible;                  /* important! */
-    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
-    transition: all 0.4s ease;
-    backdrop-filter: blur(10px);
-}
-.testimonial-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 34px 70px rgba(0,0,0,0.32);
-}
+.testimonial-card.featured{grid-column:span 7}
+.testimonial-card.large{grid-column:span 5}
+.testimonial-card.small{grid-column:span 4}
 
-/* Card sizes */
-.testimonial-card.featured { grid-column: span 7; }
-.testimonial-card.large    { grid-column: span 5; }
-.testimonial-card.small    { grid-column: span 4; }
-
-/* Initials badge – perfectly positioned on all devices */
-.initials {
-    position: absolute;
-    z-index: 10;
-    background: #2CBFAE;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    box-shadow: 0 12px 32px rgba(44,191,174,0.45);
-    
+.initials{
+    position:absolute;
+    z-index:10;
+    background:#2CBFAE;
+    color:white;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    box-shadow:0 12px 32px rgba(44,191,174,.45);
     /* Desktop */
-    width: 78px;
-    height: 78px;
-    font-size: 1.8rem;
-    top: -50px;
-    left: 32px;
+    width:78px;height:78px;font-size:1.8rem;top:-50px;left:32px
 }
 
-/* Quote */
-.quote-text {
-    font-size: 1.18rem;
-    line-height: 1.88;
-    margin: 1.8rem 0;
-}
-.more { font-weight: 600; color: #2CBFAE; opacity: 0.9; }
-.expand-link {
-    color: #2CBFAE;
-    text-decoration: none;
-    font-weight: 600;
-    border-bottom: 1.5px solid transparent;
-    transition: border 0.3s;
-}
-.expand-link:hover { border-bottom: 1.5px solid #2CBFAE; }
+.quote-text{font-size:1.18rem;line-height:1.88;margin:1.8rem 0}
+.more{font-weight:600;color:#2CBFAE;opacity:.9}
+.expand-link{color:#2CBFAE;text-decoration:none;font-weight:600;border-bottom:1.5px solid transparent;transition:border .3s}
+.expand-link:hover{border-bottom:1.5px solid #2CBFAE}
+.full-text{display:none;margin-top:2rem;padding-top:2rem;border-top:1px solid #e2e8f0;font-size:1.16rem;line-height:1.92;animation:fadeIn .5s ease}
+.testimonial-card.expanded .more{display:none}
+.testimonial-card.expanded .full-text{display:block}
 
-.full-text {
-    display: none;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid #e2e8f0;
-    font-size: 1.16rem;
-    line-height: 1.92;
-    animation: fadeIn 0.5s ease;
-}
-.testimonial-card.expanded .more { display: none; }
-.testimonial-card.expanded .full-text { display: block; }
-
-/* Author */
-.author { margin-top: 1.8rem; }
-.author .name {
-    display: block;
-    font-size: 1.38rem;
-    font-weight: 600;
-    color: #0A2A4D;
-}
-.author .role {
-    display: block;
-    margin-top: 0.4rem;
-    opacity: 0.82;
-    font-size: 1rem;
-}
+.author{margin-top:1.8rem}
+.author .name{display:block;font-size:1.38rem;font-weight:600;color:#0A2A4D}
+.author .role{display:block;margin-top:.4rem;opacity:.82;font-size:1rem}
 
 /* ============================================================
-   RESPONSIVE – MOBILE & TABLET (perfect now)
+   RESPONSIVE – MOBILE PERFECT (cards no longer full-width)
    ============================================================ */
-@media (max-width: 1024px) {
-    .testimonial-card { grid-column: span 12 !important; }
-    .testimonials-grid .container { padding-top: 90px; }
-    .testimonials-header h1 { font-size: 2.8rem; }
-    .testimonials-header { margin-bottom: 60px; }
+@media (max-width:1024px){
+    .testimonial-card{grid-column:span 12!important}
+    .testimonials-grid .container{padding-top:90px}
+    .testimonials-header h1{font-size:2.8rem}
+    .testimonials-header{margin-bottom:60px}
+    .initials{width:70px;height:70px;font-size:1.5rem;top:-45px;left:24px}
+    .testimonial-card{padding:4.5rem 2.5rem 2rem}
+}
+
+@media (max-width:640px){
+    .testimonials-grid{padding:40px 0 100px}
+    .testimonials-grid .container{
+        padding:0 1rem;
+        padding-top:70px
+    }
+    .testimonials-header h1{font-size:2.4rem}
+    .testimonials-header p{font-size:1.15rem}
     
-    .initials {
-        width: 70px;
-        height: 70px;
-        font-size: 1.5rem;
-        top: -45px;
-        left: 24px;
+    /* ←←← THIS IS THE KEY FIX ←←← */
+    .testimonial-card{
+        max-width:380px;           /* ← never wider than 380px */
+        margin-left:auto;
+        margin-right:auto;
+        padding:4rem 2rem 2rem;
+        border-radius:24px
     }
-    .testimonial-card { padding: 4.5rem 2.5rem 2rem; }
-}
-
-@media (max-width: 640px) {
-    .testimonials-grid { padding: 50px 0 100px; }
-    .testimonials-grid .container {
-        padding-top: 70px;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    .testimonials-header h1 { font-size: 2.4rem; }
-    .testimonials-header p { font-size: 1.15rem; }
     
-    .initials {
-        width: 64px;
-        height: 64px;
-        font-size: 1.4rem;
-        top: -40px;
-        left: 18px;
+    .initials{
+        width:66px;height:66px;font-size:1.4rem;
+        top:-42px;left:50%;transform:translateX(-50%)
     }
-    .testimonial-card {
-        padding: 4rem 1.8rem 2rem;
-        border-radius: 22px;
+}
+
+/* Center initials on mobile */
+@media (max-width:640px){
+    .testimonial-card .initials{
+        left:50%!important;
+        transform:translateX(-50%)
     }
-    .quote-text { font-size: 1.12rem; }
 }
 
-/* Animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
 }
 
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 4rem;
-    font-size: 1.3rem;
-    opacity: 0.8;
-}
-
-.tl-footer {
-    margin-top: 80px;
-    text-align: center;
-    padding: 2rem 0;
-    font-size: .95rem;
-    opacity: .9;
-}
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem;font-size:1.3rem;opacity:.8}
+.tl-footer{margin-top:80px;text-align:center;padding:2rem 0;font-size:.95rem;opacity:.9}

@@ -94,6 +94,8 @@ class DeviceController extends Controller
                 'business_name'  => $request->new_customer_name,
                 'accounts_email' => $request->new_customer_email,
                 'account_number' => $accountNumber,
+                'mobile_number'       => '',   // required by DB
+                'landline_number'     => '',   // required by DB
                 'setup_completed' => 0,
             ]);
 
