@@ -50,20 +50,44 @@ class DeviceController extends Controller
     }
 
     public function assign(Request $request, Device $device)
-    {
-        $data = $request->validate([
-            'customer_profile_id' => ['required', 'integer'],
+{
+    // Case 1: Creating a new customer
+    if ($request->customer_profile_id === '__new__') {
+
+        $request->validate([
+            'new_customer_name'  => 'required|string|max:150',
+            'new_customer_email' => 'nullable|email|max:150',
         ]);
 
-        $customer = CustomerProfile::on('crm')->findOrFail($data['customer_profile_id']);
+        $customer = CustomerProfile::on('crm')->create([
+            'business_name' => $request->new_customer_name,
+            'accounts_email' => $request->new_customer_email,
+            'setup_completed' => 0,
+        ]);
 
         $device->customer_profile_id = $customer->id;
         $device->save();
 
         return redirect()
             ->route('admin.devices.show', $device->id)
-            ->with('status', 'Device assigned to ' . $customer->business_name . ' successfully.');
+            ->with('status', 'Device assigned to NEW customer: '.$customer->business_name);
     }
+
+    // Case 2: Assigning to existing customer
+    $data = $request->validate([
+        'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
+    ]);
+
+    $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
+
+    $device->customer_profile_id = $customer->id;
+    $device->save();
+
+    return redirect()
+        ->route('admin.devices.show', $device->id)
+        ->with('status', 'Device assigned to '.$customer->business_name.' successfully.');
+}
+
 
     public function importForm()
 {

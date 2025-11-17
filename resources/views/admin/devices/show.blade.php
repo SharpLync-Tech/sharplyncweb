@@ -42,16 +42,36 @@
                 @csrf
 
                 <label>Select customer</label>
-                <select name="customer_profile_id" class="form-control">
+                <select name="customer_profile_id" id="customerSelect" class="form-control">
                     <option value="">-- Select --</option>
+
+                    <option value="__new__">-- Create New Customer --</option>
 
                     @foreach($customers as $cust)
                         <option value="{{ $cust->id }}"
-                            @selected($device->customer_profile_id === $cust->id)>
-                            {{ $cust->business_name }}
-                        </option>
-                    @endforeach
+                        @selected($device->customer_profile_id === $cust->id)>
+                        {{ $cust->business_name }}
+                    </option>
+                @endforeach
                 </select>
+
+                <div id="newCustomerForm" style="display:none; margin-top:20px;">
+                    <h4>Create New Customer</h4>
+
+                    <label>Business Name</label>
+                    <input type="text"
+                        name="new_customer_name"
+                        class="form-control"
+                        placeholder="Enter business name">
+
+                    <label style="margin-top:10px;">Account Email</label>
+                    <input type="email"
+                        name="new_customer_email"
+                        class="form-control"
+                        placeholder="email@example.com">
+                </div>
+
+
 
                 <button class="btn btn-primary" style="margin-top:10px;">
                     Save Assignment
@@ -118,5 +138,15 @@
     <h3>Audit History</h3>
     <a href="{{ route('admin.devices.audits.index', $device->id) }}">View audit history</a>
 </div>
+    <script>
+        document.getElementById('customerSelect').addEventListener('change', function () {
+            let form = document.getElementById('newCustomerForm');
+            if (this.value === '__new__') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        });
+    </script>
 
 @endsection
