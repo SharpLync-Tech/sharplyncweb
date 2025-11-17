@@ -214,6 +214,19 @@ blockquote {
     margin-top: 0.2rem;
 }
 
+.cp-footer {
+    background: var(--ink);
+    color: #fff;
+    text-align: center;
+    padding: 1.25rem;
+    font-size: .95rem;
+    margin-top: 2rem;
+}
+.cp-footer .cp-hl {
+    color: var(--teal);
+    font-weight: 700;
+}
+
 
 /* ============================================================
     MODAL STYLES (Retained & Tidied)
