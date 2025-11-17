@@ -1,68 +1,173 @@
 /* ============================================================
-   PAGE SHELL
+   TESTIMONIALS GRID – MODERN 2025 STYLE
    ============================================================ */
-.testimonials-body {font-family:'Poppins',sans-serif;margin:0;background:linear-gradient(135deg,#0A2A4D 0%,#104976 40%,#2CBFAE 100%);color:#e9f4f3;overflow-x:hidden;min-height:100vh}
-main{overflow:visible!important}
-.tl-header{display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.5rem;position:sticky;top:0;z-index:5000;background:rgba(10,42,77,.6);backdrop-filter:blur(10px)}
-.tl-header .logo img{height:80px}
-.hamburger{font-size:2rem;color:#2CBFAE;background:none;border:none;cursor:pointer}
+.testimonials-grid {
+    padding: 120px 0 160px;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    color: #e9f4f3;
+    min-height: 100vh;
+}
 
-/* Overlay menu */
-.overlay-menu{position:fixed;inset:0;background:rgba(10,42,77,.85);backdrop-filter:blur(10px);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:99999}
-.overlay-menu.show{display:flex}
-.overlay-menu ul{list-style:none;padding:0;text-align:center}
-.overlay-menu li a{display:block;padding:10px 0;color:#fff;font-size:1.4rem}
-.close-menu{position:absolute;top:20px;right:30px;color:#2CBFAE;font-size:2.4rem;background:none;border:none;cursor:pointer}
+.testimonials-grid .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
 
-/* ============================================================
-   TESTIMONIALS PAGE
-   ============================================================ */
-.testimonials-page{padding:2rem 1rem 160px;min-height:80vh}
-.testimonials-title{text-align:center;margin-top:2.5rem}
-.testimonials-title h1{font-size:2.6rem;margin-bottom:.3rem}
-.testimonials-title p{font-size:1.1rem;opacity:.85}
+/* Header */
+.testimonials-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 100px;
+}
 
-/* Dots */
-.tl-dots{text-align:center;margin:2rem 0 1.5rem}
-.tl-dot{height:12px;width:12px;margin:0 6px;background:transparent;border:2px solid #2CBFAE;border-radius:50%;display:inline-block;cursor:pointer;transition:all .3s}
-.tl-dot.active{background:#2CBFAE;transform:scale(1.25);box-shadow:0 0 14px rgba(44,191,174,.9)}
+.testimonials-header h1 {
+    font-size: 3.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #c0f0ec);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-/* Carousel */
-.tl-carousel{max-width:1100px;margin:0 auto;overflow:hidden;padding:70px 0 40px}
-.tl-track{display:flex;gap:30px;transition:transform .7s cubic-bezier(.4,0,.2,1);padding:0 12%}
+.testimonials-header p {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    opacity: 0.92;
+}
 
-/* Slides */
-.tl-slide{flex:0 0 68%;max-width:720px;opacity:.58;transform:scale(.86);filter:blur(.4px);transition:all .55s ease;pointer-events:none}
-.tl-slide.active{opacity:1;transform:scale(1);filter:blur(0);pointer-events:auto;z-index:10}
+/* Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 2.8rem;
+    align-items: start;
+}
 
-/* Card */
-.tl-card{background:#fff;border-radius:24px;border:2px solid #2CBFAE;padding:2.6rem 2.8rem;color:#0A2A4D;position:relative;box-shadow:0 16px 40px rgba(0,0,0,.32);transition:all .55s;min-height:290px}
-.tl-slide.active .tl-card{min-height:370px;box-shadow:0 26px 60px rgba(0,0,0,.44);transform:translateY(-14px)}
-.tl-card::before{content:"“";font-size:72px;color:rgba(10,42,77,.07);position:absolute;top:18px;left:24px;line-height:1}
-.initial-badge{width:68px;height:68px;border-radius:50%;background:#fff;border:3px solid #2CBFAE;color:#2CBFAE;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.5rem;position:absolute;top:-42px;left:36px;box-shadow:0 8px 20px rgba(0,0,0,.28);z-index:20}
-blockquote{margin:2.2rem 0 1.4rem;line-height:1.8;font-size:1.07rem;position:relative}
-.tl-name{font-size:1.28rem;font-weight:600;margin-top:.8rem}
-.tl-role{font-size:.98rem;opacity:.82;margin-top:.3rem}
+.testimonial-card {
+    background: rgba(255, 255, 255, 0.98);
+    color: #0A2A4D;
+    border-radius: 28px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
 
-/* Read more */
-.read-more{opacity:0;transition:opacity .4s;font-weight:600;color:#2CBFAE}
-.tl-card:hover .read-more{opacity:1}
-.read-more-link{color:#2CBFAE;text-decoration:none;border-bottom:1px solid transparent;transition:border .3s}
-.read-more-link:hover{border-bottom:1px solid #2CBFAE}
+.testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 70px rgba(0,0,0,0.3);
+}
 
-/* ============================================================
-   MODAL
-   ============================================================ */
-.modal-backdrop{position:fixed;inset:0;background:rgba(5,18,35,.82);backdrop-filter:blur(12px);display:none;justify-content:center;align-items:center;z-index:999999}
-.modal-backdrop.open{display:flex}
-.modal-dialog{background:rgba(10,42,77,.98);padding:3rem 3.2rem;border-radius:24px;max-width:900px;width:92%;color:#fff;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:modalIn .5s ease}
-.modal-close{position:absolute;top:20px;right:24px;font-size:2.4rem;background:none;border:none;color:#2CBFAE;cursor:pointer}
-.modal-text{font-size:1.3rem;line-height:2;margin-bottom:2.5rem}
-.modal-text::before{content:"“";font-size:5rem;opacity:.15;float:left;margin-right:.5rem;line-height:1}
-.modal-text::after{content:"”";font-size:5rem;opacity:.15;float:right;margin-left:.5rem;margin-top:-1rem;line-height:1}
-.modal-name{font-size:1.45rem;font-weight:600;margin:1.5rem 0 .4rem}
-.modal-role{opacity:.9;font-size:1.08rem}
-@keyframes modalIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+/* Card sizes */
+.testimonial-card.featured   { grid-column: span 7; }
+.testimonial-card.large      { grid-column: span 5; }
+.testimonial-card.small      { grid-column: span 4; }
 
-/* Footer */
-.tl-footer{margin-top:100px;text-align:center;padding:2rem 0;font-size:.95rem;opacity:.9}
+/* Initials badge */
+.initials {
+    position: absolute;
+    top: -34px;
+    left: 32px;
+    width: 74px;
+    height: 74px;
+    background: #2CBFAE;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(44,191,174,0.4);
+    z-index: 10;
+}
+
+/* Quote */
+.quote-text {
+    font-size: 1.18rem;
+    line-height: 1.85;
+    margin: 2rem 0;
+}
+
+.more {
+    font-weight: 600;
+    color: #2CBFAE;
+    opacity: 0.9;
+}
+
+.expand-link {
+    color: #2CBFAE;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1.5px solid transparent;
+    transition: border 0.3s;
+}
+
+.expand-link:hover {
+    border-bottom: 1.5px solid #2CBFAE;
+}
+
+.full-text {
+    display: none;
+    margin-top: 1.8rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 1.15rem;
+    line-height: 1.9;
+    animation: fadeIn 0.5s ease;
+}
+
+.testimonial-card.expanded .more { display: none; }
+.testimonial-card.expanded .full-text { display: block; }
+
+/* Author */
+.author {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.author .name {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #0A2A4D;
+}
+
+.author .role {
+    display: block;
+    margin-top: 0.3rem;
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .testimonial-card { grid-column: span 12 !important; }
+    .testimonials-header h1 { font-size: 2.8rem; }
+    .initials { width: 68px; height: 68px; font-size: 1.5rem; top: -30px; left: 28px; }
+}
+
+@media (max-width: 640px) {
+    .testimonials-grid { padding: 80px 0 120px; }
+    .testimonials-header { margin-bottom: 60px; padding: 0 1rem; }
+    .testimonials-header h1 { font-size: 2.4rem; }
+    .testimonial-card { padding: 2.5rem; }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.3rem;
+    opacity: 0.8;
+}

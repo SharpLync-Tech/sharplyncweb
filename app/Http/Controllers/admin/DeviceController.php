@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CRM\Device;
 use App\Models\CRM\CustomerProfile;
 use Illuminate\Http\Request;
+use App\Models\CRM\DeviceAudit;
+use App\Models\CRM\DeviceApp;
+
 
 class DeviceController extends Controller
 {
