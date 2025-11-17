@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Models\CRM\Customer;
+use Illuminate\Support\Facades\DB;
+
 
 class CustomerController extends Controller
 {
