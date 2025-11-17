@@ -15,11 +15,15 @@ use App\Models\CRM\Customer;
 
 class CustomerController extends Controller
 {
+    /**
+     * Customer index (search + paginate) using CRM connection + customer_profiles table.
+     */
     public function index(Request $request)
     {
         $q = trim((string) $request->get('q', ''));
 
-        $query = Customer::on('crm')
+        $query = DB::connection('crm')
+            ->table('customer_profiles')
             ->select([
                 'id',
                 'business_name as company_name',
@@ -31,9 +35,9 @@ class CustomerController extends Controller
                 'setup_completed',
                 'updated_at',
             ])
-            ->when($q !== '', function ($qBuilder) use ($q) {
-                $like = "%{$q}%";
-                $qBuilder->where(function ($w) use ($like) {
+            ->when($q !== '', function ($qry) use ($q) {
+                $like = '%' . $q . '%';
+                $qry->where(function ($w) use ($like) {
                     $w->where('business_name', 'like', $like)
                       ->orWhere('authority_contact', 'like', $like)
                       ->orWhere('accounts_email', 'like', $like)
@@ -45,6 +49,7 @@ class CustomerController extends Controller
 
         $customers = $query->paginate(20)->withQueryString();
 
+        // post-process: unify phone/status fields for the view
         $customers->getCollection()->transform(function ($row) {
             $row->phone  = $row->mobile_number ?: $row->landline_number;
             $row->status = $row->setup_completed ? 'active' : 'pending';
@@ -57,86 +62,67 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function show($id)
+    /**
+     * Read-only profile view for now (same table/conn).
+     */
+    public function show(int $id)
     {
-        $c = Customer::on('crm')->findOrFail($id);
+        $customer = DB::connection('crm')
+            ->table('customer_profiles')
+            ->where('id', $id)
+            ->first();
 
-        $c->company_name = $c->business_name;
-        $c->contact_name = $c->authority_contact;
-        $c->email        = $c->accounts_email;
-        $c->phone        = $c->mobile_number ?: $c->landline_number;
-        $c->status       = $c->setup_completed ? 'active' : 'pending';
+        abort_if(!$customer, 404);
 
-        return view('admin.customers.show', ['customer' => $c]);
+        return view('admin.customers.show', compact('customer'));
     }
 
-    public function edit($id)
+    /**
+     * Edit form (loads one record).
+     */
+    public function edit(int $id)
     {
-        $c = Customer::on('crm')->findOrFail($id);
+        $customer = DB::connection('crm')
+            ->table('customer_profiles')
+            ->where('id', $id)
+            ->first();
 
-        $c->company_name = $c->business_name;
-        $c->contact_name = $c->authority_contact;
-        $c->email        = $c->accounts_email;
-        $c->phone        = $c->mobile_number ?: $c->landline_number;
-        $c->status       = $c->setup_completed ? 'active' : 'pending';
+        abort_if(!$customer, 404);
 
-        return view('admin.customers.edit', ['customer' => $c]);
+        return view('admin.customers.edit', compact('customer'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update handler (minimal safe fields to start).
+     */
+    public function update(Request $request, int $id)
     {
-        /** @var \App\Models\CRM\Customer $customer */
-        $customer = Customer::on('crm')->findOrFail($id);
-
-        $formUpdatedAt    = $request->input('updated_at');
-        $currentUpdatedAt = optional($customer->updated_at)->format('Y-m-d H:i:s');
-
-        if ($formUpdatedAt && $currentUpdatedAt && $formUpdatedAt !== $currentUpdatedAt) {
-            return back()
-                ->withInput()
-                ->withErrors(['general' => 'This record was changed by someone else. Please reload and try again.']);
-        }
-
         $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:255'], // business_name
-            'contact_name' => ['nullable', 'string', 'max:255'], // authority_contact
-            'email'        => ['nullable', 'string', 'email', 'max:255'], // accounts_email
-            'phone'        => ['nullable', 'string', 'max:50'], // mobile_number (simple mapping)
-            'status'       => ['nullable', Rule::in(['active', 'pending'])], // -> setup_completed
-            'notes'        => ['nullable', 'string', 'max:5000'],
+            'business_name'   => ['required', 'string', 'max:255'],
+            'authority_contact' => ['nullable', 'string', 'max:255'],
+            'accounts_email'  => ['nullable', 'email', 'max:255'],
+            'mobile_number'   => ['nullable', 'string', 'max:50'],
+            'landline_number' => ['nullable', 'string', 'max:50'],
+            'notes'           => ['nullable', 'string'],
+            'setup_completed' => ['nullable', 'boolean'],
         ]);
 
-        $customer->business_name     = $validated['company_name'];
-        $customer->authority_contact = $validated['contact_name'] ?? null;
-        $customer->accounts_email    = $validated['email'] ?? null;
-        $customer->mobile_number     = $validated['phone'] ?? null;
-
-        if (array_key_exists('status', $validated) && $validated['status'] !== null) {
-            $customer->setup_completed = $validated['status'] === 'active' ? 1 : 0;
-        }
-
-        $customer->notes = $validated['notes'] ?? $customer->notes;
-
-        if (!$customer->isDirty()) {
-            return redirect()
-                ->route('admin.customers.show', $customer->id)
-                ->with('status', 'No changes detected.');
-        }
-
-        $customer->save();
-
-        $actor = [
-            'displayName' => data_get(session('admin_user'), 'displayName'),
-            'email'       => data_get(session('admin_user'), 'userPrincipalName') ?? data_get(session('admin_user'), 'mail'),
-        ];
-        Log::info('Admin updated CRM customer', [
-            'actor'     => $actor,
-            'customer'  => ['id' => $customer->id, 'business_name' => $customer->business_name],
-            'timestamp' => now()->toDateTimeString(),
-        ]);
+        $affected = DB::connection('crm')
+            ->table('customer_profiles')
+            ->where('id', $id)
+            ->update([
+                'business_name'    => $validated['business_name'],
+                'authority_contact'=> $validated['authority_contact'] ?? null,
+                'accounts_email'   => $validated['accounts_email'] ?? null,
+                'mobile_number'    => $validated['mobile_number'] ?? null,
+                'landline_number'  => $validated['landline_number'] ?? null,
+                'notes'            => $validated['notes'] ?? null,
+                'setup_completed'  => (int) ($validated['setup_completed'] ?? 0),
+                'updated_at'       => now(),
+            ]);
 
         return redirect()
-            ->route('admin.customers.show', $customer->id)
-            ->with('status', 'Customer updated successfully.');
+            ->route('admin.customers.show', $id)
+            ->with('status', $affected ? 'Customer updated.' : 'No changes detected.');
     }
 }

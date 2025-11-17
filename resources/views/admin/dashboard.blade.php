@@ -5,7 +5,7 @@
 @section('content')
     {{-- ======== HEADER AREA / PROFILE ========= --}}
     <div class="admin-top-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;">
-        <h2>Welcome back, {{ session('admin_user')['displayName'] ?? 'SharpLync Admin' }} 👋</h2>
+        <h2>Welcome back, {{ session('admin_user')['displayName'] ?? 'SharpLync Admin' }}</h2>
         <div class="profile-box" style="display:flex;align-items:center;gap:10px;">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(session('admin_user')['displayName'] ?? 'SharpLync Admin') }}&background=0A2A4D&color=fff&size=40" 
                  alt="Profile" style="border-radius:50%;width:40px;height:40px;box-shadow:0 0 6px rgba(0,0,0,0.15);">
