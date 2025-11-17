@@ -131,5 +131,21 @@ class DeviceController extends Controller
                 ->with('status', 'Device audit imported successfully!');
         }
 
+        public function destroy(Device $device)
+        {
+            // Delete related audits
+            $device->audits()->delete();
+
+            // Delete related apps
+            $device->apps()->delete();
+
+            // Delete the device itself
+            $device->delete();
+
+            return redirect()
+                ->route('admin.devices.index')
+                ->with('status', 'Device and all related audit data deleted successfully.');
+        }
+
 
 }

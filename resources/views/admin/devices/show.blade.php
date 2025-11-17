@@ -52,8 +52,32 @@
         </select>
 
         <button class="btn btn-primary" style="margin-top:10px;">Save Assignment</button>
-    </form>
-</div>
+        <div class="admin-card" style="border:2px solid #ffdddd;">
+
+                <h3 style="color:#b30000;">Danger Zone</h3>
+                <p>Deleting this device will remove:</p>
+                <ul>
+                    <li>All audit logs</li>
+                    <li>All installed apps records</li>
+                    <li>The device record itself</li>
+                </ul>
+
+                <form action="{{ route('admin.devices.destroy', $device->id) }}"
+                    method="POST"
+                    onsubmit="return confirm('Are you sure you want to permanently delete this device and all audit data?');">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button class="btn btn-danger" style="margin-top:10px;">
+                        Delete Device
+                    </button>
+                </form>
+
+            </div>
+
+                </form>
+            </div>
 
 {{-- Apps --}}
 <div class="admin-card">

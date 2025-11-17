@@ -42,6 +42,10 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
         Route::get('/devices/import', [DeviceController::class, 'importForm'])->name('admin.devices.import');
         Route::post('/devices/import', [DeviceController::class, 'importProcess'])->name('admin.devices.import.process');
 
+        Route::delete('/devices/{device}/delete', [DeviceController::class, 'destroy'])
+        ->name('admin.devices.destroy');
+
+
     });
 
 });
