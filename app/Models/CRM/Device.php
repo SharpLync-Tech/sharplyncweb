@@ -10,7 +10,7 @@ class Device extends Model
     protected $table = 'crm_devices';
 
     protected $fillable = [
-        'customer_id',
+        'customer_profile_id',
         'device_name',
         'device_type',
         'manufacturer',
@@ -27,25 +27,18 @@ class Device extends Model
         'last_audit_at',
     ];
 
-    protected $casts = [
-        'total_ram_gb' => 'float',
-        'storage_size_gb' => 'float',
-        'storage_used_percent' => 'float',
-        'last_audit_at' => 'datetime',
-    ];
-
-    public function customer()
+    public function customerProfile()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(CustomerProfile::class, 'customer_profile_id');
     }
 
     public function audits()
     {
-        return $this->hasMany(DeviceAudit::class);
+        return $this->hasMany(DeviceAudit::class, 'device_id');
     }
 
     public function apps()
     {
-        return $this->hasMany(DeviceApp::class);
+        return $this->hasMany(DeviceApp::class, 'device_id');
     }
 }

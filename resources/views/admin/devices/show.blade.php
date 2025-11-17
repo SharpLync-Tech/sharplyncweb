@@ -3,87 +3,92 @@
 @section('title', 'Device Details')
 
 @section('content')
-    <h2>Device: {{ $device->device_name ?? 'Unknown Device' }}</h2>
 
-    <div class="admin-card" style="margin-bottom:20px;">
-        <h3>Overview</h3>
-        <p><strong>Manufacturer:</strong> {{ $device->manufacturer ?? '—' }}</p>
-        <p><strong>Model:</strong> {{ $device->model ?? '—' }}</p>
-        <p><strong>OS:</strong> {{ $device->os_version ?? '—' }}</p>
-        <p><strong>RAM:</strong> {{ $device->total_ram_gb ?? '—' }} GB</p>
-        <p><strong>CPU:</strong> {{ $device->cpu_model ?? '—' }} ({{ $device->cpu_cores }} cores / {{ $device->cpu_threads }} threads)</p>
-        <p><strong>Storage:</strong> {{ $device->storage_size_gb ?? '—' }} GB ({{ $device->storage_used_percent ?? '—' }}% used)</p>
-        <p><strong>Antivirus:</strong> {{ $device->antivirus ?? '—' }}</p>
-        <p><strong>Last Audit:</strong> {{ optional($device->last_audit_at)->format('d M Y H:i') ?? '—' }}</p>
-    </div>
+<h2>Device: {{ $device->device_name }}</h2>
 
-    <div class="admin-card" style="margin-bottom:20px;">
-        <h3>Customer Assignment</h3>
+{{-- Overview --}}
+<div class="admin-card">
+    <h3>Overview</h3>
 
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+    <p><strong>Manufacturer:</strong> {{ $device->manufacturer ?? '—' }}</p>
+    <p><strong>Model:</strong> {{ $device->model ?? '—' }}</p>
+    <p><strong>OS:</strong> {{ $device->os_version ?? '—' }}</p>
+    <p><strong>RAM:</strong> {{ $device->total_ram_gb ?? '—' }} GB</p>
+    <p><strong>CPU:</strong> {{ $device->cpu_model ?? '—' }} ({{ $device->cpu_cores }} cores, {{ $device->cpu_threads }} threads)</p>
+    <p><strong>Storage:</strong> {{ $device->storage_size_gb }} GB ({{ $device->storage_used_percent }}% used)</p>
+    <p><strong>Antivirus:</strong> {{ $device->antivirus }}</p>
+    <p><strong>Last Audit:</strong> {{ optional($device->last_audit_at)->format('d M Y H:i') }}</p>
+</div>
 
-        <p>
-            <strong>Current:</strong>
-            @if($device->customer)
-                {{ $device->customer->name ?? 'Customer #'.$device->customer->id }}
-            @else
-                <span class="badge badge-warning">Unassigned</span>
-            @endif
-        </p>
+{{-- Customer Assignment --}}
+<div class="admin-card">
+    <h3>Customer Assignment</h3>
 
-        <form action="{{ route('admin.devices.assign', $device->id) }}" method="POST" style="margin-top:10px;max-width:400px;">
-            @csrf
-            <label for="customer_id">Assign to customer</label>
-            <select name="customer_id" id="customer_id" class="form-control">
-                <option value="">-- Select customer --</option>
-                @foreach($customers as $customer)
-                    <option value="{{ $customer->id }}" @selected($device->customer_id === $customer->id)>
-                        {{ $customer->name ?? ('Customer #'.$customer->id) }}
-                    </option>
-                @endforeach
-            </select>
-            @error('customer_id')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
+    @if(session('status'))
+        <div class="alert">{{ session('status') }}</div>
+    @endif
 
-            <button type="submit" class="btn btn-primary" style="margin-top:10px;">
-                Save Assignment
-            </button>
-        </form>
-    </div>
-
-    <div class="admin-card" style="margin-bottom:20px;">
-        <h3>Installed Applications (latest audit)</h3>
-        @if($device->apps->isEmpty())
-            <p>No app data recorded for this device yet.</p>
+    <p><strong>Current:</strong>
+        @if($device->customerProfile)
+            {{ $device->customerProfile->business_name }}
         @else
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Version</th>
-                        <th>Publisher</th>
-                        <th>Installed On</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach($device->apps as $app)
-                    <tr>
-                        <td>{{ $app->name }}</td>
-                        <td>{{ $app->version ?? '—' }}</td>
-                        <td>{{ $app->publisher ?? '—' }}</td>
-                        <td>{{ optional($app->installed_on)->format('d M Y') ?? '—' }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+            <span class="badge badge-off">Unassigned</span>
         @endif
-    </div>
+    </p>
 
-    <div class="admin-card">
-        <h3>Audit History</h3>
-        <a href="{{ route('admin.devices.audits.index', $device->id) }}">View full audit history</a>
-    </div>
+    <form method="POST" action="{{ route('admin.devices.assign', $device->id) }}" style="max-width:400px;">
+        @csrf
+
+        <label>Select customer</label>
+        <select name="customer_profile_id" class="form-control">
+            <option value="">-- Select --</option>
+
+            @foreach($customers as $cust)
+                <option value="{{ $cust->id }}"
+                    @selected($device->customer_profile_id === $cust->id)>
+                    {{ $cust->business_name }}
+                </option>
+            @endforeach
+        </select>
+
+        <button class="btn btn-primary" style="margin-top:10px;">Save Assignment</button>
+    </form>
+</div>
+
+{{-- Apps --}}
+<div class="admin-card">
+    <h3>Installed Applications</h3>
+
+    @if($device->apps->isEmpty())
+        <p>No application data recorded.</p>
+    @else
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Version</th>
+                    <th>Publisher</th>
+                    <th>Installed On</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach($device->apps as $app)
+                <tr>
+                    <td>{{ $app->name }}</td>
+                    <td>{{ $app->version }}</td>
+                    <td>{{ $app->publisher }}</td>
+                    <td>{{ optional($app->installed_on)->format('d M Y') }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
+
+{{-- Audit history --}}
+<div class="admin-card">
+    <h3>Audit History</h3>
+    <a href="{{ route('admin.devices.audits.index', $device->id) }}">View audit history</a>
+</div>
+
 @endsection

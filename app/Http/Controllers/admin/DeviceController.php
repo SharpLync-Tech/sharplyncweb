@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CRM\Device;
-use App\Models\CRM\Customer;
+use App\Models\CRM\CustomerProfile;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
     public function index()
     {
-        $devices = Device::with('customer')
+        $devices = Device::with('customerProfile')
             ->orderByDesc('last_audit_at')
             ->paginate(20);
 
@@ -20,8 +20,8 @@ class DeviceController extends Controller
 
     public function unassigned()
     {
-        $devices = Device::with('customer')
-            ->whereNull('customer_id')
+        $devices = Device::with('customerProfile')
+            ->whereNull('customer_profile_id')
             ->orderByDesc('last_audit_at')
             ->paginate(20);
 
@@ -30,15 +30,18 @@ class DeviceController extends Controller
 
     public function show(Device $device)
     {
-        $device->load(['customer', 'audits' => function ($q) {
-            $q->latest()->limit(10);
-        }, 'apps']);
+        $device->load([
+            'customerProfile',
+            'audits' => function ($q) {
+                $q->latest()->limit(10);
+            },
+            'apps'
+        ]);
 
-        // This assumes your CRM customers table has a 'name' column.
-        // If it's 'company_name' or 'contact_name', just adjust here.
-        $customers = Customer::on('crm')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        // Use business_name from customer_profiles table
+        $customers = CustomerProfile::on('crm')
+            ->orderBy('business_name')
+            ->get(['id', 'business_name']);
 
         return view('admin.devices.show', compact('device', 'customers'));
     }
@@ -46,16 +49,16 @@ class DeviceController extends Controller
     public function assign(Request $request, Device $device)
     {
         $data = $request->validate([
-            'customer_id' => ['required', 'integer'],
+            'customer_profile_id' => ['required', 'integer'],
         ]);
 
-        $customer = Customer::on('crm')->findOrFail($data['customer_id']);
+        $customer = CustomerProfile::on('crm')->findOrFail($data['customer_profile_id']);
 
-        $device->customer_id = $customer->id;
+        $device->customer_profile_id = $customer->id;
         $device->save();
 
         return redirect()
             ->route('admin.devices.show', $device->id)
-            ->with('status', 'Device assigned to ' . $customer->name . ' successfully.');
+            ->with('status', 'Device assigned to ' . $customer->business_name . ' successfully.');
     }
 }
