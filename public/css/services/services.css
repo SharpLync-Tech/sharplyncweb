@@ -58,9 +58,10 @@
 
 .tile-detail {
     margin-top: 20px;
+    display: none !important;
     display: none;
 }
 
 .service-tile.active .tile-detail {
-    display: block;
+    display: block; !important;
 }
