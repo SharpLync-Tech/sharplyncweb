@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.tile-toggle').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const tile = e.target.closest('.service-tile');
+    document.querySelectorAll('.service-tile').forEach(tile => {
+        tile.querySelector('.tile-toggle').addEventListener('click', () => {
             tile.classList.toggle('active');
         });
     });
