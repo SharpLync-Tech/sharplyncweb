@@ -186,6 +186,11 @@
 
 /* ==================== PREMIUM EXPANDED MODE ==================== */
 
+.services-cards.focus-one {
+    padding-bottom: 20rem; /* prevents footer overlap */
+}
+
+
 /* fade out other tiles */
 .services-cards.focus-one .service-tile:not(.active) {
     opacity: 0;
@@ -196,15 +201,22 @@
 
 /* expanded card */
 .service-tile.active {
-    transform: scale(1.03);
-    box-shadow: 0 0 55px rgba(44,191,174,1);
-    background: rgba(10, 42, 77, 0.88);
-    border-color: rgba(44,191,174,0.65);
-    max-width: 100%;
-    grid-column: 1 / -1;
-    padding: 2.8rem 3rem;
-}
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1150px;      /* full width of the grid */
+    z-index: 20;
 
+    /* keep your glow and scale */
+    transform: scale(1.03);
+    box-shadow: 0 0 40px rgba(44,191,174,0.9);
+    border-color: rgba(44,191,174,0.85);
+
+    /* disable grid push-down */
+    grid-column: auto; 
+}
 /* subtle teal glow */
 .service-tile.active::before {
     content: "";
