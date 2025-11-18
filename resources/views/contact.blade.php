@@ -1,5 +1,5 @@
-@extends('layouts.about-base')
-<link rel="stylesheet" href="{{ asset('css/contact.css') }}">
+@extends('layouts.contact-base') {{-- *** CHANGED TO NEW BASE FILE *** --}}
+
 @section('title', 'SharpLync | Contact Us')
 
 @section('content')
@@ -25,21 +25,21 @@
         <div class="details-grid">
 
             <div class="detail-item">
-                <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
+                <img src="{{ asset('images/email-icon-placeholder.png') }}" alt="Email Icon" class="detail-icon">
                 <h4>Email Support</h4>
                 <a href="mailto:info@sharplync.com.au" class="detail-link">info@sharplync.com.au</a>
                 <p>For all service enquiries and general questions.</p>
             </div>
 
             <div class="detail-item">
-                <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn Icon" class="detail-icon">
+                <img src="{{ asset('images/linkedin-icon-placeholder.png') }}" alt="LinkedIn Icon" class="detail-icon">
                 <h4>LinkedIn</h4>
                 <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page</a>
                 <p>Follow our updates and professional insights.</p>
             </div>
 
             <div class="detail-item">
-                <img src="{{ asset('images/facebook.png') }}" alt="Facebook Icon" class="detail-icon">
+                <img src="{{ asset('images/facebook-icon-placeholder.png') }}" alt="Facebook Icon" class="detail-icon">
                 <h4>Facebook</h4>
                 <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community</a>
                 <p>See our latest news and announcements.</p>
@@ -57,6 +57,12 @@
         <form action="/submit-contact" method="POST" class="contact-form">
             @csrf {{-- Laravel CSRF protection --}}
 
+            {{-- Honeypot field for bot protection (as discussed previously) --}}
+            <div class="form-group full-width" style="display:none; height:0; overflow:hidden;">
+                <label for="address_bot_trap">Do not fill this field (Bot Trap)</label>
+                <input type="text" id="address_bot_trap" name="address_bot_trap" value="">
+            </div>
+            
             <div class="form-group">
                 <label for="name">Your Name</label>
                 <input type="text" id="name" name="name" required placeholder="John Doe">
