@@ -115,6 +115,19 @@ class ServicesMockController extends Controller
                 'icon'  => asset('images/planning.png'),
             ],
 
+              [
+                'id'    => 'hardware-repair',
+                'title' => 'Laptop & Desktop Repairs',
+                'short' => 'Laptop screens, nattery replacements & more.',
+                'long'  => 'We source, repalcement parts and can fix laptops and desktops.',
+                'subs'  => [
+                    'New laptops, desktops & screens',
+                    'Networking & Wi-Fi hardware',
+                    'Pre-config & install to your standards',
+                ],
+                'icon'  => asset('images/hardware.png'),
+            ],
+
             [
                 'id'    => 'hardware-procurement',
                 'title' => 'Hardware & Procurement',
