@@ -12,7 +12,7 @@ class ServicesMockController extends Controller
             [
                 'id'    => 1,
                 'title' => 'Remote Support',
-                'icon'  => '/images/mock/remote.svg',
+                'icon'  => '/images/remote.png',
                 'short' => 'Instant help wherever you are.',
                 'long'  => 'Our remote support keeps your business moving with fast troubleshooting, software fixes, and ongoing helpdesk assistance.',
                 'subs'  => [
@@ -24,7 +24,7 @@ class ServicesMockController extends Controller
             [
                 'id'    => 2,
                 'title' => 'Cybersecurity',
-                'icon'  => '/images/mock/security.svg',
+                'icon'  => '/images/security.png',
                 'short' => 'Stay protected 24/7.',
                 'long'  => 'We keep your business safe with layered security, active monitoring, and modern authentication methods.',
                 'subs'  => [
