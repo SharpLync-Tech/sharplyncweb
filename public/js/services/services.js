@@ -1,38 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const grid = document.querySelector('.services-cards');
-    if (!grid) return;
+    const tiles = Array.from(document.querySelectorAll('.service-tile'));
 
-    const tiles = Array.from(grid.querySelectorAll('.service-tile'));
-
-    function closeAllTiles() {
-        tiles.forEach(tile => tile.classList.remove('active'));
-        grid.classList.remove('focus-one');
-    }
+    if (!tiles.length) return;
 
     tiles.forEach(tile => {
-        const btn = tile.querySelector('.tile-toggle');
-        if (!btn) return;
+        const toggleBtn = tile.querySelector('.tile-toggle');
+        if (!toggleBtn) return;
 
-        btn.addEventListener('click', () => {
-            const isActive = tile.classList.contains('active');
+        toggleBtn.addEventListener('click', () => {
+            const isOpen = tile.classList.contains('active');
 
-            if (isActive) {
-                closeAllTiles();
-                return;
-            }
+            // Close ALL tiles
+            tiles.forEach(t => {
+                t.classList.remove('active');
+                const btn = t.querySelector('.tile-toggle');
+                if (btn) btn.textContent = "Learn More";
+            });
 
-            closeAllTiles();
+            // If the clicked tile was open, it now closes
+            if (isOpen) return;
 
+            // Otherwise, open it
             tile.classList.add('active');
-            grid.classList.add('focus-one');
+            toggleBtn.textContent = "Close";
 
-            // Auto-scroll on mobile and desktop
-            setTimeout(() => {
-                tile.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
+            // Mobile scroll into view
+            if (window.innerWidth <= 768) {
+                const headerOffset = 80;
+                const rect = tile.getBoundingClientRect();
+                const scrollTop = window.scrollY + rect.top - headerOffset;
+
+                window.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
                 });
-            }, 200);
+            }
         });
     });
 });
