@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\PdfToText\Pdf;
+use Smalot\PdfParser\Parser;
 // We no longer need the Storage facade, as we are using the public_path helper.
 
 class PolicyController extends Controller
