@@ -1,5 +1,5 @@
 @extends('layouts.about-base')
-
+<link rel="stylesheet" href="{{ asset('css/contact.css') }}">
 @section('title', 'SharpLync | Contact Us')
 
 @section('content')
