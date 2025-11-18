@@ -1,16 +1,19 @@
-{{-- 
-  Page: services/mock.blade.php
-  Version: v1.1 (Uses Services Layout + Mock Data)
-  Description:
-  - Extends services-base, which itself extends layouts.base
-  - Renders the services grid with mock categories
---}}
-
 @extends('layouts.services.services-base')
 
-@section('services-content')
+@section('title', 'SharpLync | Services')
 
-<section class="services-grid">
+@section('hero')
+<header class="services-hero">
+    <img src="/images/sharplync-logo.png" class="services-hero-logo" alt="SharpLync Logo">
+    <h1>What We Do</h1>
+    <h2>Sharp Solutions</h2>
+    <p>From the Granite Belt to the Cloud — smart systems, secure solutions, and real people who get IT right.</p>
+</header>
+@endsection
+
+@section('content')
+
+<section class="services-section">
     @foreach ($categories as $cat)
         @include('services.components.tile', ['cat' => $cat])
     @endforeach
