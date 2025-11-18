@@ -112,7 +112,7 @@ class ServicesMockController extends Controller
                     'Budget planning & lifecycle advice',
                     'Vendor & project guidance',
                 ],
-                'icon'  => asset('images/pconsulting.png'),
+                'icon'  => asset('images/consulting.png'),
             ],
 
               [
