@@ -215,7 +215,11 @@
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
-        background: #0A2A4D !important; /* Solid navy */
+        background: linear-gradient(
+            180deg,
+            #0A2A4D 0%,
+            #0A2A4D 80%,
+            #0E3A62 100%
+        ) !important;
     }
-
 }
