@@ -1,6 +1,23 @@
+/* ============================================================
+   CONTACT US PAGE — CONSOLIDATED STYLESHEET (Version 2.0)
+   Includes: Dark Header/Footer/Body (from about.css link), 
+             Dark Details Card, and White Form Card.
+   ============================================================ */
+
+/*
+    Note: body.about-body, .about-header, footer, and overlay-menu 
+    styles are inherited from the linked about.css in contact-base.blade.php.
+*/
+
+
+/* ============================================================
+   TITLE & SUBTITLE
+   ============================================================ */
+
 .contact-title-wrapper {
     text-align: center;
     margin-top: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .contact-title {
@@ -10,7 +27,6 @@
 }
 
 .contact-title .gradient {
-    /* Reusing gradient from about.css */
     background: linear-gradient(90deg, #2CBFAE, #4df0d8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -27,32 +43,17 @@
 }
 
 /* ============================================================
-   Contact Details Card (The white card for email/socials)
+   Contact Details Card (Dark/Glassy - Matches Homepage Blocks)
    ============================================================ */
 
 .contact-details-card {
-    background: #ffffff;
-    color: #0A2A4D;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-    max-width: 1100px;
-    margin: 3rem auto 3rem;
-    text-align: center;
-}
-
-/* ============================================================
-   Contact Details Card (Redefined to match Homepage Blocks)
-   ============================================================ */
-
-.contact-details-card {
-    /* Main container is now dark, transparent, and glossy */
-    background: rgba(10, 42, 77, 0.4); /* Dark blue transparency */
-    border: 1px solid rgba(44, 191, 174, 0.2); /* Teal accent border */
+    /* Main container is dark, transparent, and glossy */
+    background: rgba(10, 42, 77, 0.4);
+    border: 1px solid rgba(44, 191, 174, 0.2);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     
-    color: #e9f4f3; /* Light text color */
+    color: #e9f4f3;
     border-radius: 20px;
     padding: 2.5rem 2rem;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
@@ -62,52 +63,64 @@
 }
 
 .contact-details-card h3 {
-    color: #2CBFAE; /* Teal heading color */
+    color: #2CBFAE;
     font-weight: 600;
     font-size: 1.5rem;
     margin-bottom: 2rem;
 }
 
+/* --- GRID LAYOUT FIX --- */
 .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Use 1fr repeat for equal columns, minmax ensures responsiveness */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
     gap: 1.5rem;
-    /* Remove padding/margin here, let the inner items define their look */
+    padding: 0 1rem; /* Add horizontal padding to prevent stretching edges */
 }
 
 /* Individual Contact Item Block */
 .detail-item {
-    /* Use a darker background than the container for definition, similar to the image blocks */
-    background: rgba(10, 42, 77, 0.7); 
+    background: rgba(10, 42, 77, 0.7);
     padding: 2rem 1.5rem;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle inner border */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .detail-item:hover {
-    /* Lift effect on hover */
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(44, 191, 174, 0.4);
 }
 
-/* Icons (assuming your placeholders are teal/white outlines like the image) */
+/* Icon Wrapper for the accent circle */
+.icon-wrapper {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    background: rgba(44, 191, 174, 0.1); 
+    border: 1px solid rgba(44, 191, 174, 0.3);
+}
+
 .detail-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0.8rem;
-    filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.5)); /* Subtle glow on icons */
+    width: 38px;
+    height: 38px;
+    margin-bottom: 0;
+    filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.5));
 }
 
 .detail-item h4 {
     margin: 0 0 0.4rem;
     font-size: 1.2rem;
     font-weight: 600;
-    color: #2CBFAE; /* Teal color for the main title */
+    color: #2CBFAE;
 }
 
 .detail-link {
-    color: #f7ffff; /* White link color for contrast */
+    color: #f7ffff;
     text-decoration: none;
     font-weight: 500;
     display: block;
@@ -129,38 +142,9 @@
     font-weight: 300;
 }
 
-/* Mobile adjustments (ensure they stack nicely) */
-@media (max-width: 600px) {
-    .contact-details-card {
-        padding: 1.5rem;
-    }
-    .details-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Wrapper for icon, to give it an accent circle */
-.icon-wrapper {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 70px; /* Size of the circle */
-    height: 70px;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-    /* Optional accent circle - adjust as desired */
-    background: rgba(44, 191, 174, 0.1); 
-    border: 1px solid rgba(44, 191, 174, 0.3);
-}
-
-.detail-icon {
-    width: 38px;
-    height: 38px;
-    margin-bottom: 0; /* Remove margin since it's on the wrapper now */
-}
 
 /* ============================================================
-   Contact Form Card (The white card for the form)
+   Contact Form Card (White Card)
    ============================================================ */
 
 .contact-form-card {
@@ -189,8 +173,8 @@
 }
 
 .form-group {
-    flex: 1 1 calc(50% - 1.5rem); /* Two columns layout */
-    min-width: 250px; /* Ensures stacking on smaller screens */
+    flex: 1 1 calc(50% - 1.5rem); 
+    min-width: 250px; 
 }
 
 .form-group.full-width {
@@ -249,15 +233,18 @@
     transform: translateY(-1px);
 }
 
-/* Mobile adjustments for form */
+/* ============================================================
+   MOBILE ADJUSTMENTS
+   ============================================================ */
 @media (max-width: 600px) {
     .contact-form-card {
         padding: 1.5rem;
     }
     .form-group {
-        flex: 1 1 100%; /* Single column layout on small screens */
+        flex: 1 1 100%; /* Single column layout for form on small screens */
     }
     .details-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column layout for details on small screens */
+        padding: 0;
     }
 }
