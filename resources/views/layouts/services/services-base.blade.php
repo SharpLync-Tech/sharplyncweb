@@ -20,11 +20,7 @@
             <h1>
                 What We Do<br>
                 <span class="highlight">Sharp Solutions</span>
-            </h1>
-            <p>
-                From the Granite Belt to the Cloud — smart systems, secure solutions,
-                and real people who get IT right.
-            </p>
+            </h1>            
         </div>
     </header>
 
