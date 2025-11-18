@@ -1,119 +1,49 @@
-/* Full page gradient — identical to home page */
-.services-root {
-    --navy: #0A2A4D;
-    --blue: #104976;
-    --teal: #2CBFAE;
-    font-family: 'Poppins', sans-serif;
+/*
+  Page: services.css
+  Version: v1.0 (Services Hero + Expandable Tiles)
+  Description:
+  - Reuses global hero + tile styles from sharplync.css
+  - Adds extra behaviour for services page only
+*/
 
-    background: linear-gradient(135deg,
-        var(--navy) 0%,
-        var(--blue) 40%,
-        var(--teal) 100%
-    );
-
-    color: white;
-    min-height: 100vh;
-    padding-bottom: 80px;
-}
-
-/* HERO SECTION */
+/* Slightly extra bottom padding so cards have breathing room */
 .services-hero {
-    text-align: center;
-    padding: 130px 20px 80px 20px;
+    padding-bottom: 6rem;
 }
 
-.services-hero-logo {
-    width: 140px;
-    opacity: .9;
-    margin-bottom: 30px;
+/* Just a tiny tweak label for services – reusing .hero-cards layout */
+.services-cards {
+    margin-top: 2.5rem;
 }
 
-.services-hero h1 {
-    font-size: 42px;
-    font-weight: 700;
-    margin: 0;
-}
-
-.services-hero h2 {
-    font-size: 32px;
-    color: var(--teal);
-    margin: 10px 0 20px;
-    border-bottom: 3px solid var(--teal);
-    display: inline-block;
-    padding-bottom: 5px;
-}
-
-.services-hero p {
-    max-width: 620px;
-    margin: 0 auto;
-    opacity: .85;
-}
-
-
-/* GRID SECTION */
-.services-section {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 30px 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 40px;
-}
-
-
-/* SERVICE CARDS — Home page vibe */
-.service-tile {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 20px;
-    padding: 25px;
-    backdrop-filter: blur(8px);
-    transition: all .35s ease;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-    color: white;
-}
-
-.service-tile:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
-    border-color: var(--teal);
-}
-
-/* ICONS */
-.tile-icon {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 15px;
-    opacity: .9;
-    filter: drop-shadow(0 0 4px rgba(44,191,174,0.4));
-}
-
-/* TEXT */
-.tile-header h3 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 600;
-}
-
-.tile-header p {
-    opacity: .85;
-}
-
-/* BUTTON */
-.tile-toggle {
-    background: var(--teal);
+/* Learn More button inside tiles */
+.service-tile .tile-toggle {
+    margin-top: 1rem;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
     border: none;
-    padding: 10px 18px;
+    background-color: #2CBFAE;
     color: #0A2A4D;
     font-weight: 600;
-    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
     cursor: pointer;
-    margin-top: 15px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* DETAILS */
-.tile-detail {
-    margin-top: 20px;
+.service-tile .tile-toggle:hover {
+    background-color: #35E0C2;
+    transform: translateY(-1px);
+}
+
+.service-tile .tile-toggle:active {
+    transform: translateY(0);
+}
+
+/* Detail content hidden by default, shown when card is active */
+.service-tile .tile-detail {
+    margin-top: 1.4rem;
+    text-align: left;
     display: none;
 }
 
@@ -121,9 +51,33 @@
     display: block;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
+/* Detail text styling */
+.service-tile .tile-detail h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.9;
+}
+
+.service-tile .tile-detail ul {
+    padding-left: 1.3rem;
+    margin: 0;
+}
+
+.service-tile .tile-detail li {
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+/* Mobile tweaks */
+@media (max-width: 900px) {
     .services-hero {
-        padding-top: 110px;
+        padding-bottom: 5rem;
+    }
+
+    .services-cards {
+        gap: 1.5rem;
     }
 }

@@ -1,13 +1,23 @@
+// public/js/services/services.js
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.service-tile').forEach(tile => {
-        const btn = tile.querySelector('.tile-toggle');
-        
-        btn.addEventListener('click', () => {
+        const toggle = tile.querySelector('.tile-toggle');
+        if (!toggle) return;
+
+        toggle.addEventListener('click', () => {
+            const willOpen = !tile.classList.contains('active');
+
+            // Toggle detail visibility
             tile.classList.toggle('active');
 
-            // Only scroll when opening, not closing
-            if (tile.classList.contains('active')) {
-                tile.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // On mobile, scroll the card into view when it opens
+            if (willOpen && window.innerWidth < 820) {
+                setTimeout(() => {
+                    tile.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 250);
             }
         });
     });
