@@ -1,4 +1,4 @@
-@extends('layouts.contact-base') {{-- *** CHANGED TO NEW BASE FILE *** --}}
+@extends('layouts.contact-base')
 
 @section('title', 'SharpLync | Contact Us')
 
@@ -18,31 +18,42 @@
     </div>
 
     {{-- =============================================== --}}
-    {{-- Contact Details Card --}}
+    {{-- Contact Details Grid (FIXED 3-COLUMN LAYOUT) --}}
     {{-- =============================================== --}}
-    <div class="contact-details-card fade-section">
-        <h3>Connect with Us</h3>
-        <div class="details-grid">
+    <div class="details-grid-wrapper fade-section">
+        <h3 class="grid-heading">Connect with Us</h3>
 
-            <div class="icon-wrapper">
-                <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
+        {{-- This is the container that must use the 3-column grid --}}
+        <div class="details-grid"> 
+
+            {{-- Block 1: Email Support --}}
+            <div class="detail-item">
+                <div class="icon-wrapper"> 
+                    <img src="{{ asset('images/email-icon-placeholder.png') }}" alt="Email Icon" class="detail-icon">
+                </div>
                 <h4>Email Support</h4>
-                <a href="mailto:info@sharplync.com.au" class="detail-link">info@sharplync.com.au</a>
                 <p>For all service enquiries and general questions.</p>
+                <a href="mailto:info@sharplync.com.au" class="detail-link">info@sharplync.com.au</a>
             </div>
 
-            <div class="icon-wrapper">
-                <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn Icon" class="detail-icon">
+            {{-- Block 2: LinkedIn --}}
+            <div class="detail-item">
+                <div class="icon-wrapper">
+                    <img src="{{ asset('images/linkedin-icon-placeholder.png') }}" alt="LinkedIn Icon" class="detail-icon">
+                </div>
                 <h4>LinkedIn</h4>
-                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page</a>
                 <p>Follow our updates and professional insights.</p>
+                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page →</a>
             </div>
 
-            <div class="icon-wrapper">
-                <img src="{{ asset('images/facebook.png') }}" alt="Facebook Icon" class="detail-icon">
+            {{-- Block 3: Facebook --}}
+            <div class="detail-item">
+                <div class="icon-wrapper">
+                    <img src="{{ asset('images/facebook-icon-placeholder.png') }}" alt="Facebook Icon" class="detail-icon">
+                </div>
                 <h4>Facebook</h4>
-                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community</a>
                 <p>See our latest news and announcements.</p>
+                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community →</a>
             </div>
 
         </div>
@@ -50,14 +61,14 @@
 
 
     {{-- =============================================== --}}
-    {{-- Contact Form Section --}}
+    {{-- Contact Form Section (Styled like Login Screen) --}}
     {{-- =============================================== --}}
     <div class="contact-form-card fade-section">
-        <h3>Send Us a Message</h3>
+        <h3 class="form-heading">Send Us a Message</h3>
         <form action="/submit-contact" method="POST" class="contact-form">
             @csrf {{-- Laravel CSRF protection --}}
 
-            {{-- Honeypot field for bot protection (as discussed previously) --}}
+            {{-- Honeypot field for bot protection --}}
             <div class="form-group full-width" style="display:none; height:0; overflow:hidden;">
                 <label for="address_bot_trap">Do not fill this field (Bot Trap)</label>
                 <input type="text" id="address_bot_trap" name="address_bot_trap" value="">

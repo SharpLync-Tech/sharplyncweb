@@ -1,14 +1,6 @@
 /* ============================================================
-   CONTACT US PAGE — CONSOLIDATED STYLESHEET (Version 2.0)
-   Includes: Dark Header/Footer/Body (from about.css link), 
-             Dark Details Card, and White Form Card.
+   CONTACT US PAGE — CONSOLIDATED STYLESHEET (Final Version)
    ============================================================ */
-
-/*
-    Note: body.about-body, .about-header, footer, and overlay-menu 
-    styles are inherited from the linked about.css in contact-base.blade.php.
-*/
-
 
 /* ============================================================
    TITLE & SUBTITLE
@@ -43,56 +35,52 @@
 }
 
 /* ============================================================
-   Contact Details Card (Dark/Glassy - Matches Homepage Blocks)
+   Contact Details Grid (FIXED 3-COLUMN)
    ============================================================ */
 
-.contact-details-card {
-    /* Main container is dark, transparent, and glossy */
-    background: rgba(10, 42, 77, 0.4);
-    border: 1px solid rgba(44, 191, 174, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    
-    color: #e9f4f3;
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
-    max-width: 1100px;
+.details-grid-wrapper {
+    /* Main wrapper to contain the heading and grid */
+    max-width: 1200px; /* Wider container for the three cards */
     margin: 3rem auto 3rem;
     text-align: center;
 }
 
-.contact-details-card h3 {
+.grid-heading {
+    /* Styling for the "Connect with Us" heading */
     color: #2CBFAE;
     font-weight: 600;
     font-size: 1.5rem;
     margin-bottom: 2rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-/* --- GRID LAYOUT FIX --- */
 .details-grid {
     display: grid;
-    /* Use 1fr repeat for equal columns, minmax ensures responsiveness */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    /* FIX: Ensure exactly 3 columns on desktop, auto-fit handles responsiveness */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 1.5rem;
-    padding: 0 1rem; /* Add horizontal padding to prevent stretching edges */
+    padding: 0 1.5rem; /* Padding for desktop edges */
 }
 
-/* Individual Contact Item Block */
+/* Individual Contact Item Block (Dark/Glassy) */
 .detail-item {
-    background: rgba(10, 42, 77, 0.7);
-    padding: 2rem 1.5rem;
+    /* Use the same dark blue/gradient style as the homepage blocks */
+    background: linear-gradient(145deg, rgba(10, 42, 77, 0.95) 0%, rgba(16, 73, 118, 0.9) 100%);
+    
+    padding: 2.5rem 1.5rem;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(44, 191, 174, 0.1); /* Subtle teal border */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    
+    color: #e9f4f3;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .detail-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(44, 191, 174, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px rgba(44, 191, 174, 0.5);
 }
 
-/* Icon Wrapper for the accent circle */
 .icon-wrapper {
     display: inline-flex;
     justify-content: center;
@@ -119,12 +107,19 @@
     color: #2CBFAE;
 }
 
+.detail-item p {
+    font-size: 0.9rem;
+    color: rgba(233, 244, 243, 0.85);
+    margin: 0.5rem 0 1rem;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
 .detail-link {
+    display: block;
     color: #f7ffff;
     text-decoration: none;
     font-weight: 500;
-    display: block;
-    margin-bottom: 0.8rem;
     opacity: 0.9;
     transition: opacity 0.3s;
 }
@@ -134,32 +129,23 @@
     text-decoration: underline;
 }
 
-.detail-item p {
-    font-size: 0.9rem;
-    color: rgba(233, 244, 243, 0.85);
-    margin: 0;
-    line-height: 1.5;
-    font-weight: 300;
-}
-
-
 /* ============================================================
-   Contact Form Card (White Card)
+   Contact Form Card (Dark/Glassy - Matches Login Screen)
    ============================================================ */
 
 .contact-form-card {
-    background: #ffffff;
-    color: #0A2A4D;
+    background: #0A2A4D; 
+    color: #e9f4f3;      
     border-radius: 20px;
-    padding: 2.5rem;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    padding: 3rem 2.5rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
     max-width: 900px;
-    margin: 0 auto 5rem;
+    margin: 4rem auto 5rem; /* More margin above to separate from grid */
     text-align: center;
 }
 
-.contact-form-card h3 {
-    color: #0A2A4D;
+.form-heading {
+    color: #e9f4f3;
     font-weight: 600;
     font-size: 1.5rem;
     margin-bottom: 2rem;
@@ -185,7 +171,7 @@
     display: block;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: #0A2A4D;
+    color: #e9f4f3; 
 }
 
 .contact-form input[type="text"],
@@ -193,20 +179,27 @@
 .contact-form input[type="tel"],
 .contact-form textarea {
     width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid #ccc;
+    padding: 1rem 1.25rem; 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
     border-radius: 8px;
     font-size: 1rem;
-    color: #0A2A4D;
+    color: #f7ffff; 
+    background: rgba(0, 0, 0, 0.2); 
     box-sizing: border-box;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
     border-color: #2CBFAE;
+    background: rgba(0, 0, 0, 0.3);
     outline: none;
-    box-shadow: 0 0 8px rgba(44, 191, 174, 0.2);
+    box-shadow: 0 0 10px rgba(44, 191, 174, 0.4);
 }
 
 .contact-form textarea {
@@ -217,34 +210,42 @@
     display: block;
     width: 100%;
     padding: 1rem 1.5rem;
-    background: #2CBFAE;
-    color: #ffffff;
+    background: linear-gradient(90deg, #2CBFAE, #4df0d8);
+    color: #0A2A4D;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1rem;
     font-weight: 600;
-    transition: background 0.3s ease, transform 0.1s ease;
+    transition: opacity 0.3s ease, transform 0.1s ease;
     margin-top: 1rem;
 }
 
 .submit-btn:hover {
-    background: #24a895;
+    opacity: 0.9;
     transform: translateY(-1px);
 }
 
 /* ============================================================
    MOBILE ADJUSTMENTS
    ============================================================ */
+@media (max-width: 992px) {
+    /* For tablets/mid-size screens, switch to 2 columns for details */
+    .details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    }
+}
+
 @media (max-width: 600px) {
     .contact-form-card {
-        padding: 1.5rem;
+        padding: 2rem 1.5rem;
     }
     .form-group {
-        flex: 1 1 100%; /* Single column layout for form on small screens */
+        flex: 1 1 100%;
     }
     .details-grid {
-        grid-template-columns: 1fr; /* Single column layout for details on small screens */
-        padding: 0;
+        /* Single column on phones */
+        grid-template-columns: 1fr; 
+        padding: 0 1rem;
     }
 }
