@@ -1,141 +1,176 @@
-/*
-  File: public/css/services/services.css
-  Version: v1.1 (Hero Integration + Grid Fix)
-  Description:
-  - Styles the service tiles and layout
-  - Works alongside sharplync.css (which handles hero + global styles)
-*/
+/* --------------------------------------------------------------
+   SharpLync Services Page
+   Style: Matches Home Page (Dark gradient + glass cards)
+-------------------------------------------------------------- */
 
-/* ===================== SERVICES PAGE WRAPPER ====================== */
+/* HERO ------------------------------------------------------- */
 
-.services-content {
-    padding: 3rem 0 5rem;
-    margin-top: -60px;
+.services-hero {
+    position: relative;
+    width: 100%;
+    padding: 140px 20px 160px;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    text-align: center;
+    overflow: hidden;
+}
+
+.services-hero.small-hero {
+    padding: 120px 20px 100px;
+}
+
+.services-hero-inner {
     position: relative;
     z-index: 10;
 }
 
-/* Make hero slightly shorter than home hero */
-.services-hero {
-    min-height: 45vh !important;
-    padding: 4rem 10% 3rem !important;
+.hero-logo {
+    width: 140px;
+    margin-bottom: 25px;
+    opacity: 0.95;
 }
 
-/* ===================== SERVICES GRID ====================== */
-
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    padding: 40px 20px;
-    max-width: 1300px;
-    margin: auto;
-    align-items: start; /* Fix: prevents other tiles from "stretching empty" */
-}
-
-/* ===================== TILE CARD ====================== */
-
-.service-tile {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    transition: all .3s ease;
-    overflow: hidden;
-}
-
-.service-tile:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 25px rgba(44,191,174,0.3);
-}
-
-.tile-header img {
-    width: 65px;
-    margin-bottom: 1px;
-}
-
-.tile-header h3 {
-    margin: 0 0 10px 0;
+.services-title {
+    font-size: 48px;
     font-weight: 700;
-    color: #0A2A4D;
-}
-
-.tile-header p {
+    color: #fff;
     margin: 0;
-    color: #35506c;
-    font-size: 0.95rem;
 }
 
-.tile-toggle {
-    background: #2CBFAE;
-    border: none;
-    padding: 10px 18px;
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 15px;
+.services-subtitle {
+    font-size: 34px;
     font-weight: 600;
+    margin-top: 10px;
+    color: #2CBFAE;
 }
 
-/* ===================== TILE DETAILS ====================== */
-
-.tile-detail {
-    margin-top: 20px;
-    display: none !important;
+.services-subtitle span {
+    border-bottom: 3px solid #2CBFAE;
 }
 
-.service-tile.active .tile-detail {
-    display: block !important;
+.services-tagline {
+    margin-top: 18px;
+    font-size: 18px;
+    color: rgba(255,255,255,0.85);
 }
 
-.tile-detail h4 {
-    margin-top: 1rem;
-    margin-bottom: 0.4rem;
-    font-weight: 700;
-    color: #0A2A4D;
-}
-
-.tile-detail ul {
-    list-style: disc;
-    padding-left: 1.2rem;
-    margin-top: 0.5rem;
-}
-
-.tile-detail li {
-    margin-bottom: 4px;
-    color: #083a69;
-}
-
-.hero::after {
-    content: "";
+/* CHIP IMAGE RIGHT SIDE */
+.hero-chip {
     position: absolute;
+    right: 0;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px; /* longer but softer */
-    background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.00) 0%,
-        rgba(255, 255, 255, 0.06) 20%,
-        rgba(255, 255, 255, 0.12) 35%,
-        rgba(255, 255, 255, 0.20) 50%,
-        rgba(255, 255, 255, 0.32) 65%,
-        rgba(255, 255, 255, 0.50) 82%,
-        rgba(255, 255, 255, 0.70) 92%,
-        rgba(255, 255, 255, 0.85) 100%
-    );
+    width: 460px;
+    opacity: 0.38;
     pointer-events: none;
 }
 
+/* GRADIENT SECTION ------------------------------------------------ */
 
-/* ===================== RESPONSIVE ====================== */
+.services-gradient-bg {
+    background: linear-gradient(180deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    padding: 100px 20px 140px;
+    color: #fff;
+}
 
-@media (max-width: 600px) {
-    .services-hero {
-        padding: 3rem 1rem 1.5rem !important;
-    }
+/* GRID ---------------------------------------------------------- */
 
-    .hero-fade {
-        margin-top: -60px !important;
-    }
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* CARDS -------------------------------------------------------- */
+
+.service-card {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    border-radius: 22px;
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.30);
+    transition: 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 35px 70px rgba(0,0,0,0.40);
+}
+
+/* ICONS */
+.service-icon img {
+    width: 50px;
+    height: 50px;
+    opacity: 0.95;
+    margin-bottom: 18px;
+}
+
+/* CONTENT */
+.service-name {
+    font-size: 24px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.service-desc {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+.service-button {
+    background: #2CBFAE;
+    color: #08304D;
+    font-weight: 600;
+    padding: 10px 26px;
+    border-radius: 8px;
+    display: inline-block;
+    transition: 0.2s ease;
+}
+
+.service-button:hover {
+    background: #23a996;
+}
+
+/* DETAIL PAGE ------------------------------------------------------ */
+
+.detail-card {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 50px;
+    border-radius: 26px;
+    max-width: 900px;
+    margin: 40px auto;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.32);
+    color: #fff;
+}
+
+.detail-card h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.detail-features {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.detail-features li {
+    margin-bottom: 10px;
+    color: rgba(255,255,255,0.9);
+}
+
+/* MOBILE ------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+    .services-title { font-size: 32px; }
+    .services-subtitle { font-size: 26px; }
+
+    .hero-chip { width: 260px; opacity: 0.25; }
+
+    .detail-card { padding: 30px; }
 }

@@ -1,37 +1,61 @@
-@extends('layouts.base')
+@extends('layouts.app')
 
 @section('title', 'SharpLync | Services')
 
-@push('styles')
-<link rel="stylesheet" href="{{ secure_asset('css/services/services.css') }}">
-@endpush
-
 @section('content')
 
-    <!-- ======= SERVICES HERO (FULL SHARPLYNC STYLE) ======= -->
-    <header class="hero services-hero">
-        <div class="hero-cpu-bg">
-            <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
+<link rel="stylesheet" href="/css/services.css">
+
+<section class="services-hero">
+    <div class="services-hero-inner">
+        <img src="/images/sharplync-logo.png" class="hero-logo" alt="SharpLync Logo">
+
+        <h1 class="services-title">What We Do</h1>
+        <h2 class="services-subtitle">Sharp <span>Solutions</span></h2>
+
+        <p class="services-tagline">
+            From the Granite Belt to the Cloud — smart systems, secure solutions, and real people who care about getting IT right.
+        </p>
+    </div>
+
+    <img src="/images/hero-circuit.png" class="hero-chip" alt="">
+</section>
+
+
+<section class="services-section services-gradient-bg">
+
+    <div class="service-grid">
+
+        {{-- Remote Support --}}
+        <div class="service-card">
+            <div class="service-icon">
+                <img src="/images/support.png" alt="Remote Support">
+            </div>
+
+            <h3 class="service-name">Remote Support</h3>
+            <p class="service-desc">
+                Instant help wherever you are.
+            </p>
+
+            <a href="/services/remote-support" class="service-button">Learn More</a>
         </div>
 
-        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="hero-logo">
+        {{-- Cybersecurity --}}
+        <div class="service-card">
+            <div class="service-icon">
+                <img src="/images/security.png" alt="Cybersecurity">
+            </div>
 
-        <div class="hero-text">
-            <h1>
-                What We Do<br>
-                <span class="highlight">Sharp Solutions</span>
-            </h1>            
+            <h3 class="service-name">Cybersecurity</h3>
+            <p class="service-desc">
+                Stay protected 24/7.
+            </p>
+
+            <a href="/services/cybersecurity" class="service-button">Learn More</a>
         </div>
-    </header>
 
-    <!-- ======= SERVICES PAGE CONTENT ======= -->
-    <main class="services-content">
-        @yield('services-content')
-    </main>
+    </div>
+
+</section>
 
 @endsection
-
-{{-- MUST be outside @section to correctly push to base layout --}}
-@push('scripts')
-<script src="{{ asset('js/services/services.js') }}"></script>
-@endpush
