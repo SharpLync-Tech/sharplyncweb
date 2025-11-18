@@ -11,25 +11,38 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleBtn.addEventListener('click', () => {
             const alreadyActive = tile.classList.contains('active');
 
-            // Close all tiles
-            tiles.forEach(t => t.classList.remove('active'));
+            // Clear active state from all tiles
+            tiles.forEach(t => {
+                t.classList.remove('active');
+                t.style.removeProperty('--tile-top');
+                t.style.removeProperty('--tile-left');
+                t.style.removeProperty('--tile-width');
+            });
 
-            // Remove focus mode if closing the only active tile
             if (alreadyActive) {
+                // Deactivate focus mode when closing an open tile
                 container.classList.remove('focus-one');
                 return;
             }
 
+            // ----- DESKTOP BEHAVIOUR -----
+            if (window.innerWidth > 768) {
+                const rect = tile.getBoundingClientRect();
+
+                // Store fixed-position coordinates (viewport-based)
+                tile.style.setProperty('--tile-top', rect.top + 'px');
+                tile.style.setProperty('--tile-left', rect.left + 'px');
+                tile.style.setProperty('--tile-width', rect.width + 'px');
+            }
+
             // Activate selected tile
             tile.classList.add('active');
-
-            // Enable focus mode (fade out others)
             container.classList.add('focus-one');
 
-            // Change button text to Close
+            // Update button text
             toggleBtn.textContent = 'Close';
 
-            // Scroll tile into view (mobile)
+            // ----- MOBILE SCROLL INTO VIEW -----
             if (window.innerWidth <= 768) {
                 const rect = tile.getBoundingClientRect();
                 const headerOffset = 80;
@@ -43,13 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Reset button text when tile is deactivated
+    // Reset button text automatically
     tiles.forEach(tile => {
         tile.addEventListener('transitionend', () => {
             const btn = tile.querySelector('.tile-toggle');
-            if (btn) {
-                btn.textContent = tile.classList.contains('active') ? 'Close' : 'Learn More';
-            }
+            if (!btn) return;
+
+            btn.textContent = tile.classList.contains('active')
+                ? 'Close'
+                : 'Learn More';
         });
     });
 });
