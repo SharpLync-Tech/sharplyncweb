@@ -188,9 +188,8 @@
 /* ==================== PREMIUM EXPANDED MODE ==================== */
 
 .services-cards.focus-one {
-    padding-bottom: 20rem; /* prevents footer overlap */
+    padding-bottom: 4rem; /* just a little space, not 20rem anymore */
 }
-
 
 /* fade out other tiles */
 .services-cards.focus-one .service-tile:not(.active) {
@@ -200,24 +199,22 @@
     transform: scale(0.95);
 }
 
-/* expanded card */
+/* expanded card – IN PLACE, full row */
 .service-tile.active {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
+    /* ❌ no more absolute/fixed positioning */
+    position: static;
     width: 100%;
-    max-width: 1150px;      /* full width of the grid */
-    z-index: 20;
+    max-width: 100%;
 
-    /* keep your glow and scale */
+    /* span the whole grid row */
+    grid-column: 1 / -1;
+
+    /* keep the premium feel */
     transform: scale(1.03);
     box-shadow: 0 0 40px rgba(44,191,174,0.9);
     border-color: rgba(44,191,174,0.85);
-
-    /* disable grid push-down */
-    grid-column: auto; 
 }
+
 /* subtle teal glow */
 .service-tile.active::before {
     content: "";
@@ -238,14 +235,11 @@
     max-height: 420px;
     opacity: 1;
     transform: translateY(0);
-}
-
-/* Premium divider styling */
-.service-tile.active .tile-detail {
     border-top: 1px solid rgba(255,255,255,0.18);
     margin-top: 1.6rem;
     padding-top: 1.2rem;
 }
+
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
