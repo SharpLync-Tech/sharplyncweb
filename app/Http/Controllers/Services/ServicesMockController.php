@@ -60,7 +60,7 @@ class ServicesMockController extends Controller
                     'New equipment rollouts',
                     'Office moves & changes',
                 ],
-                'icon'  => asset('images/onsite.png'),
+                'icon'  => asset('images/boots.png'),
             ],
 
             [
@@ -73,7 +73,7 @@ class ServicesMockController extends Controller
                     'Switching & VLAN configuration',
                     'Firewall & router management',
                 ],
-                'icon'  => asset('images/network.png'),
+                'icon'  => asset('images/wifi.png'),
             ],
 
             [
@@ -99,7 +99,7 @@ class ServicesMockController extends Controller
                     'Windows & third-party patching',
                     'Health & compliance reporting',
                 ],
-                'icon'  => asset('images/endpoint.png'),
+                'icon'  => asset('images/protection.png'),
             ],
 
             [
@@ -112,7 +112,7 @@ class ServicesMockController extends Controller
                     'Budget planning & lifecycle advice',
                     'Vendor & project guidance',
                 ],
-                'icon'  => asset('images/planning.png'),
+                'icon'  => asset('images/pconsulting.png'),
             ],
 
               [
@@ -125,7 +125,7 @@ class ServicesMockController extends Controller
                     'Networking & Wi-Fi hardware',
                     'Pre-config & install to your standards',
                 ],
-                'icon'  => asset('images/hardware.png'),
+                'icon'  => asset('images/repair.png'),
             ],
 
             [
@@ -138,7 +138,7 @@ class ServicesMockController extends Controller
                     'Networking & Wi-Fi hardware',
                     'Pre-config & install to your standards',
                 ],
-                'icon'  => asset('images/hardware.png'),
+                'icon'  => asset('images/sales.png'),
             ],
         ];
 
