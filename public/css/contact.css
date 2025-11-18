@@ -1,0 +1,207 @@
+/* ============================================================
+   CONTACT US PAGE — ISOLATED STYLESHEET
+   Version: 1.0
+   ============================================================ */
+
+/*
+    Inheriting body/font/gradient from about.css (via about-base)
+*/
+
+.contact-title-wrapper {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.contact-title {
+    font-size: 2.7rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+
+.contact-title .gradient {
+    /* Reusing gradient from about.css */
+    background: linear-gradient(90deg, #2CBFAE, #4df0d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.contact-subtitle {
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 10px auto 35px;
+    max-width: 960px;
+    color: rgba(233, 244, 243, 0.85);
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Contact Details Card (The white card for email/socials)
+   ============================================================ */
+
+.contact-details-card {
+    background: #ffffff;
+    color: #0A2A4D;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    max-width: 1100px;
+    margin: 3rem auto 3rem;
+    text-align: center;
+}
+
+.contact-details-card h3 {
+    color: #0A2A4D;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: rgba(10, 42, 77, 0.04); /* Very light background on items */
+}
+
+.detail-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.8rem;
+}
+
+.detail-item h4 {
+    margin: 0 0 0.4rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.detail-link {
+    color: #2CBFAE; /* Teal link color */
+    text-decoration: none;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s;
+}
+
+.detail-link:hover {
+    color: #1a9e88;
+    text-decoration: underline;
+}
+
+.detail-item p {
+    font-size: 0.9rem;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 300;
+}
+
+/* ============================================================
+   Contact Form Card (The white card for the form)
+   ============================================================ */
+
+.contact-form-card {
+    background: #ffffff;
+    color: #0A2A4D;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    max-width: 900px;
+    margin: 0 auto 5rem;
+    text-align: center;
+}
+
+.contact-form-card h3 {
+    color: #0A2A4D;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.form-group {
+    flex: 1 1 calc(50% - 1.5rem); /* Two columns layout */
+    min-width: 250px; /* Ensures stacking on smaller screens */
+}
+
+.form-group.full-width {
+    flex: 1 1 100%;
+}
+
+.contact-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #0A2A4D;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form input[type="tel"],
+.contact-form textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #0A2A4D;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #2CBFAE;
+    outline: none;
+    box-shadow: 0 0 8px rgba(44, 191, 174, 0.2);
+}
+
+.contact-form textarea {
+    resize: vertical;
+}
+
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: #2CBFAE;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background 0.3s ease, transform 0.1s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    background: #24a895;
+    transform: translateY(-1px);
+}
+
+/* Mobile adjustments for form */
+@media (max-width: 600px) {
+    .contact-form-card {
+        padding: 1.5rem;
+    }
+    .form-group {
+        flex: 1 1 100%; /* Single column layout on small screens */
+    }
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Admin\LogViewerController;
 
 Route::get('/', fn() => view('welcome'));
+Route::get('/contact', fn() => view('contact'));
 Route::get('/style-preview', fn() => view('style-preview'));
 Route::get('/mobile-preview', fn() => view('mobile-preview'));
 Route::get('/components', fn() => view('components'));
