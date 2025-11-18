@@ -1,70 +1,42 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const tiles = Array.from(document.querySelectorAll('.service-tile'));
-    const container = document.querySelector('.services-cards');
+toggleBtn.addEventListener('click', () => {
+    const alreadyActive = tile.classList.contains('active');
 
-    if (!tiles.length || !container) return;
+    // Close all tiles first
+    tiles.forEach(t => t.classList.remove('active'));
 
-    tiles.forEach(tile => {
-        const toggleBtn = tile.querySelector('.tile-toggle');
-        if (!toggleBtn) return;
+    if (alreadyActive) {
+        container.classList.remove('focus-one');
+        return;
+    }
 
-        toggleBtn.addEventListener('click', () => {
-            const alreadyActive = tile.classList.contains('active');
+    // --- NEW: ensure tile is centered BEFORE expanding ---
+    const rect = tile.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
 
-            // Clear active state from all tiles
-            tiles.forEach(t => {
-                t.classList.remove('active');
-                t.style.removeProperty('--tile-top');
-                t.style.removeProperty('--tile-left');
-                t.style.removeProperty('--tile-width');
-            });
+    // We want the tile roughly in middle 40% of screen
+    const idealTop = viewportHeight * 0.30;
 
-            if (alreadyActive) {
-                // Deactivate focus mode when closing an open tile
-                container.classList.remove('focus-one');
-                return;
-            }
+    const scrollOffset = rect.top - idealTop;
 
-            // ----- DESKTOP BEHAVIOUR -----
-            if (window.innerWidth > 768) {
-                const rect = tile.getBoundingClientRect();
-
-                // Store fixed-position coordinates (viewport-based)
-                tile.style.setProperty('--tile-top', rect.top + 'px');
-                tile.style.setProperty('--tile-left', rect.left + 'px');
-                tile.style.setProperty('--tile-width', rect.width + 'px');
-            }
-
-            // Activate selected tile
-            tile.classList.add('active');
-            container.classList.add('focus-one');
-
-            // Update button text
-            toggleBtn.textContent = 'Close';
-
-            // ----- MOBILE SCROLL INTO VIEW -----
-            if (window.innerWidth <= 768) {
-                const rect = tile.getBoundingClientRect();
-                const headerOffset = 80;
-                const scrollTop = window.scrollY + rect.top - headerOffset;
-
-                window.scrollTo({
-                    top: scrollTop,
-                    behavior: 'smooth'
-                });
-            }
+    // Only scroll if tile is out of optimal vertical range
+    if (Math.abs(scrollOffset) > 40) {
+        window.scrollBy({
+            top: scrollOffset,
+            behavior: "smooth"
         });
-    });
+    }
 
-    // Reset button text automatically
-    tiles.forEach(tile => {
-        tile.addEventListener('transitionend', () => {
-            const btn = tile.querySelector('.tile-toggle');
-            if (!btn) return;
+    // Wait for scroll to finish, then activate
+    setTimeout(() => {
+        // compute new position after scroll
+        const newRect = tile.getBoundingClientRect();
+        tile.style.setProperty("--tile-top", `${newRect.top}px`);
+        tile.style.setProperty("--tile-left", `${newRect.left}px`);
+        tile.style.setProperty("--tile-width", `${newRect.width}px`);
 
-            btn.textContent = tile.classList.contains('active')
-                ? 'Close'
-                : 'Learn More';
-        });
-    });
+        tile.classList.add('active');
+        container.classList.add('focus-one');
+
+        toggleBtn.textContent = "Close";
+    }, 350); // slight delay to match scroll easing
 });
