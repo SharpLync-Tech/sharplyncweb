@@ -1,4 +1,4 @@
-@extends('layouts.services.services-base')
+@extends('layouts.services-base')
 
 @section('title', 'SharpLync | Services')
 
