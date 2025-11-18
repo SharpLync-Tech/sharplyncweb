@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 
 class ServicesMockController extends Controller
 {
-    public function __invoke()
+    public function index()
     {
         $categories = [
             [
@@ -47,7 +47,7 @@ class ServicesMockController extends Controller
                     'SharePoint / OneDrive structure',
                     'Teams setup and best-practice',
                 ],
-                'icon'  => asset('images/cloud.png'), // add this file when you’re ready
+                'icon'  => asset('images/cloud.png'),
             ],
 
             [
@@ -60,7 +60,7 @@ class ServicesMockController extends Controller
                     'New equipment rollouts',
                     'Office moves & changes',
                 ],
-                'icon'  => asset('images/onsite.png'), // add this file
+                'icon'  => asset('images/onsite.png'),
             ],
 
             [
@@ -73,7 +73,7 @@ class ServicesMockController extends Controller
                     'Switching & VLAN configuration',
                     'Firewall & router management',
                 ],
-                'icon'  => asset('images/network.png'), // add this file
+                'icon'  => asset('images/network.png'),
             ],
 
             [
@@ -86,7 +86,7 @@ class ServicesMockController extends Controller
                     'Workstation & server protection',
                     'Recovery testing & run-books',
                 ],
-                'icon'  => asset('images/backup.png'), // add this file
+                'icon'  => asset('images/backup.png'),
             ],
 
             [
@@ -99,7 +99,7 @@ class ServicesMockController extends Controller
                     'Windows & third-party patching',
                     'Health & compliance reporting',
                 ],
-                'icon'  => asset('images/endpoint.png'), // add this file
+                'icon'  => asset('images/endpoint.png'),
             ],
 
             [
@@ -112,7 +112,7 @@ class ServicesMockController extends Controller
                     'Budget planning & lifecycle advice',
                     'Vendor & project guidance',
                 ],
-                'icon'  => asset('images/planning.png'), // add this file
+                'icon'  => asset('images/planning.png'),
             ],
 
             [
@@ -125,7 +125,7 @@ class ServicesMockController extends Controller
                     'Networking & Wi-Fi hardware',
                     'Pre-config & install to your standards',
                 ],
-                'icon'  => asset('images/hardware.png'), // add this file
+                'icon'  => asset('images/hardware.png'),
             ],
         ];
 
