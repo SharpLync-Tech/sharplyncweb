@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Spatie\PdfToText\Pdf;
+// We no longer need the Storage facade, as we are using the public_path helper.
 
 class PolicyController extends Controller
 {
-    private $storageDisk = 'public';
-    private $policyPath = 'policies/';
+    // The policy path is now relative to the public directory
+    private $policyPath = 'policies/'; 
 
     /**
      * Renders a policy page, extracting content from a PDF.
@@ -21,31 +21,34 @@ class PolicyController extends Controller
      */
     private function renderPolicy(string $policyKey, string $viewPath, string $filename)
     {
-        $filePath = $this->policyPath . $filename;
+        // 1. Define the full absolute file path on the server
+        $filePath = public_path($this->policyPath . $filename); 
+        
+        // 2. Define the public URL for the download link
+        $pdfUrl = asset($this->policyPath . $filename); 
+        
         $content = '';
-        $pdfUrl = null;
-
-        // Check if the PDF file exists in the public storage
-        if (Storage::disk($this->storageDisk)->exists($filePath)) {
-            $pdfAbsolutePath = Storage::disk($this->storageDisk)->path($filePath);
-            $pdfUrl = Storage::disk($this->storageDisk)->url($filePath);
-
+        
+        // Check if the physical file exists at the given path
+        if (file_exists($filePath)) {
+            
             try {
-                // 1. Extract text from PDF
-                $plainText = (new Pdf())->setPdf($pdfAbsolutePath)->text();
+                // Instantiate the Pdf class with the absolute path to the PDF
+                $plainText = (new Pdf())->setPdf($filePath)->text();
                 
-                // 2. Convert plain text to simple HTML (paragraphs)
-                // This is a simple conversion; you may need a more robust library 
-                // if your PDF has complex formatting (tables, lists, etc.)
-                $htmlContent = nl2br(e($plainText)); // nl2br handles new lines, e() escapes for safety
+                // Convert plain text to simple HTML (paragraphs)
+                // nl2br handles new lines, e() escapes for safety
+                $htmlContent = nl2br(e($plainText)); 
                 $content = '<div class="policy-text-raw">' . $htmlContent . '</div>';
 
             } catch (\Exception $e) {
-                // Log the error and fall back to a message
                 \Log::error("Failed to parse PDF for {$policyKey}: " . $e->getMessage());
-                $content = "<p>Error: Could not process the official document file.</p>";
+                // You can add a specific message for parsing failure
+                $content = "<p>Error: Could not process the official document file. Please check server logs for 'pdftotext' path or installation issues.</p>";
             }
-        }
+        } 
+        // If file_exists is false, $content remains '' (empty), triggering the 
+        // fallback message in the Blade view.
 
         return view($viewPath, [
             'content' => $content,
