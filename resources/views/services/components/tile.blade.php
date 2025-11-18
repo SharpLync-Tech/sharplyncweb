@@ -1,11 +1,17 @@
+{{-- resources/views/services/components/tile.blade.php --}}
 <div class="service-tile" data-id="{{ $cat['id'] }}">
     <div class="tile-inner">
-
         <div class="tile-header">
-            <img src="{{ $cat['icon'] }}" alt="{{ $cat['title'] }}" class="tile-icon">
+            <img src="{{ asset($cat['icon']) }}" 
+                 alt="{{ $cat['title'] }}" 
+                 class="tile-icon">
+
             <h3>{{ $cat['title'] }}</h3>
             <p>{{ $cat['short'] }}</p>
-            <button class="tile-toggle">Learn More</button>
+
+            <button type="button" class="tile-toggle">
+                Learn More
+            </button>
         </div>
 
         <div class="tile-detail">
@@ -20,6 +26,5 @@
                 </ul>
             @endif
         </div>
-
     </div>
 </div>
