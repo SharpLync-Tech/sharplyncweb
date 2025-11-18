@@ -1,29 +1,17 @@
-/* ============================================================
-   SERVICES PAGE STYLESHEET
-   Version: v3.0
-   Description:
-   - Premium “expand in place” interaction
-   - Desktop fixed-position expanded tile
-   - Auto-scroll when content exceeds viewport
-   - Mobile mode uses natural flow (non-fixed)
-   - Focus-one mode fades other cards
-   ============================================================ */
-
-
-/* ==================== ROOT VARIABLES ==================== */
+/* ==================== VARIABLES / ROOT ==================== */
 .services-root {
     --navy: #0A2A4D;
     --blue: #104976;
     --teal: #2CBFAE;
     --card-bg: rgba(10, 42, 77, 0.78);
     --card-border: rgba(255,255,255,0.15);
+    --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.35);
 
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
     color: #ffffff;
     min-height: 100vh;
 }
-
 
 /* ==================== HERO WRAPPER ==================== */
 .services-hero {
@@ -62,8 +50,8 @@
     width: 220px;
     height: auto;
     margin-bottom: 2rem;
-    z-index: 1;
     filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
+    z-index: 1;
 }
 
 .services-hero .hero-text {
@@ -80,6 +68,7 @@
 
 .services-hero .hero-text .highlight {
     color: var(--teal);
+    display: inline-block;
     position: relative;
 }
 
@@ -88,11 +77,10 @@
     position: absolute;
     left: 0;
     bottom: -6px;
-    width: 100%;
     height: 3px;
+    width: 100%;
     background-color: var(--teal);
 }
-
 
 /* ==================== GRID ==================== */
 .services-cards {
@@ -107,7 +95,6 @@
     transition: all 0.4s ease;
 }
 
-
 /* ==================== CARD BASE ==================== */
 .service-tile {
     background: var(--card-bg);
@@ -119,10 +106,12 @@
     transition:
         transform 0.35s ease,
         box-shadow 0.35s ease,
+        max-width 0.35s ease,
         opacity 0.3s ease,
         filter 0.3s ease,
         margin 0.35s ease,
         background 0.3s ease;
+    overflow: hidden;
     color: #E8F3FF;
     display: flex;
     flex-direction: column;
@@ -135,8 +124,7 @@
     border-color: rgba(44,191,174,0.85);
 }
 
-
-/* ==================== CONTENT ==================== */
+/* ==================== CARD CONTENT ==================== */
 .tile-header {
     display: flex;
     flex-direction: column;
@@ -161,8 +149,7 @@
     opacity: 0.9;
 }
 
-
-/* ==================== BUTTON (LEARN / CLOSE) ==================== */
+/* learn more / close button */
 .tile-toggle {
     margin-top: auto;
     align-self: center;
@@ -182,8 +169,7 @@
     background-color: #35e0c2;
 }
 
-
-/* ==================== COLLAPSED DETAIL ==================== */
+/* ==================== DETAIL (collapsed) ==================== */
 .tile-detail {
     border-top: 1px solid rgba(255,255,255,0.12);
     margin-top: 1rem;
@@ -199,12 +185,14 @@
         transform 0.35s ease;
 }
 
+/* ==================== PREMIUM EXPANDED MODE ==================== */
 
-/* ============================================================
-   PREMIUM EXPAND MODE (DESKTOP)
-   ============================================================ */
+.services-cards.focus-one {
+    padding-bottom: 20rem; /* prevents footer overlap */
+}
 
-/* Fade out other tiles */
+
+/* fade out other tiles */
 .services-cards.focus-one .service-tile:not(.active) {
     opacity: 0;
     filter: blur(3px);
@@ -212,23 +200,25 @@
     transform: scale(0.95);
 }
 
-/* Main expanded tile */
+/* expanded card */
 .service-tile.active {
-    position: fixed;
-    top: var(--tile-top);
-    left: var(--tile-left); /* ensures perfect centering */
-    width: var(--tile-width);
-    z-index: 9999;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1150px;      /* full width of the grid */
+    z-index: 20;
 
-    transform: scale(1.05);
-    box-shadow: 0 0 45px rgba(44,191,174,0.95);
-    border-color: rgba(44,191,174,0.9);
+    /* keep your glow and scale */
+    transform: scale(1.03);
+    box-shadow: 0 0 40px rgba(44,191,174,0.9);
+    border-color: rgba(44,191,174,0.85);
 
-    max-height: 85vh;   /* Prevent overflow below screen */
-    overflow-y: auto;   /* Scroll within tile */
+    /* disable grid push-down */
+    grid-column: auto; 
 }
-
-/* Premium teal glow ring */
+/* subtle teal glow */
 .service-tile.active::before {
     content: "";
     position: absolute;
@@ -243,20 +233,24 @@
     opacity: 1;
 }
 
-/* Expanded detail */
+/* reveal details */
 .service-tile.active .tile-detail {
     max-height: 420px;
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Premium divider styling */
+.service-tile.active .tile-detail {
     border-top: 1px solid rgba(255,255,255,0.18);
     margin-top: 1.6rem;
     padding-top: 1.2rem;
 }
 
-
 /* ==================== RESPONSIVE ==================== */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .services-hero .hero-text h1 { font-size: 2.2rem; }
+    .service-tile.active { margin-top: 0.5rem; }
 }
 
 @media (max-width: 600px) {
@@ -264,33 +258,7 @@
     .services-hero .hero-cpu-bg { display: none !important; }
 }
 
-
-/* ============================================================
-   MOBILE MODE — NO FIXED EXPANSION
-   ============================================================ */
-@media (max-width: 768px) {
-
-    .service-tile.active {
-        position: static !important;
-        width: 100% !important;
-        transform: none !important;
-        max-height: none !important;
-        overflow-y: visible !important;
-    }
-
-    /* Do NOT fade other tiles on mobile */
-    .services-cards.focus-one .service-tile:not(.active) {
-        opacity: 1 !important;
-        filter: none !important;
-        transform: none !important;
-        pointer-events: auto !important;
-    }
-}
-
-
-/* ============================================================
-   DARKER MOBILE BACKGROUND (better readability)
-   ============================================================ */
+/* Darker simple background on mobile */
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
