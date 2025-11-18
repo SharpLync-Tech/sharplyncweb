@@ -148,8 +148,8 @@
 }
 
 .tile-toggle {
-    margin-top: 0.8rem;
-    align-self: flex-start;
+    margin-top: auto;   /* 💥 pushes to bottom of header */
+    align-self: center; /* center horizontally */
     border: none;
     border-radius: 999px;
     padding: 0.55rem 1.4rem;
