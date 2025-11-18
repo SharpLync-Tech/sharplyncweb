@@ -23,11 +23,7 @@
     <div class="hero-text">
         <h1>Your Business,<br>
             <span class="highlight">Secure &amp; Connected.</span>
-        </h1>
-        <p>
-            From the Granite Belt to the Cloud — managed IT, cloud, and security
-            that keeps your systems running sharp, safe, and simple.
-        </p>
+        </h1>        
     </div>
 
     {{-- Service tiles: same style as home (.tile), but with extra behaviour --}}
