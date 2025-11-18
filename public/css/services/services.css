@@ -130,10 +130,12 @@
 
 /* ===================== RESPONSIVE ====================== */
 
-@media (max-width: 768px) {
-   
-    .tile-header img {
-        width: 48px;
+@media (max-width: 600px) {
+    .services-hero {
+        padding: 3rem 1rem 1.5rem !important;
     }
-    
+
+    .hero-fade {
+        margin-top: -60px !important;
+    }
 }
