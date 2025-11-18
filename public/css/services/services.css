@@ -211,3 +211,11 @@
     .services-hero .hero-text h1 { font-size: 1.9rem; }
     .services-hero .hero-cpu-bg { display: none !important; }
 }
+
+@media (max-width: 700px) {
+    .services-root,
+    .services-hero {
+        background: #0A2A4D !important; /* Solid navy */
+    }
+
+}
