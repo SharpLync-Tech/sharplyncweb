@@ -28,3 +28,4 @@ Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear
 require __DIR__.'/facilities.php';
 require __DIR__.'/admin.php';
 require __DIR__.'/customers.php';
+require __DIR__.'/services.php';
