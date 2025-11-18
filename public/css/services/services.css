@@ -14,8 +14,8 @@
 
 /* Make hero slightly shorter than home hero */
 .services-hero {
-    min-height: 70vh !important;
-    padding: 5rem 10% 3rem !important;
+    min-height: 55vh !important;
+    padding: 4rem 10% 3rem !important;
 }
 
 /* ===================== SERVICES GRID ====================== */
