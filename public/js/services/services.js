@@ -1,23 +1,34 @@
-// public/js/services/services.js
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.service-tile').forEach(tile => {
-        const toggle = tile.querySelector('.tile-toggle');
-        if (!toggle) return;
+    const tiles = Array.from(document.querySelectorAll('.service-tile'));
 
-        toggle.addEventListener('click', () => {
-            const willOpen = !tile.classList.contains('active');
+    if (!tiles.length) return;
 
-            // Toggle detail visibility
-            tile.classList.toggle('active');
+    tiles.forEach(tile => {
+        const toggleBtn = tile.querySelector('.tile-toggle');
+        if (!toggleBtn) return;
 
-            // On mobile, scroll the card into view when it opens
-            if (willOpen && window.innerWidth < 820) {
-                setTimeout(() => {
-                    tile.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 250);
+        toggleBtn.addEventListener('click', () => {
+            const alreadyActive = tile.classList.contains('active');
+
+            // Close all tiles first (auto-close behaviour)
+            tiles.forEach(t => t.classList.remove('active'));
+
+            // If the one we clicked was already open, we’re done (it just closes)
+            if (alreadyActive) return;
+
+            // Open the clicked tile
+            tile.classList.add('active');
+
+            // On mobile, scroll the tile into view so user SEES the expansion
+            if (window.innerWidth <= 768) {
+                const headerOffset = 80; // approx sticky header height
+                const rect = tile.getBoundingClientRect();
+                const scrollTop = window.scrollY + rect.top - headerOffset;
+
+                window.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
             }
         });
     });

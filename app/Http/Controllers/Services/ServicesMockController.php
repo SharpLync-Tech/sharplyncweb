@@ -6,34 +6,127 @@ use App\Http\Controllers\Controller;
 
 class ServicesMockController extends Controller
 {
-    public function index()
+    public function __invoke()
     {
         $categories = [
             [
-                'id'    => 1,
+                'id'    => 'remote-support',
                 'title' => 'Remote Support',
-                'icon'  => '/images/support.png',
                 'short' => 'Instant help wherever you are.',
-                'long'  => 'Our remote support keeps your business moving with fast troubleshooting, software fixes, and ongoing helpdesk assistance.',
+                'long'  => 'Fast, friendly remote support to keep your people working — without waiting days for someone to show up. Screensharing, quick fixes, and real humans on the other end.',
                 'subs'  => [
-                    'Remote troubleshooting',
-                    'Software fixes & updates',
-                    'Performance checks',
+                    'Remote troubleshooting & fixes',
+                    'Application and OS support',
+                    'Printer, email & access issues',
                 ],
+                'icon'  => asset('images/support.png'),
             ],
+
             [
-                'id'    => 2,
+                'id'    => 'cybersecurity',
                 'title' => 'Cybersecurity',
-                'icon'  => '/images/security.png',
                 'short' => 'Stay protected 24/7.',
-                'long'  => 'We keep your business safe with layered security, active monitoring, and modern authentication methods.',
+                'long'  => 'Layered security that protects your people, devices and data — without the scare tactics. Practical security that fits how you actually work.',
                 'subs'  => [
-                    'Antivirus management',
-                    '2FA setup',
-                    'Security monitoring',
+                    'Managed antivirus / endpoint protection',
+                    '2FA / MFA rollout & support',
+                    'Security monitoring & alerting',
+                    'Security reviews & hardening',
                 ],
+                'icon'  => asset('images/security.png'),
             ],
-            // Add more mock categories here
+
+            [
+                'id'    => 'cloud-m365',
+                'title' => 'Cloud & Microsoft 365',
+                'short' => 'Email, files and collaboration that just works.',
+                'long'  => 'We look after Microsoft 365, Azure and your core cloud apps so your team can log in, get to their stuff, and get on with their day.',
+                'subs'  => [
+                    'Microsoft 365 setup & admin',
+                    'Licensing & tenant management',
+                    'SharePoint / OneDrive structure',
+                    'Teams setup and best-practice',
+                ],
+                'icon'  => asset('images/cloud.png'), // add this file when you’re ready
+            ],
+
+            [
+                'id'    => 'onsite-support',
+                'title' => 'On-Site Support (Local Region)',
+                'short' => 'Boots-on-ground support where it makes sense.',
+                'long'  => 'When the job needs a human on site — cabling, hardware swaps, WiFi tuning — we provide on-site support across the Granite Belt and surrounds by arrangement. No surprise “Perth visits” here.',
+                'subs'  => [
+                    'On-site fault finding & fixes',
+                    'New equipment rollouts',
+                    'Office moves & changes',
+                ],
+                'icon'  => asset('images/onsite.png'), // add this file
+            ],
+
+            [
+                'id'    => 'network-wifi',
+                'title' => 'Networking & Wi-Fi',
+                'short' => 'Solid networks. No mystery drop-outs.',
+                'long'  => 'From modem to meeting room, we design and support networks that stay up, stay fast and stay secure — wired, wireless and everything in between.',
+                'subs'  => [
+                    'Business-grade Wi-Fi design',
+                    'Switching & VLAN configuration',
+                    'Firewall & router management',
+                ],
+                'icon'  => asset('images/network.png'), // add this file
+            ],
+
+            [
+                'id'    => 'backup-continuity',
+                'title' => 'Backup & Business Continuity',
+                'short' => 'If something breaks, you’re not stuck.',
+                'long'  => 'We make sure your critical data is backed up, tested and recoverable — whether it lives on a server, in the cloud or on a laptop.',
+                'subs'  => [
+                    'Cloud & on-prem backups',
+                    'Workstation & server protection',
+                    'Recovery testing & run-books',
+                ],
+                'icon'  => asset('images/backup.png'), // add this file
+            ],
+
+            [
+                'id'    => 'endpoint-patching',
+                'title' => 'Endpoint Protection & Patching',
+                'short' => 'Laptops and PCs kept locked-down and up-to-date.',
+                'long'  => 'We keep your devices healthy with monitored antivirus, patching and health checks — lowering risk without annoying your staff every 5 minutes.',
+                'subs'  => [
+                    'Managed antivirus / EDR',
+                    'Windows & third-party patching',
+                    'Health & compliance reporting',
+                ],
+                'icon'  => asset('images/endpoint.png'), // add this file
+            ],
+
+            [
+                'id'    => 'it-planning',
+                'title' => 'IT Planning & Advisory',
+                'short' => 'Clear, practical guidance — no buzzwords.',
+                'long'  => 'Straight-talking advice on where to take your systems next: what to keep, what to replace and how to budget for it over time.',
+                'subs'  => [
+                    'IT roadmap & refresh planning',
+                    'Budget planning & lifecycle advice',
+                    'Vendor & project guidance',
+                ],
+                'icon'  => asset('images/planning.png'), // add this file
+            ],
+
+            [
+                'id'    => 'hardware-procurement',
+                'title' => 'Hardware & Procurement',
+                'short' => 'Business-ready gear, ordered and prepped for you.',
+                'long'  => 'We source, configure and deliver the right hardware for the job — desktops, laptops, networking, and more — so it arrives ready for your staff to log in and go.',
+                'subs'  => [
+                    'New laptops, desktops & screens',
+                    'Networking & Wi-Fi hardware',
+                    'Pre-config & install to your standards',
+                ],
+                'icon'  => asset('images/hardware.png'), // add this file
+            ],
         ];
 
         return view('services.mock', compact('categories'));

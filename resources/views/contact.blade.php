@@ -24,21 +24,21 @@
         <h3>Connect with Us</h3>
         <div class="details-grid">
 
-            <div class="detail-item">
+            <div class="icon-wrapper">
                 <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
                 <h4>Email Support</h4>
                 <a href="mailto:info@sharplync.com.au" class="detail-link">info@sharplync.com.au</a>
                 <p>For all service enquiries and general questions.</p>
             </div>
 
-            <div class="detail-item">
+            <div class="icon-wrapper">
                 <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn Icon" class="detail-icon">
                 <h4>LinkedIn</h4>
                 <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page</a>
                 <p>Follow our updates and professional insights.</p>
             </div>
 
-            <div class="detail-item">
+            <div class="icon-wrapper">
                 <img src="{{ asset('images/facebook.png') }}" alt="Facebook Icon" class="detail-icon">
                 <h4>Facebook</h4>
                 <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community</a>
