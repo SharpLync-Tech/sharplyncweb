@@ -1,22 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SharpLync | Services')</title>
+{{-- 
+  Layout: layouts/services/services-base.blade.php
+  Version: v1.1 (Extends main site layout + Services Hero)
+  Description:
+  - Reuses main header/footer from layouts.base
+  - Adds a SharpLync-style hero specific to Services
+  - Provides @yield('services-content') for pages like services.mock
+--}}
 
-    {{-- Use the main SharpLync stylesheet for hero + branding --}}
-    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+@extends('layouts.base')
 
-    {{-- Services-specific stylesheet --}}
-    <link rel="stylesheet" href="/css/services/services.css">
+@section('title', 'SharpLync | Services')
 
-    @stack('styles')
-</head>
+@push('styles')
+    {{-- Services-specific stylesheet (hero styling still from sharplync.css) --}}
+    <link rel="stylesheet" href="{{ secure_asset('css/services/services.css') }}">
+@endpush
 
-<body class="services-root">
-
-    <!-- ======= FULL SHARPLYNC HERO (Same style as home) ======= -->
+@section('content')
+    <!-- ======= FULL SHARPLYNC HERO (Same style as home, but for Services) ======= -->
     <header class="hero services-hero">
 
         <!-- CPU Background -->
@@ -41,13 +42,12 @@
 
     </header>
 
-    <!-- ======= PAGE CONTENT ======= -->
+    <!-- ======= SERVICES PAGE CONTENT WRAPPER ======= -->
     <main class="services-content">
-        @yield('content')
+        @yield('services-content')
     </main>
+@endsection
 
-    <!-- ======= SERVICES JS ======= -->
-    <script src="/js/services/services.js"></script>
-    @stack('scripts')
-</body>
-</html>
+@push('scripts')
+    <script src="{{ asset('js/services/services.js') }}"></script>
+@endpush

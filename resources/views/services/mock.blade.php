@@ -1,8 +1,14 @@
+{{-- 
+  Page: services/mock.blade.php
+  Version: v1.1 (Uses Services Layout + Mock Data)
+  Description:
+  - Extends services-base, which itself extends layouts.base
+  - Renders the services grid with mock categories
+--}}
+
 @extends('layouts.services.services-base')
 
-@section('title', 'SharpLync Services (Mock)')
-
-@section('content')
+@section('services-content')
 
 <section class="services-grid">
     @foreach ($categories as $cat)
