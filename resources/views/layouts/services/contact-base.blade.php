@@ -1,7 +1,3 @@
-<!-- =====================
-     Works on Mobile. Hamburger not working.
-     ===================== -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/contact.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 
-    <!-- ============================================== -->
-    <!-- FORCE OVERLAY MENU HIDDEN (fix hamburger issue) -->
-    <!-- ============================================== -->
-    <style>
+        <style>
         #overlayMenu {
             display: none !important;
         }
