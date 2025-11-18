@@ -29,7 +29,7 @@
             {{-- Block 1: Email Support --}}
             <div class="detail-item">
                 <div class="icon-wrapper"> 
-                    <img src="{{ asset('images/email-icon-placeholder.png') }}" alt="Email Icon" class="detail-icon">
+                    <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
                 </div>
                 <h4>Email Support</h4>
                 <p>For all service enquiries and general questions.</p>
@@ -39,7 +39,7 @@
             {{-- Block 2: LinkedIn --}}
             <div class="detail-item">
                 <div class="icon-wrapper">
-                    <img src="{{ asset('images/linkedin-icon-placeholder.png') }}" alt="LinkedIn Icon" class="detail-icon">
+                    <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn Icon" class="detail-icon">
                 </div>
                 <h4>LinkedIn</h4>
                 <p>Follow our updates and professional insights.</p>
@@ -49,7 +49,7 @@
             {{-- Block 3: Facebook --}}
             <div class="detail-item">
                 <div class="icon-wrapper">
-                    <img src="{{ asset('images/facebook-icon-placeholder.png') }}" alt="Facebook Icon" class="detail-icon">
+                    <img src="{{ asset('images/facebook.png') }}" alt="Facebook Icon" class="detail-icon">
                 </div>
                 <h4>Facebook</h4>
                 <p>See our latest news and announcements.</p>
