@@ -12,7 +12,7 @@ class ServicesMockController extends Controller
             [
                 'id'    => 1,
                 'title' => 'Remote Support',
-                'icon'  => '/images/remote.png',
+                'icon'  => '/images/support.png',
                 'short' => 'Instant help wherever you are.',
                 'long'  => 'Our remote support keeps your business moving with fast troubleshooting, software fixes, and ongoing helpdesk assistance.',
                 'subs'  => [
