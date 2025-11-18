@@ -108,7 +108,8 @@
         max-width 0.35s ease,
         opacity 0.3s ease,
         filter 0.3s ease,
-        margin 0.35s ease;
+        margin 0.35s ease,
+        background 0.3s ease;
     overflow: hidden;
     color: #E8F3FF;
     display: flex;
@@ -147,9 +148,10 @@
     opacity: 0.9;
 }
 
+/* learn more / close button */
 .tile-toggle {
-    margin-top: auto;   /* 💥 pushes to bottom of header */
-    align-self: center; /* center horizontally */
+    margin-top: auto;
+    align-self: center;
     border: none;
     border-radius: 999px;
     padding: 0.55rem 1.4rem;
@@ -166,6 +168,7 @@
     background-color: #35e0c2;
 }
 
+/* ==================== DETAIL (collapsed) ==================== */
 .tile-detail {
     border-top: 1px solid rgba(255,255,255,0.12);
     margin-top: 1rem;
@@ -174,13 +177,14 @@
     max-height: 0;
     opacity: 0;
     overflow: hidden;
+    transform: translateY(-6px);
     transition:
         max-height 0.35s ease,
         opacity 0.35s ease,
         transform 0.35s ease;
 }
 
-/* ==================== PREMIUM ZOOM + STRETCH MODE ==================== */
+/* ==================== PREMIUM EXPANDED MODE ==================== */
 
 /* fade out other tiles */
 .services-cards.focus-one .service-tile:not(.active) {
@@ -190,19 +194,44 @@
     transform: scale(0.95);
 }
 
-/* expanded tile */
+/* expanded card */
 .service-tile.active {
     transform: scale(1.03);
-    box-shadow: 0 0 40px rgba(44,191,174,0.9);
+    box-shadow: 0 0 55px rgba(44,191,174,1);
+    background: rgba(10, 42, 77, 0.88);
+    border-color: rgba(44,191,174,0.65);
     max-width: 100%;
     grid-column: 1 / -1;
+    padding: 2.8rem 3rem;
 }
 
-/* expanded details visible */
+/* subtle teal glow */
+.service-tile.active::before {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 20px;
+    background: radial-gradient(
+        circle,
+        rgba(44,191,174,0.20) 0%,
+        rgba(44,191,174,0) 70%
+    );
+    z-index: -1;
+    opacity: 1;
+}
+
+/* reveal details */
 .service-tile.active .tile-detail {
-    max-height: 380px;
+    max-height: 420px;
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Premium divider styling */
+.service-tile.active .tile-detail {
+    border-top: 1px solid rgba(255,255,255,0.18);
+    margin-top: 1.6rem;
+    padding-top: 1.2rem;
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -216,13 +245,14 @@
     .services-hero .hero-cpu-bg { display: none !important; }
 }
 
+/* Darker simple background on mobile */
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
         background: linear-gradient(
             180deg,
             #0A2A4D 0%,
-            #0A2A4D 80%,
+            #0A2A4D 90%,
             #0E3A62 100%
         ) !important;
     }
