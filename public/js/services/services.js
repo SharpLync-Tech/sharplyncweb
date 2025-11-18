@@ -1,35 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const tiles = Array.from(document.querySelectorAll('.service-tile'));
+    const grid = document.querySelector('.services-cards');
+    if (!grid) return;
 
-    if (!tiles.length) return;
+    const tiles = Array.from(grid.querySelectorAll('.service-tile'));
+
+    function closeAllTiles() {
+        tiles.forEach(tile => tile.classList.remove('active'));
+        grid.classList.remove('focus-one');
+    }
 
     tiles.forEach(tile => {
-        const toggleBtn = tile.querySelector('.tile-toggle');
-        if (!toggleBtn) return;
+        const btn = tile.querySelector('.tile-toggle');
+        if (!btn) return;
 
-        toggleBtn.addEventListener('click', () => {
-            const alreadyActive = tile.classList.contains('active');
+        btn.addEventListener('click', () => {
+            const isActive = tile.classList.contains('active');
 
-            // Close all tiles first (auto-close behaviour)
-            tiles.forEach(t => t.classList.remove('active'));
-
-            // If the one we clicked was already open, we’re done (it just closes)
-            if (alreadyActive) return;
-
-            // Open the clicked tile
-            tile.classList.add('active');
-
-            // On mobile, scroll the tile into view so user SEES the expansion
-            if (window.innerWidth <= 768) {
-                const headerOffset = 80; // approx sticky header height
-                const rect = tile.getBoundingClientRect();
-                const scrollTop = window.scrollY + rect.top - headerOffset;
-
-                window.scrollTo({
-                    top: scrollTop,
-                    behavior: 'smooth'
-                });
+            if (isActive) {
+                closeAllTiles();
+                return;
             }
+
+            closeAllTiles();
+
+            tile.classList.add('active');
+            grid.classList.add('focus-one');
+
+            // Auto-scroll on mobile and desktop
+            setTimeout(() => {
+                tile.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }, 200);
         });
     });
 });

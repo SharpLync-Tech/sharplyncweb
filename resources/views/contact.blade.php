@@ -43,7 +43,7 @@
                 </div>
                 <h4>LinkedIn</h4>
                 <p>Follow our updates and professional insights.</p>
-                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page →</a>
+                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page</a>
             </div>
 
             {{-- Block 3: Facebook --}}
@@ -53,7 +53,7 @@
                 </div>
                 <h4>Facebook</h4>
                 <p>See our latest news and announcements.</p>
-                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community →</a>
+                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community</a>
             </div>
 
         </div>
