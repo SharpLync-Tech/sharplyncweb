@@ -131,9 +131,7 @@
 /* ===================== RESPONSIVE ====================== */
 
 @media (max-width: 768px) {
-    .services-content {
-        margin-top: -10px; /* or 0 if you prefer no overlap at all */
-    }
+   
     .tile-header img {
         width: 48px;
     }
