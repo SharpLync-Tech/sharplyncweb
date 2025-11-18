@@ -1,0 +1,61 @@
+/* ============================================================
+   POLICY PAGES STYLES
+   ============================================================ */
+
+/* Wrapper for main content on policy pages */
+.policy-page-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 4rem; /* Ensure footer spacing */
+}
+
+/* Card for policy text */
+.policy-content-card {
+    background: #ffffff;
+    color: #0A2A4D;
+    border-radius: 16px;
+    padding: 2.5rem 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    margin-top: 2rem;
+    text-align: left;
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+/* Style for headings within the policy content */
+.policy-content-card h2,
+.policy-content-card h3 {
+    color: #104976;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(16, 73, 118, 0.2);
+    padding-bottom: 4px;
+}
+
+.policy-content-card p {
+    margin-bottom: 1rem;
+}
+
+/* Download link style */
+.download-link {
+    font-size: 1.05rem;
+    margin-top: -10px;
+}
+
+.download-link a {
+    color: #2CBFAE;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.download-link a:hover {
+    color: #4df0d8;
+}
+
+@media (max-width: 768px) {
+    .policy-content-card {
+        padding: 1.5rem;
+    }
+}

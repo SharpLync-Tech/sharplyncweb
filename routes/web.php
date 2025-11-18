@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Admin\LogViewerController;
+use App\Http\Controllers\PolicyController;
 
 Route::get('/', fn() => view('welcome'));
 Route::get('/contact', fn() => view('contact'));
@@ -23,6 +24,12 @@ Route::get('/verify/{token}', [VerifyController::class, 'verify'])->name('verify
 
 Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
 Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
+
+
+
+// Policy Pages
+Route::get('/terms', [PolicyController::class, 'termsAndConditions'])->name('terms');
+Route::get('/privacy', [PolicyController::class, 'privacyPolicy'])->name('privacy');
 
 
 
