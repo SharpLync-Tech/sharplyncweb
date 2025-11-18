@@ -10,6 +10,9 @@
 
 .services-content {
     padding: 3rem 0 5rem;
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
 }
 
 /* Make hero slightly shorter than home hero */
@@ -105,13 +108,8 @@
 
 /* ===================== RESPONSIVE ====================== */
 
-@media (max-width: 700px) {
-    .services-grid {
-        padding: 30px 15px;
-        gap: 20px;
-    }
-
-    .service-tile {
-        padding: 20px;
+@media (max-width: 768px) {
+    .services-content {
+        margin-top: -10px; /* or 0 if you prefer no overlap at all */
     }
 }
