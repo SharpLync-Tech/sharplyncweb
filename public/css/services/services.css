@@ -130,7 +130,9 @@
 
 .tile-icon {
     width: 100px;
-    filter: drop-shadow(0 0 6px rgba(44,191,174,0.7));
+    filter:
+        drop-shadow(0 0 2px rgba(44,191,174,0.9))     /* tight main glow */
+        drop-shadow(0 0 6px rgba(44,191,174,0.25));   /* soft halo */
 }
 
 .tile-toggle {
