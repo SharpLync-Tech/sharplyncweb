@@ -203,7 +203,7 @@
     }
 
     .mock-header img {
-        width: 70px;
+        width: 100px;
         /* stronger glow */
         filter:
             drop-shadow(0 0 4px rgba(44,191,174,1))
@@ -326,6 +326,18 @@
     .mock-wrapper {
         padding: 2rem;
     }
+
+     .services-hero {
+        padding: 1rem 6% 2rem !important; /* reduce top gap */
+    }
+
+     .services-hero .hero-text h1 {
+        font-size: 1.7rem !important;
+        line-height: 1.25 !important;
+        padding: 0 0.5rem; /* optional — adds breathing space */
+    }
+
+
 
     /* Header & divider align full width */
     .mock-header,
