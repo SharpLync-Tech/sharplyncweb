@@ -274,7 +274,7 @@
         max-width: 100%;
     }
 
-    .services-cards.focus-one .service-tile:not(.active)) {
+    .services-cards.focus-one .service-tile:not(.active) {
         display: block !important;
         opacity: 1;
         transform: none;
