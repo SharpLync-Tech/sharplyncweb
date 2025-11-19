@@ -4,82 +4,68 @@
 @section('title', 'SharpLync | Services')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=9001">
+<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=7001">
 @endpush
 
 @section('content')
-<section class="hero services-hero">
+<section class="services-root services-hero">
 
-    {{-- CPU background --}}
+    {{-- CPU BG --}}
     <div class="hero-cpu-bg">
-        <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
+        <img src="{{ asset('images/hero-cpu.png') }}" alt="CPU">
     </div>
 
-    {{-- Logo --}}
-    <img src="{{ asset('images/sharplync-logo.png') }}"
-         alt="SharpLync Hero Logo"
-         class="hero-logo">
+    {{-- LOGO --}}
+    <img src="{{ asset('images/sharplync-logo.png') }}" class="hero-logo">
 
-    {{-- Hero Heading --}}
+    {{-- HEADING --}}
     <div class="hero-text">
-        <h1>Your Business,<br>
-            <span class="highlight">Secure & Connected.</span>
-        </h1>
+        <h1>Your Business,<br><span class="highlight">Secure & Connected.</span></h1>
     </div>
 
-    {{-- GRID OF SERVICE TILES --}}
-    <div class="hero-cards fade-section services-cards" id="servicesGrid">
-
+    {{-- SERVICE GRID --}}
+    <div id="servicesGrid" class="services-cards">
         @foreach ($categories as $cat)
-        <div class="tile service-tile" data-id="{{ $cat['id'] }}" data-title="{{ $cat['title'] }}"
+        <div class="service-tile"
+             data-title="{{ $cat['title'] }}"
              data-short="{{ $cat['short'] }}"
              data-long="{{ $cat['long'] }}"
              data-icon="{{ asset($cat['icon']) }}"
              data-image="{{ asset($cat['image']) }}"
-             data-subs="{{ json_encode($cat['subs']) }}">
+             data-subs='@json($cat["subs"])'>
 
             <div class="tile-header">
                 <img src="{{ asset($cat['icon']) }}" class="tile-icon">
                 <h3>{{ $cat['title'] }}</h3>
                 <p>{{ $cat['short'] }}</p>
-
-                <button type="button" class="tile-toggle">Learn More</button>
+                <button class="tile-toggle">Learn More</button>
             </div>
-
         </div>
         @endforeach
-
     </div>
 
+    {{-- EXPANDED ONE-CARD CLEAN UI --}}
+    <div id="expandedService" class="mock-wrapper">
 
-    {{-- THE EXPANDED FULL-WIDTH CLEAN LAYOUT --}}
-    <div id="expandedService" style="display:none;">
+        <div class="mock-header">
+            <img id="expIcon" src="">
+            <h2 id="expTitle"></h2>
+            <p id="expShort"></p>
+            <button id="closeExpanded" class="mock-close-btn">Close</button>
+        </div>
 
-        <div class="mock-wrapper">
+        <hr class="mock-divider">
 
-            <div class="mock-header">
-                <img id="expIcon" src="" alt="">
-                <h2 id="expTitle"></h2>
-                <p id="expShort"></p>
-
-                <button class="mock-close-btn" id="closeExpanded">Close</button>
+        <div class="mock-content">
+            <div class="mock-image">
+                <img id="expImage" src="">
             </div>
 
-            <hr class="mock-divider">
-
-            <div class="mock-content">
-                <div class="mock-image">
-                    <img id="expImage" src="" alt="">
-                </div>
-
-                <div class="mock-text">
-                    <p id="expLong"></p>
-
-                    <h4>Included Services</h4>
-                    <ul id="expSubs"></ul>
-                </div>
+            <div class="mock-text">
+                <p id="expLong"></p>
+                <h4>Included Services</h4>
+                <ul id="expSubs"></ul>
             </div>
-
         </div>
 
     </div>
@@ -88,5 +74,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/services/services.js') }}?v=9001" defer></script>
+<script src="{{ asset('js/services/services.js') }}?v=9001"></script>
 @endpush

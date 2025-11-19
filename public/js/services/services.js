@@ -12,58 +12,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const closeBtn = document.getElementById("closeExpanded");
 
-    // --- OPEN TILE ---
+    // =========================
+    // OPEN CARD
+    // =========================
     document.querySelectorAll(".tile-toggle").forEach(btn => {
         btn.addEventListener("click", e => {
 
             const tile = e.target.closest(".service-tile");
 
-            // Read tile data
-            const title = tile.dataset.title;
-            const short = tile.dataset.short;
-            const longText = tile.dataset.long;
-            const icon = tile.dataset.icon;
-            const image = tile.dataset.image;
-            const subs = JSON.parse(tile.dataset.subs);
+            expTitle.textContent = tile.dataset.title;
+            expShort.textContent = tile.dataset.short;
+            expLong.textContent = tile.dataset.long;
+            expIcon.src = tile.dataset.icon;
+            expImage.src = tile.dataset.image;
 
-            // Fill expanded content
-            expIcon.src = icon;
-            expTitle.textContent = title;
-            expShort.textContent = short;
-            expImage.src = image;
-            expLong.textContent = longText;
-
-            // Populate subs
             expSubs.innerHTML = "";
-            subs.forEach(s => {
+            JSON.parse(tile.dataset.subs).forEach(text => {
                 const li = document.createElement("li");
-                li.textContent = s;
+                li.textContent = text;
                 expSubs.appendChild(li);
             });
 
-            // Show expanded, hide grid
-            grid.style.display = "none";
+            grid.classList.add("hidden");
             expanded.style.display = "block";
 
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0 });
         });
     });
 
-    // --- CLOSE EXPANDED ---
+    // =========================
+    // CLOSE CARD – INSTANT
+    // =========================
     closeBtn.addEventListener("click", () => {
-
-        // Add `.closing` class for instant collapse (removes CSS transitions)
-        expanded.classList.add("closing");
-
         expanded.style.display = "none";
-        grid.style.display = "grid";
-
-        // Remove override once layout stabilises
-        setTimeout(() => {
-            expanded.classList.remove("closing");
-        }, 50);
-
-        // No smooth scroll — instant back to top = faster feel
+        grid.classList.remove("hidden");
         window.scrollTo({ top: 0 });
     });
 
