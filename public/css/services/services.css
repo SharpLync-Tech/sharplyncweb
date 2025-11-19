@@ -90,7 +90,7 @@
 
 /* ==================== CARD BASE ==================== */
 .service-tile {
-    background: var(--card-bg);
+    background: #0A2A4D;
     border-radius: 18px;
     padding: 2rem 1.8rem;
     border: 1px solid var(--card-border);
