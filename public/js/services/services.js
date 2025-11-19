@@ -15,35 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!toggleBtn) return;
 
         toggleBtn.addEventListener('click', () => {
-            const alreadyActive = tile.classList.contains('active');
+    const alreadyActive = tile.classList.contains('active');
 
-            // Close all tiles + reset focus mode
-            tiles.forEach(t => t.classList.remove('active'));
-            container.classList.remove('focus-one');
+    tiles.forEach(t => t.classList.remove('active'));
+    container.classList.remove('focus-one');
 
-            if (alreadyActive) {
-                // we just closed the open one
-                toggleBtn.textContent = 'Learn More';
-                return;
-            }
+    if (alreadyActive) return;
 
-            // Activate the clicked tile
-            tile.classList.add('active');
-            container.classList.add('focus-one');
-            toggleBtn.textContent = 'Close';
+    tile.classList.add('active');
+    container.classList.add('focus-one');
 
-            // MOBILE: gently scroll so the card is nicely in view
-            if (window.innerWidth <= 768) {
-                const rect = tile.getBoundingClientRect();
-                const headerOffset = 80; // sticky header height-ish
-
-                window.scrollTo({
-                    top: window.scrollY + rect.top - headerOffset,
-                    behavior: 'smooth'
-                });
-            }
+    // mobile only
+    if (window.innerWidth <= 768) {
+        const rect = tile.getBoundingClientRect();
+        window.scrollTo({
+            top: window.scrollY + rect.top - 80,
+            behavior: "smooth"
         });
-    });
+    }
+});
+
 
     // Safety: keep button label in sync after transitions
     tiles.forEach(tile => {
