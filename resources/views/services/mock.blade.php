@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<section class="hero services-hero services-root">
+<section class="hero services-hero">
 
     {{-- CPU background --}}
     <div class="hero-cpu-bg">
@@ -27,97 +27,66 @@
         </h1>
     </div>
 
-    {{-- SERVICE CARDS --}}
-    <div class="hero-cards fade-section services-cards">
+    {{-- GRID OF SERVICE TILES --}}
+    <div class="hero-cards fade-section services-cards" id="servicesGrid">
 
         @foreach ($categories as $cat)
-        <div class="tile service-tile" data-id="{{ $cat['id'] }}">
+        <div class="tile service-tile" data-id="{{ $cat['id'] }}" data-title="{{ $cat['title'] }}"
+             data-short="{{ $cat['short'] }}"
+             data-long="{{ $cat['long'] }}"
+             data-icon="{{ asset($cat['icon']) }}"
+             data-image="{{ asset($cat['image']) }}"
+             data-subs="{{ json_encode($cat['subs']) }}">
 
-            {{-- Tile Header (Normal state) --}}
             <div class="tile-header">
-                @if (!empty($cat['icon']))
-                <img src="{{ asset($cat['icon']) }}"
-                     alt="{{ $cat['title'] }} Icon"
-                     class="tile-icon">
-                @endif
-
+                <img src="{{ asset($cat['icon']) }}" class="tile-icon">
                 <h3>{{ $cat['title'] }}</h3>
                 <p>{{ $cat['short'] }}</p>
 
-                <button type="button" class="tile-toggle">
-                    Learn More
-                </button>
+                <button type="button" class="tile-toggle">Learn More</button>
             </div>
-
-            {{-- EXPANDED DETAIL --}}
-            <div class="tile-detail">
-
-                {{-- EXPANDED HEADER (your mock-clean layout) --}}
-                <div class="mock-header-expanded">
-                    <img src="{{ asset($cat['icon']) }}" alt="" class="expanded-icon">
-                    <h2>{{ $cat['title'] }}</h2>
-                    <p>{{ $cat['short'] }}</p>
-
-                    <button type="button" class="tile-close-btn">
-                        Close
-                    </button>
-                </div>
-
-                {{-- Divider --}}
-                <hr class="tile-divider">
-
-                @if (!empty($cat['image']))
-                <div class="tile-detail-inner">
-
-                    {{-- Left Image --}}
-                    <div class="detail-image-wrapper">
-                        <img src="{{ asset($cat['image']) }}"
-                             alt="{{ $cat['title'] }} Image"
-                             class="detail-image">
-                    </div>
-
-                    {{-- Right Text Area --}}
-                    <div class="tile-detail-content">
-
-                        <p>{{ $cat['long'] }}</p>
-
-                        @if (!empty($cat['subs']))
-                            <h4>Included Services</h4>
-                            <ul class="detail-list">
-                                @foreach ($cat['subs'] as $sub)
-                                    <li>{{ $sub }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                    </div>
-
-                </div>
-
-                @else
-                    {{-- NO IMAGE --}}
-                    <p>{{ $cat['long'] }}</p>
-
-                    @if (!empty($cat['subs']))
-                        <h4>Included Services</h4>
-                        <ul class="detail-list">
-                            @foreach ($cat['subs'] as $sub)
-                                <li>{{ $sub }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-
-                @endif
-
-            </div> {{-- END tile-detail --}}
 
         </div>
         @endforeach
 
     </div>
+
+
+    {{-- THE EXPANDED FULL-WIDTH CLEAN LAYOUT --}}
+    <div id="expandedService" style="display:none;">
+
+        <div class="mock-wrapper">
+
+            <div class="mock-header">
+                <img id="expIcon" src="" alt="">
+                <h2 id="expTitle"></h2>
+                <p id="expShort"></p>
+
+                <button class="mock-close-btn" id="closeExpanded">Close</button>
+            </div>
+
+            <hr class="mock-divider">
+
+            <div class="mock-content">
+                <div class="mock-image">
+                    <img id="expImage" src="" alt="">
+                </div>
+
+                <div class="mock-text">
+                    <p id="expLong"></p>
+
+                    <h4>Included Services</h4>
+                    <ul id="expSubs"></ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 </section>
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/services/services.js') }}" defer></script>
+<script src="{{ asset('js/services/services.js') }}?v=9001" defer></script>
 @endpush

@@ -1,56 +1,60 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const tiles = document.querySelectorAll(".service-tile");
-    const cardsContainer = document.querySelector(".services-cards");
+    const grid = document.getElementById("servicesGrid");
+    const expanded = document.getElementById("expandedService");
 
-    let activeTile = null;
+    const expIcon = document.getElementById("expIcon");
+    const expTitle = document.getElementById("expTitle");
+    const expShort = document.getElementById("expShort");
+    const expImage = document.getElementById("expImage");
+    const expLong = document.getElementById("expLong");
+    const expSubs = document.getElementById("expSubs");
 
-    // OPEN TILE
-    tiles.forEach(tile => {
-        const toggleBtn = tile.querySelector(".tile-toggle");
-        const closeBtn = tile.querySelector(".tile-close-btn");
+    const closeBtn = document.getElementById("closeExpanded");
 
-        if (toggleBtn) {
-            toggleBtn.addEventListener("click", () => openTile(tile));
-        }
-        if (closeBtn) {
-            closeBtn.addEventListener("click", () => closeTile(tile));
-        }
+    // --- OPEN TILE ---
+    document.querySelectorAll(".tile-toggle").forEach(btn => {
+        btn.addEventListener("click", e => {
+
+            const tile = e.target.closest(".service-tile");
+
+            // Read tile data attributes
+            const title = tile.dataset.title;
+            const short = tile.dataset.short;
+            const longText = tile.dataset.long;
+            const icon = tile.dataset.icon;
+            const image = tile.dataset.image;
+            const subs = JSON.parse(tile.dataset.subs);
+
+            // Fill expanded layout
+            expIcon.src = icon;
+            expTitle.textContent = title;
+            expShort.textContent = short;
+            expImage.src = image;
+            expLong.textContent = longText;
+
+            // Populate subs
+            expSubs.innerHTML = "";
+            subs.forEach(s => {
+                const li = document.createElement("li");
+                li.textContent = s;
+                expSubs.appendChild(li);
+            });
+
+            // Hide grid, show expanded
+            grid.style.display = "none";
+            expanded.style.display = "block";
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     });
 
-    function openTile(tile) {
-        if (activeTile === tile) return; // Already open
+    // --- CLOSE EXPANDED ---
+    closeBtn.addEventListener("click", () => {
+        expanded.style.display = "none";
+        grid.style.display = "grid";
 
-        // Close previous
-        if (activeTile) {
-            closeTile(activeTile);
-        }
-
-        activeTile = tile;
-
-        // Add active state
-        tile.classList.add("active");
-        cardsContainer.classList.add("focus-one");
-
-        // Lock scroll (desktop only)
-        document.body.style.overflow = "hidden";
-
-        // Scroll into view smoothly
-        setTimeout(() => {
-            tile.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }, 250);
-    }
-
-    // CLOSE TILE
-    function closeTile(tile) {
-        tile.classList.remove("active");
-        cardsContainer.classList.remove("focus-one");
-        activeTile = null;
-
-        document.body.style.overflow = "";
-    }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 
 });
