@@ -45,16 +45,19 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.style.display = "none";
             expanded.style.display = "block";
 
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            // INSTANT scroll to top
+            window.scrollTo(0, 0);
         });
     });
 
     // --- CLOSE EXPANDED ---
     closeBtn.addEventListener("click", () => {
+
         expanded.style.display = "none";
         grid.style.display = "grid";
 
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // INSTANT scroll to top
+        window.scrollTo(0, 0);
     });
 
 });
