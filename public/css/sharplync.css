@@ -130,7 +130,7 @@ body {
 .hero-logo {
   width: 250px;
   height: auto;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; /* Jannie chaged */
   animation: logoPulse 4s ease-in-out infinite, fadeUp 1s ease forwards;
   filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
   z-index: 1;
@@ -171,7 +171,7 @@ body {
 
 .hero-text p {
   margin: 1rem auto 2rem;
-  font-size: 1.1rem;
+  font-size: 2.5rem;
   color: #e9f4f3;
   line-height: 1.6;
 }

@@ -32,7 +32,7 @@
       We’re your tech partner! Great service never goes out of style.
       Reliable people, smarter systems, and genuine care for getting IT right.
     </p>
-    <a href="/about" class="learn-more">Learn more →</a>
+    <a href="/about" class="learn-more">Learn more</a>
   </div>
 
   <div class="tile transparent">
@@ -42,7 +42,7 @@
       From cloud and security to on-site infrastructure. SharpLync keeps your business connected,
       protected, and performing at its best. Real solutions, real people, real results.
     </p>
-    <a href="/services" class="learn-more">Learn more →</a>
+    <a href="/services" class="learn-more">Learn more</a>
   </div>
 
   <div class="tile transparent">
@@ -52,7 +52,7 @@
       Need help or advice? Reach out anytime. Proudly based in the Granite Belt —
       proudly supporting clients nationwide. Quick support, friendly faces, no fuss.
     </p>
-    <a href="/contact" class="learn-more">Learn more →</a>
+    <a href="/contact" class="learn-more">Learn more</a>
   </div>
 
 </div>
