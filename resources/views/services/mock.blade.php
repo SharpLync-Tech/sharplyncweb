@@ -4,11 +4,11 @@
 @section('title', 'SharpLync | Services')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6975">
+<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=9001">
 @endpush
 
 @section('content')
-<section class="hero services-hero">
+<section class="hero services-hero services-root">
 
     {{-- CPU background --}}
     <div class="hero-cpu-bg">
@@ -23,80 +23,95 @@
     {{-- Hero Heading --}}
     <div class="hero-text">
         <h1>Your Business,<br>
-            <span class="highlight">Secure &amp; Connected.</span>
+            <span class="highlight">Secure & Connected.</span>
         </h1>
     </div>
 
-    {{-- Service Tiles --}}
+    {{-- SERVICE CARDS --}}
     <div class="hero-cards fade-section services-cards">
 
         @foreach ($categories as $cat)
-            <div class="tile service-tile" data-id="{{ $cat['id'] }}">
+        <div class="tile service-tile" data-id="{{ $cat['id'] }}">
 
-                {{-- TILE HEADER (used for both closed & open states) --}}
-                <div class="tile-header">
-                    @if (!empty($cat['icon']))
-                        <img src="{{ asset($cat['icon']) }}"
-                             alt="{{ $cat['title'] }} Icon"
-                             class="tile-icon">
-                    @endif
+            {{-- Tile Header (Normal state) --}}
+            <div class="tile-header">
+                @if (!empty($cat['icon']))
+                <img src="{{ asset($cat['icon']) }}"
+                     alt="{{ $cat['title'] }} Icon"
+                     class="tile-icon">
+                @endif
 
-                    <h3>{{ $cat['title'] }}</h3>
+                <h3>{{ $cat['title'] }}</h3>
+                <p>{{ $cat['short'] }}</p>
+
+                <button type="button" class="tile-toggle">
+                    Learn More
+                </button>
+            </div>
+
+            {{-- EXPANDED DETAIL --}}
+            <div class="tile-detail">
+
+                {{-- EXPANDED HEADER (your mock-clean layout) --}}
+                <div class="mock-header-expanded">
+                    <img src="{{ asset($cat['icon']) }}" alt="" class="expanded-icon">
+                    <h2>{{ $cat['title'] }}</h2>
                     <p>{{ $cat['short'] }}</p>
 
-                    <button type="button" class="tile-toggle">
-                        Learn More
+                    <button type="button" class="tile-close-btn">
+                        Close
                     </button>
                 </div>
 
-                {{-- EXPANDED DETAIL AREA (hidden when collapsed) --}}
-                <div class="tile-detail">
+                {{-- Divider --}}
+                <hr class="tile-divider">
 
-                    {{-- Divider that matches the text column --}}
-                    <hr class="tile-divider">
+                @if (!empty($cat['image']))
+                <div class="tile-detail-inner">
 
-                    @if (!empty($cat['image']))
-                        {{-- Image-left, text-right layout --}}
-                        <div class="tile-detail-inner">
+                    {{-- Left Image --}}
+                    <div class="detail-image-wrapper">
+                        <img src="{{ asset($cat['image']) }}"
+                             alt="{{ $cat['title'] }} Image"
+                             class="detail-image">
+                    </div>
 
-                            {{-- IMAGE LEFT --}}
-                            <div class="detail-image-wrapper">
-                                <img src="{{ asset($cat['image']) }}"
-                                     alt="{{ $cat['title'] }} Image"
-                                     class="detail-image">
-                            </div>
+                    {{-- Right Text Area --}}
+                    <div class="tile-detail-content">
 
-                            {{-- TEXT RIGHT --}}
-                            <div class="tile-detail-content">
-                                <p>{{ $cat['long'] }}</p>
+                        <p>{{ $cat['long'] }}</p>
 
-                                @if (!empty($cat['subs']))
-                                    <h4>Included Services</h4>
-                                    <ul class="detail-list">
-                                        @foreach ($cat['subs'] as $sub)
-                                            <li>{{ $sub }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </div>
-                        </div>
-                    @else
-                        {{-- FALLBACK: NO IMAGE, CLASSIC CENTERED TEXT --}}
-                        <div class="tile-detail-content tile-detail-content--centered">
-                            <p>{{ $cat['long'] }}</p>
+                        @if (!empty($cat['subs']))
+                            <h4>Included Services</h4>
+                            <ul class="detail-list">
+                                @foreach ($cat['subs'] as $sub)
+                                    <li>{{ $sub }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
 
-                            @if (!empty($cat['subs']))
-                                <h4>Included Services</h4>
-                                <ul class="detail-list">
-                                    @foreach ($cat['subs'] as $sub)
-                                        <li>{{ $sub }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-                    @endif
+                    </div>
+
                 </div>
-            </div>
+
+                @else
+                    {{-- NO IMAGE --}}
+                    <p>{{ $cat['long'] }}</p>
+
+                    @if (!empty($cat['subs']))
+                        <h4>Included Services</h4>
+                        <ul class="detail-list">
+                            @foreach ($cat['subs'] as $sub)
+                                <li>{{ $sub }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+
+                @endif
+
+            </div> {{-- END tile-detail --}}
+
+        </div>
         @endforeach
 
     </div>
@@ -104,5 +119,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/services/services.js') }}" defer></script>
+<script src="{{ asset('js/services/services.js') }}" defer></script>
 @endpush

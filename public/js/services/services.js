@@ -1,33 +1,56 @@
-// public/js/services/services.js
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('.services-cards');
-    if (!container) return;
+    const tiles = document.querySelectorAll(".service-tile");
+    const cardsContainer = document.querySelector(".services-cards");
 
-    container.addEventListener('click', (event) => {
-        const toggle = event.target.closest('.tile-toggle');
-        if (!toggle) return;
+    let activeTile = null;
 
-        const tile = toggle.closest('.service-tile');
-        if (!tile) return;
+    // OPEN TILE
+    tiles.forEach(tile => {
+        const toggleBtn = tile.querySelector(".tile-toggle");
+        const closeBtn = tile.querySelector(".tile-close-btn");
 
-        const isActive = tile.classList.contains('active');
-
-        // Reset all tiles first
-        const tiles = container.querySelectorAll('.service-tile');
-        tiles.forEach(t => {
-            t.classList.remove('active');
-            const btn = t.querySelector('.tile-toggle');
-            if (btn) btn.textContent = 'Learn More';
-        });
-        container.classList.remove('focus-one');
-
-        // If the clicked one was NOT active, open it
-        if (!isActive) {
-            tile.classList.add('active');
-            container.classList.add('focus-one');
-            toggle.textContent = 'Close';
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => openTile(tile));
         }
-        // If it *was* active, we just closed it by resetting above
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => closeTile(tile));
+        }
     });
+
+    function openTile(tile) {
+        if (activeTile === tile) return; // Already open
+
+        // Close previous
+        if (activeTile) {
+            closeTile(activeTile);
+        }
+
+        activeTile = tile;
+
+        // Add active state
+        tile.classList.add("active");
+        cardsContainer.classList.add("focus-one");
+
+        // Lock scroll (desktop only)
+        document.body.style.overflow = "hidden";
+
+        // Scroll into view smoothly
+        setTimeout(() => {
+            tile.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 250);
+    }
+
+    // CLOSE TILE
+    function closeTile(tile) {
+        tile.classList.remove("active");
+        cardsContainer.classList.remove("focus-one");
+        activeTile = null;
+
+        document.body.style.overflow = "";
+    }
+
 });
