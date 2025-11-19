@@ -100,7 +100,11 @@
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+
+    /* IMPORTANT — remove space-between */
+    justify-content: flex-start;
+
+    height: 100%; /* ensures full card height */
 
     transition:
         transform 0.35s ease,
@@ -109,6 +113,7 @@
         max-height 0.4s ease;
 }
 
+
 .service-tile:hover {
     transform: translateY(-6px);
     box-shadow: 0 0 30px rgba(44,191,174,0.7);
@@ -116,11 +121,11 @@
 
 /* ==================== CONTENT ==================== */
 .tile-header {
-    text-align: center;
+    flex-grow: 1;  /* expands to fill space */
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
     align-items: center;
+    text-align: center;
 }
 
 .tile-icon {
@@ -130,18 +135,19 @@
 
 .tile-toggle {
     margin-top: auto;
+    align-self: center;
     padding: 0.55rem 1.4rem;
     border-radius: 999px;
     border: none;
-    background: var(--teal);
-    color: #0A2A4D;
+    background: var(--teal)!important;
+    color: #fff !important;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 18px rgba(0,0,0,0.35);
 }
 
 .tile-toggle:hover {
-    background: #35e0c2;
+    background-color: #35e0c2 !important;
 }
 
 /* ==================== DETAILS (Collapsed) ==================== */
