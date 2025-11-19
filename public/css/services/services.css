@@ -1,189 +1,172 @@
-/* ============================================================
-   SERVICES PAGE STYLESHEET – v4.0 CLEAN
-   Grid cards unchanged.
-   Expanded layout replaced by standalone mock-clean block.
-   ============================================================ */
-
-/* ==================== ROOT VARIABLES ==================== */
-.services-root {
-    --navy: #0A2A4D;
-    --blue: #104976;
-    --teal: #2CBFAE;
-    --card-bg: rgba(10, 42, 77, 0.78);
-    --card-border: rgba(255,255,255,0.15);
-
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #ffffff;
-    min-height: 100vh;
-}
-
-/* ==================== HERO WRAPPER ==================== */
-.services-hero {
-    position: relative;
-    min-height: 100vh;
-    padding: 7rem 8% 4rem;
-    text-align: center;
-    overflow: hidden;
-}
-
-.services-hero .hero-cpu-bg {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    pointer-events: none;
-}
-
-.services-hero .hero-cpu-bg img {
-    width: 680px;
-    opacity: 0.35;
-    margin-top: -1rem;
-    filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
-}
-
-.services-hero .hero-logo {
-    width: 220px;
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
-}
-
-.services-hero .hero-text {
-    margin-top: -50px;
-    max-width: 700px;
-    margin-inline: auto;
-}
-
-.services-hero .hero-text h1 {
-    font-size: 2.7rem;
-    line-height: 1.2;
-}
-
-.services-hero .highlight {
-    color: var(--teal);
-    position: relative;
-}
-
-.services-hero .highlight::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-    width: 100%;
-    height: 3px;
-    background-color: var(--teal);
-}
-
-/* ==================== GRID ==================== */
-.services-cards {
-    margin-top: 3rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    max-width: 1150px;
-    margin-inline: auto;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-/* ==================== CARD BASE ==================== */
-.service-tile {
-    background: #0A2A4D;
-    border-radius: 18px;
-    padding: 2rem 1.8rem;
-    border: 1px solid var(--card-border);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-    overflow: hidden;
-    color: #E8F3FF;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        background 0.3s ease,
-        max-height 0.4s ease;
-}
-
-.service-tile:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 30px rgba(44,191,174,0.7);
-}
-
-/* ==================== CONTENT ==================== */
-.tile-header {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-}
-
-.tile-icon {
-    width: 100px;
-    filter:
-        drop-shadow(0 0 2px rgba(44,191,174,0.9))
-        drop-shadow(0 0 6px rgba(44,191,174,0.25));
-}
-
-.tile-toggle {
-    margin-top: auto;
-    padding: 0.55rem 1.4rem;
-    border-radius: 999px;
-    border: 1px solid rgba(44,191,174,0.65);
-    background: var(--teal);
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.35);
-}
-
-.tile-toggle:hover {
-    background-color: #35e0c2;
-}
-
-/* ============================================================
-   ⛔️ REMOVED: OLD EXPANDED TILE CSS
-   (.tile-detail, .active, .detail-image-wrapper etc.)
-   Because the new expanded layout is *separate*
-   ============================================================ */
-
-
-/* ==================== MOBILE LAYOUT ==================== */
-@media (max-width: 768px) {
-
-    .services-cards {
-        display: grid;
-        gap: 1.5rem;
-        max-width: 100%;
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+        color: white;
     }
 
-    .service-tile:hover {
-        transform: none;
+    .mock-wrapper {
+        max-width: 1200px;
+        margin: 4rem auto;
+        background: #0A2A4D;
+        border-radius: 18px;
+        padding: 3rem;
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     }
-}
 
-/* DARKER MOBILE BACKGROUND */
-@media (max-width: 700px) {
-    .services-root,
-    .services-hero {
-        background: linear-gradient(180deg,
-            #0A2A4D 0%,
-            #0A2A4D 90%,
-            #0E3A62 100%);
+    /* -------------------------------------------------------
+       HEADER aligned to the RIGHT COLUMN ONLY
+    ---------------------------------------------------------*/
+    .mock-header {
+        text-align: center;
+        width: 100%;
+        max-width: 600px;        /* keeps header aligned to text width */
+        margin-left: calc(420px + 3rem); /* pushes header to align above text */
     }
+
+    .mock-header img {
+        width: 70px;
+        /* stronger glow */
+        filter:
+            drop-shadow(0 0 4px rgba(44,191,174,1))
+            drop-shadow(0 0 16px rgba(44,191,174,0.7));
+        margin-bottom: 1rem;
+    }
+
+    .mock-header h2 {
+        margin: 0;
+        font-size: 1.7rem;
+        font-weight: 600;
+    }
+
+    .mock-header p {
+        margin-top: .3rem;
+        opacity: 0.85;
+        font-size: 0.95rem;
+    }
+
+    /* -------------------------------------------------------
+       DIVIDER — matches width of text column only
+    ---------------------------------------------------------*/
+    .mock-divider {
+        width: 600px;  /* matches .mock-header max-width */
+        margin-left: calc(420px + 3rem);
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.18);
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* -------------------------------------------------------
+       GRID LAYOUT
+    ---------------------------------------------------------*/
+    .mock-content {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 3rem;
+        align-items: flex-start;
+    }
+
+    .mock-image img {
+        width: 100%;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+        margin-top: -13rem; /* keep your original offset */
+    }
+
+    .mock-text {
+        max-width: 650px;
+    }
+
+    .mock-text p {
+        margin-bottom: 1.5rem;
+        line-height: 1.55;
+        opacity: 0.95;
+    }
+
+    .mock-text h4 {
+        /* more breathing room above and below */
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .mock-text ul {
+        margin: 0;
+        padding-left: 0;          /* remove default indent */
+        list-style: none;         /* remove default bullets */
+    }
+
+    .mock-text li {
+        margin-bottom: .6rem;
+        position: relative;
+        padding-left: 1.4rem;     /* space for custom icon */
+    }
+
+    .mock-text li::before {
+        content: "➜";             /* custom arrow bullet */
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: #2CBFAE;           /* SharpLync teal */
+        font-weight: 700;
+    }
+
+    /* ----------------------------------------------
+   CLOSE BUTTON (under title)
+----------------------------------------------*/
+.mock-close-btn {
+    margin-top: 1rem;
+    padding: 0.55rem 1.6rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(44,191,174,0.65);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
 
-/* ============================================================
-   PRESERVED DIVIDER STYLE (if used anywhere else)
-============================================================ */
-.tile-divider {
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    margin: 1.5rem 0 2rem;
+.mock-close-btn:hover {
+    background: rgba(44,191,174,0.25);
+    box-shadow: 0 0 15px rgba(44,191,174,0.8);
+    transform: translateY(-2px);
 }
+
+
+    /* -------------------------------------------------------
+       MOBILE
+    ---------------------------------------------------------*/
+    @media (max-width: 768px) {
+
+        .mock-wrapper {
+            padding: 2rem;
+        }
+
+        .mock-header,
+        .mock-divider {
+            margin-left: 0;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .mock-content {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .mock-text ul {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .mock-image img {
+            margin-top: 0;
+        }
+    }
