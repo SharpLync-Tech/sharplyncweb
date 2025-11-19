@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.classList.add("hidden");
             expanded.style.display = "block";
 
-            window.scrollTo({ top: 0 });
+            // ==== window.scrollTo({ top: 0 }); /// Removed by Jannie ====
+            expanded.scrollIntoView({ behavior: "instant", block: "start" }); // ==== Added by Jannie ====
+
         });
     });
 
@@ -46,7 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtn.addEventListener("click", () => {
         expanded.style.display = "none";
         grid.classList.remove("hidden");
-        window.scrollTo({ top: 0 });
+        // ==== window.scrollTo({ top: 0 }); Removed by Jannie ====
+        expanded.scrollIntoView({ behavior: "instant", block: "start" }); // ==== Added by Jannie ====
+
     });
 
 });
