@@ -50,9 +50,8 @@
 }
 
 .services-hero .hero-text h1 {
-    font-size: 2.7rem;
-    line-height: 1.2;
     font-size: 35px;
+    line-height: 1.2;
 }
 
 .services-hero .highlight {
@@ -79,7 +78,6 @@
     max-width: 1150px;
     margin-inline: auto;
     position: relative;
-    transition: all 0.3s ease;
 }
 
 /* ==================== CARD BASE ==================== */
@@ -96,17 +94,10 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        background 0.3s ease,
-        max-height 0.4s ease;
 }
 
 .service-tile:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 30px rgba(44,191,174,0.7);
+    /* removed transform + transition */
 }
 
 /* ==================== CONTENT ==================== */
@@ -155,17 +146,13 @@
 .tile-detail {
     margin-top: 1rem;
     padding-top: 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateY(-6px);
-    transition:
-        max-height 0.35s ease,
-        opacity 0.35s ease,
-        transform 0.35s ease;
+    max-height: none; /* remove animation collapse */
+    opacity: 1;       /* always visible for our expanded mode */
+    overflow: auto;
+    transform: none;
 }
 
-/* Divider inside expanded detail */
+/* Divider */
 .tile-divider {
     width: 100%;
     max-width: 600px;
@@ -176,126 +163,106 @@
 
 /* ==================== EXPANDED MODE ==================== */
 
-    body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-        color: white;
-    }
+.mock-wrapper {
+    max-width: 1200px;
+    margin: 4rem auto;
+    background: #0A2A4D;
+    border-radius: 18px;
+    padding: 3rem;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+}
 
-    .mock-wrapper {
-        max-width: 1200px;
-        margin: 4rem auto;
-        background: #0A2A4D;
-        border-radius: 18px;
-        padding: 3rem;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-    }
+.mock-header {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin-left: calc(420px + 3rem);
+}
 
-    /* -------------------------------------------------------
-       HEADER aligned to the RIGHT COLUMN ONLY
-    ---------------------------------------------------------*/
-    .mock-header {
-        text-align: center;
-        width: 100%;
-        max-width: 600px;        /* keeps header aligned to text width */
-        margin-left: calc(420px + 3rem); /* pushes header to align above text */
-    }
+.mock-header img {
+    width: 100px;
+    filter:
+        drop-shadow(0 0 4px rgba(44,191,174,1))
+        drop-shadow(0 0 16px rgba(44,191,174,0.7));
+    margin-bottom: 1rem;
+}
 
-    .mock-header img {
-        width: 100px;
-        /* stronger glow */
-        filter:
-            drop-shadow(0 0 4px rgba(44,191,174,1))
-            drop-shadow(0 0 16px rgba(44,191,174,0.7));
-        margin-bottom: 1rem;
-    }
+.mock-header h2 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 600;
+}
 
-    .mock-header h2 {
-        margin: 0;
-        font-size: 1.7rem;
-        font-weight: 600;
-    }
+.mock-header p {
+    margin-top: .3rem;
+    opacity: 0.85;
+    font-size: 0.95rem;
+}
 
-    .mock-header p {
-        margin-top: .3rem;
-        opacity: 0.85;
-        font-size: 0.95rem;
-    }
+.mock-divider {
+    width: 600px;
+    margin-left: calc(420px + 3rem);
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
 
-    /* -------------------------------------------------------
-       DIVIDER — matches width of text column only
-    ---------------------------------------------------------*/
-    .mock-divider {
-        width: 600px;  /* matches .mock-header max-width */
-        margin-left: calc(420px + 3rem);
-        border: none;
-        border-top: 1px solid rgba(255,255,255,0.18);
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-    }
+.mock-content {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 3rem;
+    align-items: flex-start;
+}
 
-    /* -------------------------------------------------------
-       GRID LAYOUT
-    ---------------------------------------------------------*/
-    .mock-content {
-        display: grid;
-        grid-template-columns: 420px 1fr;
-        gap: 3rem;
-        align-items: flex-start;
-    }
+.mock-image img {
+    width: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    margin-top: -13rem;
+}
 
-    .mock-image img {
-        width: 100%;
-        border-radius: 14px;
-        object-fit: cover;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-        margin-top: -13rem; /* keep your original offset */
-    }
+.mock-text {
+    max-width: 650px;
+}
 
-    .mock-text {
-        max-width: 650px;
-    }
+.mock-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+    opacity: 0.95;
+}
 
-    .mock-text p {
-        margin-bottom: 1.5rem;
-        line-height: 1.55;
-        opacity: 0.95;
-    }
+.mock-text h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
 
-    .mock-text h4 {
-        /* more breathing room above and below */
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        font-size: 1.2rem;
-        font-weight: 600;
-        text-align: center;
-    }
+.mock-text ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+}
 
-    .mock-text ul {
-        margin: 0;
-        padding-left: 0;          /* remove default indent */
-        list-style: none;         /* remove default bullets */
-    }
+.mock-text li {
+    margin-bottom: .6rem;
+    position: relative;
+    padding-left: 1.4rem;
+}
 
-    .mock-text li {
-        margin-bottom: .6rem;
-        position: relative;
-        padding-left: 1.4rem;     /* space for custom icon */
-    }
+.mock-text li::before {
+    content: "➜";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #2CBFAE;
+    font-weight: 700;
+}
 
-    .mock-text li::before {
-        content: "➜";             /* custom arrow bullet */
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: #2CBFAE;           /* SharpLync teal */
-        font-weight: 700;
-    }
-
-    /* ----------------------------------------------
-   CLOSE BUTTON (under title)
-----------------------------------------------*/
+/* Close button */
 .mock-close-btn {
     margin-top: 1rem;
     padding: 0.55rem 1.6rem;
@@ -305,41 +272,26 @@
     font-size: 0.95rem;
     color: white;
     cursor: pointer;
-    transition: all 0.25s ease;
     backdrop-filter: blur(4px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
 
-.mock-close-btn:hover {
-    background: rgba(44,191,174,0.25);
-    box-shadow: 0 0 15px rgba(44,191,174,0.8);
-    transform: translateY(-2px);
-}
-
-
-   /* -------------------------------------------------------
-   MOBILE — Unified Block (Final)
----------------------------------------------------------*/
+/* ==================== MOBILE ==================== */
 @media (max-width: 768px) {
-
-    /* Mock wrapper spacing */
     .mock-wrapper {
         padding: 2rem;
     }
 
-     .services-hero {
-        padding: 1rem 6% 2rem !important; /* reduce top gap */
+    .services-hero {
+        padding: 1rem 6% 2rem !important;
     }
 
-     .services-hero .hero-text h1 {
+    .services-hero .hero-text h1 {
         font-size: 1.7rem !important;
         line-height: 1.25 !important;
-        padding: 0 0.5rem; /* optional — adds breathing space */
+        padding: 0 0.5rem;
     }
 
-
-
-    /* Header & divider align full width */
     .mock-header,
     .mock-divider {
         margin-left: 0;
@@ -348,7 +300,6 @@
         text-align: center;
     }
 
-    /* Stack layout: image on top, text below */
     .mock-content {
         grid-template-columns: 1fr;
         text-align: center;
@@ -359,31 +310,24 @@
         width: 100%;
     }
 
-    /* List centered under text */
     .mock-text ul {
         text-align: left;
         display: inline-block;
         margin: 0 auto;
     }
 
-    /* The main cards (grid) */
     .services-cards {
         display: block;
         max-width: 100%;
     }
 
-    /* Keep other cards visible on mobile */
     .services-cards.focus-one .service-tile:not(.active) {
         display: block !important;
         opacity: 1;
         filter: none;
-        transform: none;
     }
 
-    /* Expanded card shadow for mobile */
     .service-tile.active {
-        transform: none;
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     }
 }
-
