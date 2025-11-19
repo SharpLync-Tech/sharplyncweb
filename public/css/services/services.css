@@ -246,111 +246,64 @@
     }
 }
 
-/* ============================================================
-   EXPANDED TILE — IMAGE LAYOUT (OPTION B)
-   Activates ONLY when tile has-image + is active
-   ============================================================ */
-
-.service-tile.has-image.active .tile-detail {
-    padding: 2rem 2.5rem;
-}
-
-/* Main 2-column layout */
-.tile-expanded-layout {
+/* ============================================
+   EXPANDED TILE — IMAGE + TEXT LAYOUT
+   ============================================ */
+.tile-detail-inner {
     display: flex;
     align-items: flex-start;
-    gap: 2.5rem;
-
-    /* smooth reveal */
-    opacity: 0;
-    transform: translateY(10px);
-    animation: tileImageReveal 0.35s ease forwards;
+    gap: 2rem;
+    padding: 1rem 0;
 }
 
-/* Left image */
-.tile-expanded-layout .tile-media {
-    flex: 1;
-    max-width: 360px;
-}
-
-.tile-expanded-layout .tile-media img {
+/* Image sizing */
+.detail-image {
     width: 100%;
+    max-width: 380px;      /* <— adjust for the perfect size you want */
     height: auto;
-    border-radius: 16px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
     object-fit: cover;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-
-    /* SharpLync glow */
-    filter: drop-shadow(0 0 14px rgba(44,191,174,0.25));
 }
 
-/* Right content */
-.tile-expanded-layout .tile-content {
-    flex: 2;
-    max-width: 640px;
+/* Right-hand content block */
+.tile-detail-content {
+    flex: 1;
+    max-width: 650px;
 }
 
-.tile-expanded-layout .tile-content p {
-    line-height: 1.65;
-    margin-bottom: 1.6rem;
+/* Typography polish */
+.tile-detail-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+    font-size: 1rem;
 }
 
-.tile-expanded-layout .tile-content h4 {
-    margin-top: 1.6rem;
-    margin-bottom: 0.6rem;
-    font-size: 1.1rem;
-    color: var(--teal);
-    font-weight: 600;
-}
-
-.tile-expanded-layout .tile-content ul {
-    margin: 0;
+.tile-detail-content ul {
     padding-left: 1.2rem;
 }
 
-.tile-expanded-layout .tile-content li {
-    margin-bottom: 0.35rem;
-    opacity: 0.95;
+.tile-detail-content li {
+    margin-bottom: 0.4rem;
 }
 
-/* Reveal animation */
-@keyframes tileImageReveal {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ============================================================
-   RESPONSIVE — Mobile collapses into vertical stacking
-   ============================================================ */
-
-@media (max-width: 900px) {
-    .tile-expanded-layout {
+/* ============================
+   MOBILE — STACKED
+   ============================ */
+@media (max-width: 768px) {
+    .tile-detail-inner {
         flex-direction: column;
-        gap: 1.8rem;
+        align-items: center;
+        text-align: center;
     }
 
-    .tile-expanded-layout .tile-media {
+    .detail-image {
         max-width: 100%;
+        margin-bottom: 1.5rem;
     }
 
-    .tile-expanded-layout .tile-content {
-        max-width: 100%;
+    .tile-detail-content {
+        text-align: center;
     }
 }
 
-/* Even smaller screens */
-@media (max-width: 600px) {
-    .service-tile.has-image.active .tile-detail {
-        padding: 1.5rem 1rem;
-    }
-
-    .tile-expanded-layout {
-        gap: 1.4rem;
-    }
-
-    .tile-expanded-layout .tile-media img {
-        border-radius: 12px;
-    }
-}
