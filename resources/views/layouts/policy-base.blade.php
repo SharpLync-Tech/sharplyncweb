@@ -10,17 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     {{-- Assuming about.css contains all necessary base styling --}}
     <link rel="stylesheet" href="{{ asset('css/policy.css') }}"> 
-    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
-
-    {{-- FORCE OVERLAY MENU HIDDEN (Copying the style block from about-base) --}}
-    <style>
-        #overlayMenu {
-            display: none !important;
-        }
-        #overlayMenu.show {
-            display: flex !important;
-        }
-    </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">   
 </head>
 
 <body class="about-body">
