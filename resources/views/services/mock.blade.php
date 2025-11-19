@@ -4,7 +4,7 @@
 @section('title', 'SharpLync | Services')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6969">
+<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6970">
 @endpush
 
 @section('content')
@@ -36,7 +36,7 @@
             {{-- TILE HEADER --}}
             <div class="tile-header">
                 @if (!empty($cat['icon']))
-                <img src="{{ asset($cat['icon']) }}" 
+                <img src="{{ asset($cat['icon']) }}"
                      alt="{{ $cat['title'] }} Icon"
                      class="tile-icon">
                 @endif
@@ -49,52 +49,54 @@
                 </button>
             </div>
 
-            {{-- EXPANDED DETAIL --}}
+            {{-- EXPANDED CARD --}}
             <div class="tile-detail">
 
-                {{-- DIVIDER LINE --}}
-                <hr class="tile-divider">
+                <div class="expanded-wrapper">
 
-                @if (!empty($cat['image']))
-                <div class="tile-detail-inner">
+                    {{-- HEADER ABOVE TEXT COLUMN --}}
+                    <div class="expanded-header">
+                        @if (!empty($cat['icon']))
+                        <img src="{{ asset($cat['icon']) }}" class="expanded-icon" alt="">
+                        @endif
+                        <h2>{{ $cat['title'] }}</h2>
+                        <p>{{ $cat['short'] }}</p>
 
-                    {{-- IMAGE LEFT --}}
-                    <div class="detail-image-wrapper">
-                        <img src="{{ asset($cat['image']) }}"
-                             alt="{{ $cat['title'] }} Image"
-                             class="detail-image">
+                        <button type="button" class="expanded-close">
+                            Close
+                        </button>
                     </div>
 
-                    {{-- TEXT RIGHT --}}
-                    <div class="tile-detail-content">
+                    {{-- DIVIDER --}}
+                    <hr class="expanded-divider">
 
-                        <p>{{ $cat['long'] }}</p>
+                    {{-- CONTENT ROW --}}
+                    <div class="expanded-content">
 
-                        @if (!empty($cat['subs']))
-                            <h4>Included Services</h4>
-                            <ul>
-                                @foreach ($cat['subs'] as $sub)
-                                    <li>{{ $sub }}</li>
-                                @endforeach
-                            </ul>
+                        {{-- IMAGE LEFT --}}
+                        @if (!empty($cat['image']))
+                        <div class="expanded-image">
+                            <img src="{{ asset($cat['image']) }}" alt="{{ $cat['title'] }} Image">
+                        </div>
                         @endif
+
+                        {{-- TEXT RIGHT --}}
+                        <div class="expanded-text">
+                            <p>{{ $cat['long'] }}</p>
+
+                            @if (!empty($cat['subs']))
+                                <h4>Included Services</h4>
+                                <ul class="arrow-list">
+                                    @foreach ($cat['subs'] as $sub)
+                                        <li>{{ $sub }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
 
                     </div>
 
                 </div>
-
-                {{-- NO IMAGE → CLASSIC CENTERED TEXT --}}
-                @else
-                    <p>{{ $cat['long'] }}</p>
-                    @if (!empty($cat['subs']))
-                        <h4>Included Services</h4>
-                        <ul>
-                            @foreach ($cat['subs'] as $sub)
-                                <li>{{ $sub }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-                @endif
 
             </div>
 
