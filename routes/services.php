@@ -1,12 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Services\ServicesMockController;
+use App\Http\Controllers\Services\ServicesController;
 
-Route::get('/services-mock', [ServicesMockController::class, 'index'])
-    ->name('services.mock');
-
-Route::get('/services-mock-clean', function () {
-    return view('services.mock-clean');
-});
-
+Route::get('/services', [ServicesController::class, 'index'])
+    ->name('services');

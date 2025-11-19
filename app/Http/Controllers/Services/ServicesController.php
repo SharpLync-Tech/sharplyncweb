@@ -154,6 +154,6 @@ class ServicesMockController extends Controller
             ],
         ];
 
-        return view('services.mock', compact('categories'));
+        return view('services', compact('categories'));
     }
 }

@@ -1,4 +1,4 @@
-{{-- resources/views/services/mock.blade.php --}}
+{{-- resources/views/services/services.blade.php --}}
 @extends('layouts.base')
 
 @section('title', 'SharpLync | Services')
