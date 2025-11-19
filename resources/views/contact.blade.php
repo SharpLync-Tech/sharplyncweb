@@ -5,9 +5,7 @@
 @section('content')
 <section class="content-hero fade-in">
 
-    {{-- ===================== --}}
-    {{-- Contact Us Title --}}
-    {{-- ===================== --}}
+    <!-- HERO -->
     <div class="contact-title-wrapper fade-section">
         <h1 class="contact-title">
             Contact <span class="gradient">SharpLync</span>
@@ -17,63 +15,65 @@
         </p>
     </div>
 
-    {{-- =============================================== --}}
-    {{-- Contact Details Grid (FIXED 3-COLUMN LAYOUT) --}}
-    {{-- =============================================== --}}
+
+    <!-- CONTACT BLOCKS -->
     <div class="details-grid-wrapper fade-section">
         <h3 class="grid-heading">Connect with Us</h3>
 
-        {{-- This is the container that must use the 3-column grid --}}
-        <div class="details-grid"> 
+        <div class="details-grid">
 
-            {{-- Block 1: Email Support --}}
+            <!-- Email -->
             <div class="detail-item">
-                <div class="icon-wrapper"> 
+                <div class="icon-wrapper">
                     <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
                 </div>
                 <h4>Email Support</h4>
                 <p>For all service enquiries and general questions.</p>
-                <a href="mailto:info@sharplync.com.au" class="detail-link">info@sharplync.com.au</a>
+                <a href="mailto:info@sharplync.com.au" class="detail-link">
+                    info@sharplync.com.au
+                </a>
             </div>
 
-            {{-- Block 2: LinkedIn --}}
+            <!-- LinkedIn -->
             <div class="detail-item">
                 <div class="icon-wrapper">
                     <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn Icon" class="detail-icon">
                 </div>
                 <h4>LinkedIn</h4>
                 <p>Follow our updates and professional insights.</p>
-                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">Connect with our page</a>
+                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="detail-link">
+                    Connect with our page
+                </a>
             </div>
 
-            {{-- Block 3: Facebook --}}
+            <!-- Facebook -->
             <div class="detail-item">
                 <div class="icon-wrapper">
                     <img src="{{ asset('images/facebook.png') }}" alt="Facebook Icon" class="detail-icon">
                 </div>
                 <h4>Facebook</h4>
                 <p>See our latest news and announcements.</p>
-                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">Join our community</a>
+                <a href="https://www.facebook.com/SharpLync" target="_blank" class="detail-link">
+                    Join our community
+                </a>
             </div>
 
         </div>
     </div>
 
 
-    {{-- =============================================== --}}
-    {{-- Contact Form Section (Styled like Login Screen) --}}
-    {{-- =============================================== --}}
+    <!-- FORM -->
     <div class="contact-form-card fade-section">
         <h3 class="form-heading">Send Us a Message</h3>
-        <form action="/submit-contact" method="POST" class="contact-form">
-            @csrf {{-- Laravel CSRF protection --}}
 
-            {{-- Honeypot field for bot protection --}}
+        <form action="/submit-contact" method="POST" class="contact-form">
+            @csrf
+
+            <!-- Hidden honeypot -->
             <div class="form-group full-width" style="display:none; height:0; overflow:hidden;">
-                <label for="address_bot_trap">Do not fill this field (Bot Trap)</label>
-                <input type="text" id="address_bot_trap" name="address_bot_trap" value="">
+                <input type="text" name="address_bot_trap" value="">
             </div>
-            
+
             <div class="form-group">
                 <label for="name">Your Name</label>
                 <input type="text" id="name" name="name" required placeholder="John Doe">
@@ -102,6 +102,7 @@
             <div class="form-group full-width">
                 <button type="submit" class="submit-btn">Send Message</button>
             </div>
+
         </form>
     </div>
 
