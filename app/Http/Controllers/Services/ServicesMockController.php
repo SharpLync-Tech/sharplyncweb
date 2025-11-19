@@ -20,6 +20,7 @@ class ServicesMockController extends Controller
                     'Printer, email & access issues',
                 ],
                 'icon'  => asset('images/support.png'),
+                'image' => asset('images/remote_support.png'),
             ],
 
             [
