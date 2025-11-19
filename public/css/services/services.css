@@ -317,46 +317,50 @@
 }
 
 
-    /* -------------------------------------------------------
-       MOBILE
-    ---------------------------------------------------------*/
-    @media (max-width: 768px) {
-
-        .mock-wrapper {
-            padding: 2rem;
-        }
-
-        .mock-header,
-        .mock-divider {
-            margin-left: 0;
-            max-width: 100%;
-            width: 100%;
-        }
-
-        .mock-content {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-
-        .mock-text ul {
-            text-align: left;
-            display: inline-block;
-            margin: 0 auto;
-        }
-
-        .mock-image img {
-            margin-top: 0;
-        }
-    }
-
-/* ==================== MOBILE LAYOUT ==================== */
+   /* -------------------------------------------------------
+   MOBILE — Unified Block (Final)
+---------------------------------------------------------*/
 @media (max-width: 768px) {
 
+    /* Mock wrapper spacing */
+    .mock-wrapper {
+        padding: 2rem;
+    }
+
+    /* Header & divider align full width */
+    .mock-header,
+    .mock-divider {
+        margin-left: 0;
+        max-width: 100%;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Stack layout: image on top, text below */
+    .mock-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .mock-image img {
+        margin-top: 0;
+        width: 100%;
+    }
+
+    /* List centered under text */
+    .mock-text ul {
+        text-align: left;
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    /* The main cards (grid) */
     .services-cards {
         display: block;
         max-width: 100%;
     }
 
+    /* Keep other cards visible on mobile */
     .services-cards.focus-one .service-tile:not(.active) {
         display: block !important;
         opacity: 1;
@@ -364,46 +368,10 @@
         transform: none;
     }
 
+    /* Expanded card shadow for mobile */
     .service-tile.active {
         transform: none;
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     }
-
-    .tile-detail-inner {
-        display: block;
-        text-align: center;
-    }
-
-    .detail-image-wrapper {
-        width: 100%;
-        margin-bottom: 1.5rem;
-    }
-
-    .detail-image {
-        width: 100%;
-        margin-top: 0;
-    }
-
-    .tile-detail-content,
-    .tile-detail-content--centered {
-        text-align: center;
-        max-width: 100%;
-    }
-
-    .detail-list {
-        text-align: left;
-        display: inline-block;
-        margin: 0 auto;
-    }
 }
 
-/* DARKER MOBILE BACKGROUND */
-@media (max-width: 700px) {
-    .services-root,
-    .services-hero {
-        background: linear-gradient(180deg,
-            #0A2A4D 0%,
-            #0A2A4D 90%,
-            #0E3A62 100%);
-    }
-}
