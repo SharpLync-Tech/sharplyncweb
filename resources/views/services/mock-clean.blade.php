@@ -123,6 +123,30 @@
         font-weight: 700;
     }
 
+    /* ----------------------------------------------
+   CLOSE BUTTON (under title)
+----------------------------------------------*/
+.mock-close-btn {
+    margin-top: 1rem;
+    padding: 0.55rem 1.6rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(44,191,174,0.65);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.mock-close-btn:hover {
+    background: rgba(44,191,174,0.25);
+    box-shadow: 0 0 15px rgba(44,191,174,0.8);
+    transform: translateY(-2px);
+}
+
+
     /* -------------------------------------------------------
        MOBILE
     ---------------------------------------------------------*/
@@ -167,6 +191,7 @@
         <img src="/images/support.png" alt="">
         <h2>Remote Support</h2>
         <p>Instant help wherever you are.</p>
+        <button class="mock-close-btn">Close</button>
     </div>
 
     <hr class="mock-divider">
