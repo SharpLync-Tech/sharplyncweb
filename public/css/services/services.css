@@ -1,35 +1,93 @@
 /* ============================================================
-   SHARPLYNC SERVICES — v3.5
-   With left-image / right-content expanded layout
+   SERVICES PAGE STYLESHEET – v3.1 (Expand-in-Place Mode)
    ============================================================ */
 
-/* ROOT */
+/* ==================== ROOT VARIABLES ==================== */
 .services-root {
     --navy: #0A2A4D;
     --blue: #104976;
     --teal: #2CBFAE;
     --card-bg: rgba(10, 42, 77, 0.78);
     --card-border: rgba(255,255,255,0.15);
+
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
     color: #ffffff;
     min-height: 100vh;
 }
 
-/* HERO SECTION OMITTED FOR BREVITY — KEEP YOUR EXISTING ONE */
+/* ==================== HERO WRAPPER ==================== */
+.services-hero {
+    position: relative;
+    min-height: 100vh;
+    padding: 7rem 8% 4rem;
+    text-align: center;
+    overflow: hidden;
+}
 
-/* GRID */
+.services-hero .hero-cpu-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.services-hero .hero-cpu-bg img {
+    width: 680px;
+    opacity: 0.35;
+    margin-top: -1rem;
+    filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
+}
+
+.services-hero .hero-logo {
+    width: 220px;
+    margin-bottom: 2rem;
+    z-index: 1;
+}
+
+.services-hero .hero-text {
+    margin-top: -50px;
+    max-width: 700px;
+    margin-inline: auto;
+}
+
+.services-hero .hero-text h1 {
+    font-size: 2.7rem;
+    line-height: 1.2;
+}
+
+.services-hero .highlight {
+    color: var(--teal);
+    position: relative;
+}
+
+.services-hero .highlight::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background-color: var(--teal);
+}
+
+/* ==================== GRID ==================== */
 .services-cards {
     margin-top: 3rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
-    width: 100%;
     max-width: 1150px;
+    margin-inline: auto;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-/* CARD BASE */
+/* ==================== CARD BASE ==================== */
 .service-tile {
     background: var(--card-bg);
     border-radius: 18px;
@@ -42,77 +100,93 @@
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+
+    /* IMPORTANT — remove space-between */
+    justify-content: flex-start;
+
+    height: 100%; /* ensures full card height */
 
     transition:
         transform 0.35s ease,
         box-shadow 0.35s ease,
+        background 0.3s ease,
         max-height 0.4s ease;
 }
 
-/* Hover */
+
 .service-tile:hover {
     transform: translateY(-6px);
-    border-color: rgba(44,191,174,0.85);
+    box-shadow: 0 0 30px rgba(44,191,174,0.7);
 }
 
-/* ICON */
+/* ==================== CONTENT ==================== */
+.tile-header {
+    flex-grow: 1;  /* expands to fill space */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
 .tile-icon {
     width: 100px;
-    filter: drop-shadow(0 0 12px rgba(44,191,174,0.9));
+    filter:
+        drop-shadow(0 0 2px rgba(44,191,174,0.9))     /* tight main glow */
+        drop-shadow(0 0 6px rgba(44,191,174,0.25));   /* soft halo */
 }
 
-/* BUTTON */
 .tile-toggle {
     margin-top: auto;
     align-self: center;
-    border: 1px solid rgba(44,191,174,0.65);
-    border-radius: 999px;
     padding: 0.55rem 1.4rem;
-    background-color: rgba(0,0,0,0.15);
-    color: white;
+    border-radius: 999px;
+    border: 1px solid rgba(44, 191, 174, 0.6) !important;
+    background: var(--teal)!important;
+    color: #fff !important;
     font-weight: 600;
-    font-size: 0.9rem;
     cursor: pointer;
-    transition: 0.25s ease;
     box-shadow: 0 8px 18px rgba(0,0,0,0.35);
 }
+
 .tile-toggle:hover {
-    background-color: var(--teal);
+    background-color: #35e0c2 !important;
 }
 
-/* COLLAPSED DETAILS */
+/* ==================== DETAILS (Collapsed) ==================== */
 .tile-detail {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+
     max-height: 0;
     opacity: 0;
     overflow: hidden;
     transform: translateY(-6px);
-    transition: 0.35s ease;
-    border-top: 1px solid transparent;
+    transition:
+        max-height 0.35s ease,
+        opacity 0.35s ease,
+        transform 0.35s ease;
 }
 
-/* ------------------------------------------------------------
-   EXPANDED MODE (DESKTOP)
------------------------------------------------------------- */
+/* ==================== EXPANDED IN-PLACE MODE ==================== */
+
+/* Hide all non-active tiles */
 .services-cards.focus-one .service-tile:not(.active) {
-    opacity: 0;
-    filter: blur(3px);
-    pointer-events: none;
-    transform: scale(0.93);
+    display: none !important;
 }
 
-/* Expanded card */
+/* Expanded tile */
 .service-tile.active {
     grid-column: 1 / -1;
     width: 100%;
     max-width: 1150px;
-    margin-inline: auto;
     transform: scale(1.03);
+
     box-shadow: 0 0 45px rgba(44,191,174,0.95);
-    border-color: rgba(44,191,174,0.9);
+    border-color: rgba(44,191,174,0.85);
 }
 
-/* Glow */
+/* Glow ring */
 .service-tile.active::before {
     content: "";
     position: absolute;
@@ -120,89 +194,45 @@
     border-radius: 20px;
     background: radial-gradient(
         circle,
-        rgba(44,191,174,0.22) 0%,
+        rgba(44,191,174,0.20) 0%,
         rgba(44,191,174,0) 70%
     );
     z-index: -1;
 }
 
-/* Expanded details */
+/* Expanded detail shown */
 .service-tile.active .tile-detail {
-    max-height: 600px;
+    max-height: 500px;
     opacity: 1;
     transform: translateY(0);
     border-top: 1px solid rgba(255,255,255,0.18);
-    margin-top: 1.6rem;
-    padding-top: 1.2rem;
 }
 
-/* ------------------------------------------------------------
-   IMAGE + TEXT SPLIT LAYOUT (ADDED)
------------------------------------------------------------- */
-
-.tile-expanded-layout {
-    display: none;
-    gap: 2.5rem;
-    align-items: center;
-}
-
-.service-tile.active .tile-expanded-layout {
-    display: flex;
-    animation: fadeIn 0.35s ease;
-}
-
-/* LEFT IMAGE */
-.tile-media {
-    flex: 1;
-    max-width: 420px;
-}
-.tile-media img {
-    width: 100%;
-    border-radius: 16px;
-    object-fit: cover;
-    box-shadow: 0 0 25px rgba(0,0,0,0.3);
-    filter: drop-shadow(0 0 10px rgba(44,191,174,0.55));
-}
-
-/* RIGHT TEXT */
-.tile-content {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-}
-
-/* Fade animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ------------------------------------------------------------
-   MOBILE RESPONSIVE
------------------------------------------------------------- */
-
-@media (max-width: 850px) {
-    .tile-expanded-layout {
-        flex-direction: column;
-        text-align: center;
-    }
-    .tile-media {
+/* ==================== MOBILE ==================== */
+@media (max-width: 768px) {
+    /* Make sure layout is just a simple vertical stack */
+    .services-cards {
+        display: block;
         max-width: 100%;
     }
-    .tile-content {
-        width: 100%;
-        text-align: center;
-    }
+
+    /* Do NOT fade / blur / shrink other tiles on mobile */
     .services-cards.focus-one .service-tile:not(.active) {
-        opacity: 1 !important;
-        filter: none !important;
-        transform: none !important;
-        pointer-events: auto !important;
+        opacity: 1;
+        filter: none;
+        pointer-events: auto;
+        transform: none;
+    }
+
+    /* Active tile: no extra zoom/glow on mobile,
+       just show the details */
+    .service-tile.active {
+        transform: none;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.35); /* same as base card */
     }
 }
 
-/* Darker mobile background */
+/* DARKER MOBILE BACKGROUND (unchanged) */
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
@@ -214,3 +244,4 @@
         );
     }
 }
+
