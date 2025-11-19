@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
 
-class ServicesMockController extends Controller
+class ServicesController extends Controller
 {
     public function index()
     {
