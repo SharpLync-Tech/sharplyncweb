@@ -307,3 +307,79 @@
     }
 }
 
+/* =============================================
+   EXPANDED TILE — IMAGE + TEXT DESKTOP LAYOUT
+   ============================================= */
+.tile-detail-inner {
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+    padding: 1rem 0 2rem;
+}
+
+/* left image */
+.detail-image-wrapper {
+    flex: 0 0 420px;              /* perfect width */
+}
+
+.detail-image {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    object-fit: cover;
+}
+
+/* right content */
+.tile-detail-content {
+    flex: 1;
+    max-width: 650px;
+}
+
+.tile-detail-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+}
+
+.tile-detail-content h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.tile-detail-content ul {
+    padding-left: 1.2rem;
+}
+
+.tile-detail-content li {
+    margin-bottom: 0.4rem;
+}
+
+/* =============================================
+   MOBILE — STACKED IMAGE ABOVE TEXT
+   (KEEP EXACT BEHAVIOR YOU ALREADY LOVE)
+   ============================================= */
+@media (max-width: 768px) {
+
+    .tile-detail-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .detail-image-wrapper {
+        width: 100%;
+        flex: unset;
+    }
+
+    .detail-image {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .tile-detail-content {
+        text-align: center;
+    }
+}
+
