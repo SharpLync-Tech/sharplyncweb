@@ -263,6 +263,23 @@
     font-weight: 700;
 }
 
+/* One-time fade-in arrow animation */
+@keyframes arrowFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.mock-text li.arrow-animate::before {
+    animation: arrowFadeIn 0.6s ease-out forwards;
+}
+
+
 /* CLOSE BUTTON */
 .mock-close-btn {
     margin-top: 1rem;

@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
             JSON.parse(tile.dataset.subs).forEach(text => {
                 const li = document.createElement("li");
                 li.textContent = text;
+                li.classList.add("arrow-animate"); // <-- arrow animation
                 expSubs.appendChild(li);
             });
 
