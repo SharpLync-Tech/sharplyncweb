@@ -154,6 +154,6 @@ class ServicesController extends Controller
             ],
         ];
 
-        return view('service.services', compact('categories'));
+        return view('services.services', compact('categories'));
     }
 }
