@@ -57,7 +57,7 @@ class ServicesMockController extends Controller
                 'id'    => 'onsite-support',
                 'title' => 'On-Site Support (Local Region)',
                 'short' => 'Boots-on-ground support where it makes sense.',
-                'long'  => 'When the job needs a human on site — cabling, hardware swaps, WiFi tuning — we provide on-site support across the Granite Belt and surrounds by arrangement. No surprise “Perth visits” here.',
+                'long'  => 'When the job needs a human on site — cabling, hardware swaps, WiFi tuning — we provide on-site support across the Granite Belt and surrounds by arrangement.',
                 'subs'  => [
                     'On-site fault finding & fixes',
                     'New equipment rollouts',
@@ -128,7 +128,7 @@ class ServicesMockController extends Controller
               [
                 'id'    => 'hardware-repair',
                 'title' => 'Laptop & Desktop Repairs',
-                'short' => 'Laptop screens, nattery replacements & more.',
+                'short' => 'Laptop screens, battery replacements & more.',
                 'long'  => 'We source, repalcement parts and can fix laptops and desktops.',
                 'subs'  => [
                     'Laptops, desktops, batteries & screens',
