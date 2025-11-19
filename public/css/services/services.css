@@ -1,7 +1,7 @@
 /* ============================================================
-   SERVICES PAGE STYLESHEET – v3.3
-   - Closed: original tile grid unchanged
-   - Open: image-left layout with header + divider + arrows
+   SERVICES PAGE STYLESHEET – v3.3 MERGED CLEAN RELEASE
+   Includes all fixes for open-card layout (image offset, divider,
+   arrow lists, overflow, header alignment)
    ============================================================ */
 
 /* ==================== ROOT VARIABLES ==================== */
@@ -90,7 +90,6 @@
 
 /* ==================== CARD BASE ==================== */
 .service-tile {
-    position: relative;
     background: #0A2A4D;
     border-radius: 18px;
     padding: 2rem 1.8rem;
@@ -131,16 +130,6 @@
         drop-shadow(0 0 6px rgba(44,191,174,0.25));
 }
 
-.tile-header h3 {
-    margin-top: 1.3rem;
-    margin-bottom: 0.4rem;
-}
-
-.tile-header p {
-    margin: 0 0 1.2rem;
-    opacity: 0.9;
-}
-
 .tile-toggle {
     margin-top: auto;
     padding: 0.55rem 1.4rem;
@@ -159,8 +148,9 @@
 
 /* ==================== DETAIL (Collapsed) ==================== */
 .tile-detail {
+    border-top: 1px solid rgba(255,255,255,0.12);
     margin-top: 1rem;
-    padding-top: 0;
+    padding-top: 0.9rem;
     max-height: 0;
     opacity: 0;
     overflow: hidden;
@@ -169,15 +159,6 @@
         max-height 0.35s ease,
         opacity 0.35s ease,
         transform 0.35s ease;
-}
-
-/* Divider inside expanded detail */
-.tile-divider {
-    width: 100%;
-    max-width: 600px;
-    margin: 1.5rem auto 2.2rem;
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.18);
 }
 
 /* ==================== EXPANDED MODE ==================== */
@@ -190,9 +171,11 @@
     max-width: 1150px;
     width: 100%;
     transform: scale(1.03);
-
     box-shadow: 0 0 45px rgba(44,191,174,0.95);
     border-color: rgba(44,191,174,0.85);
+
+    /* FIXED: allow image to rise without clipping */
+    overflow: visible;
 }
 
 .service-tile.active::before {
@@ -210,13 +193,7 @@
     max-height: 900px;
     opacity: 1;
     transform: translateY(0);
-}
-
-/* Slight glow bump for active icon */
-.service-tile.active .tile-icon {
-    filter:
-        drop-shadow(0 0 4px rgba(44,191,174,0.95))
-        drop-shadow(0 0 14px rgba(44,191,174,0.55));
+    border-top: 1px solid rgba(255,255,255,0.18);
 }
 
 /* ==================== EXPANDED LAYOUT (Desktop) ==================== */
@@ -224,7 +201,12 @@
     display: flex;
     gap: 2.5rem;
     align-items: flex-start;
-    padding: 0 0 2.5rem;
+
+    /* NEW: locks divider + text width */
+    max-width: 1000px;
+    margin-inline: auto;
+
+    padding: 1.5rem 0 2.5rem;
 }
 
 .detail-image-wrapper {
@@ -235,8 +217,11 @@
     width: 100%;
     border-radius: 14px;
     object-fit: cover;
+
+    /* Your desired vertical lift */
+    margin-top: -13rem;
+
     box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-    margin-top: -13rem; /* match mock-clean vertical alignment */
 }
 
 .tile-detail-content {
@@ -247,28 +232,28 @@
 .tile-detail-content p {
     margin-bottom: 1.6rem;
     line-height: 1.55;
-    opacity: 0.95;
 }
 
-.tile-detail-content h4 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.9rem;
-    font-size: 1.15rem;
-    font-weight: 600;
-    text-align: center;
+/* ==================== DIVIDER ==================== */
+.tile-divider {
+    width: 100%;
+    max-width: 1000px;
+    margin: 2rem auto;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.18);
 }
 
-/* Bullet / arrow list */
+/* ==================== ARROW LIST ==================== */
 .detail-list {
     list-style: none;
     margin: 0;
-    padding-left: 0;
+    padding: 0;
 }
 
 .detail-list li {
     position: relative;
     padding-left: 1.6rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.55rem;
 }
 
 .detail-list li::before {
@@ -276,14 +261,9 @@
     position: absolute;
     left: 0;
     top: 0.05rem;
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--teal);
-}
-
-/* Fallback centered layout when no image */
-.tile-detail-content--centered {
-    max-width: 700px;
-    margin-inline: auto;
+    font-weight: 600;
 }
 
 /* ==================== MOBILE LAYOUT ==================== */
@@ -294,11 +274,11 @@
         max-width: 100%;
     }
 
-    .services-cards.focus-one .service-tile:not(.active) {
+    .services-cards.focus-one .service-tile:not(.active)) {
         display: block !important;
         opacity: 1;
-        filter: none;
         transform: none;
+        filter: none;
     }
 
     .service-tile.active {
@@ -309,6 +289,11 @@
     .tile-detail-inner {
         display: block;
         text-align: center;
+        max-width: 100%;
+    }
+
+    .detail-image {
+        margin-top: 0;
     }
 
     .detail-image-wrapper {
@@ -316,21 +301,8 @@
         margin-bottom: 1.5rem;
     }
 
-    .detail-image {
-        width: 100%;
-        margin-top: 0;
-    }
-
-    .tile-detail-content,
-    .tile-detail-content--centered {
+    .tile-detail-content {
         text-align: center;
-        max-width: 100%;
-    }
-
-    .detail-list {
-        text-align: left;
-        display: inline-block;
-        margin: 0 auto;
     }
 }
 

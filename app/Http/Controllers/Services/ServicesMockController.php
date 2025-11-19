@@ -108,6 +108,7 @@ class ServicesMockController extends Controller
                     'Health & compliance reporting',
                 ],
                 'icon'  => asset('images/protection.png'),
+                'image' => asset('images/patching.png'),
             ],
 
             [
@@ -121,6 +122,7 @@ class ServicesMockController extends Controller
                     'Vendor & project guidance',
                 ],
                 'icon'  => asset('images/consulting.png'),
+                'image' => asset('images/consulting.png'),
             ],
 
               [
@@ -134,6 +136,7 @@ class ServicesMockController extends Controller
                     'Pre-config & install to your standards',
                 ],
                 'icon'  => asset('images/repair.png'),
+                'image' => asset('images/it_repair.png'),
             ],
 
             [
@@ -147,6 +150,7 @@ class ServicesMockController extends Controller
                     'Pre-config & install to your standards',
                 ],
                 'icon'  => asset('images/sales.png'),
+                'image' => asset('images/it_sales.png'),
             ],
         ];
 
