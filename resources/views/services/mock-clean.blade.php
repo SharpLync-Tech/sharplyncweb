@@ -22,10 +22,13 @@
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     }
 
-    /* HEADER */
+    /* HEADER (RIGHT SIDE) */
     .mock-header {
         text-align: center;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .mock-header img {
@@ -42,7 +45,8 @@
 
     .mock-header p {
         margin-top: .3rem;
-        opacity: 0.8;
+        opacity: 0.85;
+        font-size: 0.95rem;
     }
 
     .mock-divider {
@@ -53,13 +57,10 @@
 
     /* GRID */
     .mock-content {
-        display: flex;
-        gap: 2.5rem;
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 3rem;
         align-items: flex-start;
-    }
-
-    .mock-image {
-        flex: 0 0 420px;
     }
 
     .mock-image img {
@@ -70,7 +71,7 @@
     }
 
     .mock-text {
-        flex: 1;
+        padding-top: 1.5rem; /* pushes text further down to match your mock */
         max-width: 650px;
     }
 
@@ -84,6 +85,7 @@
         margin-bottom: .5rem;
         font-size: 1.2rem;
         font-weight: 600;
+        text-align: center;
     }
 
     .mock-text ul {
@@ -97,19 +99,24 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
+
+        .mock-wrapper {
+            padding: 2rem;
+        }
+
         .mock-content {
-            flex-direction: column;
+            grid-template-columns: 1fr;
             text-align: center;
         }
 
-        .mock-image {
-            width: 100%;
+        .mock-text {
+            padding-top: 1rem;
         }
 
         .mock-text ul {
             text-align: left;
-            margin: 0 auto;
             display: inline-block;
+            margin: 0 auto;
         }
     }
 
@@ -120,6 +127,7 @@
 
 <div class="mock-wrapper">
 
+    <!-- HEADER ON TOP RIGHT -->
     <div class="mock-header">
         <img src="/images/support.png" alt="">
         <h2>Remote Support</h2>
@@ -128,6 +136,7 @@
 
     <hr class="mock-divider">
 
+    <!-- IMAGE LEFT, CONTENT RIGHT -->
     <div class="mock-content">
 
         <div class="mock-image">
@@ -135,6 +144,7 @@
         </div>
 
         <div class="mock-text">
+
             <p>
                 Fast, friendly remote support to keep your people working — without waiting days 
                 for someone to show up. Screensharing, quick fixes, and real humans on the other end.
