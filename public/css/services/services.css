@@ -1,7 +1,7 @@
 /* ============================================================
-   SERVICES PAGE STYLESHEET – v3.3
-   - Closed: original tile grid unchanged
-   - Open: image-left layout with header + divider + arrows
+   SERVICES PAGE STYLESHEET – v3.2 CLEAN RELEASE
+   Desktop: 1-card expand with image-left layout
+   Mobile: Natural stacked layout (your preferred version)
    ============================================================ */
 
 /* ==================== ROOT VARIABLES ==================== */
@@ -90,7 +90,6 @@
 
 /* ==================== CARD BASE ==================== */
 .service-tile {
-    position: relative;
     background: #0A2A4D;
     border-radius: 18px;
     padding: 2rem 1.8rem;
@@ -131,16 +130,6 @@
         drop-shadow(0 0 6px rgba(44,191,174,0.25));
 }
 
-.tile-header h3 {
-    margin-top: 1.3rem;
-    margin-bottom: 0.4rem;
-}
-
-.tile-header p {
-    margin: 0 0 1.2rem;
-    opacity: 0.9;
-}
-
 .tile-toggle {
     margin-top: auto;
     padding: 0.55rem 1.4rem;
@@ -159,8 +148,9 @@
 
 /* ==================== DETAIL (Collapsed) ==================== */
 .tile-detail {
+    border-top: 1px solid rgba(255,255,255,0.12);
     margin-top: 1rem;
-    padding-top: 0;
+    padding-top: 0.9rem;
     max-height: 0;
     opacity: 0;
     overflow: hidden;
@@ -169,15 +159,6 @@
         max-height 0.35s ease,
         opacity 0.35s ease,
         transform 0.35s ease;
-}
-
-/* Divider inside expanded detail */
-.tile-divider {
-    width: 100%;
-    max-width: 600px;
-    margin: 1.5rem auto 2.2rem;
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.18);
 }
 
 /* ==================== EXPANDED MODE ==================== */
@@ -207,16 +188,10 @@
 }
 
 .service-tile.active .tile-detail {
-    max-height: 900px;
+    max-height: 800px;
     opacity: 1;
     transform: translateY(0);
-}
-
-/* Slight glow bump for active icon */
-.service-tile.active .tile-icon {
-    filter:
-        drop-shadow(0 0 4px rgba(44,191,174,0.95))
-        drop-shadow(0 0 14px rgba(44,191,174,0.55));
+    border-top: 1px solid rgba(255,255,255,0.18);
 }
 
 /* ==================== EXPANDED LAYOUT (Desktop) ==================== */
@@ -224,7 +199,7 @@
     display: flex;
     gap: 2.5rem;
     align-items: flex-start;
-    padding: 0 0 2.5rem;
+    padding: 1.5rem 0 2.5rem;
 }
 
 .detail-image-wrapper {
@@ -236,7 +211,6 @@
     border-radius: 14px;
     object-fit: cover;
     box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-    margin-top: -13rem; /* match mock-clean vertical alignment */
 }
 
 .tile-detail-content {
@@ -247,46 +221,9 @@
 .tile-detail-content p {
     margin-bottom: 1.6rem;
     line-height: 1.55;
-    opacity: 0.95;
 }
 
-.tile-detail-content h4 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.9rem;
-    font-size: 1.15rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* Bullet / arrow list */
-.detail-list {
-    list-style: none;
-    margin: 0;
-    padding-left: 0;
-}
-
-.detail-list li {
-    position: relative;
-    padding-left: 1.6rem;
-    margin-bottom: 0.5rem;
-}
-
-.detail-list li::before {
-    content: "➜";
-    position: absolute;
-    left: 0;
-    top: 0.05rem;
-    font-size: 1rem;
-    color: var(--teal);
-}
-
-/* Fallback centered layout when no image */
-.tile-detail-content--centered {
-    max-width: 700px;
-    margin-inline: auto;
-}
-
-/* ==================== MOBILE LAYOUT ==================== */
+/* ==================== MOBILE LAYOUT (unchanged & perfect) ==================== */
 @media (max-width: 768px) {
 
     .services-cards {
@@ -318,19 +255,10 @@
 
     .detail-image {
         width: 100%;
-        margin-top: 0;
     }
 
-    .tile-detail-content,
-    .tile-detail-content--centered {
+    .tile-detail-content {
         text-align: center;
-        max-width: 100%;
-    }
-
-    .detail-list {
-        text-align: left;
-        display: inline-block;
-        margin: 0 auto;
     }
 }
 
@@ -344,3 +272,10 @@
             #0E3A62 100%);
     }
 }
+
+.tile-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin: 1.5rem 0 2rem;
+}
+
