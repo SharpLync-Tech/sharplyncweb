@@ -52,6 +52,8 @@
             <h2 id="expTitle"></h2>
             <p id="expShort"></p>
             <button id="closeExpanded" class="mock-close-btn">Close</button>
+            <a href="https://sharplync.com.au/contact" class="mock-cta-btn">Let’s Get You Sorted</a>
+
         </div>
 
         <hr class="mock-divider">
