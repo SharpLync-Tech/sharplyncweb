@@ -199,43 +199,18 @@
     border-top: 1px solid rgba(255,255,255,0.18);
 }
 
-/* ==================== MOBILE MODE ==================== */
-@media (max-width: 768px) {
-
-    /* Do NOT hide other cards */
-    .services-cards.focus-one .service-tile:not(.active) {
-        display: block !important;
-        opacity: 1 !important;
-        filter: none !important;
-        transform: none !important;
-        pointer-events: auto !important;
-    }
-
-    /* Active card behaves like normal accordion */
-    .service-tile.active {
-        position: static !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        transform: none !important;
-        box-shadow: none !important;
-        border-color: var(--card-border) !important;
-        z-index: auto !important;
-    }
-
-    /* Remove premium glow */
-    .service-tile.active::before {
-        display: none !important;
-    }
-
-    /* Detail expands normally */
-    .service-tile.active .tile-detail {
-        max-height: 500px !important;
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+    .services-hero .hero-text h1 { font-size: 2.2rem; }
+    .service-tile.active { margin-top: 0.5rem; }
 }
 
-/* DARKER MOBILE BACKGROUND (unchanged) */
+@media (max-width: 600px) {
+    .services-hero .hero-text h1 { font-size: 1.9rem; }
+    .services-hero .hero-cpu-bg { display: none !important; }
+}
+
+/* Darker simple background on mobile */
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
@@ -244,7 +219,6 @@
             #0A2A4D 0%,
             #0A2A4D 90%,
             #0E3A62 100%
-        );
+        ) !important;
     }
 }
-
