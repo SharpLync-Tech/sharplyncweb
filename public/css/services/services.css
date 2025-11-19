@@ -1,11 +1,14 @@
-/* ==================== VARIABLES / ROOT ==================== */
+/* ============================================================
+   SERVICES PAGE STYLESHEET – v3.1 (Expand-in-Place Mode)
+   ============================================================ */
+
+/* ==================== ROOT VARIABLES ==================== */
 .services-root {
     --navy: #0A2A4D;
     --blue: #104976;
     --teal: #2CBFAE;
     --card-bg: rgba(10, 42, 77, 0.78);
     --card-border: rgba(255,255,255,0.15);
-    --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.35);
 
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
@@ -18,9 +21,6 @@
     position: relative;
     min-height: 100vh;
     padding: 7rem 8% 4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-align: center;
     overflow: hidden;
 }
@@ -38,47 +38,40 @@
 
 .services-hero .hero-cpu-bg img {
     width: 680px;
-    max-width: 100%;
-    height: auto;
-    margin-top: -1rem;
-    margin-left: 10rem;
     opacity: 0.35;
+    margin-top: -1rem;
     filter: drop-shadow(0 0 15px rgba(44,191,174,0.3));
 }
 
 .services-hero .hero-logo {
     width: 220px;
-    height: auto;
     margin-bottom: 2rem;
-    filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
     z-index: 1;
 }
 
 .services-hero .hero-text {
     margin-top: -50px;
     max-width: 700px;
-    z-index: 1;
+    margin-inline: auto;
 }
 
 .services-hero .hero-text h1 {
     font-size: 2.7rem;
     line-height: 1.2;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.35);
 }
 
-.services-hero .hero-text .highlight {
+.services-hero .highlight {
     color: var(--teal);
-    display: inline-block;
     position: relative;
 }
 
-.services-hero .hero-text .highlight::after {
+.services-hero .highlight::after {
     content: "";
     position: absolute;
     left: 0;
     bottom: -6px;
-    height: 3px;
     width: 100%;
+    height: 3px;
     background-color: var(--teal);
 }
 
@@ -88,11 +81,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
-    width: 100%;
     max-width: 1150px;
+    margin-inline: auto;
     position: relative;
-    z-index: 1;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
 }
 
 /* ==================== CARD BASE ==================== */
@@ -103,35 +95,31 @@
     border: 1px solid var(--card-border);
     box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     backdrop-filter: blur(9px);
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        max-width 0.35s ease,
-        opacity 0.3s ease,
-        filter 0.3s ease,
-        margin 0.35s ease,
-        background 0.3s ease;
     overflow: hidden;
     color: #E8F3FF;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        background 0.3s ease,
+        max-height 0.4s ease;
 }
 
 .service-tile:hover {
     transform: translateY(-6px);
     box-shadow: 0 0 30px rgba(44,191,174,0.7);
-    border-color: rgba(44,191,174,0.85);
 }
 
-/* ==================== CARD CONTENT ==================== */
+/* ==================== CONTENT ==================== */
 .tile-header {
+    text-align: center;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    text-align: center;
-    align-items: center;
-    flex: 1;
 }
 
 .tile-icon {
@@ -139,37 +127,23 @@
     filter: drop-shadow(0 0 6px rgba(44,191,174,0.7));
 }
 
-.tile-header h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.tile-short {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-/* learn more / close button */
 .tile-toggle {
     margin-top: auto;
-    align-self: center;
-    border: none;
-    border-radius: 999px;
     padding: 0.55rem 1.4rem;
-    background-color: var(--teal);
-    color: white;
+    border-radius: 999px;
+    border: none;
+    background: var(--teal);
+    color: #0A2A4D;
     font-weight: 600;
-    font-size: 0.9rem;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.15s ease;
     box-shadow: 0 8px 18px rgba(0,0,0,0.35);
 }
 
 .tile-toggle:hover {
-    background-color: #35e0c2;
+    background: #35e0c2;
 }
 
-/* ==================== DETAIL (collapsed) ==================== */
+/* ==================== DETAILS (Collapsed) ==================== */
 .tile-detail {
     border-top: 1px solid rgba(255,255,255,0.12);
     margin-top: 1rem;
@@ -185,29 +159,25 @@
         transform 0.35s ease;
 }
 
-/* ==================== PREMIUM EXPANDED MODE ==================== */
+/* ==================== EXPANDED IN-PLACE MODE ==================== */
 
-.services-cards.focus-one {
-    padding-bottom: 4rem; /* just a little space, not 20rem anymore */
-}
-
-/* fade out other tiles */
+/* Hide all non-active tiles */
 .services-cards.focus-one .service-tile:not(.active) {
-   display: none !important;
+    display: none !important;
 }
 
-/* expanded card – IN PLACE, full row */
+/* Expanded tile */
 .service-tile.active {
-    position: relative !important;
-    width: 100%;
-    max-width: 100%;
     grid-column: 1 / -1;
+    width: 100%;
+    max-width: 1150px;
     transform: scale(1.03);
-    box-shadow: 0 0 40px rgba(44,191,174,0.9);
+
+    box-shadow: 0 0 45px rgba(44,191,174,0.95);
+    border-color: rgba(44,191,174,0.85);
 }
 
-
-/* subtle teal glow */
+/* Glow ring */
 .service-tile.active::before {
     content: "";
     position: absolute;
@@ -219,40 +189,34 @@
         rgba(44,191,174,0) 70%
     );
     z-index: -1;
-    opacity: 1;
 }
 
-/* reveal details */
+/* Expanded detail shown */
 .service-tile.active .tile-detail {
-    max-height: 420px;
+    max-height: 500px;
     opacity: 1;
     transform: translateY(0);
     border-top: 1px solid rgba(255,255,255,0.18);
-    margin-top: 1.6rem;
-    padding-top: 1.2rem;
 }
 
+/* ==================== MOBILE ==================== */
+@media (max-width: 768px) {
+    .services-cards.focus-one .service-tile:not(.active) {
+        display: block !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
 
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 900px) {
-    .services-hero .hero-text h1 { font-size: 2.2rem; }
-    .service-tile.active { margin-top: 0.5rem; }
+    .service-tile.active {
+        transform: none !important;
+        box-shadow: none !important;
+    }
 }
 
-@media (max-width: 600px) {
-    .services-hero .hero-text h1 { font-size: 1.9rem; }
-    .services-hero .hero-cpu-bg { display: none !important; }
-}
-
-/* Darker simple background on mobile */
+/* DARKER MOBILE BACKGROUND */
 @media (max-width: 700px) {
     .services-root,
     .services-hero {
-        background: linear-gradient(
-            180deg,
-            #0A2A4D 0%,
-            #0A2A4D 90%,
-            #0E3A62 100%
-        ) !important;
+        background: linear-gradient(180deg, #0A2A4D 0%, #0A2A4D 90%, #0E3A62 100%);
     }
 }
