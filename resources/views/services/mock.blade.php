@@ -4,113 +4,105 @@
 @section('title', 'SharpLync | Services')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6970">
+    <link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6975">
 @endpush
 
 @section('content')
-{{-- The .services-root class should wrap the content if you want root variables to apply --}}
-<div class="services-root"> 
 <section class="hero services-hero">
 
-    {{-- CPU background --}}
-    <div class="hero-cpu-bg">
-        <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
-    </div>
+    {{-- CPU background --}}
+    <div class="hero-cpu-bg">
+        <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
+    </div>
 
-    {{-- Logo --}}
-    <img src="{{ asset('images/sharplync-logo.png') }}"
-         alt="SharpLync Hero Logo"
-         class="hero-logo">
+    {{-- Logo --}}
+    <img src="{{ asset('images/sharplync-logo.png') }}"
+         alt="SharpLync Hero Logo"
+         class="hero-logo">
 
-    {{-- Hero Heading --}}
-    <div class="hero-text">
-        <h1>Your Business,<br>
-            <span class="highlight">Secure & Connected.</span>
-        </h1>
-    </div>
+    {{-- Hero Heading --}}
+    <div class="hero-text">
+        <h1>Your Business,<br>
+            <span class="highlight">Secure &amp; Connected.</span>
+        </h1>
+    </div>
 
-    {{-- Service Tiles Container --}}
-    <div class="hero-cards fade-section services-cards">
+    {{-- Service Tiles --}}
+    <div class="hero-cards fade-section services-cards">
 
-        @foreach ($categories as $cat)
-        <div class="tile service-tile" data-id="{{ $cat['id'] }}">
+        @foreach ($categories as $cat)
+            <div class="tile service-tile" data-id="{{ $cat['id'] }}">
 
-            {{-- TILE HEADER (Visible when collapsed) --}}
-            <div class="tile-header">
-                @if (!empty($cat['icon']))
-                <img src="{{ asset($cat['icon']) }}"
-                     alt="{{ $cat['title'] }} Icon"
-                     class="tile-icon">
-                @endif
+                {{-- TILE HEADER (used for both closed & open states) --}}
+                <div class="tile-header">
+                    @if (!empty($cat['icon']))
+                        <img src="{{ asset($cat['icon']) }}"
+                             alt="{{ $cat['title'] }} Icon"
+                             class="tile-icon">
+                    @endif
 
-                <h3>{{ $cat['title'] }}</h3>
-                <p>{{ $cat['short'] }}</p>
+                    <h3>{{ $cat['title'] }}</h3>
+                    <p>{{ $cat['short'] }}</p>
 
-                <button type="button" class="tile-toggle">
-                    Learn More
-                </button>
-            </div>
+                    <button type="button" class="tile-toggle">
+                        Learn More
+                    </button>
+                </div>
 
-            {{-- EXPANDED CARD (Hidden until .active) --}}
-            <div class="tile-detail">
+                {{-- EXPANDED DETAIL AREA (hidden when collapsed) --}}
+                <div class="tile-detail">
 
-                <div class="expanded-wrapper">
+                    {{-- Divider that matches the text column --}}
+                    <hr class="tile-divider">
 
-                    {{-- HEADER ABOVE TEXT COLUMN --}}
-                    <div class="expanded-header">
-                        @if (!empty($cat['icon']))
-                        <img src="{{ asset($cat['icon']) }}" class="expanded-icon" alt="">
-                        @endif
-                        <h2>{{ $cat['title'] }}</h2>
-                        <p>{{ $cat['short'] }}</p>
+                    @if (!empty($cat['image']))
+                        {{-- Image-left, text-right layout --}}
+                        <div class="tile-detail-inner">
 
-                        {{-- THIS IS THE BUTTON THAT NOW WORKS WITH THE JS FIX --}}
-                        <button type="button" class="expanded-close">
-                            Close
-                        </button>
-                    </div>
+                            {{-- IMAGE LEFT --}}
+                            <div class="detail-image-wrapper">
+                                <img src="{{ asset($cat['image']) }}"
+                                     alt="{{ $cat['title'] }} Image"
+                                     class="detail-image">
+                            </div>
 
-                    {{-- DIVIDER --}}
-                    <hr class="expanded-divider">
+                            {{-- TEXT RIGHT --}}
+                            <div class="tile-detail-content">
+                                <p>{{ $cat['long'] }}</p>
 
-                    {{-- CONTENT ROW --}}
-                    <div class="expanded-content">
+                                @if (!empty($cat['subs']))
+                                    <h4>Included Services</h4>
+                                    <ul class="detail-list">
+                                        @foreach ($cat['subs'] as $sub)
+                                            <li>{{ $sub }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        {{-- FALLBACK: NO IMAGE, CLASSIC CENTERED TEXT --}}
+                        <div class="tile-detail-content tile-detail-content--centered">
+                            <p>{{ $cat['long'] }}</p>
 
-                        {{-- IMAGE LEFT --}}
-                        @if (!empty($cat['image']))
-                        <div class="expanded-image">
-                            <img src="{{ asset($cat['image']) }}" alt="{{ $cat['title'] }} Image">
-                        </div>
-                        @endif
+                            @if (!empty($cat['subs']))
+                                <h4>Included Services</h4>
+                                <ul class="detail-list">
+                                    @foreach ($cat['subs'] as $sub)
+                                        <li>{{ $sub }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endforeach
 
-                        {{-- TEXT RIGHT --}}
-                        <div class="expanded-text">
-                            <p>{{ $cat['long'] }}</p>
-
-                            @if (!empty($cat['subs']))
-                                <h4>Included Services</h4>
-                                <ul class="arrow-list">
-                                    @foreach ($cat['subs'] as $sub)
-                                        <li>{{ $sub }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-        @endforeach
-
-    </div>
+    </div>
 </section>
-</div>
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/services/services.js') }}" defer></script>
+    <script src="{{ asset('js/services/services.js') }}" defer></script>
 @endpush
