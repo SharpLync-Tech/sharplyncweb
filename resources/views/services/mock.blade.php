@@ -53,7 +53,7 @@
 
 
     {{-- EXPANDED CLEAN MOCK --}}
-@if($expanded)
+
 <div class="mock-wrapper">
 
     {{-- FULL INLINE STYLES SO NOTHING CAN INTERFERE --}}
@@ -242,9 +242,6 @@
     </div>
 
 </div>
-@endif
-
-
 </section>
 @endsection
 
