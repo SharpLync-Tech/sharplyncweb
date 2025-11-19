@@ -13,7 +13,7 @@ class ServicesMockController extends Controller
                 'id'    => 'remote-support',
                 'title' => 'Remote Support',
                 'short' => 'Instant help wherever you are.',
-                'long'  => 'Fast, friendly remote support to keep your people working — without waiting days for someone to show up. Screensharing, quick fixes, and real humans on the other end.',
+                'long'  => 'Fast, friendly remote support to keep your people working, without waiting days for someone to show up. Screensharing, quick fixes, and real humans on the other end.',
                 'subs'  => [
                     'Remote troubleshooting & fixes',
                     'Application and OS support',
@@ -27,7 +27,7 @@ class ServicesMockController extends Controller
                 'id'    => 'cybersecurity',
                 'title' => 'Cybersecurity',
                 'short' => 'Stay protected 24/7.',
-                'long'  => 'Layered security that protects your people, devices and data — without the scare tactics. Practical security that fits how you actually work.',
+                'long'  => 'Layered security that protects your people, devices and data, without the scare tactics. Practical security that fits how you actually work.',
                 'subs'  => [
                     'Managed antivirus / endpoint protection',
                     '2FA / MFA rollout & support',
@@ -35,6 +35,7 @@ class ServicesMockController extends Controller
                     'Security reviews & hardening',
                 ],
                 'icon'  => asset('images/security.png'),
+                'image' => asset('images/cyber_security.png'),
             ],
 
             [
@@ -49,6 +50,7 @@ class ServicesMockController extends Controller
                     'Teams setup and best-practice',
                 ],
                 'icon'  => asset('images/cloud.png'),
+                'image' => asset('images/m365_cloud.png'),
             ],
 
             [
@@ -62,6 +64,7 @@ class ServicesMockController extends Controller
                     'Office moves & changes',
                 ],
                 'icon'  => asset('images/boots.png'),
+                'image' => asset('images/onsite_support.png'),
             ],
 
             [
@@ -75,6 +78,7 @@ class ServicesMockController extends Controller
                     'Firewall & router management',
                 ],
                 'icon'  => asset('images/wifi.png'),
+                'image' => asset('images/network.png'),
             ],
 
             [
@@ -88,6 +92,9 @@ class ServicesMockController extends Controller
                     'Recovery testing & run-books',
                 ],
                 'icon'  => asset('images/backup.png'),
+                'image' => asset('images/backup-continuity.png'),
+
+
             ],
 
             [
