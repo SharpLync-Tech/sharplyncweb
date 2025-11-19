@@ -122,7 +122,7 @@ class ServicesMockController extends Controller
                     'Vendor & project guidance',
                 ],
                 'icon'  => asset('images/consulting.png'),
-                'image' => asset('images/consulting.png'),
+                'image' => asset('images/it_consulting.png'),
             ],
 
               [
@@ -131,7 +131,7 @@ class ServicesMockController extends Controller
                 'short' => 'Laptop screens, nattery replacements & more.',
                 'long'  => 'We source, repalcement parts and can fix laptops and desktops.',
                 'subs'  => [
-                    'New laptops, desktops & screens',
+                    'Laptops, desktops, batteries & screens',
                     'Networking & Wi-Fi hardware',
                     'Pre-config & install to your standards',
                 ],

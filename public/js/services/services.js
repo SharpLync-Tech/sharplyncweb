@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const tile = e.target.closest(".service-tile");
 
-            // Read tile data attributes
+            // Read tile data
             const title = tile.dataset.title;
             const short = tile.dataset.short;
             const longText = tile.dataset.long;
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const image = tile.dataset.image;
             const subs = JSON.parse(tile.dataset.subs);
 
-            // Fill expanded layout
+            // Fill expanded content
             expIcon.src = icon;
             expTitle.textContent = title;
             expShort.textContent = short;
@@ -41,23 +41,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 expSubs.appendChild(li);
             });
 
-            // Hide grid, show expanded
+            // Show expanded, hide grid
             grid.style.display = "none";
             expanded.style.display = "block";
 
-            // INSTANT scroll to top
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
 
     // --- CLOSE EXPANDED ---
     closeBtn.addEventListener("click", () => {
 
+        // Add `.closing` class for instant collapse (removes CSS transitions)
+        expanded.classList.add("closing");
+
         expanded.style.display = "none";
         grid.style.display = "grid";
 
-        // INSTANT scroll to top
-        window.scrollTo(0, 0);
+        // Remove override once layout stabilises
+        setTimeout(() => {
+            expanded.classList.remove("closing");
+        }, 50);
+
+        // No smooth scroll — instant back to top = faster feel
+        window.scrollTo({ top: 0 });
     });
 
 });
