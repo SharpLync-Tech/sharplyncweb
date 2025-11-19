@@ -4,7 +4,7 @@
 @section('title', 'SharpLync | Services')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/services/services.css') }}">
+<link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=6969">
 @endpush
 
 @section('content')
