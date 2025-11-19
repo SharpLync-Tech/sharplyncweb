@@ -39,7 +39,7 @@
 
 .services-hero .hero-logo {
     width: 220px;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     filter: drop-shadow(0 0 15px rgba(44,191,174,0.7));
 }
 
@@ -52,6 +52,7 @@
 .services-hero .hero-text h1 {
     font-size: 2.7rem;
     line-height: 1.2;
+    font-size: 35px;
 }
 
 .services-hero .highlight {
