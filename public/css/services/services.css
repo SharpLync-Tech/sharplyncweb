@@ -272,3 +272,10 @@
             #0E3A62 100%);
     }
 }
+
+.tile-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin: 1.5rem 0 2rem;
+}
+
