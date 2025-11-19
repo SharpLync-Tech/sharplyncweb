@@ -7,118 +7,136 @@
 
 <style>
     body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-        color: white;
-    }
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    color: white;
+}
+
+.mock-wrapper {
+    max-width: 1200px;
+    margin: 4rem auto;
+    background: #0A2A4D;
+    border-radius: 18px;
+    padding: 3rem;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+}
+
+/* -------------------------------------------------------
+   HEADER aligned to the RIGHT COLUMN ONLY
+---------------------------------------------------------*/
+.mock-header {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;        /* keeps header aligned to text width */
+    margin-left: calc(420px + 3rem); /* pushes header to align above text */
+}
+
+.mock-header img {
+    width: 70px;
+    filter: drop-shadow(0 0 8px rgba(44,191,174,0.9));
+    margin-bottom: 1rem;
+}
+
+.mock-header h2 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+
+.mock-header p {
+    margin-top: .3rem;
+    opacity: 0.85;
+    font-size: 0.95rem;
+}
+
+/* -------------------------------------------------------
+   DIVIDER — matches width of text column only
+---------------------------------------------------------*/
+.mock-divider {
+    width: 600px;  /* matches .mock-header max-width */
+    margin-left: calc(420px + 3rem);
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* -------------------------------------------------------
+   GRID LAYOUT
+---------------------------------------------------------*/
+.mock-content {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.mock-image img {
+    width: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    margin-top: -4rem; /* optional: match your mock */
+}
+
+.mock-text {
+    max-width: 650px;
+}
+
+.mock-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+    opacity: 0.95;
+}
+
+.mock-text h4 {
+    margin-bottom: .5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.mock-text ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.mock-text li {
+    margin-bottom: .4rem;
+}
+
+/* -------------------------------------------------------
+   MOBILE
+---------------------------------------------------------*/
+@media (max-width: 768px) {
 
     .mock-wrapper {
-        max-width: 1200px;
-        margin: 4rem auto;
-        background: #0A2A4D;
-        border-radius: 18px;
-        padding: 3rem;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+        padding: 2rem;
     }
 
-    /* HEADER (RIGHT SIDE) */
-    .mock-header {
-        text-align: center;
-        margin-bottom: 2rem;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .mock-header img {
-        width: 70px;
-        filter: drop-shadow(0 0 8px rgba(44,191,174,0.9));
-        margin-bottom: 1rem;
-    }
-
-    .mock-header h2 {
-        margin: 0;
-        font-size: 1.7rem;
-        font-weight: 600;
-    }
-
-    .mock-header p {
-        margin-top: .3rem;
-        opacity: 0.85;
-        font-size: 0.95rem;
-    }
-
+    .mock-header,
     .mock-divider {
-        border: none;
-        border-top: 1px solid rgba(255,255,255,0.18);
-        margin: 2rem 0;
-    }
-
-    /* GRID */
-    .mock-content {
-        display: grid;
-        grid-template-columns: 420px 1fr;
-        gap: 3rem;
-        align-items: flex-start;
-    }
-
-    .mock-image img {
+        margin-left: 0;
+        max-width: 100%;
         width: 100%;
-        border-radius: 14px;
-        object-fit: cover;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
     }
 
-    .mock-text {
-        padding-top: 1.5rem; /* pushes text further down to match your mock */
-        max-width: 650px;
-    }
-
-    .mock-text p {
-        margin-bottom: 1.5rem;
-        line-height: 1.55;
-        opacity: 0.95;
-    }
-
-    .mock-text h4 {
-        margin-bottom: .5rem;
-        font-size: 1.2rem;
-        font-weight: 600;
+    .mock-content {
+        grid-template-columns: 1fr;
         text-align: center;
     }
 
     .mock-text ul {
-        margin: 0;
-        padding-left: 1.2rem;
+        text-align: left;
+        display: inline-block;
+        margin: 0 auto;
     }
 
-    .mock-text li {
-        margin-bottom: .4rem;
+    .mock-image img {
+        margin-top: 0;
     }
-
-    /* MOBILE */
-    @media (max-width: 768px) {
-
-        .mock-wrapper {
-            padding: 2rem;
-        }
-
-        .mock-content {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-
-        .mock-text {
-            padding-top: 1rem;
-        }
-
-        .mock-text ul {
-            text-align: left;
-            display: inline-block;
-            margin: 0 auto;
-        }
-    }
+}
 
 </style>
 </head>
