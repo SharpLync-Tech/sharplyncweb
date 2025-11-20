@@ -59,6 +59,13 @@ Route::get('/test-footer', function () {
     return FooterLink::all();
 });
 
+use App\Models\CMS\AboutSection;
+
+Route::get('/test-about-section', function () {
+    return AboutSection::all();
+});
+
+
 
 require __DIR__.'/facilities.php';
 require __DIR__.'/admin.php';
