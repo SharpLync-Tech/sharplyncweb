@@ -11,10 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Existing global middleware
+
+        // Global middleware
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
-        // ✅ Register route middleware aliases
+        // Route middleware aliases
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
         ]);
@@ -23,9 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
 
-    // ⭐ NEW — Register custom providers (Laravel 12 style)
-    ->withProviders([
-        App\Providers\MenuServiceProvider::class,
-    ])
+    // 🔥 Correct place to register your provider in Laravel 12
+    ->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterProviders::class, 
+        function ($app) {
+            $app->register(\App\Providers\MenuServiceProvider::class);
+        }
+    )
 
     ->create();
