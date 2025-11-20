@@ -158,8 +158,8 @@ main {
     font-size: 80px;
     color: rgba(10,42,77,0.08);
     position: absolute;
-    top: 20px;
-    right: 20px; /* Moved to top right */
+    top: 40px;
+    right: 620px; /* Moved to top right */
     line-height: 1;
 }
 
