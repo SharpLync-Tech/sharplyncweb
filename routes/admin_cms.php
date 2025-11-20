@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CMS\PageController;
 use App\Http\Controllers\Admin\CMS\FooterLinkController;
 use App\Http\Controllers\Admin\CMS\AboutSectionController;
 use App\Http\Controllers\Admin\CMS\AboutTimelineItemController;
+use App\Http\Controllers\Admin\CMS\AboutValueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,9 +79,6 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
 
    
         // CMS: About Timeline
-
-
-
         Route::prefix('about/timeline')->name('about.timeline.')->group(function () {
         Route::get('/', [AboutTimelineItemController::class, 'index'])->name('index');
         Route::get('/create', [AboutTimelineItemController::class, 'create'])->name('create');
@@ -90,5 +88,19 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::delete('/{timelineItem}', [AboutTimelineItemController::class, 'destroy'])->name('destroy');
     });
 
+    
+        // CMS: About Values
+        Route::prefix('about/values')->name('about.values.')->group(function () {
+        Route::get('/', [AboutValueController::class, 'index'])->name('index');
+        Route::get('/create', [AboutValueController::class, 'create'])->name('create');
+        Route::post('/store', [AboutValueController::class, 'store'])->name('store');
+        Route::get('/{value}/edit', [AboutValueController::class, 'edit'])->name('edit');
+        Route::put('/{value}', [AboutValueController::class, 'update'])->name('update');
+        Route::delete('/{value}', [AboutValueController::class, 'destroy'])->name('destroy');
+    });
+
+    
+    
+    
     // OTHER CMS routes will go here later
 });
