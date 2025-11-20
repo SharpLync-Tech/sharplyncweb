@@ -39,7 +39,7 @@
 <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
     <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
     <ul>
-        <li><a href="/">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/services" onclick="toggleMenu()">Services</a></li>
             <li><a href="/login" onclick="toggleMenu()">Login</a></li>
             <li><a href="/register" onclick="toggleMenu()">Register</a></li>

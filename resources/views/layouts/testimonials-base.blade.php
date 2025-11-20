@@ -22,7 +22,7 @@
 <div id="overlayMenu" class="overlay-menu">
     <button class="close-menu" onclick="toggleMenu()">×</button>
     <ul>
-        <li><a href="/">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/services" onclick="toggleMenu()">Services</a></li>
             <li><a href="/login" onclick="toggleMenu()">Login</a></li>
             <li><a href="/register" onclick="toggleMenu()">Register</a></li>
