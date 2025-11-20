@@ -299,18 +299,18 @@
     display: inline-block;
     margin-top: 1rem;
     padding: 0.55rem 1.6rem;
-    background: var(--teal);
+    background: var(--teal) !important;
     border: 1px solid rgba(44,191,174,0.65);
     border-radius: 999px;
     font-size: 0.95rem;
-    color: white;
+    color: white !important;
     text-decoration: none;
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
 
 .mock-cta-btn:hover {
-    background: #35e0c2;
+    background: #35e0c2 !important;
 }
 
 

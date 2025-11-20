@@ -6,7 +6,9 @@
     <title>@yield('title', 'SharpLync Admin Portal')</title>
     <link href="{{ asset('css/admin/sharplync-admin.css') }}?v=1.1" rel="stylesheet">
 </head>
+
 <body class="admin-portal">
+
 <header class="admin-header">
     <h1>SharpLync Admin Portal</h1>
 
@@ -23,56 +25,111 @@
     </div>
 </header>
 
-<aside class="sidebar">
+{{-- ⭐ FIX: Proper wrapper to hold sidebar + main content --}}
+<div class="admin-container" style="display:flex;min-height:calc(100vh - 70px);">
 
-    {{-- Dashboard --}}
-    <a href="{{ url('/admin/dashboard') }}"
-       class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
-        Dashboard
-    </a>
+    {{-- Sidebar --}}
+    <aside class="sidebar">
 
-    {{-- Customers (NEW) --}}
-    <a href="{{ route('admin.customers.index') }}"
-       class="{{ request()->is('admin/customers*') ? 'active' : '' }}">
-        Customers
-    </a>
+        {{-- Dashboard --}}
+        <a href="{{ url('/admin/dashboard') }}"
+           class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
+            Dashboard
+        </a>
 
-    {{-- Testimonials --}}
-    <a href="{{ route('admin.testimonials.index') }}"
-       class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">
-        Testimonials
-    </a>
+        {{-- Customers --}}
+        <a href="{{ route('admin.customers.index') }}"
+           class="{{ request()->is('admin/customers*') ? 'active' : '' }}">
+            Customers
+        </a>
 
-    {{-- Devices --}}
-    <a href="{{ route('admin.devices.index') }}"
-       class="{{ request()->is('admin/devices') ? 'active' : '' }}">
-        Devices – All
-    </a>
+        {{-- Testimonials --}}
+        <a href="{{ route('admin.testimonials.index') }}"
+           class="{{ request()->is('admin/testimonials*') ? 'active' : '' }}">
+            Testimonials
+        </a>
 
-    <a href="{{ route('admin.devices.unassigned') }}"
-       class="{{ request()->is('admin/devices/unassigned') ? 'active' : '' }}">
-        Devices – Unassigned
-    </a>
+        {{-- Devices --}}
+        <a href="{{ route('admin.devices.index') }}"
+           class="{{ request()->is('admin/devices') ? 'active' : '' }}">
+            Devices – All
+        </a>
 
-    <a href="{{ route('admin.devices.import') }}"
-       class="{{ request()->is('admin/devices/import') ? 'active' : '' }}">
-        Devices – Import Audit
-    </a>
+        <a href="{{ route('admin.devices.unassigned') }}"
+           class="{{ request()->is('admin/devices/unassigned') ? 'active' : '' }}">
+            Devices – Unassigned
+        </a>
 
-    {{-- Pulse Feed --}}
-    <a href="#" class="">Pulse Feed</a>
+        <a href="{{ route('admin.devices.import') }}"
+           class="{{ request()->is('admin/devices/import') ? 'active' : '' }}">
+            Devices – Import Audit
+        </a>
 
-    {{-- Components --}}
-    <a href="#" class="">Components</a>
+        {{-- Pulse Feed --}}
+        <a href="{{ route('admin.pulse.index') }}"
+           class="{{ request()->is('admin/pulse*') ? 'active' : '' }}">
+            Pulse Feed
+        </a>
 
-    {{-- Settings --}}
-    <a href="#" class="">Settings</a>
+        {{-- Components --}}
+        <a href="{{ route('admin.components.index') }}"
+           class="{{ request()->is('admin/components*') ? 'active' : '' }}">
+            Components
+        </a>
 
-</aside>
+        {{-- Settings --}}
+        <a href="#" class="">Settings</a>
 
-<main class="admin-main">
-    @yield('content')
-</main>
+        {{-- CMS Section Header --}}
+        <div class="sidebar-section-title">CMS MANAGEMENT</div>
+
+        <a href="{{ route('admin.cms.menu.index') }}" class="{{ request()->is('admin/cms/menu*') ? 'active' : '' }}">
+            Menu Items
+        </a>
+
+        <a href="{{ route('admin.cms.pages.index') }}" class="{{ request()->is('admin/cms/pages*') ? 'active' : '' }}">
+            Pages
+        </a>
+
+        <a href="{{ route('admin.cms.services.index') }}" class="{{ request()->is('admin/cms/services*') ? 'active' : '' }}">
+            Services
+        </a>
+
+        <a href="{{ route('admin.cms.footer.index') }}" class="{{ request()->is('admin/cms/footer*') ? 'active' : '' }}">
+            Footer Links
+        </a>
+
+        <a href="{{ route('admin.cms.contact.index') }}" class="{{ request()->is('admin/cms/contact*') ? 'active' : '' }}">
+            Contact Info
+        </a>
+
+        <a href="{{ route('admin.cms.seo.index') }}" class="{{ request()->is('admin/cms/seo*') ? 'active' : '' }}">
+            SEO Meta
+        </a>
+
+        <a href="{{ route('admin.cms.about.sections.index') }}"
+           class="{{ request()->is('admin/cms/about/sections*') ? 'active' : '' }}">
+            About Sections
+        </a>
+
+        <a href="{{ route('admin.cms.about.values.index') }}"
+           class="{{ request()->is('admin/cms/about/values*') ? 'active' : '' }}">
+            About Values
+        </a>
+
+        <a href="{{ route('admin.cms.about.timeline.index') }}"
+           class="{{ request()->is('admin/cms/about/timeline*') ? 'active' : '' }}">
+            About Timeline
+        </a>
+
+    </aside>
+
+    {{-- Main Content --}}
+    <main class="admin-main" style="flex:1;padding:30px;">
+        @yield('content')
+    </main>
+
+</div>
 
 </body>
 </html>
