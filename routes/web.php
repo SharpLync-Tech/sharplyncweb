@@ -34,27 +34,10 @@ Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear
 Route::get('/terms', [PolicyController::class, 'termsAndConditions'])->name('terms');
 Route::get('/privacy', [PolicyController::class, 'privacyPolicy'])->name('privacy');
 
-// DB Content Testing Routes
-use App\Models\CMS\Service;
-
-Route::get('/test-services', function () {
-    return Service::all();    
-});
-use App\Models\CMS\MenuItem;
-
-Route::get('/test-menu', function () {
-    return MenuItem::all();
-});
-
-use App\Models\CMS\Page;
-
-Route::get('/test-page', function () {
-    return Page::all();
-});
 
 
 
-
+require __DIR__.'/contentdb.php';
 require __DIR__.'/facilities.php';
 require __DIR__.'/admin.php';
 require __DIR__.'/customers.php';
