@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CMS\MenuItemController;
 use App\Http\Controllers\Admin\CMS\ServiceController;
+use App\Http\Controllers\Admin\CMS\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +18,8 @@ use App\Http\Controllers\Admin\CMS\ServiceController;
 
 Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
 
-    // MENU ITEMS
-    Route::prefix('menu')->name('menu.')->group(function () {
+        // MENU ITEMS
+        Route::prefix('menu')->name('menu.')->group(function () {
         Route::get('/', [MenuItemController::class, 'index'])->name('index');
         Route::get('/create', [MenuItemController::class, 'create'])->name('create');
         Route::post('/store', [MenuItemController::class, 'store'])->name('store');
@@ -28,18 +29,28 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
     });
 
     
-    // CMS: Services
+        // CMS: Services
 
-    Route::prefix('services')->name('services.')->group(function () {
-    Route::get('/', [ServiceController::class, 'index'])->name('index');
-    Route::get('/create', [ServiceController::class, 'create'])->name('create');
-    Route::post('/store', [ServiceController::class, 'store'])->name('store');
-    Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
-    Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
-    Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+        Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('/create', [ServiceController::class, 'create'])->name('create');
+        Route::post('/store', [ServiceController::class, 'store'])->name('store');
+        Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
 
-});
+    });
 
+    
+        // CMS: Pages
+        Route::prefix('pages')->name('pages.')->group(function () {
+        Route::get('/', [PageController::class, 'index'])->name('index');
+        Route::get('/create', [PageController::class, 'create'])->name('create');
+        Route::post('/store', [PageController::class, 'store'])->name('store');
+        Route::get('/{page}/edit', [PageController::class, 'edit'])->name('edit');
+        Route::put('/{page}', [PageController::class, 'update'])->name('update');
+        Route::delete('/{page}', [PageController::class, 'destroy'])->name('destroy');
+    });
 
     // OTHER CMS routes will go here later
 });
