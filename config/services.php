@@ -41,6 +41,13 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', 'https://sharplync.com.au/customer/google/callback'),
     ],
 
+    'mailgun' => [
+    'domain' => env('MAILGUN_DOMAIN'),
+    'secret' => env('MAILGUN_SECRET'),
+    'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+    ],
+
+
     'microsoft_customer' => [
     'client_id' => env('MICROSOFT_CUSTOMER_CLIENT_ID'),
     'client_secret' => env('MICROSOFT_CUSTOMER_CLIENT_SECRET'),
