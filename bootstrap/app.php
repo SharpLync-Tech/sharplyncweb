@@ -21,4 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+
+    // ⭐ NEW — Register custom providers (Laravel 12 style)
+    ->withProviders([
+        App\Providers\MenuServiceProvider::class,
+    ])
+
+    ->create();
