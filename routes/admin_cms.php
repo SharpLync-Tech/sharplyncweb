@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\CMS\AboutTimelineItemController;
 use App\Http\Controllers\Admin\CMS\AboutValueController;
 use App\Http\Controllers\Admin\CMS\ContactInfoController;
 use App\Http\Controllers\Admin\CMS\SeoMetaController;
+use App\Http\Controllers\Admin\CMS\BlogCategoryController;
+use App\Http\Controllers\Admin\CMS\BlogPostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +120,31 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::get('/{seoMeta}/edit', [SeoMetaController::class, 'edit'])->name('edit');
         Route::put('/{seoMeta}', [SeoMetaController::class, 'update'])->name('update');
         Route::delete('/{seoMeta}', [SeoMetaController::class, 'destroy'])->name('destroy');
+    });
+
+
+        // CMS: Blog Categories
+        Route::prefix('blog/categories')->name('blog.categories.')->group(function () {
+        Route::get('/', [BlogCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [BlogCategoryController::class, 'create'])->name('create');
+        Route::post('/store', [BlogCategoryController::class, 'store'])->name('store');
+        Route::get('/{category}/edit', [BlogCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}', [BlogCategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [BlogCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+    
+        // CMS: Blog Posts
+
+
+
+        Route::prefix('blog/posts')->name('blog.posts.')->group(function () {
+        Route::get('/', [BlogPostController::class, 'index'])->name('index');
+        Route::get('/create', [BlogPostController::class, 'create'])->name('create');
+        Route::post('/store', [BlogPostController::class, 'store'])->name('store');
+        Route::get('/{post}/edit', [BlogPostController::class, 'edit'])->name('edit');
+        Route::put('/{post}', [BlogPostController::class, 'update'])->name('update');
+        Route::delete('/{post}', [BlogPostController::class, 'destroy'])->name('destroy');
     });
 
 
