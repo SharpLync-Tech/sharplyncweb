@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\CMS\ContactInfoController;
 use App\Http\Controllers\Admin\CMS\SeoMetaController;
 use App\Http\Controllers\Admin\CMS\BlogCategoryController;
 use App\Http\Controllers\Admin\CMS\BlogPostController;
+use App\Http\Controllers\Admin\CMS\KbCategoryController;
+use App\Http\Controllers\Admin\CMS\KbArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,9 +137,6 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
 
     
         // CMS: Blog Posts
-
-
-
         Route::prefix('blog/posts')->name('blog.posts.')->group(function () {
         Route::get('/', [BlogPostController::class, 'index'])->name('index');
         Route::get('/create', [BlogPostController::class, 'create'])->name('create');
@@ -145,6 +144,28 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::get('/{post}/edit', [BlogPostController::class, 'edit'])->name('edit');
         Route::put('/{post}', [BlogPostController::class, 'update'])->name('update');
         Route::delete('/{post}', [BlogPostController::class, 'destroy'])->name('destroy');
+    });
+
+    
+        // CMS: Knowledge Base Categories
+        Route::prefix('kb/categories')->name('kb.categories.')->group(function () {
+        Route::get('/', [KbCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [KbCategoryController::class, 'create'])->name('create');
+        Route::post('/store', [KbCategoryController::class, 'store'])->name('store');
+        Route::get('/{category}/edit', [KbCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}', [KbCategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [KbCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+
+        // CMS: Knowledge Base Articles
+        Route::prefix('kb/articles')->name('kb.articles.')->group(function () {
+        Route::get('/', [KbArticleController::class, 'index'])->name('index');
+        Route::get('/create', [KbArticleController::class, 'create'])->name('create');
+        Route::post('/store', [KbArticleController::class, 'store'])->name('store');
+        Route::get('/{article}/edit', [KbArticleController::class, 'edit'])->name('edit');
+        Route::put('/{article}', [KbArticleController::class, 'update'])->name('update');
+        Route::delete('/{article}', [KbArticleController::class, 'destroy'])->name('destroy');
     });
 
 
