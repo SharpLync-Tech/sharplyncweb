@@ -78,4 +78,21 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::get('/{device}', [DeviceController::class, 'show'])->name('admin.devices.show');
     });
 
+    /** Pulse Feed */
+    Route::get('/pulse', [PulseFeedController::class, 'index'])->name('admin.pulse.index');
+    Route::get('/pulse/create', [PulseFeedController::class, 'create'])->name('admin.pulse.create');
+    Route::post('/pulse/store', [PulseFeedController::class, 'store'])->name('admin.pulse.store');
+    Route::get('/pulse/{pulse}/edit', [PulseFeedController::class, 'edit'])->name('admin.pulse.edit');
+    Route::put('/pulse/{pulse}', [PulseFeedController::class, 'update'])->name('admin.pulse.update');
+    Route::delete('/pulse/{pulse}', [PulseFeedController::class, 'destroy'])->name('admin.pulse.destroy');
+
+    /** Components */
+    Route::get('/components', [ComponentController::class, 'index'])->name('admin.components.index');
+    Route::get('/components/create', [ComponentController::class, 'create'])->name('admin.components.create');
+    Route::post('/components/store', [ComponentController::class, 'store'])->name('admin.components.store');
+    Route::get('/components/{component}/edit', [ComponentController::class, 'edit'])->name('admin.components.edit');
+    Route::put('/components/{component}', [ComponentController::class, 'update'])->name('admin.components.update');
+    Route::delete('/components/{component}', [ComponentController::class, 'destroy'])->name('admin.components.destroy');
+
+
 });
