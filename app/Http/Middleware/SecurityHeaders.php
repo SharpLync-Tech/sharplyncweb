@@ -31,7 +31,8 @@ class SecurityHeaders
             "font-src 'self' data: https://fonts.gstatic.com; ".
             "style-src 'self' 'unsafe-inline'; ".
             "font-src 'self' data:; ".
-            "script-src 'self' 'unsafe-inline' https:;"
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;"
+
         );
 
         // --- Frame and Embedding Control ---
