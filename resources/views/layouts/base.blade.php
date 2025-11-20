@@ -53,7 +53,7 @@
     <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
         <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
         <ul>
-            @foreach($menuItems as $item)
+            @foreach(($menuItems ?? []) as $item)
                 <li>
                     <a 
                         href="{{ $item->url }}"
