@@ -100,6 +100,13 @@ Route::get('/test-post-categories', function () {
     return PostCategory::all();
 });
 
+use App\Models\CMS\KnowledgeBaseCategory;
+use App\Models\CMS\KnowledgeBaseArticle;
+
+Route::get('/test-kb-categories', fn() => KnowledgeBaseCategory::all());
+Route::get('/test-kb-articles', fn() => KnowledgeBaseArticle::all());
+
+
 
 
 
