@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\CMS\FooterLinkController;
 use App\Http\Controllers\Admin\CMS\AboutSectionController;
 use App\Http\Controllers\Admin\CMS\AboutTimelineItemController;
 use App\Http\Controllers\Admin\CMS\AboutValueController;
+use App\Http\Controllers\Admin\CMS\ContactInfoController;
+use App\Http\Controllers\Admin\CMS\SeoMetaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +102,25 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
     });
 
     
+        // CMS: Contact Info
+        Route::prefix('contact')->name('contact.')->group(function () {
+        Route::get('/', [ContactInfoController::class, 'index'])->name('index');
+        Route::get('/{contact}/edit', [ContactInfoController::class, 'edit'])->name('edit');
+        Route::put('/{contact}', [ContactInfoController::class, 'update'])->name('update');
+    });
+
+    
+        // CMS: SEO Meta
+        Route::prefix('seo')->name('seo.')->group(function () {
+        Route::get('/', [SeoMetaController::class, 'index'])->name('index');
+        Route::get('/create', [SeoMetaController::class, 'create'])->name('create');
+        Route::post('/store', [SeoMetaController::class, 'store'])->name('store');
+        Route::get('/{seoMeta}/edit', [SeoMetaController::class, 'edit'])->name('edit');
+        Route::put('/{seoMeta}', [SeoMetaController::class, 'update'])->name('update');
+        Route::delete('/{seoMeta}', [SeoMetaController::class, 'destroy'])->name('destroy');
+    });
+
+
     
     
     // OTHER CMS routes will go here later
