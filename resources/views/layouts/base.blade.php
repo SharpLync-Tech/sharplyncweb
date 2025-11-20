@@ -54,11 +54,13 @@
         <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
         <ul>
             <li><a href="/">Home</a></li>
+            <li><a href="/services" onclick="toggleMenu()">Contact Us</a></li>
             <li><a href="/login" onclick="toggleMenu()">Login</a></li>
             <li><a href="/register" onclick="toggleMenu()">Register</a></li>
             <li><a href="/about" onclick="toggleMenu()">About Us</a></li>
             <li><a href="/testimonials" onclick="toggleMenu()">Testimonials</a></li>
-            <li><a href="#contact" onclick="toggleMenu()">Contact Us</a></li>
+            <li><a href="/contact" onclick="toggleMenu()">Contact Us</a></li>
+        
         </ul>
     </div>
 
