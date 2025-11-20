@@ -1,4 +1,5 @@
-@extends('admin.layouts.app')
+@extends('admin.layouts.admin-layout')
+
 
 @section('title', 'CMS Menu Items')
 
