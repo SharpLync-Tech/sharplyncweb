@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CMS\MenuItemController;
 use App\Http\Controllers\Admin\CMS\ServiceController;
 use App\Http\Controllers\Admin\CMS\PageController;
 use App\Http\Controllers\Admin\CMS\FooterLinkController;
+use App\Http\Controllers\Admin\CMS\AboutSectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,16 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
     });
 
     
+        // CMS: About Sections
+        Route::prefix('about/sections')->name('about.sections.')->group(function () {
+        Route::get('/', [AboutSectionController::class, 'index'])->name('index');
+        Route::get('/create', [AboutSectionController::class, 'create'])->name('create');
+        Route::post('/store', [AboutSectionController::class, 'store'])->name('store');
+        Route::get('/{section}/edit', [AboutSectionController::class, 'edit'])->name('edit');
+        Route::put('/{section}', [AboutSectionController::class, 'update'])->name('update');
+        Route::delete('/{section}', [AboutSectionController::class, 'destroy'])->name('destroy');
+    });
+
     
     // OTHER CMS routes will go here later
 });
