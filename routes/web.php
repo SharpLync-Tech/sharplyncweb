@@ -5,7 +5,9 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\PolicyController;
+
 use App\Models\CMS\Service;
+use App\Models\CMS\MenuItem;
 
 Route::get('/', fn() => view('welcome'));
 Route::get('/contact', fn() => view('contact'));
@@ -25,14 +27,21 @@ Route::get('/verify/{token}', [VerifyController::class, 'verify'])->name('verify
 
 Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
 Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
-Route::get('/test-services', function () {
-    return Service::all();
-});
+
 
 
 // Policy Pages
 Route::get('/terms', [PolicyController::class, 'termsAndConditions'])->name('terms');
 Route::get('/privacy', [PolicyController::class, 'privacyPolicy'])->name('privacy');
+
+
+Route::get('/test-services', function () {
+    return Service::all();    
+});
+
+Route::get('/test-menu', function () {
+    return MenuItem::all();
+});
 
 
 
