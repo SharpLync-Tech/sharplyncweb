@@ -89,6 +89,18 @@ Route::get('/test-seo', function () {
     return SeoMeta::all();
 });
 
+use App\Models\CMS\Post;
+use App\Models\CMS\PostCategory;
+
+Route::get('/test-posts', function () {
+    return Post::all();
+});
+
+Route::get('/test-post-categories', function () {
+    return PostCategory::all();
+});
+
+
 
 
 
