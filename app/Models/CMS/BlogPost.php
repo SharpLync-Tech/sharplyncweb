@@ -4,7 +4,7 @@ namespace App\Models\CMS;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class BlogPost extends Model
 {
     protected $table = 'posts';
 

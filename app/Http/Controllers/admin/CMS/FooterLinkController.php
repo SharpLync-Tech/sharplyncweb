@@ -10,7 +10,9 @@ class FooterLinkController extends Controller
 {
     public function index()
     {
-        $links = FooterLink::orderBy('column')->orderBy('sort_order')->get();
+        // Sort by sort_order only
+        $links = FooterLink::orderBy('sort_order')->get();
+
         return view('admin.cms.footer.index', compact('links'));
     }
 
@@ -24,7 +26,6 @@ class FooterLinkController extends Controller
         $request->validate([
             'label' => 'required|string|max:255',
             'url' => 'required|string|max:255',
-            'column' => 'required|integer|min:1|max:4',
             'sort_order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
@@ -45,7 +46,6 @@ class FooterLinkController extends Controller
         $request->validate([
             'label' => 'required|string|max:255',
             'url' => 'required|string|max:255',
-            'column' => 'required|integer|min:1|max:4',
             'sort_order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);

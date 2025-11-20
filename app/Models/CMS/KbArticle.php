@@ -4,7 +4,7 @@ namespace App\Models\CMS;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KnowledgeBaseArticle extends Model
+class KbArticle extends Model
 {
     protected $table = 'knowledge_base_articles';
 

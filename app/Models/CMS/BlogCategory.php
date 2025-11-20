@@ -4,7 +4,7 @@ namespace App\Models\CMS;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PostCategory extends Model
+class BlogCategory extends Model
 {
     protected $table = 'post_categories';
 

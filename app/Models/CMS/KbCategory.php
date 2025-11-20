@@ -4,7 +4,7 @@ namespace App\Models\CMS;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KnowledgeBaseCategory extends Model
+class KbCategory extends Model
 {
     protected $table = 'knowledge_base_categories';
 
