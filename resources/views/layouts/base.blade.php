@@ -1,3 +1,6 @@
+{{-- TEMP DEBUG --}}
+<pre>{{ isset($menuItems) ? 'OK' : 'NOT OK' }}</pre>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
