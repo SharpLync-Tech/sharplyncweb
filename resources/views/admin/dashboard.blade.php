@@ -1,4 +1,9 @@
-<nav class="sidebar">
+@extends('admin.layouts.admin-layout')
+
+@section('title', 'Dashboard')
+
+@section('content')
+    <nav class="sidebar">
     <ul>
 
         {{-- ============================= --}}
@@ -60,3 +65,15 @@
 
     </ul>
 </nav>
+
+
+    {{-- ======== MODAL SCRIPT ========= --}}
+    <script>
+        function openModal() {
+            document.getElementById('sharpModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('sharpModal').classList.remove('active');
+        }
+    </script>
+@endsection
