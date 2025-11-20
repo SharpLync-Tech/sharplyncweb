@@ -1,4 +1,5 @@
-@extends('layouts.testimonials-base')
+
+@extends('layouts.base')
 
 @section('title', 'SharpLync | Testimonials')
 
@@ -77,7 +78,7 @@
 
 @push('scripts')
 <script>
-// Modal Logic (simplified from your original)
+// Modal Logic (simplified from your original - @extends('layouts.testimonials-base'))
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('testimonialModal');
     const modalClose = modal.querySelector('.modal-close');
