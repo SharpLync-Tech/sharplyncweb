@@ -65,6 +65,31 @@ Route::get('/test-about-section', function () {
     return AboutSection::all();
 });
 
+use App\Models\CMS\AboutTimelineItem;
+
+Route::get('/test-timeline', function () {
+    return AboutTimelineItem::all();
+});
+
+use App\Models\CMS\AboutValue;
+
+Route::get('/test-about-values', function () {
+    return AboutValue::all();
+});
+
+use App\Models\CMS\ContactInfo;
+
+Route::get('/test-contact', function () {
+    return ContactInfo::all();
+});
+
+use App\Models\CMS\SeoMeta;
+
+Route::get('/test-seo', function () {
+    return SeoMeta::all();
+});
+
+
 
 
 require __DIR__.'/facilities.php';
