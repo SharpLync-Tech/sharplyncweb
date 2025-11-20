@@ -20,8 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
         ]);
     })
+    ->withProviders([
+        \App\Providers\MenuServiceProvider::class,
+    ])  // ⭐ THIS IS WHAT YOU WERE MISSING ⭐
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })
-
     ->create();
