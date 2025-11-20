@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CMS\ServiceController;
 use App\Http\Controllers\Admin\CMS\PageController;
 use App\Http\Controllers\Admin\CMS\FooterLinkController;
 use App\Http\Controllers\Admin\CMS\AboutSectionController;
+use App\Http\Controllers\Admin\CMS\AboutTimelineItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,19 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::delete('/{section}', [AboutSectionController::class, 'destroy'])->name('destroy');
     });
 
-    
+   
+        // CMS: About Timeline
+
+
+
+        Route::prefix('about/timeline')->name('about.timeline.')->group(function () {
+        Route::get('/', [AboutTimelineItemController::class, 'index'])->name('index');
+        Route::get('/create', [AboutTimelineItemController::class, 'create'])->name('create');
+        Route::post('/store', [AboutTimelineItemController::class, 'store'])->name('store');
+        Route::get('/{timelineItem}/edit', [AboutTimelineItemController::class, 'edit'])->name('edit');
+        Route::put('/{timelineItem}', [AboutTimelineItemController::class, 'update'])->name('update');
+        Route::delete('/{timelineItem}', [AboutTimelineItemController::class, 'destroy'])->name('destroy');
+    });
+
     // OTHER CMS routes will go here later
 });
