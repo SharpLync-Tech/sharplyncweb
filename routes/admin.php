@@ -27,6 +27,8 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
 
     /** Dashboard */
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/settings', function () {return view('admin.settings.index');
+            })->name('admin.settings.index');
 
     /** Testimonials */
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('admin.testimonials.index');
