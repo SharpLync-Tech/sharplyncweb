@@ -24,11 +24,4 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
 
-    // 🔥 Correct place to register your provider in Laravel 12
-    ->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterProviders::class, 
-        function ($app) {
-            $app->register(\App\Providers\MenuServiceProvider::class);
-        }
-    )
-
     ->create();
