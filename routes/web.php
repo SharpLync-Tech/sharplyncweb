@@ -5,6 +5,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\PolicyController;
+use App\Models\CMS\Service;
 
 Route::get('/', fn() => view('welcome'));
 Route::get('/contact', fn() => view('contact'));
@@ -24,7 +25,9 @@ Route::get('/verify/{token}', [VerifyController::class, 'verify'])->name('verify
 
 Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
 Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
-
+Route::get('/test-services', function () {
+    return Service::all();
+});
 
 
 // Policy Pages
