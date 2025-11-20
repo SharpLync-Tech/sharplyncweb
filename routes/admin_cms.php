@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CMS\MenuItemController;
 use App\Http\Controllers\Admin\CMS\ServiceController;
 use App\Http\Controllers\Admin\CMS\PageController;
+use App\Http\Controllers\Admin\CMS\FooterLinkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +41,6 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
 
     });
-
     
         // CMS: Pages
         Route::prefix('pages')->name('pages.')->group(function () {
@@ -52,5 +52,18 @@ Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
         Route::delete('/{page}', [PageController::class, 'destroy'])->name('destroy');
     });
 
+   
+        // CMS: Footer Links
+        Route::prefix('footer')->name('footer.')->group(function () {
+        Route::get('/', [FooterLinkController::class, 'index'])->name('index');
+        Route::get('/create', [FooterLinkController::class, 'create'])->name('create');
+        Route::post('/store', [FooterLinkController::class, 'store'])->name('store');
+        Route::get('/{footerLink}/edit', [FooterLinkController::class, 'edit'])->name('edit');
+        Route::put('/{footerLink}', [FooterLinkController::class, 'update'])->name('update');
+        Route::delete('/{footerLink}', [FooterLinkController::class, 'destroy'])->name('destroy');
+    });
+
+    
+    
     // OTHER CMS routes will go here later
 });
