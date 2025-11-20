@@ -26,6 +26,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\DashboardController;
+use App\Http\Controllers\Customer\Auth\ForgotPasswordController;
+use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 
 // ======================================================
 // PART 1 — CUSTOMER REGISTRATION & ONBOARDING
@@ -67,6 +69,25 @@ Route::get('/portal_test', fn() => view('customers.portal_test'))->name('custome
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('customer.login');
 Route::post('/login', [LoginController::class, 'login'])->name('customer.login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('customer.logout');
+
+
+// ========================================
+// CUSTOMER PASSWORD RESET
+// ========================================
+
+
+Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('customer.password.request');
+
+Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('customer.password.email');
+
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('customer.password.reset.form');
+
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])
+    ->name('customer.password.update');
+
 
 
 // ======================================================

@@ -7,36 +7,29 @@ return [
     | Default Mailer
     |--------------------------------------------------------------------------
     |
-    | This option controls the default mailer that is used to send all email
-    | messages. The "graph" mailer is now available for Microsoft 365 sending.
+    | This controls the default mailer your application uses.
+    | We are switching to Mailgun for all outgoing emails.
     |
     */
-    'default' => env('MAIL_MAILER', 'graph'),
+    'default' => env('MAIL_MAILER', 'mailgun'),
 
     /*
     |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |
-    | Here you may configure all of the mailers used by your application.
-    | We’ve added a custom "graph" transport that uses the Microsoft Graph API
-    | for sending emails through Azure AD instead of SMTP.
+    | These are all the mailers your application knows about.
+    | We removed the old Microsoft Graph transport entirely and added Mailgun.
     |
     */
     'mailers' => [
 
-        // ✅ Microsoft Graph Mailer
-        'graph' => [
-            'transport' => 'graph',
-            'api_version' => env('GRAPH_API_VERSION', 'v1.0'),
-            'client_id' => env('GRAPH_CLIENT_ID'),
-            'client_secret' => env('GRAPH_CLIENT_SECRET'),
-            'tenant_id' => env('GRAPH_TENANT_ID'),
-            'redirect' => env('GRAPH_REDIRECT_URI'), // Optional
-            'scopes' => env('GRAPH_SCOPES', 'https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read offline_access'),
+        // ✅ Mailgun Mailer (Primary)
+        'mailgun' => [
+            'transport' => 'mailgun',
         ],
 
-        // Standard SMTP (e.g. fallback)
+        // Optional fallback (Office365 SMTP or Gmail if added later)
         'smtp' => [
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.office365.com'),
@@ -51,13 +44,13 @@ return [
             ),
         ],
 
-        // Logs all emails to laravel.log (for testing)
+        // Log driver (for debugging)
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
         ],
 
-        // Keeps emails in memory (mainly for tests)
+        // Array driver (for tests)
         'array' => [
             'transport' => 'array',
         ],
@@ -68,12 +61,12 @@ return [
     | Global "From" Address
     |--------------------------------------------------------------------------
     |
-    | All emails sent by the application will use this sender address.
+    | All emails sent by your app will use this.
     |
     */
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@sharplync.com.au'),
-        'name' => env('MAIL_FROM_NAME', 'SharpLync'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@sharplync.com.au'),
+        'name' => env('MAIL_FROM_NAME', 'SharpLync Support'),
     ],
 
 ];
