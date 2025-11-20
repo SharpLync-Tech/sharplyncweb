@@ -3,25 +3,27 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Models\CMS\MenuItem;
 use Illuminate\Support\Facades\View;
+use App\Models\MenuItem;
 
 class MenuServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
         //
     }
 
-    public function boot()
+    public function boot(): void
     {
-        // Share menu items with ALL frontend views
-        View::composer('*', function ($view) {
-            $view->with('menuItems',
-                MenuItem::where('is_active', true)
-                    ->orderBy('sort_order', 'asc')
-                    ->get()
-            );
+        // Delay view composer registration until view subsystem is ready
+        $this->callAfterResolving('view', function () {
+            View::composer('*', function ($view) {
+                $menuItems = MenuItem::where('is_active', 1)
+                    ->orderBy('sort_order')
+                    ->get();
+
+                $view->with('menuItems', $menuItems);
+            });
         });
     }
 }
