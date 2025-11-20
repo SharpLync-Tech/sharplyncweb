@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Models\MenuItem;
+use App\Models\CMS\MenuItem;
 
 class MenuServiceProvider extends ServiceProvider
 {
