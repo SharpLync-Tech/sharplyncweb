@@ -146,7 +146,7 @@ document.getElementById('passwordInput').addEventListener('input', function() {
         bar.style.background = "#2CBFAE";
         text.textContent = "Strong";
     } else {
-        bar.style.background = "#2CBFAE";
+        bar.style.background = "#4CAF50";
         text.textContent = "Very Strong";
     }
 });
