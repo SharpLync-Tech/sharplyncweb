@@ -58,7 +58,8 @@
                     <span id="togglePassword"
                         style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
                             cursor:pointer; color:#2CBFAE; font-size:1.2rem;">
-                        👁️
+                        👁
+
                     </span>
                 </div>
 
