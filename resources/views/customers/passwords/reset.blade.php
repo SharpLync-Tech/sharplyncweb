@@ -38,58 +38,88 @@
                 </div>
             @endif
 
-            <form action="{{ route('customer.password.update') }}" method="POST">
-                @csrf
+                    <form action="{{ route('customer.password.update') }}" method="POST">
+            @csrf
 
-                <input type="hidden" name="token" value="{{ $token }}">
-                <input type="hidden" name="email" value="{{ $email }}">
+            <input type="hidden" name="token" value="{{ $token }}">
+            <input type="hidden" name="email" value="{{ $email }}">
 
-                <!-- NEW PASSWORD INPUT + STRENGTH METER -->
-                <div style="margin-bottom:1rem;">
-                    <label style="color:white; font-weight:600;">New Password</label>
+            <!-- PASSWORD FIELD -->
+            <div style="margin-bottom:1rem;">
+                <label style="color:white; font-weight:600;">New Password</label>
+
+                <div style="position:relative;">
                     <input type="password" name="password" id="passwordInput" required
-                           style="width:100%; padding:0.6rem; border-radius:6px;
-                                  color:white; background:rgba(255,255,255,0.08);
-                                  border:1px solid rgba(255,255,255,0.25);">
-                    
-                    <!-- Strength bar -->
-                    <div style="margin-top:8px; height:8px; width:100%; background:rgba(255,255,255,0.15); border-radius:6px;">
-                        <div id="passwordStrengthBar" style="
-                            height:100%; width:0%; border-radius:6px;
-                            transition:width 0.2s ease-in-out;
-                        "></div>
-                    </div>
+                        style="width:100%; padding:0.6rem 2.5rem 0.6rem 0.6rem; border-radius:6px;
+                            color:white; background:rgba(255,255,255,0.08);
+                            border:1px solid rgba(255,255,255,0.25);">
 
-                    <!-- Strength label -->
-                    <div id="passwordStrengthText" style="margin-top:6px; font-size:0.9rem; color:#ccc;"></div>
+                    <!-- SHOW / HIDE EYE ICON -->
+                    <span id="togglePassword"
+                        style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
+                            cursor:pointer; color:#2CBFAE; font-size:1.2rem;">
+                        👁️
+                    </span>
                 </div>
 
-                <div style="margin-bottom:1.5rem;">
-                    <label style="color:white; font-weight:600;">Confirm Password</label>
-                    <input type="password" name="password_confirmation" required
-                           style="width:100%; padding:0.6rem; border-radius:6px;
-                                  color:white; background:rgba(255,255,255,0.08);
-                                  border:1px solid rgba(255,255,255,0.25);">
+                <!-- Strength bar -->
+                <div style="margin-top:8px; height:8px; width:100%; background:rgba(255,255,255,0.15); border-radius:6px;">
+                    <div id="passwordStrengthBar" style="
+                        height:100%; width:0%; border-radius:6px;
+                        transition:width 0.2s ease-in-out;
+                    "></div>
                 </div>
 
-                <button type="submit"
-                        style="width:100%; padding:0.75rem; background:#2CBFAE;
-                               border-radius:8px; color:white; font-weight:600;">
-                    Reset Password
+                <!-- Strength label -->
+                <div id="passwordStrengthText" style="margin-top:6px; font-size:0.9rem; color:#ccc;"></div>
+
+                <!-- Generate Password Button -->
+                <button type="button" id="generatePasswordBtn"
+                    style="margin-top:8px; background:#104976; color:white; padding:0.45rem 0.7rem;
+                        border:none; border-radius:6px; font-size:0.85rem; cursor:pointer;">
+                    Generate Strong Password
                 </button>
+            </div>
 
-                <div style="text-align:center; margin-top:1rem;">
-                    <a href="{{ route('customer.login') }}" style="color:#2CBFAE;">
-                        Back to login
-                    </a>
-                </div>
-            </form>
+            <!-- CONFIRM FIELD -->
+            <div style="margin-bottom:1.5rem;">
+                <label style="color:white; font-weight:600;">Confirm Password</label>
+
+                <input type="password" name="password_confirmation" id="passwordConfirm" required
+                    style="width:100%; padding:0.6rem; border-radius:6px;
+                        color:white; background:rgba(255,255,255,0.08);
+                        border:1px solid rgba(255,255,255,0.25);">
+
+                <!-- Match indicator -->
+                <div id="passwordMatchText" style="margin-top:6px; font-size:0.9rem;"></div>
+            </div>
+
+            <button type="submit"
+                style="width:100%; padding:0.75rem; background:#2CBFAE;
+                    border-radius:8px; color:white; font-weight:600;">
+                Reset Password
+            </button>
+
+            <div style="text-align:center; margin-top:1rem;">
+                <a href="{{ route('customer.login') }}" style="color:#2CBFAE;">
+                    Back to login
+                </a>
+            </div>
+        </form>
+
         </div>
     </div>
 </section>
 
 <!-- Password Strength Script -->
 <script>
+// ===== SHOW/HIDE PASSWORD =====
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const pw = document.getElementById('passwordInput');
+    pw.type = pw.type === "password" ? "text" : "password";
+});
+
+// ===== PASSWORD STRENGTH =====
 document.getElementById('passwordInput').addEventListener('input', function() {
     const val = this.value;
     const bar = document.getElementById('passwordStrengthBar');
@@ -106,19 +136,58 @@ document.getElementById('passwordInput').addEventListener('input', function() {
     bar.style.width = width + "%";
 
     if (strength <= 1) {
-        bar.style.background = "#ff4d4d"; // red
+        bar.style.background = "#ff4d4d";
         text.textContent = "Weak";
     } else if (strength === 2) {
-        bar.style.background = "#ffcc00"; // yellow
+        bar.style.background = "#ffcc00";
         text.textContent = "Okay";
     } else if (strength === 3) {
-        bar.style.background = "#2CBFAE"; // teal-ish strong
+        bar.style.background = "#2CBFAE";
         text.textContent = "Strong";
     } else {
-        bar.style.background = "#2CBFAE"; // strongest teal
+        bar.style.background = "#2CBFAE";
         text.textContent = "Very Strong";
     }
 });
+
+// ===== PASSWORD MATCH CHECK =====
+document.getElementById('passwordConfirm').addEventListener('input', function() {
+    const pw = document.getElementById('passwordInput').value;
+    const pw2 = this.value;
+    const matchText = document.getElementById('passwordMatchText');
+
+    if (!pw2) {
+        matchText.textContent = "";
+        return;
+    }
+
+    if (pw === pw2) {
+        matchText.style.color = "#2CBFAE";
+        matchText.textContent = "✔ Passwords match";
+    } else {
+        matchText.style.color = "#ff4d4d";
+        matchText.textContent = "✖ Passwords do not match";
+    }
+});
+
+// ===== GENERATE STRONG PASSWORD =====
+document.getElementById('generatePasswordBtn').addEventListener('click', function () {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?";
+    let pass = "";
+    for (let i = 0; i < 14; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    const pwField = document.getElementById('passwordInput');
+    const pwConfirm = document.getElementById('passwordConfirm');
+
+    pwField.value = pass;
+    pwConfirm.value = pass;
+
+    pwField.dispatchEvent(new Event('input'));
+    pwConfirm.dispatchEvent(new Event('input'));
+});
 </script>
+
 
 @endsection
