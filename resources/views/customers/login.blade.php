@@ -111,11 +111,13 @@
         </div>
 
         <!-- Forgot password link -->
-        <div style="text-align: right; margin-bottom: 1.5rem;">
-          <a href="#" style="color: #2CBFAE; font-weight: 500; text-decoration: none;">
-            Forgot your password?
-          </a>
-        </div>
+          <div style="text-align: right; margin-bottom: 1.5rem;">
+            <a href="{{ route('customer.password.request') }}" 
+              style="color: #2CBFAE; font-weight: 500; text-decoration: none;">
+              Forgot your password?
+            </a>
+          </div>
+
 
         <!-- Login button -->
         <button type="submit" class="btn-primary w-full"
