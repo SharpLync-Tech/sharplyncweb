@@ -16,7 +16,7 @@ class ResetPasswordController extends Controller
     public function showResetForm(Request $request, string $token)
     {
         // Validate signed URL (security)
-        if (!$request->hasValidSignature()) {
+        if (!$request->hasValidSignatureWhileIgnoring(['email'])) {
             return redirect()
                 ->route('customer.password.request')
                 ->with('error', 'This password reset link is invalid or has expired.');
