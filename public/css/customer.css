@@ -506,8 +506,9 @@ html, body {
 .cp-switch {
     position: relative;
     display: inline-block;
-    width: 48px;
+    width: 48px !important;
     height: 26px;
+    flex-shrink: 0;
 }
 
 .cp-switch input {
