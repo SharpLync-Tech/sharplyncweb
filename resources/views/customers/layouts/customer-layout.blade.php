@@ -1,6 +1,6 @@
 {{-- 
   Layout: customers/layouts/customer-layout.blade.php
-  Version: v2.0 (Customer Portal Layout - Stable)
+  Version: v2.1 (Customer Portal Layout + Cache Bust)
   Description:
   - Provides header, footer, and cp-root background wrapper
 --}}
@@ -11,7 +11,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title') | SharpLync Portal</title>
-  <link rel="stylesheet" href="/css/customer.css?v=3002">
+  <link rel="stylesheet" href="/css/customer.css?v=3003">
 </head>
 <body class="cp-root">
   <header class="cp-header">

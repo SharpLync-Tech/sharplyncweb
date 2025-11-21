@@ -1,12 +1,20 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v3.0 (Clean Rewrite + Security Modal)
+   Version: v3.1 (Clean Modal + Security)
    Updated: 21 Nov 2025
    Description:
    - Structured CSS for Customer Portal
    - Includes header, grid, FAB logout, security modal & 2FA cards
    - Fully responsive and brand-consistent
 =================================================================== */
+
+/* -------------------------------------------------------------------
+   0. GLOBAL RESET
+------------------------------------------------------------------- */
+html, body {
+    margin: 0;
+    padding: 0;
+}
 
 /* -------------------------------------------------------------------
    1. ROOT VARIABLES & BASE
@@ -36,6 +44,13 @@
 
 .cp-root a:hover {
     text-decoration: underline;
+}
+
+/* When modal is open, lock background scroll safely */
+.cp-root.modal-open {
+    overflow: hidden;
+    height: 100vh;
+    width: 100%;
 }
 
 /* -------------------------------------------------------------------
@@ -304,21 +319,22 @@
     inset: 0;
     background: rgba(0,0,0,0.45);
     display: none;
-    align-items: flex-end; /* mobile: slide up from bottom */
+    align-items: flex-end; /* mobile bottom-sheet default */
     justify-content: center;
     z-index: 1500;
     opacity: 0;
     transition: opacity .25s ease;
 }
 
-/* Visible state controlled by JS */
+/* visible state */
 .cp-modal-backdrop.cp-modal-visible {
     display: flex;
     opacity: 1;
 }
 
+/* Modal sheet */
 .cp-modal-sheet {
-    background: #ffffff;
+    background: #fff;
     width: 100%;
     max-height: 90vh;
     border-radius: 18px 18px 0 0;
@@ -335,24 +351,16 @@
 }
 
 /* Desktop: center sheet */
-@media (min-width: 769px) {
+@media (min-width:769px){
     .cp-modal-backdrop {
         align-items: center;
     }
     .cp-modal-sheet {
-        max-width: 620px;
-        border-radius: 16px;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        max-width:620px;
+        border-radius:16px;
+        box-shadow:0 16px 40px rgba(0,0,0,0.35);
     }
 }
-
-.cp-root.modal-open {
-    overflow: hidden;
-    height: 100vh;      /* ensures background content doesn't shift */
-    width: 100%;        /* ensures proper viewport width */
-}
-
-
 
 /* Modal internal layout */
 .cp-modal-header {
@@ -414,50 +422,6 @@
 /* -------------------------------------------------------------------
    9. SECURITY OPTION CARDS (INSIDE MODAL)
 ------------------------------------------------------------------- */
-
-/* Modal backdrop */
-.cp-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: flex-end; /* mobile bottom-sheet default */
-    justify-content: center;
-    z-index: 1500;
-    opacity: 0;
-    transition: opacity .25s ease;
-}
-
-/* visible state */
-.cp-modal-backdrop.cp-modal-visible {
-    display: flex;
-    opacity: 1;
-}
-
-/* Modal sheet */
-.cp-modal-sheet {
-    background: #fff;
-    width: 100%;
-    max-height: 90vh;
-    border-radius: 18px 18px 0 0;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
-    padding: 1.5rem 1.25rem 1.25rem;
-    transform: translateY(100%);
-    animation: cpModalSlideUp .28s ease-out forwards;
-}
-
-/* Desktop: center sheet */
-@media (min-width:769px){
-    .cp-modal-backdrop {
-        align-items: center;
-    }
-    .cp-modal-sheet {
-        max-width:620px;
-        border-radius:16px;
-        box-shadow:0 16px 40px rgba(0,0,0,0.35);
-    }
-}
-
 
 .cp-sec-card {
     background: #f9fbfd;
@@ -702,30 +666,5 @@
         0% { transform: scale(1); opacity: 0.8; }
         70% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
-    }    
-
-    /* Fix modal alignment on mobile */
-    .cp-modal-backdrop {
-        align-items: flex-end !important;
-
     }
-}
-
-/* ============================================================
-   FINAL MOBILE ENFORCER — fixes modal width & alignment
-   ============================================================ */
-
-@media (max-width: 768px) {   
-   
-    /* Fix close button */
-    .cp-modal-close {
-        margin-right: 0.25rem;
-    }
-
-    /* Fix scroll area */
-    .cp-modal-body {
-        max-height: 60vh !important;
-        overflow-y: auto !important;
-    }   
-    
 }
