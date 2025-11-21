@@ -1,13 +1,3 @@
-{{-- 
-  Page: resources/views/customers/security.blade.php
-  Version: v1.0 (Security Page Base)
-  Description:
-  - Mirrors Customer Portal layout
-  - Keeps: Header + User section
-  - Removes: Edit Profile, Support, Account Summary
-  - Adds: Security Settings Area
---}}
-
 @extends('customers.layouts.customer-layout')
 
 @section('title', 'Security Settings')
@@ -16,7 +6,6 @@
 @php
     use Illuminate\Support\Str;
 
-    // Resolve user object safely
     $u = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
 
     $fullName = $u ? trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) : 'Customer Name';
@@ -26,7 +15,7 @@
     $status = ucfirst($u->account_status ?? 'Active');
     $since = $u && $u->created_at ? $u->created_at->format('F Y') : null;
 
-    // Initials
+    // Generate initials
     $nameParts = explode(' ', trim($fullName));
     $initials = '';
     foreach ($nameParts as $p) {
@@ -38,28 +27,30 @@
     <h2>Security Settings</h2>
 </div>
 
+{{-- IDENTICAL STRUCTURE TO ORIGINAL DASHBOARD --}}
 <div class="cp-card cp-dashboard-grid">
 
-    {{-- LEFT COLUMN: User Profile (KEEP) --}}
+    {{-- LEFT PROFILE COLUMN (unchanged) --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
             <div class="cp-avatar">{{ $initials }}</div>
+
             <div class="cp-name-group">
                 <h3>{{ $fullName }}</h3>
                 <p class="cp-member-status">{{ $status }}</p>
                 <p class="cp-detail-line">Email: <a href="mailto:{{ $email }}">{{ $email }}</a></p>
+
                 @if($since)
                     <p class="cp-detail-line">Customer since: {{ $since }}</p>
                 @endif
             </div>
         </div>
-
-        {{-- Edit Profile removed intentionally --}}
     </div>
 
-    {{-- RIGHT COLUMN: SECURITY ONLY --}}
+    {{-- RIGHT ACTIVITY COLUMN (kept EXACT width) --}}
     <div class="cp-activity-column">
 
+        {{-- FULL-SIZE SECURITY CARD --}}
         <div class="cp-activity-card cp-security-card">
             <h4>Two-Factor Authentication</h4>
             <p>Protect your account with an additional layer of security.</p>
@@ -71,6 +62,5 @@
         </div>
 
     </div>
-
 </div>
 @endsection
