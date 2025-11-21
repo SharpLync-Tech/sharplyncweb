@@ -10,25 +10,21 @@ use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
-    /**
-     * Show the password reset form.
-     */
-    public function showResetForm(Request $request, string $token)
+        /**
+         * Show the password reset form.
+         */
+        public function showResetForm(Request $request, $token)
     {
-        // Validate signed URL (security)
-        if (!$request->hasValidSignatureWhileIgnoring(['email'])) {
-            return redirect()
-                ->route('customer.password.request')
-                ->with('error', 'This password reset link is invalid or has expired.');
+        if (! $request->hasValidSignature()) {
+            abort(403, 'Invalid or expired password reset link.');
         }
-
-        $email = $request->query('email');
 
         return view('customers.passwords.reset', [
             'token' => $token,
-            'email' => $email,
+            'email' => $request->query('email'),
         ]);
     }
+
 
     /**
      * Actually reset the customer's password.
