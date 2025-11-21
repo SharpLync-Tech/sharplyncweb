@@ -83,6 +83,7 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkE
     ->name('customer.password.email');
 
 Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->middleware('signed')
     ->name('customer.password.reset.form');
 
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])
