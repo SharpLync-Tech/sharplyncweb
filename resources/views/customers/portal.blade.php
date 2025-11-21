@@ -72,9 +72,9 @@
             <h4>Support</h4>
             <p>Need help? View support tickets or connect for remote assistance.</p>
             <div class="cp-support-footer">
-                <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-navy-btn">Open Support</a>
+                <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-teal-btn">Open Support</a>
                 <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
-                   class="cp-btn cp-small-btn cp-outline-btn">
+                   class="cp-btn cp-small-btn cp-teal-btn">
                     Download Quick Support
                 </a>
             </div>
