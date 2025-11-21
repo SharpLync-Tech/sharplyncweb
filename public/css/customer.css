@@ -659,3 +659,37 @@
         max-width: 100%;
     }
 }
+
+/* ============================================================
+   FINAL MOBILE ENFORCER — fixes modal width & alignment
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Force full-width sheet on mobile */
+    .cp-modal-sheet {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 18px 18px 0 0 !important;
+    }
+
+    /* Ensure backdrop uses slide-up behavior */
+    .cp-modal-backdrop {
+        align-items: flex-end !important;
+        justify-content: center;
+    }
+
+    /* Fix close button alignment */
+    .cp-modal-close {
+        margin-right: 0.25rem;
+    }
+
+    /* Ensure modal content scrolls naturally */
+    .cp-modal-body {
+        max-height: 60vh !important;
+        overflow-y: auto !important;
+    }
+}
