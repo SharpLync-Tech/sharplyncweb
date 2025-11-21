@@ -213,8 +213,8 @@
 @section('scripts')
 <script>
     (function () {
-        const openBtn = document.getElementById('cp-open-security-modal');
-        const modal   = document.getElementById('cp-security-modal');
+        const openBtn     = document.getElementById('cp-open-security-modal');
+        const modal       = document.getElementById('cp-security-modal');
         if (!openBtn || !modal) return;
 
         const sheet       = modal.querySelector('.cp-modal-sheet');
@@ -224,13 +224,13 @@
         function openModal() {
             modal.setAttribute('aria-hidden', 'false');
             modal.classList.add('cp-modal-visible');
-            root.classList.add('modal-open');   // << NEW (safe scroll lock)
+            root.classList.add('modal-open');      // Safe scroll lock
         }
 
         function closeModal() {
             modal.classList.remove('cp-modal-visible');
             modal.setAttribute('aria-hidden', 'true');
-            root.classList.remove('modal-open'); // << NEW (safe restore)
+            root.classList.remove('modal-open');   // Restore normal scroll
         }
 
         openBtn.addEventListener('click', openModal);
@@ -252,5 +252,6 @@
         });
     })();
 </script>
+
 
 @endsection
