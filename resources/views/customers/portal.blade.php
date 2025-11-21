@@ -109,59 +109,62 @@
 
         <div class="cp-modal-body">
 
-    {{-- ============================= --}}
-    {{-- Email 2FA Card --}}
-    {{-- ============================= --}}
-    <div class="cp-sec-card">
+    {{-- EMAIL 2FA --}}
+    <div class="cp-sec-card cp-sec-bordered">
         <div class="cp-sec-card-header">
-            <div>
-                <h4>Email Two-Factor Authentication</h4>
-                <p class="cp-sec-desc">Receive a one-time code via email when signing in.</p>
+            <div class="cp-sec-title-row">
+                <span class="cp-sec-icon email-icon">📧</span>
+                <div>
+                    <h4>Email Authentication</h4>
+                    <p class="cp-sec-desc">Receive a one-time security code via email when signing in.</p>
+                </div>
             </div>
 
-            <span class="cp-sec-status cp-status-off">Off</span>
-        </div>
-
-        <div class="cp-sec-card-footer">
-            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+            <label class="cp-switch">
+                <input type="checkbox" disabled>
+                <span class="cp-slider"></span>
+            </label>
         </div>
     </div>
 
-    {{-- ============================= --}}
-    {{-- Google Authenticator Card --}}
-    {{-- ============================= --}}
-    <div class="cp-sec-card">
+    {{-- AUTHENTICATOR APP --}}
+    <div class="cp-sec-card cp-sec-bordered">
         <div class="cp-sec-card-header">
-            <div>
-                <h4>Authenticator App</h4>
-                <p class="cp-sec-desc">Use Google Authenticator or compatible apps to verify sign-ins.</p>
+            <div class="cp-sec-title-row">
+                <span class="cp-sec-icon auth-icon">🔒</span>
+                <div>
+                    <h4>Authenticator App</h4>
+                    <p class="cp-sec-desc">Use Google Authenticator or a compatible app to verify logins.</p>
+                </div>
             </div>
 
-            <span class="cp-sec-status cp-status-off">Off</span>
-        </div>
-
-        <div class="cp-sec-card-footer">
-            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+            <label class="cp-switch">
+                <input type="checkbox" disabled>
+                <span class="cp-slider"></span>
+            </label>
         </div>
     </div>
 
-    {{-- ============================= --}}
-    {{-- SMS 2FA Card --}}
-    {{-- ============================= --}}
-    <div class="cp-sec-card">
+    {{-- SMS VERIFICATION --}}
+    <div class="cp-sec-card cp-sec-bordered cp-sec-disabled">
         <div class="cp-sec-card-header">
-            <div>
-                <h4>SMS Verification</h4>
-                <p class="cp-sec-desc">Receive a 6-digit verification code via text message.</p>
+            <div class="cp-sec-title-row">
+                <span class="cp-sec-icon sms-icon">📱</span>
+                <div>
+                    <h4>SMS Verification</h4>
+                    <p class="cp-sec-desc">A mobile number is required before SMS authentication can be enabled.</p>
+                </div>
             </div>
 
-            <span class="cp-sec-status cp-status-off">Off</span>
-        </div>
-
-        <div class="cp-sec-card-footer">
-            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+            <label class="cp-switch disabled">
+                <input type="checkbox" disabled>
+                <span class="cp-slider"></span>
+            </label>
         </div>
     </div>
+
+</div>
+
 
 </div> <!-- END cp-modal-body -->
 

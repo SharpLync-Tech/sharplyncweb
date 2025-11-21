@@ -446,29 +446,45 @@
 }
 
 /* ================================
-   Security Option Cards (Modal)
-   ================================ */
+   Security Card Styling
+================================ */
 
 .cp-sec-card {
-    background: #f7f9fb;
+    background: #f9fbfd;
     border-radius: 12px;
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.25rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 4px solid transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform .15s ease, background .15s ease;
+}
+
+.cp-sec-bordered {
+    border-left-color: var(--teal);
+}
+
+.cp-sec-card:hover {
+    transform: translateY(-2px);
+    background: #ffffff;
 }
 
 .cp-sec-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+    gap: 1.25rem;
 }
 
-.cp-sec-card-header h4 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--ink);
+.cp-sec-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.cp-sec-icon {
+    font-size: 1.5rem;
+    color: var(--teal);
+    margin-top: 3px;
 }
 
 .cp-sec-desc {
@@ -477,24 +493,56 @@
     color: var(--muted);
 }
 
-.cp-sec-status {
-    padding: 0.2rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
+.cp-sec-disabled {
+    opacity: 0.55;
+    pointer-events: none;
 }
 
-.cp-status-off {
-    background: #ffe8e8;
-    color: #b00000;
+/* ================================
+   Apple-Style Toggle Switch
+================================ */
+
+.cp-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
 }
 
-.cp-status-on {
-    background: #e1f7f2;
-    color: #0b8a74;
+.cp-switch input {
+    display: none;
 }
 
-.cp-sec-card-footer {
-    text-align: right;
+.cp-slider {
+    position: absolute;
+    cursor: pointer;
+    background: var(--navy);
+    border-radius: 30px;
+    inset: 0;
+    transition: background .25s ease;
 }
 
+.cp-slider:before {
+    position: absolute;
+    content: "";
+    height: 21px;
+    width: 21px;
+    left: 3px;
+    top: 2.5px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .25s ease;
+}
+
+/* If checked (future functional use) */
+.cp-switch input:checked + .cp-slider {
+    background: var(--teal);
+}
+.cp-switch input:checked + .cp-slider:before {
+    transform: translateX(22px);
+}
+
+/* Disabled switch */
+.cp-switch.disabled .cp-slider {
+    background: #b7c3d1;
+}
