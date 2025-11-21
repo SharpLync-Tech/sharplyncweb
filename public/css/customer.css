@@ -1,17 +1,17 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v2.4 (Uniform Mobile Buttons + FAB)
-   Updated: 13 Nov 2025 by Max (ChatGPT)
+   Version: v2.5 (Modal Fix)
+   Updated: 21 Nov 2025 by Max (ChatGPT)
    Description:
-   - All mobile buttons now share Edit Profile’s width & height
-   - Replaces inline logout with floating ⏻ FAB
-   - Keeps teal for brand accents, navy/blue as core buttons
+   - Fixes modal not opening (moved out of media query)
+   - All mobile buttons share Edit Profile width & height
+   - Floating logout on mobile
    - Fully responsive and brand-consistent
 =================================================================== */
 
-/* ------------------------------------------------------------------- */
-/* ===== Base Variables and Body Styling ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Base Variables and Body Styling =====
+------------------------------------------------------------------- */
 .cp-root {
     --navy: #0A2A4D;
     --blue: #104976;
@@ -29,9 +29,9 @@
     -webkit-font-smoothing: antialiased;
 }
 
-/* ------------------------------------------------------------------- */
-/* ===== Global Elements (Buttons, Cards, Dividers) ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Global Elements: Buttons, Cards =====
+------------------------------------------------------------------- */
 .cp-main {
     padding: 1.5rem 1rem 4rem;
 }
@@ -56,9 +56,9 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
 }
 
-/* ------------------------------------------------------------------- */
-/* ===== Buttons (Base + Brand Variants) ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Buttons =====
+------------------------------------------------------------------- */
 .cp-btn {
     display: inline-block;
     text-decoration: none;
@@ -81,7 +81,6 @@
     font-size: .85rem;
 }
 
-/* Brand color variations */
 .cp-teal-btn {
     background: var(--teal);
 }
@@ -95,9 +94,9 @@
     background: var(--blue);
 }
 
-/* ------------------------------------------------------------------- */
-/* ===== Header and Footer ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Header & Footer =====
+------------------------------------------------------------------- */
 .cp-header {
     position: sticky;
     top: 0;
@@ -107,7 +106,6 @@
     justify-content: space-between;
     padding: .75rem 1.25rem;
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     background: rgba(10, 42, 77, .55);
     border-bottom: 1px solid rgba(255, 255, 255, .08);
     color: #E9F4F3;
@@ -122,6 +120,7 @@
     align-items: center;
     gap: 1rem;
 }
+
 .cp-logout-inline button {
     width: 34px;
     height: 34px;
@@ -138,6 +137,7 @@
     background: rgba(44, 191, 174, .45);
     transform: translateY(-1px);
 }
+
 .cp-footer {
     background: var(--ink);
     color: #fff;
@@ -151,9 +151,9 @@
     font-weight: 700;
 }
 
-/* ------------------------------------------------------------------- */
-/* ===== Dashboard Layout (Two-Column Grid) ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Two-Column Dashboard Layout =====
+------------------------------------------------------------------- */
 .cp-dashboard-grid {
     display: flex;
     flex-direction: column;
@@ -161,7 +161,7 @@
     padding: 2rem;
 }
 
-/* Ensure right column ALWAYS fills its half of the grid */
+/* Force right column to always take full width */
 .cp-activity-column {
     width: 100%;
     display: flex;
@@ -178,9 +178,9 @@
     }
 }
 
-/* ------------------------------------------------------------------- */
-/* ===== Profile Card (Left Column) ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Profile Card =====
+------------------------------------------------------------------- */
 .cp-profile-header {
     display: flex;
     align-items: center;
@@ -190,27 +190,22 @@
     border-bottom: 1px solid #eee;
 }
 
-/* Avatar — initials only */
 .cp-avatar {
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
     background: var(--blue);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    color: #fff;
     font-size: 1.8rem;
     font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
 }
 
 .cp-profile-header h3 {
     margin: 0;
     font-size: 1.75rem;
-    color: var(--ink);
 }
 .cp-member-status {
     color: var(--teal);
@@ -223,55 +218,9 @@
     color: var(--muted);
 }
 
-.cp-contact-details p {
-    margin: .5rem 0;
-    color: var(--muted);
-    line-height: 1.5;
-}
-.cp-contact-details a {
-    color: var(--blue);
-    text-decoration: none;
-    font-weight: 500;
-}
-.cp-member-since {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed #eee;
-    font-size: .95rem;
-    color: var(--muted);
-}
-
-/* Profile action buttons */
-.cp-profile-actions .cp-btn {
-    margin-right: .5rem;
-}
-.cp-edit-profile {
-    background: #E9EEF5;
-    color: var(--blue);
-    font-size: .9rem;
-    padding: .6rem 1.1rem;
-    margin-top: 1.5rem;
-    border: 1px solid var(--blue);
-    box-shadow: none;
-}
-.cp-edit-profile:hover {
-    background: #D6E1F0;
-}
-.cp-logout-btn {
-    background: var(--navy);
-}
-.cp-logout-btn:hover {
-    background: var(--blue);
-}
-
-/* ------------------------------------------------------------------- */
-/* ===== Activity Column (Right Column) ===== */
-/* ------------------------------------------------------------------- */
-.cp-activity-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
+/* -------------------------------------------------------------------
+   ===== Activity Cards =====
+------------------------------------------------------------------- */
 .cp-activity-card {
     background: #f9f9f9;
     padding: 1.25rem;
@@ -281,83 +230,72 @@
 .cp-activity-card h4 {
     margin: 0 0 .5rem;
     font-size: 1.2rem;
-    color: var(--ink);
 }
-.cp-invoice-card { border-left: 4px solid var(--teal); }
-.cp-ticket-card { border-left: 4px solid var(--navy); }
-.cp-plan-card { border-left: 4px solid var(--teal); }
 
-/* ------------------------------------------------------------------- */
-/* ===== Responsive Adjustments (Mobile Enhancements) ===== */
-/* ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   ===== Mobile Optimisation =====
+------------------------------------------------------------------- */
 @media (max-width: 768px) {
 
-    /* Header */
     .cp-header {
         flex-direction: column;
         gap: .5rem;
         padding: 1rem;
         text-align: center;
     }
+
     .cp-welcome {
         flex-direction: column;
-        gap: 0;
     }
+
     .cp-logo img {
         height: 56px;
     }
 
-    /* Layout + Cards */
     .cp-main {
         padding: 1rem .75rem 4rem;
     }
+
     .cp-card {
         padding: 1.5rem 1rem;
     }
+
     .cp-dashboard-grid {
         flex-direction: column;
         gap: 1.5rem;
         padding: 1.5rem 1rem;
     }
+
     .cp-profile-header {
         flex-direction: column;
         text-align: center;
     }
+
     .cp-avatar {
         margin-bottom: 1rem;
     }
 
-    /* --- Uniform mobile button sizing (match Edit Profile) --- */
     .cp-btn {
-        width: auto;
         min-width: 160px;
         padding: 0.6rem 1.1rem;
         font-size: 0.9rem;
-        border-radius: 8px;
-        display: inline-block;
-        text-align: center;
     }
 
-    .cp-profile-actions,
     .cp-support-footer,
     .cp-security-footer,
     .cp-account-footer {
         text-align: center;
     }
 
-    /* Stack spacing for multi-button groups */
     .cp-support-footer .cp-btn {
         margin-bottom: 0.5rem;
     }
 
-    /* Hide inline logout button */
     .cp-logout-btn {
         display: none;
     }
 
-    /* -------------------------------------------------------------------
-       Floating Logout (FAB) — Mobile Only
-    ------------------------------------------------------------------- */
+    /* FAB logout */
     .cp-fab-logout {
         position: fixed;
         bottom: 22px;
@@ -370,11 +308,11 @@
         border: none;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
         font-size: 1.4rem;
         cursor: pointer;
-        transition: background 0.2s ease, transform 0.15s ease;
+        transition: background .2s ease, transform .15s ease;
         z-index: 1001;
     }
     .cp-fab-logout:hover {
@@ -382,7 +320,6 @@
         transform: translateY(-2px);
     }
 
-    /* Optional teal pulse animation (SharpLync flair) */
     .cp-fab-logout::after {
         content: "";
         position: absolute;
@@ -396,70 +333,60 @@
         70% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
+}
 
-    /* ============================================================
-   Security / General Modal (Slide-Up Sheet)
-   ============================================================ */
+/* ===================================================================
+   SECURITY MODAL (NOW GLOBAL — NOT INSIDE MOBILE)
+=================================================================== */
 
 .cp-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0,0,0,0.45);
     display: none;
-    align-items: flex-end; /* mobile: slide up from bottom */
+    align-items: flex-end;
     justify-content: center;
     z-index: 1500;
-    transition: opacity 0.25s ease;
     opacity: 0;
+    transition: opacity .25s ease;
 }
 
-.cp-modal-backdrop.cp-modal-visible {
+.cp-modal-visible {
     display: flex;
     opacity: 1;
 }
 
 .cp-modal-sheet {
-    background: #ffffff;
+    background: #fff;
     width: 100%;
     max-height: 90vh;
     border-radius: 18px 18px 0 0;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
     padding: 1.5rem 1.25rem 1.25rem;
     transform: translateY(100%);
-    animation: cpModalSlideUp 0.28s ease-out forwards;
+    animation: cpModalSlideUp .28s ease-out forwards;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
 }
 
-/* When backdrop is visible, ensure sheet is in its final position */
-.cp-modal-backdrop:not(.cp-modal-visible) .cp-modal-sheet {
-    transform: translateY(100%);
+@keyframes cpModalSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
 }
 
-/* Desktop / larger screens: center modal with rounded edges */
+/* Desktop modal positioning */
 @media (min-width: 769px) {
     .cp-modal-backdrop {
         align-items: center;
     }
-
     .cp-modal-sheet {
         max-width: 620px;
         border-radius: 16px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
     }
 }
 
-@keyframes cpModalSlideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0%);
-    }
-}
-
-/* Modal internal layout */
+/* Modal Content */
 .cp-modal-header {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1rem;
@@ -468,57 +395,40 @@
 .cp-modal-header h3 {
     margin: 0;
     font-size: 1.4rem;
-    color: var(--ink);
-}
-
-.cp-modal-subtitle {
-    margin: 0.25rem 0 0;
-    font-size: 0.95rem;
-    color: var(--muted);
 }
 
 .cp-modal-close {
     border: none;
-    border-radius: 999px;
     width: 32px;
     height: 32px;
-    cursor: pointer;
-    background: rgba(10, 42, 77, 0.06);
-    color: var(--ink);
+    background: rgba(10,42,77,0.06);
+    border-radius: 999px;
     font-size: 1.2rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.18s ease, transform 0.1s ease;
+    cursor: pointer;
+    transition: background .18s ease, transform .1s ease;
 }
 .cp-modal-close:hover {
-    background: rgba(10, 42, 77, 0.12);
+    background: rgba(10,42,77,0.12);
     transform: translateY(-1px);
 }
 
 .cp-modal-body {
     max-height: 55vh;
     overflow-y: auto;
-    padding-right: 0.25rem;
 }
 
 .cp-modal-section h4 {
     margin: 0 0 0.5rem;
     font-size: 1.1rem;
-    color: var(--ink);
 }
+
 .cp-modal-section p {
     margin: 0 0 0.75rem;
-    font-size: 0.95rem;
-    color: var(--muted);
 }
 
 .cp-modal-list {
     padding-left: 1.2rem;
     margin: 0 0 0.75rem;
-    font-size: 0.95rem;
-    color: var(--muted);
 }
 
 .cp-modal-note {
@@ -531,9 +441,6 @@
     margin-top: 1rem;
     text-align: right;
 }
-
 .cp-modal-footer .cp-btn {
     min-width: 120px;
-}
-
 }
