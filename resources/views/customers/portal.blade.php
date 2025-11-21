@@ -1,7 +1,7 @@
 {{-- 
   Page: resources/views/customers/portal.blade.php
-  Version: v2.2 (Initials Avatar + Detail + Mobile Polish)
-  Updated: 13 Nov 2025 by Max (ChatGPT)
+  Version: v2.3 (Security Modal - Slide Up)
+  Updated: 21 Nov 2025 by Max (ChatGPT)
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -58,7 +58,12 @@
             <h4>Security</h4>
             <p>Manage your login security and two-factor authentication options.</p>
             <div class="cp-security-footer">
-                <a href="{{ route('customer.security') }}" class="cp-btn cp-small-btn cp-teal-btn">Manage Security</a>
+                {{-- NOTE: Now opens modal instead of navigating --}}
+                <button type="button"
+                        id="cp-open-security-modal"
+                        class="cp-btn cp-small-btn cp-teal-btn">
+                    Manage Security
+                </button>
             </div>
         </div>
 
@@ -86,4 +91,98 @@
 
     </div>
 </div>
+
+{{-- ============================= --}}
+{{-- SECURITY SLIDE-UP MODAL      --}}
+{{-- ============================= --}}
+<div id="cp-security-modal" class="cp-modal-backdrop" aria-hidden="true">
+    <div class="cp-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="cpSecurityTitle">
+        <header class="cp-modal-header">
+            <div>
+                <h3 id="cpSecurityTitle">Security &amp; Login Protection</h3>
+                <p class="cp-modal-subtitle">Manage how you protect access to your SharpLync customer portal.</p>
+            </div>
+            <button type="button" class="cp-modal-close" aria-label="Close security panel">
+                &times;
+            </button>
+        </header>
+
+        <div class="cp-modal-body">
+            {{-- Placeholder content for now – we’ll plug 2FA options in here later --}}
+            <section class="cp-modal-section">
+                <h4>Two-Factor Authentication</h4>
+                <p>
+                    Add an extra layer of security to your account. When enabled, you’ll confirm it’s really you
+                    whenever you sign in from a new device or location.
+                </p>
+
+                <ul class="cp-modal-list">
+                    <li>Email 2FA – receive a one-time code via email.</li>
+                    <li>Authenticator App – use Google Authenticator or similar.</li>
+                    <li>SMS Codes – receive verification codes via text message.</li>
+                </ul>
+
+                <p class="cp-modal-note">
+                    We’ll add your available options here shortly. For now, your account is protected
+                    with your SharpLync password only.
+                </p>
+            </section>
+        </div>
+
+        <footer class="cp-modal-footer">
+            <button type="button" class="cp-btn cp-small-btn cp-navy-btn cp-modal-close-btn">
+                Close
+            </button>
+        </footer>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    (function () {
+        const openBtn = document.getElementById('cp-open-security-modal');
+        const modal   = document.getElementById('cp-security-modal');
+        if (!openBtn || !modal) return;
+
+        const sheet   = modal.querySelector('.cp-modal-sheet');
+        const closeButtons = modal.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
+
+        function openModal() {
+            modal.setAttribute('aria-hidden', 'false');
+            modal.classList.add('cp-modal-visible');
+            document.body.style.overflow = 'hidden'; // lock scroll behind
+        }
+
+        function closeModal() {
+            modal.classList.remove('cp-modal-visible');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = ''; // restore scroll
+        }
+
+        openBtn.addEventListener('click', function () {
+            openModal();
+        });
+
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                closeModal();
+            });
+        });
+
+        // Click outside sheet to close
+        modal.addEventListener('click', function (e) {
+            if (!sheet.contains(e.target)) {
+                closeModal();
+            }
+        });
+
+        // Escape key to close
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.classList.contains('cp-modal-visible')) {
+                closeModal();
+            }
+        });
+    })();
+</script>
 @endsection
