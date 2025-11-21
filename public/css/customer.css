@@ -160,6 +160,15 @@
     gap: 2rem; 
     padding: 2rem;
 }
+
+/* Ensure right column ALWAYS fills its half of the grid */
+.cp-activity-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
 @media (min-width: 769px) {
     .cp-dashboard-grid {
         display: grid;
