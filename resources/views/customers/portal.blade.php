@@ -108,26 +108,63 @@
         </header>
 
         <div class="cp-modal-body">
-            {{-- Placeholder content for now – we’ll plug 2FA options in here later --}}
-            <section class="cp-modal-section">
-                <h4>Two-Factor Authentication</h4>
-                <p>
-                    Add an extra layer of security to your account. When enabled, you’ll confirm it’s really you
-                    whenever you sign in from a new device or location.
-                </p>
 
-                <ul class="cp-modal-list">
-                    <li>Email 2FA – receive a one-time code via email.</li>
-                    <li>Authenticator App – use Google Authenticator or similar.</li>
-                    <li>SMS Codes – receive verification codes via text message.</li>
-                </ul>
+    {{-- ============================= --}}
+    {{-- Email 2FA Card --}}
+    {{-- ============================= --}}
+    <div class="cp-sec-card">
+        <div class="cp-sec-card-header">
+            <div>
+                <h4>Email Two-Factor Authentication</h4>
+                <p class="cp-sec-desc">Receive a one-time code via email when signing in.</p>
+            </div>
 
-                <p class="cp-modal-note">
-                    We’ll add your available options here shortly. For now, your account is protected
-                    with your SharpLync password only.
-                </p>
-            </section>
+            <span class="cp-sec-status cp-status-off">Off</span>
         </div>
+
+        <div class="cp-sec-card-footer">
+            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+        </div>
+    </div>
+
+    {{-- ============================= --}}
+    {{-- Google Authenticator Card --}}
+    {{-- ============================= --}}
+    <div class="cp-sec-card">
+        <div class="cp-sec-card-header">
+            <div>
+                <h4>Authenticator App</h4>
+                <p class="cp-sec-desc">Use Google Authenticator or compatible apps to verify sign-ins.</p>
+            </div>
+
+            <span class="cp-sec-status cp-status-off">Off</span>
+        </div>
+
+        <div class="cp-sec-card-footer">
+            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+        </div>
+    </div>
+
+    {{-- ============================= --}}
+    {{-- SMS 2FA Card --}}
+    {{-- ============================= --}}
+    <div class="cp-sec-card">
+        <div class="cp-sec-card-header">
+            <div>
+                <h4>SMS Verification</h4>
+                <p class="cp-sec-desc">Receive a 6-digit verification code via text message.</p>
+            </div>
+
+            <span class="cp-sec-status cp-status-off">Off</span>
+        </div>
+
+        <div class="cp-sec-card-footer">
+            <button class="cp-btn cp-small-btn cp-teal-btn">Set Up</button>
+        </div>
+    </div>
+
+</div> <!-- END cp-modal-body -->
+
 
         <footer class="cp-modal-footer">
             <button type="button" class="cp-btn cp-small-btn cp-navy-btn cp-modal-close-btn">
