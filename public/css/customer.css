@@ -680,22 +680,29 @@
         left: 0 !important;
         right: 0 !important;
         border-radius: 18px 18px 0 0 !important;
-    }
-
-    /* Ensure backdrop uses slide-up behavior */
+    }  
+   
+    /* Correct vertical alignment: modal must sit at bottom */
     .cp-modal-backdrop {
-        align-items: flex-end !important;
-        justify-content: center;
+        align-items: flex-end !important;  /* horizontal center, bottom vertical */
+        justify-content: center !important;
+        flex-direction: column !important; /* ensure correct axis */
     }
 
-    /* Fix close button alignment */
+    /* Fix close button */
     .cp-modal-close {
         margin-right: 0.25rem;
     }
 
-    /* Ensure modal content scrolls naturally */
+    /* Fix scroll area */
     .cp-modal-body {
         max-height: 60vh !important;
         overflow-y: auto !important;
+    }
+    
+    /* Fix desktop animation transform affecting mobile layout */
+    .cp-modal-sheet {
+    transform: translateY(0) !important;
+    animation: none !important;
     }
 }
