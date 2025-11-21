@@ -444,3 +444,57 @@
 .cp-modal-footer .cp-btn {
     min-width: 120px;
 }
+
+/* ================================
+   Security Option Cards (Modal)
+   ================================ */
+
+.cp-sec-card {
+    background: #f7f9fb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.cp-sec-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.cp-sec-card-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--ink);
+}
+
+.cp-sec-desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.cp-sec-status {
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.cp-status-off {
+    background: #ffe8e8;
+    color: #b00000;
+}
+
+.cp-status-on {
+    background: #e1f7f2;
+    color: #0b8a74;
+}
+
+.cp-sec-card-footer {
+    text-align: right;
+}
+
