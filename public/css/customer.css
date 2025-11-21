@@ -546,3 +546,74 @@
 .cp-switch.disabled .cp-slider {
     background: #b7c3d1;
 }
+
+/* ============================================================
+   ICONS (SVG)
+============================================================ */
+.cp-sec-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(44,191,174,0.12);
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: transform .18s ease;
+}
+
+.cp-sec-card:hover .cp-sec-icon {
+    transform: translateY(-2px);
+}
+
+.cp-icon-svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+
+/* ============================================================
+   CARD HOVER GRADIENT
+============================================================ */
+.cp-sec-card:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(10,42,77,0.02),
+        rgba(16,73,118,0.025),
+        rgba(44,191,174,0.03)
+    );
+}
+
+/* ============================================================
+   TEAL BRAND SWITCH
+============================================================ */
+.cp-slider-teal {
+    background: var(--navy);
+}
+
+.cp-switch input:checked + .cp-slider-teal {
+    background: var(--teal);
+}
+
+/* handle movement */
+.cp-switch input:checked + .cp-slider-teal:before {
+    transform: translateX(22px);
+}
+
+/* disabled teal switch */
+.cp-switch.disabled .cp-slider-teal {
+    background: #b7c3d1;
+}
+
+/* ============================================================
+   CARD LAYOUT + DISABLED
+============================================================ */
+.cp-sec-card {
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.cp-sec-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
