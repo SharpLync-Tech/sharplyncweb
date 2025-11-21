@@ -346,6 +346,14 @@
     }
 }
 
+.cp-root.modal-open {
+    overflow: hidden;
+    height: 100vh;      /* ensures background content doesn't shift */
+    width: 100%;        /* ensures proper viewport width */
+}
+
+
+
 /* Modal internal layout */
 .cp-modal-header {
     display: flex;

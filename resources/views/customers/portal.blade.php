@@ -217,39 +217,34 @@
         const modal   = document.getElementById('cp-security-modal');
         if (!openBtn || !modal) return;
 
-        const sheet   = modal.querySelector('.cp-modal-sheet');
+        const sheet       = modal.querySelector('.cp-modal-sheet');
         const closeButtons = modal.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
+        const root        = document.querySelector('.cp-root');
 
         function openModal() {
             modal.setAttribute('aria-hidden', 'false');
             modal.classList.add('cp-modal-visible');
-            document.body.style.overflow = 'hidden'; // lock scroll behind
+            root.classList.add('modal-open');   // << NEW (safe scroll lock)
         }
 
         function closeModal() {
             modal.classList.remove('cp-modal-visible');
             modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = ''; // restore scroll
+            root.classList.remove('modal-open'); // << NEW (safe restore)
         }
 
-        openBtn.addEventListener('click', function () {
-            openModal();
-        });
+        openBtn.addEventListener('click', openModal);
 
         closeButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                closeModal();
-            });
+            btn.addEventListener('click', closeModal);
         });
 
-        // Click outside sheet to close
         modal.addEventListener('click', function (e) {
             if (!sheet.contains(e.target)) {
                 closeModal();
             }
         });
 
-        // Escape key to close
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && modal.classList.contains('cp-modal-visible')) {
                 closeModal();
@@ -257,4 +252,5 @@
         });
     })();
 </script>
+
 @endsection
