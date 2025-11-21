@@ -106,6 +106,9 @@ use App\Models\CMS\KnowledgeBaseArticle;
 Route::get('/test-kb-categories', fn() => KnowledgeBaseCategory::all());
 Route::get('/test-kb-articles', fn() => KnowledgeBaseArticle::all());
 
+Route::get('/email-preview', function () {
+    return view('emails.preview-test');
+});
 
 
 
