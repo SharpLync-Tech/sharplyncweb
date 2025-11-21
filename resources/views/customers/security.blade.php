@@ -1,3 +1,12 @@
+{{-- 
+  Page: resources/views/customers/security.blade.php
+  Version: v1.1 (Matched Card Width Exactly)
+  Description:
+  - Keeps portal header + user header
+  - Removes Edit Profile / Support / Account Summary
+  - Card width now identical to Customer Portal right column
+--}}
+
 @extends('customers.layouts.customer-layout')
 
 @section('title', 'Security Settings')
@@ -27,10 +36,10 @@
     <h2>Security Settings</h2>
 </div>
 
-{{-- IDENTICAL STRUCTURE TO ORIGINAL DASHBOARD --}}
+{{-- IDENTICAL STRUCTURE TO MAIN PORTAL --}}
 <div class="cp-card cp-dashboard-grid">
 
-    {{-- LEFT PROFILE COLUMN (unchanged) --}}
+    {{-- LEFT: Profile Column (unchanged) --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
             <div class="cp-avatar">{{ $initials }}</div>
@@ -45,12 +54,12 @@
                 @endif
             </div>
         </div>
+        {{-- IMPORTANT: No Edit Profile button --}}
     </div>
 
-    {{-- RIGHT ACTIVITY COLUMN (kept EXACT width) --}}
+    {{-- RIGHT: Activity Column (forced to full width with CSS fix) --}}
     <div class="cp-activity-column">
 
-        {{-- FULL-SIZE SECURITY CARD --}}
         <div class="cp-activity-card cp-security-card">
             <h4>Two-Factor Authentication</h4>
             <p>Protect your account with an additional layer of security.</p>
@@ -62,5 +71,6 @@
         </div>
 
     </div>
+
 </div>
 @endsection
