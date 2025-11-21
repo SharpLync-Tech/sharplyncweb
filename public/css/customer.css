@@ -1,17 +1,17 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v2.5 (Modal Fix)
-   Updated: 21 Nov 2025 by Max (ChatGPT)
+   Version: v3.0 (Clean Rewrite + Security Modal)
+   Updated: 21 Nov 2025
    Description:
-   - Fixes modal not opening (moved out of media query)
-   - All mobile buttons share Edit Profile width & height
-   - Floating logout on mobile
+   - Structured CSS for Customer Portal
+   - Includes header, grid, FAB logout, security modal & 2FA cards
    - Fully responsive and brand-consistent
 =================================================================== */
 
 /* -------------------------------------------------------------------
-   ===== Base Variables and Body Styling =====
+   1. ROOT VARIABLES & BASE
 ------------------------------------------------------------------- */
+
 .cp-root {
     --navy: #0A2A4D;
     --blue: #104976;
@@ -29,9 +29,19 @@
     -webkit-font-smoothing: antialiased;
 }
 
+.cp-root a {
+    color: var(--blue);
+    text-decoration: none;
+}
+
+.cp-root a:hover {
+    text-decoration: underline;
+}
+
 /* -------------------------------------------------------------------
-   ===== Global Elements: Buttons, Cards =====
+   2. GLOBAL LAYOUT CONTAINERS
 ------------------------------------------------------------------- */
+
 .cp-main {
     padding: 1.5rem 1rem 4rem;
 }
@@ -50,6 +60,7 @@
     color: #fff;
     padding: 1.25rem 1rem .5rem;
 }
+
 .cp-pagehead h2 {
     margin: 0;
     font-size: 1.75rem;
@@ -57,8 +68,9 @@
 }
 
 /* -------------------------------------------------------------------
-   ===== Buttons =====
+   3. BUTTONS
 ------------------------------------------------------------------- */
+
 .cp-btn {
     display: inline-block;
     text-decoration: none;
@@ -69,34 +81,43 @@
     font-weight: 600;
     background: var(--navy);
     color: #fff;
-    transition: background .2s ease, transform .1s ease;
+    transition: background .2s ease, transform .1s ease, box-shadow .15s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+    font-family: 'Poppins', sans-serif;
 }
+
 .cp-btn:hover {
     background: var(--blue);
     transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.15);
 }
+
 .cp-small-btn {
     padding: .4rem .9rem;
     font-size: .85rem;
 }
 
+/* Brand color variations */
 .cp-teal-btn {
     background: var(--teal);
 }
+
 .cp-teal-btn:hover {
     background: #20A694;
 }
+
 .cp-navy-btn {
     background: var(--navy);
 }
+
 .cp-navy-btn:hover {
     background: var(--blue);
 }
 
 /* -------------------------------------------------------------------
-   ===== Header & Footer =====
+   4. HEADER & FOOTER
 ------------------------------------------------------------------- */
+
 .cp-header {
     position: sticky;
     top: 0;
@@ -106,14 +127,17 @@
     justify-content: space-between;
     padding: .75rem 1.25rem;
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     background: rgba(10, 42, 77, .55);
     border-bottom: 1px solid rgba(255, 255, 255, .08);
     color: #E9F4F3;
 }
+
 .cp-logo img {
     height: 48px;
     width: auto;
 }
+
 .cp-welcome {
     font-weight: 600;
     display: flex;
@@ -133,6 +157,7 @@
     line-height: 1;
     transition: transform .12s ease, background .2s ease;
 }
+
 .cp-logout-inline button:hover {
     background: rgba(44, 191, 174, .45);
     transform: translateY(-1px);
@@ -146,22 +171,24 @@
     font-size: .95rem;
     margin-top: 2rem;
 }
+
 .cp-footer .cp-hl {
     color: var(--teal);
     font-weight: 700;
 }
 
 /* -------------------------------------------------------------------
-   ===== Two-Column Dashboard Layout =====
+   5. DASHBOARD GRID LAYOUT
 ------------------------------------------------------------------- */
+
 .cp-dashboard-grid {
     display: flex;
     flex-direction: column;
-    gap: 2rem; 
+    gap: 2rem;
     padding: 2rem;
 }
 
-/* Force right column to always take full width */
+/* Right column container */
 .cp-activity-column {
     width: 100%;
     display: flex;
@@ -169,6 +196,7 @@
     gap: 1.25rem;
 }
 
+/* Desktop grid: 3/2 split */
 @media (min-width: 769px) {
     .cp-dashboard-grid {
         display: grid;
@@ -179,8 +207,9 @@
 }
 
 /* -------------------------------------------------------------------
-   ===== Profile Card =====
+   6. PROFILE CARD (LEFT COLUMN)
 ------------------------------------------------------------------- */
+
 .cp-profile-header {
     display: flex;
     align-items: center;
@@ -194,49 +223,330 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
     background: var(--blue);
     display: flex;
-    justify-content: center;
     align-items: center;
-    color: #fff;
+    justify-content: center;
     font-size: 1.8rem;
     font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
 }
 
 .cp-profile-header h3 {
     margin: 0;
     font-size: 1.75rem;
+    color: var(--ink);
 }
+
 .cp-member-status {
     color: var(--teal);
     font-weight: 600;
     margin: 0;
 }
+
 .cp-name-group p.cp-detail-line {
     margin: 0.25rem 0 0;
     font-size: 0.95rem;
     color: var(--muted);
 }
 
+.cp-profile-actions .cp-btn {
+    margin-right: .5rem;
+}
+
+/* Edit Profile button styling */
+.cp-edit-profile {
+    background: #E9EEF5;
+    color: var(--blue);
+    font-size: .9rem;
+    padding: .6rem 1.1rem;
+    margin-top: 1.5rem;
+    border: 1px solid var(--blue);
+    box-shadow: none;
+}
+
+.cp-edit-profile:hover {
+    background: #D6E1F0;
+}
+
 /* -------------------------------------------------------------------
-   ===== Activity Cards =====
+   7. ACTIVITY CARDS (RIGHT COLUMN)
 ------------------------------------------------------------------- */
+
 .cp-activity-card {
     background: #f9f9f9;
     padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
 }
+
 .cp-activity-card h4 {
     margin: 0 0 .5rem;
     font-size: 1.2rem;
+    color: var(--ink);
+}
+
+.cp-security-footer,
+.cp-support-footer,
+.cp-account-footer {
+    margin-top: .75rem;
 }
 
 /* -------------------------------------------------------------------
-   ===== Mobile Optimisation =====
+   8. SECURITY MODAL (BACKDROP + SHEET)
 ------------------------------------------------------------------- */
+
+.cp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: flex-end; /* mobile: slide up from bottom */
+    justify-content: center;
+    z-index: 1500;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+/* Visible state controlled by JS */
+.cp-modal-backdrop.cp-modal-visible {
+    display: flex;
+    opacity: 1;
+}
+
+.cp-modal-sheet {
+    background: #ffffff;
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
+    padding: 1.5rem 1.25rem 1.25rem;
+    transform: translateY(100%);
+    animation: cpModalSlideUp .28s ease-out forwards;
+}
+
+/* Slide-up animation */
+@keyframes cpModalSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+/* Desktop: center sheet */
+@media (min-width: 769px) {
+    .cp-modal-backdrop {
+        align-items: center;
+    }
+    .cp-modal-sheet {
+        max-width: 620px;
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+}
+
+/* Modal internal layout */
+.cp-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cp-modal-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--ink);
+}
+
+.cp-modal-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.cp-modal-close {
+    border: none;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: rgba(10,42,77,0.06);
+    color: var(--ink);
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s ease, transform 0.1s ease;
+}
+
+.cp-modal-close:hover {
+    background: rgba(10,42,77,0.12);
+    transform: translateY(-1px);
+}
+
+.cp-modal-body {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.cp-modal-footer {
+    margin-top: 1rem;
+    text-align: right;
+}
+
+.cp-modal-footer .cp-btn {
+    min-width: 120px;
+}
+
+/* -------------------------------------------------------------------
+   9. SECURITY OPTION CARDS (INSIDE MODAL)
+------------------------------------------------------------------- */
+
+.cp-sec-card {
+    background: #f9fbfd;
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.cp-sec-bordered {
+    border-left-color: var(--teal);
+}
+
+.cp-sec-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+
+.cp-sec-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.cp-sec-desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.cp-sec-card:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(10,42,77,0.02),
+        rgba(16,73,118,0.025),
+        rgba(44,191,174,0.03)
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Disabled variant (e.g. SMS when no phone) */
+.cp-sec-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Icons container */
+.cp-sec-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(44,191,174,0.12);
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: transform .18s ease;
+}
+
+/* Icon SVG */
+.cp-icon-svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    fill: var(--teal);
+}
+
+/* Icon hover motion */
+.cp-sec-card:hover .cp-sec-icon {
+    transform: translateY(-2px);
+}
+
+/* -------------------------------------------------------------------
+   10. TOGGLE SWITCHES (APPLE STYLE)
+------------------------------------------------------------------- */
+
+.cp-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.cp-switch input {
+    display: none;
+}
+
+.cp-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: var(--navy);
+    border-radius: 30px;
+    transition: background .25s ease;
+}
+
+.cp-slider::before {
+    position: absolute;
+    content: "";
+    height: 21px;
+    width: 21px;
+    left: 3px;
+    top: 2.5px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform .25s ease;
+}
+
+/* Teal/on state */
+.cp-slider-teal {
+    background: var(--navy);
+}
+
+/* When checked */
+.cp-switch input:checked + .cp-slider-teal {
+    background: var(--teal);
+}
+
+.cp-switch input:checked + .cp-slider-teal::before {
+    transform: translateX(22px);
+}
+
+/* Disabled switch */
+.cp-switch.disabled .cp-slider,
+.cp-switch.disabled .cp-slider-teal {
+    background: #d4dde9;
+    cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------
+   11. MOBILE RESPONSIVE (<= 768px)
+------------------------------------------------------------------- */
+
 @media (max-width: 768px) {
 
+    /* Header stacking */
     .cp-header {
         flex-direction: column;
         gap: .5rem;
@@ -246,12 +556,14 @@
 
     .cp-welcome {
         flex-direction: column;
+        gap: 0;
     }
 
     .cp-logo img {
         height: 56px;
     }
 
+    /* Layout & card padding */
     .cp-main {
         padding: 1rem .75rem 4rem;
     }
@@ -275,12 +587,16 @@
         margin-bottom: 1rem;
     }
 
+    /* Uniform mobile button sizing */
     .cp-btn {
         min-width: 160px;
         padding: 0.6rem 1.1rem;
         font-size: 0.9rem;
+        border-radius: 8px;
+        text-align: center;
     }
 
+    .cp-profile-actions,
     .cp-support-footer,
     .cp-security-footer,
     .cp-account-footer {
@@ -291,11 +607,11 @@
         margin-bottom: 0.5rem;
     }
 
-    .cp-logout-btn {
+    /* Hide inline logout, use FAB */
+    .cp-logout-inline {
         display: none;
     }
 
-    /* FAB logout */
     .cp-fab-logout {
         position: fixed;
         bottom: 22px;
@@ -308,13 +624,14 @@
         border: none;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         font-size: 1.4rem;
         cursor: pointer;
-        transition: background .2s ease, transform .15s ease;
-        z-index: 1001;
+        transition: background 0.2s ease, transform 0.15s ease;
+        z-index: 1600;
     }
+
     .cp-fab-logout:hover {
         background: var(--blue);
         transform: translateY(-2px);
@@ -325,295 +642,20 @@
         position: absolute;
         inset: 0;
         border-radius: 50%;
-        background: rgba(44, 191, 174, 0.2);
+        background: rgba(44,191,174,0.2);
         animation: cpPulse 2s infinite ease-in-out;
     }
+
     @keyframes cpPulse {
         0% { transform: scale(1); opacity: 0.8; }
         70% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
-}
 
-/* ===================================================================
-   SECURITY MODAL (NOW GLOBAL — NOT INSIDE MOBILE)
-=================================================================== */
-
-.cp-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 1500;
-    opacity: 0;
-    transition: opacity .25s ease;
-}
-
-.cp-modal-visible {
-    display: flex;
-    opacity: 1;
-}
-
-.cp-modal-sheet {
-    background: #fff;
-    width: 100%;
-    max-height: 90vh;
-    border-radius: 18px 18px 0 0;
-    padding: 1.5rem 1.25rem 1.25rem;
-    transform: translateY(100%);
-    animation: cpModalSlideUp .28s ease-out forwards;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
-}
-
-@keyframes cpModalSlideUp {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
-}
-
-/* Desktop modal positioning */
-@media (min-width: 769px) {
-    .cp-modal-backdrop {
-        align-items: center;
-    }
+    /* Modal on mobile: sheet from bottom is already default */
     .cp-modal-sheet {
-        max-width: 620px;
-        border-radius: 16px;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        border-radius: 18px 18px 0 0;
+        width: 100%;
+        max-width: 100%;
     }
 }
-
-/* Modal Content */
-.cp-modal-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.cp-modal-header h3 {
-    margin: 0;
-    font-size: 1.4rem;
-}
-
-.cp-modal-close {
-    border: none;
-    width: 32px;
-    height: 32px;
-    background: rgba(10,42,77,0.06);
-    border-radius: 999px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background .18s ease, transform .1s ease;
-}
-.cp-modal-close:hover {
-    background: rgba(10,42,77,0.12);
-    transform: translateY(-1px);
-}
-
-.cp-modal-body {
-    max-height: 55vh;
-    overflow-y: auto;
-}
-
-.cp-modal-section h4 {
-    margin: 0 0 0.5rem;
-    font-size: 1.1rem;
-}
-
-.cp-modal-section p {
-    margin: 0 0 0.75rem;
-}
-
-.cp-modal-list {
-    padding-left: 1.2rem;
-    margin: 0 0 0.75rem;
-}
-
-.cp-modal-note {
-    font-size: 0.9rem;
-    color: var(--muted);
-    font-style: italic;
-}
-
-.cp-modal-footer {
-    margin-top: 1rem;
-    text-align: right;
-}
-.cp-modal-footer .cp-btn {
-    min-width: 120px;
-}
-
-/* ================================
-   Security Card Styling
-================================ */
-
-.cp-sec-card {
-    background: #f9fbfd;
-    border-radius: 12px;
-    padding: 1.25rem 1.25rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid transparent;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: transform .15s ease, background .15s ease;
-}
-
-.cp-sec-bordered {
-    border-left-color: var(--teal);
-}
-
-.cp-sec-card:hover {
-    transform: translateY(-2px);
-    background: #ffffff;
-}
-
-.cp-sec-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1.25rem;
-}
-
-.cp-sec-title-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
-.cp-sec-icon {
-    font-size: 1.5rem;
-    color: var(--teal);
-    margin-top: 3px;
-}
-
-.cp-sec-desc {
-    margin: 0.25rem 0 0;
-    font-size: 0.9rem;
-    color: var(--muted);
-}
-
-.cp-sec-disabled {
-    opacity: 0.55;
-    pointer-events: none;
-}
-
-/* ================================
-   Apple-Style Toggle Switch
-================================ */
-
-.cp-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-}
-
-.cp-switch input {
-    display: none;
-}
-
-.cp-slider {
-    position: absolute;
-    cursor: pointer;
-    background: var(--navy);
-    border-radius: 30px;
-    inset: 0;
-    transition: background .25s ease;
-}
-
-.cp-slider:before {
-    position: absolute;
-    content: "";
-    height: 21px;
-    width: 21px;
-    left: 3px;
-    top: 2.5px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform .25s ease;
-}
-
-/* If checked (future functional use) */
-.cp-switch input:checked + .cp-slider {
-    background: var(--teal);
-}
-.cp-switch input:checked + .cp-slider:before {
-    transform: translateX(22px);
-}
-
-/* Disabled switch */
-.cp-switch.disabled .cp-slider {
-    background: #b7c3d1;
-}
-
-/* ============================================================
-   ICONS (SVG)
-============================================================ */
-.cp-sec-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: rgba(44,191,174,0.12);
-    border-radius: 10px;
-    flex-shrink: 0;
-    transition: transform .18s ease;
-}
-
-.cp-sec-card:hover .cp-sec-icon {
-    transform: translateY(-2px);
-}
-
-.cp-icon-svg {
-    width: 22px;
-    height: 22px;
-    display: block;
-}
-
-/* ============================================================
-   CARD HOVER GRADIENT
-============================================================ */
-.cp-sec-card:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(10,42,77,0.02),
-        rgba(16,73,118,0.025),
-        rgba(44,191,174,0.03)
-    );
-}
-
-/* ============================================================
-   TEAL BRAND SWITCH
-============================================================ */
-.cp-slider-teal {
-    background: var(--navy);
-}
-
-.cp-switch input:checked + .cp-slider-teal {
-    background: var(--teal);
-}
-
-/* handle movement */
-.cp-switch input:checked + .cp-slider-teal:before {
-    transform: translateX(22px);
-}
-
-/* disabled teal switch */
-.cp-switch.disabled .cp-slider-teal {
-    background: #b7c3d1;
-}
-
-/* ============================================================
-   CARD LAYOUT + DISABLED
-============================================================ */
-.cp-sec-card {
-    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-}
-
-.cp-sec-disabled {
-    opacity: 0.45;
-    pointer-events: none;
-}
-
