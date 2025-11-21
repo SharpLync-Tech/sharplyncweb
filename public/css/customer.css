@@ -658,6 +658,12 @@
         width: 100%;
         max-width: 100%;
     }
+
+    /* Fix modal alignment on mobile */
+    .cp-modal-backdrop {
+        align-items: flex-end !important;
+
+    }
 }
 
 /* ============================================================
