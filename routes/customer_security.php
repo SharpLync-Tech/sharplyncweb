@@ -3,16 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\SecurityController;
 
-// ...your existing routes above...
-
-Route::middleware(['auth']) // keep same middleware you already use
-    ->prefix('portal')
-    ->name('customer.')
+Route::middleware(['auth'])
+    ->prefix('portal/security')
+    ->name('customer.security.')
     ->group(function () {
 
-        // other portal routes...
+        // Already exists:
+        Route::post('/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
+            ->name('2fa.email.toggle');
 
-        // AJAX: toggle Email 2FA on/off
-        Route::post('/security/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
-            ->name('security.2fa.email.toggle');
+        // NEW — Send verification code (email 2FA)
+        Route::post('/email/send-code', [SecurityController::class, 'sendEmail2FACode'])
+            ->name('email.send-code');
+
+        // NEW — Verify code (email 2FA)
+        Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
+            ->name('email.verify-code');
+
     });

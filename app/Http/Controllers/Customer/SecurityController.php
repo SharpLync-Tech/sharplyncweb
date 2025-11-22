@@ -4,50 +4,85 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Mail\TwoFactorEmailCode;
 
 class SecurityController extends Controller
 {
     /**
-     * Toggle Email-based 2FA for the logged-in customer.
-     *
-     * Request: JSON { enabled: true|false }
-     * Response: JSON with current 2FA state.
+     * Step 1 — Send verification code to user's email
      */
-    public function toggleEmail(Request $request)
+    public function sendEmail2FACode(Request $request)
     {
-        $request->validate([
-            'enabled' => 'required|boolean',
+        $user = auth()->user();
+
+        // Generate a clean 6-digit code
+        $code = rand(100000, 999999);
+
+        // Store token in DB
+        DB::table('user_two_factor_tokens')->insert([
+            'user_id'      => $user->id,
+            'type'         => 'email',
+            'token'        => $code,
+            'expires_at'   => Carbon::now()->addMinutes(10),
+            'created_at'   => now(),
+            'updated_at'   => now(),
         ]);
 
-        $user = Auth::user(); // same user you use in the portal
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
-        }
-
-        $enabled = (bool) $request->input('enabled');
-
-        // Flip the flag on the users table
-        $user->two_factor_email_enabled = $enabled;
-
-        // Keep default method sensible
-        if ($enabled) {
-            if (!in_array($user->two_factor_default_method, ['email', 'app', 'sms'], true)) {
-                $user->two_factor_default_method = 'email';
-            }
-        } else {
-            if ($user->two_factor_default_method === 'email') {
-                $user->two_factor_default_method = null;
-            }
-        }
-
-        $user->save();
+        // Send email
+        Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
         return response()->json([
-            'status'         => 'ok',
-            'email_enabled'  => (bool) $user->two_factor_email_enabled,
-            'default_method' => $user->two_factor_default_method,
+            'success' => true,
+            'message' => 'Verification code sent.'
+        ]);
+    }
+
+    /**
+     * Step 2 — Verify the email code
+     */
+    public function verifyEmail2FACode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|numeric',
+        ]);
+
+        $user = auth()->user();
+
+        $record = DB::table('user_two_factor_tokens')
+            ->where('user_id', $user->id)
+            ->where('type', 'email')
+            ->where('token', $request->code)
+            ->where('expires_at', '>', Carbon::now())
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired code.'
+            ], 422);
+        }
+
+        // Mark email 2FA as active on the user
+        $user->two_factor_enabled = true;
+        $user->two_factor_method  = 'email';
+        $user->two_factor_confirmed_at = now();
+        $user->save();
+
+        // Cleanup tokens
+        DB::table('user_two_factor_tokens')
+            ->where('user_id', $user->id)
+            ->where('type', 'email')
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Email authentication enabled.'
         ]);
     }
 }
