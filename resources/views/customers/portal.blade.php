@@ -1,6 +1,6 @@
 {{-- 
   Page: resources/views/customers/portal.blade.php
-  Version: v2.6 (Security Modal – Email 2FA Setup Screen)
+  Version: v2.7 (Email 2FA – Send + Verify Flow)
   Updated: 22 Nov 2025 by Max (ChatGPT)
 --}}
 
@@ -219,7 +219,7 @@
                 </div>
             </div>
 
-            {{-- SCREEN 2: Email 2FA Setup --}}
+            {{-- SCREEN 2: Email 2FA Setup + Verification --}}
             <div id="cp-modal-screen-email-setup" style="display:none;">
                 <div class="cp-sec-card cp-sec-bordered">
                     <div class="cp-sec-card-header">
@@ -259,19 +259,74 @@
                             Enter the code you receive to complete setup and turn on Email Authentication for your account.
                         </p>
 
-                        <button type="button"
-                                id="cp-email-setup-send"
-                                class="cp-btn cp-teal-btn"
-                                style="margin-top: 1rem;">
-                            Send Verification Code
-                        </button>
+                        {{-- Status / info line --}}
+                        <p id="cp-email-status"
+                           class="cp-sec-desc"
+                           style="margin-top:.75rem; display:none;"></p>
+
+                        {{-- STEP 1: Send Code Block --}}
+                        <div id="cp-email-send-block" style="margin-top: 1rem;">
+                            <button type="button"
+                                    id="cp-email-setup-send"
+                                    class="cp-btn cp-teal-btn">
+                                Send Verification Code
+                            </button>
+                        </div>
+
+                        {{-- STEP 2: Verify Code Block --}}
+                        <div id="cp-email-verify-block" style="margin-top: 1.25rem; display:none;">
+
+                            <p class="cp-sec-desc" style="margin-bottom: .5rem;">
+                                Enter the 6-digit code we emailed you:
+                            </p>
+
+                            <div id="cp-email-otp-row"
+                                 style="display:flex; gap:0.45rem; justify-content:flex-start; margin-bottom:0.75rem; flex-wrap:nowrap;">
+                                @for($i = 0; $i < 6; $i++)
+                                    <input type="text"
+                                           maxlength="1"
+                                           inputmode="numeric"
+                                           pattern="[0-9]*"
+                                           class="cp-otp-input"
+                                           style="
+                                               width: 2.35rem;
+                                               height: 2.7rem;
+                                               text-align: center;
+                                               font-size: 1.4rem;
+                                               border-radius: 8px;
+                                               border: 1px solid #d0d7e2;
+                                               outline: none;
+                                               font-family: 'Poppins', sans-serif;
+                                           ">
+                                @endfor
+                            </div>
+
+                            <button type="button"
+                                    id="cp-email-setup-verify"
+                                    class="cp-btn cp-teal-btn">
+                                Verify &amp; Enable
+                            </button>
+
+                            <button type="button"
+                                    id="cp-email-setup-resend"
+                                    class="cp-btn cp-small-btn cp-navy-btn"
+                                    style="margin-left:.5rem;">
+                                Resend Code
+                            </button>
+
+                            <p id="cp-email-error"
+                               class="cp-modal-note"
+                               style="display:none; margin-top:.75rem; color:#b3261e;">
+                                Invalid or expired code. Please try again.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        {{-- FOOTER (Back toggles on in setup screen) --}}
+        {{-- FOOTER --}}
         <footer class="cp-modal-footer">
             <button type="button"
                     id="cp-email-setup-back"
@@ -301,35 +356,78 @@
         const closeButtons = modal.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
         const root         = document.querySelector('.cp-root');
 
-        const modalTitle   = document.getElementById('cpSecurityTitle');
-        const modalSubtitle= modal.querySelector('.cp-modal-subtitle');
+        const modalTitle    = document.getElementById('cpSecurityTitle');
+        const modalSubtitle = modal.querySelector('.cp-modal-subtitle');
 
-        const screenMain   = document.getElementById('cp-modal-screen-main');
-        const screenEmail  = document.getElementById('cp-modal-screen-email-setup');
+        const screenMain    = document.getElementById('cp-modal-screen-main');
+        const screenEmail   = document.getElementById('cp-modal-screen-email-setup');
 
-        const emailToggle  = document.getElementById('cp-toggle-email');
-        const authToggle   = document.getElementById('cp-toggle-auth');
-        const smsToggle    = document.getElementById('cp-toggle-sms');
+        const emailToggle   = document.getElementById('cp-toggle-email');
+        const authToggle    = document.getElementById('cp-toggle-auth');
+        const smsToggle     = document.getElementById('cp-toggle-sms');
 
-        const backBtn      = document.getElementById('cp-email-setup-back');
-        const sendBtn      = document.getElementById('cp-email-setup-send');
+        const backBtn       = document.getElementById('cp-email-setup-back');
+        const sendBtn       = document.getElementById('cp-email-setup-send');
+        const verifyBtn     = document.getElementById('cp-email-setup-verify');
+        const resendBtn     = document.getElementById('cp-email-setup-resend');
+
+        const statusEl      = document.getElementById('cp-email-status');
+        const errorEl       = document.getElementById('cp-email-error');
+        const sendBlock     = document.getElementById('cp-email-send-block');
+        const verifyBlock   = document.getElementById('cp-email-verify-block');
+        const otpInputs     = Array.from(document.querySelectorAll('.cp-otp-input'));
 
         const defaultTitle    = modalTitle ? modalTitle.textContent : '';
         const defaultSubtitle = modalSubtitle ? modalSubtitle.textContent : '';
+
+        const routes = {
+            sendEmailCode: "{{ route('customer.security.email.send-code') }}",
+            verifyEmailCode: "{{ route('customer.security.email.verify-code') }}"
+        };
+        const csrfToken = "{{ csrf_token() }}";
+
+        function clearOtpInputs() {
+            otpInputs.forEach(inp => inp.value = '');
+            if (otpInputs[0]) otpInputs[0].focus();
+        }
+
+        function resetEmailSetupState() {
+            if (statusEl) {
+                statusEl.style.display = 'none';
+                statusEl.textContent = '';
+            }
+            if (errorEl) {
+                errorEl.style.display = 'none';
+                errorEl.textContent = 'Invalid or expired code. Please try again.';
+            }
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Verification Code';
+            }
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Verify & Enable';
+            }
+            if (sendBlock)  sendBlock.style.display  = 'block';
+            if (verifyBlock) verifyBlock.style.display = 'none';
+            clearOtpInputs();
+        }
 
         function showMainScreen() {
             if (screenMain)  screenMain.style.display  = 'block';
             if (screenEmail) screenEmail.style.display = 'none';
 
-            if (modalTitle)   modalTitle.textContent   = defaultTitle;
-            if (modalSubtitle)modalSubtitle.textContent= defaultSubtitle;
+            if (modalTitle)    modalTitle.textContent    = defaultTitle;
+            if (modalSubtitle) modalSubtitle.textContent = defaultSubtitle;
 
             if (backBtn) backBtn.style.display = 'none';
 
-            // For now, if user leaves setup without completing, keep toggle OFF
+            // if user hasn't successfully enabled email 2FA, keep toggle off
             if (emailToggle && !emailToggle.dataset.persistOn) {
                 emailToggle.checked = false;
             }
+
+            resetEmailSetupState();
         }
 
         function showEmailSetupScreen() {
@@ -344,6 +442,8 @@
             }
 
             if (backBtn) backBtn.style.display = 'inline-block';
+
+            resetEmailSetupState();
         }
 
         function openModal() {
@@ -351,7 +451,6 @@
             modal.classList.add('cp-modal-visible');
             if (root) root.classList.add('modal-open');
 
-            // When opening, always show main screen
             showMainScreen();
         }
 
@@ -360,7 +459,6 @@
             modal.setAttribute('aria-hidden', 'true');
             if (root) root.classList.remove('modal-open');
 
-            // Reset back to main on close
             showMainScreen();
         }
 
@@ -388,13 +486,12 @@
                 if (this.checked) {
                     showEmailSetupScreen();
                 } else {
-                    // If they turn it off on main screen, just leave them on main for now
                     showMainScreen();
                 }
             });
         }
 
-        // AUTH & SMS toggles: placeholder for future wiring
+        // AUTH & SMS toggles: reserved for future
         if (authToggle) {
             authToggle.addEventListener('change', function () {
                 console.log('Authenticator toggle changed:', this.checked);
@@ -413,14 +510,195 @@
             });
         }
 
-        // Send Verification Code (placeholder – Step 3 will wire backend)
+        // OTP input behaviour (auto-advance, backspace, paste full code)
+        if (otpInputs.length) {
+            otpInputs.forEach((input, idx) => {
+                input.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/\D/g, '');
+
+                    if (!val) {
+                        e.target.value = '';
+                        return;
+                    }
+
+                    // If user typed/pasted more than one digit into a single box
+                    if (val.length > 1) {
+                        const digits = val.slice(0, otpInputs.length).split('');
+                        otpInputs.forEach((inp, i) => {
+                            inp.value = digits[i] || '';
+                        });
+                        const lastIndex = Math.min(digits.length - 1, otpInputs.length - 1);
+                        otpInputs[lastIndex].focus();
+                        return;
+                    }
+
+                    e.target.value = val;
+
+                    // Auto advance
+                    const next = otpInputs[idx + 1];
+                    if (next && val) {
+                        next.focus();
+                        next.select && next.select();
+                    }
+                });
+
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                        const prev = otpInputs[idx - 1];
+                        prev.focus();
+                        prev.select && prev.select();
+                    }
+                });
+
+                input.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const pasted = (e.clipboardData || window.clipboardData).getData('text') || '';
+                    const digits = pasted.replace(/\D/g, '').slice(0, otpInputs.length).split('');
+                    otpInputs.forEach((inp, i) => {
+                        inp.value = digits[i] || '';
+                    });
+                    const focusIndex = Math.min(digits.length - 1, otpInputs.length - 1);
+                    if (otpInputs[focusIndex]) {
+                        otpInputs[focusIndex].focus();
+                        otpInputs[focusIndex].select && otpInputs[focusIndex].select();
+                    }
+                });
+            });
+        }
+
+        // Helper: collect 6-digit code from inputs
+        function getOtpCode() {
+            const digits = otpInputs.map(inp => inp.value.trim()).join('');
+            return digits.replace(/\D/g, '');
+        }
+
+        // Helper: show status & error
+        function showStatus(msg) {
+            if (!statusEl) return;
+            statusEl.textContent = msg;
+            statusEl.style.display = 'block';
+        }
+
+        function showError(msg) {
+            if (!errorEl) return;
+            errorEl.textContent = msg || 'Invalid or expired code. Please try again.';
+            errorEl.style.display = 'block';
+        }
+
+        function clearError() {
+            if (!errorEl) return;
+            errorEl.style.display = 'none';
+        }
+
+        // Send verification code (AJAX)
+        async function sendEmailCode() {
+            if (!sendBtn) return;
+
+            clearError();
+            showStatus('Sending verification code...');
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch(routes.sendEmailCode, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || 'Unable to send verification code.');
+                }
+
+                showStatus('We\'ve emailed you a 6-digit code. Enter it below to finish setup.');
+                if (sendBlock)  sendBlock.style.display  = 'none';
+                if (verifyBlock) verifyBlock.style.display = 'block';
+                clearOtpInputs();
+
+            } catch (err) {
+                console.error(err);
+                showError(err.message || 'Unable to send verification code. Please try again.');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Verification Code';
+            }
+        }
+
+        // Verify code (AJAX)
+        async function verifyEmailCode() {
+            if (!verifyBtn) return;
+
+            clearError();
+
+            const code = getOtpCode();
+            if (!code || code.length !== 6) {
+                showError('Please enter the 6-digit code from your email.');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+
+            try {
+                const res = await fetch(routes.verifyEmailCode, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || 'Invalid or expired code.');
+                }
+
+                // Success: mark toggle as persist-on and checked
+                if (emailToggle) {
+                    emailToggle.dataset.persistOn = '1';
+                    emailToggle.checked = true;
+                }
+
+                showStatus('Email Authentication is now enabled for your account.');
+                // Optional: brief delay then go back to main screen
+                setTimeout(() => {
+                    showMainScreen();
+                }, 800);
+
+            } catch (err) {
+                console.error(err);
+                showError(err.message || 'Invalid or expired code. Please try again.');
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Verify & Enable';
+            }
+        }
+
         if (sendBtn) {
             sendBtn.addEventListener('click', function () {
-                console.log('TODO: Send verification code via backend');
-                // In Step 3:
-                //  - call POST /portal/security/2fa/email/send-code
-                //  - show input for code
-                //  - verify + enable
+                sendEmailCode();
+            });
+        }
+
+        if (resendBtn) {
+            resendBtn.addEventListener('click', function () {
+                sendEmailCode();
+            });
+        }
+
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', function () {
+                verifyEmailCode();
             });
         }
 
