@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Mail\TwoFactorEmailCode;
@@ -19,23 +20,21 @@ class SecurityController extends Controller
     {
         $user = auth()->user();
 
-        // Generate a clean 6-digit code
+        // Generate clean 6-digit code
         $code = rand(100000, 999999);
 
-        // Hash token for DB storage
+        // Hash for storage
         $tokenHash = hash('sha256', $code);
 
         // Store token in CRM DB
-        DB::connection('crm')
-            ->table('user_two_factor_tokens')
-            ->insert([
-                'user_id'    => $user->id,
-                'channel'    => 'email',
-                'token_hash' => $tokenHash,
-                'sent_to'    => $user->email,
-                'expires_at' => now()->addMinutes(10),
-                'created_at' => now(),
-            ]);
+        DB::connection('crm')->table('user_two_factor_tokens')->insert([
+            'user_id'    => $user->id,
+            'channel'    => 'email',
+            'token_hash' => $tokenHash,
+            'sent_to'    => $user->email,
+            'expires_at' => now()->addMinutes(10),
+            'created_at' => now(),
+        ]);
 
         // Send email
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
@@ -52,17 +51,16 @@ class SecurityController extends Controller
     public function verifyEmail2FACode(Request $request)
     {
         $request->validate([
-            'code' => 'required|numeric',
+            'code' => 'required|numeric|digits:6',
         ]);
 
         $user = auth()->user();
 
-        // Hash incoming code so it matches DB
+        // Hash incoming code
         $hashed = hash('sha256', $request->code);
 
-        // Look up token in CRM DB
-        $record = DB::connection('crm')
-            ->table('user_two_factor_tokens')
+        // Fetch from CRM db
+        $record = DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('channel', 'email')
             ->where('token_hash', $hashed)
@@ -77,15 +75,22 @@ class SecurityController extends Controller
             ], 422);
         }
 
-        // Mark email 2FA as active (CMS user table)
-        $user->two_factor_enabled = true;
-        $user->two_factor_method  = 'email';
+        // ✅ Update CRM users table correctly
+        DB::connection('crm')->table('users')
+            ->where('id', $user->id)
+            ->update([
+                'two_factor_email_enabled' => 1,
+                'two_factor_default_method' => 'email',
+                'two_factor_confirmed_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        // Also update session user's in-app model (Laravel model is CMS DB)
         $user->two_factor_confirmed_at = now();
         $user->save();
 
-        // Cleanup all email tokens for this user
-        DB::connection('crm')
-            ->table('user_two_factor_tokens')
+        // Cleanup tokens (CRM)
+        DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('channel', 'email')
             ->delete();
