@@ -7,8 +7,7 @@
 
     <p style="margin:0 0 20px 0; font-size:15px; color:#104976; line-height:1.6;">
         Thanks for signing up with <strong>SharpLync</strong>.  
-        We're excited to have you onboard and can't wait to support you with
-        “Old School Support, Modern Results”.
+        We're excited to have you onboard and can't wait to support you!.
     </p>
 
     <p style="margin:0 0 25px 0; font-size:15px; color:#104976;">
