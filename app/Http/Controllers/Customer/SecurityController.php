@@ -14,6 +14,20 @@ use App\Mail\TwoFactorEmailCode;
 class SecurityController extends Controller
 {
     /**
+     * TEMPORARY PLACEHOLDER
+     * Required because your routes file calls this method.
+     * Prevents Laravel from failing controller loading.
+     */
+    public function toggleEmail(Request $request)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Email toggle endpoint not implemented yet.'
+        ]);
+    }
+
+
+    /**
      * Step 1 — Send verification code to user's email
      */
     public function sendEmail2FACode(Request $request)
@@ -41,6 +55,7 @@ class SecurityController extends Controller
             'message' => 'Verification code sent.'
         ]);
     }
+
 
     /**
      * Step 2 — Verify the email code
