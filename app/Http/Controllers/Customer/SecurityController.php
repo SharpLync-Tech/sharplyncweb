@@ -14,20 +14,6 @@ use App\Mail\TwoFactorEmailCode;
 class SecurityController extends Controller
 {
     /**
-     * TEMPORARY PLACEHOLDER
-     * Required because your routes file calls this method.
-     * Prevents Laravel from failing controller loading.
-     */
-    public function toggleEmail(Request $request)
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Email toggle endpoint not implemented yet.'
-        ]);
-    }
-
-
-    /**
      * Step 1 — Send verification code to user's email
      */
     public function sendEmail2FACode(Request $request)
@@ -37,8 +23,8 @@ class SecurityController extends Controller
         // Generate a clean 6-digit code
         $code = rand(100000, 999999);
 
-        // Store token in DB
-        DB::table('user_two_factor_tokens')->insert([
+        // Store token in CRM database
+        DB::connection('crm')->table('user_two_factor_tokens')->insert([
             'user_id'      => $user->id,
             'type'         => 'email',
             'token'        => $code,
@@ -56,7 +42,6 @@ class SecurityController extends Controller
         ]);
     }
 
-
     /**
      * Step 2 — Verify the email code
      */
@@ -68,7 +53,7 @@ class SecurityController extends Controller
 
         $user = auth()->user();
 
-        $record = DB::table('user_two_factor_tokens')
+        $record = DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('type', 'email')
             ->where('token', $request->code)
@@ -83,14 +68,14 @@ class SecurityController extends Controller
             ], 422);
         }
 
-        // Mark email 2FA as active on the user
+        // Mark email 2FA as active on the user (CMS user table)
         $user->two_factor_enabled = true;
         $user->two_factor_method  = 'email';
         $user->two_factor_confirmed_at = now();
         $user->save();
 
-        // Cleanup tokens
-        DB::table('user_two_factor_tokens')
+        // Cleanup tokens (CRM DB)
+        DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('type', 'email')
             ->delete();
