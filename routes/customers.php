@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Customer\ProfileController;
-use App\Http\Controllers\Customer\LoginController;
+use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\Auth\ForgotPasswordController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
