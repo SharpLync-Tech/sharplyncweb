@@ -8,20 +8,20 @@ use App\Http\Controllers\Customer\SecurityController;
  *  PORTAL 2FA ROUTES (USER IS LOGGED IN)
  * ======================================================
  */
-Route::middleware(['auth'])
+Route::middleware(['auth:customer'])
     ->prefix('portal/security')
     ->name('customer.security.')
     ->group(function () {
 
-        // Toggle Email 2FA (on/off)
+        // (For later if you add toggle logic)
         Route::post('/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
             ->name('2fa.email.toggle');
 
-        // Send verification code for enabling Email 2FA
+        // Enable Email 2FA – send verification code (from portal modal)
         Route::post('/email/send-code', [SecurityController::class, 'sendEmail2FACode'])
             ->name('email.send-code');
 
-        // Verify code when enabling Email 2FA
+        // Enable Email 2FA – verify code (from portal modal)
         Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
             ->name('email.verify-code');
     });
@@ -35,7 +35,7 @@ Route::prefix('portal/security')
     ->name('customer.security.')
     ->group(function () {
 
-        // Send 2FA code after password login
+        // Send 2FA code after successful password check
         Route::post('/email/send-login-code', [SecurityController::class, 'sendLogin2FACode'])
             ->name('email.send-login-code');
 

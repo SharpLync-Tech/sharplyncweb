@@ -6,47 +6,44 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Models\CRM\User as CrmUser;
 use App\Mail\TwoFactorEmailCode;
 
 class SecurityController extends Controller
 {
     /**
-     * Step 1 — Send verification code to user's email
+     * PORTAL: Send verification code to enable Email 2FA
      */
     public function sendEmail2FACode(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\CRM\User $user */
+        $user = Auth::guard('customer')->user();
 
-        // Generate a clean 6-digit code
+        // 6-digit code
         $code = rand(100000, 999999);
+        $hash = hash('sha256', $code);
 
-        // Hash for secure DB storage
-        $tokenHash = hash('sha256', $code);
-
-        // Store token in CRM DB (correct)
+        // CRM DB token
         DB::connection('crm')->table('user_two_factor_tokens')->insert([
             'user_id'    => $user->id,
             'channel'    => 'email',
-            'token_hash' => $tokenHash,
+            'token_hash' => $hash,
             'sent_to'    => $user->email,
             'expires_at' => now()->addMinutes(10),
             'created_at' => now(),
         ]);
 
-        // Send email
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
         return response()->json([
             'success' => true,
-            'message' => 'Verification code sent.'
+            'message' => 'Verification code sent.',
         ]);
     }
 
     /**
-     * Step 2 — Verify the email code
+     * PORTAL: Verify code & enable Email 2FA
      */
     public function verifyEmail2FACode(Request $request)
     {
@@ -54,40 +51,165 @@ class SecurityController extends Controller
             'code' => 'required|numeric',
         ]);
 
-        $user = auth()->user();
+        /** @var \App\Models\CRM\User $user */
+        $user = Auth::guard('customer')->user();
 
         $hashed = hash('sha256', $request->code);
 
-        // Look up token in CRM DB (correct)
         $record = DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('channel', 'email')
             ->where('token_hash', $hashed)
             ->where('expires_at', '>', now())
+            ->whereNull('consumed_at')
             ->orderByDesc('id')
             ->first();
 
-        if (!$record) {
+        if (! $record) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired code.'
+                'message' => 'Invalid or expired code.',
             ], 422);
         }
 
-        // Update the CRM users table
+        // Enable email 2FA on CRM user
         $user->two_factor_email_enabled = 1;
-        $user->two_factor_confirmed_at = now();
-        $user->save(); // goes to CRM automatically
+        $user->two_factor_confirmed_at  = now();
+        $user->save(); // CRM connection
 
-        // Cleanup all CRM tokens for this user
+        // Mark token consumed / clean up
         DB::connection('crm')->table('user_two_factor_tokens')
-            ->where('user_id', $user->id)
-            ->where('channel', 'email')
-            ->delete();
+            ->where('id', $record->id)
+            ->update(['consumed_at' => now()]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Email authentication enabled.'
+            'message' => 'Email authentication enabled.',
         ]);
+    }
+
+    /**
+     * LOGIN: Send (or resend) 2FA code AFTER password verification.
+     * Called from the login modal "Resend Code" button.
+     */
+    public function sendLogin2FACode(Request $request)
+    {
+        $userId = $request->session()->get('2fa_user_id');
+
+        if (! $userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No 2FA session found.',
+            ], 401);
+        }
+
+        /** @var \App\Models\CRM\User|null $user */
+        $user = CrmUser::find($userId);
+
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        // 6-digit code
+        $code = rand(100000, 999999);
+        $hash = hash('sha256', $code);
+
+        DB::connection('crm')->table('user_two_factor_tokens')->insert([
+            'user_id'    => $user->id,
+            'channel'    => 'email',
+            'token_hash' => $hash,
+            'sent_to'    => $user->email,
+            'expires_at' => now()->addMinutes(10),
+            'created_at' => now(),
+        ]);
+
+        Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login verification code sent.',
+        ]);
+    }
+
+    /**
+     * LOGIN: Verify 2FA code & complete login
+     */
+    public function verifyLogin2FACode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|numeric',
+        ]);
+
+        $userId = $request->session()->get('2fa_user_id');
+
+        if (! $userId) {
+            return response()->json([
+                'success' => false,
+                'message' => '2FA session expired. Please log in again.',
+            ], 401);
+        }
+
+        /** @var \App\Models\CRM\User|null $user */
+        $user = CrmUser::find($userId);
+
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        $hashed = hash('sha256', $request->code);
+
+        $record = DB::connection('crm')->table('user_two_factor_tokens')
+            ->where('user_id', $user->id)
+            ->where('channel', 'email')
+            ->where('token_hash', $hashed)
+            ->where('expires_at', '>', now())
+            ->whereNull('consumed_at')
+            ->orderByDesc('id')
+            ->first();
+
+        if (! $record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired code.',
+            ], 422);
+        }
+
+        // Mark token consumed
+        DB::connection('crm')->table('user_two_factor_tokens')
+            ->where('id', $record->id)
+            ->update(['consumed_at' => now()]);
+
+        // Complete login now that 2FA passed
+        Auth::guard('customer')->login($user);
+
+        // Clear 2FA session data
+        $request->session()->forget('2fa_user_id');
+        $request->session()->forget('show_2fa_modal');
+
+        // Redirect target (default: /portal)
+        $redirect = url('/portal');
+
+        return response()->json([
+            'success'  => true,
+            'message'  => '2FA verification successful.',
+            'redirect' => $redirect,
+        ]);
+    }
+
+    /**
+     * Placeholder for toggleEmail (for future "turn off 2FA" logic).
+     */
+    public function toggleEmail(Request $request)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Toggle endpoint not yet implemented.',
+        ], 501);
     }
 }
