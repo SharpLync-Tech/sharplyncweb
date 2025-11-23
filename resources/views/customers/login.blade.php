@@ -1,29 +1,21 @@
 {{--  
   Page: customers/login.blade.php  
-  Version: v2.1 (Polished Visual Refresh + UX Enhancements)  
-  Description:  
-  - Removed icon filter to preserve brand teal color.  
-  - Added "Forgot Password" link (functionality to be implemented later).  
-  - Improved spacing, shadows, field focus styling, and button hover transitions.  
-  - Adjusted for perfect alignment + responsive layout on mobile.  
-  - No functionality changes; routes, CSRF, and session handling fully intact.  
-  Last updated: 11 Nov 2025 by Jannie & Max  
+  Version: v3.0 (Login 2FA Modal Integration) 
 --}}
 
 @extends('layouts.base')
 @section('title', 'Customer Login')
 @section('content')
+
 <section class="hero" style="padding-top: 4rem; min-height: auto;">
-  <!-- CPU background for thematic consistency -->
+
   <div class="hero-cpu-bg">
     <img src="{{ asset('images/hero-cpu.png') }}" alt="SharpLync CPU Background">
   </div>
 
-  <!-- Hero logo -->
   <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Hero Logo"
        class="hero-logo" style="margin-bottom: -1rem;">
 
-  <!-- Centered login card -->
   <div class="hero-cards fade-section" style="justify-content: center; margin-top: 0;">
     <div class="tile transparent single-reg-card"
          style="width: 500px; max-width: 90%; flex: none; padding: 2.5rem;
@@ -32,19 +24,16 @@
                 border-radius: 16px;
                 box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
 
-      <!-- Lock icon -->
       <div class="onboard-icon" style="text-align: center; margin-bottom: 1rem;">
         <img src="{{ asset('images/login-lock.png') }}" alt="Login Icon"
              style="width: 80px; height: auto; filter: drop-shadow(0 0 4px rgba(44,191,174,0.3));">
       </div>
 
-      <!-- Title + Subtitle -->
       <h1 class="onboard-title"
           style="color: white; margin-bottom: 0.5rem; text-align: center;">
         Sign In to Your Account
       </h1>
-      
-      <!-- Alerts -->
+
       @if (session('error'))
         <div class="alert alert-error"
              style="color: white; background-color: rgba(255, 227, 227, 0.9);
@@ -68,16 +57,8 @@
           </svg>
           <span>{{ session('status') }}</span>
         </div>
-        <style>
-          @keyframes tickFade {
-            0% { opacity: 0; transform: scale(0.6) rotate(-10deg); }
-            60% { opacity: 1; transform: scale(1.05) rotate(3deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
-          }
-        </style>
       @endif
 
-      <!-- Login form -->
       <form action="{{ route('customer.login.submit') }}" method="POST"
             class="onboard-form" style="color: white;">
         @csrf
@@ -101,7 +82,6 @@
                         transition: all 0.2s ease; width: 100%;">
         </div>
 
-        <!-- Remember me -->
         <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
           <input type="checkbox" name="remember" id="remember"
                  style="width: 18px; height: 18px; accent-color: #2CBFAE; cursor: pointer;">
@@ -110,16 +90,13 @@
           </label>
         </div>
 
-        <!-- Forgot password link -->
-          <div style="text-align: right; margin-bottom: 1.5rem;">
-            <a href="{{ route('customer.password.request') }}" 
-              style="color: #2CBFAE; font-weight: 500; text-decoration: none;">
-              Forgot your password?
-            </a>
-          </div>
+        <div style="text-align: right; margin-bottom: 1.5rem;">
+          <a href="{{ route('customer.password.request') }}" 
+             style="color: #2CBFAE; font-weight: 500; text-decoration: none;">
+            Forgot your password?
+          </a>
+        </div>
 
-
-        <!-- Login button -->
         <button type="submit" class="btn-primary w-full"
                 style="background-color: #2CBFAE; color: white; padding: 0.75rem;
                        width: 100%; border-radius: 8px; font-weight: 600;
@@ -128,7 +105,6 @@
         </button>
       </form>
 
-      <!-- Registration link -->
       <p class="onboard-note"
          style="color: rgba(255,255,255,0.8); text-align: center; margin-top: 1.5rem;">
         Don’t have an account yet?
@@ -139,33 +115,124 @@
     </div>
   </div>
 
-  <!-- Mobile optimization -->
-  <style>
-    @media (max-width: 768px) {
-      .hero-cpu-bg img {
-        opacity: 0.25;
-        transform: scale(1.2);
-        right: 0;
-      }
-      .single-reg-card {
-        padding: 2rem 1.5rem !important;
-        width: 95% !important;
-      }
-      .hero-logo {
-        width: 200px;
-      }
-    }
-
-    input:focus {
-      border-color: #2CBFAE !important;
-      background-color: rgba(255,255,255,0.15) !important;
-      outline: none;
-    }
-
-    .btn-primary:hover {
-      background-color: #25ab9d !important;
-      transform: translateY(-2px);
-    }
-  </style>
 </section>
+
+
+{{-- ================================================================= --}}
+{{-- LOGIN-TIME 2FA MODAL --}}
+{{-- ================================================================= --}}
+@if(session('show_2fa_modal'))
+<div id="login-2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
+
+    <div class="cp-modal-sheet" style="max-width:460px;">
+        <header class="cp-modal-header">
+            <div>
+                <h3>Two-Factor Authentication</h3>
+                <p class="cp-modal-subtitle">
+                    Enter the code sent to <strong>{{ session('email_masked') }}</strong>
+                </p>
+            </div>
+            <button class="cp-modal-close">&times;</button>
+        </header>
+
+        <div class="cp-modal-body">
+            <div style="display:flex; gap:8px; justify-content:center;">
+                @for($i = 1; $i <= 6; $i++)
+                    <input maxlength="1"
+                           class="login-2fa-digit"
+                           data-id="{{ $i }}"
+                           style="width:45px; height:55px; text-align:center;
+                                  font-size:1.6rem; border-radius:10px;
+                                  border:1px solid #ccc;">
+                @endfor
+            </div>
+
+            <div id="login-2fa-error"
+                 style="color:#b00020; margin-top:1rem; text-align:center; display:none;">
+            </div>
+
+            <button id="login-2fa-submit"
+                    class="cp-btn cp-teal-btn"
+                    style="margin-top:1.5rem; width:100%;"
+                    disabled>
+                Verify Code
+            </button>
+
+            <button id="login-2fa-resend"
+                    class="cp-btn cp-navy-btn"
+                    style="margin-top:0.75rem; width:100%;">
+                Resend Code
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection
+
+
+@push('scripts')
+<script>
+(function(){
+
+    const digits = document.querySelectorAll('.login-2fa-digit');
+    const submitBtn = document.getElementById('login-2fa-submit');
+    const resendBtn = document.getElementById('login-2fa-resend');
+    const errorBox  = document.getElementById('login-2fa-error');
+
+    if (!digits.length) return;
+
+    digits.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value.match(/[0-9]/)) {
+                if (index < 5) digits[index + 1].focus();
+            } else {
+                input.value = '';
+            }
+            checkReady();
+        });
+    });
+
+    function checkReady() {
+        const code = [...digits].map(i => i.value).join('');
+        submitBtn.disabled = code.length !== 6;
+    }
+
+    submitBtn.addEventListener('click', function(){
+        const code = [...digits].map(i => i.value).join('');
+
+        fetch("{{ route('customer.security.email.verify-login-code') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ code })
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                window.location = res.redirect;
+            } else {
+                errorBox.innerText = res.message;
+                errorBox.style.display = 'block';
+
+                digits.forEach(i => i.value = '');
+                digits[0].focus();
+                submitBtn.disabled = true;
+            }
+        });
+    });
+
+    resendBtn.addEventListener('click', function(){
+        fetch("{{ route('customer.security.email.send-login-code') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        });
+    });
+
+})();
+</script>
+@endpush
