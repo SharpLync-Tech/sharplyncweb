@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +10,6 @@
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
     <meta name="author" content="SharpLync Pty Ltd">
 
-    {{-- Structured data for Google / Knowledge Graph --}}
     @verbatim
     <script type="application/ld+json">
     {
@@ -31,80 +28,43 @@
     @endverbatim
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
-    <!-- Additional page-specific styles -->
     @stack('styles')
 
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
-</head>
 
-<body>
-    <!-- ========================= HEADER ========================= -->
-    <header class="main-header">
-        <div class="logo">
-            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
-        </div>
-        <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
-    </header>
-
-    <!-- ========================= OVERLAY MENU ========================= -->
-    <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
-        <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
-        <ul>
-            @foreach(($menuItems ?? []) as $item)
-                <li>
-                    <a 
-                        href="{{ $item->url }}"
-                        onclick="toggleMenu()"
-                        @if($item->open_in_new_tab) target="_blank" @endif
-                    >
-                        {{ $item->label }}
-                    </a>
-                </li>
-            @endforeach
-            </ul>
-
-    </div>
-
-    <!-- ========================= MAIN ========================= -->
-    <main>
-        @yield('content')
-    </main>
-
-    <!-- ========================= FOOTER ========================= -->
-    <footer>
-        <div class="footer-content">
-            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-            <div class="social-icons">
-                <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
-                <a href="https://www.facebook.com/SharpLync"><img src="{{ asset('images/facebook.png') }}" alt="Facebook"></a>
-                <a href="mailto:info@sharplync.com.au"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ========================= SCRIPTS ========================= -->
-    <script>
-        // Toggle overlay menu
-        function toggleMenu() {
-            const overlay = document.getElementById('overlayMenu');
-            overlay.classList.toggle('show');
-            document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
+    {{-- ============================= --}}
+    {{-- LOGIN 2FA MODAL CSS (REQUIRED) --}}
+    {{-- ============================= --}}
+    <style>
+        .cp-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
 
-        // Fade-in on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.15 });
+        .cp-modal-backdrop.cp-modal-visible {
+            display: flex;
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
-        });
-    </script>
-    @stack('scripts')   
-</body>
-</html>
+        .cp-modal-sheet {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1.5rem;
+            width: 95%;
+            max-width: 460px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            animation: modalPop .25s ease-out;
+        }
+
+        @keyframes modalPop {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>

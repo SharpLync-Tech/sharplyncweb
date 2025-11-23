@@ -1,20 +1,8 @@
 <?php
 /**
  * SharpLync Customer Routes
- * Version: 2.2 (Portal Ecosystem + Secure Downloads)
- * Last updated: 13 Nov 2025 by Max (ChatGPT)
- * 
- * Description:
- *  Unified routing system for the SharpLync Customer environment.
- *  This file governs:
- *   - Registration & onboarding (CRM-linked)
- *   - Authentication (login / logout)
- *   - The secure Customer Portal ecosystem (/portal)
- * 
- *  Highlights:
- *   • Portal now runs via DashboardController (loads $user + $profile)
- *   • Profile routes fully aligned with controller methods
- *   • Secure, logged, and signed TeamViewer download (no public access)
+ * Version: 2.3 (Portal Ecosystem + Login-time 2FA)
+ * Updated: 24 Nov 2025 by Max (ChatGPT)
  */
 
 use Illuminate\Support\Facades\Route;
@@ -24,10 +12,11 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Customer\ProfileController;
-use App\Http\Controllers\Customer\Auth\LoginController;
+use App\Http\Controllers\Customer\LoginController;
 use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\Auth\ForgotPasswordController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
+use App\Http\Controllers\Customer\SecurityController;
 
 // ======================================================
 // PART 1 — CUSTOMER REGISTRATION & ONBOARDING
@@ -49,7 +38,8 @@ Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('customer.
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('customer.profile.update');
 
 // Onboarding completion screen
-Route::get('/customer/onboard-complete', fn() => view('customers.onboard-complete'))->name('onboard.complete');
+Route::get('/customer/onboard-complete', fn() => view('customers.onboard-complete'))
+    ->name('onboard.complete');
 
 // Legacy onboarding test (safe to remove later)
 Route::get('/onboard', [CustomerController::class, 'create'])->name('customers.create');
@@ -59,7 +49,9 @@ Route::post('/onboard', [CustomerController::class, 'store'])->name('customers.s
 Route::get('/portal-standalone', fn() => view('customers.portal-standalone'))
     ->name('customer.portal.standalone')
     ->middleware('auth:customer');
-Route::get('/portal_test', fn() => view('customers.portal_test'))->name('customer.portal_test');
+
+Route::get('/portal_test', fn() => view('customers.portal_test'))
+    ->name('customer.portal_test');
 
 
 // ======================================================
@@ -71,10 +63,27 @@ Route::post('/login', [LoginController::class, 'login'])->name('customer.login.s
 Route::post('/logout', [LoginController::class, 'logout'])->name('customer.logout');
 
 
-// ========================================
-// CUSTOMER PASSWORD RESET
-// ========================================
+// ======================================================
+// PART 2B — LOGIN-TIME 2FA (NO LOGIN REQUIRED)
+// ======================================================
+// REQUIRED for 2FA modal to work
 
+Route::middleware(['web'])  // <-- CRITICAL: allows session to work
+    ->prefix('portal/security')
+    ->name('customer.security.')
+    ->group(function () {
+
+        Route::post('/email/send-login-code', [SecurityController::class, 'sendLogin2FACode'])
+            ->name('email.send-login-code');
+
+        Route::post('/email/verify-login-code', [SecurityController::class, 'verifyLogin2FACode'])
+            ->name('email.verify-login-code');
+    });
+
+
+// ======================================================
+// CUSTOMER PASSWORD RESET
+// ======================================================
 
 Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])
     ->name('customer.password.request');
@@ -85,10 +94,8 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkE
 Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
     ->name('customer.password.reset.form');
 
-
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])
     ->name('customer.password.update');
-
 
 
 // ======================================================
@@ -118,18 +125,16 @@ Route::middleware(['auth:customer'])->group(function () {
             abort(404, 'Quick Support tool not found.');
         }
 
-        // Log download for auditing
         Log::info('TeamViewer downloaded by: ' . ($user->email ?? 'unknown') . ' (ID ' . ($user->id ?? '-') . ')');
 
-        // Signed link validation (optional but enabled here)
         if (!request()->hasValidSignature()) {
             abort(403, 'Invalid or expired download link.');
         }
 
         return response()->download($file, 'SharpLync_QuickSupport.exe', [
-            'Content-Type' => 'application/octet-stream',
+            'Content-Type'  => 'application/octet-stream',
             'Cache-Control' => 'no-store, no-cache, must-revalidate',
-            'Pragma' => 'no-cache',
+            'Pragma'        => 'no-cache',
         ]);
     })->middleware('auth:customer')->name('customer.teamviewer.download');
 });
