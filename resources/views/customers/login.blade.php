@@ -201,7 +201,7 @@
     submitBtn.addEventListener('click', function(){
         const code = [...digits].map(i => i.value).join('');
 
-        fetch("{{ route('customer.security.email.verify-login-code') }}", {
+        fetch("{{ route('customer.login.2fa.verify') }}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -225,7 +225,7 @@
     });
 
     resendBtn.addEventListener('click', function(){
-        fetch("{{ route('customer.security.email.send-login-code') }}", {
+        fetch("{{ route('customer.login.2fa.send') }}", {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
