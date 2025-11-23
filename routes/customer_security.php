@@ -7,21 +7,24 @@ use App\Http\Controllers\Customer\SecurityController;
  * ======================================================
  *  PORTAL 2FA ROUTES (USER IS LOGGED IN)
  * ======================================================
+ * These routes are used from inside the Customer Portal
+ * when the user enables Email 2FA from settings.
+ * ======================================================
  */
 Route::middleware(['auth:customer'])
     ->prefix('portal/security')
     ->name('customer.security.')
     ->group(function () {
 
-        // (For later if you add toggle logic)
+        // Enable/disable email 2FA toggle (future use)
         Route::post('/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
             ->name('2fa.email.toggle');
 
-        // Enable Email 2FA – send verification code (from portal modal)
+        // EMAIL 2FA SETUP — SEND CODE
         Route::post('/email/send-code', [SecurityController::class, 'sendEmail2FACode'])
             ->name('email.send-code');
 
-        // Enable Email 2FA – verify code (from portal modal)
+        // EMAIL 2FA SETUP — VERIFY CODE
         Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
             ->name('email.verify-code');
     });
@@ -30,16 +33,19 @@ Route::middleware(['auth:customer'])
  * ======================================================
  *  LOGIN-TIME 2FA ROUTES (USER NOT LOGGED IN)
  * ======================================================
+ * These routes are called from the login.blade.php modal
+ * when a user with 2FA enabled tries to log in.
+ * ======================================================
  */
-Route::prefix('portal/security')
-    ->name('customer.security.')
+Route::prefix('login/2fa')
+    ->name('customer.login.2fa.')
     ->group(function () {
 
-        // Send 2FA code after successful password check
-        Route::post('/email/send-login-code', [SecurityController::class, 'sendLogin2FACode'])
-            ->name('email.send-login-code');
+        // LOGIN 2FA — SEND CODE
+        Route::post('/send', [SecurityController::class, 'sendLogin2FACode'])
+            ->name('send');
 
-        // Verify login-time 2FA code
-        Route::post('/email/verify-login-code', [SecurityController::class, 'verifyLogin2FACode'])
-            ->name('email.verify-login-code');
+        // LOGIN 2FA — VERIFY CODE
+        Route::post('/verify', [SecurityController::class, 'verifyLogin2FACode'])
+            ->name('verify');
     });
