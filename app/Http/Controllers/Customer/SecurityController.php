@@ -14,9 +14,9 @@ use App\Mail\TwoFactorEmailCode;
 class SecurityController extends Controller
 {
     /**
-     * ---------------------------------------------------------------------
-     * ENABLE 2FA FROM PORTAL — SEND CODE
-     * ---------------------------------------------------------------------
+     * =====================================================
+     * PORTAL 2FA: SEND SETUP CODE
+     * =====================================================
      */
     public function sendEmail2FACode(Request $request)
     {
@@ -36,15 +36,14 @@ class SecurityController extends Controller
 
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
-        return response()->json([
-            'success' => true,
-        ]);
+        return response()->json(['success' => true]);
     }
 
+
     /**
-     * ---------------------------------------------------------------------
-     * ENABLE 2FA FROM PORTAL — VERIFY CODE
-     * ---------------------------------------------------------------------
+     * =====================================================
+     * PORTAL 2FA: VERIFY SETUP CODE
+     * =====================================================
      */
     public function verifyEmail2FACode(Request $request)
     {
@@ -58,46 +57,43 @@ class SecurityController extends Controller
             ->where('channel', 'email')
             ->where('token_hash', $hash)
             ->where('expires_at', '>', now())
-            ->orderByDesc('id')
             ->first();
 
         if (! $record) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid or expired code.',
-            ]);
+            return response()->json(['success' => false, 'message' => 'Invalid or expired code.'], 422);
         }
 
+        // Enable 2FA
         $user->two_factor_email_enabled = 1;
         $user->two_factor_confirmed_at = now();
         $user->save();
 
+        // Delete tokens
         DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->delete();
 
-        return response()->json([
-            'success' => true,
-        ]);
+        return response()->json(['success' => true]);
     }
 
+
     /**
-     * ---------------------------------------------------------------------
-     * LOGIN PAGE — SEND CODE AFTER PASSWORD SUCCESS
-     * ---------------------------------------------------------------------
+     * =====================================================
+     * LOGIN-TIME 2FA: SEND LOGIN VERIFICATION CODE
+     * =====================================================
      */
     public function sendLogin2FACode(Request $request)
     {
         $userId = session('2fa_user_id');
-        $user   = User::find($userId);
+
+        if (! $userId) {
+            return response()->json(['success' => false, 'message' => 'No 2FA session.']);
+        }
+
+        $user = User::find($userId);
 
         if (! $user) {
-            Log::warning("2FA SEND CODE FAILED — no user for id {$userId}");
-            return response()->json([
-                'success' => false,
-                'message' => '2FA session expired.',
-                'debug'   => ['user_id' => $userId],
-            ]);
+            return response()->json(['success' => false, 'message' => 'Account not found.']);
         }
 
         $code = rand(100000, 999999);
@@ -117,37 +113,31 @@ class SecurityController extends Controller
         return response()->json(['success' => true]);
     }
 
+
     /**
-     * ---------------------------------------------------------------------
-     * LOGIN PAGE — VERIFY ENTERED CODE
-     * ---------------------------------------------------------------------
+     * =====================================================
+     * LOGIN-TIME 2FA: VERIFY LOGIN CODE
+     * =====================================================
      */
     public function verifyLogin2FACode(Request $request)
     {
-        Log::info('VERIFY LOGIN 2FA REQUEST', [
-            'posted_code' => $request->code ?? 'NO CODE',
-            'session_2fa_user_id' => session('2fa_user_id'),
-        ]);
+        $request->validate(['code' => 'required|numeric']);
 
         $userId = session('2fa_user_id');
 
         if (! $userId) {
-            Log::warning("2FA FAILED — Missing session user id");
             return response()->json([
                 'success' => false,
-                'message' => '2FA session expired. Please log in again.',
-                'debug'   => ['missing_session_user_id' => true],
+                'message' => '2FA session expired. Please log in again.'
             ]);
         }
 
         $user = User::find($userId);
 
         if (! $user) {
-            Log::warning("2FA FAILED — user not found for id {$userId}");
             return response()->json([
                 'success' => false,
-                'message' => '2FA session expired.',
-                'debug'   => ['user_found' => false],
+                'message' => 'Account not found.'
             ]);
         }
 
@@ -161,34 +151,26 @@ class SecurityController extends Controller
             ->first();
 
         if (! $record) {
-            Log::warning("2FA FAILED — token not found", [
-                'user_id' => $user->id,
-                'hash'    => $hash,
-            ]);
-
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired code.',
-                'debug'   => [
-                    'user_id' => $user->id,
-                    'token_valid' => false,
-                ],
+                'message' => 'Invalid or expired code.'
             ]);
         }
 
-        // SUCCESS — log user in
-        auth('customer')->login($user);
-
+        // CLEAN UP TOKEN
         DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->delete();
 
-        Log::info("2FA LOGIN SUCCESS for {$user->email}");
+        // LOG USER IN
+        auth('customer')->login($user);
+
+        // REMOVE 2FA SESSION
+        session()->forget(['2fa_user_id', 'email_masked', 'show_2fa_modal']);
 
         return response()->json([
             'success' => true,
-            'redirect' => route('customer.portal'),
-            'debug' => ['final_login' => true],
+            'redirect' => route('customer.portal')
         ]);
     }
 }

@@ -1,10 +1,11 @@
 {{--  
   Page: customers/login.blade.php  
-  Version: v3.2 (Login 2FA Modal + Debug Snapshot) 
+  Version: FINAL (Login 2FA Working) 
 --}}
 
 @extends('layouts.base')
 @section('title', 'Customer Login')
+
 @section('content')
 
 <section class="hero" style="padding-top: 4rem; min-height: auto;">
@@ -26,7 +27,7 @@
 
       <div class="onboard-icon" style="text-align: center; margin-bottom: 1rem;">
         <img src="{{ asset('images/login-lock.png') }}" alt="Login Icon"
-             style="width: 80px; height: auto; filter: drop-shadow(0 0 4px rgba(44,191,174,0.3));">
+             style="width: 80px; height: auto;">
       </div>
 
       <h1 class="onboard-title"
@@ -34,88 +35,78 @@
         Sign In to Your Account
       </h1>
 
+      {{-- ERROR MESSAGE --}}
       @if (session('error'))
         <div class="alert alert-error"
-             style="color: white; background-color: rgba(255, 227, 227, 0.9);
-                    border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem;
-                    border-radius: 6px; padding: 0.75rem;">
+             style="color: #0A2A4D; background-color: rgba(255,227,227,0.9);
+                    border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem;">
           {{ session('error') }}
         </div>
       @endif
 
+      {{-- STATUS MESSAGE --}}
       @if (session('status'))
         <div class="alert alert-success"
-             style="display: flex; align-items: center; justify-content: center;
-                    gap: 0.5rem; color: #0A2A4D; font-weight: 600; text-align: center;
-                    background-color: rgba(216, 243, 220, 0.95);
-                    border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem;
-                    padding: 0.75rem 1rem; border-radius: 6px;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-               fill="none" stroke="#2CBFAE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-               style="width: 22px; height: 22px; animation: tickFade 0.8s ease-in-out;">
-            <path d="M20 6L9 17l-5-5"/>
-          </svg>
-          <span>{{ session('status') }}</span>
+             style="color: #0A2A4D; background-color: rgba(216,243,220,0.95);
+                    border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem;
+                    font-weight: 600; text-align:center;">
+          {{ session('status') }}
         </div>
       @endif
 
-      <form action="{{ route('customer.login.submit') }}" method="POST"
-            class="onboard-form" style="color: white;">
+
+      {{-- LOGIN FORM --}}
+      <form action="{{ route('customer.login.submit') }}" method="POST" class="onboard-form" style="color: white;">
         @csrf
 
         <div class="form-group">
           <label for="email" style="color: white; font-weight: 600;">Email Address</label>
-          <input type="email" id="email" name="email" required placeholder="you@example.com"
+          <input type="email" id="email" name="email" required
                  value="{{ old('email') }}"
+                 placeholder="you@example.com"
                  style="color: white; background-color: rgba(255,255,255,0.08);
                         border: 1px solid rgba(255,255,255,0.25);
-                        border-radius: 6px; padding: 0.6rem;
-                        transition: all 0.2s ease; width: 100%;">
+                        border-radius: 6px; padding: 0.6rem; width: 100%;">
         </div>
 
         <div class="form-group">
           <label for="password" style="color: white; font-weight: 600;">Password</label>
-          <input type="password" id="password" name="password" required placeholder="Enter your password"
+          <input type="password" id="password" name="password" required
+                 placeholder="Enter your password"
                  style="color: white; background-color: rgba(255,255,255,0.08);
                         border: 1px solid rgba(255,255,255,0.25);
-                        border-radius: 6px; padding: 0.6rem;
-                        transition: all 0.2s ease; width: 100%;">
+                        border-radius: 6px; padding: 0.6rem; width: 100%;">
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
           <input type="checkbox" name="remember" id="remember"
-                 style="width: 18px; height: 18px; accent-color: #2CBFAE; cursor: pointer;">
-          <label for="remember" style="color: white; font-weight: 600; cursor: pointer; margin: 0;">
-            Remember me
-          </label>
+                 style="width: 18px; height: 18px; accent-color: #2CBFAE;">
+          <label for="remember" style="color: white; font-weight: 600;">Remember me</label>
         </div>
 
         <div style="text-align: right; margin-bottom: 1.5rem;">
-          <a href="{{ route('customer.password.request') }}" 
-             style="color: #2CBFAE; font-weight: 500; text-decoration: none;">
+          <a href="{{ route('customer.password.request') }}" style="color: #2CBFAE; font-weight: 500;">
             Forgot your password?
           </a>
         </div>
 
         <button type="submit" class="btn-primary w-full"
                 style="background-color: #2CBFAE; color: white; padding: 0.75rem;
-                       width: 100%; border-radius: 8px; font-weight: 600;
-                       transition: all 0.2s ease-in-out;">
+                       width: 100%; border-radius: 8px; font-weight: 600;">
           Log In
         </button>
       </form>
 
-      <p class="onboard-note"
-         style="color: rgba(255,255,255,0.8); text-align: center; margin-top: 1.5rem;">
+      <p class="onboard-note" style="color: rgba(255,255,255,0.8); text-align: center; margin-top: 1.5rem;">
         Don’t have an account yet?
-        <a href="{{ route('register') }}" style="color: #2CBFAE; text-decoration: none; font-weight: 500;">
-          Create one here
-        </a>
+        <a href="{{ route('register') }}" style="color: #2CBFAE; font-weight: 500;">Create one here</a>
       </p>
+
     </div>
   </div>
 
 </section>
+
 
 {{-- ================================================================= --}}
 {{-- LOGIN-TIME 2FA MODAL --}}
@@ -123,31 +114,23 @@
 @if(session('show_2fa_modal'))
 <div id="login-2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
 
-    <div class="cp-modal-sheet" style="max-width:460px;">
-
-        {{-- DEBUG BLOCK --}}
-        <div style="background:#ffeeee; padding:12px; margin-bottom:15px; border-radius:6px; color:#333; font-size:0.9rem;">
-            <strong>DEBUG:</strong><br>
-            show_2fa_modal: {{ session('show_2fa_modal') ? 'YES' : 'NO' }}<br>
-            2fa_user_id: {{ session('2fa_user_id') ?? 'NULL' }}<br>
-            email_masked: {{ session('email_masked') ?? 'NULL' }}<br>
-        </div>
-        {{-- END DEBUG --}}
-
-        <header class="cp-modal-header">
+    <div class="cp-modal-sheet">
+        <header style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-                <h3>Two-Factor Authentication</h3>
-                <p class="cp-modal-subtitle">
+                <h3 style="margin:0; font-size:1.2rem;">Two-Factor Authentication</h3>
+                <p style="margin:0; font-size:0.9rem; color:#555;">
                     Enter the code sent to <strong>{{ session('email_masked') }}</strong>
                 </p>
             </div>
-            <button class="cp-modal-close">&times;</button>
+            <button onclick="window.location.reload()" 
+                    style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
         </header>
 
-        <div class="cp-modal-body">
+        <div style="margin-top:1rem;">
 
+            {{-- OTP INPUTS --}}
             <div style="display:flex; gap:8px; justify-content:center; margin-bottom:1rem;">
-                @for($i = 0; $i < 6; $i++)
+                @for($i = 1; $i <= 6; $i++)
                     <input maxlength="1"
                            class="login-2fa-digit"
                            style="width:45px; height:55px; text-align:center;
@@ -156,28 +139,32 @@
                 @endfor
             </div>
 
+            {{-- ERROR --}}
             <div id="login-2fa-error"
-                 style="color:#b00020; margin-top:1rem; text-align:center; display:none;">
+                 style="color:#b00020; margin:0.5rem 0; text-align:center; display:none;">
             </div>
 
             <button id="login-2fa-submit"
                     class="cp-btn cp-teal-btn"
-                    style="margin-top:1.5rem; width:100%;"
+                    style="width:100%; margin-top:0.5rem;"
                     disabled>
                 Verify Code
             </button>
 
             <button id="login-2fa-resend"
                     class="cp-btn cp-navy-btn"
-                    style="margin-top:0.75rem; width:100%;">
+                    style="width:100%; margin-top:0.5rem;">
                 Resend Code
             </button>
+
         </div>
     </div>
 </div>
 @endif
 
 @endsection
+
+
 
 @push('scripts')
 <script>
@@ -192,11 +179,11 @@
 
     digits.forEach((input, index) => {
         input.addEventListener('input', () => {
-            if (/^[0-9]$/.test(input.value)) {
-                if (index < 5) digits[index + 1].focus();
-            } else {
+            if (!/^[0-9]$/.test(input.value)) {
                 input.value = '';
+                return;
             }
+            if (index < 5) digits[index + 1].focus();
             checkReady();
         });
     });
@@ -206,8 +193,8 @@
         submitBtn.disabled = code.length !== 6;
     }
 
-    submitBtn.addEventListener('click', function(){
-
+    // VERIFY 2FA
+    submitBtn?.addEventListener('click', function(){
         const code = [...digits].map(i => i.value).join('');
 
         fetch("{{ route('customer.security.email.verify-login-code') }}", {
@@ -220,9 +207,6 @@
         })
         .then(r => r.json())
         .then(res => {
-
-            if (res.debug) console.log("DEBUG_SERVER:", res.debug);
-
             if (res.success) {
                 window.location = res.redirect;
             } else {
@@ -235,10 +219,13 @@
         });
     });
 
-    resendBtn.addEventListener('click', function(){
+    // RESEND
+    resendBtn?.addEventListener('click', function(){
         fetch("{{ route('customer.security.email.send-login-code') }}", {
             method: "POST",
-            headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
         });
     });
 

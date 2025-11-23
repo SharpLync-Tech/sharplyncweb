@@ -44,7 +44,6 @@
     <!-- LOGIN-TIME 2FA MODAL CSS (Globally available) -->
     <!-- ============================================= -->
     <style>
-        /* Modal backdrop */
         .cp-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -60,7 +59,6 @@
             display: flex !important;
         }
 
-        /* Modal card/sheet */
         .cp-modal-sheet {
             background: #fff;
             border-radius: 14px;
@@ -76,7 +74,6 @@
             100% { transform: translateY(0);    opacity: 1; }
         }
 
-        /* Make sure modal sits ABOVE hero, header, menus */
         .modal-open {
             overflow: hidden !important;
         }
@@ -84,8 +81,12 @@
 </head>
 
 <body class="cp-root">
+    
+    {{-- PAGE CONTENT --}}
     @yield('content')
 
+    {{-- GLOBAL SCRIPTS + ALL @push('scripts') --}}
     @stack('scripts')
+
 </body>
 </html>
