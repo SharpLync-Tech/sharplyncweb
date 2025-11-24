@@ -15,17 +15,11 @@ use Carbon\Carbon;
 
 class LoginController extends Controller
 {
-    /**
-     * Show login form
-     */
     public function showLoginForm()
     {
         return view('customers.login');
     }
 
-    /**
-     * Handle login (step 1 — password check)
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -55,10 +49,12 @@ class LoginController extends Controller
             return back()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
-        // ===================================================================
-        // CASE 1: 2FA NOT ENABLED → Normal login
-        // ===================================================================
-        if (! $user->two_factor_email_enabled) {
+        // Determine 2FA mode
+        $usesApp2FA   = (bool) $user->two_factor_app_enabled;
+        $usesEmail2FA = (bool) $user->two_factor_email_enabled;
+
+        // CASE 1 — No 2FA → login normally
+        if (! $usesApp2FA && ! $usesEmail2FA) {
 
             Auth::guard('customer')->login($user);
 
@@ -74,19 +70,35 @@ class LoginController extends Controller
             return redirect()->intended('/portal');
         }
 
-        // ===================================================================
-        // CASE 2: 2FA ENABLED → Start login-time 2FA flow
-        // ===================================================================
+        // CASE 2 — APP 2FA enabled
+        if ($usesApp2FA) {
 
-        // Store ID in session for the 2FA step
+            session([
+                '2fa_user_id' => $user->id,
+                '2fa_method'  => 'app',
+            ]);
+
+            Log::info('LOGIN 2FA REQUIRED (app)', [
+                'id'    => $user->id,
+                'email' => $user->email,
+            ]);
+
+            return redirect()
+                ->route('customer.login')
+                ->with('show_app_2fa_modal', true)
+                ->with('status', 'Open your Authenticator app and enter your 6-digit code.');
+        }
+
+        // CASE 3 — EMAIL 2FA enabled
         session([
             '2fa_user_id' => $user->id,
+            '2fa_method'  => 'email',
         ]);
 
-        // Mask email for the modal
+        // Mask email for modal
         $maskedEmail = $this->maskEmail($user->email);
 
-        // Send the login-time 2FA code
+        // Send login-time 2FA code
         $this->sendLoginCode($user);
 
         Log::info('LOGIN 2FA REQUIRED (email)', [
@@ -94,7 +106,6 @@ class LoginController extends Controller
             'email' => $user->email,
         ]);
 
-        // Flash modal vars
         return redirect()
             ->route('customer.login')
             ->with('show_2fa_modal', true)
@@ -102,9 +113,6 @@ class LoginController extends Controller
             ->with('status', 'We emailed you a 6-digit security code.');
     }
 
-    /**
-     * Logout
-     */
     public function logout(Request $request)
     {
         Auth::guard('customer')->logout();
@@ -114,9 +122,6 @@ class LoginController extends Controller
         return redirect('/login')->with('status', 'You have been logged out.');
     }
 
-    /**
-     * Mask email (ja********@gmail.com)
-     */
     private function maskEmail(?string $email): string
     {
         if (! $email || ! str_contains($email, '@')) {
@@ -136,15 +141,11 @@ class LoginController extends Controller
         return $visible . str_repeat('*', $stars) . '@' . $domain;
     }
 
-    /**
-     * Sends login-time 2FA code to the user
-     */
     private function sendLoginCode(User $user): void
     {
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
-        // Store token in CRM DB
         DB::connection('crm')->table('user_two_factor_tokens')->insert([
             'user_id'    => $user->id,
             'channel'    => 'email',
@@ -154,7 +155,6 @@ class LoginController extends Controller
             'created_at' => now(),
         ]);
 
-        // Email the code
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
         Log::info('LOGIN 2FA CODE SENT', [

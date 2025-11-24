@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\SecurityController;
 use App\Http\Controllers\Customer\Auth\TwoFactorLoginController;
-use App\Http\Controllers\Customer\Auth\TwoFactorLoginAppController;
 
 /**
  * ======================================================
@@ -47,23 +46,21 @@ Route::middleware(['auth:customer'])
  * ======================================================
  *  LOGIN-TIME 2FA ROUTES (USER NOT LOGGED IN)
  * ======================================================
- * These routes are called from the login.blade.php modal
- * when a user with 2FA enabled tries to log in.
+ * These routes are used when logging in:
+ * - Email code verification
+ * - Authenticator app (TOTP) verification
+ * Both use the same TwoFactorLoginController@verify()
  * ======================================================
  */
 Route::prefix('login/2fa')
     ->name('customer.login.2fa.')
     ->group(function () {
 
-        // LOGIN 2FA — EMAIL: SEND CODE
+        // LOGIN 2FA — SEND (email)
         Route::post('/send', [TwoFactorLoginController::class, 'send'])
             ->name('send');
 
-        // LOGIN 2FA — EMAIL: VERIFY CODE
+        // LOGIN 2FA — VERIFY (email OR authenticator app)
         Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
             ->name('verify');
-
-        // LOGIN 2FA — AUTHENTICATOR APP: VERIFY TOTP
-        Route::post('/verify-app', [TwoFactorLoginAppController::class, 'verify'])
-            ->name('verify-app');
     });
