@@ -112,75 +112,45 @@
   </div>
 
 </section>
-{{-- ================================================================= --}}
-{{--                 LOGIN-TIME 2FA MODAL (TRIGGERED ON LOGIN)        --}}
-{{-- ================================================================= --}}
-@if(session('show_2fa_modal'))
-<div id="login-2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
-
-    <div class="cp-modal-sheet" style="max-width:460px;">
-        <header class="cp-modal-header">
-            <div>
-                <h3>Two-Factor Authentication</h3>
-                <p class="cp-modal-subtitle">
-                    Enter the code sent to <strong>{{ session('email_masked') }}</strong>
-                </p>
-            </div>
-            <button class="cp-modal-close" id="login-2fa-close">&times;</button>
-        </header>
-
-        <div class="cp-modal-body">          
-            
-
-            <div style="display:flex; gap:8px; justify-content:center;">
-                @for($i = 1; $i <= 6; $i++)
-                    <input maxlength="1"
-                           class="login-2fa-digit"
-                           data-id="{{ $i }}"
-                           inputmode="numeric"
-                           autocomplete="one-time-code"
-                           style="width:45px; height:55px; text-align:center;
-                                  font-size:1.6rem; border-radius:10px;
-                                  border:1px solid #ccc;">
-                @endfor
-            </div>
-
-            <div id="login-2fa-error"
-                 style="color:#b00020; margin-top:1rem; text-align:center; display:none;">
-            </div>
-
-            <button id="login-2fa-submit"
-                    class="cp-btn cp-teal-btn"
-                    style="margin-top:1.5rem; width:100%;"
-                    disabled>
-                Verify Code
-            </button>
-
-            <button id="login-2fa-resend"
-                    class="cp-btn cp-navy-btn"
-                    style="margin-top:0.75rem; width:100%;">
-                Resend Code
-            </button>
-        </div>
-    </div>
-</div>
-@endif
+Max, generate the updated JS + OTP HTML
 @endsection
 @push('scripts')
 <script>
 (function(){
 
-    const digits      = [...document.querySelectorAll('.login-2fa-digit')];
+    const digits      = [...document.querySelectorAll('.otp-digit')];
     const submitBtn   = document.getElementById('login-2fa-submit');
     const resendBtn   = document.getElementById('login-2fa-resend');
     const errorBox    = document.getElementById('login-2fa-error');
     const modalSheet  = document.querySelector('.cp-modal-sheet');
+    const closeBtn    = document.getElementById('cp-close-2fa');
+
+    const backdrop    = document.getElementById('login-2fa-backdrop');
+    const autofill    = document.getElementById('otp-autofill');
 
     if (!digits.length) return;
 
-    /* ---------------------------- */
-    /*  Auto-advance + Paste Logic  */
-    /* ---------------------------- */
+    /* ================================ */
+    /*  Close Modal (FIXED)             */
+    /* ================================ */
+    closeBtn?.addEventListener('click', () => {
+        backdrop?.classList.remove('cp-modal-visible');
+    });
+
+    /* ==================================================== */
+    /*  MOBILE AUTOFILL (Gmail / SMS Suggestion Capture)    */
+    /* ==================================================== */
+    autofill?.addEventListener('input', (e) => {
+        let code = e.target.value.replace(/\D/g, '').slice(0, 6);
+        if (code.length === 6) {
+            digits.forEach((box, i) => box.value = code[i]);
+            submitBtn.disabled = false;
+        }
+    });
+
+    /* ================================ */
+    /*  Auto-advance + Paste Logic      */
+    /* ================================ */
     digits.forEach((input, idx) => {
 
         input.addEventListener('input', (e) => {
@@ -198,23 +168,26 @@
             }
         });
 
-        /* Paste full 6-digit code */
+        /* Full 6-digit paste */
         input.addEventListener('paste', (e) => {
             e.preventDefault();
-            const paste = (e.clipboardData || window.clipboardData)
+            let paste = (e.clipboardData || window.clipboardData)
                 .getData('text')
                 .replace(/\D/g, '')
                 .slice(0, 6)
                 .split('');
 
-            digits.forEach((box, i) => box.value = paste[i] || '');
+            digits.forEach((box, i) => { box.value = paste[i] || '' });
             checkReady();
         });
     });
 
+    function getCode() {
+        return digits.map(i => i.value).join('');
+    }
+
     function checkReady() {
-        const code = digits.map(i => i.value).join('');
-        submitBtn.disabled = code.length !== 6;
+        submitBtn.disabled = (getCode().length !== 6);
     }
 
     function showError(msg) {
@@ -226,11 +199,20 @@
         modalSheet.classList.add('shake');
     }
 
-    /* ---------------------------- */
-    /*  VERIFY 2FA CODE             */
-    /* ---------------------------- */
+    /* ================================ */
+    /*  VERIFY CODE                     */
+    /* ================================ */
     submitBtn.addEventListener('click', function(){
-        const code = digits.map(i => i.value).join('');
+
+        const code = getCode();
+        if (code.length !== 6) return;
+
+        // Loading dots
+        submitBtn.classList.add('loading-dots');
+        submitBtn.innerText = "Verifying";
+        submitBtn.disabled  = true;
+
+        errorBox.style.display = 'none';
 
         fetch("{{ route('customer.security.email.verify-login-code') }}", {
             method: "POST",
@@ -248,15 +230,22 @@
                 return;
             }
 
+            // Wrong code
             digits.forEach(i => i.value = '');
             digits[0].focus();
-
-            submitBtn.disabled = true;
             showError(res.message);
+
+            // Undo loader
+            submitBtn.classList.remove('loading-dots');
+            submitBtn.innerText = "Verify Code";
+            submitBtn.disabled = true;
         });
     });
 
-    resendBtn.addEventListener('click', function(){
+    /* ================================ */
+    /*  RESEND CODE                     */
+    /* ================================ */
+    resendBtn.addEventListener('click', () => {
         fetch("{{ route('customer.security.email.send-login-code') }}", {
             method: "POST",
             headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }

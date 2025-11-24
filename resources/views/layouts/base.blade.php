@@ -41,9 +41,8 @@
     <!-- ============================================= -->
 <!-- LOGIN-TIME 2FA MODAL CSS (SharpLync WOW v2.0) -->
 <!-- ============================================= -->
-<style>/* ============================================================
-   BACKDROP
-============================================================ */
+<style>
+/* Backdrop */
 .cp-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -59,21 +58,18 @@
     display: flex !important;
 }
 
-/* ============================================================
-   MODAL SHEET
-============================================================ */
+/* Modal sheet */
 .cp-modal-sheet {
-    background: #0A2A4D; /* SharpLync Navy */
-    border: 2px solid #2CBFAE; /* Thin teal border */
+    position: relative;
+    background: #0A2A4D;
+    border: 2px solid #2CBFAE;
     border-radius: 18px;
     padding: 2rem 2rem 2rem;
     width: 94%;
     max-width: 500px;
-
     box-shadow:
         0 0 15px rgba(44,191,174,0.25),
         0 20px 60px rgba(0,0,0,0.45);
-
     animation: modalPop .25s ease-out;
     color: white;
 }
@@ -83,24 +79,7 @@
     100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Glossy slide-down animation */
-.slide-down {
-    animation: slideDown .35s ease-out;
-}
-
-@keyframes slideDown {
-    0% { transform: translateY(-40px) scale(.98); opacity: 0; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* ============================================================
-   HEADER + SUBTITLE
-============================================================ */
-.cp-modal-header {
-    position: relative;
-    margin-bottom: 1rem;
-}
-
+/* Header */
 .cp-modal-header h3 {
     margin: 0;
     font-size: 1.35rem;
@@ -113,28 +92,23 @@
     color: #cfe7ef;
 }
 
-/* ============================================================
-   CLOSE BUTTON (TOP-RIGHT, GLOW, HOVER)
-============================================================ */
+/* Close button – FIXED */
 .cp-modal-close {
     position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     border: 1px solid rgba(44,191,174,0.65);
-    background: rgba(255,255,255,0.10);
-
+    background: rgba(255,255,255,0.1);
     color: #2CBFAE;
     font-size: 22px;
     font-weight: bold;
-
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-
     transition: all 0.25s ease;
 }
 
@@ -145,21 +119,17 @@
     box-shadow: 0 0 8px rgba(44,191,174,0.45);
 }
 
-/* ============================================================
-   OTP DIGIT BOXES (login-2fa-digit)
-============================================================ */
+/* OTP DIGITS */
 .login-2fa-digit {
     width: 50px !important;
     height: 58px !important;
     text-align: center;
     font-size: 1.7rem !important;
     font-weight: 600;
-
     border-radius: 10px;
-    border: 2px solid rgba(44,191,174,0.6);
+    border: 2px solid rgba(44, 191, 174, 0.6);
     background: rgba(255,255,255,0.1);
     color: #ffffff;
-
     transition: 0.2s ease;
     outline: none;
     box-shadow: 0 0 8px rgba(44,191,174,0.25);
@@ -171,23 +141,7 @@
     background: rgba(255,255,255,0.15);
 }
 
-/* Shake animation when wrong code */
-.shake {
-    animation: shakeAnim .35s ease;
-}
-
-@keyframes shakeAnim {
-    0%   { transform: translateX(0); }
-    20%  { transform: translateX(-6px); }
-    40%  { transform: translateX(6px); }
-    60%  { transform: translateX(-6px); }
-    80%  { transform: translateX(6px); }
-    100% { transform: translateX(0); }
-}
-
-/* ============================================================
-   BUTTONS
-============================================================ */
+/* Buttons */
 .cp-btn {
     width: 100%;
     padding: 0.65rem 1rem;
@@ -200,12 +154,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.cp-btn:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-}
-
-/* Teal button */
 .cp-teal-btn {
     background: #2CBFAE;
     color: #0A2A4D;
@@ -215,7 +163,6 @@
     color: #ffffff;
 }
 
-/* Navy button */
 .cp-navy-btn {
     background: #104976;
     color: white;
@@ -224,87 +171,32 @@
     background: #0c3a5e;
 }
 
-/* ============================================================
-   ERROR TEXT
-============================================================ */
-.otp-error,
-#login-2fa-error {
-    display: none;
-    color: #ff6363;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 1rem;
+/* Shake error */
+.shake {
+    animation: shakeAnim .35s ease;
+}
+@keyframes shakeAnim {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
 }
 
+/* Loading dots animation */
+@keyframes dots {
+    0% { content: ''; }
+    33% { content: '.'; }
+    66% { content: '..'; }
+    100% { content: '...'; }
+}
+.loading-dots::after {
+    content: '';
+    animation: dots 1s infinite;
+}
 </style>
 
-</head>
-
-<body>
-    <!-- ========================= HEADER ========================= -->
-    <header class="main-header">
-        <div class="logo">
-            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
-        </div>
-        <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
-    </header>
-
-    <!-- ========================= OVERLAY MENU ========================= -->
-    <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
-        <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
-        <ul>
-            @foreach(($menuItems ?? []) as $item)
-                <li>
-                    <a 
-                        href="{{ $item->url }}"
-                        onclick="toggleMenu()"
-                        @if($item->open_in_new_tab) target="_blank" @endif
-                    >
-                        {{ $item->label }}
-                    </a>
-                </li>
-            @endforeach
-            </ul>
-
-    </div>
-
-    <!-- ========================= MAIN ========================= -->
-    <main>
-        @yield('content')
-    </main>
-
-    <!-- ========================= FOOTER ========================= -->
-    <footer>
-        <div class="footer-content">
-            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-            <div class="social-icons">
-                <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
-                <a href="https://www.facebook.com/SharpLync"><img src="{{ asset('images/facebook.png') }}" alt="Facebook"></a>
-                <a href="mailto:info@sharplync.com.au"><img src="{{ asset('images/email.png') }}" alt="Email"></a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ========================= SCRIPTS ========================= -->
-    <script>
-        // Toggle overlay menu
-        function toggleMenu() {
-            const overlay = document.getElementById('overlayMenu');
-            overlay.classList.toggle('show');
-            document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
-        }
-
-        // Fade-in on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.15 });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
-        });
-    </script>
     @stack('scripts')   
 </body>
 </html>
