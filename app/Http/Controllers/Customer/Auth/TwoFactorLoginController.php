@@ -9,11 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
+use PragmaRX\Google2FA\Google2FA;
 
 class TwoFactorLoginController extends Controller
 {
     /**
-     * Send login-time 2FA code
+     * Send login-time 2FA code (EMAIL)
+     * (Kept for compatibility; current email 2FA flow uses SecurityController,
+     *  but we leave this intact in case anything else calls it.)
      */
     public function send(Request $request)
     {
@@ -56,6 +59,8 @@ class TwoFactorLoginController extends Controller
 
     /**
      * Verify login-time 2FA
+     * - If session('2fa_method') === 'app' → verify TOTP via Google Authenticator
+     * - Otherwise → fall back to existing EMAIL token check
      */
     public function verify(Request $request)
     {
@@ -79,6 +84,53 @@ class TwoFactorLoginController extends Controller
                 'message' => 'User not found.'
             ], 422);
         }
+
+        $method = session('2fa_method', 'email');
+
+        // ===============================================================
+        // CASE 1: AUTHENTICATOR APP (TOTP) LOGIN
+        // ===============================================================
+        if ($method === 'app') {
+
+            if (! $user->two_factor_app_enabled || empty($user->two_factor_secret)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authenticator is not enabled for this account.'
+                ], 422);
+            }
+
+            $google2fa = new Google2FA();
+
+            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
+
+            if (! $valid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid or expired code.'
+                ], 422);
+            }
+
+            // success → complete login
+            Auth::guard('customer')->login($user);
+
+            // clean up session flags
+            session()->forget('2fa_user_id');
+            session()->forget('2fa_method');
+            session()->forget('show_app_2fa_modal');
+
+            // update last login
+            $user->last_login_at = now();
+            $user->save();
+
+            return response()->json([
+                'success'  => true,
+                'redirect' => url('/portal')
+            ]);
+        }
+
+        // ===============================================================
+        // CASE 2: EMAIL 2FA (existing DB-token based logic)
+        // ===============================================================
 
         $hash = hash('sha256', $request->code);
 
@@ -107,6 +159,7 @@ class TwoFactorLoginController extends Controller
         session()->forget('2fa_user_id');
         session()->forget('email_masked');
         session()->forget('show_2fa_modal');
+        session()->forget('2fa_method');
 
         return response()->json([
             'success' => true,

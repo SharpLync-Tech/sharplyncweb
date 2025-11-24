@@ -55,10 +55,16 @@ class LoginController extends Controller
             return back()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
+        // -------------------------------------------------------------------
+        // Determine 2FA mode
+        // -------------------------------------------------------------------
+        $usesApp2FA   = (bool) $user->two_factor_app_enabled;
+        $usesEmail2FA = (bool) $user->two_factor_email_enabled;
+
         // ===================================================================
-        // CASE 1: 2FA NOT ENABLED → Normal login
+        // CASE 1: NO 2FA ENABLED → Normal login
         // ===================================================================
-        if (! $user->two_factor_email_enabled) {
+        if (! $usesApp2FA && ! $usesEmail2FA) {
 
             Auth::guard('customer')->login($user);
 
@@ -75,12 +81,35 @@ class LoginController extends Controller
         }
 
         // ===================================================================
-        // CASE 2: 2FA ENABLED → Start login-time 2FA flow
+        // CASE 2: AUTHENTICATOR APP 2FA ENABLED → TOTP FLOW
+        // ===================================================================
+        if ($usesApp2FA) {
+
+            // Store ID + method in session for the 2FA step
+            session([
+                '2fa_user_id' => $user->id,
+                '2fa_method'  => 'app',
+            ]);
+
+            Log::info('LOGIN 2FA REQUIRED (app)', [
+                'id'    => $user->id,
+                'email' => $user->email,
+            ]);
+
+            return redirect()
+                ->route('customer.login')
+                ->with('show_app_2fa_modal', true)
+                ->with('status', 'Open your Authenticator app and enter your 6-digit code.');
+        }
+
+        // ===================================================================
+        // CASE 3: EMAIL 2FA ENABLED → Existing email 2FA flow
         // ===================================================================
 
-        // Store ID in session for the 2FA step
+        // Store ID + method in session for the 2FA step
         session([
             '2fa_user_id' => $user->id,
+            '2fa_method'  => 'email',
         ]);
 
         // Mask email for the modal
@@ -137,7 +166,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Sends login-time 2FA code to the user
+     * Sends login-time 2FA code to the user (EMAIL)
      */
     private function sendLoginCode(User $user): void
     {
