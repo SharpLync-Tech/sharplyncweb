@@ -126,7 +126,7 @@
                     Enter the code sent to <strong>{{ session('email_masked') }}</strong>
                 </p>
             </div>
-            <button class="cp-modal-close">&times;</button>
+            <button class="cp-modal-close" id="login-2fa-close">&times;</button>
         </header>
 
         <div class="cp-modal-body">          
