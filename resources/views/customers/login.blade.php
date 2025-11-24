@@ -134,7 +134,7 @@
 
             <div style="display:flex; gap:8px; justify-content:center;">
                 @for($i = 1; $i <= 6; $i++)
-                    <input maxlength="1"
+                    <input maxlength="6"
                            class="login-2fa-digit"
                            data-id="{{ $i }}"
                            inputmode="numeric"
@@ -175,8 +175,6 @@
     const resendBtn   = document.getElementById('login-2fa-resend');
     const errorBox    = document.getElementById('login-2fa-error');
     const modalSheet  = document.querySelector('.cp-modal-sheet');
-    
-    // Select the close button and backdrop
     const closeBtn    = document.getElementById('login-2fa-close');
     const backdrop    = document.getElementById('login-2fa-backdrop');
 
@@ -198,33 +196,33 @@
     digits.forEach((input, idx) => {
 
         input.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\D/g, ''); // Clean non-digits
+            // Strip non-numeric characters
+            let val = e.target.value.replace(/\D/g, '');
 
-            // === MOBILE AUTOFILL FIX ===
-            // If more than 1 character is entered (e.g., iOS autofill), 
-            // distribute it across the inputs.
+            // === MOBILE AUTOFILL & PASTE HANDLER ===
+            // If value length > 1, it's a paste or keyboard suggestion
             if (val.length > 1) {
                 const chars = val.split('');
                 
-                // Distribute chars starting from the current box
+                // Distribute characters to this box and subsequent boxes
                 chars.forEach((char, i) => {
                     if (digits[idx + i]) {
                         digits[idx + i].value = char;
                     }
                 });
 
-                // Focus the next empty box, or the last box if full
-                const nextIndex = Math.min(idx + chars.length, 5);
-                digits[nextIndex].focus();
+                // Move focus to the last filled box (or the end)
+                let focusIndex = idx + chars.length;
+                if (focusIndex >= 5) focusIndex = 5; 
+                digits[focusIndex].focus();
                 
-                // Stop here, don't run the single-digit logic below
                 checkReady();
-                return; 
+                return; // Stop here so we don't trigger single-digit logic
             }
-            // ===========================
-
-            // Normal single-digit entry
-            e.target.value = val;
+            
+            // === SINGLE DIGIT TYPING ===
+            // Even with maxlength=6, we enforce single char visually here
+            e.target.value = val; 
 
             if (val && idx < 5) {
                 digits[idx + 1].focus();
@@ -234,12 +232,13 @@
         });
 
         input.addEventListener('keydown', (e) => {
+            // Handle Backspace
             if (e.key === 'Backspace' && !input.value && idx > 0) {
                 digits[idx - 1].focus();
             }
         });
 
-        /* Paste full 6-digit code (Desktop/Clipboard) */
+        // Desktop Paste Fallback (Double protection)
         input.addEventListener('paste', (e) => {
             e.preventDefault();
             const paste = (e.clipboardData || window.clipboardData)
@@ -250,7 +249,6 @@
 
             digits.forEach((box, i) => box.value = paste[i] || '');
             checkReady();
-            // Focus last box after paste
             if (digits[5].value) digits[5].focus();
         });
     });
@@ -285,15 +283,12 @@
         })
         .then(r => r.json())
         .then(res => {
-
             if (res.success) {
                 window.location = res.redirect;
                 return;
             }
-
             digits.forEach(i => i.value = '');
             digits[0].focus();
-
             submitBtn.disabled = true;
             showError(res.message);
         });
