@@ -17,19 +17,9 @@ class LoginController extends Controller
 {
     /**
      * Show login form
-     * REFLASH flash data so 2FA modals always appear.
      */
-    public function showLoginForm(Request $request)
+    public function showLoginForm()
     {
-        // Preserve flash data for app or email 2FA modals
-        if ($request->session()->has('show_app_2fa_modal')) {
-            $request->session()->reflash();
-        }
-
-        if ($request->session()->has('show_2fa_modal')) {
-            $request->session()->reflash();
-        }
-
         return view('customers.login');
     }
 
@@ -65,16 +55,10 @@ class LoginController extends Controller
             return back()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
-        // -----------------------------------------
-        // Determine 2FA method
-        // -----------------------------------------
-        $usesApp2FA   = (bool) $user->two_factor_app_enabled;
-        $usesEmail2FA = (bool) $user->two_factor_email_enabled;
-
         // ===================================================================
-        // CASE: NO 2FA ENABLED → Normal login
+        // CASE 1: 2FA NOT ENABLED → Normal login
         // ===================================================================
-        if (! $usesApp2FA && ! $usesEmail2FA) {
+        if (! $user->two_factor_email_enabled) {
 
             Auth::guard('customer')->login($user);
 
@@ -91,37 +75,18 @@ class LoginController extends Controller
         }
 
         // ===================================================================
-        // CASE: APP 2FA ENABLED → TOTP VERIFICATION MODAL
+        // CASE 2: 2FA ENABLED → Start login-time 2FA flow
         // ===================================================================
-        if ($usesApp2FA) {
 
-            session([
-                '2fa_user_id' => $user->id,
-                '2fa_method'  => 'app',
-            ]);
-
-            Log::info('LOGIN 2FA REQUIRED (app)', [
-                'id'    => $user->id,
-                'email' => $user->email,
-            ]);
-
-            return redirect()
-                ->route('customer.login')
-                ->with('show_app_2fa_modal', true)
-                ->with('status', 'Open your Authenticator app and enter your 6-digit code.');
-        }
-
-        // ===================================================================
-        // CASE: EMAIL 2FA ENABLED → EMAIL FLOW
-        // ===================================================================
+        // Store ID in session for the 2FA step
         session([
             '2fa_user_id' => $user->id,
-            '2fa_method'  => 'email',
         ]);
 
+        // Mask email for the modal
         $maskedEmail = $this->maskEmail($user->email);
 
-        // Send email 2FA login code
+        // Send the login-time 2FA code
         $this->sendLoginCode($user);
 
         Log::info('LOGIN 2FA REQUIRED (email)', [
@@ -129,6 +94,7 @@ class LoginController extends Controller
             'email' => $user->email,
         ]);
 
+        // Flash modal vars
         return redirect()
             ->route('customer.login')
             ->with('show_2fa_modal', true)
@@ -171,13 +137,14 @@ class LoginController extends Controller
     }
 
     /**
-     * Sends login-time EMAIL 2FA code
+     * Sends login-time 2FA code to the user
      */
     private function sendLoginCode(User $user): void
     {
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
+        // Store token in CRM DB
         DB::connection('crm')->table('user_two_factor_tokens')->insert([
             'user_id'    => $user->id,
             'channel'    => 'email',
@@ -187,6 +154,7 @@ class LoginController extends Controller
             'created_at' => now(),
         ]);
 
+        // Email the code
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
         Log::info('LOGIN 2FA CODE SENT', [
