@@ -49,18 +49,22 @@ Route::middleware(['auth:customer'])
  * These routes are used when logging in:
  * - Email code verification
  * - Authenticator app (TOTP) verification
- * Both use the same TwoFactorLoginController@verify()
+ * Both handled by TwoFactorLoginController
  * ======================================================
  */
 Route::prefix('login/2fa')
     ->name('customer.login.2fa.')
     ->group(function () {
 
-        // LOGIN 2FA — SEND (email)
+        // LOGIN 2FA — SEND (EMAIL CODE)
         Route::post('/send', [TwoFactorLoginController::class, 'send'])
             ->name('send');
 
-        // LOGIN 2FA — VERIFY (email OR authenticator app)
+        // LOGIN 2FA — VERIFY (EMAIL OR AUTH APP)
         Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
             ->name('verify');
+
+        // LOGIN 2FA — AUTH APP TOTP (modal expects this)
+        Route::post('/verify-app', [TwoFactorLoginController::class, 'verify'])
+            ->name('verify-app');
     });
