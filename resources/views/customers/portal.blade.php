@@ -1,6 +1,6 @@
 {{-- 
   Page: resources/views/customers/portal.blade.php
-  Version: v3.1 (Email 2FA + Auth App Setup + Step Guide)
+  Version: v3.0 (Email 2FA + Authenticator App Setup)
   Updated: 24 Nov 2025 by Max (ChatGPT)
 --}}
 
@@ -141,7 +141,7 @@
                             </div>
                         </div>
 
-                        {{-- DB-bound toggle --}}
+                        {{-- DB-bound toggle + persisted state --}}
                         <label class="cp-switch">
                             <input id="cp-toggle-email"
                                    type="checkbox"
@@ -153,7 +153,7 @@
                     </div>
                 </div>
 
-                {{-- AUTH APP --}}
+                {{-- AUTHENTICATOR APP --}}
                 <div class="cp-sec-card cp-sec-bordered">
                     <div class="cp-sec-card-header">
                         <div class="cp-sec-title-row">
@@ -186,7 +186,7 @@
                     </div>
                 </div>
 
-                {{-- SMS --}}
+                {{-- SMS (disabled) --}}
                 <div class="cp-sec-card cp-sec-bordered cp-sec-disabled">
                     <div class="cp-sec-card-header">
                         <div class="cp-sec-title-row">
@@ -213,11 +213,81 @@
 
             </div>
 
+            {{-- ================================================= --}}
             {{-- SCREEN 2 — EMAIL SETUP --}}
-            {{-- (unchanged) --}}
+            {{-- ================================================= --}}
+            <div id="cp-modal-screen-email-setup" style="display:none;">
+
+                <div class="cp-sec-card cp-sec-bordered">
+                    <div class="cp-sec-card-header">
+                        <div class="cp-sec-title-row">
+                            <span class="cp-sec-icon">
+                                <svg viewBox="0 0 24 24" class="cp-icon-svg">
+                                    <path d="M20 4H4a2 2 0 0 0-2 2v12a2 
+                                             2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 
+                                             2 0 0 0-2-2zm0 4-8 5-8-5V6l8 
+                                             5 8-5v2z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Set Up Email Authentication</h4>
+                                <p class="cp-sec-desc">
+                                    We’ll send a verification code to your email to confirm it’s you.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1rem;">
+                        <p class="cp-sec-desc">Your email on file:</p>
+                        <p style="font-weight:600; margin:0 0 .75rem;">{{ $maskedEmail }}</p>
+
+                        <p id="cp-email-status" class="cp-sec-desc" style="display:none;"></p>
+
+                        {{-- Send code --}}
+                        <div id="cp-email-send-block" style="margin-top:1rem;">
+                            <button id="cp-email-setup-send" class="cp-btn cp-teal-btn">
+                                Send Verification Code
+                            </button>
+                        </div>
+
+                        {{-- Verify code --}}
+                        <div id="cp-email-verify-block" style="display:none; margin-top:1.25rem;">
+
+                            <p class="cp-sec-desc">Enter the 6-digit code:</p>
+
+                            <div id="cp-email-otp-row"
+                                 style="display:flex; gap:.45rem; margin:.75rem 0;">
+                                @for($i=0;$i<6;$i++)
+                                    <input type="text" maxlength="1" inputmode="numeric"
+                                           class="cp-otp-input"
+                                           style="width:2.3rem; height:2.7rem;
+                                                  text-align:center; font-size:1.4rem;">
+                                @endfor
+                            </div>
+
+                            <button id="cp-email-setup-verify" class="cp-btn cp-teal-btn">
+                                Verify & Enable
+                            </button>
+
+                            <button id="cp-email-setup-resend"
+                                    class="cp-btn cp-small-btn cp-navy-btn"
+                                    style="margin-left:.5rem;">
+                                Resend Code
+                            </button>
+
+                            <p id="cp-email-error"
+                               style="display:none; margin-top:.75rem; color:#b3261e;">
+                                Invalid or expired code.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
             {{-- ================================================= --}}
-            {{-- SCREEN 3 — AUTHENTICATOR SETUP (Updated with Steps) --}}
+            {{-- SCREEN 3 — AUTHENTICATOR APP SETUP --}}
             {{-- ================================================= --}}
             <div id="cp-modal-screen-auth-setup" style="display:none;">
 
@@ -232,12 +302,12 @@
                                              2-2v-8c0-1.1-.9-2-2-2h-1V7a5 
                                              5 0 0 0-5-5zm-3 
                                              5a3 3 0 0 1 6 0v3H9V7z"/>
-                                </svg>
+                                    </svg>
                             </span>
                             <div>
                                 <h4>Set Up Authenticator App</h4>
                                 <p class="cp-sec-desc">
-                                    Scan the QR code with Google Authenticator or another TOTP app,
+                                    Scan the QR code with Google Authenticator or another TOTP app, 
                                     then enter the 6-digit code to confirm.
                                 </p>
                             </div>
@@ -245,51 +315,38 @@
                     </div>
 
                     <div style="margin-top:1rem;">
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+                            <div id="cp-auth-qr-wrapper" style="display:none;">
+                                <img id="cp-auth-qr" src="" alt="Authenticator QR Code"
+                                     style="width:180px; height:180px; border-radius:12px; background:#fff; padding:8px;">
+                            </div>
 
-                        {{-- STEP 1 --}}
-                        <h4 style="color:#0A2A4D; margin-bottom:0.25rem;">Step 1 — Generate your QR code</h4>
-                        <p class="cp-sec-desc">Tap the button below to generate your Authentication setup.</p>
+                            <div id="cp-auth-secret-block" style="display:none; text-align:center;">
+                                <p class="cp-sec-desc" style="margin-bottom:0.25rem;">Or enter this code manually in your app:</p>
+                                <code id="cp-auth-secret" style="font-weight:700; letter-spacing:0.12em;"></code>
+                            </div>
 
-                        <button id="cp-auth-start" class="cp-btn cp-teal-btn" style="margin:0.75rem 0 1.25rem;">
-                            Generate QR Code
-                        </button>
-
-                        {{-- QR IMAGE + SECRET --}}
-                        <div id="cp-auth-qr-wrapper" style="display:none; text-align:center; margin-bottom:0.75rem;">
-                            <img id="cp-auth-qr" src="" alt="Authenticator QR Code"
-                                 style="width:180px; height:180px; border-radius:12px; background:#fff; padding:8px;">
+                            <button id="cp-auth-start" class="cp-btn cp-teal-btn">
+                                Generate QR Code
+                            </button>
                         </div>
 
-                        <div id="cp-auth-secret-block" style="display:none; text-align:center; margin-bottom:1rem;">
-                            <p class="cp-sec-desc" style="margin-bottom:0.25rem;">
-                                Or manually enter this code in your app:
-                            </p>
-                            <code id="cp-auth-secret"
-                                  style="font-weight:700; letter-spacing:0.12em;"></code>
-                        </div>
-
-                        {{-- STEP 2 --}}
-                        <div id="cp-auth-verify-block" style="display:none; margin-top:1rem;">
-                            <h4 style="color:#0A2A4D; margin-bottom:0.25rem;">Step 2 — Enter your 6-digit code</h4>
-
+                        <div id="cp-auth-verify-block" style="display:none; margin-top:1.5rem;">
+                            <p class="cp-sec-desc">Enter the 6-digit code from your app:</p>
                             <input id="cp-auth-code"
                                    type="text"
                                    maxlength="6"
                                    inputmode="numeric"
                                    style="width:180px; height:2.7rem; text-align:center;
-                                          font-size:1.4rem; letter-spacing:0.4em; display:block;
-                                          margin:0.5rem auto 1rem;">
+                                          font-size:1.4rem; letter-spacing:0.4em;">
 
-                            {{-- STEP 3 --}}
-                            <h4 style="color:#0A2A4D; margin-bottom:0.25rem;">Step 3 — Confirm & enable</h4>
-                            <button id="cp-auth-verify" class="cp-btn cp-teal-btn" style="margin-top:0.5rem;">
+                            <button id="cp-auth-verify" class="cp-btn cp-teal-btn" style="margin-top:1rem;">
                                 Verify & Enable
                             </button>
 
                             <p id="cp-auth-status"
                                class="cp-sec-desc"
-                               style="display:none; margin-top:.75rem;">
-                            </p>
+                               style="display:none; margin-top:.75rem;"></p>
 
                             <p id="cp-auth-error"
                                style="display:none; margin-top:.75rem; color:#b3261e;">
@@ -334,12 +391,9 @@
 </div>
 @endsection
 
+
 @section('scripts')
 <script>
-/* 
-    NOTE: All JS logic unchanged — only UI structure modified.
-    Your existing IDs, event listeners, flows, and routes remain intact.
-*/
 (function(){
 
     const modal     = document.getElementById('cp-security-modal');
@@ -369,7 +423,7 @@
     const errorEl    = document.getElementById('cp-email-error');
     const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
-    // Authenticator
+    // Authenticator elements
     const authStartBtn      = document.getElementById('cp-auth-start');
     const authVerifyBtn     = document.getElementById('cp-auth-verify');
     const authDisableBtn    = document.getElementById('cp-auth-disable');
@@ -389,11 +443,385 @@
         authVerify:  "{{ route('customer.security.auth.verify') }}",
         authDisable: "{{ route('customer.security.auth.disable') }}"
     };
-
     const csrf = "{{ csrf_token() }}";
 
-    // === All original JS below remains unchanged ===
-    // (Truncated here for brevity in this message — but you keep your existing JS)
+    function clearOtp() {
+        otpInputs.forEach(i=>i.value='');
+        if (otpInputs[0]) otpInputs[0].focus();
+    }
+
+    function restoreDBState() {
+        if (emailToggle) {
+            emailToggle.checked = (emailToggle.dataset.persistOn === "1");
+        }
+        if (authToggle) {
+            authToggle.checked = (authToggle.dataset.persistOn === "1");
+        }
+    }
+
+    function showMain() {
+        screenMain.style.display  = 'block';
+        screenEmail.style.display = 'none';
+        screenAuth.style.display  = 'none';
+
+        backEmailBtn.style.display = 'none';
+        backAuthBtn.style.display  = 'none';
+
+        errorEl.style.display   = 'none';
+        statusEl.style.display  = 'none';
+        sendBlock.style.display = 'block';
+        verifyBlock.style.display = 'none';
+        clearOtp();
+
+        // Reset auth screen
+        authQrWrapper.style.display   = 'none';
+        authSecretBlock.style.display = 'none';
+        authVerifyBlock.style.display = 'none';
+        authStatusEl.style.display    = 'none';
+        authErrorEl.style.display     = 'none';
+        if (authCodeInput) authCodeInput.value = '';
+
+        // restore DB value
+        restoreDBState();
+    }
+
+    function showEmailSetup() {
+        screenMain.style.display  = 'none';
+        screenEmail.style.display = 'block';
+        screenAuth.style.display  = 'none';
+
+        backEmailBtn.style.display = 'inline-block';
+        backAuthBtn.style.display  = 'none';
+
+        errorEl.style.display  = 'none';
+        statusEl.style.display = 'none';
+        clearOtp();
+    }
+
+    function showAuthSetup() {
+        screenMain.style.display  = 'none';
+        screenEmail.style.display = 'none';
+        screenAuth.style.display  = 'block';
+
+        backEmailBtn.style.display = 'none';
+        backAuthBtn.style.display  = 'inline-block';
+
+        authStatusEl.style.display = 'none';
+        authErrorEl.style.display  = 'none';
+        if (authCodeInput) authCodeInput.value = '';
+    }
+
+    function openModal(){
+        modal.classList.add('cp-modal-visible');
+        modal.setAttribute('aria-hidden', 'false');
+        if(root) root.classList.add('modal-open');
+        showMain();
+    }
+
+    function closeModal(){
+        modal.classList.remove('cp-modal-visible');
+        modal.setAttribute('aria-hidden','true');
+        if(root) root.classList.remove('modal-open');
+        showMain();
+    }
+
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    closeBtns.forEach(btn=>btn.addEventListener('click', closeModal));
+
+    modal.addEventListener('click', e=>{
+        if (!sheet.contains(e.target)) closeModal();
+    });
+
+    // Email toggle
+    if (emailToggle) {
+        emailToggle.addEventListener('change', function(){
+            if (this.checked) {
+                // Move to email setup screen
+                showEmailSetup();
+                // Visual only: can't auto-disable app here; that’s handled in backend when we complete setup
+            } else {
+                // Just go back to main screen; actual disabling logic can be handled later if needed
+                showMain();
+            }
+        });
+    }
+
+    backEmailBtn.addEventListener('click', showMain);
+
+    // --- OTP INPUT BEHAVIOR ---
+    otpInputs.forEach((input, idx)=>{
+        input.addEventListener('input', e=>{
+            e.target.value = e.target.value.replace(/\D/g,'');
+            if (e.target.value && idx < otpInputs.length-1) {
+                otpInputs[idx+1].focus();
+            }
+        });
+        input.addEventListener('keydown', e=>{
+            if(e.key==='Backspace' && !e.target.value && idx>0){
+                otpInputs[idx-1].focus();
+            }
+        });
+        input.addEventListener('paste', e=>{
+            e.preventDefault();
+            const digits = (e.clipboardData.getData('text')||'')
+                .replace(/\D/g,'')
+                .slice(0,6)
+                .split('');
+            otpInputs.forEach((inp,i)=>inp.value = digits[i]||'');
+            otpInputs[Math.min(digits.length-1,5)].focus();
+        });
+    });
+
+    function getOtp(){
+        return otpInputs.map(i=>i.value).join('');
+    }
+
+    async function sendCode(){
+        statusEl.style.display = 'block';
+        statusEl.textContent = "Sending verification code...";
+        try{
+            const r = await fetch(routes.emailSend,{
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRF-TOKEN':csrf
+                },
+                body:JSON.stringify({})
+            });
+            const d = await r.json();
+            if(!d.success) throw new Error(d.message);
+
+            statusEl.textContent = "We've emailed you a 6-digit code.";
+            sendBlock.style.display='none';
+            verifyBlock.style.display='block';
+            clearOtp();
+
+        }catch(err){
+            statusEl.style.display='none';
+            errorEl.textContent = err.message || "Something went wrong.";
+            errorEl.style.display='block';
+        }
+    }
+
+    async function verifyCode(){
+        const code = getOtp();
+        if(code.length!==6){
+            errorEl.textContent="Please enter the full 6-digit code.";
+            errorEl.style.display='block';
+            return;
+        }
+
+        try{
+            const r = await fetch(routes.emailVerify,{
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRF-TOKEN':csrf
+                },
+                body:JSON.stringify({code})
+            });
+            const d = await r.json();
+            if(!d.success) throw new Error(d.message);
+
+            // Persist ON across sessions
+            emailToggle.dataset.persistOn = "1";
+            emailToggle.checked = true;
+
+            statusEl.textContent = "Email Authentication is now enabled.";
+            statusEl.style.display='block';
+            errorEl.style.display='none';
+
+            setTimeout(showMain,800);
+
+        }catch(err){
+            errorEl.textContent = err.message || "Invalid or expired code.";
+            errorEl.style.display='block';
+        }
+    }
+
+    if (sendBtn)   sendBtn.addEventListener('click', sendCode);
+    if (resendBtn) resendBtn.addEventListener('click', sendCode);
+    if (verifyBtn) verifyBtn.addEventListener('click', verifyCode);
+
+    // ==========================================================
+    // AUTHENTICATOR APP LOGIC
+    // ==========================================================
+
+    // When user flips the Authenticator toggle
+    if (authToggle) {
+        authToggle.addEventListener('change', function () {
+
+            // Turned ON → start setup flow
+            if (this.checked) {
+                // Visual only: email toggle should appear off (real disabling is backend when GA is confirmed)
+                if (emailToggle) {
+                    emailToggle.checked = false;
+                }
+
+                showAuthSetup();
+
+            } else {
+                // Turned OFF
+                // If DB says it's actually enabled, call disable endpoint
+                if (authToggle.dataset.persistOn === "1") {
+                    // Simple confirm for now
+                    if (confirm("Disable Authenticator App for your account?")) {
+                        disableAuth();
+                    } else {
+                            // Revert visual state
+                            authToggle.checked = true;
+                    }
+                } else {
+                    showMain();
+                }
+            }
+        });
+    }
+
+    if (backAuthBtn) {
+        backAuthBtn.addEventListener('click', showMain);
+    }
+
+        // Start / regenerate QR + secret
+    async function startAuthSetup() {
+        authStatusEl.style.display = 'block';
+        authStatusEl.textContent  = "Generating QR code...";
+        authErrorEl.style.display = 'none';
+
+        try {
+            const r = await fetch(routes.authStart, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf
+                },
+                body: JSON.stringify({})
+            });
+
+            const d = await r.json();
+            if (!d.success) throw new Error(d.message || "Unable to start setup.");
+
+            // Show QR + secret
+            const secret  = d.secret;
+            const qrImage = d.qr_image || null;
+
+            if (qrImage) {
+                authQrImg.src = qrImage;
+                authQrWrapper.style.display   = 'block';
+            } else {
+                // Fallback if QR generation failed: hide QR but still show secret
+                authQrWrapper.style.display   = 'none';
+            }
+
+            if (secret) {
+                authSecretBlock.style.display = 'block';
+                authSecretEl.textContent      = secret;
+            }
+
+            authVerifyBlock.style.display = 'block';
+            authStatusEl.textContent      = "Scan the QR or enter the code in your app, then enter the 6-digit code below.";
+
+        } catch (err) {
+            authStatusEl.style.display = 'none';
+            authErrorEl.textContent    = err.message || "Something went wrong starting Authenticator setup.";
+            authErrorEl.style.display  = 'block';
+            // Revert toggle if setup fails
+            if (authToggle) {
+                authToggle.checked = false;
+            }
+        }
+    }
+
+    async function verifyAuthCode() {
+        const code = (authCodeInput.value || '').replace(/\D/g, '');
+
+        if (code.length !== 6) {
+            authErrorEl.textContent   = "Please enter the full 6-digit code from your app.";
+            authErrorEl.style.display = 'block';
+            return;
+        }
+
+        authErrorEl.style.display  = 'none';
+        authStatusEl.style.display = 'block';
+        authStatusEl.textContent   = "Verifying code...";
+
+        try {
+            const r = await fetch(routes.authVerify, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf
+                },
+                body: JSON.stringify({ code })
+            });
+
+            const d = await r.json();
+            if (!d.success) throw new Error(d.message || "Invalid or expired code.");
+
+            // Mark app 2FA as enabled in UI
+            authToggle.dataset.persistOn = "1";
+            authToggle.checked           = true;
+
+            // Email is disabled when app is enabled
+            if (emailToggle) {
+                emailToggle.dataset.persistOn = "";
+                emailToggle.checked           = false;
+            }
+
+            authStatusEl.textContent = "Authenticator App is now enabled for your account.";
+            authErrorEl.style.display = 'none';
+
+            // After a short pause, go back to main
+            setTimeout(showMain, 900);
+
+        } catch (err) {
+            authStatusEl.style.display = 'none';
+            authErrorEl.textContent    = err.message || "Invalid or expired code.";
+            authErrorEl.style.display  = 'block';
+        }
+    }
+
+    async function disableAuth() {
+        authErrorEl.style.display  = 'none';
+        authStatusEl.style.display = 'block';
+        authStatusEl.textContent   = "Disabling Authenticator App...";
+
+        try {
+            const r = await fetch(routes.authDisable, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf
+                },
+                body: JSON.stringify({})
+            });
+
+            const d = await r.json();
+            if (!d.success) throw new Error(d.message || "Unable to disable Authenticator.");
+
+            // Update UI
+            authToggle.dataset.persistOn = "";
+            authToggle.checked           = false;
+
+            // Clear QR + code
+            authQrWrapper.style.display   = 'none';
+            authSecretBlock.style.display = 'none';
+            authVerifyBlock.style.display = 'none';
+            authStatusEl.textContent      = "Authenticator App has been disabled.";
+            authStatusEl.style.display    = 'block';
+
+        } catch (err) {
+            authStatusEl.style.display = 'none';
+            authErrorEl.textContent    = err.message || "Something went wrong disabling Authenticator.";
+            authErrorEl.style.display  = 'block';
+            // Keep toggle ON if disable fails
+            authToggle.checked = true;
+        }
+    }
+
+    if (authStartBtn)  authStartBtn.addEventListener('click', startAuthSetup);
+    if (authVerifyBtn) authVerifyBtn.addEventListener('click', verifyAuthCode);
+    if (authDisableBtn) authDisableBtn.addEventListener('click', disableAuth);
 
 })();
 </script>
