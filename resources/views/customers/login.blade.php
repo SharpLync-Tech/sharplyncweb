@@ -176,17 +176,16 @@
     const errorBox    = document.getElementById('login-2fa-error');
     const modalSheet  = document.querySelector('.cp-modal-sheet');
     
-    // NEW: Select the close button and the backdrop
+    // Select the close button and backdrop
     const closeBtn    = document.getElementById('login-2fa-close');
     const backdrop    = document.getElementById('login-2fa-backdrop');
 
     /* ---------------------------- */
-    /* CLOSE MODAL LOGIC (ADDED)   */
+    /* 1. CLOSE MODAL LOGIC         */
     /* ---------------------------- */
     if (closeBtn && backdrop) {
         closeBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Remove the class that makes it visible (defined in base.blade.php)
             backdrop.classList.remove('cp-modal-visible');
         });
     }
@@ -194,15 +193,42 @@
     if (!digits.length) return;
 
     /* ---------------------------- */
-    /* Auto-advance + Paste Logic  */
+    /* 2. AUTO-ADVANCE + AUTOFILL   */
     /* ---------------------------- */
     digits.forEach((input, idx) => {
 
         input.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\D/g, '');
+            let val = e.target.value.replace(/\D/g, ''); // Clean non-digits
+
+            // === MOBILE AUTOFILL FIX ===
+            // If more than 1 character is entered (e.g., iOS autofill), 
+            // distribute it across the inputs.
+            if (val.length > 1) {
+                const chars = val.split('');
+                
+                // Distribute chars starting from the current box
+                chars.forEach((char, i) => {
+                    if (digits[idx + i]) {
+                        digits[idx + i].value = char;
+                    }
+                });
+
+                // Focus the next empty box, or the last box if full
+                const nextIndex = Math.min(idx + chars.length, 5);
+                digits[nextIndex].focus();
+                
+                // Stop here, don't run the single-digit logic below
+                checkReady();
+                return; 
+            }
+            // ===========================
+
+            // Normal single-digit entry
             e.target.value = val;
 
-            if (val && idx < 5) digits[idx + 1].focus();
+            if (val && idx < 5) {
+                digits[idx + 1].focus();
+            }
 
             checkReady();
         });
@@ -213,7 +239,7 @@
             }
         });
 
-        /* Paste full 6-digit code */
+        /* Paste full 6-digit code (Desktop/Clipboard) */
         input.addEventListener('paste', (e) => {
             e.preventDefault();
             const paste = (e.clipboardData || window.clipboardData)
@@ -224,6 +250,8 @@
 
             digits.forEach((box, i) => box.value = paste[i] || '');
             checkReady();
+            // Focus last box after paste
+            if (digits[5].value) digits[5].focus();
         });
     });
 
@@ -242,7 +270,7 @@
     }
 
     /* ---------------------------- */
-    /* VERIFY 2FA CODE             */
+    /* 3. VERIFY 2FA CODE           */
     /* ---------------------------- */
     submitBtn.addEventListener('click', function(){
         const code = digits.map(i => i.value).join('');
