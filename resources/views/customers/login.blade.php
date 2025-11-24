@@ -5,6 +5,9 @@
 
 @extends('layouts.base')
 @section('title', 'Customer Login')
+@push('styles')
+    <link rel="stylesheet" href="{{ secure_asset('css/2fa.css') }}">
+@endpush
 @section('content')
 
 <section class="hero" style="padding-top: 4rem; min-height: auto;">
