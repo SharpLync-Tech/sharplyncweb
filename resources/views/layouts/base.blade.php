@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync | IT Support & Cloud Services')</title>
 
-    <!-- Meta SEO -->
     <meta name="description" content="SharpLync delivers reliable IT support, cloud services, and technology solutions across the Granite Belt and beyond. Old school support, modern results.">
     <meta name="keywords" content="SharpLync, IT Support, Cloud Services, Managed IT, Granite Belt, Warwick, Stanthorpe, Tenterfield">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sharplync.com.au/">
-    <meta name="author" content="SharpLync Pty Ltd">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    <meta name="author" content="SharpLync Pty Ltd">
 
+    {{-- Structured data for Google / Knowledge Graph --}}
     @verbatim
     <script type="application/ld+json">
     {
@@ -30,59 +30,14 @@
     </script>
     @endverbatim
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Main site styles -->
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
+    <!-- Additional page-specific styles -->
     @stack('styles')
 
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
-
-    <!-- ============================================== -->
-    <!-- FORCE OVERLAY MENU HIDDEN (fix hamburger issue) -->
-    <!-- ============================================== -->
-    <style>
-        #overlayMenu {
-            display: none !important;
-        }
-        #overlayMenu.show {
-            display: flex !important;
-        }
-    </style>
-</head>
-
-<body class="about-body">
-
-<header class="about-header">
-    <div class="logo">
-        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
-    </div>
-    <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
-</header>
-
-<div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
-    <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
-    <ul>
-            @foreach(($menuItems ?? []) as $item)
-                <li>
-                    <a 
-                        href="{{ $item->url }}"
-                        onclick="toggleMenu()"
-                        @if($item->open_in_new_tab) target="_blank" @endif
-                    >
-                        {{ $item->label }}
-                    </a>
-                </li>
-            @endforeach
-            </ul>
-</div>
-
-<main class="about-main">
-    @yield('content')
-</main>
-
     <!-- ============================================= -->
     <!-- LOGIN-TIME 2FA MODAL CSS (Globally available) -->
     <!-- ============================================= -->
@@ -123,15 +78,40 @@
     </style>
 </head>
 
-<body class="cp-root">
-    
-    {{-- PAGE CONTENT --}}
-    @yield('content')
+<body>
+    <!-- ========================= HEADER ========================= -->
+    <header class="main-header">
+        <div class="logo">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+        </div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
+    </header>
 
-    {{-- GLOBAL SCRIPTS + ALL @push('scripts') --}}
-    @stack('scripts')
+    <!-- ========================= OVERLAY MENU ========================= -->
+    <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
+        <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
+        <ul>
+            @foreach(($menuItems ?? []) as $item)
+                <li>
+                    <a 
+                        href="{{ $item->url }}"
+                        onclick="toggleMenu()"
+                        @if($item->open_in_new_tab) target="_blank" @endif
+                    >
+                        {{ $item->label }}
+                    </a>
+                </li>
+            @endforeach
+            </ul>
 
+    </div>
 
+    <!-- ========================= MAIN ========================= -->
+    <main>
+        @yield('content')
+    </main>
+
+    <!-- ========================= FOOTER ========================= -->
     <footer>
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
@@ -143,15 +123,26 @@
         </div>
     </footer>
 
-<script>
-    function toggleMenu() {
-        const overlay = document.getElementById('overlayMenu');
-        overlay.classList.toggle('show');
-        document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
-    }
-</script>
+    <!-- ========================= SCRIPTS ========================= -->
+    <script>
+        // Toggle overlay menu
+        function toggleMenu() {
+            const overlay = document.getElementById('overlayMenu');
+            overlay.classList.toggle('show');
+            document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
+        }
 
-@stack('scripts')
+        // Fade-in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
 
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
+        });
+    </script>
+    @stack('scripts')   
 </body>
 </html>
