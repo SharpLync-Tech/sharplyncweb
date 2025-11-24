@@ -15,8 +15,6 @@ class TwoFactorLoginController extends Controller
 {
     /**
      * Send login-time 2FA code (EMAIL)
-     * (Kept for compatibility; current email 2FA flow uses SecurityController,
-     *  but we leave this intact in case anything else calls it.)
      */
     public function send(Request $request)
     {
@@ -36,7 +34,7 @@ class TwoFactorLoginController extends Controller
             ], 422);
         }
 
-        // generate 6-digit code
+        // generate 6-digit email code
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
@@ -59,8 +57,9 @@ class TwoFactorLoginController extends Controller
 
     /**
      * Verify login-time 2FA
-     * - If session('2fa_method') === 'app' → verify TOTP via Google Authenticator
-     * - Otherwise → fall back to existing EMAIL token check
+     * Handles:
+     * - Authenticator App (TOTP)
+     * - Email fallback
      */
     public function verify(Request $request)
     {
@@ -88,11 +87,11 @@ class TwoFactorLoginController extends Controller
         $method = session('2fa_method', 'email');
 
         // ===============================================================
-        // CASE 1: AUTHENTICATOR APP (TOTP) LOGIN
+        // CASE 1 — AUTHENTICATOR APP (TOTP)
         // ===============================================================
         if ($method === 'app') {
 
-            if (!$user->two_factor_app_enabled || empty($user->two_factor_secret)) {
+            if (! $user->two_factor_app_enabled || empty($user->two_factor_secret)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Authenticator is not enabled for this account.'
@@ -101,18 +100,13 @@ class TwoFactorLoginController extends Controller
 
             $google2fa = new Google2FA();
 
-            /**
-             * FIX:
-             * Allow up to 4 windows drift (±2 minutes)
-             * Required for reliable login-time verification.
-             */
-            $valid = $google2fa->verifyKey(
+            // 🎯 FIX: allow ±1 time window drift = reliable login
+            $valid = $google2fa->setWindow(2)->verifyKey(
                 $user->two_factor_secret,
-                $request->code,
-                4 // <-- IMPORTANT FIX
+                $request->code
             );
 
-            if (!$valid) {
+            if (! $valid) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid or expired code.'
@@ -127,7 +121,7 @@ class TwoFactorLoginController extends Controller
             session()->forget('2fa_method');
             session()->forget('show_app_2fa_modal');
 
-            // update last login time
+            // update last login
             $user->last_login_at = now();
             $user->save();
 
@@ -138,7 +132,7 @@ class TwoFactorLoginController extends Controller
         }
 
         // ===============================================================
-        // CASE 2: EMAIL 2FA (existing DB-token based logic)
+        // CASE 2 — EMAIL 2FA
         // ===============================================================
 
         $hash = hash('sha256', $request->code);
@@ -162,10 +156,9 @@ class TwoFactorLoginController extends Controller
             ->where('user_id', $user->id)
             ->delete();
 
-        // complete login
+        // Log in
         Auth::guard('customer')->login($user);
 
-        // clean session
         session()->forget('2fa_user_id');
         session()->forget('email_masked');
         session()->forget('show_2fa_modal');
