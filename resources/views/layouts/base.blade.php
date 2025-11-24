@@ -41,7 +41,8 @@
     <!-- ============================================= -->
 <!-- LOGIN-TIME 2FA MODAL CSS (SharpLync WOW v2.0) -->
 <!-- ============================================= -->
-<style>/* ============================================================
+<style>
+/* ============================================================
    BACKDROP
 ============================================================ */
 .cp-modal-backdrop {
@@ -66,7 +67,7 @@
     background: #0A2A4D; /* SharpLync Navy */
     border: 2px solid #2CBFAE; /* Thin teal border */
     border-radius: 18px;
-    padding: 2rem 2rem 2rem;
+    padding: 2rem;
     width: 94%;
     max-width: 500px;
 
@@ -94,11 +95,15 @@
 }
 
 /* ============================================================
-   HEADER + SUBTITLE
+   HEADER + SUBTITLE (UPDATED FIX)
 ============================================================ */
 .cp-modal-header {
     position: relative;
     margin-bottom: 1rem;
+    
+    /* FIX: Pushes text down and adds buffer for the close button */
+    padding-top: 1.5rem; 
+    padding-right: 2rem; 
 }
 
 .cp-modal-header h3 {
@@ -106,15 +111,17 @@
     font-size: 1.35rem;
     font-weight: 600;
     color: #ffffff;
+    line-height: 1.4; /* Better spacing for wrapping text */
 }
 
 .cp-modal-subtitle {
     font-size: .9rem;
     color: #cfe7ef;
+    margin-top: 0.5rem;
 }
 
 /* ============================================================
-   CLOSE BUTTON (TOP-RIGHT, GLOW, HOVER)
+   CLOSE BUTTON
 ============================================================ */
 .cp-modal-close {
     position: absolute;
@@ -136,6 +143,7 @@
     cursor: pointer;
 
     transition: all 0.25s ease;
+    z-index: 10; /* Ensures it stays on top */
 }
 
 .cp-modal-close:hover {
@@ -146,7 +154,7 @@
 }
 
 /* ============================================================
-   OTP DIGIT BOXES (login-2fa-digit)
+   OTP DIGIT BOXES
 ============================================================ */
 .login-2fa-digit {
     width: 50px !important;
@@ -171,7 +179,7 @@
     background: rgba(255,255,255,0.15);
 }
 
-/* Shake animation when wrong code */
+/* Shake animation */
 .shake {
     animation: shakeAnim .35s ease;
 }
@@ -235,7 +243,6 @@
     text-align: center;
     margin-top: 1rem;
 }
-
 </style>
 
 </head>
