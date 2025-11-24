@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
 use Carbon\Carbon;
+use PragmaRX\Google2FA\Google2FA;
 
 class SecurityController extends Controller
 {
@@ -89,9 +90,138 @@ class SecurityController extends Controller
             ->where('channel', 'email')
             ->delete();
 
-        Log::info("PORTAL 2FA ENABLED", ['user_id' => $user->id]);
+        Log::info("PORTAL 2FA ENABLED (EMAIL)", ['user_id' => $user->id]);
 
         return response()->json(['success' => true, 'message' => 'Email authentication enabled.']);
+    }
+
+    /* ============================================================
+     |  PORTAL 2FA — AUTHENTICATOR APP (GOOGLE AUTHENTICATOR)
+     * ============================================================ */
+
+    /**
+     * Start Authenticator App setup:
+     * - Generate a new TOTP secret
+     * - Save to user
+     * - Return otpauth:// URL + secret so the frontend can show QR + manual code
+     */
+    public function startApp2FASetup(Request $request)
+    {
+        /** @var User $user */
+        $user = auth('customer')->user();
+
+        if (!$user) {
+            Log::error("PORTAL APP 2FA START: Not authenticated.");
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        $google2fa = new Google2FA();
+
+        // Generate a fresh secret every time setup is started
+        $secret = $google2fa->generateSecretKey();
+
+        $user->two_factor_secret      = $secret;
+        $user->two_factor_app_enabled = 0;  // Not enabled until verified
+        $user->save();
+
+        // Build standard otpauth URL (works with Google Authenticator, MS Authenticator, etc.)
+        $issuer   = 'SharpLync';
+        $account  = $user->email ?: ('customer-' . $user->id . '@sharplync.local');
+        $otpauth  = sprintf(
+            'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30',
+            rawurlencode($issuer),
+            rawurlencode($account),
+            $secret,
+            rawurlencode($issuer)
+        );
+
+        Log::info("PORTAL APP 2FA STARTED", ['user_id' => $user->id]);
+
+        return response()->json([
+            'success'     => true,
+            'secret'      => $secret,
+            'otpauth_url' => $otpauth,
+            'message'     => 'Authenticator setup started.'
+        ]);
+    }
+
+    /**
+     * Verify the 6-digit code from the Authenticator app to enable TOTP 2FA.
+     */
+    public function verifyApp2FASetup(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|digits:6',
+        ]);
+
+        /** @var User $user */
+        $user = auth('customer')->user();
+
+        if (!$user) {
+            Log::error("PORTAL APP 2FA VERIFY: Not authenticated.");
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        if (empty($user->two_factor_secret)) {
+            Log::warning("PORTAL APP 2FA VERIFY: No secret on user.", ['user_id' => $user->id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Authenticator setup has not been started.'
+            ], 422);
+        }
+
+        $google2fa = new Google2FA();
+
+        $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
+
+        if (!$valid) {
+            Log::warning("PORTAL APP 2FA INVALID CODE", ['user_id' => $user->id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired code.'
+            ], 422);
+        }
+
+        // Enable app-based 2FA and turn off email 2FA
+        $user->two_factor_app_enabled    = 1;
+        $user->two_factor_email_enabled  = 0;
+        $user->two_factor_confirmed_at   = now();
+        $user->two_factor_default_method = 'app'; // optional, nothing uses this yet
+        $user->save();
+
+        Log::info("PORTAL APP 2FA ENABLED", ['user_id' => $user->id]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Authenticator app has been enabled.'
+        ]);
+    }
+
+    /**
+     * Disable Authenticator App 2FA.
+     */
+    public function disableApp2FA(Request $request)
+    {
+        /** @var User $user */
+        $user = auth('customer')->user();
+
+        if (!$user) {
+            Log::error("PORTAL APP 2FA DISABLE: Not authenticated.");
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        $user->two_factor_app_enabled      = 0;
+        // We can optionally clear the secret; leaving it null forces a new setup next time
+        $user->two_factor_secret           = null;
+        $user->two_factor_trusted_devices  = null; // clear any trusted devices tied to app 2FA
+        $user->save();
+
+        Log::info("PORTAL APP 2FA DISABLED", ['user_id' => $user->id]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Authenticator app has been disabled.'
+        ]);
     }
 
     /* ============================================================
