@@ -1,4 +1,3 @@
-// public/js/security.js
 (function(){
 
     const emailToggle = document.getElementById('cp-toggle-email');
@@ -16,11 +15,12 @@
     const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
     const routes = {
-        emailSend:   window.cpRoutes?.emailSend,
-        emailVerify: window.cpRoutes?.emailVerify,
-        authStart:   window.cpRoutes?.authStart,
-        authVerify:  window.cpRoutes?.authVerify,
-        authDisable: window.cpRoutes?.authDisable
+        emailSend:    window.cpRoutes?.emailSend,
+        emailVerify:  window.cpRoutes?.emailVerify,
+        emailDisable: window.cpRoutes?.emailDisable,
+        authStart:    window.cpRoutes?.authStart,
+        authVerify:   window.cpRoutes?.authVerify,
+        authDisable:  window.cpRoutes?.authDisable
     };
 
     const csrf = window.cpCsrf;
@@ -29,9 +29,6 @@
         return otpInputs.map(i => i.value).join('');
     }
 
-    // ============================
-    // EMAIL — SEND CODE
-    // ============================
     async function sendCode(){
         statusEl.style.display = 'block';
         statusEl.textContent = "Sending verification code...";
@@ -43,8 +40,7 @@
                 headers:{
                     'Content-Type':'application/json',
                     'X-CSRF-TOKEN':csrf
-                },
-                body:JSON.stringify({})
+                }
             });
 
             const d = await r.json();
@@ -61,9 +57,6 @@
         }
     }
 
-    // ============================
-    // EMAIL — VERIFY CODE
-    // ============================
     async function verifyCode(){
         const code = getOtp();
         if(code.length !== 6){
@@ -102,9 +95,42 @@
     if (resendBtn) resendBtn.addEventListener('click', sendCode);
     if (verifyBtn) verifyBtn.addEventListener('click', verifyCode);
 
-    // ============================
-    // AUTH APP — START / VERIFY / DISABLE
-    // ============================
+    // ====================================================
+    // EMAIL TOGGLE — OFF SUPPORTED NOW
+    // ====================================================
+    if (emailToggle) {
+        emailToggle.addEventListener('change', async function(){
+
+            if (this.checked) {
+                document.dispatchEvent(new Event('cp-show-email-setup'));
+                return;
+            }
+
+            try {
+                const r = await fetch(routes.emailDisable, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrf
+                    }
+                });
+
+                const d = await r.json();
+                if (!d.success) throw new Error(d.message);
+
+                emailToggle.dataset.persistOn = "";
+                emailToggle.checked = false;
+
+            } catch (err) {
+                emailToggle.checked = true;
+            }
+        });
+    }
+
+    // ====================================================
+    // AUTHENTICATOR LOGIC (unchanged)
+    // ====================================================
+
     const authStartBtn   = document.getElementById('cp-auth-start');
     const authVerifyBtn  = document.getElementById('cp-auth-verify');
     const authDisableBtn = document.getElementById('cp-auth-disable');
@@ -129,36 +155,28 @@
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrf
-                },
-                body: JSON.stringify({})
+                }
             });
 
             const d = await r.json();
             if (!d.success) throw new Error(d.message);
 
-            const secret  = d.secret;
-            const qrImage = d.qr_image || null;
-
-            if (qrImage) {
-                authQrImg.src = qrImage;
+            if (d.qr_image) {
+                authQrImg.src = d.qr_image;
                 authQrWrapper.style.display = 'block';
-            } else {
-                authQrWrapper.style.display = 'none';
             }
 
-            if (secret) {
-                authSecretBlock.style.display = 'block';
-                authSecretEl.textContent      = secret;
-            }
+            authSecretBlock.style.display = 'block';
+            authSecretEl.textContent = d.secret;
 
             authVerifyBlock.style.display = 'block';
-            authStatusEl.textContent      = "Scan the QR or enter the code in your app, then enter the 6-digit code below.";
+            authStatusEl.textContent = "Scan the code then enter the 6-digit code.";
 
         } catch (err) {
             authStatusEl.style.display = 'none';
-            authErrorEl.textContent    = err.message || "Something went wrong starting setup.";
-            authErrorEl.style.display  = 'block';
-            if (authToggle) authToggle.checked = false;
+            authErrorEl.textContent = err.message;
+            authErrorEl.style.display = 'block';
+            authToggle.checked = false;
         }
     }
 
@@ -166,14 +184,13 @@
         const code = (authCodeInput.value || '').replace(/\D/g, '');
 
         if (code.length !== 6) {
-            authErrorEl.textContent = "Please enter the 6-digit code from your app.";
+            authErrorEl.textContent = "Please enter the 6-digit code.";
             authErrorEl.style.display = 'block';
             return;
         }
 
         authStatusEl.style.display = 'block';
-        authStatusEl.textContent   = "Verifying code...";
-        authErrorEl.style.display  = 'none';
+        authStatusEl.textContent   = "Verifying...";
 
         try {
             const r = await fetch(routes.authVerify, {
@@ -189,62 +206,48 @@
             if (!d.success) throw new Error(d.message);
 
             authToggle.dataset.persistOn = "1";
-            authToggle.checked           = true;
+            authToggle.checked = true;
 
-            if (emailToggle) {
-                emailToggle.dataset.persistOn = "";
-                emailToggle.checked           = false;
-            }
+            emailToggle.dataset.persistOn = "";
+            emailToggle.checked = false;
 
-            authStatusEl.textContent = "Authenticator App is now enabled.";
+            authStatusEl.textContent = "Authenticator App enabled.";
 
         } catch (err) {
             authStatusEl.style.display = 'none';
-            authErrorEl.textContent    = err.message || "Invalid or expired code.";
-            authErrorEl.style.display  = 'block';
+            authErrorEl.textContent = err.message;
+            authErrorEl.style.display = 'block';
         }
     }
 
     async function disableAuth() {
-        authStatusEl.style.display = 'block';
-        authStatusEl.textContent   = "Disabling Authenticator App...";
-        authErrorEl.style.display  = 'none';
-
         try {
             const r = await fetch(routes.authDisable, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrf
-                },
-                body: JSON.stringify({})
+                }
             });
 
             const d = await r.json();
             if (!d.success) throw new Error(d.message);
 
             authToggle.dataset.persistOn = "";
-            authToggle.checked           = false;
+            authToggle.checked = false;
 
-            authQrWrapper.style.display   = 'none';
+            authQrWrapper.style.display = 'none';
             authSecretBlock.style.display = 'none';
             authVerifyBlock.style.display = 'none';
 
-            authStatusEl.textContent = "Authenticator App has been disabled.";
-
         } catch (err) {
-            authStatusEl.style.display = 'none';
-            authErrorEl.textContent    = err.message || "Something went wrong disabling.";
-            authErrorEl.style.display  = 'block';
+            authErrorEl.textContent = err.message;
+            authErrorEl.style.display = 'block';
         }
     }
 
-    // Button hooks (still safe to keep)
     if (authStartBtn)   authStartBtn.addEventListener('click', startAuthSetup);
     if (authVerifyBtn)  authVerifyBtn.addEventListener('click', verifyAuthCode);
     if (authDisableBtn) authDisableBtn.addEventListener('click', disableAuth);
-
-    // 🔵 NEW: listen for UI event from portal-ui.js
-    document.addEventListener('cp-auth-start', startAuthSetup);
 
 })();
