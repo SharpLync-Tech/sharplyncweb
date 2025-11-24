@@ -15,11 +15,17 @@ use Carbon\Carbon;
 
 class LoginController extends Controller
 {
+    /**
+     * Show login form
+     */
     public function showLoginForm()
     {
         return view('customers.login');
     }
 
+    /**
+     * Handle login (step 1 — password check)
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -30,7 +36,7 @@ class LoginController extends Controller
         $email    = $request->input('email');
         $password = $request->input('password');
 
-        /** @var \App\Models\CRM\User|null $user */
+        /** @var User|null $user */
         $user = User::where('email', $email)->first();
 
         Log::info('LOGIN ATTEMPT', [
@@ -38,7 +44,7 @@ class LoginController extends Controller
             'found' => (bool) $user,
         ]);
 
-        // Bad credentials
+        // Wrong credentials
         if (! $user || ! Hash::check($password, $user->password)) {
             Log::warning('LOGIN FAILED', ['email' => $email]);
             return back()->with('error', 'Invalid email or password.');
@@ -49,9 +55,9 @@ class LoginController extends Controller
             return back()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
-        // ================================================================
-        // CASE 1: 2FA NOT ENABLED → Normal login, no modal
-        // ================================================================
+        // ===================================================================
+        // CASE 1: 2FA NOT ENABLED → Normal login
+        // ===================================================================
         if (! $user->two_factor_email_enabled) {
 
             Auth::guard('customer')->login($user);
@@ -68,14 +74,19 @@ class LoginController extends Controller
             return redirect()->intended('/portal');
         }
 
-        // ================================================================
-        // CASE 2: 2FA ENABLED → Trigger modal + send verification code
-        // ================================================================
+        // ===================================================================
+        // CASE 2: 2FA ENABLED → Start login-time 2FA flow
+        // ===================================================================
 
-        // Mask email
+        // Store ID in session for the 2FA step
+        session([
+            '2fa_user_id' => $user->id,
+        ]);
+
+        // Mask email for the modal
         $maskedEmail = $this->maskEmail($user->email);
 
-        // Send login code
+        // Send the login-time 2FA code
         $this->sendLoginCode($user);
 
         Log::info('LOGIN 2FA REQUIRED (email)', [
@@ -83,15 +94,17 @@ class LoginController extends Controller
             'email' => $user->email,
         ]);
 
-        // Return to login with FLASHED modal variables
+        // Flash modal vars
         return redirect()
             ->route('customer.login')
             ->with('show_2fa_modal', true)
             ->with('email_masked', $maskedEmail)
-            ->with('2fa_user_id', $user->id)
             ->with('status', 'We emailed you a 6-digit security code.');
     }
 
+    /**
+     * Logout
+     */
     public function logout(Request $request)
     {
         Auth::guard('customer')->logout();
@@ -101,9 +114,9 @@ class LoginController extends Controller
         return redirect('/login')->with('status', 'You have been logged out.');
     }
 
-    // ---------------------------------------------------------
-    // EMAIL MASK
-    // ---------------------------------------------------------
+    /**
+     * Mask email (ja********@gmail.com)
+     */
     private function maskEmail(?string $email): string
     {
         if (! $email || ! str_contains($email, '@')) {
@@ -111,20 +124,27 @@ class LoginController extends Controller
         }
 
         [$local, $domain] = explode('@', $email, 2);
-        $visible = mb_substr($local, 0, 2);
-        $stars   = max(1, mb_strlen($local) - 2);
+
+        if (strlen($local) <= 2) {
+            $visible = substr($local, 0, 1);
+            $stars   = max(1, strlen($local) - 1);
+        } else {
+            $visible = substr($local, 0, 2);
+            $stars   = max(1, strlen($local) - 2);
+        }
 
         return $visible . str_repeat('*', $stars) . '@' . $domain;
     }
 
-    // ---------------------------------------------------------
-    // SEND LOGIN-TIME 2FA CODE (CRM DB)
-    // ---------------------------------------------------------
+    /**
+     * Sends login-time 2FA code to the user
+     */
     private function sendLoginCode(User $user): void
     {
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
+        // Store token in CRM DB
         DB::connection('crm')->table('user_two_factor_tokens')->insert([
             'user_id'    => $user->id,
             'channel'    => 'email',
@@ -134,6 +154,12 @@ class LoginController extends Controller
             'created_at' => now(),
         ]);
 
+        // Email the code
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
+
+        Log::info('LOGIN 2FA CODE SENT', [
+            'user_id' => $user->id,
+            'email'   => $user->email,
+        ]);
     }
 }
