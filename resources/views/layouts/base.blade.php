@@ -95,20 +95,29 @@
 
     /* Close button */
     .cp-modal-close {
-        background: transparent;
-        border: 1px solid rgba(44,191,174,0.5);
-        color: #2CBFAE;
-        font-size: 1.2rem;
-        border-radius: 6px;
-        padding: 2px 7px;
-        cursor: pointer;
-        transition: 0.2s ease;
-    }
-    .cp-modal-close:hover {
-        background: rgba(44,191,174,0.15);
-        border-color: #2CBFAE;
-        color: #fff;
-    }
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid rgba(44,191,174,0.65);
+    background: rgba(255,255,255,0.1);
+    color: #2CBFAE;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.25s ease;
+}
+
+.cp-modal-close:hover {
+    background: rgba(44,191,174,0.22);
+    border-color: #2CBFAE;
+    color: white;
+    box-shadow: 0 0 8px rgba(44,191,174,0.45);
+}
 
     /* OTP DIGIT BOXES */
     .login-2fa-digit {

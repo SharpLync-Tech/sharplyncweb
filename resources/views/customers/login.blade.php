@@ -112,8 +112,6 @@
   </div>
 
 </section>
-
-
 {{-- ================================================================= --}}
 {{--                 LOGIN-TIME 2FA MODAL (TRIGGERED ON LOGIN)        --}}
 {{-- ================================================================= --}}
@@ -140,6 +138,7 @@
                            class="login-2fa-digit"
                            data-id="{{ $i }}"
                            inputmode="numeric"
+                           autocomplete="one-time-code"
                            style="width:45px; height:55px; text-align:center;
                                   font-size:1.6rem; border-radius:10px;
                                   border:1px solid #ccc;">
@@ -166,16 +165,12 @@
     </div>
 </div>
 @endif
-
 @endsection
-
-
-
 @push('scripts')
 <script>
 (function(){
 
-    const digits      = [...document.querySelectorAll('.otp-digit')];
+    const digits      = [...document.querySelectorAll('.login-2fa-digit')];
     const submitBtn   = document.getElementById('login-2fa-submit');
     const resendBtn   = document.getElementById('login-2fa-resend');
     const errorBox    = document.getElementById('login-2fa-error');
@@ -183,93 +178,58 @@
 
     if (!digits.length) return;
 
-    /* --------------------------------------- */
-    /*  INPUT, AUTOSHIFT & PASTE HANDLING      */
-    /* --------------------------------------- */
-    digits.forEach((input, index) => {
+    /* ---------------------------- */
+    /*  Auto-advance + Paste Logic  */
+    /* ---------------------------- */
+    digits.forEach((input, idx) => {
 
-        // TYPING
         input.addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
+            e.target.value = val;
 
-            // User pasted more than 1 digit via keyboard auto-paste
-            if (val.length > 1) {
-                fillFromPaste(val);
-                return;
-            }
-
-            input.value = val;
-
-            if (val && index < 5) {
-                digits[index + 1].focus();
-            }
+            if (val && idx < 5) digits[idx + 1].focus();
 
             checkReady();
         });
 
-        // BACKSPACE
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !input.value && index > 0) {
-                digits[index - 1].focus();
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+                digits[idx - 1].focus();
             }
         });
 
-        // RIGHT-CLICK + CTRL+V PASTE
+        /* Paste full 6-digit code */
         input.addEventListener('paste', (e) => {
             e.preventDefault();
-
-            const pasted = (e.clipboardData || window.clipboardData)
+            const paste = (e.clipboardData || window.clipboardData)
                 .getData('text')
                 .replace(/\D/g, '')
-                .slice(0, 6);
+                .slice(0, 6)
+                .split('');
 
-            fillFromPaste(pasted);
+            digits.forEach((box, i) => box.value = paste[i] || '');
+            checkReady();
         });
     });
 
-    /* --------------------------------------- */
-    /* FILL BOXES FROM PASTED STRING           */
-    /* --------------------------------------- */
-    function fillFromPaste(str) {
-        const chars = str.split('');
-
-        digits.forEach((box, i) => {
-            box.value = chars[i] || '';
-        });
-
-        checkReady();
-
-        // Auto-submit if all 6 digits present
-        if (chars.length === 6) {
-            submitBtn.click();
-        }
-    }
-
-    /* --------------------------------------- */
-    /* READY CHECK                             */
-    /* --------------------------------------- */
     function checkReady() {
         const code = digits.map(i => i.value).join('');
         submitBtn.disabled = code.length !== 6;
     }
 
-    /* --------------------------------------- */
-    /* ERROR / SHAKE                           */
-    /* --------------------------------------- */
     function showError(msg) {
         errorBox.innerText = msg;
         errorBox.style.display = 'block';
 
         modalSheet.classList.remove('shake');
-        void modalSheet.offsetWidth; // reflow
+        void modalSheet.offsetWidth;
         modalSheet.classList.add('shake');
     }
 
-    /* --------------------------------------- */
-    /* VERIFY CODE                             */
-    /* --------------------------------------- */
+    /* ---------------------------- */
+    /*  VERIFY 2FA CODE             */
+    /* ---------------------------- */
     submitBtn.addEventListener('click', function(){
-
         const code = digits.map(i => i.value).join('');
 
         fetch("{{ route('customer.security.email.verify-login-code') }}", {
@@ -288,17 +248,14 @@
                 return;
             }
 
-            // WRONG CODE
             digits.forEach(i => i.value = '');
             digits[0].focus();
+
             submitBtn.disabled = true;
             showError(res.message);
         });
     });
 
-    /* --------------------------------------- */
-    /* RESEND CODE                             */
-    /* --------------------------------------- */
     resendBtn.addEventListener('click', function(){
         fetch("{{ route('customer.security.email.send-login-code') }}", {
             method: "POST",
@@ -308,6 +265,4 @@
 
 })();
 </script>
-
 @endpush
-
