@@ -54,6 +54,63 @@
 </div>
 
 <main class="about-main">
+    {{-- ============================= --}}
+{{-- MAIN SITE NAVIGATION BAR      --}}
+{{-- (Restored exactly as before)  --}}
+{{-- ============================= --}}
+
+<header class="main-header">
+    <div class="nav-container">
+
+        {{-- Logo --}}
+        <a href="/" class="nav-logo">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+        </a>
+
+        {{-- Hamburger Menu --}}
+        <div class="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        {{-- Desktop Nav --}}
+        <nav class="nav-links">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/services">Services</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/testimonials">Testimonials</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+
+    </div>
+
+    {{-- Mobile Slide-Out Menu --}}
+    <div id="mobileMenu" class="mobile-menu">
+        <ul>
+            <li><a href="/" onclick="toggleMenu()">Home</a></li>
+            <li><a href="/services" onclick="toggleMenu()">Services</a></li>
+            <li><a href="/login" onclick="toggleMenu()">Login</a></li>
+            <li><a href="/register" onclick="toggleMenu()">Register</a></li>
+            <li><a href="/about" onclick="toggleMenu()">About Us</a></li>
+            <li><a href="/testimonials" onclick="toggleMenu()">Testimonials</a></li>
+            <li><a href="/contact" onclick="toggleMenu()">Contact Us</a></li>
+        </ul>
+    </div>
+</header>
+
+{{-- Mobile Menu Toggle Script --}}
+<script>
+function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('open');
+}
+</script>
+
     @yield('content')
 </main>
 
