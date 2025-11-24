@@ -15,6 +15,8 @@ class TwoFactorLoginController extends Controller
 {
     /**
      * Send login-time 2FA code (EMAIL)
+     * (Kept for compatibility; current email 2FA flow uses SecurityController,
+     *  but we leave this intact in case anything else calls it.)
      */
     public function send(Request $request)
     {
@@ -34,7 +36,7 @@ class TwoFactorLoginController extends Controller
             ], 422);
         }
 
-        // generate 6-digit email code
+        // generate 6-digit code
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
@@ -57,9 +59,8 @@ class TwoFactorLoginController extends Controller
 
     /**
      * Verify login-time 2FA
-     * Handles:
-     * - Authenticator App (TOTP)
-     * - Email fallback
+     * - If session('2fa_method') === 'app' → verify TOTP via Google Authenticator
+     * - Otherwise → fall back to existing EMAIL token check
      */
     public function verify(Request $request)
     {
@@ -87,7 +88,7 @@ class TwoFactorLoginController extends Controller
         $method = session('2fa_method', 'email');
 
         // ===============================================================
-        // CASE 1 — AUTHENTICATOR APP (TOTP)
+        // CASE 1: AUTHENTICATOR APP (TOTP) LOGIN
         // ===============================================================
         if ($method === 'app') {
 
@@ -100,11 +101,7 @@ class TwoFactorLoginController extends Controller
 
             $google2fa = new Google2FA();
 
-            // 🎯 FIX: allow ±1 time window drift = reliable login
-            $valid = $google2fa->setWindow(2)->verifyKey(
-                $user->two_factor_secret,
-                $request->code
-            );
+            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
 
             if (! $valid) {
                 return response()->json([
@@ -132,7 +129,7 @@ class TwoFactorLoginController extends Controller
         }
 
         // ===============================================================
-        // CASE 2 — EMAIL 2FA
+        // CASE 2: EMAIL 2FA (existing DB-token based logic)
         // ===============================================================
 
         $hash = hash('sha256', $request->code);
@@ -156,7 +153,7 @@ class TwoFactorLoginController extends Controller
             ->where('user_id', $user->id)
             ->delete();
 
-        // Log in
+        // complete login
         Auth::guard('customer')->login($user);
 
         session()->forget('2fa_user_id');
