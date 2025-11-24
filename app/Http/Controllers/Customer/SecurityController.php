@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
-use Carbon\Carbon;
 use PragmaRX\Google2FA\Google2FA;
-
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -19,6 +17,9 @@ use BaconQrCode\Writer;
 
 class SecurityController extends Controller
 {
+    /* ============================================================
+     | EMAIL 2FA — SEND CODE
+     * ============================================================ */
     public function sendEmail2FACode(Request $request)
     {
         $user = auth('customer')->user();
@@ -43,6 +44,9 @@ class SecurityController extends Controller
         return response()->json(['success' => true, 'message' => 'Verification code sent.']);
     }
 
+    /* ============================================================
+     | EMAIL 2FA — VERIFY CODE
+     * ============================================================ */
     public function verifyEmail2FACode(Request $request)
     {
         $request->validate(['code' => 'required|numeric']);
@@ -78,9 +82,13 @@ class SecurityController extends Controller
         return response()->json(['success' => true, 'message' => 'Email authentication enabled.']);
     }
 
+    /* ============================================================
+     | EMAIL 2FA — DISABLE (NEW)
+     * ============================================================ */
     public function disableEmail2FA(Request $request)
     {
         $user = auth('customer')->user();
+
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
         }
@@ -91,6 +99,9 @@ class SecurityController extends Controller
         return response()->json(['success' => true, 'message' => 'Email authentication disabled.']);
     }
 
+    /* ============================================================
+     | AUTH APP — START SETUP
+     * ============================================================ */
     public function startApp2FASetup(Request $request)
     {
         $user = auth('customer')->user();
@@ -99,7 +110,7 @@ class SecurityController extends Controller
         }
 
         $google2fa = new Google2FA();
-        $secret = $google2fa->generateSecretKey();
+        $secret    = $google2fa->generateSecretKey();
 
         $user->two_factor_secret      = $secret;
         $user->two_factor_app_enabled = 0;
@@ -107,6 +118,7 @@ class SecurityController extends Controller
 
         $issuer  = 'SharpLync';
         $account = $user->email ?: ('customer-' . $user->id);
+
         $otpauth = sprintf(
             'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30',
             rawurlencode($issuer),
@@ -126,6 +138,7 @@ class SecurityController extends Controller
 
             $qrBase64 = 'data:image/svg+xml;base64,' . base64_encode($svgData);
         } catch (\Throwable $e) {
+
             return response()->json([
                 'success'     => true,
                 'secret'      => $secret,
@@ -142,6 +155,9 @@ class SecurityController extends Controller
         ]);
     }
 
+    /* ============================================================
+     | AUTH APP — VERIFY SETUP
+     * ============================================================ */
     public function verifyApp2FASetup(Request $request)
     {
         $request->validate(['code' => 'required|digits:6']);
@@ -166,6 +182,9 @@ class SecurityController extends Controller
         return response()->json(['success' => true, 'message' => 'Authenticator app enabled.']);
     }
 
+    /* ============================================================
+     | AUTH APP — DISABLE
+     * ============================================================ */
     public function disableApp2FA(Request $request)
     {
         $user = auth('customer')->user();
@@ -181,6 +200,7 @@ class SecurityController extends Controller
         return response()->json(['success' => true, 'message' => 'Authenticator app disabled.']);
     }
 
+    /* LOGIN-TIME EMAIL 2FA (unchanged) */
     public function sendLogin2FACode(Request $request)
     {
         $userId = session('2fa_user_id');

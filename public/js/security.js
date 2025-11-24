@@ -95,9 +95,9 @@
     if (resendBtn) resendBtn.addEventListener('click', sendCode);
     if (verifyBtn) verifyBtn.addEventListener('click', verifyCode);
 
-    // ====================================================
-    // EMAIL TOGGLE — OFF SUPPORTED NOW
-    // ====================================================
+    /* ====================================================
+     | EMAIL TOGGLE — DISABLE SUPPORT
+     * ==================================================== */
     if (emailToggle) {
         emailToggle.addEventListener('change', async function(){
 
@@ -127,9 +127,9 @@
         });
     }
 
-    // ====================================================
-    // AUTHENTICATOR LOGIC (unchanged)
-    // ====================================================
+    /* ====================================================
+     | AUTH APP SETUP & DISABLE — unchanged
+     * ==================================================== */
 
     const authStartBtn   = document.getElementById('cp-auth-start');
     const authVerifyBtn  = document.getElementById('cp-auth-verify');
