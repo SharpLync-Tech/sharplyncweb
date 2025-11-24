@@ -393,11 +393,15 @@
 
 @section('scripts')
 <script>
+    // **CORRECTED ROUTES SECTION**
     window.cpRoutes = {
-        emailSend:   "{{ route('customer.security.email.send-code') }}",
+        emailSend:    "{{ route('customer.security.email.send-code') }}",
         emailVerify: "{{ route('customer.security.email.verify-code') }}",
-        authStart:   "{{ route('customer.security.auth.start') }}",
-        authVerify:  "{{ route('customer.security.auth.verify') }}",
+        // >>> FIX: Added the missing email disable route:
+        emailDisable: "{{ route('customer.security.email.disable') }}", 
+        // -------------------------
+        authStart:    "{{ route('customer.security.auth.start') }}",
+        authVerify:   "{{ route('customer.security.auth.verify') }}",
         authDisable: "{{ route('customer.security.auth.disable') }}"
     };
     window.cpCsrf = "{{ csrf_token() }}";

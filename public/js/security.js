@@ -15,12 +15,12 @@
     const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
     const routes = {
-        emailSend:    window.cpRoutes?.emailSend,
-        emailVerify:  window.cpRoutes?.emailVerify,
-        emailDisable: window.cpRoutes?.emailDisable,
-        authStart:    window.cpRoutes?.authStart,
-        authVerify:   window.cpRoutes?.authVerify,
-        authDisable:  window.cpRoutes?.authDisable
+        emailSend:     window.cpRoutes?.emailSend,
+        emailVerify:   window.cpRoutes?.emailVerify,
+        emailDisable:  window.cpRoutes?.emailDisable, // Now correctly defined in Blade
+        authStart:     window.cpRoutes?.authStart,
+        authVerify:    window.cpRoutes?.authVerify,
+        authDisable:   window.cpRoutes?.authDisable
     };
 
     const csrf = window.cpCsrf;
@@ -84,6 +84,9 @@
             statusEl.textContent = "Email Authentication is now enabled.";
             statusEl.style.display='block';
             errorEl.style.display='none';
+            
+            // Reload the page to refresh the modal state and the main view
+            window.location.reload(); 
 
         }catch(err){
             errorEl.textContent = err.message || "Invalid or expired code.";
@@ -102,10 +105,12 @@
         emailToggle.addEventListener('change', async function(){
 
             if (this.checked) {
+                // User checked the box (turning ON). Trigger setup.
                 document.dispatchEvent(new Event('cp-show-email-setup'));
                 return;
             }
-
+            
+            // User unchecked the box (turning OFF).
             try {
                 const r = await fetch(routes.emailDisable, {
                     method: "POST",
@@ -118,22 +123,28 @@
                 const d = await r.json();
                 if (!d.success) throw new Error(d.message);
 
+                // Success: Update UI state
                 emailToggle.dataset.persistOn = "";
                 emailToggle.checked = false;
+                
+                // Reload the page to refresh the modal state and the main view
+                window.location.reload(); 
 
             } catch (err) {
-                emailToggle.checked = true;
+                // Failure: Revert the toggle state to prevent DB/UI mismatch
+                this.checked = true; 
+                alert("Failed to disable Email 2FA: " + (err.message || "Server Error"));
             }
         });
     }
 
     /* ====================================================
-     | AUTH APP SETUP & DISABLE — unchanged
+     | AUTH APP SETUP & DISABLE
      * ==================================================== */
 
-    const authStartBtn   = document.getElementById('cp-auth-start');
-    const authVerifyBtn  = document.getElementById('cp-auth-verify');
-    const authDisableBtn = document.getElementById('cp-auth-disable');
+    const authStartBtn    = document.getElementById('cp-auth-start');
+    const authVerifyBtn   = document.getElementById('cp-auth-verify');
+    const authDisableBtn  = document.getElementById('cp-auth-disable');
 
     const authQrWrapper   = document.getElementById('cp-auth-qr-wrapper');
     const authQrImg       = document.getElementById('cp-auth-qr');
@@ -145,6 +156,7 @@
     const authCodeInput   = document.getElementById('cp-auth-code');
 
     async function startAuthSetup() {
+        // ... (function logic remains unchanged) ...
         authStatusEl.style.display = 'block';
         authStatusEl.textContent  = "Generating QR code...";
         authErrorEl.style.display = 'none';
@@ -205,17 +217,22 @@
             const d = await r.json();
             if (!d.success) throw new Error(d.message);
 
+            // Success: Update UI state
             authToggle.dataset.persistOn = "1";
             authToggle.checked = true;
 
+            // Optional: Disable Email 2FA if Auth App is enabled (common security policy)
             emailToggle.dataset.persistOn = "";
             emailToggle.checked = false;
 
-            authStatusEl.textContent = "Authenticator App enabled.";
+            authStatusEl.textContent = "Authenticator App enabled. Reloading...";
+            
+            // Reload the page to refresh the modal state and the main view
+            setTimeout(() => window.location.reload(), 500);
 
         } catch (err) {
             authStatusEl.style.display = 'none';
-            authErrorEl.textContent = err.message;
+            authErrorEl.textContent = err.message || "Invalid code.";
             authErrorEl.style.display = 'block';
         }
     }
@@ -233,21 +250,56 @@
             const d = await r.json();
             if (!d.success) throw new Error(d.message);
 
+            // Success: Update UI state
             authToggle.dataset.persistOn = "";
             authToggle.checked = false;
 
             authQrWrapper.style.display = 'none';
             authSecretBlock.style.display = 'none';
             authVerifyBlock.style.display = 'none';
+            
+            // Reload the page to refresh the modal state and the main view
+            window.location.reload(); 
 
         } catch (err) {
-            authErrorEl.textContent = err.message;
+            authErrorEl.textContent = err.message || "Failed to disable Authenticator App.";
             authErrorEl.style.display = 'block';
+            throw err; // Re-throw so the caller (if toggle change) can catch it
         }
     }
 
-    if (authStartBtn)   authStartBtn.addEventListener('click', startAuthSetup);
-    if (authVerifyBtn)  authVerifyBtn.addEventListener('click', verifyAuthCode);
+    if (authStartBtn)  authStartBtn.addEventListener('click', startAuthSetup);
+    if (authVerifyBtn) authVerifyBtn.addEventListener('click', verifyAuthCode);
     if (authDisableBtn) authDisableBtn.addEventListener('click', disableAuth);
+
+
+    /* ====================================================
+     | AUTH TOGGLE — ADD DISABLE SUPPORT (THE MISSING LOGIC)
+     * ==================================================== */
+    if (authToggle) {
+        authToggle.addEventListener('change', async function(){
+            
+            if (this.checked) {
+                // User checked the box (turning ON). Trigger setup.
+                document.dispatchEvent(new Event('cp-show-auth-setup'));
+                return;
+            }
+
+            // User unchecked the box (turning OFF).
+            if (confirm("Are you sure you want to disable the Authenticator App?")) {
+                try {
+                    // Call the main disable function
+                    await disableAuth(); 
+
+                } catch (err) {
+                    // If API call fails, revert the toggle back to ON (checked)
+                    this.checked = true; 
+                }
+            } else {
+                // User cancelled, revert the toggle back to ON (checked)
+                this.checked = true; 
+            }
+        });
+    }
 
 })();
