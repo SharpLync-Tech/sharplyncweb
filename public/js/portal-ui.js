@@ -135,6 +135,10 @@
             if (this.checked) {
                 if (emailToggle) emailToggle.checked = false;
                 showAuthSetup();
+
+                // 🔵 NEW: tell security.js to start Auth setup (QR + secret)
+                document.dispatchEvent(new Event('cp-auth-start'));
+
             } else {
                 showMain();
             }
