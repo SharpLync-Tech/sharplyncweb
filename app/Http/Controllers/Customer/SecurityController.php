@@ -11,8 +11,10 @@ use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
 use Carbon\Carbon;
 use PragmaRX\Google2FA\Google2FA;
+
+// NEW QR CODE IMPORTS (SVG Backend)
 use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\Image\GdImageBackEnd;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 
@@ -58,9 +60,7 @@ class SecurityController extends Controller
      * ============================================================ */
     public function verifyEmail2FACode(Request $request)
     {
-        $request->validate([
-            'code' => 'required|numeric'
-        ]);
+        $request->validate(['code' => 'required|numeric']);
 
         /** @var User $user */
         $user = auth('customer')->user();
@@ -94,7 +94,7 @@ class SecurityController extends Controller
             ->where('channel', 'email')
             ->delete();
 
-        Log::info("PORTAL 2FA ENABLED (EMAIL)", ['user_id' => $user->id]);
+        Log::info("PORTAL 2FA ENABLED (EMAIL): User {$user->id}");
 
         return response()->json(['success' => true, 'message' => 'Email authentication enabled.']);
     }
@@ -107,7 +107,7 @@ class SecurityController extends Controller
      * Start Authenticator App setup:
      * - Generate a new TOTP secret
      * - Save to user
-     * - Return otpauth:// URL + secret + QR image (base64) for the frontend
+     * - Return otpauth:// URL + secret + SVG QR image (base64)
      */
     public function startApp2FASetup(Request $request)
     {
@@ -121,16 +121,15 @@ class SecurityController extends Controller
 
         $google2fa = new Google2FA();
 
-        // Generate a fresh secret every time setup is started
+        // Generate secret
         $secret = $google2fa->generateSecretKey();
 
         $user->two_factor_secret      = $secret;
-        $user->two_factor_app_enabled = 0;  // Not enabled until verified
+        $user->two_factor_app_enabled = 0;
         $user->save();
 
-        // Build standard otpauth URL (works with Google Authenticator, MS Authenticator, etc.)
         $issuer   = 'SharpLync';
-        $account  = $user->email ?: ('customer-' . $user->id . '@sharplync.local');
+        $account  = $user->email ?: ('customer-' . $user->id);
         $otpauth  = sprintf(
             'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30',
             rawurlencode($issuer),
@@ -139,27 +138,25 @@ class SecurityController extends Controller
             rawurlencode($issuer)
         );
 
-        // Generate PNG QR code using BaconQrCode
+        // Generate SVG QR Code (NO GD required)
         try {
             $renderer = new ImageRenderer(
                 new RendererStyle(200),
-                new GdImageBackEnd()
+                new SvgImageBackEnd()   // ← SVG BACKEND, WORKS EVERYWHERE
             );
-            $writer   = new Writer($renderer);
 
-            // Binary PNG data
-            $qrBinary = $writer->writeString($otpauth);
+            $writer  = new Writer($renderer);
+            $svgData = $writer->writeString($otpauth);
 
-            // Base64 encode it so frontend can use as <img src="data:image/png;base64,...">
-            $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
+            // Base64 encode SVG
+            $qrBase64 = 'data:image/svg+xml;base64,' . base64_encode($svgData);
 
         } catch (\Throwable $e) {
-            Log::error('PORTAL APP 2FA QR GENERATION FAILED', [
+            Log::error("PORTAL APP 2FA SVG GENERATION FAILED", [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
             ]);
 
-            // Fallback: still return otpauth URL + secret, frontend can handle error state
             return response()->json([
                 'success'     => true,
                 'secret'      => $secret,
@@ -169,13 +166,13 @@ class SecurityController extends Controller
             ]);
         }
 
-        Log::info("PORTAL APP 2FA STARTED", ['user_id' => $user->id]);
+        Log::info("PORTAL APP 2FA STARTED (APP): User {$user->id}");
 
         return response()->json([
             'success'     => true,
             'secret'      => $secret,
             'otpauth_url' => $otpauth,
-            'qr_image'    => $qrBase64,
+            'qr_image'    => $qrBase64, // ← FRONTEND USES THIS
             'message'     => 'Authenticator setup started.'
         ]);
     }
@@ -185,51 +182,32 @@ class SecurityController extends Controller
      */
     public function verifyApp2FASetup(Request $request)
     {
-        $request->validate([
-            'code' => 'required|digits:6',
-        ]);
+        $request->validate(['code' => 'required|digits:6']);
 
         /** @var User $user */
         $user = auth('customer')->user();
 
         if (!$user) {
-            Log::error("PORTAL APP 2FA VERIFY: Not authenticated.");
             return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
         }
 
         if (empty($user->two_factor_secret)) {
-            Log::warning("PORTAL APP 2FA VERIFY: No secret on user.", ['user_id' => $user->id]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Authenticator setup has not been started.'
-            ], 422);
+            return response()->json(['success' => false, 'message' => 'Authenticator setup has not been started.'], 422);
         }
 
         $google2fa = new Google2FA();
 
-        $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
-
-        if (!$valid) {
-            Log::warning("PORTAL APP 2FA INVALID CODE", ['user_id' => $user->id]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid or expired code.'
-            ], 422);
+        if (!$google2fa->verifyKey($user->two_factor_secret, $request->code)) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired code.'], 422);
         }
 
-        // Enable app-based 2FA and turn off email 2FA
         $user->two_factor_app_enabled    = 1;
         $user->two_factor_email_enabled  = 0;
         $user->two_factor_confirmed_at   = now();
-        $user->two_factor_default_method = 'app'; // optional, nothing uses this yet
+        $user->two_factor_default_method = 'app';
         $user->save();
 
-        Log::info("PORTAL APP 2FA ENABLED", ['user_id' => $user->id]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Authenticator app has been enabled.'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Authenticator app has been enabled.']);
     }
 
     /**
@@ -241,22 +219,15 @@ class SecurityController extends Controller
         $user = auth('customer')->user();
 
         if (!$user) {
-            Log::error("PORTAL APP 2FA DISABLE: Not authenticated.");
             return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
         }
 
-        $user->two_factor_app_enabled      = 0;
-        // We can optionally clear the secret; leaving it null forces a new setup next time
-        $user->two_factor_secret           = null;
-        $user->two_factor_trusted_devices  = null; // clear any trusted devices tied to app 2FA
+        $user->two_factor_app_enabled     = 0;
+        $user->two_factor_secret          = null;
+        $user->two_factor_trusted_devices = null;
         $user->save();
 
-        Log::info("PORTAL APP 2FA DISABLED", ['user_id' => $user->id]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Authenticator app has been disabled.'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Authenticator app has been disabled.']);
     }
 
     /* ============================================================
@@ -267,15 +238,12 @@ class SecurityController extends Controller
         $userId = session('2fa_user_id');
 
         if (!$userId) {
-            Log::warning("LOGIN 2FA SEND: No 2fa_user_id found.");
             return response()->json(['success' => false, 'message' => 'Session expired.'], 419);
         }
 
-        /** @var User $user */
         $user = User::find($userId);
 
         if (!$user) {
-            Log::error("LOGIN 2FA SEND: User not found", ['id' => $userId]);
             return response()->json(['success' => false, 'message' => 'Invalid session user'], 419);
         }
 
@@ -293,8 +261,6 @@ class SecurityController extends Controller
 
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
-        Log::info("LOGIN 2FA CODE SENT", ['user_id' => $user->id]);
-
         return response()->json(['success' => true, 'message' => 'Code re-sent']);
     }
 
@@ -308,15 +274,12 @@ class SecurityController extends Controller
         $userId = session('2fa_user_id');
 
         if (!$userId) {
-            Log::warning("LOGIN VERIFY: No 2fa_user_id in session");
             return response()->json(['success' => false, 'message' => '2FA session expired. Please log in again.'], 419);
         }
 
-        /** @var User $user */
         $user = User::find($userId);
 
         if (!$user) {
-            Log::error("LOGIN VERIFY: User not found", ['id' => $userId]);
             return response()->json(['success' => false, 'message' => 'Invalid user'], 419);
         }
 
@@ -331,23 +294,18 @@ class SecurityController extends Controller
             ->first();
 
         if (!$record) {
-            Log::warning("LOGIN VERIFY INVALID CODE", ['user_id' => $user->id]);
             return response()->json(['success' => false, 'message' => 'Invalid or expired code.'], 422);
         }
 
-        // Clean tokens
         DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->where('channel', 'email')
             ->delete();
 
-        // Finalise login
         auth('customer')->login($user);
 
         $user->last_login_at = now();
         $user->save();
-
-        Log::info("LOGIN 2FA SUCCESS", ['user_id' => $user->id]);
 
         return response()->json([
             'success'  => true,
