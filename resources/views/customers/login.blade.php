@@ -131,15 +131,8 @@
             <button class="cp-modal-close">&times;</button>
         </header>
 
-        <div class="cp-modal-body">
+        <div class="cp-modal-body">          
             
-            {{-- DEBUG BLOCK --}}
-            <div style="margin-bottom:1rem; background:#f4f4f4; padding:0.75rem; border-radius:6px; font-size:0.85rem;">
-                <strong>DEBUG:</strong><br>
-                show_2fa_modal: {{ session('show_2fa_modal') ? 'YES' : 'NO' }}<br>
-                2fa_user_id: {{ session('2fa_user_id') }}<br>
-                email_masked: {{ session('email_masked') }}<br>
-            </div>
 
             <div style="display:flex; gap:8px; justify-content:center;">
                 @for($i = 1; $i <= 6; $i++)
@@ -190,59 +183,91 @@
 
     if (!digits.length) return;
 
-    /* ---------------------------- */
-    /*  Auto-advance + Paste Logic  */
-    /* ---------------------------- */
-    digits.forEach((input, idx) => {
+    /* --------------------------------------- */
+    /*  INPUT, AUTOSHIFT & PASTE HANDLING      */
+    /* --------------------------------------- */
+    digits.forEach((input, index) => {
 
+        // TYPING
         input.addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
-            e.target.value = val;
 
-            if (val && idx < 5) digits[idx + 1].focus();
+            // User pasted more than 1 digit via keyboard auto-paste
+            if (val.length > 1) {
+                fillFromPaste(val);
+                return;
+            }
+
+            input.value = val;
+
+            if (val && index < 5) {
+                digits[index + 1].focus();
+            }
 
             checkReady();
         });
 
-        /* Backspace to previous box */
+        // BACKSPACE
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !input.value && idx > 0) {
-                digits[idx - 1].focus();
+            if (e.key === 'Backspace' && !input.value && index > 0) {
+                digits[index - 1].focus();
             }
         });
 
-        /* Paste full code */
+        // RIGHT-CLICK + CTRL+V PASTE
         input.addEventListener('paste', (e) => {
             e.preventDefault();
-            const paste = (e.clipboardData || window.clipboardData)
+
+            const pasted = (e.clipboardData || window.clipboardData)
                 .getData('text')
                 .replace(/\D/g, '')
-                .slice(0, 6)
-                .split('');
+                .slice(0, 6);
 
-            digits.forEach((box, i) => box.value = paste[i] || '');
-            checkReady();
+            fillFromPaste(pasted);
         });
     });
 
+    /* --------------------------------------- */
+    /* FILL BOXES FROM PASTED STRING           */
+    /* --------------------------------------- */
+    function fillFromPaste(str) {
+        const chars = str.split('');
+
+        digits.forEach((box, i) => {
+            box.value = chars[i] || '';
+        });
+
+        checkReady();
+
+        // Auto-submit if all 6 digits present
+        if (chars.length === 6) {
+            submitBtn.click();
+        }
+    }
+
+    /* --------------------------------------- */
+    /* READY CHECK                             */
+    /* --------------------------------------- */
     function checkReady() {
         const code = digits.map(i => i.value).join('');
         submitBtn.disabled = code.length !== 6;
     }
 
+    /* --------------------------------------- */
+    /* ERROR / SHAKE                           */
+    /* --------------------------------------- */
     function showError(msg) {
         errorBox.innerText = msg;
         errorBox.style.display = 'block';
 
-        // shake the modal
         modalSheet.classList.remove('shake');
-        void modalSheet.offsetWidth; // force reflow
+        void modalSheet.offsetWidth; // reflow
         modalSheet.classList.add('shake');
     }
 
-    /* ---------------------------- */
-    /*  VERIFY 2FA CODE             */
-    /* ---------------------------- */
+    /* --------------------------------------- */
+    /* VERIFY CODE                             */
+    /* --------------------------------------- */
     submitBtn.addEventListener('click', function(){
 
         const code = digits.map(i => i.value).join('');
@@ -263,18 +288,17 @@
                 return;
             }
 
-            // Invalid code
+            // WRONG CODE
             digits.forEach(i => i.value = '');
             digits[0].focus();
-
             submitBtn.disabled = true;
             showError(res.message);
         });
     });
 
-    /* ---------------------------- */
-    /*  RESEND CODE                 */
-    /* ---------------------------- */
+    /* --------------------------------------- */
+    /* RESEND CODE                             */
+    /* --------------------------------------- */
     resendBtn.addEventListener('click', function(){
         fetch("{{ route('customer.security.email.send-login-code') }}", {
             method: "POST",
@@ -284,5 +308,6 @@
 
 })();
 </script>
+
 @endpush
 
