@@ -14,13 +14,12 @@ use PragmaRX\Google2FA\Google2FA;
 class TwoFactorLoginController extends Controller
 {
     /**
-     * Send login-time 2FA code (EMAIL)
-     * (Kept for compatibility; current email 2FA flow uses SecurityController,
-     *  but we leave this intact in case anything else calls it.)
+     * Send login-time EMAIL 2FA code
      */
     public function send(Request $request)
     {
         $userId = session('2fa_user_id');
+
         if (!$userId) {
             return response()->json([
                 'success' => false,
@@ -29,6 +28,7 @@ class TwoFactorLoginController extends Controller
         }
 
         $user = User::find($userId);
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -36,7 +36,7 @@ class TwoFactorLoginController extends Controller
             ], 422);
         }
 
-        // generate 6-digit code
+        // Generate 6-digit code
         $code = rand(100000, 999999);
         $hash = hash('sha256', $code);
 
@@ -58,9 +58,7 @@ class TwoFactorLoginController extends Controller
     }
 
     /**
-     * Verify login-time 2FA
-     * - If session('2fa_method') === 'app' → verify TOTP via Google Authenticator
-     * - Otherwise → fall back to existing EMAIL token check
+     * Verify login-time 2FA (Email OR Authenticator App)
      */
     public function verify(Request $request)
     {
@@ -78,6 +76,7 @@ class TwoFactorLoginController extends Controller
         }
 
         $user = User::find($userId);
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -87,12 +86,14 @@ class TwoFactorLoginController extends Controller
 
         $method = session('2fa_method', 'email');
 
-        // ===============================================================
-        // CASE 1: AUTHENTICATOR APP (TOTP) LOGIN
-        // ===============================================================
+        /**
+         * ============================================================
+         * CASE 1 — AUTHENTICATOR APP (TOTP)
+         * ============================================================
+         */
         if ($method === 'app') {
 
-            if (! $user->two_factor_app_enabled || empty($user->two_factor_secret)) {
+            if (!$user->two_factor_app_enabled || empty($user->two_factor_secret)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Authenticator is not enabled for this account.'
@@ -101,24 +102,26 @@ class TwoFactorLoginController extends Controller
 
             $google2fa = new Google2FA();
 
-            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
+            $valid = $google2fa->verifyKey(
+                $user->two_factor_secret,
+                $request->code
+            );
 
-            if (! $valid) {
+            if (!$valid) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid or expired code.'
                 ], 422);
             }
 
-            // success → complete login
+            // Login success
             Auth::guard('customer')->login($user);
 
-            // clean up session flags
+            // Cleanup
             session()->forget('2fa_user_id');
             session()->forget('2fa_method');
             session()->forget('show_app_2fa_modal');
 
-            // update last login
             $user->last_login_at = now();
             $user->save();
 
@@ -128,10 +131,11 @@ class TwoFactorLoginController extends Controller
             ]);
         }
 
-        // ===============================================================
-        // CASE 2: EMAIL 2FA (existing DB-token based logic)
-        // ===============================================================
-
+        /**
+         * ============================================================
+         * CASE 2 — EMAIL 2FA
+         * ============================================================
+         */
         $hash = hash('sha256', $request->code);
 
         $record = DB::connection('crm')->table('user_two_factor_tokens')
@@ -148,12 +152,12 @@ class TwoFactorLoginController extends Controller
             ], 422);
         }
 
-        // success → wipe tokens
+        // Valid → wipe codes
         DB::connection('crm')->table('user_two_factor_tokens')
             ->where('user_id', $user->id)
             ->delete();
 
-        // complete login
+        // Complete login
         Auth::guard('customer')->login($user);
 
         session()->forget('2fa_user_id');
