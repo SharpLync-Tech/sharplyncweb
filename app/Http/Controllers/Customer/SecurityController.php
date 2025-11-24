@@ -11,6 +11,10 @@ use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
 use Carbon\Carbon;
 use PragmaRX\Google2FA\Google2FA;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\GdImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 
 class SecurityController extends Controller
 {
@@ -103,7 +107,7 @@ class SecurityController extends Controller
      * Start Authenticator App setup:
      * - Generate a new TOTP secret
      * - Save to user
-     * - Return otpauth:// URL + secret so the frontend can show QR + manual code
+     * - Return otpauth:// URL + secret + QR image (base64) for the frontend
      */
     public function startApp2FASetup(Request $request)
     {
@@ -135,12 +139,43 @@ class SecurityController extends Controller
             rawurlencode($issuer)
         );
 
+        // Generate PNG QR code using BaconQrCode
+        try {
+            $renderer = new ImageRenderer(
+                new RendererStyle(200),
+                new GdImageBackEnd()
+            );
+            $writer   = new Writer($renderer);
+
+            // Binary PNG data
+            $qrBinary = $writer->writeString($otpauth);
+
+            // Base64 encode it so frontend can use as <img src="data:image/png;base64,...">
+            $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
+
+        } catch (\Throwable $e) {
+            Log::error('PORTAL APP 2FA QR GENERATION FAILED', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            // Fallback: still return otpauth URL + secret, frontend can handle error state
+            return response()->json([
+                'success'     => true,
+                'secret'      => $secret,
+                'otpauth_url' => $otpauth,
+                'qr_image'    => null,
+                'message'     => 'Authenticator setup started, but QR generation failed. Enter the code manually.'
+            ]);
+        }
+
         Log::info("PORTAL APP 2FA STARTED", ['user_id' => $user->id]);
 
         return response()->json([
             'success'     => true,
             'secret'      => $secret,
             'otpauth_url' => $otpauth,
+            'qr_image'    => $qrBase64,
             'message'     => 'Authenticator setup started.'
         ]);
     }

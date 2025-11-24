@@ -682,7 +682,7 @@
         backAuthBtn.addEventListener('click', showMain);
     }
 
-    // Start / regenerate QR + secret
+        // Start / regenerate QR + secret
     async function startAuthSetup() {
         authStatusEl.style.display = 'block';
         authStatusEl.textContent  = "Generating QR code...";
@@ -702,15 +702,21 @@
             if (!d.success) throw new Error(d.message || "Unable to start setup.");
 
             // Show QR + secret
-            const otpauth = d.otpauth_url;
             const secret  = d.secret;
+            const qrImage = d.qr_image || null;
 
-            // Use Google Charts to render QR (quick & easy)
-            const qrUrl = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + encodeURIComponent(otpauth);
-            authQrImg.src = qrUrl;
-            authQrWrapper.style.display   = 'block';
-            authSecretBlock.style.display = 'block';
-            authSecretEl.textContent      = secret;
+            if (qrImage) {
+                authQrImg.src = qrImage;
+                authQrWrapper.style.display   = 'block';
+            } else {
+                // Fallback if QR generation failed: hide QR but still show secret
+                authQrWrapper.style.display   = 'none';
+            }
+
+            if (secret) {
+                authSecretBlock.style.display = 'block';
+                authSecretEl.textContent      = secret;
+            }
 
             authVerifyBlock.style.display = 'block';
             authStatusEl.textContent      = "Scan the QR or enter the code in your app, then enter the 6-digit code below.";
@@ -720,7 +726,9 @@
             authErrorEl.textContent    = err.message || "Something went wrong starting Authenticator setup.";
             authErrorEl.style.display  = 'block';
             // Revert toggle if setup fails
-            authToggle.checked = false;
+            if (authToggle) {
+                authToggle.checked = false;
+            }
         }
     }
 
