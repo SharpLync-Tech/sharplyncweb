@@ -8,7 +8,7 @@ use App\Http\Controllers\Customer\SecurityController;
  *  PORTAL 2FA ROUTES (USER IS LOGGED IN)
  * ======================================================
  * These routes are used from inside the Customer Portal
- * when the user enables 2FA from settings.
+ * when the user enables Email 2FA from settings.
  * ======================================================
  */
 Route::middleware(['auth:customer'])
@@ -27,18 +27,6 @@ Route::middleware(['auth:customer'])
         // EMAIL 2FA SETUP — VERIFY CODE
         Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
             ->name('email.verify-code');
-
-        // AUTHENTICATOR APP 2FA — START SETUP
-        Route::post('/auth/start', [SecurityController::class, 'startApp2FASetup'])
-            ->name('auth.start');
-
-        // AUTHENTICATOR APP 2FA — VERIFY & ENABLE
-        Route::post('/auth/verify', [SecurityController::class, 'verifyApp2FASetup'])
-            ->name('auth.verify');
-
-        // AUTHENTICATOR APP 2FA — DISABLE
-        Route::post('/auth/disable', [SecurityController::class, 'disableApp2FA'])
-            ->name('auth.disable');
     });
 
 /**
