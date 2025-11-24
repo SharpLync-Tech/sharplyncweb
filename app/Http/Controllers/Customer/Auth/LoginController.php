@@ -17,9 +17,19 @@ class LoginController extends Controller
 {
     /**
      * Show login form
+     * REFLASH flash data so 2FA modals always appear.
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        // Preserve flash data for app or email 2FA modals
+        if ($request->session()->has('show_app_2fa_modal')) {
+            $request->session()->reflash();
+        }
+
+        if ($request->session()->has('show_2fa_modal')) {
+            $request->session()->reflash();
+        }
+
         return view('customers.login');
     }
 
@@ -45,26 +55,26 @@ class LoginController extends Controller
         ]);
 
         // Wrong credentials
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             Log::warning('LOGIN FAILED', ['email' => $email]);
             return back()->with('error', 'Invalid email or password.');
         }
 
-        // Suspended accounts
+        // Suspended
         if ($user->account_status === 'suspended') {
             return back()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
-        // -------------------------------------------------------------------
-        // Determine which 2FA method the user is using
-        // -------------------------------------------------------------------
+        // -----------------------------------------
+        // Determine 2FA method
+        // -----------------------------------------
         $usesApp2FA   = (bool) $user->two_factor_app_enabled;
         $usesEmail2FA = (bool) $user->two_factor_email_enabled;
 
         // ===================================================================
-        // CASE 1: NO 2FA ENABLED → Login normally
+        // CASE: NO 2FA ENABLED → Normal login
         // ===================================================================
-        if (!$usesApp2FA && !$usesEmail2FA) {
+        if (! $usesApp2FA && ! $usesEmail2FA) {
 
             Auth::guard('customer')->login($user);
 
@@ -81,7 +91,7 @@ class LoginController extends Controller
         }
 
         // ===================================================================
-        // CASE 2: AUTHENTICATOR APP 2FA (TOTP)
+        // CASE: APP 2FA ENABLED → TOTP VERIFICATION MODAL
         // ===================================================================
         if ($usesApp2FA) {
 
@@ -102,7 +112,7 @@ class LoginController extends Controller
         }
 
         // ===================================================================
-        // CASE 3: EMAIL 2FA
+        // CASE: EMAIL 2FA ENABLED → EMAIL FLOW
         // ===================================================================
         session([
             '2fa_user_id' => $user->id,
@@ -111,6 +121,7 @@ class LoginController extends Controller
 
         $maskedEmail = $this->maskEmail($user->email);
 
+        // Send email 2FA login code
         $this->sendLoginCode($user);
 
         Log::info('LOGIN 2FA REQUIRED (email)', [
@@ -142,7 +153,7 @@ class LoginController extends Controller
      */
     private function maskEmail(?string $email): string
     {
-        if (!$email || !str_contains($email, '@')) {
+        if (! $email || ! str_contains($email, '@')) {
             return '(no email on file)';
         }
 
@@ -178,7 +189,7 @@ class LoginController extends Controller
 
         Mail::to($user->email)->send(new TwoFactorEmailCode($user, $code));
 
-        Log::info('LOGIN 2FA CODE SENT (email)', [
+        Log::info('LOGIN 2FA CODE SENT', [
             'user_id' => $user->id,
             'email'   => $user->email,
         ]);
