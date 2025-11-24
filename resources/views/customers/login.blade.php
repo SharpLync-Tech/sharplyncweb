@@ -112,7 +112,59 @@
   </div>
 
 </section>
-Max, generate the updated JS + OTP HTML
+{{-- ================================================================= --}}
+{{--                 LOGIN-TIME 2FA MODAL (TRIGGERED ON LOGIN)        --}}
+{{-- ================================================================= --}}
+@if(session('show_2fa_modal'))
+<div id="login-2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
+
+    <div class="cp-modal-sheet" style="max-width:460px;">
+        <header class="cp-modal-header">
+            <div>
+                <h3>Two-Factor Authentication</h3>
+                <p class="cp-modal-subtitle">
+                    Enter the code sent to <strong>{{ session('email_masked') }}</strong>
+                </p>
+            </div>
+            <button class="cp-modal-close" id="login-2fa-close">&times;</button>
+        </header>
+
+        <div class="cp-modal-body">          
+            
+
+            <div style="display:flex; gap:8px; justify-content:center;">
+                @for($i = 1; $i <= 6; $i++)
+                    <input maxlength="1"
+                           class="login-2fa-digit"
+                           data-id="{{ $i }}"
+                           inputmode="numeric"
+                           autocomplete="one-time-code"
+                           style="width:45px; height:55px; text-align:center;
+                                  font-size:1.6rem; border-radius:10px;
+                                  border:1px solid #ccc;">
+                @endfor
+            </div>
+
+            <div id="login-2fa-error"
+                 style="color:#b00020; margin-top:1rem; text-align:center; display:none;">
+            </div>
+
+            <button id="login-2fa-submit"
+                    class="cp-btn cp-teal-btn"
+                    style="margin-top:1.5rem; width:100%;"
+                    disabled>
+                Verify Code
+            </button>
+
+            <button id="login-2fa-resend"
+                    class="cp-btn cp-navy-btn"
+                    style="margin-top:0.75rem; width:100%;">
+                Resend Code
+            </button>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 @push('scripts')
 <script>
