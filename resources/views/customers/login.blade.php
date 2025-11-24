@@ -175,11 +175,26 @@
     const resendBtn   = document.getElementById('login-2fa-resend');
     const errorBox    = document.getElementById('login-2fa-error');
     const modalSheet  = document.querySelector('.cp-modal-sheet');
+    
+    // NEW: Select the close button and the backdrop
+    const closeBtn    = document.getElementById('login-2fa-close');
+    const backdrop    = document.getElementById('login-2fa-backdrop');
+
+    /* ---------------------------- */
+    /* CLOSE MODAL LOGIC (ADDED)   */
+    /* ---------------------------- */
+    if (closeBtn && backdrop) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Remove the class that makes it visible (defined in base.blade.php)
+            backdrop.classList.remove('cp-modal-visible');
+        });
+    }
 
     if (!digits.length) return;
 
     /* ---------------------------- */
-    /*  Auto-advance + Paste Logic  */
+    /* Auto-advance + Paste Logic  */
     /* ---------------------------- */
     digits.forEach((input, idx) => {
 
@@ -227,7 +242,7 @@
     }
 
     /* ---------------------------- */
-    /*  VERIFY 2FA CODE             */
+    /* VERIFY 2FA CODE             */
     /* ---------------------------- */
     submitBtn.addEventListener('click', function(){
         const code = digits.map(i => i.value).join('');
