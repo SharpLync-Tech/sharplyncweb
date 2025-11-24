@@ -99,7 +99,8 @@
 .cp-modal-header {
     position: relative;
     margin-bottom: 1rem;
-}
+    padding-top: 1.5rem; /* <--- This pushes the text down */
+    margin-right: 1rem;  /* <--- Adds a little buffer on the right too */
 
 .cp-modal-header h3 {
     margin: 0;
