@@ -182,35 +182,70 @@
 <script>
 (function(){
 
-    const digits   = document.querySelectorAll('.login-2fa-digit');
-    const submitBtn = document.getElementById('login-2fa-submit');
-    const resendBtn = document.getElementById('login-2fa-resend');
-    const errorBox  = document.getElementById('login-2fa-error');
+    const digits      = [...document.querySelectorAll('.otp-digit')];
+    const submitBtn   = document.getElementById('login-2fa-submit');
+    const resendBtn   = document.getElementById('login-2fa-resend');
+    const errorBox    = document.getElementById('login-2fa-error');
+    const modalSheet  = document.querySelector('.cp-modal-sheet');
 
     if (!digits.length) return;
 
-    // Auto advance digits
-    digits.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            if (input.value.match(/[0-9]/)) {
-                if (index < 5) digits[index + 1].focus();
-            } else {
-                input.value = '';
+    /* ---------------------------- */
+    /*  Auto-advance + Paste Logic  */
+    /* ---------------------------- */
+    digits.forEach((input, idx) => {
+
+        input.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            e.target.value = val;
+
+            if (val && idx < 5) digits[idx + 1].focus();
+
+            checkReady();
+        });
+
+        /* Backspace to previous box */
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+                digits[idx - 1].focus();
             }
+        });
+
+        /* Paste full code */
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData)
+                .getData('text')
+                .replace(/\D/g, '')
+                .slice(0, 6)
+                .split('');
+
+            digits.forEach((box, i) => box.value = paste[i] || '');
             checkReady();
         });
     });
 
     function checkReady() {
-        const code = [...digits].map(i => i.value).join('');
+        const code = digits.map(i => i.value).join('');
         submitBtn.disabled = code.length !== 6;
     }
 
-    // -------------------------------------------------------
-    // VERIFY CODE
-    // -------------------------------------------------------
-    submitBtn?.addEventListener('click', function(){
-        const code = [...digits].map(i => i.value).join('');
+    function showError(msg) {
+        errorBox.innerText = msg;
+        errorBox.style.display = 'block';
+
+        // shake the modal
+        modalSheet.classList.remove('shake');
+        void modalSheet.offsetWidth; // force reflow
+        modalSheet.classList.add('shake');
+    }
+
+    /* ---------------------------- */
+    /*  VERIFY 2FA CODE             */
+    /* ---------------------------- */
+    submitBtn.addEventListener('click', function(){
+
+        const code = digits.map(i => i.value).join('');
 
         fetch("{{ route('customer.security.email.verify-login-code') }}", {
             method: "POST",
@@ -222,31 +257,32 @@
         })
         .then(r => r.json())
         .then(res => {
+
             if (res.success) {
                 window.location = res.redirect;
-            } else {
-                errorBox.innerText = res.message;
-                errorBox.style.display = 'block';
-
-                digits.forEach(i => i.value = '');
-                digits[0].focus();
-                submitBtn.disabled = true;
+                return;
             }
+
+            // Invalid code
+            digits.forEach(i => i.value = '');
+            digits[0].focus();
+
+            submitBtn.disabled = true;
+            showError(res.message);
         });
     });
 
-    // -------------------------------------------------------
-    // RESEND CODE
-    // -------------------------------------------------------
-    resendBtn?.addEventListener('click', function(){
+    /* ---------------------------- */
+    /*  RESEND CODE                 */
+    /* ---------------------------- */
+    resendBtn.addEventListener('click', function(){
         fetch("{{ route('customer.security.email.send-login-code') }}", {
             method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            }
+            headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
         });
     });
 
 })();
 </script>
 @endpush
+

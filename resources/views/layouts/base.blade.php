@@ -164,15 +164,100 @@
         background: #0c3a5e;
     }
 
-    /* Debug box */
-    .debug-box {
-        background: rgba(255,255,255,0.15);
-        border: 1px solid rgba(255,255,255,0.2);
-        color: #fff;
-        padding: .75rem;
-        border-radius: 10px;
-        margin-bottom: 1.25rem;
+    
+    
+/* ------------------------------ */
+/* Modal + Animation Enhancements */
+/* ------------------------------ */
+
+/* Slide-down glossy animation */
+.slide-down {
+    animation: slideDown .35s ease-out;
+}
+
+@keyframes slideDown {
+    0% { 
+        transform: translateY(-40px) scale(.98); 
+        opacity: 0;
     }
+    100% { 
+        transform: translateY(0) scale(1); 
+        opacity: 1;
+    }
+}
+
+/* OTP Styling */
+.otp-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.7rem;
+    margin: 1.2rem 0;
+}
+
+.otp-digit {
+    width: 50px;
+    height: 58px;
+    font-size: 1.7rem;
+    text-align: center;
+    background: #0A2A4D;
+    border: 2px solid #2CBFAE;
+    border-radius: 10px;
+    color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(44,191,174,.4);
+    transition: all .15s ease;
+}
+
+.otp-digit:focus {
+    border-color: #37dccc;
+    box-shadow: 0 0 12px rgba(44,191,174,.7);
+}
+
+/* Shake animation on wrong code */
+.shake {
+    animation: shakeAnim .35s ease;
+}
+
+@keyframes shakeAnim {
+    0%   { transform: translateX(0); }
+    20%  { transform: translateX(-6px); }
+    40%  { transform: translateX(6px); }
+    60%  { transform: translateX(-6px); }
+    80%  { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+
+/* Error box */
+.otp-error {
+    display: none;
+    margin-bottom: 1rem;
+    color: #ff6363;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Buttons */
+.full-btn {
+    width: 100%;
+    margin-top: .5rem;
+}
+
+/* Close button polish */
+#cp-close-2fa {
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    color: #ffffffaa;
+    cursor: pointer;
+    padding: .2rem .4rem;
+    border-radius: 6px;
+    transition: all .2s ease;
+}
+
+#cp-close-2fa:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+}
 </style>
 
 </head>
