@@ -92,7 +92,7 @@ class TwoFactorLoginController extends Controller
         // ===============================================================
         if ($method === 'app') {
 
-            if (! $user->two_factor_app_enabled || empty($user->two_factor_secret)) {
+            if (!$user->two_factor_app_enabled || empty($user->two_factor_secret)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Authenticator is not enabled for this account.'
@@ -101,9 +101,18 @@ class TwoFactorLoginController extends Controller
 
             $google2fa = new Google2FA();
 
-            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
+            /**
+             * FIX:
+             * Allow up to 4 windows drift (±2 minutes)
+             * Required for reliable login-time verification.
+             */
+            $valid = $google2fa->verifyKey(
+                $user->two_factor_secret,
+                $request->code,
+                4 // <-- IMPORTANT FIX
+            );
 
-            if (! $valid) {
+            if (!$valid) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid or expired code.'
@@ -118,7 +127,7 @@ class TwoFactorLoginController extends Controller
             session()->forget('2fa_method');
             session()->forget('show_app_2fa_modal');
 
-            // update last login
+            // update last login time
             $user->last_login_at = now();
             $user->save();
 
@@ -156,6 +165,7 @@ class TwoFactorLoginController extends Controller
         // complete login
         Auth::guard('customer')->login($user);
 
+        // clean session
         session()->forget('2fa_user_id');
         session()->forget('email_masked');
         session()->forget('show_2fa_modal');
