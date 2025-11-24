@@ -1,6 +1,6 @@
 {{--  
   Page: customers/login.blade.php  
-  Version: FINAL (Login-Time 2FA Integration + Debug + App 2FA) 
+  Version: FINAL (Login-Time 2FA Integration + Debug) 
 --}}
 
 @extends('layouts.base')
@@ -115,9 +115,8 @@
   </div>
 
 </section>
-
 {{-- ================================================================= --}}
-{{--               LOGIN-TIME 2FA MODAL — EMAIL (EXISTING)             --}}
+{{--                 LOGIN-TIME 2FA MODAL (TRIGGERED ON LOGIN)        --}}
 {{-- ================================================================= --}}
 @if(session('show_2fa_modal'))
 <div id="login-2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
@@ -169,54 +168,8 @@
     </div>
 </div>
 @endif
-
-{{-- ================================================================= --}}
-{{--           LOGIN-TIME 2FA MODAL — AUTHENTICATOR APP (NEW)          --}}
-{{-- ================================================================= --}}
-@if(session('show_app_2fa_modal'))
-<div id="login-app2fa-backdrop" class="cp-modal-backdrop cp-modal-visible">
-
-    <div class="cp-modal-sheet" style="max-width:460px;">
-        <header class="cp-modal-header">
-            <div>
-                <h3>Authenticator App Verification</h3>
-                <p class="cp-modal-subtitle">
-                    Open your Authenticator app and enter the 6-digit code.
-                </p>
-            </div>
-            <button class="cp-modal-close" id="login-app2fa-close">&times;</button>
-        </header>
-
-        <div class="cp-modal-body">
-            <div style="display:flex; justify-content:center; margin-top:0.5rem;">
-                <input id="login-app2fa-code"
-                       type="text"
-                       inputmode="numeric"
-                       maxlength="6"
-                       autocomplete="one-time-code"
-                       style="width:180px; height:55px; text-align:center;
-                              font-size:1.6rem; letter-spacing:0.25em; border-radius:10px;
-                              border:1px solid #ccc;">
-            </div>
-
-            <div id="login-app2fa-error"
-                 style="color:#b00020; margin-top:1rem; text-align:center; display:none;">
-            </div>
-
-            <button id="login-app2fa-submit"
-                    class="cp-btn cp-teal-btn"
-                    style="margin-top:1.5rem; width:100%;">
-                Verify Code
-            </button>
-        </div>
-    </div>
-</div>
-@endif
-
 @endsection
-
 @push('scripts')
-{{-- Existing EMAIL 2FA script (unchanged) --}}
 <script>
 (function(){
 
@@ -305,14 +258,11 @@
 
     function checkReady() {
         const code = digits.map(i => i.value).join('');
-        if (submitBtn) {
-            submitBtn.disabled = code.length !== 6;
-        }
+        submitBtn.disabled = code.length !== 6;
     }
 
     function showError(msg) {
-        if (!errorBox || !modalSheet) return;
-        errorBox.innerText = msg || 'Something went wrong.';
+        errorBox.innerText = msg;
         errorBox.style.display = 'block';
 
         modalSheet.classList.remove('shake');
@@ -321,136 +271,38 @@
     }
 
     /* ---------------------------- */
-    /* 3. VERIFY 2FA CODE (EMAIL)   */
+    /* 3. VERIFY 2FA CODE           */
     /* ---------------------------- */
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function(){
-            const code = digits.map(i => i.value).join('');
+    submitBtn.addEventListener('click', function(){
+        const code = digits.map(i => i.value).join('');
 
-            fetch("{{ route('customer.security.email.verify-login-code') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({ code })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    window.location = res.redirect;
-                    return;
-                }
-                digits.forEach(i => i.value = '');
-                digits[0].focus();
-                submitBtn.disabled = true;
-                showError(res.message);
-            });
-        });
-    }
-
-    if (resendBtn) {
-        resendBtn.addEventListener('click', function(){
-            fetch("{{ route('customer.security.email.send-login-code') }}", {
-                method: "POST",
-                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
-            });
-        });
-    }
-
-})();
-</script>
-
-{{-- New AUTHENTICATOR APP 2FA script --}}
-<script>
-(function(){
-
-    const backdrop   = document.getElementById('login-app2fa-backdrop');
-    if (!backdrop) return; // no app modal on this request
-
-    const modalSheet = backdrop.querySelector('.cp-modal-sheet');
-    const closeBtn   = document.getElementById('login-app2fa-close');
-    const codeInput  = document.getElementById('login-app2fa-code');
-    const submitBtn  = document.getElementById('login-app2fa-submit');
-    const errorBox   = document.getElementById('login-app2fa-error');
-
-    // Close logic
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function(e){
-            e.preventDefault();
-            backdrop.classList.remove('cp-modal-visible');
-        });
-    }
-
-    // Helper: clean / normalise code
-    function getCode() {
-        if (!codeInput) return '';
-        return (codeInput.value || '').replace(/\D/g, '').slice(0, 6);
-    }
-
-    function showError(msg) {
-        if (!errorBox || !modalSheet) return;
-        errorBox.innerText = msg || 'Something went wrong.';
-        errorBox.style.display = 'block';
-
-        modalSheet.classList.remove('shake');
-        void modalSheet.offsetWidth;
-        modalSheet.classList.add('shake');
-    }
-
-    if (codeInput) {
-        codeInput.addEventListener('input', function(e){
-            const cleaned = (e.target.value || '').replace(/\D/g, '').slice(0, 6);
-            e.target.value = cleaned;
-        });
-
-        codeInput.addEventListener('keydown', function(e){
-            if (e.key === 'Enter' && submitBtn) {
-                e.preventDefault();
-                submitBtn.click();
-            }
-        });
-
-        // Focus as soon as modal shows
-        setTimeout(() => codeInput.focus(), 100);
-    }
-
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function(){
-            const code = getCode();
-
-            if (code.length !== 6) {
-                showError('Please enter the full 6-digit code.');
+        fetch("{{ route('customer.security.email.verify-login-code') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ code })
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                window.location = res.redirect;
                 return;
             }
-
-            errorBox.style.display = 'none';
-
-            fetch("{{ route('customer.login.2fa.verify') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({ code })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    window.location = res.redirect;
-                    return;
-                }
-                if (codeInput) {
-                    codeInput.value = '';
-                    codeInput.focus();
-                }
-                showError(res.message || 'Invalid or expired code.');
-            })
-            .catch(() => {
-                showError('Something went wrong verifying your code.');
-            });
+            digits.forEach(i => i.value = '');
+            digits[0].focus();
+            submitBtn.disabled = true;
+            showError(res.message);
         });
-    }
+    });
+
+    resendBtn.addEventListener('click', function(){
+        fetch("{{ route('customer.security.email.send-login-code') }}", {
+            method: "POST",
+            headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+        });
+    });
 
 })();
 </script>

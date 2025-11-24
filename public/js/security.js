@@ -103,7 +103,7 @@
     if (verifyBtn) verifyBtn.addEventListener('click', verifyCode);
 
     // ============================
-    // AUTH APP — START SETUP
+    // AUTH APP — START / VERIFY / DISABLE
     // ============================
     const authStartBtn   = document.getElementById('cp-auth-start');
     const authVerifyBtn  = document.getElementById('cp-auth-verify');
@@ -158,7 +158,7 @@
             authStatusEl.style.display = 'none';
             authErrorEl.textContent    = err.message || "Something went wrong starting setup.";
             authErrorEl.style.display  = 'block';
-            authToggle.checked = false;
+            if (authToggle) authToggle.checked = false;
         }
     }
 
@@ -239,8 +239,12 @@
         }
     }
 
-    if (authStartBtn)  authStartBtn.addEventListener('click', startAuthSetup);
-    if (authVerifyBtn) authVerifyBtn.addEventListener('click', verifyAuthCode);
+    // Button hooks (still safe to keep)
+    if (authStartBtn)   authStartBtn.addEventListener('click', startAuthSetup);
+    if (authVerifyBtn)  authVerifyBtn.addEventListener('click', verifyAuthCode);
     if (authDisableBtn) authDisableBtn.addEventListener('click', disableAuth);
+
+    // 🔵 NEW: listen for UI event from portal-ui.js
+    document.addEventListener('cp-auth-start', startAuthSetup);
 
 })();

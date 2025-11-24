@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\SecurityController;
+use App\Http\Controllers\Customer\Auth\LoginTotpController;
 
 /**
  * ======================================================
@@ -53,11 +54,17 @@ Route::prefix('login/2fa')
     ->name('customer.login.2fa.')
     ->group(function () {
 
-        // LOGIN 2FA — SEND CODE
+        // LOGIN-TIME EMAIL 2FA — SEND
         Route::post('/send', [SecurityController::class, 'sendLogin2FACode'])
             ->name('send');
 
-        // LOGIN 2FA — VERIFY CODE
+        // LOGIN-TIME EMAIL 2FA — VERIFY
         Route::post('/verify', [SecurityController::class, 'verifyLogin2FACode'])
             ->name('verify');
+
+        // ============================================
+        // NEW — LOGIN-TIME AUTHENTICATOR APP TOTP VERIFY
+        // ============================================
+        Route::post('/verify-totp', [LoginTotpController::class, 'verify'])
+            ->name('verify-totp');
     });
