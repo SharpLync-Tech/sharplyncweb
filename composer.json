@@ -11,6 +11,7 @@
         "laravel/socialite": "^5.12",
         "laravel/tinker": "^2.10.1",
         "pragmarx/google2fa": "^9.0",
+        "symfony/mailgun-mailer": "^7.3",
         "xeroapi/xero-php-oauth2": "^4.0"
     }
 ,
