@@ -24,7 +24,7 @@
     const errorEl    = document.getElementById('cp-email-error');
     const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
-    // Authenticator UI elements
+    // Authenticator UI
     const authQrWrapper   = document.getElementById('cp-auth-qr-wrapper');
     const authSecretBlock = document.getElementById('cp-auth-secret-block');
     const authVerifyBlock = document.getElementById('cp-auth-verify-block');
@@ -32,18 +32,14 @@
     const authErrorEl     = document.getElementById('cp-auth-error');
     const authCodeInput   = document.getElementById('cp-auth-code');
 
+    /* ============================================================
+       FIX 1 — REMOVE restoreDBState()
+       The toggles MUST NOT be forced back to DB values.
+       ============================================================ */
+
     function clearOtp() {
         otpInputs.forEach(i => i.value = '');
         if (otpInputs[0]) otpInputs[0].focus();
-    }
-
-    function restoreDBState() {
-        if (emailToggle) {
-            emailToggle.checked = (emailToggle.dataset.persistOn === "1");
-        }
-        if (authToggle) {
-            authToggle.checked = (authToggle.dataset.persistOn === "1");
-        }
     }
 
     function showMain() {
@@ -56,20 +52,19 @@
 
         errorEl.style.display   = 'none';
         statusEl.style.display  = 'none';
-        sendBlock.style.display = 'block';
+
+        sendBlock.style.display   = 'block';
         verifyBlock.style.display = 'none';
 
         clearOtp();
 
-        // Reset authenticator section
+        // Reset Authenticator UI
         authQrWrapper.style.display   = 'none';
         authSecretBlock.style.display = 'none';
         authVerifyBlock.style.display = 'none';
         authStatusEl.style.display    = 'none';
         authErrorEl.style.display     = 'none';
         if (authCodeInput) authCodeInput.value = '';
-
-        restoreDBState();
     }
 
     function showEmailSetup() {
@@ -79,8 +74,10 @@
 
         backEmailBtn.style.display = 'inline-block';
         backAuthBtn.style.display  = 'none';
-        errorEl.style.display      = 'none';
-        statusEl.style.display     = 'none';
+
+        errorEl.style.display  = 'none';
+        statusEl.style.display = 'none';
+
         clearOtp();
     }
 
@@ -101,6 +98,10 @@
         modal.classList.add('cp-modal-visible');
         modal.setAttribute('aria-hidden', 'false');
         if(root) root.classList.add('modal-open');
+
+        /* FIX 2 — DO NOT restoreDBState() */
+        // restoreDBState();
+
         showMain();
     }
 
@@ -108,6 +109,10 @@
         modal.classList.remove('cp-modal-visible');
         modal.setAttribute('aria-hidden','true');
         if(root) root.classList.remove('modal-open');
+
+        /* FIX 3 — DO NOT restoreDBState() */
+        // restoreDBState();
+
         showMain();
     }
 
@@ -119,7 +124,10 @@
         if (!sheet.contains(e.target)) closeModal();
     });
 
-    // Toggle → routing screens
+    // ============================================================
+    // TOGGLE HANDLING (NOW WORKS!)
+    // ============================================================
+
     if (emailToggle) {
         emailToggle.addEventListener('change', function(){
             if (this.checked) {
@@ -134,9 +142,10 @@
         authToggle.addEventListener('change', function(){
             if (this.checked) {
                 if (emailToggle) emailToggle.checked = false;
+
                 showAuthSetup();
 
-                // 🔵 NEW: tell security.js to start Auth setup (QR + secret)
+                // Tell security.js to start QR setup
                 document.dispatchEvent(new Event('cp-auth-start'));
 
             } else {
@@ -148,7 +157,7 @@
     backEmailBtn.addEventListener('click', showMain);
     backAuthBtn.addEventListener('click', showMain);
 
-    // OTP input UX
+    // OTP UX
     otpInputs.forEach((input, idx)=>{
         input.addEventListener('input', e=>{
             e.target.value = e.target.value.replace(/\D/g,'');
