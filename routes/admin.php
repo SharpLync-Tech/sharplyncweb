@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\LogViewerController;
 use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Admin\DeviceAuditController;
+use App\Http\Controllers\Admin\SmsController;
 
 Route::get('/admin/signin', fn () => view('admin.auth.login'))->name('admin.signin');
 Route::get('/admin/login', [MicrosoftController::class, 'redirectToMicrosoft'])->name('login');
@@ -25,10 +26,25 @@ Route::get('/admin/logout', [MicrosoftController::class, 'logout'])->name('logou
 
 Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
 
+    /** Support → Verification SMS */
+    Route::prefix('support')->group(function () {
+
+    // SMS form page
+    Route::get('/sms', [SmsController::class, 'index'])
+        ->name('admin.support.sms.index');
+
+    // Send SMS action
+    Route::post('/sms/send', [SmsController::class, 'send'])
+        ->name('admin.support.sms.send');
+
     /** Dashboard */
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/settings', function () {return view('admin.settings.index');
             })->name('admin.settings.index');
+
+    Route::get('/support/sms/logs', [SmsController::class, 'logs'])
+            ->name('admin.support.sms.logs');
+
 
     /** Testimonials */
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('admin.testimonials.index');
@@ -94,5 +110,6 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::put('/components/{component}', [ComponentController::class, 'update'])->name('admin.components.update');
     Route::delete('/components/{component}', [ComponentController::class, 'destroy'])->name('admin.components.destroy');
 
+    
 
 });
