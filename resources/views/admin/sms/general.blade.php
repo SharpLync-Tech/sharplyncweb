@@ -39,19 +39,8 @@
                     {{-- Hidden optional name --}}
                     <input type="hidden" name="name" id="sms-name">
 
-                    {{-- Dropdown --}}
-                    <div id="sms-results"
-                         style="
-                            position:absolute;
-                            top:100%;
-                            left:0;
-                            width:100%;
-                            background:white;
-                            border:1px solid #ccc;
-                            border-radius:6px;
-                            display:none;
-                            z-index:2000;
-                         ">
+                    {{-- Dropdown - REMOVED INLINE STYLE HERE --}}
+                    <div id="sms-results">
                     </div>
                 </div>
 
@@ -148,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const div = document.createElement('div');
             div.textContent = item.label;
+            // The following inline styles are fine for basic appearance/cursor
             div.style.padding = '8px 10px';
             div.style.cursor = 'pointer';
             div.style.borderBottom = '1px solid #eee';
@@ -178,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
+/* CSS is now the authoritative source for positioning and visual effects */
 #sms-results {
     position: absolute;
     top: 100%;
@@ -189,7 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     max-height: 220px;
     overflow-y: auto;
-    z-index: 9999 !important;
+    /* Ensuring a very high z-index to show above all admin layout elements */
+    z-index: 9999 !important; 
     display: none;
 }
 
