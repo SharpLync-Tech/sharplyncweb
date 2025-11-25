@@ -51,6 +51,23 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
             ->name('admin.support.sms.logs');
     });
 
+    /** Support → General SMS */
+        Route::prefix('support/sms/general')->group(function () {
+
+        // Show general SMS form
+        Route::get('/', [SmsController::class, 'general'])
+            ->name('admin.support.sms.general');
+
+        // Send general SMS
+        Route::post('/send', [SmsController::class, 'sendGeneral'])
+            ->name('admin.support.sms.general.send');
+
+        // Smart search for names + numbers
+        Route::get('/search', [SmsController::class, 'searchRecipients'])
+            ->name('admin.support.sms.general.search');
+    });
+
+
     /** Testimonials */
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('admin.testimonials.index');
     Route::get('/testimonials/create', [TestimonialController::class, 'create'])->name('admin.testimonials.create');

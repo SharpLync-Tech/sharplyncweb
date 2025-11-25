@@ -81,15 +81,22 @@
         <a href="#" class="">Settings</a>
 
         {{-- Support Tools --}}
-        <a href="{{ route('admin.support.sms.index') }}"
-            class="{{ request()->is('admin/support/sms') ? 'active' : '' }}">
-            📱 Verification SMS
-        </a>
+            <div class="sidebar-section-title">SUPPORT TOOLS</div>
 
-        <a href="{{ route('admin.support.sms.logs') }}"
+            <a href="{{ route('admin.support.sms.index') }}"
+            class="{{ request()->is('admin/support/sms') ? 'active' : '' }}">
+                📱 Verification SMS
+            </a>
+
+            <a href="{{ route('admin.support.sms.general') }}"
+            class="{{ request()->is('admin/support/sms/general') ? 'active' : '' }}">
+                ✉️ Send SMS (General)
+            </a>
+
+            <a href="{{ route('admin.support.sms.logs') }}"
             class="{{ request()->is('admin/support/sms/logs') ? 'active' : '' }}">
-            📜 SMS Logs
-        </a>
+                📜 SMS Logs
+            </a>
 
 
         {{-- CMS Section Header --}}

@@ -13,6 +13,7 @@ class SmsVerificationLog extends Model
         'admin_id',
         'admin_name',
         'customer_profile_id',
+        'recipient_name',
         'phone',
         'message',
         'verification_code',
