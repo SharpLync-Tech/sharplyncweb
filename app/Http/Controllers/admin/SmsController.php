@@ -8,6 +8,7 @@ use App\Services\MobileMessageService;
 use App\Models\Admin\SmsVerificationLog;
 use App\Models\CRM\CustomerProfile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SmsController extends Controller
 {
