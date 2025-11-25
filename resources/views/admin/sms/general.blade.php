@@ -89,78 +89,112 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    const searchInput = document.getElementById('sms-search');
-    const resultsBox  = document.getElementById('sms-results');
-    const phoneInput  = document.getElementById('sms-phone');
-    const nameInput   = document.getElementById('sms-name');
+    console.log("🔥 DEBUG: SMS General page JS loaded");
 
-    let debounceTimer = null;
+    const searchInput = document.getElementById('sms-search');
+    const resultsBox = document.getElementById('sms-results');
+    const phoneInput = document.getElementById('sms-phone');
+    const nameInput = document.getElementById('sms-name');
+
+    let searchTimeout = null;
 
     searchInput.addEventListener('input', function () {
-        const q = this.value.trim();
 
-        phoneInput.value = "";  // Always reset
-        nameInput.value  = "";
+        console.log("🔍 Input changed:", this.value);
+
+        const q = this.value.trim();
+        phoneInput.value = '';
+        nameInput.value = '';
 
         if (q.length < 2) {
-            resultsBox.style.display = "none";
+            console.log("⛔ Too short, hiding results");
+            resultsBox.style.display = 'none';
             return;
         }
 
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
+        clearTimeout(searchTimeout);
 
-            // ✔ Correct endpoint
-            fetch(`/admin/support/search-recipients?q=${encodeURIComponent(q)}`)
-                .then(res => res.json())
-                .then(data => renderResults(data))
-                .catch(err => console.error("Autocomplete error:", err));
+        searchTimeout = setTimeout(() => {
 
-        }, 300);
+            const url = `/admin/support/search-recipients?q=${encodeURIComponent(q)}`;
+            console.log("📡 Fetching:", url);
+
+            fetch(url)
+                .then(res => {
+                    console.log("📥 Response status:", res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log("📦 Data received:", data);
+                    showResults(data);
+                })
+                .catch(err => {
+                    console.error("❌ Fetch error:", err);
+                });
+
+        }, 250);
     });
 
-    function renderResults(items) {
+
+    function showResults(items) {
+
+        console.log("🎨 Rendering results:", items);
 
         if (!items.length) {
-            resultsBox.style.display = "none";
+            console.log("❌ No results found");
+            resultsBox.style.display = 'none';
             return;
         }
 
-        resultsBox.innerHTML = "";
-        resultsBox.style.display = "block";
+        resultsBox.innerHTML = '';
+        resultsBox.style.display = 'block';
 
         items.forEach(item => {
+            console.log("➡ Adding row:", item);
 
             const div = document.createElement('div');
-            div.className = "autocomplete-item";
             div.textContent = item.label;
-
-            div.style.padding = "8px 10px";
-            div.style.cursor  = "pointer";
-            div.style.borderBottom = "1px solid #eee";
-
-            div.addEventListener('mouseover', () => div.style.background = "#f1f5f9");
-            div.addEventListener('mouseout',  () => div.style.background = "white");
+            div.style.padding = '8px 10px';
+            div.style.cursor = 'pointer';
+            div.style.borderBottom = '1px solid #eee';
 
             div.addEventListener('click', () => {
-                searchInput.value = item.label;
-                phoneInput.value  = item.phone;
-                nameInput.value   = item.name || "";
 
-                resultsBox.style.display = "none";
+                console.log("✔ SELECTED:", item);
+
+                searchInput.value = item.label;
+                phoneInput.value = item.phone;
+                nameInput.value = item.name ?? '';
+
+                console.log("☎ phoneInput =", phoneInput.value);
+                console.log("👤 nameInput =", nameInput.value);
+
+                resultsBox.style.display = 'none';
             });
 
             resultsBox.appendChild(div);
         });
     }
 
-    // Clicking outside closes dropdown
-    document.addEventListener('click', function (e) {
+
+    // Hide popup when clicking away
+    document.addEventListener('click', (e) => {
         if (!resultsBox.contains(e.target) && e.target !== searchInput) {
-            resultsBox.style.display = "none";
+            resultsBox.style.display = 'none';
         }
     });
+
+    // Debug form submission
+    const form = document.querySelector("form");
+    form.addEventListener("submit", () => {
+        console.log("🚀 Submitting SMS form");
+        console.log("☎ phone =", phoneInput.value);
+        console.log("📨 message =", document.querySelector("textarea[name='message']").value);
+        console.log("👤 name =", nameInput.value);
+    });
+
 });
 </script>
+
 
 @endsection
