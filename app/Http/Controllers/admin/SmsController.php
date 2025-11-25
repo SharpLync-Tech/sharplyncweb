@@ -197,26 +197,29 @@ public function searchRecipients(Request $request)
 
     $results = [];
 
-    /** 1. Search Customer Profiles */
+    /* ---------------------------------------------------------
+     * 1. CUSTOMER PROFILES
+     * --------------------------------------------------------- */
     $profiles = DB::connection('crm')->table('customer_profiles')
         ->where('mobile_number', 'LIKE', "%$q%")
-        ->orWhere('first_name', 'LIKE', "%$q%")
-        ->orWhere('last_name', 'LIKE', "%$q%")
+        ->orWhere('business_name', 'LIKE', "%$q%")
+        ->orWhere('authority_contact', 'LIKE', "%$q%")
         ->limit(10)
         ->get();
 
     foreach ($profiles as $p) {
-        $fullName = trim("{$p->first_name} {$p->last_name}");
         $results[] = [
-            'label' => "$fullName – {$p->mobile_number} (Profile)",
-            'name'  => $fullName,
+            'label' => "{$p->authority_contact} – {$p->mobile_number} (Profile)",
+            'name'  => $p->authority_contact,
             'phone' => $p->mobile_number,
             'type'  => 'profile',
             'id'    => $p->id,
         ];
     }
 
-    /** 2. Search Customer Contacts */
+    /* ---------------------------------------------------------
+     * 2. CUSTOMER CONTACTS
+     * --------------------------------------------------------- */
     $contacts = DB::connection('crm')->table('customer_contacts')
         ->where('phone', 'LIKE', "%$q%")
         ->orWhere('contact_name', 'LIKE', "%$q%")
@@ -233,19 +236,23 @@ public function searchRecipients(Request $request)
         ];
     }
 
-    /** 3. Search CRM Users */
+    /* ---------------------------------------------------------
+     * 3. CRM USERS
+     * (your table does NOT have first_name / last_name)
+     * --------------------------------------------------------- */
     $users = DB::connection('crm')->table('users')
         ->where('phone', 'LIKE', "%$q%")
-        ->orWhere('first_name', 'LIKE', "%$q%")
-        ->orWhere('last_name', 'LIKE', "%$q%")
+        ->orWhere('email', 'LIKE', "%$q%")
+        ->orWhere('username', 'LIKE', "%$q%")
         ->limit(10)
         ->get();
 
     foreach ($users as $u) {
-        $fullName = trim("{$u->first_name} {$u->last_name}");
+        $displayName = $u->username ?: $u->email;
+
         $results[] = [
-            'label' => "$fullName – {$u->phone} (User)",
-            'name'  => $fullName,
+            'label' => "{$displayName} – {$u->phone} (User)",
+            'name'  => $displayName,
             'phone' => $u->phone,
             'type'  => 'user',
             'id'    => $u->id,
@@ -254,5 +261,6 @@ public function searchRecipients(Request $request)
 
     return response()->json($results);
 }
+
 
 }
