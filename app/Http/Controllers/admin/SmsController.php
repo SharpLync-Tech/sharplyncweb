@@ -197,9 +197,9 @@ public function searchRecipients(Request $request)
 
     $results = [];
 
-    /* ---------------------------------------------------------
-     * 1. CUSTOMER PROFILES
-     * --------------------------------------------------------- */
+    /**
+     * 1. CUSTOMER PROFILES (business_name, authority_contact, mobile_number)
+     */
     $profiles = DB::connection('crm')->table('customer_profiles')
         ->where('mobile_number', 'LIKE', "%$q%")
         ->orWhere('business_name', 'LIKE', "%$q%")
@@ -217,9 +217,9 @@ public function searchRecipients(Request $request)
         ];
     }
 
-    /* ---------------------------------------------------------
-     * 2. CUSTOMER CONTACTS
-     * --------------------------------------------------------- */
+    /**
+     * 2. CUSTOMER CONTACTS (contact_name, phone)
+     */
     $contacts = DB::connection('crm')->table('customer_contacts')
         ->where('phone', 'LIKE', "%$q%")
         ->orWhere('contact_name', 'LIKE', "%$q%")
@@ -236,23 +236,23 @@ public function searchRecipients(Request $request)
         ];
     }
 
-    /* ---------------------------------------------------------
-     * 3. CRM USERS
-     * (your table does NOT have first_name / last_name)
-     * --------------------------------------------------------- */
+    /**
+     * 3. USERS (first_name, last_name, phone, email)
+     */
     $users = DB::connection('crm')->table('users')
         ->where('phone', 'LIKE', "%$q%")
         ->orWhere('email', 'LIKE', "%$q%")
-        ->orWhere('username', 'LIKE', "%$q%")
+        ->orWhere('first_name', 'LIKE', "%$q%")
+        ->orWhere('last_name', 'LIKE', "%$q%")
         ->limit(10)
         ->get();
 
     foreach ($users as $u) {
-        $displayName = $u->username ?: $u->email;
+        $fullName = trim("{$u->first_name} {$u->last_name}");
 
         $results[] = [
-            'label' => "{$displayName} – {$u->phone} (User)",
-            'name'  => $displayName,
+            'label' => "{$fullName} – {$u->phone} (User)",
+            'name'  => $fullName,
             'phone' => $u->phone,
             'type'  => 'user',
             'id'    => $u->id,
@@ -261,6 +261,7 @@ public function searchRecipients(Request $request)
 
     return response()->json($results);
 }
+
 
 
 }
