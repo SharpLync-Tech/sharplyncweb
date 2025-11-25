@@ -168,6 +168,18 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
+
+.container {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+#sms-results {
+    position: absolute;
+    z-index: 999999 !important;
+}
+
 #sms-results {
     position: absolute;
     top: 100%;
