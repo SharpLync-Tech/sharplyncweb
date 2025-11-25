@@ -197,18 +197,19 @@ public function searchRecipients(Request $request)
 
     $results = [];
 
-    /** 1. Search Customer Profiles (CRM database) */
+    /** 1. Search Customer Profiles */
     $profiles = DB::connection('crm')->table('customer_profiles')
         ->where('mobile_number', 'LIKE', "%$q%")
-        ->orWhere('business_name', 'LIKE', "%$q%")
-        ->orWhere('contact_name', 'LIKE', "%$q%")
+        ->orWhere('first_name', 'LIKE', "%$q%")
+        ->orWhere('last_name', 'LIKE', "%$q%")
         ->limit(10)
         ->get();
 
     foreach ($profiles as $p) {
+        $fullName = trim("{$p->first_name} {$p->last_name}");
         $results[] = [
-            'label' => "{$p->contact_name} – {$p->mobile_number} (Profile)",
-            'name'  => $p->contact_name,
+            'label' => "$fullName – {$p->mobile_number} (Profile)",
+            'name'  => $fullName,
             'phone' => $p->mobile_number,
             'type'  => 'profile',
             'id'    => $p->id,
@@ -241,9 +242,10 @@ public function searchRecipients(Request $request)
         ->get();
 
     foreach ($users as $u) {
+        $fullName = trim("{$u->first_name} {$u->last_name}");
         $results[] = [
-            'label' => "{$u->first_name} {$u->last_name} – {$u->phone} (User)",
-            'name'  => "{$u->first_name} {$u->last_name}",
+            'label' => "$fullName – {$u->phone} (User)",
+            'name'  => $fullName,
             'phone' => $u->phone,
             'type'  => 'user',
             'id'    => $u->id,
@@ -252,7 +254,5 @@ public function searchRecipients(Request $request)
 
     return response()->json($results);
 }
-
-
 
 }
