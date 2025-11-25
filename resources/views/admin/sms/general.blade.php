@@ -169,15 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <style>
 
+ /* FIX: Make autocomplete dropdown visible inside admin layout */
 .container {
     overflow: visible !important;
     position: relative;
     z-index: 1;
-}
-
-#sms-results {
-    position: absolute;
-    z-index: 999999 !important;
 }
 
 #sms-results {
@@ -191,9 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     max-height: 220px;
     overflow-y: auto;
-    z-index: 9999 !important;
-    display: none;
+    z-index: 999999 !important;
 }
+
 
 #sms-results div {
     padding: 10px 12px;
