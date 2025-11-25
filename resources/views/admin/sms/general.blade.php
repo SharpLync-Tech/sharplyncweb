@@ -88,23 +88,21 @@
 {{-- Autocomplete Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
     console.log("🔥 DEBUG: SMS General page JS loaded");
 
     const searchInput = document.getElementById('sms-search');
     const resultsBox = document.getElementById('sms-results');
-    const phoneInput = document.getElementById('sms-phone');
-    const nameInput = document.getElementById('sms-name');
+    const phoneInput   = document.getElementById('sms-phone');
+    const nameInput    = document.getElementById('sms-name');
 
     let searchTimeout = null;
 
     searchInput.addEventListener('input', function () {
-
-        console.log("🔍 Input changed:", this.value);
-
         const q = this.value.trim();
+        console.log("🔹 Input changed:", q);
+
         phoneInput.value = '';
-        nameInput.value = '';
+        nameInput.value  = '';
 
         if (q.length < 2) {
             console.log("⛔ Too short, hiding results");
@@ -113,35 +111,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         clearTimeout(searchTimeout);
-
         searchTimeout = setTimeout(() => {
+            console.log("🚀 Fetching: /admin/support/search-recipients?q=" + q);
 
-            const url = `/admin/support/search-recipients?q=${encodeURIComponent(q)}`;
-            console.log("📡 Fetching:", url);
-
-            fetch(url)
+            fetch(`/admin/support/search-recipients?q=${encodeURIComponent(q)}`)
                 .then(res => {
-                    console.log("📥 Response status:", res.status);
+                    console.log("📬 Response status:", res.status);
                     return res.json();
                 })
                 .then(data => {
                     console.log("📦 Data received:", data);
-                    showResults(data);
-                })
-                .catch(err => {
-                    console.error("❌ Fetch error:", err);
-                });
 
+                    // Convert to real array
+                    const items = Array.isArray(data) ? data : Object.values(data);
+                    console.log("🎨 Rendering results:", items);
+
+                    showResults(items);
+                });
         }, 250);
     });
 
-
     function showResults(items) {
+        console.log("🔍 showResults invoked; count:", items.length);
 
-        console.log("🎨 Rendering results:", items);
-
-        if (!items.length) {
-            console.log("❌ No results found");
+        if (!items || items.length === 0) {
+            console.log("⚠ No items to show, hiding dropdown");
             resultsBox.style.display = 'none';
             return;
         }
@@ -150,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsBox.style.display = 'block';
 
         items.forEach(item => {
-            console.log("➡ Adding row:", item);
+            console.log("➕ Adding row:", item);
 
             const div = document.createElement('div');
             div.textContent = item.label;
@@ -158,16 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
             div.style.cursor = 'pointer';
             div.style.borderBottom = '1px solid #eee';
 
-            div.addEventListener('click', () => {
+            div.addEventListener('mouseover', () => div.style.background = '#f1f4f8');
+            div.addEventListener('mouseout',  () => div.style.background = 'white');
 
-                console.log("✔ SELECTED:", item);
+            div.addEventListener('click', () => {
+                console.log("👉 Selected:", item);
 
                 searchInput.value = item.label;
-                phoneInput.value = item.phone;
-                nameInput.value = item.name ?? '';
-
-                console.log("☎ phoneInput =", phoneInput.value);
-                console.log("👤 nameInput =", nameInput.value);
+                phoneInput.value  = item.phone;
+                nameInput.value   = item.name ?? '';
 
                 resultsBox.style.display = 'none';
             });
@@ -176,25 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // Hide popup when clicking away
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', function(e) {
         if (!resultsBox.contains(e.target) && e.target !== searchInput) {
             resultsBox.style.display = 'none';
         }
     });
-
-    // Debug form submission
-    const form = document.querySelector("form");
-    form.addEventListener("submit", () => {
-        console.log("🚀 Submitting SMS form");
-        console.log("☎ phone =", phoneInput.value);
-        console.log("📨 message =", document.querySelector("textarea[name='message']").value);
-        console.log("👤 name =", nameInput.value);
-    });
-
 });
 </script>
-
-
 @endsection
