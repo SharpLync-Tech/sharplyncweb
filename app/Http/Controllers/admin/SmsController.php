@@ -196,11 +196,11 @@ public function searchRecipients(Request $request)
 
     $results = [];
 
-    /** 1. Search Customer Profiles */
-    $profiles = \DB::table('customer_profiles')
+    /** 1. Search Customer Profiles (CRM database) */
+    $profiles = DB::connection('crm')->table('customer_profiles')
         ->where('mobile_number', 'LIKE', "%$q%")
         ->orWhere('business_name', 'LIKE', "%$q%")
-        ->orWhere('authority_contact', 'LIKE', "%$q%")
+        ->orWhere('contact_name', 'LIKE', "%$q%")
         ->limit(10)
         ->get();
 
@@ -215,7 +215,7 @@ public function searchRecipients(Request $request)
     }
 
     /** 2. Search Customer Contacts */
-    $contacts = \DB::table('customer_contacts')
+    $contacts = DB::connection('crm')->table('customer_contacts')
         ->where('phone', 'LIKE', "%$q%")
         ->orWhere('contact_name', 'LIKE', "%$q%")
         ->limit(10)
@@ -232,7 +232,7 @@ public function searchRecipients(Request $request)
     }
 
     /** 3. Search CRM Users */
-    $users = \DB::table('users')
+    $users = DB::connection('crm')->table('users')
         ->where('phone', 'LIKE', "%$q%")
         ->orWhere('first_name', 'LIKE', "%$q%")
         ->orWhere('last_name', 'LIKE', "%$q%")
@@ -251,6 +251,7 @@ public function searchRecipients(Request $request)
 
     return response()->json($results);
 }
+
 
 
 }
