@@ -39,7 +39,11 @@ class SmsController extends Controller
             'use_code' => 'nullable|boolean',
         ]);
 
-        $adminId = Auth::id();
+        // In your setup, Auth::id() may be null (SSO only),
+        // but we keep the field for future compatibility.
+        $adminId   = Auth::id();
+        $adminName = session('admin_user')['displayName'] ?? 'Admin';
+
         $customerId = $request->input('customer_id');
 
         // Generate code if toggled
@@ -60,13 +64,14 @@ class SmsController extends Controller
             );
 
             // Extract status + message_id
-            $result = $response['results'][0] ?? [];
-            $status = $result['status'] ?? 'unknown';
+            $result    = $response['results'][0] ?? [];
+            $status    = $result['status'] ?? 'unknown';
             $messageId = $result['message_id'] ?? null;
 
             // Store log
             SmsVerificationLog::create([
                 'admin_id'            => $adminId,
+                'admin_name'          => $adminName,
                 'customer_profile_id' => $customerId,
                 'phone'               => $request->phone,
                 'message'             => $messageToSend,
@@ -83,11 +88,13 @@ class SmsController extends Controller
         }
     }
 
-        public function logs()
+    /**
+     * Show paginated SMS logs.
+     */
+    public function logs()
     {
-        $logs = \App\Models\Admin\SmsVerificationLog::latest()->paginate(20);
+        $logs = SmsVerificationLog::latest()->paginate(20);
 
         return view('admin.sms.logs', compact('logs'));
     }
-
 }

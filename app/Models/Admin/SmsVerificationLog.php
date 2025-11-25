@@ -3,6 +3,7 @@
 namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CRM\CustomerProfile;
 
 class SmsVerificationLog extends Model
 {
@@ -10,6 +11,7 @@ class SmsVerificationLog extends Model
 
     protected $fillable = [
         'admin_id',
+        'admin_name',
         'customer_profile_id',
         'phone',
         'message',
@@ -18,13 +20,12 @@ class SmsVerificationLog extends Model
         'status',
     ];
 
-    public function admin()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'admin_id');
-    }
-
+    /**
+     * Related customer profile (from CRM DB).
+     * Not a foreign key constraint — just a reference.
+     */
     public function customerProfile()
     {
-        return $this->belongsTo(\App\Models\CRM\CustomerProfile::class, 'customer_profile_id');
+        return $this->belongsTo(CustomerProfile::class, 'customer_profile_id');
     }
 }

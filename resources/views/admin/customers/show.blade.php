@@ -100,7 +100,7 @@
                               </td>
 
                               <td style="padding:8px 10px;">
-                                  {{ optional($log->admin)->name ?? '—' }}
+                                  {{ $log->admin_name ?? '—' }}
                               </td>
 
                               <td style="padding:8px 10px;max-width:350px;">
@@ -129,7 +129,6 @@
           </div>
       @endif
 
-      {{-- Optional link to full logs --}}
       <div style="margin-top:10px;">
           <a href="{{ route('admin.support.sms.logs') }}" class="btn btn-accent btn-sm">
               View Full SMS Log

@@ -28,12 +28,12 @@
                         <tr>
                             <td>{{ $log->created_at->format('d M Y H:i') }}</td>
 
-                            <td>{{ optional($log->admin)->name ?? '—' }}</td>
+                            <td>{{ $log->admin_name ?? '—' }}</td>
 
                             <td>
                                 @if($log->customer_profile_id)
                                     <a href="/admin/customers/{{ $log->customer_profile_id }}">
-                                        {{ optional($log->customerProfile)->company ?? 'Customer' }}
+                                        {{ optional($log->customerProfile)->company_name ?? 'Customer' }}
                                     </a>
                                 @else
                                     —
@@ -43,7 +43,7 @@
                             <td>{{ $log->phone }}</td>
 
                             <td style="max-width: 300px;">
-                                {{ Str::limit($log->message, 40) }}
+                                {{ \Illuminate\Support\Str::limit($log->message, 40) }}
                             </td>
 
                             <td>
