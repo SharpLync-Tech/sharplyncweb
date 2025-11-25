@@ -176,4 +176,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+
+<style>
+#sms-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 9999 !important;
+    display: none;
+}
+
+#sms-results div {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#sms-results div:hover {
+    background: #e9f2ff;
+}
+</style>
+
 @endsection
