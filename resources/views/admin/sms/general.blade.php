@@ -39,9 +39,8 @@
                     {{-- Hidden optional name --}}
                     <input type="hidden" name="name" id="sms-name">
 
-                    {{-- Dropdown - REMOVED INLINE STYLE HERE --}}
-                    <div id="sms-results">
-                    </div>
+                    {{-- Dropdown --}}
+                    <div id="sms-results"></div>
                 </div>
 
                 {{-- Message --}}
@@ -63,36 +62,72 @@
         </div>
     </div>
 
+    {{-- =======================
+        API RESPONSE PANEL
+    ======================== --}}
     @if(session('response'))
-    <div class="card mt-2 shadow-sm api-card">
-        <div class="card-body">
+        @php
+            $resp = session('response');
+            $r = $resp['results'][0] ?? [];
+            $status = strtolower($r['status'] ?? 'unknown');
+            $statusColor = $status === 'success' ? '#2CBFAE' : '#E74C3C';
+        @endphp
 
-            <h5 class="mb-3" style="font-weight:700; color:#0A2A4D;">
-                📡 API Response
-            </h5>
+        <div class="card mt-4 shadow api-card">
+            <div class="card-body">
 
-            @php
-                $resp = session('response');
-                $result = $resp['results'][0] ?? null;
-            @endphp
-
-            <div class="api-grid">
-                <div><strong>Status:</strong> {{ $resp['status'] ?? 'unknown' }}</div>
-                <div><strong>Total Cost:</strong> {{ $resp['total_cost'] ?? '0' }}</div>
-                <div><strong>To:</strong> {{ $result['to'] ?? '' }}</div>
-                <div><strong>Message ID:</strong> {{ $result['message_id'] ?? '' }}</div>
-                <div><strong>Message Status:</strong> {{ $result['status'] ?? '' }}</div>
-                <div><strong>Conversation:</strong> {{ $result['conversation'] ?? '' }}</div>
-                <div class="full">
-                    <strong>Message Sent:</strong><br>
-                    <pre class="code-block">{{ $result['message'] ?? '' }}</pre>
+                {{-- HEADER --}}
+                <div class="api-header">
+                    <div class="api-header-left">
+                        <div class="api-icon success-pulse">📨</div>
+                        <h4 class="api-title">SMS Sent</h4>
+                    </div>
+                    <span class="api-time">{{ now()->format('d M Y - h:i A') }}</span>
                 </div>
+
+                {{-- GRID --}}
+                <div class="api-grid">
+                    <div>
+                        <strong>Status:</strong>
+                        <span class="badge-status" style="background:{{ $statusColor }}">{{ ucfirst($status) }}</span>
+                    </div>
+
+                    <div>
+                        <strong>Total Cost:</strong>
+                        ${{ $resp['total_cost'] ?? '0' }}
+                    </div>
+
+                    <div>
+                        <strong>To:</strong>
+                        {{ $r['to'] ?? '-' }}
+                    </div>
+
+                    <div class="msg-id-row">
+                        <strong>Message ID:</strong>
+                        <span>{{ $r['message_id'] ?? '-' }}</span>
+
+                        @if(!empty($r['message_id']))
+                            <button class="copy-btn"
+                                    data-copy="{{ $r['message_id'] }}">
+                                Copy
+                            </button>
+                        @endif
+                    </div>
+
+                    <div>
+                        <strong>Conversation:</strong>
+                        {{ $r['conversation'] ?? '0' }}
+                    </div>
+
+                    <div class="full">
+                        <strong>Message Sent:</strong>
+                        <pre class="code-block">{{ $r['message'] ?? '' }}</pre>
+                    </div>
+                </div>
+
             </div>
-
         </div>
-    </div>
-@endif
-
+    @endif
 
 </div>
 
@@ -102,51 +137,35 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("🔥 DEBUG: SMS General page JS loaded");
 
     const searchInput = document.getElementById('sms-search');
-    const resultsBox = document.getElementById('sms-results');
-    const phoneInput   = document.getElementById('sms-phone');
-    const nameInput    = document.getElementById('sms-name');
+    const resultsBox  = document.getElementById('sms-results');
+    const phoneInput  = document.getElementById('sms-phone');
+    const nameInput   = document.getElementById('sms-name');
 
     let searchTimeout = null;
 
     searchInput.addEventListener('input', function () {
         const q = this.value.trim();
-        console.log("🔹 Input changed:", q);
-
         phoneInput.value = '';
-        nameInput.value  = '';
+        nameInput.value = '';
 
         if (q.length < 2) {
-            console.log("⛔ Too short, hiding results");
             resultsBox.style.display = 'none';
             return;
         }
 
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
-            console.log("🚀 Fetching: /admin/support/search-recipients?q=" + q);
-
             fetch(`/admin/support/search-recipients?q=${encodeURIComponent(q)}`)
-                .then(res => {
-                    console.log("📬 Response status:", res.status);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
-                    console.log("📦 Data received:", data);
-
-                    // Convert to real array
                     const items = Array.isArray(data) ? data : Object.values(data);
-                    console.log("🎨 Rendering results:", items);
-
                     showResults(items);
                 });
-        }, 250);
+        }, 200);
     });
 
     function showResults(items) {
-        console.log("🔍 showResults invoked; count:", items.length);
-
-        if (!items || items.length === 0) {
-            console.log("⚠ No items to show, hiding dropdown");
+        if (!items.length) {
             resultsBox.style.display = 'none';
             return;
         }
@@ -155,25 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsBox.style.display = 'block';
 
         items.forEach(item => {
-            console.log("➕ Adding row:", item);
-
             const div = document.createElement('div');
             div.textContent = item.label;
-            // The following inline styles are fine for basic appearance/cursor
-            div.style.padding = '8px 10px';
-            div.style.cursor = 'pointer';
-            div.style.borderBottom = '1px solid #eee';
-
-            div.addEventListener('mouseover', () => div.style.background = '#f1f4f8');
-            div.addEventListener('mouseout',  () => div.style.background = 'white');
+            div.className = 'dropdown-item';
 
             div.addEventListener('click', () => {
-                console.log("👉 Selected:", item);
-
                 searchInput.value = item.label;
-                phoneInput.value  = item.phone;
-                nameInput.value   = item.name ?? '';
-
+                phoneInput.value = item.phone;
+                nameInput.value = item.name ?? '';
                 resultsBox.style.display = 'none';
             });
 
@@ -181,79 +189,126 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', e => {
         if (!resultsBox.contains(e.target) && e.target !== searchInput) {
             resultsBox.style.display = 'none';
         }
+    });
+
+    // Copy Message-ID
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(btn.dataset.copy);
+            btn.textContent = 'Copied!';
+            setTimeout(() => (btn.textContent = 'Copy'), 1500);
+        });
     });
 });
 </script>
 
 <style>
 
- /* FIX: Make autocomplete dropdown visible inside admin layout */
-.container {
-    overflow: visible !important;
-    position: relative;
-    z-index: 1;
-}
+.container { overflow: visible !important; position: relative; z-index: 1; }
 
+/* AUTOCOMPLETE */
 #sms-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    max-height: 220px;
-    overflow-y: auto;
-    z-index: 999999 !important;
+    position:absolute;
+    top:100%;
+    left:0;
+    width:100%;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    max-height:220px;
+    overflow-y:auto;
+    display:none;
+    z-index:99999;
+}
+#sms-results .dropdown-item {
+    padding:10px 12px;
+    cursor:pointer;
+    font-size:14px;
+    border-bottom:1px solid #eee;
+}
+#sms-results .dropdown-item:hover { background:#e9f2ff; }
+
+/* API CARD */
+.api-card { border-left:6px solid #2CBFAE; }
+
+/* HEADER */
+.api-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+.api-header-left { display:flex; align-items:center; gap:10px; }
+.api-title { font-weight:700; color:#0A2A4D; margin:0; }
+.api-time { font-size:13px; color:#6b7a89; }
+
+/* Animated pulsing icon */
+.success-pulse {
+    font-size:32px;
+    animation:pulse 1.4s infinite ease-in-out;
+}
+@keyframes pulse {
+    0% { transform:scale(1); opacity:.8; }
+    50% { transform:scale(1.15); opacity:1; }
+    100% { transform:scale(1); opacity:.8; }
 }
 
-
-#sms-results div {
-    padding: 10px 12px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-#sms-results div:hover {
-    background: #e9f2ff;
-}
-
-.api-card {
-    border-left: 5px solid #2CBFAE;
-}
-
+/* GRID */
 .api-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+.api-grid > div {
+    background:#f8fafc;
+    padding:10px;
+    border-radius:6px;
+    font-size:14px;
+}
+.api-grid .full { grid-column:span 2; }
+
+/* STATUS BADGE */
+.badge-status {
+    padding:3px 8px;
+    border-radius:4px;
+    color:#fff;
+    font-weight:600;
+    font-size:12px;
 }
 
-.api-grid div {
-    padding: 8px 10px;
-    background: #f8fafc;
-    border-radius: 6px;
-    font-size: 14px;
+/* COPY BUTTON */
+.copy-btn {
+    margin-left:10px;
+    padding:3px 8px;
+    font-size:12px;
+    background:#0A2A4D;
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
 }
+.copy-btn:hover { background:#104976; }
 
-.api-grid .full {
-    grid-column: span 2;
-}
-
+/* MESSAGE BLOCK */
 .code-block {
-    background: #0A2A4D;
-    color: #fff;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    white-space: pre-wrap;
+    background:#0A2A4D;
+    color:#fff;
+    padding:12px;
+    border-radius:6px;
+    white-space:pre-wrap;
+}
 
+/* MOBILE */
+@media(max-width:768px){
+    .api-grid { grid-template-columns:1fr; }
+    .api-grid .full { grid-column:1; }
+    .api-header { flex-direction:column; align-items:flex-start; gap:4px; }
 }
 </style>
-
 
 @endsection
