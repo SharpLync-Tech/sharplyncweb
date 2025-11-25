@@ -17,7 +17,7 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-4">
         <div class="card-body">
 
             <form method="POST" action="{{ route('admin.support.sms.general.send') }}">
