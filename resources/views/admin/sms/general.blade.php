@@ -64,13 +64,35 @@
     </div>
 
     @if(session('response'))
-        <div class="card mt-4 shadow-sm">
-            <div class="card-body">
-                <h5>API Response</h5>
-                <pre class="bg-light p-3 rounded">{{ json_encode(session('response'), JSON_PRETTY_PRINT) }}</pre>
+    <div class="card mt-2 shadow-sm api-card">
+        <div class="card-body">
+
+            <h5 class="mb-3" style="font-weight:700; color:#0A2A4D;">
+                📡 API Response
+            </h5>
+
+            @php
+                $resp = session('response');
+                $result = $resp['results'][0] ?? null;
+            @endphp
+
+            <div class="api-grid">
+                <div><strong>Status:</strong> {{ $resp['status'] ?? 'unknown' }}</div>
+                <div><strong>Total Cost:</strong> {{ $resp['total_cost'] ?? '0' }}</div>
+                <div><strong>To:</strong> {{ $result['to'] ?? '' }}</div>
+                <div><strong>Message ID:</strong> {{ $result['message_id'] ?? '' }}</div>
+                <div><strong>Message Status:</strong> {{ $result['status'] ?? '' }}</div>
+                <div><strong>Conversation:</strong> {{ $result['conversation'] ?? '' }}</div>
+                <div class="full">
+                    <strong>Message Sent:</strong><br>
+                    <pre class="code-block">{{ $result['message'] ?? '' }}</pre>
+                </div>
             </div>
+
         </div>
-    @endif
+    </div>
+@endif
+
 
 </div>
 
@@ -199,6 +221,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 #sms-results div:hover {
     background: #e9f2ff;
+}
+
+.api-card {
+    border-left: 5px solid #2CBFAE;
+}
+
+.api-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.api-grid div {
+    padding: 8px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.api-grid .full {
+    grid-column: span 2;
+}
+
+.code-block {
+    background: #0A2A4D;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: pre-wrap;
+
 }
 </style>
 
