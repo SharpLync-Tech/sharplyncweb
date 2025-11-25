@@ -45,6 +45,8 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     Route::get('/support/sms/logs', [SmsController::class, 'logs'])
             ->name('admin.support.sms.logs');
 
+        }
+
 
     /** Testimonials */
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('admin.testimonials.index');
