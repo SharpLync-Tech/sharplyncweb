@@ -23,34 +23,46 @@
             <form method="POST" action="{{ route('admin.support.sms.general.send') }}">
                 @csrf
 
-                {{-- Smart Search Field --}}
+                {{-- Search / Autocomplete --}}
                 <div class="mb-3 position-relative">
-                    <label class="form-label">Send To</label>
+                    <label class="form-label fw-bold">Search Number or Name</label>
+
                     <input type="text"
                            id="sms-search"
                            class="form-control"
-                           placeholder="Type a name or number..."
+                           placeholder="Start typing a name or number..."
                            autocomplete="off">
 
-                    {{-- Hidden real phone number value --}}
+                    {{-- Hidden actual phone number --}}
                     <input type="hidden" name="phone" id="sms-phone">
 
-                    {{-- Optional Name --}}
+                    {{-- Hidden optional name --}}
                     <input type="hidden" name="name" id="sms-name">
 
-                    {{-- Results dropdown --}}
+                    {{-- Dropdown --}}
                     <div id="sms-results"
-                        style="position:absolute;top:100%;left:0;width:100%;
-                               background:white;border:1px solid #ccc;
-                               border-radius:6px;display:none;z-index:20;">
+                         style="
+                            position:absolute;
+                            top:100%;
+                            left:0;
+                            width:100%;
+                            background:white;
+                            border:1px solid #ccc;
+                            border-radius:6px;
+                            display:none;
+                            z-index:2000;
+                         ">
                     </div>
                 </div>
 
-                {{-- Manual Message Field --}}
+                {{-- Message --}}
                 <div class="mb-3">
-                    <label class="form-label">Message</label>
-                    <textarea name="message" class="form-control" rows="3"
-                              placeholder="Type your message...">{{ old('message') }}</textarea>
+                    <label class="form-label fw-bold">Message</label>
+                    <textarea name="message"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Type your message..."
+                              required>{{ old('message') }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2">
@@ -62,8 +74,6 @@
         </div>
     </div>
 
-
-    {{-- API Response Block --}}
     @if(session('response'))
         <div class="card mt-4 shadow-sm">
             <div class="card-body">
@@ -78,66 +88,76 @@
 {{-- Autocomplete Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('sms-search');
-    const resultsBox = document.getElementById('sms-results');
-    const phoneInput   = document.getElementById('sms-phone');
-    const nameInput    = document.getElementById('sms-name');
 
-    let searchTimeout = null;
+    const searchInput = document.getElementById('sms-search');
+    const resultsBox  = document.getElementById('sms-results');
+    const phoneInput  = document.getElementById('sms-phone');
+    const nameInput   = document.getElementById('sms-name');
+
+    let debounceTimer = null;
 
     searchInput.addEventListener('input', function () {
         const q = this.value.trim();
 
-        phoneInput.value = ''; // reset hidden phone
-        nameInput.value  = ''; // reset hidden name
+        phoneInput.value = "";  // Always reset
+        nameInput.value  = "";
 
         if (q.length < 2) {
-            resultsBox.style.display = 'none';
+            resultsBox.style.display = "none";
             return;
         }
 
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            fetch(`/admin/support/sms/general/search?q=${encodeURIComponent(q)}`)
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+
+            // ✔ Correct endpoint
+            fetch(`/admin/support/search-recipients?q=${encodeURIComponent(q)}`)
                 .then(res => res.json())
-                .then(data => showResults(data));
-        }, 250);
+                .then(data => renderResults(data))
+                .catch(err => console.error("Autocomplete error:", err));
+
+        }, 300);
     });
 
-    function showResults(items) {
+    function renderResults(items) {
+
         if (!items.length) {
-            resultsBox.style.display = 'none';
+            resultsBox.style.display = "none";
             return;
         }
 
-        resultsBox.innerHTML = '';
-        resultsBox.style.display = 'block';
+        resultsBox.innerHTML = "";
+        resultsBox.style.display = "block";
 
         items.forEach(item => {
-            const div = document.createElement('div');
-            div.textContent = item.label;
-            div.style.padding = '8px 10px';
-            div.style.cursor = 'pointer';
-            div.style.borderBottom = '1px solid #eee';
 
-            div.addEventListener('mouseover', () => div.style.background = '#f1f4f8');
-            div.addEventListener('mouseout',  () => div.style.background = 'white');
+            const div = document.createElement('div');
+            div.className = "autocomplete-item";
+            div.textContent = item.label;
+
+            div.style.padding = "8px 10px";
+            div.style.cursor  = "pointer";
+            div.style.borderBottom = "1px solid #eee";
+
+            div.addEventListener('mouseover', () => div.style.background = "#f1f5f9");
+            div.addEventListener('mouseout',  () => div.style.background = "white");
 
             div.addEventListener('click', () => {
                 searchInput.value = item.label;
                 phoneInput.value  = item.phone;
-                nameInput.value   = item.name ?? '';
-                resultsBox.style.display = 'none';
+                nameInput.value   = item.name || "";
+
+                resultsBox.style.display = "none";
             });
 
             resultsBox.appendChild(div);
         });
     }
 
-    // Close suggestions if clicked outside
-    document.addEventListener('click', function(e) {
+    // Clicking outside closes dropdown
+    document.addEventListener('click', function (e) {
         if (!resultsBox.contains(e.target) && e.target !== searchInput) {
-            resultsBox.style.display = 'none';
+            resultsBox.style.display = "none";
         }
     });
 });

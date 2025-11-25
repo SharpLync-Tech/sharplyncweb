@@ -52,19 +52,15 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     });
 
     /** Support → General SMS */
-        Route::prefix('support/sms/general')->group(function () {
+        Route::get('/support/general-sms', [SmsController::class, 'general'])
+        ->name('admin.support.sms.general');
 
-        // Show general SMS form
-        Route::get('/', [SmsController::class, 'general'])
-            ->name('admin.support.sms.general');
+        Route::post('/support/general-sms/send', [SmsController::class, 'sendGeneral'])
+        ->name('admin.support.sms.general.send');
 
-        // Send general SMS
-        Route::post('/send', [SmsController::class, 'sendGeneral'])
-            ->name('admin.support.sms.general.send');
+        Route::get('/support/search-recipients', [SmsController::class, 'searchRecipients'])
+        ->name('admin.support.search');
 
-        // Smart search for names + numbers
-        Route::get('/search', [SmsController::class, 'searchRecipients'])
-            ->name('admin.support.sms.general.search');
     });
 
 
