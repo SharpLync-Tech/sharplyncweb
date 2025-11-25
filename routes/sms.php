@@ -6,5 +6,7 @@ use App\Http\Controllers\TestSmsController;
 // ------------------------------------------------------
 // SMS TEST ROUTES (sandbox only)
 // ------------------------------------------------------
-Route::get('/test-sms', [TestSmsController::class, 'form']);
-Route::post('/test-sms/send', [TestSmsController::class, 'send']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/test-sms', [TestSmsController::class, 'form']);
+    Route::post('/test-sms/send', [TestSmsController::class, 'send']);
+});
