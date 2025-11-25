@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-/* CSS is now the authoritative source for positioning and visual effects */
 #sms-results {
     position: absolute;
     top: 100%;
@@ -180,8 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     max-height: 220px;
     overflow-y: auto;
-    /* Ensuring a very high z-index to show above all admin layout elements */
-    z-index: 9999 !important; 
+    z-index: 9999 !important;
     display: none;
 }
 
@@ -195,5 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
     background: #e9f2ff;
 }
 </style>
+
 
 @endsection
