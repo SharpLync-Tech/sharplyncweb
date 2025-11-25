@@ -1,4 +1,4 @@
-@extends('admin.layouts.base')
+@extends('admin.layouts.admin-layout')
 
 @section('title', 'SMS Logs')
 
