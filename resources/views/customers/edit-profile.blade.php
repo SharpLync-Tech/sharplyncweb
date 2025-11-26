@@ -1,89 +1,107 @@
+{{-- 
+    Standard Google Autocomplete Test (Barebones)
+    Purpose: To definitively check API key validity and Autocomplete interactivity 
+    using the simple, built-in Google Maps JavaScript method, bypassing the 
+    problematic gmpx-place-autocomplete component.
+--}}
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Google API Debug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Standard Autocomplete Test</title>
+
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        input[type="text"] { border: 1px solid #ccc; padding: 10px; width: 300px; display: block; margin-bottom: 20px; }
+        pre { background: #eee; padding: 10px; border: 1px solid #ddd; white-space: pre-wrap; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+
+    {{-- 1. LOAD GOOGLE MAPS JS API --}}
+    {{-- CRITICAL: Includes `libraries=places` and the mandatory `callback=initAutocomplete` --}}
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initAutocomplete">
+    </script>
 </head>
 <body>
-<h1>Google Maps API Debug</h1>
-<div>
-    <h3>Test Autocomplete Input</h3>
-    <gmpx-place-picker
-        id="test_ac"
-        placeholder="Start typing an address…"
-    ></gmpx-place-picker>
-</div>
-<div>
-    <h3>Formatted Address:</h3>
-    <div id="formatted-output">
-        (none yet)
-    </div>
-</div>
-<div>
-    <h3>Parsed Components</h3>
-    <div id="components-output">
-        (none yet)
-    </div>
-</div>
-<div>
-    <h3>Debug Log</h3>
-    <div id="debug-log">(waiting for events)</div>
-</div>
 
-<!-- Load Maps JS API asynchronously with callback (no libraries param) -->
-<script async src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initGoogleMaps"></script>
-<!-- Extended Components -->
-<script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
+<h1>Standard Google Autocomplete Test</h1>
+
+<label for="address_input">Address Input Field:</label>
+<input type="text" id="address_input" placeholder="Start typing an address (e.g., Sydney Opera House)">
+
+<h2>Debug Log:</h2>
+<pre id="debug-log">Waiting for API script to load...</pre>
 
 <script>
-function log(msg) {
-    console.log(msg);
-    const dbg = document.getElementById("debug-log");
-    dbg.textContent += msg + "\n";
+// Global variables for easy access
+const debugLog = document.getElementById('debug-log');
+const inputElement = document.getElementById('address_input');
+
+// --- Step 0: Logging Function ---
+function log(msg, type = 'info') {
+    const time = new Date().toLocaleTimeString();
+    let prefix = `[${time}] ${msg}`;
+    
+    // Create the HTML log entry
+    let logEntry = document.createElement('div');
+    logEntry.innerHTML = prefix;
+    
+    if (type === 'success') {
+        logEntry.classList.add('success');
+    } else if (type === 'error') {
+        logEntry.classList.add('error');
+        console.error(msg);
+    }
+    
+    debugLog.appendChild(logEntry);
+    console.log(`[TEST LOG] ${msg}`);
 }
 
-// Define the callback function (runs after API loads)
-window.initGoogleMaps = async () => {
+// --- Step 1: Callback Function (Fires when Maps API is fully loaded) ---
+// This is called automatically by the Google Maps script due to `callback=initAutocomplete`
+window.initAutocomplete = function() {
+    log("STATUS 1: initAutocomplete() callback fired. This proves API key is likely valid.", 'success');
+    
+    if (typeof google === 'undefined' || typeof google.maps.places === 'undefined') {
+        log("ERROR 1: 'google.maps.places' library is missing or failed to load.", 'error');
+        return;
+    }
+    
+    log("STATUS 2: 'google.maps.places' library is available. Attempting initialization...", 'success');
+
+    // --- Step 2: Initialize Autocomplete Object ---
     try {
-        log("PAGE LOADED - Starting async import...");
-        
-        // Import the places library
-        await google.maps.importLibrary('places');
-        log("google.maps.places imported successfully");
-        
-        const ac = document.getElementById("test_ac");
-        if (!ac) {
-            log("ERROR: Place picker element not found");
-            return;
-        }
-        log("<gmpx-place-picker> FOUND and ready");
-
-        ac.addEventListener("gmpx-placechange", () => {
-            const val = ac.text || "(empty)";
-            log("PLACE CHANGE EVENT — Value: " + val);
-            
-            document.getElementById("formatted-output").innerText = val;
-
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address: val }, (results, status) => {
-                log("GEOCODER STATUS: " + status);
-                if (status !== "OK") {
-                    document.getElementById("components-output").innerText = "Geocoder failed: " + status;
-                    return;
-                }
-                let comps = results[0].address_components;
-                let resultDump = "";
-                comps.forEach(c => {
-                    resultDump += c.types.join(", ") + ": " + c.long_name + "\n";
-                });
-                document.getElementById("components-output").innerText = resultDump;
-                log("Address Components Parsed:\n" + resultDump);
-            });
+        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
+            // Fields and component restrictions for relevance and cost control
+            fields: ["formatted_address", "address_components", "name"], 
+            componentRestrictions: { country: ["au", "nz"] }
         });
+        
+        log("STATUS 3: Autocomplete object created successfully. INPUT IS NOW ACTIVE.", 'success');
+
+        // --- Step 3: Add Event Listener ---
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            
+            if (place.formatted_address) {
+                log(`EVENT: Place selected. Address: ${place.formatted_address}`, 'info');
+            } else {
+                log("EVENT: Place selected, but no formatted address was found.", 'error');
+            }
+        });
+
     } catch (error) {
-        log("ERROR during import or init: " + error.message);
+        log(`FATAL ERROR 3: Failed to initialize Autocomplete object. Error: ${error.message}`, 'error');
     }
 };
+
+// Log initial state
+log("Initial Check: Waiting for Google API script to load...");
 </script>
+
 </body>
 </html>
