@@ -9,6 +9,9 @@ class Ticket extends Model
 {
     use HasFactory;
 
+
+    protected $connection = 'crm';
+
     protected $table = 'support_tickets';
 
     protected $fillable = [

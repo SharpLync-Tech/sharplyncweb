@@ -9,6 +9,8 @@ class TicketReply extends Model
 {
     use HasFactory;
 
+    protected $connection = 'crm';
+
     protected $table = 'support_ticket_replies';
 
     protected $fillable = [
