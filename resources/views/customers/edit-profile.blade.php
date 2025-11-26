@@ -62,8 +62,7 @@
             <gmpx-place-autocomplete
                 id="address_autocomplete"
                 placeholder="Start typing your address…"
-                autocomplete="street-address"
-                text="{{ old('address_line1', $profile->address_line1) }}"
+                autocomplete="street-address"                
             ></gmpx-place-autocomplete>
 
             <input type="hidden"

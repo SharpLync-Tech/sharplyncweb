@@ -1,6 +1,6 @@
 /* ===================================================================
-   SharpLync — Edit Profile JS (Google Places + Autofill)
-   Version: v1.0
+   SharpLync — Edit Profile JS (Google Places + Autofill)
+   Version: v1.1 (Fixed Pre-fill)
 =================================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -20,15 +20,23 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Restore stored address into visible field
+    // FIX: Use .text property to display the address string in the
+    // gmpx-place-autocomplete component's input field.
     if (hidden.value) {
-        ac.value = hidden.value;
+        // Wait for the custom element to be defined before trying to set a property
+        customElements.whenDefined('gmpx-place-autocomplete').then(() => {
+             ac.text = hidden.value;
+             console.log("Restored address display:", hidden.value);
+        }).catch(err => {
+            console.error("Failed to define gmpx-place-autocomplete:", err);
+        });
     }
 
     ac.addEventListener("gmpx-placechange", () => {
 
-        const selected = ac.value || "";
-        hidden.value = selected; // Save full address
+        // When a place is selected, the component's .text property holds the display string.
+        const selected = ac.text || "";
+        hidden.value = selected; // Save full address string to the hidden field
 
         console.log("Selected Address:", selected);
 
@@ -47,10 +55,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 return c ? c.long_name : "";
             }
 
+            // Autofill the separated fields
             cityEl.value    = part("locality") || part("postal_town") || "";
             stateEl.value   = part("administrative_area_level_1") || "";
             pcEl.value      = part("postal_code") || "";
             countryEl.value = part("country") || "Australia";
+
+            // If the country is set by Google, make sure the dropdown reflects it
+            const countryValue = countryEl.value;
+            const countryOption = countryEl.querySelector(`option[value="${countryValue}"]`);
+            if (countryOption) {
+                countryOption.selected = true;
+            } else if (countryValue !== 'Australia' && countryValue !== 'New Zealand') {
+                // Select 'Other' if the resolved country is neither Australia nor New Zealand
+                countryEl.querySelector('option[value="Other"]').selected = true;
+            }
+
 
             console.log("Autofill Complete");
         });
