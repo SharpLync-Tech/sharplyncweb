@@ -15,12 +15,14 @@
     <div class="support-header">
         <h1 class="support-title">Support</h1>
         <p class="support-subtitle">View and manage your support requests.</p>
+        <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
+        <a href="/portal" class="support-link-back" style="display: block; width: fit-content; margin: 0 auto;">
+            Back to Portal
+        </a>
         <a href="{{ route('customer.support.tickets.create') }}" class="support-btn-primary">
             + New Support Request
         </a>
-        <a href="/portal" class="support-link-back">
-            Back to Portal
-        </a>
+        
     </div>
 
     @if (session('success'))
@@ -57,8 +59,9 @@
                             {{ ucfirst($ticket->priority) }} priority
                         </span>
                         <span class="support-ticket-date">
-                            Opened {{ $ticket->created_at->format('d M Y, H:i') }}
+                            Opened {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                         </span>
+
                         @if($ticket->last_reply_at)
                             <span class="support-ticket-date">
                                 Last updated {{ $ticket->last_reply_at->diffForHumans() }}

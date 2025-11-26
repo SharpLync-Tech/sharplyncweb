@@ -17,6 +17,7 @@
         </h1>
         <p class="support-subtitle">
             Reference: <strong>{{ $ticket->reference }}</strong>
+            <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
         </p>
         <a href="{{ route('customer.support.index') }}" class="support-link-back">
             Back to my tickets
@@ -37,7 +38,7 @@
             {{ ucfirst($ticket->priority) }} priority
         </span>
         <span class="support-ticket-date">
-            Opened {{ $ticket->created_at->format('d M Y, H:i') }}
+            Opened {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
         </span>
         @if($ticket->last_reply_at)
             <span class="support-ticket-date">
@@ -68,7 +69,7 @@
                         {{ $reply->admin_id ? 'SharpLync Support' : ($customer->name ?? 'You') }}
                     </span>
                     <span class="support-message-time">
-                        {{ $reply->created_at->format('d M Y, H:i') }}
+                        {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                     </span>
                 </div>
                 <div class="support-message-body">
