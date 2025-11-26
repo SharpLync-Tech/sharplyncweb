@@ -164,6 +164,22 @@
     </div>
 
 </section>
+
+{{-- Success Modal --}}
+<div id="contactSuccessModal" class="contact-modal-overlay" style="display:none;">
+    <div class="contact-modal">
+        <div class="contact-modal-icon">
+            ✓
+        </div>
+        <h3 class="contact-modal-title">Message Sent!</h3>
+        <p class="contact-modal-text">We’ll get back to you shortly.</p>
+
+        <button id="closeContactModal" class="contact-modal-btn">
+            OK
+        </button>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -185,4 +201,40 @@
             });
         </script>
     @endif
+
+    {{-- Success Modal Logic --}}
+@if(session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('contactSuccessModal');
+    const closeBtn = document.getElementById('closeContactModal');
+
+    if (overlay && closeBtn) {
+        overlay.style.display = 'flex';
+
+        // Manual close
+        closeBtn.addEventListener('click', () => {
+            overlay.style.animation = "modalFadeOut 0.4s forwards";
+            setTimeout(() => { overlay.style.display = 'none'; }, 400);
+        });
+
+        // Close by clicking background
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.animation = "modalFadeOut 0.4s forwards";
+                setTimeout(() => { overlay.style.display = 'none'; }, 400);
+            }
+        });
+
+        // Auto-dismiss after 3 seconds ⭐
+        setTimeout(() => {
+            overlay.style.animation = "modalFadeOut 0.4s forwards";
+            setTimeout(() => { overlay.style.display = 'none'; }, 400);
+        }, 3000);
+    }
+});
+</script>
+@endif
 @endpush
+
+
