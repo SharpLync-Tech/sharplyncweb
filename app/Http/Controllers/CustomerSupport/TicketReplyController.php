@@ -47,7 +47,8 @@ class TicketReplyController extends Controller
         }
 
         return redirect()
-            ->route('customer.support.show', $ticket)
-            ->with('success', 'Your reply has been added to this ticket.');
+        ->route('customer.support.tickets.show', $ticket)
+        ->with('success', 'Your reply has been added to this ticket.');
+
     }
 }

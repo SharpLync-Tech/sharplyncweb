@@ -18,7 +18,7 @@
         <a href="{{ route('customer.support.tickets.create') }}" class="support-btn-primary">
             + New Support Request
         </a>
-        <a href="/portal">
+        <a href="/portal" class="support-link-back">
             Back to Portal
         </a>
     </div>
