@@ -18,7 +18,7 @@ use App\Http\Controllers\CustomerSupport\TicketReplyController;
 | Adjust the middleware/guard if your customer auth guard name differs.
 */
 
-Route::middleware(['web', 'auth.customer'])
+Route::middleware(['web', 'auth:customer'])
     ->prefix('customer/support')
     ->name('customer.support.')
     ->group(function () {
