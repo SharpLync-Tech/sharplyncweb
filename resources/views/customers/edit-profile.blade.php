@@ -125,20 +125,28 @@
 @endsection
 
 @push('scripts')
+    {{-- Google Maps API and Libraries --}}
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&v=weekly"></script>
     <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
     
-    {{-- Inline script to set the text property immediately after the component is defined --}}
+    {{-- ⚡ NEW INLINE SCRIPT FOR PRE-FILL ⚡ --}}
     <script>
+        // Get the elements
         const ac_element = document.getElementById("address_autocomplete");
         const initial_val = document.getElementById("address_line1").value;
 
+        // Check if data exists and the component is on the page
         if (ac_element && initial_val) {
+            // Wait for the custom element to be defined and registered by the browser
             customElements.whenDefined('gmpx-place-autocomplete').then(() => {
                 ac_element.text = initial_val;
+                console.log("SUCCESS: Autocomplete pre-filled with:", initial_val);
             });
+        } else {
+            console.log("Pre-fill skipped. Value or element missing.");
         }
     </script>
     
+    {{-- Your main logic file --}}
     <script src="{{ secure_asset('js/profile-edit.js') }}"></script>
 @endpush
