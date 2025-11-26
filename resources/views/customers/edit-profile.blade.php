@@ -1,7 +1,9 @@
-@extends('customers.layouts.customer-layout')
-@section('title', 'Edit Profile')
 <link rel="stylesheet" href="/css/customer-profile-edit.css">
 <link rel="stylesheet" href="/css/google-places.css">
+
+@extends('customers.layouts.customer-layout')
+@section('title', 'Edit Profile')
+
 
 @section('content')
 <div class="cp-edit-card">
