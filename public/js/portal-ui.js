@@ -1,6 +1,6 @@
 // public/js/portal-ui.js
+document.addEventListener("DOMContentLoaded", function () {
 
-// REMOVE DOMContentLoaded (it blocks everything!)
 (function(){
 
     const modal     = document.getElementById('cp-security-modal');
@@ -22,8 +22,9 @@
     const sendBlock   = document.getElementById('cp-email-send-block');
     const verifyBlock = document.getElementById('cp-email-verify-block');
 
-    const statusEl   = document.getElementById('cp-email-status');
-    const errorEl    = document.getElementById('cp-email-error');
+    const statusEl = document.getElementById('cp-email-status');
+    const errorEl  = document.getElementById('cp-email-error');
+
     const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
     // Authenticator UI
@@ -34,9 +35,6 @@
     const authErrorEl     = document.getElementById('cp-auth-error');
     const authCodeInput   = document.getElementById('cp-auth-code');
 
-    /* ============================================================
-       FIX — NO restoreDBState() ANYWHERE
-       ============================================================ */
 
     function clearOtp() {
         otpInputs.forEach(i => i.value = '');
@@ -48,23 +46,23 @@
         screenEmail.style.display = 'none';
         screenAuth.style.display  = 'none';
 
-        backEmailBtn.style.display = 'none';
-        backAuthBtn.style.display  = 'none';
+        if (backEmailBtn) backEmailBtn.style.display = 'none';
+        if (backAuthBtn)  backAuthBtn.style.display  = 'none';
 
-        errorEl.style.display   = 'none';
-        statusEl.style.display  = 'none';
+        if (errorEl)  errorEl.style.display  = 'none';
+        if (statusEl) statusEl.style.display = 'none';
 
-        sendBlock.style.display   = 'block';
-        verifyBlock.style.display = 'none';
+        if (sendBlock)   sendBlock.style.display   = 'block';
+        if (verifyBlock) verifyBlock.style.display = 'none';
 
         clearOtp();
 
-        authQrWrapper.style.display   = 'none';
-        authSecretBlock.style.display = 'none';
-        authVerifyBlock.style.display = 'none';
-        authStatusEl.style.display    = 'none';
-        authErrorEl.style.display     = 'none';
-        if (authCodeInput) authCodeInput.value = '';
+        if (authQrWrapper)   authQrWrapper.style.display   = 'none';
+        if (authSecretBlock) authSecretBlock.style.display = 'none';
+        if (authVerifyBlock) authVerifyBlock.style.display = 'none';
+        if (authStatusEl)    authStatusEl.style.display    = 'none';
+        if (authErrorEl)     authErrorEl.style.display     = 'none';
+        if (authCodeInput)   authCodeInput.value = '';
     }
 
     function showEmailSetup() {
@@ -72,11 +70,11 @@
         screenEmail.style.display = 'block';
         screenAuth.style.display  = 'none';
 
-        backEmailBtn.style.display = 'inline-block';
-        backAuthBtn.style.display  = 'none';
+        if (backEmailBtn) backEmailBtn.style.display = 'inline-block';
+        if (backAuthBtn)  backAuthBtn.style.display  = 'none';
 
-        errorEl.style.display  = 'none';
-        statusEl.style.display = 'none';
+        if (errorEl)  errorEl.style.display  = 'none';
+        if (statusEl) statusEl.style.display = 'none';
 
         clearOtp();
     }
@@ -86,13 +84,14 @@
         screenEmail.style.display = 'none';
         screenAuth.style.display  = 'block';
 
-        backEmailBtn.style.display = 'none';
-        backAuthBtn.style.display  = 'inline-block';
+        if (backEmailBtn) backEmailBtn.style.display = 'none';
+        if (backAuthBtn)  backAuthBtn.style.display  = 'inline-block';
 
-        authStatusEl.style.display = 'none';
-        authErrorEl.style.display  = 'none';
+        if (authStatusEl) authStatusEl.style.display = 'none';
+        if (authErrorEl)  authErrorEl.style.display  = 'none';
         if (authCodeInput) authCodeInput.value = '';
     }
+
 
     function openModal(){
         modal.classList.add('cp-modal-visible');
@@ -108,17 +107,8 @@
         showMain();
     }
 
-    // ============================================
-    // Attach event listeners (now they actually run)
-    // ============================================
-
-    if (openBtn) {
-        console.log("Modal button found — listeners attached");
-        openBtn.addEventListener('click', openModal);
-    } else {
-        console.error("Modal open button NOT found");
-    }
-
+    // Modal events
+    if (openBtn) openBtn.addEventListener('click', openModal);
     closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
     modal.addEventListener('click', e=>{
@@ -128,8 +118,7 @@
     // Toggle logic
     if (emailToggle) {
         emailToggle.addEventListener('change', function(){
-            if (this.checked) showEmailSetup();
-            else showMain();
+            this.checked ? showEmailSetup() : showMain();
         });
     }
 
@@ -145,9 +134,10 @@
         });
     }
 
-    backEmailBtn.addEventListener('click', showMain);
-    backAuthBtn.addEventListener('click', showMain);
+    if (backEmailBtn) backEmailBtn.addEventListener('click', showMain);
+    if (backAuthBtn)  backAuthBtn.addEventListener('click', showMain);
 
+    // OTP UX
     otpInputs.forEach((input, idx)=>{
         input.addEventListener('input', e=>{
             e.target.value = e.target.value.replace(/\D/g,'');
@@ -174,4 +164,6 @@
         });
     });
 
-})();  // END IIFE
+})(); 
+
+}); // END DOMContentLoaded

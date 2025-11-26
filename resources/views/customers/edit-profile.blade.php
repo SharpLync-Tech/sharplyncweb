@@ -16,7 +16,7 @@
     {{-- 🔹 BACK TO PORTAL BUTTON --}}
     <div style="margin-bottom: 1.5rem;">
         <a href="{{ url('/portal') }}" class="cp-edit-back-btn">
-            ← Back to Portal
+            Back to Portal
         </a>
     </div>
 
