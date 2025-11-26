@@ -63,7 +63,7 @@
 
 .support-btn-primary {
     background: #104976;
-    color: #ffffff;
+    color: #ffffff !important;
     box-shadow: 0 6px 16px rgba(16, 73, 118, 0.25);
 }
 
@@ -398,6 +398,27 @@
     border-radius: 12px;
     background: #f0f1f5;
 }
+
+/* Back to dashboard button */
+.support-back-portal-btn {
+    display: inline-block;
+    margin: 1.5rem auto 1rem auto;
+    color: #104976;
+    font-weight: 600;
+    text-decoration: none;
+    background: #e6f1ff;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.support-back-portal-btn:hover {
+    background: #d4e9ff;
+    color: #0A2A4D;
+    text-decoration: none;
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

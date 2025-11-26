@@ -10,6 +10,10 @@
 @endpush
 
 @section('content')
+<a href="/portal" class="support-back-portal-btn">
+    Back to Portal
+</a>
+
 <div class="support-wrapper">
     <div class="support-header">
         <h1 class="support-title">Support</h1>
