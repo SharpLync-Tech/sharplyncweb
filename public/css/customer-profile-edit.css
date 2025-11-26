@@ -1,21 +1,38 @@
 /* ===================================================================
    SharpLync Customer Portal — Edit Profile Stylesheet
-   Version: v1.0 (Standalone • Mobile Friendly)
+   Version: v1.1 (Isolated + Protected from customer.css overrides)
    Updated: 27 Nov 2025
 =================================================================== */
 
+
 /* --------------------------------------------------------------
-   CARD WRAPPER
+   CARD WRAPPER (matches portal cp-card)
 -------------------------------------------------------------- */
 .cp-edit-card {
     background: #ffffff;
     color: #0A2A4D;
-    border-radius: 18px;
+    border-radius: 16px;
     padding: 2rem;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    box-sizing: border-box;
 }
+
+
+/* --------------------------------------------------------------
+   HARD OVERRIDES (prevents customer.css from affecting edit page)
+-------------------------------------------------------------- */
+
+.cp-edit-card input,
+.cp-edit-card select,
+.cp-edit-card label,
+.cp-edit-card gmpx-place-autocomplete {
+    all: revert !important;
+    box-sizing: border-box !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
 
 /* --------------------------------------------------------------
    PAGE TITLE
@@ -24,7 +41,9 @@
     margin: 0 0 1.5rem 0;
     font-size: 1.75rem;
     font-weight: 600;
+    color: #0A2A4D;
 }
+
 
 /* --------------------------------------------------------------
    AVATAR ROW
@@ -60,11 +79,13 @@
     font-weight: 600;
     margin-bottom: 4px;
     display: block;
+    color: #0A2A4D;
 }
 
-.cp-edit-avatar-info input {
+.cp-edit-avatar-info input[type="file"] {
     margin-top: 6px;
 }
+
 
 /* --------------------------------------------------------------
    FORM FIELDS
@@ -90,7 +111,6 @@
     background: #f9fbfd;
     font-size: 1rem;
     color: #0A2A4D;
-    box-sizing: border-box;
     transition: border .2s ease, box-shadow .2s ease;
 }
 
@@ -100,6 +120,7 @@
     box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
     outline: none;
 }
+
 
 /* --------------------------------------------------------------
    GRID — CITY/STATE + POSTCODE/COUNTRY
@@ -116,6 +137,7 @@
     }
 }
 
+
 /* --------------------------------------------------------------
    SUBMIT BUTTON
 -------------------------------------------------------------- */
@@ -129,9 +151,35 @@
     cursor: pointer;
     transition: background .2s ease, transform .1s ease;
     margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .cp-edit-submit:hover {
     background: #24a391;
     transform: translateY(-1px);
+}
+
+
+/* --------------------------------------------------------------
+   MOBILE FIRST TWEAKS
+-------------------------------------------------------------- */
+@media (max-width: 576px) {
+
+    .cp-edit-card {
+        padding: 1.5rem;
+    }
+
+    .cp-edit-avatar-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cp-edit-avatar {
+        margin-bottom: 0.5rem;
+    }
+
+    .cp-edit-submit {
+        width: 100%;
+        text-align: center;
+    }
 }
