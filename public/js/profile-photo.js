@@ -1,6 +1,6 @@
 /* ====================================================
    SharpLync Profile Photo Manager
-   Version 1.0
+   Version 1.1 — Stable Modal + Preview + Save + Remove
 ==================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,23 +15,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const removeBtn = document.getElementById("avatar-remove-btn");
 
     /* ------------------------------------------------
+       SAFETY: If modal elements missing, abort
+    -------------------------------------------------- */
+    if (!modal || !openBtn || !fileInput) {
+        console.warn("[Avatar] Modal elements missing.");
+        return;
+    }
+
+
+    /* ------------------------------------------------
        OPEN & CLOSE MODAL
     -------------------------------------------------- */
-    if (openBtn) openBtn.addEventListener("click", () => {
+    openBtn.addEventListener("click", () => {
         modal.classList.add("cp-visible");
+        document.body.style.overflow = "hidden"; // prevent background scroll
     });
 
-    if (closeBtn) closeBtn.addEventListener("click", () => {
-        modal.classList.remove("cp-visible");
-        resetPreview();
-    });
+    closeBtn.addEventListener("click", closeModal);
 
     modal.addEventListener("click", e => {
-        if (e.target === modal) {
-            modal.classList.remove("cp-visible");
-            resetPreview();
-        }
+        if (e.target === modal) closeModal();
     });
+
+    function closeModal() {
+        modal.classList.remove("cp-visible");
+        document.body.style.overflow = "";
+        resetPreview();
+    }
 
 
     /* ------------------------------------------------
@@ -45,14 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fileInput.addEventListener("change", e => {
         const file = e.target.files[0];
-        if (!file) {
-            resetPreview();
-            return;
-        }
+        if (!file) return resetPreview();
 
         const reader = new FileReader();
-        reader.onload = e => {
-            previewImg.src = e.target.result;
+        reader.onload = ev => {
+            previewImg.src = ev.target.result;
             saveBtn.disabled = false;
         };
         reader.readAsDataURL(file);
@@ -76,9 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData
         })
         .then(r => r.json())
-        .then(() => {
-            location.reload();
-        });
+        .then(() => location.reload());
     });
 
 
