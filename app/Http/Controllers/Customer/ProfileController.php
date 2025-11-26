@@ -28,17 +28,20 @@ class ProfileController extends Controller
     }
 
     /**
-     * Store new profile data during onboarding
+     * Store new profile during onboarding
      */
     public function store(Request $request)
     {
         $user = Auth::user();
 
         $validated = $request->validate([
-            'business_name'   => 'required|string|max:150',
-            'mobile_number'   => 'required|string|max:20',
-            'address_line1'   => 'required|string|max:150',
-            'postcode'        => 'required|string|max:10',
+            'business_name' => 'required|string|max:150',
+            'mobile_number' => 'required|string|max:20',
+            'address_line1' => 'required|string|max:150',
+            'city'          => 'nullable|string|max:100',
+            'state'         => 'nullable|string|max:100',
+            'postcode'      => 'required|string|max:10',
+            'country'       => 'nullable|string|max:50',
         ]);
 
         $profile = CustomerProfile::updateOrCreate(
@@ -48,38 +51,45 @@ class ProfileController extends Controller
             ])
         );
 
-        // Optional Xero sync
+        /** OPTIONAL XERO SYNC — Safe Wrapped */
         try {
             $xero = new XeroService();
+
             $contactId = $xero->createContact([
                 'business_name' => $validated['business_name'],
                 'email'         => $user->email,
                 'mobile_number' => $validated['mobile_number'],
                 'address_line1' => $validated['address_line1'],
+                'city'          => $validated['city'] ?? '',
+                'state'         => $validated['state'] ?? '',
+                'postcode'      => $validated['postcode'],
+                'country'       => $validated['country'] ?? 'Australia',
             ]);
 
             $profile->update(['xero_contact_id' => $contactId]);
+
         } catch (\Exception $e) {
-            \Log::error('Xero sync failed: ' . $e->getMessage());
+            \Log::error('Xero sync failed (onboarding): ' . $e->getMessage());
         }
 
         return redirect()->route('onboard.complete');
     }
 
     /**
-     * Display the editable profile form (post-onboarding)
+     * Display the profile edit form
      */
     public function edit()
     {
         $user = Auth::user();
 
-        // Auto-create a blank profile if missing
+        // Create blank profile if missing
         if (!$user->profile) {
             $user->profile()->create([
                 'account_number' => 'SL' . rand(100000, 999999),
                 'business_name'  => $user->first_name . ' ' . $user->last_name,
                 'mobile_number'  => $user->phone,
                 'setup_completed' => 0,
+                'country' => 'Australia',
             ]);
         }
 
@@ -90,22 +100,58 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update profile data for existing customers
+     * Update profile for existing customers
      */
     public function update(Request $request)
     {
         $user = Auth::user();
 
+        /** FULL VALIDATION — Includes all address fields */
         $validated = $request->validate([
-            'business_name'   => 'required|string|max:150',
-            'mobile_number'   => 'required|string|max:20',
-            'address_line1'   => 'required|string|max:150',
-            'postcode'        => 'required|string|max:10',
+            'business_name' => 'required|string|max:150',
+            'mobile_number' => 'required|string|max:20',
+            'address_line1' => 'nullable|string|max:150',
+            'city'          => 'nullable|string|max:100',
+            'state'         => 'nullable|string|max:100',
+            'postcode'      => 'required|string|max:10',
+            'country'       => 'nullable|string|max:50',
             'preferred_contact_method' => 'nullable|string|max:20',
-            'notes'           => 'nullable|string',
+            'notes'         => 'nullable|string',
         ]);
 
-        $user->profile->update($validated);
+        /** UPDATE PROFILE MODEL */
+        $user->profile->update([
+            'business_name' => $validated['business_name'],
+            'mobile_number' => $validated['mobile_number'],
+            'address_line1' => $validated['address_line1'],
+            'city'          => $validated['city'] ?? null,
+            'state'         => $validated['state'] ?? null,
+            'postcode'      => $validated['postcode'],
+            'country'       => $validated['country'] ?? 'Australia',
+            'preferred_contact_method' => $validated['preferred_contact_method'] ?? null,
+            'notes'         => $validated['notes'] ?? null,
+        ]);
+
+        /** OPTIONAL XERO SYNC — UPDATE EXISTING CONTACT */
+        try {
+            if ($user->profile->xero_contact_id) {
+                $xero = new XeroService();
+
+                $xero->updateContact($user->profile->xero_contact_id, [
+                    'business_name' => $validated['business_name'],
+                    'email'         => $user->email,
+                    'mobile_number' => $validated['mobile_number'],
+                    'address_line1' => $validated['address_line1'],
+                    'city'          => $validated['city'] ?? '',
+                    'state'         => $validated['state'] ?? '',
+                    'postcode'      => $validated['postcode'],
+                    'country'       => $validated['country'] ?? 'Australia',
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Xero sync failed (update): ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Profile updated successfully.');
     }
