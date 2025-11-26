@@ -3,20 +3,7 @@
 @section('title', 'SharpLync | Contact Us')
 
 @section('content')
-<section class="content-hero fade-in">
-
-    {{-- Flash Messages --}}
-    @if(session('success'))
-        <div class="contact-alert contact-alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="contact-alert contact-alert-error">
-            {{ session('error') }}
-        </div>
-    @endif
+<section class="content-hero fade-in">    
 
     {{-- ===================== --}}
     {{-- Contact Us Title --}}
