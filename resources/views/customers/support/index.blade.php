@@ -14,11 +14,11 @@
 <div class="support-wrapper">
     <div class="support-header">
         <h1 class="support-title">Support</h1>
-        <p class="support-subtitle">View and manage your support requests.</p>
-        <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
         <a href="/portal" class="support-link-back" style="display: block; width: fit-content; margin: 0 auto;">
             Back to Portal
         </a>
+        <p class="support-subtitle">View and manage your support requests.</p>
+        <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>        
         <a href="{{ route('customer.support.tickets.create') }}" class="support-btn-primary">
             + New Support Request
         </a>
