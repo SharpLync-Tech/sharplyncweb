@@ -1,13 +1,21 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v4.1 (Google Autocomplete + Full Cleanup + Visibility Fixes)
-   Updated: 26 Nov 2025
+   Version: v4.3 (Safe Rollback + Edit Profile + Google Autocomplete)
+   Updated: 27 Nov 2025
+
+   Goals:
+   - Restore original portal look (dashboard, cards, buttons)
+   - Keep all security modal / 2FA styling intact
+   - Add Edit Profile layout
+   - Add Google Place Autocomplete (2025 API) styling
+   - Fix input overflow ONLY inside cp-card (no global layout changes)
 =================================================================== */
 
 
 /* --------------------------------------------------------------
    0. GLOBAL RESET
 -------------------------------------------------------------- */
+
 html, body {
     margin: 0;
     padding: 0;
@@ -16,8 +24,9 @@ html, body {
 
 
 /* --------------------------------------------------------------
-   1. ROOT VARIABLES + BASE COLORS
+   1. ROOT VARIABLES + BACKGROUND
 -------------------------------------------------------------- */
+
 .cp-root {
     --navy: #0A2A4D;
     --blue: #104976;
@@ -28,12 +37,11 @@ html, body {
     --shadow: 0 10px 30px rgba(0, 0, 0, .25);
 
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--navy), var(--blue) 40%, var(--teal));
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 40%, var(--teal) 100%);
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
 }
 
-/* links */
 .cp-root a {
     color: var(--teal);
     text-decoration: none;
@@ -42,15 +50,17 @@ html, body {
     text-decoration: underline;
 }
 
-/* lock scroll when modal is open */
+/* Lock scroll if modal open */
 .cp-root.modal-open {
     overflow: hidden;
+    height: 100vh;
 }
 
 
 /* --------------------------------------------------------------
-   2. HEADER + FOOTER
+   2. HEADER & FOOTER
 -------------------------------------------------------------- */
+
 .cp-header {
     position: sticky;
     top: 0;
@@ -59,42 +69,49 @@ html, body {
     align-items: center;
     justify-content: space-between;
     padding: .75rem 1.25rem;
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     background: rgba(10, 42, 77, .55);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    color: #E9F4F3;
 }
 
 .cp-logo img {
     height: 48px;
+    width: auto;
 }
 
 .cp-welcome {
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 1rem;
-    font-weight: 600;
 }
 
 .cp-logout-inline button {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, .3);
-    background: rgba(255, 255, 255, .1);
-    color: #fff;
     cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, .28);
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    transition: transform .12s ease, background .2s ease;
 }
 .cp-logout-inline button:hover {
-    background: rgba(44,191,174,.4);
+    background: rgba(44, 191, 174, .45);
+    transform: translateY(-1px);
 }
 
-/* footer */
 .cp-footer {
     background: var(--ink);
     color: #fff;
     text-align: center;
     padding: 1.25rem;
-    margin-top: 3rem;
+    font-size: .95rem;
+    margin-top: 2rem;
 }
 .cp-footer .cp-hl {
     color: var(--teal);
@@ -103,45 +120,436 @@ html, body {
 
 
 /* --------------------------------------------------------------
-   3. MAIN LAYOUT
+   3. MAIN LAYOUT CONTAINERS
 -------------------------------------------------------------- */
+
 .cp-main {
-    padding: 2rem 1rem 4rem;
+    padding: 1.5rem 1rem 4rem;
 }
 
 .cp-card {
-    background: #ffffff;
-    color: var(--ink);
-    border-radius: 18px;
-    padding: 2rem;
-    max-width: 900px;
-    margin: 0 auto;
+    background: var(--card);
+    border-radius: 16px;
     box-shadow: var(--shadow);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--ink);
+}
+
+.cp-pagehead {
+    text-align: center;
+    color: #fff;
+    padding: 1.25rem 1rem .5rem;
+}
+.cp-pagehead h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
 }
 
 
 /* --------------------------------------------------------------
    4. BUTTONS
 -------------------------------------------------------------- */
+
+/* Generic portal buttons (used on dashboard cards) */
+.cp-btn {
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    border: 0;
+    border-radius: 8px;
+    padding: .85rem 1.25rem;
+    font-weight: 600;
+    background: var(--navy);
+    color: #fff;
+    transition: background .2s ease, transform .1s ease, box-shadow .15s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+.cp-btn:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.15);
+}
+
+.cp-small-btn {
+    padding: .4rem .9rem;
+    font-size: .85rem;
+}
+
+/* Brand color variations */
+.cp-teal-btn {
+    background: var(--teal);
+}
+.cp-teal-btn:hover {
+    background: #20A694;
+}
+.cp-navy-btn {
+    background: var(--navy);
+}
+.cp-navy-btn:hover {
+    background: var(--blue);
+}
+
+/* Primary action button (used e.g. on Edit Profile) */
 .cp-btn-primary,
 button.btn-primary {
-    background: var(--teal);
-    padding: .9rem 2rem;
-    font-weight: 600;
-    color: #ffffff;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
     border-radius: 8px;
     border: none;
-    cursor: pointer;
-    transition: .2s ease;
+    padding: .9rem 2rem;
+    background: var(--teal);
+    color: #ffffff;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    transition: background .2s ease, transform .1s ease, box-shadow .15s ease;
 }
 .cp-btn-primary:hover,
 button.btn-primary:hover {
     background: #24a391;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.15);
 }
 
 
 /* --------------------------------------------------------------
-   5. INPUT FIELDS (GLOBAL)
+   5. DASHBOARD GRID LAYOUT (PORTAL HOME)
+-------------------------------------------------------------- */
+
+.cp-dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Right column container */
+.cp-activity-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Desktop grid: 3/2 split */
+@media (min-width: 769px) {
+    .cp-dashboard-grid {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 2.5rem;
+        padding: 2.5rem;
+    }
+}
+
+
+/* Profile section (left card header on portal) */
+.cp-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.cp-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.cp-profile-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--ink);
+}
+
+.cp-member-status {
+    color: var(--teal);
+    font-weight: 600;
+    margin: 0.15rem 0;
+}
+
+.cp-name-group p.cp-detail-line {
+    margin: 0.1rem 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.cp-edit-profile {
+    background: #E9EEF5;
+    color: var(--blue);
+    font-size: .9rem;
+    padding: .6rem 1.1rem;
+    margin-top: 1.5rem;
+    border: 1px solid var(--blue);
+    box-shadow: none;
+}
+.cp-edit-profile:hover {
+    background: #D6E1F0;
+}
+
+
+/* Activity cards on right column */
+.cp-activity-card {
+    background: #f9f9f9;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
+}
+.cp-activity-card h4 {
+    margin: 0 0 .5rem;
+    font-size: 1.2rem;
+    color: var(--ink);
+}
+.cp-security-footer,
+.cp-support-footer,
+.cp-account-footer {
+    margin-top: .75rem;
+}
+
+
+/* --------------------------------------------------------------
+   6. SECURITY MODAL (BACKDROP + SHEET)
+-------------------------------------------------------------- */
+
+.cp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: flex-end; /* mobile bottom-sheet default */
+    justify-content: center;
+    z-index: 1500;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+.cp-modal-backdrop.cp-modal-visible {
+    display: flex;
+    opacity: 1;
+}
+
+/* Modal sheet */
+.cp-modal-sheet {
+    background: #fff;
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
+    padding: 1.5rem 1.25rem 1.25rem;
+    transform: translateY(100%);
+    animation: cpModalSlideUp .28s ease-out forwards;
+}
+@keyframes cpModalSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+/* Desktop: center sheet */
+@media (min-width:769px){
+    .cp-modal-backdrop {
+        align-items: center;
+    }
+    .cp-modal-sheet {
+        max-width:620px;
+        border-radius:16px;
+        box-shadow:0 16px 40px rgba(0,0,0,0.35);
+    }
+}
+
+.cp-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.cp-modal-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--ink);
+}
+.cp-modal-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.cp-modal-close {
+    border: none;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: rgba(10,42,77,0.06);
+    color: var(--ink);
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s ease, transform 0.1s ease;
+}
+.cp-modal-close:hover {
+    background: rgba(10,42,77,0.12);
+    transform: translateY(-1px);
+}
+
+.cp-modal-body {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+.cp-modal-footer {
+    margin-top: 1rem;
+    text-align: right;
+}
+.cp-modal-footer .cp-btn {
+    min-width: 120px;
+}
+
+
+/* --------------------------------------------------------------
+   7. SECURITY OPTION CARDS (INSIDE MODAL)
+-------------------------------------------------------------- */
+
+.cp-sec-card {
+    background: #f9fbfd;
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.cp-sec-bordered {
+    border-left-color: var(--teal);
+}
+.cp-sec-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+.cp-sec-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+.cp-sec-desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+.cp-sec-card:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(10,42,77,0.02),
+        rgba(16,73,118,0.025),
+        rgba(44,191,174,0.03)
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.cp-sec-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Icons container */
+.cp-sec-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(44,191,174,0.12);
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: transform .18s ease;
+}
+.cp-icon-svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    fill: var(--teal);
+}
+.cp-sec-card:hover .cp-sec-icon {
+    transform: translateY(-2px);
+}
+
+
+/* --------------------------------------------------------------
+   8. TOGGLE SWITCHES (APPLE STYLE)
+-------------------------------------------------------------- */
+
+.cp-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px !important;
+    height: 26px;
+    flex-shrink: 0;
+}
+.cp-switch input {
+    display: none;
+}
+.cp-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: var(--navy);
+    border-radius: 30px;
+    transition: background .25s ease;
+}
+.cp-slider::before {
+    position: absolute;
+    content: "";
+    height: 21px;
+    width: 21px;
+    left: 3px;
+    top: 2.5px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform .25s ease;
+}
+
+/* Teal/on state */
+.cp-slider-teal {
+    background: var(--navy);
+}
+.cp-switch input:checked + .cp-slider-teal {
+    background: var(--teal);
+}
+.cp-switch input:checked + .cp-slider-teal::before {
+    transform: translateX(22px);
+}
+
+/* Disabled switch */
+.cp-switch.disabled .cp-slider,
+.cp-switch.disabled .cp-slider-teal {
+    background: #d4dde9;
+    cursor: not-allowed;
+}
+
+
+/* --------------------------------------------------------------
+   9. GENERIC FORM FIELD STYLES
 -------------------------------------------------------------- */
 
 label {
@@ -152,41 +560,46 @@ label {
     font-size: 1rem;
 }
 
-/* layout helper for each field block */
-.cp-field {
-    margin-bottom: 1.25rem;
-}
-
+/* Default inputs (will be constrained inside cp-card) */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 select {
     width: 100%;
     padding: 0.85rem 1rem;
+    border: 1px solid #dce3ea;
     border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid #d7dfe8;
+    background: #f9fbfd;
     font-size: 1rem;
     color: var(--ink);
     outline: none;
-    transition: border .2s ease, box-shadow .2s ease, background .2s ease;
+    transition: border .2s ease, box-shadow .2s ease;
+}
+
+/* Only enforce box-sizing inside cp-card to avoid global layout shifts */
+.cp-card input[type="text"],
+.cp-card input[type="email"],
+.cp-card input[type="password"],
+.cp-card select {
+    box-sizing: border-box;
 }
 
 input:focus,
 select:focus {
     border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.3);
-    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.15);
+    outline: none;
 }
 
 
 /* --------------------------------------------------------------
-   6. GRID UTILITIES
+   10. GRID UTILITIES
 -------------------------------------------------------------- */
+
 .cp-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 @media (max-width: 768px) {
     .cp-grid-2 {
@@ -196,14 +609,14 @@ select:focus {
 
 
 /* --------------------------------------------------------------
-   7. PROFILE CARD (AVATAR + FORM)
+   11. EDIT PROFILE CARD (AVATAR + FORM)
 -------------------------------------------------------------- */
 
 .cp-avatar-row {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
 }
 
 .cp-avatar-large {
@@ -228,154 +641,150 @@ select:focus {
 
 .cp-avatar-actions label {
     color: var(--ink);
-}
-
-.cp-avatar-hint {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 .cp-avatar-actions input[type="file"] {
-    margin-top: 6px;
+    margin-top: 4px;
+}
+
+/* Small helper wrapper so spacing is consistent */
+.cp-field {
+    margin-bottom: 1.25rem;
 }
 
 
 /* --------------------------------------------------------------
-   8. GOOGLE AUTOCOMPLETE (2025 API)
+   12. GOOGLE AUTOCOMPLETE (2025 API) – EDIT PROFILE
 -------------------------------------------------------------- */
 
-/* Container */
-gmpx-place-autocomplete {
+/* Component host inside the card */
+.cp-card gmpx-place-autocomplete {
     display: block !important;
     width: 100% !important;
-    min-height: 48px !important;
+    max-width: 100% !important;
+    margin-top: .25rem;
+    margin-bottom: 1rem;
+    min-height: 48px;
 }
 
-/* Input inside the component */
-gmpx-place-autocomplete::part(input) {
-    padding: 0.85rem 1rem;
-    border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid #d7dfe8;
-    color: var(--ink);
-    font-size: 1rem;
-    font-family: inherit;
-    outline: none;
-    width: 100%;
+/* Actual input inside shadow DOM */
+.cp-card gmpx-place-autocomplete::part(input) {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 48px !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 10px !important;
+    border: 1px solid #dce3ea !important;
+    background: #f9fbfd !important;
+    font-size: 1rem !important;
+    color: var(--ink) !important;
+    box-sizing: border-box !important;
+    outline: none !important;
 }
 
-gmpx-place-autocomplete::part(input):focus {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
-    background: #ffffff;
+.cp-card gmpx-place-autocomplete::part(input):focus {
+    border-color: var(--teal) !important;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.15) !important;
 }
 
-/* Dropdown */
-gmpx-place-autocomplete::part(panel) {
-    background: #ffffff;
-    color: var(--ink);
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+/* Dropdown panel */
+.cp-card gmpx-place-autocomplete::part(panel) {
+    background: #ffffff !important;
+    color: var(--ink) !important;
+    border-radius: 12px !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
     z-index: 999999 !important;
 }
 
 /* Dropdown items */
-gmpx-place-autocomplete::part(option) {
-    padding: 10px 14px;
-    font-size: 1rem;
-    color: var(--ink);
-    cursor: pointer;
+.cp-card gmpx-place-autocomplete::part(option) {
+    padding: 10px 14px !important;
+    font-size: 1rem !important;
+    color: var(--ink) !important;
 }
-gmpx-place-autocomplete::part(option):hover {
-    background: rgba(44,191,174,0.1);
+.cp-card gmpx-place-autocomplete::part(option):hover {
+    background: rgba(44,191,174,0.1) !important;
 }
 
 
 /* --------------------------------------------------------------
-   9. RESPONSIVE BEHAVIOUR
+   13. RESPONSIVE (<= 768px)
 -------------------------------------------------------------- */
 
 @media (max-width: 768px) {
 
+    /* Header stacking */
     .cp-header {
         flex-direction: column;
-        text-align: center;
-        gap: .75rem;
+        gap: .5rem;
         padding: 1rem;
+        text-align: center;
     }
 
     .cp-welcome {
         flex-direction: column;
+        gap: 0;
     }
 
     .cp-logo img {
-        height: 58px;
+        height: 56px;
     }
 
+    /* Layout & card padding */
     .cp-main {
-        padding: 1.5rem 1rem 3rem;
+        padding: 1rem .75rem 4rem;
     }
 
     .cp-card {
-        padding: 1.5rem;
+        padding: 1.5rem 1rem;
+        max-width: 100%;
+    }
+
+    .cp-dashboard-grid {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem 1rem;
+    }
+
+    .cp-profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cp-avatar {
+        margin-bottom: 1rem;
     }
 
     .cp-avatar-row {
         flex-direction: column;
         text-align: center;
-        align-items: center;
     }
 
     .cp-avatar-large {
+        margin-bottom: 1rem;
+    }
+
+    /* Uniform mobile button sizing */
+    .cp-btn,
+    .cp-btn-primary,
+    button.btn-primary {
+        min-width: 160px;
+        padding: 0.6rem 1.1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .cp-profile-actions,
+    .cp-support-footer,
+    .cp-security-footer,
+    .cp-account-footer {
+        text-align: center;
+    }
+
+    .cp-support-footer .cp-btn {
         margin-bottom: 0.5rem;
     }
-
-    /* --------------------------------------------------------------
-   FIX: Ensure all inputs stay inside cp-card
--------------------------------------------------------------- */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-/* Ensure all form fields always fit inside card */
-.cp-card input[type="text"],
-.cp-card select {
-    max-width: 100%;
-}
-
-/* Google Autocomplete wrapper fix */
-gmpx-place-autocomplete {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-}
-
-/* Google Autocomplete internal input fix */
-gmpx-place-autocomplete::part(input) {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* Grid fix for City/State & Postcode/Country */
-.cp-grid-2 {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    width: 100%;
-}
-
-.cp-grid-2 > .cp-field {
-    width: 100%;
-}
-
-/* Prevent overflow on small screens AND desktops */
-@media (min-width: 769px) {
-    .cp-field input,
-    .cp-field select {
-        width: 100%;
-    }
-}
-
 }
