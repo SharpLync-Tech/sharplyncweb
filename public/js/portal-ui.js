@@ -1,6 +1,6 @@
 // public/js/portal-ui.js
-document.addEventListener("DOMContentLoaded", function () {
 
+// REMOVE DOMContentLoaded (it blocks everything!)
 (function(){
 
     const modal     = document.getElementById('cp-security-modal');
@@ -35,8 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const authCodeInput   = document.getElementById('cp-auth-code');
 
     /* ============================================================
-       FIX 1 — REMOVE restoreDBState()
-       The toggles MUST NOT be forced back to DB values.
+       FIX — NO restoreDBState() ANYWHERE
        ============================================================ */
 
     function clearOtp() {
@@ -60,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         clearOtp();
 
-        // Reset Authenticator UI
         authQrWrapper.style.display   = 'none';
         authSecretBlock.style.display = 'none';
         authVerifyBlock.style.display = 'none';
@@ -100,10 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.classList.add('cp-modal-visible');
         modal.setAttribute('aria-hidden', 'false');
         if(root) root.classList.add('modal-open');
-
-        /* FIX 2 — DO NOT restoreDBState() */
-        // restoreDBState();
-
         showMain();
     }
 
@@ -111,32 +105,31 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.classList.remove('cp-modal-visible');
         modal.setAttribute('aria-hidden','true');
         if(root) root.classList.remove('modal-open');
-
-        /* FIX 3 — DO NOT restoreDBState() */
-        // restoreDBState();
-
         showMain();
     }
 
-    // Modal events
-    if (openBtn) openBtn.addEventListener('click', openModal);
+    // ============================================
+    // Attach event listeners (now they actually run)
+    // ============================================
+
+    if (openBtn) {
+        console.log("Modal button found — listeners attached");
+        openBtn.addEventListener('click', openModal);
+    } else {
+        console.error("Modal open button NOT found");
+    }
+
     closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
     modal.addEventListener('click', e=>{
         if (!sheet.contains(e.target)) closeModal();
     });
 
-    // ============================================================
-    // TOGGLE HANDLING (NOW WORKS!)
-    // ============================================================
-
+    // Toggle logic
     if (emailToggle) {
         emailToggle.addEventListener('change', function(){
-            if (this.checked) {
-                showEmailSetup();
-            } else {
-                showMain();
-            }
+            if (this.checked) showEmailSetup();
+            else showMain();
         });
     }
 
@@ -144,12 +137,8 @@ document.addEventListener("DOMContentLoaded", function () {
         authToggle.addEventListener('change', function(){
             if (this.checked) {
                 if (emailToggle) emailToggle.checked = false;
-
                 showAuthSetup();
-
-                // Tell security.js to start QR setup
                 document.dispatchEvent(new Event('cp-auth-start'));
-
             } else {
                 showMain();
             }
@@ -159,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
     backEmailBtn.addEventListener('click', showMain);
     backAuthBtn.addEventListener('click', showMain);
 
-    // OTP UX
     otpInputs.forEach((input, idx)=>{
         input.addEventListener('input', e=>{
             e.target.value = e.target.value.replace(/\D/g,'');
@@ -186,6 +174,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-})(); // END IIFE
-
-}); // END DOMContentLoaded
+})();  // END IIFE
