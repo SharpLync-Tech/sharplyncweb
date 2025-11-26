@@ -1,383 +1,499 @@
 {{-- 
-    Page: customers/profile/edit.blade.php
-    Version: v3.0 (Avatar Modal + Cropping + Live Preview + Remove)
+  Page: resources/views/customers/portal.blade.php
+  Version: v2.8 (Email 2FA — Fixed DB Sync + Persist State)
+  Updated: 24 Nov 2025 by Max (ChatGPT)
 --}}
 
 @extends('customers.layouts.customer-layout')
 
-@section('title', 'Edit Profile')
-
-@push('styles')
-<link rel="stylesheet" href="{{ secure_asset('css/customer-profile-edit.css') }}">
-
-{{-- CropperJS --}}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-
-<style>
-/* ================================
-   AVATAR + PENCIL ICON
-================================ */
-.cp-edit-avatar-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.cp-avatar-pencil {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    background: #2CBFAE; /* SharpLync teal */
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-    transition: background .2s ease;
-}
-.cp-avatar-pencil:hover {
-    background: #24a796;
-}
-
-.cp-avatar-pencil svg {
-    width: 16px;
-    height: 16px;
-    fill: white;
-}
-
-/* ================================
-   MODAL STYLES
-================================ */
-#cp-photo-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-#cp-photo-modal.cp-modal-visible {
-    display: flex;
-}
-
-.cp-photo-sheet {
-    width: 450px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.25);
-    overflow: hidden;
-}
-
-.cp-photo-header {
-    background: #0A2A4D; /* navy */
-    padding: 1rem 1.5rem;
-    color: white;
-}
-
-.cp-photo-body {
-    padding: 1.3rem 1.5rem;
-}
-
-.cp-photo-live {
-    width: 260px;
-    height: 260px;
-    border-radius: 100%;
-    margin: 0 auto 1.5rem;
-    overflow: hidden;
-    border: 4px solid #e8eef5;
-}
-
-.cp-photo-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: .75rem;
-    margin-top: 1rem;
-}
-
-/* Buttons */
-.cp-btn-teal {
-    background: #2CBFAE;
-    color: white;
-    padding: .6rem 1.1rem;
-    border-radius: 8px;
-}
-.cp-btn-teal:hover {
-    background: #24a796;
-}
-
-.cp-btn-navy {
-    background: #0A2A4D;
-    color: white;
-    padding: .6rem 1.1rem;
-    border-radius: 8px;
-}
-.cp-btn-navy:hover {
-    background: #104976;
-}
-
-.cp-btn-danger {
-    background: #b3261e;
-    color: white;
-    padding: .6rem 1.1rem;
-    border-radius: 8px;
-}
-.cp-btn-danger:hover {
-    background: #8e1d18;
-}
-</style>
-@endpush
+@section('title', 'Customer Portal')
 
 @section('content')
-<div class="cp-edit-card">
+@php
+    use Illuminate\Support\Str;
 
-    <h2 class="cp-edit-title">Edit Your Profile</h2>
+    $u = isset($user) ? $user : (Auth::check() ? Auth::user() : null);
+    $fullName = $u ? trim(($u->first_name ?? '') . ' ' . ($u->last_name ?? '')) : 'Customer Name';
+    if ($fullName === '') $fullName = 'Customer Name';
 
-    <form method="POST" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data">
-        @csrf
+    $email  = $u->email ?? null;
+    $status = ucfirst($u->account_status ?? 'Active');
+    $since  = $u && $u->created_at ? $u->created_at->format('F Y') : null;
 
-        {{-- AVATAR --}}
-        <div class="cp-edit-avatar-row">
+    // Generate initials
+    $nameParts = explode(' ', trim($fullName));
+    $initials  = '';
+    foreach ($nameParts as $p) {
+        $initials .= strtoupper(Str::substr($p, 0, 1));
+    }
 
-            <div class="cp-edit-avatar-wrapper">
-                <div class="cp-edit-avatar">
-                    @php
-                        $photo = $user->profile_photo ?? null;
-                        $initials = strtoupper(
-                            substr($user->first_name ?? 'U', 0, 1) .
-                            substr($user->last_name ?? 'X', 0, 1)
-                        );
-                    @endphp
+    // Mask email
+    $maskedEmail = null;
+    if ($email && str_contains($email, '@')) {
+        [$local, $domain] = explode('@', $email);
+        $maskedEmail = mb_substr($local, 0, 2)
+                        . str_repeat('*', max(1, mb_strlen($local) - 2))
+                        . '@' . $domain;
+    }
+@endphp
 
-                    @if($photo)
-                        <img src="{{ asset('storage/' . $photo) }}" id="current-avatar" alt="Avatar">
-                    @else
-                        <span id="current-avatar-text">{{ $initials }}</span>
-                    @endif
-                </div>
-
-                {{-- Pencil Icon --}}
-                <div class="cp-avatar-pencil" id="open-photo-modal">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM21.41 
-                            6.34c.38-.38.38-1.02 0-1.41l-2.34-2.34a1 
-                            1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 
-                            1.83-1.83z"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="cp-edit-avatar-info">
-                <label>Profile Photo</label>
-                {{-- removed text --}}
-            </div>
-        </div>
-
-        {{-- ======================= --}}
-        {{-- PROFILE FORM FIELDS     --}}
-        {{-- ======================= --}}
-
-        <div class="cp-field">
-            <label>Business Name</label>
-            <input type="text" name="business_name" value="{{ old('business_name', $profile->business_name) }}" required>
-        </div>
-
-        <div class="cp-field">
-            <label>Mobile Number</label>
-            <input type="text" name="mobile_number" value="{{ old('mobile_number', $profile->mobile_number) }}" required>
-        </div>
-
-        <div class="cp-field">
-            <label>Street Address</label>
-            <input id="address_line1" name="address_line1" type="text"
-                   value="{{ old('address_line1', $profile->address_line1) }}">
-        </div>
-
-        <div class="cp-grid-2">
-            <div class="cp-field">
-                <label>City / Suburb</label>
-                <input id="city" name="city" type="text" value="{{ old('city', $profile->city) }}">
-            </div>
-
-            <div class="cp-field">
-                <label>State</label>
-                <input id="state" name="state" type="text" value="{{ old('state', $profile->state) }}">
-            </div>
-        </div>
-
-        <div class="cp-grid-2">
-            <div class="cp-field">
-                <label>Postcode</label>
-                <input id="postcode" name="postcode" type="text" value="{{ old('postcode', $profile->postcode) }}">
-            </div>
-
-            <div class="cp-field">
-                <label>Country</label>
-                <select id="country" name="country">
-                    @php $c = old('country', $profile->country ?? 'Australia') @endphp
-                    <option value="Australia" {{ $c === 'Australia' ? 'selected':'' }}>Australia</option>
-                    <option value="New Zealand" {{ $c === 'New Zealand' ? 'selected':'' }}>New Zealand</option>
-                    <option value="Other" {{ $c === 'Other' ? 'selected':'' }}>Other</option>
-                </select>
-            </div>
-        </div>
-
-        <button class="cp-edit-submit" type="submit">Save Changes</button>
-    </form>
-
+<div class="cp-pagehead">
+    <h2>Customer Portal</h2>
 </div>
 
-{{-- =============================== --}}
-{{-- PHOTO MODAL                    --}}
-{{-- =============================== --}}
-<div id="cp-photo-modal">
-    <div class="cp-photo-sheet">
-
-        <div class="cp-photo-header">
-            <h3>Update Profile Photo</h3>
+<div class="cp-card cp-dashboard-grid">
+    {{-- LEFT COLUMN --}}
+    <div class="cp-profile-card">
+        <div class="cp-profile-header">
+            <div class="cp-avatar">{{ $initials }}</div>
+            <div class="cp-name-group">
+                <h3>{{ $fullName }}</h3>
+                <p class="cp-member-status">{{ $status }}</p>
+                <p class="cp-detail-line">Email: <a href="mailto:{{ $email }}">{{ $email }}</a></p>
+                @if($since)
+                    <p class="cp-detail-line">Customer since: {{ $since }}</p>
+                @endif
+            </div>
         </div>
 
-        <div class="cp-photo-body">
+        <div class="cp-profile-actions">
+            <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
+        </div>
+    </div>
 
-            <div class="cp-photo-live">
-                <img id="cropper-image" style="width:100%; display:none;">
+    {{-- RIGHT COLUMN --}}
+    <div class="cp-activity-column">
+
+        {{-- SECURITY CARD --}}
+        <div class="cp-activity-card cp-security-card">
+            <h4>Security</h4>
+            <p>Manage your login security and two-factor authentication options.</p>
+            <div class="cp-security-footer">
+                <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
+                    Manage Security
+                </button>
             </div>
+        </div>
 
-            <input type="file" id="photo-input" accept="image/*" style="margin-bottom:1rem;">
-
-            <div class="cp-photo-actions">
-
-                @if($photo)
-                <form method="POST" action="{{ route('customer.profile.remove-photo') }}">
-                    @csrf
-                    <button type="submit" class="cp-btn-danger">Remove Photo</button>
-                </form>
-                @endif
-
-                <button class="cp-btn-navy" id="close-photo-modal">Cancel</button>
-                <button class="cp-btn-teal" id="save-cropped-photo">Save</button>
+        {{-- SUPPORT --}}
+        <div class="cp-activity-card cp-support-card">
+            <h4>Support</h4>
+            <p>Need help? View support tickets or connect for remote assistance.</p>
+            <div class="cp-support-footer">
+                <a href="{{ route('customer.support') }}" class="cp-btn cp-small-btn cp-teal-btn">Open Support</a>
+                <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
+                   class="cp-btn cp-small-btn cp-teal-btn">
+                    Download Quick Support
+                </a>
             </div>
+        </div>
 
+        {{-- ACCOUNT --}}
+        <div class="cp-activity-card cp-account-card">
+            <h4>Account Summary</h4>
+            <p>Review your account status, services, and billing details.</p>
+            <div class="cp-account-footer">
+                <a href="{{ route('customer.account') }}" class="cp-btn cp-small-btn cp-teal-btn">View Account</a>
+            </div>
         </div>
 
     </div>
 </div>
 
+{{-- ======================================================= --}}
+{{-- SECURITY MODAL --}}
+{{-- ======================================================= --}}
+<div id="cp-security-modal" class="cp-modal-backdrop" aria-hidden="true">
+    <div class="cp-modal-sheet">
+
+        <header class="cp-modal-header">
+            <div>
+                <h3 id="cpSecurityTitle">Security & Login Protection</h3>
+                <p class="cp-modal-subtitle">
+                    Manage how you protect access to your SharpLync customer portal.
+                </p>
+            </div>
+            <button class="cp-modal-close">&times;</button>
+        </header>
+
+        <div class="cp-modal-body">
+
+            {{-- SCREEN 1 --}}
+            <div id="cp-modal-screen-main">
+
+                {{-- EMAIL 2FA --}}
+                <div class="cp-sec-card cp-sec-bordered">
+                    <div class="cp-sec-card-header">
+                        <div class="cp-sec-title-row">
+                            <span class="cp-sec-icon">
+                                <svg viewBox="0 0 24 24" class="cp-icon-svg">
+                                    <path d="M20 4H4a2 2 0 0 0-2 2v12a2 
+                                             2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 
+                                             2 0 0 0-2-2zm0 4-8 5-8-5V6l8 
+                                             5 8-5v2z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Email Authentication</h4>
+                                <p class="cp-sec-desc">
+                                    Receive a one-time security code via email when signing in.
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- 🔥 FIX: DB-bound toggle + persisted state --}}
+                        <label class="cp-switch">
+                            <input id="cp-toggle-email"
+                                   type="checkbox"
+                                   data-setting="email"
+                                   @if($u->two_factor_email_enabled) checked @endif
+                                   data-persist-on="{{ $u->two_factor_email_enabled ? '1' : '' }}">
+                            <span class="cp-slider cp-slider-teal"></span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- AUTHENTICATOR (placeholder) --}}
+                <div class="cp-sec-card cp-sec-bordered">
+                    <div class="cp-sec-card-header">
+                        <div class="cp-sec-title-row">
+                            <span class="cp-sec-icon">
+                                <svg viewBox="0 0 24 24" class="cp-icon-svg">
+                                    <path d="M12 2a5 5 0 0 0-5 5v3H6c-1.1 0-2 .9-2 
+                                             2v8c0 1.1.9 2 2 
+                                             2h12c1.1 0 2-.9 
+                                             2-2v-8c0-1.1-.9-2-2-2h-1V7a5 
+                                             5 0 0 0-5-5zm-3 
+                                             5a3 3 0 0 1 6 0v3H9V7z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Authenticator App</h4>
+                                <p class="cp-sec-desc">Coming soon.</p>
+                            </div>
+                        </div>
+
+                        <label class="cp-switch">
+                            <input id="cp-toggle-auth" type="checkbox" disabled>
+                            <span class="cp-slider cp-slider-teal"></span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- SMS (disabled) --}}
+                <div class="cp-sec-card cp-sec-bordered cp-sec-disabled">
+                    <div class="cp-sec-card-header">
+                        <div class="cp-sec-title-row">
+                            <span class="cp-sec-icon">
+                                <svg viewBox="0 0 24 24" class="cp-icon-svg">
+                                    <path d="M17 1H7C5.34 1 4 2.34 4 
+                                             4v16c0 1.66 1.34 3 3 
+                                             3h10c1.66 0 3-1.34 
+                                             3-3V4c0-1.66-1.34-3-3-3zm0 
+                                             18H7V5h10v14z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>SMS Verification</h4>
+                            </div>
+                        </div>
+
+                        <label class="cp-switch disabled">
+                            <input id="cp-toggle-sms" type="checkbox" disabled>
+                            <span class="cp-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- ================================================= --}}
+            {{-- SCREEN 2 — EMAIL SETUP --}}
+            {{-- ================================================= --}}
+            <div id="cp-modal-screen-email-setup" style="display:none;">
+
+                <div class="cp-sec-card cp-sec-bordered">
+                    <div class="cp-sec-card-header">
+                        <div class="cp-sec-title-row">
+                            <span class="cp-sec-icon">
+                                <svg viewBox="0 0 24 24" class="cp-icon-svg">
+                                    <path d="M20 4H4a2 2 0 0 0-2 2v12a2 
+                                             2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 
+                                             2 0 0 0-2-2zm0 4-8 5-8-5V6l8 
+                                             5 8-5v2z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Set Up Email Authentication</h4>
+                                <p class="cp-sec-desc">
+                                    We’ll send a verification code to your email to confirm it’s you.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1rem;">
+                        <p class="cp-sec-desc">Your email on file:</p>
+                        <p style="font-weight:600; margin:0 0 .75rem;">{{ $maskedEmail }}</p>
+
+                        <p id="cp-email-status" class="cp-sec-desc" style="display:none;"></p>
+
+                        {{-- Send code --}}
+                        <div id="cp-email-send-block" style="margin-top:1rem;">
+                            <button id="cp-email-setup-send" class="cp-btn cp-teal-btn">
+                                Send Verification Code
+                            </button>
+                        </div>
+
+                        {{-- Verify code --}}
+                        <div id="cp-email-verify-block" style="display:none; margin-top:1.25rem;">
+
+                            <p class="cp-sec-desc">Enter the 6-digit code:</p>
+
+                            <div id="cp-email-otp-row"
+                                 style="display:flex; gap:.45rem; margin:.75rem 0;">
+                                @for($i=0;$i<6;$i++)
+                                    <input type="text" maxlength="1" inputmode="numeric"
+                                           class="cp-otp-input"
+                                           style="width:2.3rem; height:2.7rem;
+                                                  text-align:center; font-size:1.4rem;">
+                                @endfor
+                            </div>
+
+                            <button id="cp-email-setup-verify" class="cp-btn cp-teal-btn">
+                                Verify & Enable
+                            </button>
+
+                            <button id="cp-email-setup-resend"
+                                    class="cp-btn cp-small-btn cp-navy-btn"
+                                    style="margin-left:.5rem;">
+                                Resend Code
+                            </button>
+
+                            <p id="cp-email-error"
+                               style="display:none; margin-top:.75rem; color:#b3261e;">
+                                Invalid or expired code.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="cp-modal-footer">
+            <button id="cp-email-setup-back"
+                    class="cp-btn cp-small-btn cp-navy-btn"
+                    style="display:none; margin-right:.5rem;">
+                Back
+            </button>
+
+            <button class="cp-btn cp-small-btn cp-navy-btn cp-modal-close-btn">
+                Close
+            </button>
+        </footer>
+
+    </div>
+</div>
 @endsection
 
-@push('scripts')
 
-{{-- Google Maps --}}
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initProfileAutocomplete">
-</script>
-
-{{-- CropperJS --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
+@section('scripts')
 <script>
-/* ================================
-   Avatar Modal Logic
-================================ */
-const modal = document.getElementById('cp-photo-modal');
-const openBtn = document.getElementById('open-photo-modal');
-const closeBtn = document.getElementById('close-photo-modal');
+(function(){
 
-openBtn.onclick = () => modal.classList.add('cp-modal-visible');
-closeBtn.onclick = () => modal.classList.remove('cp-modal-visible');
+    const modal     = document.getElementById('cp-security-modal');
+    const openBtn   = document.getElementById('cp-open-security-modal');
+    const sheet     = modal.querySelector('.cp-modal-sheet');
+    const closeBtns = modal.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
+    const root      = document.querySelector('.cp-root');
 
-modal.addEventListener('click', e => {
-    if (e.target === modal) modal.classList.remove('cp-modal-visible');
-});
+    const emailToggle = document.getElementById('cp-toggle-email');
+    const screenMain  = document.getElementById('cp-modal-screen-main');
+    const screenEmail = document.getElementById('cp-modal-screen-email-setup');
 
-/* ================================
-   CropperJS + Live Preview
-================================ */
-let cropper;
-const img = document.getElementById('cropper-image');
-const input = document.getElementById('photo-input');
+    const backBtn    = document.getElementById('cp-email-setup-back');
+    const sendBtn    = document.getElementById('cp-email-setup-send');
+    const resendBtn  = document.getElementById('cp-email-setup-resend');
+    const verifyBtn  = document.getElementById('cp-email-setup-verify');
 
-input.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const sendBlock  = document.getElementById('cp-email-send-block');
+    const verifyBlock= document.getElementById('cp-email-verify-block');
 
-    const url = URL.createObjectURL(file);
-    img.src = url;
-    img.style.display = 'block';
+    const statusEl   = document.getElementById('cp-email-status');
+    const errorEl    = document.getElementById('cp-email-error');
+    const otpInputs  = Array.from(document.querySelectorAll('.cp-otp-input'));
 
-    if (cropper) cropper.destroy();
+    const routes = {
+        send:  "{{ route('customer.security.email.send-code') }}",
+        verify:"{{ route('customer.security.email.verify-code') }}"
+    };
+    const csrf = "{{ csrf_token() }}";
 
-    cropper = new Cropper(img, {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false,
-        dragMode: 'move',
-        autoCropArea: 1
+    function clearOtp() {
+        otpInputs.forEach(i=>i.value='');
+        otpInputs[0].focus();
+    }
+
+    function restoreDBState() {
+        // 🔥 FIX — If DB says enabled, toggle stays ON
+        if (emailToggle.dataset.persistOn === "1") {
+            emailToggle.checked = true;
+        } else {
+            emailToggle.checked = false;
+        }
+    }
+
+    function showMain() {
+        screenMain.style.display  = 'block';
+        screenEmail.style.display = 'none';
+        backBtn.style.display = 'none';
+        errorEl.style.display = 'none';
+        statusEl.style.display = 'none';
+        sendBlock.style.display = 'block';
+        verifyBlock.style.display = 'none';
+        clearOtp();
+
+        // restore DB value
+        restoreDBState();
+    }
+
+    function showEmailSetup() {
+        screenMain.style.display  = 'none';
+        screenEmail.style.display = 'block';
+        backBtn.style.display = 'inline-block';
+        errorEl.style.display = 'none';
+        statusEl.style.display = 'none';
+        clearOtp();
+    }
+
+    function openModal(){
+        modal.classList.add('cp-modal-visible');
+        modal.setAttribute('aria-hidden', 'false');
+        if(root) root.classList.add('modal-open');
+        showMain();
+    }
+
+    function closeModal(){
+        modal.classList.remove('cp-modal-visible');
+        modal.setAttribute('aria-hidden','true');
+        if(root) root.classList.remove('modal-open');
+        showMain();
+    }
+
+    openBtn.addEventListener('click', openModal);
+    closeBtns.forEach(btn=>btn.addEventListener('click', closeModal));
+
+    modal.addEventListener('click', e=>{
+        if (!sheet.contains(e.target)) closeModal();
     });
-});
 
-/* ================================
-   Save Cropped Photo to server
-================================ */
-document.getElementById('save-cropped-photo')
-    .addEventListener('click', function () {
+    // Email toggle
+    emailToggle.addEventListener('change', function(){
+        if (this.checked) {
+            showEmailSetup();
+        } else {
+            showMain();
+        }
+    });
 
-        if (!cropper) return alert("Please select an image first");
+    backBtn.addEventListener('click', showMain);
 
-        cropper.getCroppedCanvas({
-            width: 600,
-            height: 600
-        }).toBlob(blob => {
-
-            const form = new FormData();
-            form.append("profile_photo", blob, "avatar.jpg");
-            form.append("_token", "{{ csrf_token() }}");
-
-            fetch("{{ route('customer.profile.update-photo') }}", {
-                method: "POST",
-                body: form
-            })
-            .then(() => location.reload());
+    // --- OTP INPUT BEHAVIOR ---
+    otpInputs.forEach((input, idx)=>{
+        input.addEventListener('input', e=>{
+            e.target.value = e.target.value.replace(/\D/g,'');
+            if (e.target.value && idx < otpInputs.length-1) {
+                otpInputs[idx+1].focus();
+            }
+        });
+        input.addEventListener('keydown', e=>{
+            if(e.key==='Backspace' && !e.target.value && idx>0){
+                otpInputs[idx-1].focus();
+            }
+        });
+        input.addEventListener('paste', e=>{
+            e.preventDefault();
+            const digits = (e.clipboardData.getData('text')||'')
+                .replace(/\D/g,'')
+                .slice(0,6)
+                .split('');
+            otpInputs.forEach((inp,i)=>inp.value = digits[i]||'');
+            otpInputs[Math.min(digits.length-1,5)].focus();
         });
     });
 
-/* ================================
-   Google Autocomplete
-================================ */
-window.initProfileAutocomplete = function () {
-    const addressInput  = document.getElementById('address_line1');
-    const cityInput     = document.getElementById('city');
-    const stateInput    = document.getElementById('state');
-    const postcodeInput = document.getElementById('postcode');
-    const countryInput  = document.getElementById('country');
+    function getOtp(){
+        return otpInputs.map(i=>i.value).join('');
+    }
 
-    const ac = new google.maps.places.Autocomplete(addressInput, {
-        fields: ['address_components','formatted_address'],
-        componentRestrictions: { country: ['au','nz'] }
-    });
+    async function sendCode(){
+        statusEl.style.display = 'block';
+        statusEl.textContent = "Sending verification code...";
+        try{
+            const r = await fetch(routes.send,{
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRF-TOKEN':csrf
+                },
+                body:JSON.stringify({})
+            });
+            const d = await r.json();
+            if(!d.success) throw new Error(d.message);
 
-    ac.addListener('place_changed', () => {
-        const p = ac.getPlace();
-        if (!p.address_components) return;
+            statusEl.textContent = "We've emailed you a 6-digit code.";
+            sendBlock.style.display='none';
+            verifyBlock.style.display='block';
+            clearOtp();
 
-        const part = t => {
-            const c = p.address_components.find(x => x.types.includes(t));
-            return c ? c.long_name : '';
-        };
+        }catch(err){
+            statusEl.style.display='none';
+            errorEl.textContent = err.message;
+            errorEl.style.display='block';
+        }
+    }
 
-        addressInput.value = p.formatted_address;
-        cityInput.value     = part('locality') || part('postal_town');
-        stateInput.value    = part('administrative_area_level_1');
-        postcodeInput.value = part('postal_code');
+    async function verifyCode(){
+        const code = getOtp();
+        if(code.length!==6){
+            errorEl.textContent="Please enter the full 6-digit code.";
+            errorEl.style.display='block';
+            return;
+        }
 
-        const countryName = part('country');
-        countryInput.value = ['Australia','New Zealand'].includes(countryName)
-            ? countryName : 'Other';
-    });
-};
+        try{
+            const r = await fetch(routes.verify,{
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRF-TOKEN':csrf
+                },
+                body:JSON.stringify({code})
+            });
+            const d = await r.json();
+            if(!d.success) throw new Error(d.message);
+
+            // 🔥 FIX — Persist ON across sessions
+            emailToggle.dataset.persistOn = "1";
+            emailToggle.checked = true;
+
+            statusEl.textContent = "Email Authentication is now enabled.";
+            statusEl.style.display='block';
+            errorEl.style.display='none';
+
+            setTimeout(showMain,800);
+
+        }catch(err){
+            errorEl.textContent = err.message;
+            errorEl.style.display='block';
+        }
+    }
+
+    sendBtn.addEventListener('click', sendCode);
+    resendBtn.addEventListener('click', sendCode);
+    verifyBtn.addEventListener('click', verifyCode);
+
+})();
 </script>
-
-@endpush
+@endsection
