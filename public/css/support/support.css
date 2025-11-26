@@ -272,6 +272,12 @@
     color: #0A2A4D;
 }
 
+.support-header-bar {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+
 .support-input,
 .support-select,
 .support-textarea {
@@ -408,3 +414,16 @@
         align-items: flex-start;
     }
 }
+
+/* Remove underlines from ticket cards and reference links */
+.support-ticket-card,
+.support-ticket-card:hover,
+.support-ticket-card:focus {
+    text-decoration: none !important;
+}
+
+.support-ticket-ref,
+.support-ticket-ref:hover {
+    text-decoration: none !important;
+}
+
