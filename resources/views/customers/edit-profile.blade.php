@@ -1,128 +1,153 @@
+{{-- 
+    Google Maps Debug Page
+    Purpose: Test API loading, Autocomplete visibility, geocoder results
+    NOTE: This is a raw standalone debug template.
+--}}
+
 <!DOCTYPE html>
-
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Places API Test</title>
-<style>
-body { font-family: sans-serif; background: #f0f4f8; padding: 20px; }
-.container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-.input-group { margin-bottom: 20px; }
-label { display: block; font-weight: bold; margin-bottom: 5px; color: #1e3a8a; }
-#address_input { width: 100%; padding: 10px; border: 2px solid #3b82f6; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border-color 0.3s; }
-#address_input:focus { border-color: #1d4ed8; outline: none; }
-.debug-area { margin-top: 20px; padding: 15px; border-radius: 8px; background: #ffebeb; border: 1px solid #f87171; color: #b91c1c; font-size: 0.9em; white-space: pre-wrap; }
-.success { background: #ebfff1; border: 1px solid #10b981; color: #065f46; }
-</style>
+    <meta charset="UTF-8">
+    <title>Google API Debug</title>
 
-{{-- 1. LOAD GOOGLE MAPS JS API (Essential: libraries=places) --}}
-{{-- Assuming GOOGLE_MAPS_API_KEY is available via Laravel config/environment --}}
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initAutocomplete">
-</script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f5;
+            padding: 40px;
+        }
 
+        h1 { margin-bottom: 20px; }
+
+        .box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        #debug-log {
+            white-space: pre-wrap;
+            background: #111;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 150px;
+            font-size: 14px;
+            overflow-y: auto;
+        }
+
+        gmpx-place-autocomplete {
+            display: block !important;
+            width: 100% !important;
+            margin-top: 10px;
+        }
+
+        gmpx-place-autocomplete::part(input) {
+            padding: 10px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+            width: 100%;
+        }
+    </style>
 
 </head>
+
 <body>
 
-<div class="container">
-<h1>Google Places API Test</h1>
-<p>This page tests if the Maps API and Places service are initializing correctly.</p>
+<h1>Google Maps API Debug</h1>
 
-<div class="input-group">
-    <label for="address_input">Street Address (Type here):</label>
-    <input type="text" id="address_input" placeholder="Start typing an address in Australia or NZ...">
-</div>
+<div class="box">
+    <h3>Test Autocomplete Input</h3>
 
-<div id="debug_output" class="debug-area">
-    <p><strong>Status:</strong> Awaiting API initialization...</p>
-    <p><strong>Key:</strong> The key used is loaded from `env('GOOGLE_MAPS_API_KEY')`.</p>
-</div>
-
+    <gmpx-place-autocomplete
+        id="test_ac"
+        placeholder="Start typing an address…"
+    ></gmpx-place-autocomplete>
 
 </div>
+
+<div class="box">
+    <h3>Formatted Address:</h3>
+    <div id="formatted-output" style="padding:8px; background:#f5f5f5; border-radius:6px;">
+        (none yet)
+    </div>
+</div>
+
+<div class="box">
+    <h3>Parsed Components</h3>
+    <div id="components-output" style="padding:8px; background:#fafafa; border-radius:6px;">
+        (none yet)
+    </div>
+</div>
+
+<div class="box">
+    <h3>Debug Log</h3>
+    <div id="debug-log">(waiting for events)</div>
+</div>
+
+{{-- GOOGLE MAPS JS --}}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&v=weekly"></script>
+
+{{-- EXTENDED COMPONENTS --}}
+<script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
 
 <script>
-const debugOutput = document.getElementById('debug_output');
-const inputElement = document.getElementById('address_input');
-
-// --- Utility Functions ---
-
-function log(message, isSuccess = false) {
-let content = debugOutput.innerHTML;
-// FIX: Decoded HTML entities to resolve JavaScript SyntaxError
-content += &lt;p style=&quot;margin-top: 10px; color: ${isSuccess ? &#39;#065f46&#39; : &#39;#b91c1c&#39;}&quot;&gt;&lt;strong&gt;[${new Date().toLocaleTimeString()}]&lt;/strong&gt; ${message}&lt;/p&gt;;
-debugOutput.innerHTML = content;
-if (isSuccess) {
-debugOutput.classList.remove('debug-area');
-debugOutput.classList.add('success');
-}
-console.log([TEST LOG] ${message});
+function log(msg) {
+    console.log(msg);
+    const dbg = document.getElementById("debug-log");
+    dbg.textContent += msg + "\n";
 }
 
-// --- Core Autocomplete Initialization ---
+window.addEventListener("load", function() {
+    log("PAGE LOADED");
 
-// The 'callback=initAutocomplete' in the script URL executes this function
-// after the Google Maps JS API and Places library are fully loaded.
-function initAutocomplete() {
-log("API Check: Google Maps JS API and Places Library loaded successfully.", true);
+    if (!google || !google.maps) {
+        log("ERROR: google.maps NOT loaded");
+        return;
+    }
 
-try {
-    // 1. Initialize Autocomplete on the input field
-    const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-        componentRestrictions: { country: [&quot;au&quot;, &quot;nz&quot;] },
-        fields: [&quot;formatted_address&quot;, &quot;address_components&quot;]
-    });
-    
-    log(&quot;Autocomplete object initialized successfully.&quot;, true);
+    log("google.maps loaded successfully");
+    log("Maps JS Version: " + google.maps.version);
 
-    // 2. Add Listener for Place Selection
-    autocomplete.addListener(&#39;place_changed&#39;, function() {
-        const place = autocomplete.getPlace();
+    const ac = document.getElementById("test_ac");
+
+    if (!ac) {
+        log("ERROR: Autocomplete element not found");
+        return;
+    }
+
+    log("<gmpx-place-autocomplete> FOUND and ready");
+
+    ac.addEventListener("gmpx-placechange", () => {
+        const val = ac.value || "(empty)";
+        log("PLACE CHANGE EVENT — Value: " + val);
         
-        if (place.formatted_address) {
-            log(`Place Selected: ${place.formatted_address}`, true);
-        } else {
-            log(&quot;Warning: No formatted address found for selected place.&quot;);
-        }
-        
-        // Display all available components for debugging
-        let componentsLog = &quot;--- Address Components ---\n&quot;;
-        if (place.address_components) {
-            place.address_components.forEach(comp =&gt; {
-                componentsLog += `Type: ${comp.types[0]}, Value: ${comp.long_name}\n`;
+        document.getElementById("formatted-output").innerText = val;
+
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: val }, (results, status) => {
+            log("GEOCODER STATUS: " + status);
+
+            if (status !== "OK") {
+                document.getElementById("components-output").innerText = "Geocoder failed: " + status;
+                return;
+            }
+
+            let comps = results[0].address_components;
+            let resultDump = "";
+
+            comps.forEach(c => {
+                resultDump += c.types.join(", ") + ": " + c.long_name + "\n";
             });
-        }
-        log(componentsLog);
+
+            document.getElementById("components-output").innerText = resultDump;
+
+            log("Address Components Parsed:\n" + resultDump);
+        });
     });
 
-} catch (error) {
-    log(`FATAL ERROR during initialization: ${error.message}`);
-}
-
-
-}
-
-// Fallback is generally not needed when using 'callback', but remains for robustness
-if (typeof google !== 'undefined' && typeof google.maps.places !== 'undefined') {
-// If the script already loaded before this script, call it directly
-// Note: This is usually not needed when using 'callback'
-} else {
-log("Waiting for Google API script to load...");
-}
-
-// --- Pre-fill Test (Simulate your existing data) ---
-// You can set the value directly on the standard input
-const simulatedAddress = "728 Mt Hutt Rd";
-if (simulatedAddress) {
-inputElement.value = simulatedAddress;
-log(Pre-fill Test: Standard input pre-filled with &quot;${simulatedAddress}&quot;);
-}
-
-// Assign the callback function globally so the Google script can find it
-window.initAutocomplete = initAutocomplete;
-
+});
 </script>
 
 </body>
