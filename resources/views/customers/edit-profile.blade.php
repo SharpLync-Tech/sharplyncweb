@@ -1,28 +1,88 @@
-@extends('layouts.content')
+@extends('customers.layouts.customer-layout')
 
-@section('title', 'Edit Profile | SharpLync')
+@section('title', 'Edit Profile')
 
 @section('content')
-<section class="content-card fade-in">
-  <h2>Edit Your Profile</h2>
+<div class="cp-card profile-edit-card fade-in">
 
-  <form method="POST" action="{{ route('customer.profile.update') }}">
+    <h2 class="cp-title">Edit Your Profile</h2>
 
-    @csrf
+    {{-- Success Message --}}
+    @if(session('success'))
+        <div class="cp-alert success">{{ session('success') }}</div>
+    @endif
 
-    <label>Business Name</label>
-    <input type="text" name="business_name" value="{{ old('business_name', $profile->business_name) }}" required>
+    {{-- Error Messages --}}
+    @if($errors->any())
+        <div class="cp-alert error">
+            <ul>
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <label>Mobile Number</label>
-    <input type="text" name="mobile_number" value="{{ old('mobile_number', $profile->mobile_number) }}" required>
+    <form method="POST" action="{{ route('customer.profile.update') }}" class="cp-form">
+        @csrf
 
-    <label>Address</label>
-    <input type="text" name="address_line1" value="{{ old('address_line1', $profile->address_line1) }}" required>
+        {{-- Business / Mobile --}}
+        <div class="cp-grid-2">
+            <div class="cp-field">
+                <label>Business Name</label>
+                <input type="text" name="business_name"
+                       value="{{ old('business_name', $profile->business_name) }}"
+                       required>
+            </div>
 
-    <label>Postcode</label>
-    <input type="text" name="postcode" value="{{ old('postcode', $profile->postcode) }}" required>
+            <div class="cp-field">
+                <label>Mobile Number</label>
+                <input type="text" name="mobile_number"
+                       value="{{ old('mobile_number', $profile->mobile_number) }}"
+                       required>
+            </div>
+        </div>
 
-    <button type="submit" class="btn-primary">Save Changes</button>
-  </form>
-</section>
+        {{-- Address --}}
+        <div class="cp-field">
+            <label>Address</label>
+            <input type="text" id="address-autocomplete"
+                   name="address_line1"
+                   value="{{ old('address_line1', $profile->address_line1) }}"
+                   placeholder="Start typing your address..."
+                   required>
+        </div>
+
+        {{-- Postcode --}}
+        <div class="cp-grid-2">
+            <div class="cp-field">
+                <label>Postcode</label>
+                <input type="text" name="postcode"
+                       value="{{ old('postcode', $profile->postcode) }}"
+                       required>
+            </div>
+
+            <div></div> {{-- empty column for alignment --}}
+        </div>
+
+        <button class="cp-btn-primary">Save Changes</button>
+    </form>
+
+</div>
+@endsection
+
+@section('scripts')
+{{-- OPTIONAL — Google Places Autocomplete --}}
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('address-autocomplete');
+    if (input) {
+        new google.maps.places.Autocomplete(input, {
+            componentRestrictions: { country: 'au' },
+            fields: ['formatted_address']
+        });
+    }
+});
+</script>
 @endsection

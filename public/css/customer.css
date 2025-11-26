@@ -668,4 +668,100 @@ html, body {
         70% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
+
+    /* ==========================================================
+   Customer Profile Edit Page
+   SharpLync Portal Styling • v1.0
+========================================================== */
+
+.profile-edit-card {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+}
+
+.cp-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #0A2A4D;
+    margin-bottom: 1.5rem;
+}
+
+.cp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cp-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .cp-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cp-field label {
+    display: block;
+    font-weight: 600;
+    color: #0A2A4D;
+    margin-bottom: 0.4rem;
+}
+
+.cp-field input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid #dce3ea;
+    border-radius: 10px;
+    background: #f9fbfd;
+    font-size: 1rem;
+    transition: 0.2s ease;
+}
+
+.cp-field input:focus {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.15);
+    outline: none;
+}
+
+.cp-btn-primary {
+    background: #2CBFAE;
+    color: #fff;
+    padding: 0.9rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    width: fit-content;
+}
+
+.cp-btn-primary:hover {
+    background: #24a391;
+}
+
+.cp-alert {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.cp-alert.success {
+    background: #e7fdf3;
+    color: #1c7f4f;
+}
+
+.cp-alert.error {
+    background: #ffefef;
+    color: #b32929;
+}
+
 }
