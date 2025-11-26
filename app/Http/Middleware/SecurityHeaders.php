@@ -22,17 +22,17 @@ class SecurityHeaders
         );
 
         // --- Content Security Policy (CSP) ---
-        // Allows assets from your own domains + Azure + HTTPS sources
+        // Allows assets from your own domains + Azure + HTTPS sources + Google Maps
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; ".
-            "img-src 'self' data: https: http:; ".
+            "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com; ".
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
             "font-src 'self' data: https://fonts.gstatic.com; ".
             "style-src 'self' 'unsafe-inline'; ".
-            "font-src 'self' data:; ".
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;"
-
+            "font-src 'self' data:; ".            
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https:; ".            
+            "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com;"
         );
 
         // --- Frame and Embedding Control ---
