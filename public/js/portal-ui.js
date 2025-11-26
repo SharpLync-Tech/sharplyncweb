@@ -1,4 +1,6 @@
 // public/js/portal-ui.js
+document.addEventListener("DOMContentLoaded", function () {
+
 (function(){
 
     const modal     = document.getElementById('cp-security-modal');
@@ -184,4 +186,6 @@
         });
     });
 
-})();
+})(); // END IIFE
+
+}); // END DOMContentLoaded
