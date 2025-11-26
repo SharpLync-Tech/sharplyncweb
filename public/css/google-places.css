@@ -1,0 +1,51 @@
+/* ===================================================================
+   Google Places Autocomplete Styles
+   Version: v1.0 (Standalone)
+=================================================================== */
+
+/* Container itself */
+gmpx-place-autocomplete {
+    display: block !important;
+    width: 100% !important;
+    margin: .25rem 0 1rem 0;
+    min-height: 48px;
+}
+
+/* Text field inside shadow DOM */
+gmpx-place-autocomplete::part(input) {
+    width: 100% !important;
+    height: 48px !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 10px !important;
+    background: #f9fbfd !important;
+    border: 1px solid #dce3ea !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    color: #0A2A4D !important;
+    outline: none !important;
+}
+
+gmpx-place-autocomplete::part(input):focus {
+    border-color: #2CBFAE !important;
+    box-shadow: 0 0 0 3px rgba(44,191,174,.25) !important;
+}
+
+/* Dropdown Panel */
+gmpx-place-autocomplete::part(panel) {
+    background: #ffffff !important;
+    border: 1px solid #ccc !important;
+    border-radius: 12px !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25) !important;
+    z-index: 999999 !important;
+}
+
+/* Dropdown Options */
+gmpx-place-autocomplete::part(option) {
+    padding: 10px 14px !important;
+    color: #0A2A4D !important;
+    font-size: 1rem !important;
+}
+
+gmpx-place-autocomplete::part(option):hover {
+    background: rgba(44,191,174,.15) !important;
+}
