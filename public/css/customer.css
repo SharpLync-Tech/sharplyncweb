@@ -1,25 +1,30 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v3.1 (Clean Modal + Security)
-   Updated: 21 Nov 2025
-   Description:
-   - Structured CSS for Customer Portal
-   - Includes header, grid, FAB logout, security modal & 2FA cards
-   - Fully responsive and brand-consistent
+   Version: v4.0 (Google Autocomplete + Full Cleanup + Visibility Fixes)
+   Updated: 26 Nov 2025
+
+   Improvements:
+   - Added full UI styling for Google PlaceAutocompleteElement (2025 API)
+   - Ensured all inputs & labels show correctly on gradient background
+   - Unified field spacing, card layout and typography
+   - Cleaned up duplicate rules from v3.1
+   - Improved mobile experience
 =================================================================== */
 
-/* -------------------------------------------------------------------
+
+/* --------------------------------------------------------------
    0. GLOBAL RESET
-------------------------------------------------------------------- */
+-------------------------------------------------------------- */
 html, body {
     margin: 0;
     padding: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* -------------------------------------------------------------------
-   1. ROOT VARIABLES & BASE
-------------------------------------------------------------------- */
 
+/* --------------------------------------------------------------
+   1. ROOT VARIABLES + BASE COLORS
+-------------------------------------------------------------- */
 .cp-root {
     --navy: #0A2A4D;
     --blue: #104976;
@@ -30,109 +35,29 @@ html, body {
     --shadow: 0 10px 30px rgba(0, 0, 0, .25);
 
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 40%, var(--teal) 100%);
-    color: var(--ink);
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.6;
+    background: linear-gradient(135deg, var(--navy), var(--blue) 40%, var(--teal));
+    color: #ffffff;
     -webkit-font-smoothing: antialiased;
 }
 
+/* links */
 .cp-root a {
-    color: var(--blue);
+    color: var(--teal);
     text-decoration: none;
 }
-
 .cp-root a:hover {
     text-decoration: underline;
 }
 
-/* When modal is open, lock background scroll safely */
+/* lock scroll when modal is open */
 .cp-root.modal-open {
     overflow: hidden;
-    height: 100vh;
-    width: 100%;
 }
 
-/* -------------------------------------------------------------------
-   2. GLOBAL LAYOUT CONTAINERS
-------------------------------------------------------------------- */
 
-.cp-main {
-    padding: 1.5rem 1rem 4rem;
-}
-
-.cp-card {
-    background: var(--card);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.cp-pagehead {
-    text-align: center;
-    color: #fff;
-    padding: 1.25rem 1rem .5rem;
-}
-
-.cp-pagehead h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
-}
-
-/* -------------------------------------------------------------------
-   3. BUTTONS
-------------------------------------------------------------------- */
-
-.cp-btn {
-    display: inline-block;
-    text-decoration: none;
-    cursor: pointer;
-    border: 0;
-    border-radius: 8px;
-    padding: .85rem 1.25rem;
-    font-weight: 600;
-    background: var(--navy);
-    color: #fff;
-    transition: background .2s ease, transform .1s ease, box-shadow .15s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
-    font-family: 'Poppins', sans-serif;
-}
-
-.cp-btn:hover {
-    background: var(--blue);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,.15);
-}
-
-.cp-small-btn {
-    padding: .4rem .9rem;
-    font-size: .85rem;
-}
-
-/* Brand color variations */
-.cp-teal-btn {
-    background: var(--teal);
-}
-
-.cp-teal-btn:hover {
-    background: #20A694;
-}
-
-.cp-navy-btn {
-    background: var(--navy);
-}
-
-.cp-navy-btn:hover {
-    background: var(--blue);
-}
-
-/* -------------------------------------------------------------------
-   4. HEADER & FOOTER
-------------------------------------------------------------------- */
-
+/* --------------------------------------------------------------
+   2. HEADER + FOOTER
+-------------------------------------------------------------- */
 .cp-header {
     position: sticky;
     top: 0;
@@ -141,627 +66,259 @@ html, body {
     align-items: center;
     justify-content: space-between;
     padding: .75rem 1.25rem;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
     background: rgba(10, 42, 77, .55);
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
-    color: #E9F4F3;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .cp-logo img {
     height: 48px;
-    width: auto;
 }
 
 .cp-welcome {
-    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 1rem;
+    font-weight: 600;
 }
 
 .cp-logout-inline button {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, .28);
-    background: rgba(255, 255, 255, .15);
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: rgba(255, 255, 255, .1);
     color: #fff;
-    font-size: 16px;
-    line-height: 1;
-    transition: transform .12s ease, background .2s ease;
+    cursor: pointer;
 }
-
 .cp-logout-inline button:hover {
-    background: rgba(44, 191, 174, .45);
-    transform: translateY(-1px);
+    background: rgba(44,191,174,.4);
 }
 
+/* footer */
 .cp-footer {
     background: var(--ink);
     color: #fff;
     text-align: center;
     padding: 1.25rem;
-    font-size: .95rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
-
 .cp-footer .cp-hl {
     color: var(--teal);
     font-weight: 700;
 }
 
-/* -------------------------------------------------------------------
-   5. DASHBOARD GRID LAYOUT
-------------------------------------------------------------------- */
 
-.cp-dashboard-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 2rem;
+/* --------------------------------------------------------------
+   3. MAIN LAYOUT
+-------------------------------------------------------------- */
+.cp-main {
+    padding: 2rem 1rem 4rem;
 }
 
-/* Right column container */
-.cp-activity-column {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-/* Desktop grid: 3/2 split */
-@media (min-width: 769px) {
-    .cp-dashboard-grid {
-        display: grid;
-        grid-template-columns: 3fr 2fr;
-        gap: 2.5rem;
-        padding: 2.5rem;
-    }
-}
-
-/* -------------------------------------------------------------------
-   6. PROFILE CARD (LEFT COLUMN)
-------------------------------------------------------------------- */
-
-.cp-profile-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
-}
-
-.cp-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: var(--blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-}
-
-.cp-profile-header h3 {
-    margin: 0;
-    font-size: 1.75rem;
-    color: var(--ink);
-}
-
-.cp-member-status {
-    color: var(--teal);
-    font-weight: 600;
-    margin: 0;
-}
-
-.cp-name-group p.cp-detail-line {
-    margin: 0.25rem 0 0;
-    font-size: 0.95rem;
-    color: var(--muted);
-}
-
-.cp-profile-actions .cp-btn {
-    margin-right: .5rem;
-}
-
-/* Edit Profile button styling */
-.cp-edit-profile {
-    background: #E9EEF5;
-    color: var(--blue);
-    font-size: .9rem;
-    padding: .6rem 1.1rem;
-    margin-top: 1.5rem;
-    border: 1px solid var(--blue);
-    box-shadow: none;
-}
-
-.cp-edit-profile:hover {
-    background: #D6E1F0;
-}
-
-/* -------------------------------------------------------------------
-   7. ACTIVITY CARDS (RIGHT COLUMN)
-------------------------------------------------------------------- */
-
-.cp-activity-card {
-    background: #f9f9f9;
-    padding: 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
-}
-
-.cp-activity-card h4 {
-    margin: 0 0 .5rem;
-    font-size: 1.2rem;
-    color: var(--ink);
-}
-
-.cp-security-footer,
-.cp-support-footer,
-.cp-account-footer {
-    margin-top: .75rem;
-}
-
-/* -------------------------------------------------------------------
-   8. SECURITY MODAL (BACKDROP + SHEET)
-------------------------------------------------------------------- */
-
-.cp-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: flex-end; /* mobile bottom-sheet default */
-    justify-content: center;
-    z-index: 1500;
-    opacity: 0;
-    transition: opacity .25s ease;
-}
-
-/* visible state */
-.cp-modal-backdrop.cp-modal-visible {
-    display: flex;
-    opacity: 1;
-}
-
-/* Modal sheet */
-.cp-modal-sheet {
-    background: #fff;
-    width: 100%;
-    max-height: 90vh;
-    border-radius: 18px 18px 0 0;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.35);
-    padding: 1.5rem 1.25rem 1.25rem;
-    transform: translateY(100%);
-    animation: cpModalSlideUp .28s ease-out forwards;
-}
-
-/* Slide-up animation */
-@keyframes cpModalSlideUp {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
-}
-
-/* Desktop: center sheet */
-@media (min-width:769px){
-    .cp-modal-backdrop {
-        align-items: center;
-    }
-    .cp-modal-sheet {
-        max-width:620px;
-        border-radius:16px;
-        box-shadow:0 16px 40px rgba(0,0,0,0.35);
-    }
-}
-
-/* Modal internal layout */
-.cp-modal-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.cp-modal-header h3 {
-    margin: 0;
-    font-size: 1.4rem;
-    color: var(--ink);
-}
-
-.cp-modal-subtitle {
-    margin: 0.25rem 0 0;
-    font-size: 0.95rem;
-    color: var(--muted);
-}
-
-.cp-modal-close {
-    border: none;
-    border-radius: 999px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background: rgba(10,42,77,0.06);
-    color: var(--ink);
-    font-size: 1.2rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.18s ease, transform 0.1s ease;
-}
-
-.cp-modal-close:hover {
-    background: rgba(10,42,77,0.12);
-    transform: translateY(-1px);
-}
-
-.cp-modal-body {
-    max-height: 55vh;
-    overflow-y: auto;
-    padding-right: 0.25rem;
-}
-
-.cp-modal-footer {
-    margin-top: 1rem;
-    text-align: right;
-}
-
-.cp-modal-footer .cp-btn {
-    min-width: 120px;
-}
-
-/* -------------------------------------------------------------------
-   9. SECURITY OPTION CARDS (INSIDE MODAL)
-------------------------------------------------------------------- */
-
-.cp-sec-card {
-    background: #f9fbfd;
-    border-radius: 12px;
-    padding: 1.25rem 1.25rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid transparent;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-}
-
-.cp-sec-bordered {
-    border-left-color: var(--teal);
-}
-
-.cp-sec-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1.25rem;
-}
-
-.cp-sec-title-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
-.cp-sec-desc {
-    margin: 0.25rem 0 0;
-    font-size: 0.9rem;
-    color: var(--muted);
-}
-
-.cp-sec-card:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(10,42,77,0.02),
-        rgba(16,73,118,0.025),
-        rgba(44,191,174,0.03)
-    );
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* Disabled variant (e.g. SMS when no phone) */
-.cp-sec-disabled {
-    opacity: 0.45;
-    pointer-events: none;
-}
-
-/* Icons container */
-.cp-sec-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: rgba(44,191,174,0.12);
-    border-radius: 10px;
-    flex-shrink: 0;
-    transition: transform .18s ease;
-}
-
-/* Icon SVG */
-.cp-icon-svg {
-    width: 22px;
-    height: 22px;
-    display: block;
-    fill: var(--teal);
-}
-
-/* Icon hover motion */
-.cp-sec-card:hover .cp-sec-icon {
-    transform: translateY(-2px);
-}
-
-/* -------------------------------------------------------------------
-   10. TOGGLE SWITCHES (APPLE STYLE)
-------------------------------------------------------------------- */
-
-.cp-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px !important;
-    height: 26px;
-    flex-shrink: 0;
-}
-
-.cp-switch input {
-    display: none;
-}
-
-.cp-slider {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-    background: var(--navy);
-    border-radius: 30px;
-    transition: background .25s ease;
-}
-
-.cp-slider::before {
-    position: absolute;
-    content: "";
-    height: 21px;
-    width: 21px;
-    left: 3px;
-    top: 2.5px;
+.cp-card {
     background: #ffffff;
-    border-radius: 50%;
-    transition: transform .25s ease;
-}
-
-/* Teal/on state */
-.cp-slider-teal {
-    background: var(--navy);
-}
-
-/* When checked */
-.cp-switch input:checked + .cp-slider-teal {
-    background: var(--teal);
-}
-
-.cp-switch input:checked + .cp-slider-teal::before {
-    transform: translateX(22px);
-}
-
-/* Disabled switch */
-.cp-switch.disabled .cp-slider,
-.cp-switch.disabled .cp-slider-teal {
-    background: #d4dde9;
-    cursor: not-allowed;
-}
-
-/* -------------------------------------------------------------------
-   11. MOBILE RESPONSIVE (<= 768px)
-------------------------------------------------------------------- */
-
-@media (max-width: 768px) {
-
-    /* Header stacking */
-    .cp-header {
-        flex-direction: column;
-        gap: .5rem;
-        padding: 1rem;
-        text-align: center;
-    }
-
-    .cp-welcome {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .cp-logo img {
-        height: 56px;
-    }
-
-    /* Layout & card padding */
-    .cp-main {
-        padding: 1rem .75rem 4rem;
-    }
-
-    .cp-card {
-        padding: 1.5rem 1rem;
-    }
-
-    .cp-dashboard-grid {
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 1.5rem 1rem;
-    }
-
-    .cp-profile-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .cp-avatar {
-        margin-bottom: 1rem;
-    }
-
-    /* Uniform mobile button sizing */
-    .cp-btn {
-        min-width: 160px;
-        padding: 0.6rem 1.1rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    .cp-profile-actions,
-    .cp-support-footer,
-    .cp-security-footer,
-    .cp-account-footer {
-        text-align: center;
-    }
-
-    .cp-support-footer .cp-btn {
-        margin-bottom: 0.5rem;
-    }
-
-    /* Hide inline logout, use FAB */
-    .cp-logout-inline {
-        display: none;
-    }
-
-    .cp-fab-logout {
-        position: fixed;
-        bottom: 22px;
-        right: 22px;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: var(--navy);
-        color: #fff;
-        border: none;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: background 0.2s ease, transform 0.15s ease;
-        z-index: 1600;
-    }
-
-    .cp-fab-logout:hover {
-        background: var(--blue);
-        transform: translateY(-2px);
-    }
-
-    .cp-fab-logout::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        background: rgba(44,191,174,0.2);
-        animation: cpPulse 2s infinite ease-in-out;
-    }
-
-    @keyframes cpPulse {
-        0% { transform: scale(1); opacity: 0.8; }
-        70% { transform: scale(1.4); opacity: 0; }
-        100% { transform: scale(1); opacity: 0; }
-    }
-
-    /* ==========================================================
-   Customer Profile Edit Page
-   SharpLync Portal Styling • v1.0
-========================================================== */
-
-.profile-edit-card {
-    background: #fff;
-    padding: 2.5rem;
-    border-radius: 16px;
+    color: var(--ink);
+    border-radius: 18px;
+    padding: 2rem;
     max-width: 900px;
     margin: 0 auto;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow);
 }
 
-.cp-title {
-    font-size: 1.8rem;
+
+/* --------------------------------------------------------------
+   4. BUTTONS
+-------------------------------------------------------------- */
+.cp-btn-primary,
+button.btn-primary {
+    background: var(--teal);
+    padding: .9rem 2rem;
     font-weight: 600;
-    color: #0A2A4D;
-    margin-bottom: 1.5rem;
+    color: #ffffff;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: .2s ease;
+}
+.cp-btn-primary:hover,
+button.btn-primary:hover {
+    background: #24a391;
 }
 
-.cp-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+
+/* --------------------------------------------------------------
+   5. INPUT FIELDS (GLOBAL)
+-------------------------------------------------------------- */
+
+label {
+    display: block;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+    font-size: 1rem;
 }
 
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    color: var(--ink);
+    outline: none;
+    transition: border .2s ease, box-shadow .2s ease;
+}
+
+input:focus, select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.3);
+}
+
+
+/* --------------------------------------------------------------
+   6. GRID UTILITIES
+-------------------------------------------------------------- */
 .cp-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
-
 @media (max-width: 768px) {
     .cp-grid-2 {
         grid-template-columns: 1fr;
     }
 }
 
-.cp-field label {
-    display: block;
-    font-weight: 600;
-    color: #0A2A4D;
-    margin-bottom: 0.4rem;
+
+/* --------------------------------------------------------------
+   7. PROFILE CARD (AVATAR + FORM)
+-------------------------------------------------------------- */
+
+.cp-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
-.cp-field input {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    border: 1px solid #dce3ea;
-    border-radius: 10px;
-    background: #f9fbfd;
-    font-size: 1rem;
-    transition: 0.2s ease;
-}
-
-.cp-field input:focus {
-    border-color: #2CBFAE;
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.15);
-    outline: none;
-}
-
-.cp-btn-primary {
-    background: #2CBFAE;
+.cp-avatar-large {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--blue);
     color: #fff;
-    padding: 0.9rem 2rem;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.25s;
-    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 700;
 }
 
-.cp-btn-primary:hover {
-    background: #24a391;
+.cp-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.cp-alert {
-    padding: 1rem;
-    border-radius: 10px;
+.cp-avatar-actions label {
+    color: #ffffff;
+}
+
+.cp-avatar-actions input[type="file"] {
+    margin-top: 6px;
+}
+
+
+/* --------------------------------------------------------------
+   8. GOOGLE AUTOCOMPLETE (2025 API)
+-------------------------------------------------------------- */
+
+/* Container */
+gmpx-place-autocomplete {
+    display: block !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    margin-top: .25rem;
     margin-bottom: 1rem;
-    font-size: 0.95rem;
 }
 
-.cp-alert.success {
-    background: #e7fdf3;
-    color: #1c7f4f;
+/* Input inside the component */
+gmpx-place-autocomplete::part(input) {
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--ink);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
 }
 
-.cp-alert.error {
-    background: #ffefef;
-    color: #b32929;
+gmpx-place-autocomplete::part(input):focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
 }
 
+/* Dropdown */
+gmpx-place-autocomplete::part(panel) {
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    z-index: 999999 !important;
+}
+
+/* Dropdown items */
+gmpx-place-autocomplete::part(option) {
+    padding: 10px 14px;
+    font-size: 1rem;
+    color: var(--ink);
+    cursor: pointer;
+}
+gmpx-place-autocomplete::part(option):hover {
+    background: rgba(44,191,174,0.1);
+}
+
+
+/* --------------------------------------------------------------
+   9. RESPONSIVE BEHAVIOUR
+-------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    .cp-header {
+        flex-direction: column;
+        text-align: center;
+        gap: .75rem;
+        padding: 1rem;
+    }
+
+    .cp-welcome {
+        flex-direction: column;
+    }
+
+    .cp-logo img {
+        height: 58px;
+    }
+
+    .cp-card {
+        padding: 1.5rem;
+    }
+
+    .cp-avatar-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cp-avatar-large {
+        margin-bottom: 1rem;
+    }
 }
