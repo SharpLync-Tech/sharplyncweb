@@ -42,6 +42,6 @@
     </p>
 
     <p style="margin:0; font-size:13px; color:#6b7a90;">
-        If you didn’t submit this message or believe this was an error, please reply to this email and let us know.
+        If you didn’t submit this message or believe this was an error, please email info@sharplync.com.au and let us know.
     </p>
 @endsection
