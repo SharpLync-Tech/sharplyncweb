@@ -1,6 +1,6 @@
 {{-- 
   Layout: customers/layouts/customer-layout.blade.php
-  Version: v2.2 (Customer Portal Layout + Styles Stack)
+  Version: v2.3 (Fixed scripts section — modal working)
 --}}
 
 <!DOCTYPE html>
@@ -16,10 +16,12 @@
   {{-- Base portal stylesheet --}}
   <link rel="stylesheet" href="/css/customer.css?v=3003">
 
-  {{-- Page-specific styles (e.g. edit profile) --}}
+  {{-- Page-specific styles (edit profile etc.) --}}
   @stack('styles')
 </head>
+
 <body class="cp-root">
+
   <header class="cp-header">
     <div class="cp-logo"><img src="/images/sharplync-logo.png" alt="SharpLync Logo"></div>
     <div class="cp-welcome">
@@ -36,10 +38,13 @@
   </main>
 
   <footer class="cp-footer">
-    © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, 
+    © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support,
     <span class="cp-hl">Modern Results</span>
   </footer>
 
+  {{-- 🚨 THIS WAS MISSING AND CAUSED EVERYTHING TO BREAK --}}
+  @yield('scripts')
   @stack('scripts')
+
 </body>
 </html>
