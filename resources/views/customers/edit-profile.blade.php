@@ -50,76 +50,78 @@ const inputElement = document.getElementById('address_input');
 // --- Utility Functions ---
 
 function log(message, isSuccess = false) {
-    let content = debugOutput.innerHTML;
-    content += `&lt;p style=&quot;margin-top: 10px; color: ${isSuccess ? &#39;#065f46&#39; : &#39;#b91c1c&#39;}&quot;&gt;&lt;strong&gt;[${new Date().toLocaleTimeString()}]&lt;/strong&gt; ${message}&lt;/p&gt;`;
-    debugOutput.innerHTML = content;
-    if (isSuccess) {
-        debugOutput.classList.remove(&#39;debug-area&#39;);
-        debugOutput.classList.add(&#39;success&#39;);
-    }
-    console.log(`[TEST LOG] ${message}`);
+let content = debugOutput.innerHTML;
+// FIX: Decoded HTML entities to resolve JavaScript SyntaxError
+content += &lt;p style=&quot;margin-top: 10px; color: ${isSuccess ? &#39;#065f46&#39; : &#39;#b91c1c&#39;}&quot;&gt;&lt;strong&gt;[${new Date().toLocaleTimeString()}]&lt;/strong&gt; ${message}&lt;/p&gt;;
+debugOutput.innerHTML = content;
+if (isSuccess) {
+debugOutput.classList.remove('debug-area');
+debugOutput.classList.add('success');
+}
+console.log([TEST LOG] ${message});
 }
 
 // --- Core Autocomplete Initialization ---
 
-// The &#39;callback=initAutocomplete&#39; in the script URL executes this function
-// *after* the Google Maps JS API and Places library are fully loaded.
+// The 'callback=initAutocomplete' in the script URL executes this function
+// after the Google Maps JS API and Places library are fully loaded.
 function initAutocomplete() {
-    log(&quot;API Check: Google Maps JS API and Places Library loaded successfully.&quot;, true);
+log("API Check: Google Maps JS API and Places Library loaded successfully.", true);
 
-    try {
-        // 1. Initialize Autocomplete on the input field
-        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-            componentRestrictions: { country: [&quot;au&quot;, &quot;nz&quot;] },
-            fields: [&quot;formatted_address&quot;, &quot;address_components&quot;]
-        });
+try {
+    // 1. Initialize Autocomplete on the input field
+    const autocomplete = new google.maps.places.Autocomplete(inputElement, {
+        componentRestrictions: { country: [&quot;au&quot;, &quot;nz&quot;] },
+        fields: [&quot;formatted_address&quot;, &quot;address_components&quot;]
+    });
+    
+    log(&quot;Autocomplete object initialized successfully.&quot;, true);
+
+    // 2. Add Listener for Place Selection
+    autocomplete.addListener(&#39;place_changed&#39;, function() {
+        const place = autocomplete.getPlace();
         
-        log(&quot;Autocomplete object initialized successfully.&quot;, true);
+        if (place.formatted_address) {
+            log(`Place Selected: ${place.formatted_address}`, true);
+        } else {
+            log(&quot;Warning: No formatted address found for selected place.&quot;);
+        }
+        
+        // Display all available components for debugging
+        let componentsLog = &quot;--- Address Components ---\n&quot;;
+        if (place.address_components) {
+            place.address_components.forEach(comp =&gt; {
+                componentsLog += `Type: ${comp.types[0]}, Value: ${comp.long_name}\n`;
+            });
+        }
+        log(componentsLog);
+    });
 
-        // 2. Add Listener for Place Selection
-        autocomplete.addListener(&#39;place_changed&#39;, function() {
-            const place = autocomplete.getPlace();
-            
-            if (place.formatted_address) {
-                log(`Place Selected: ${place.formatted_address}`, true);
-            } else {
-                log(&quot;Warning: No formatted address found for selected place.&quot;);
-            }
-            
-            // Display all available components for debugging
-            let componentsLog = &quot;--- Address Components ---\n&quot;;
-            if (place.address_components) {
-                place.address_components.forEach(comp =&gt; {
-                    componentsLog += `Type: ${comp.types[0]}, Value: ${comp.long_name}\n`;
-                });
-            }
-            log(componentsLog);
-        });
-
-    } catch (error) {
-        log(`FATAL ERROR during initialization: ${error.message}`);
-    }
+} catch (error) {
+    log(`FATAL ERROR during initialization: ${error.message}`);
 }
 
-// Fallback if the script loads before the callback is registered (less common with &#39;callback&#39;)
-if (typeof google !== &#39;undefined&#39; &amp;&amp; typeof google.maps.places !== &#39;undefined&#39;) {
-    // If the script already loaded before this script, call it directly
-    // Note: This is usually not needed when using &#39;callback&#39;
+
+}
+
+// Fallback is generally not needed when using 'callback', but remains for robustness
+if (typeof google !== 'undefined' && typeof google.maps.places !== 'undefined') {
+// If the script already loaded before this script, call it directly
+// Note: This is usually not needed when using 'callback'
 } else {
-    log(&quot;Waiting for Google API script to load...&quot;);
+log("Waiting for Google API script to load...");
 }
 
 // --- Pre-fill Test (Simulate your existing data) ---
 // You can set the value directly on the standard input
-const simulatedAddress = &quot;728 Mt Hutt Rd&quot;;
+const simulatedAddress = "728 Mt Hutt Rd";
 if (simulatedAddress) {
-    inputElement.value = simulatedAddress;
-    log(`Pre-fill Test: Standard input pre-filled with &quot;${simulatedAddress}&quot;`);
+inputElement.value = simulatedAddress;
+log(Pre-fill Test: Standard input pre-filled with &quot;${simulatedAddress}&quot;);
 }
 
 // Assign the callback function globally so the Google script can find it
 window.initAutocomplete = initAutocomplete;
-
 
 </script>
 
