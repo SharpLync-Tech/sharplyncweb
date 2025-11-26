@@ -1,12 +1,7 @@
-
-
+@extends('customers.layouts.customer-layout')
 @section('title', 'Edit Profile')
 <link rel="stylesheet" href="/css/customer-profile-edit.css">
 <link rel="stylesheet" href="/css/google-places.css">
-@push('styles')
-    <link rel="stylesheet" href="{{ secure_asset('css/customer-profile-edit.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/google-places.css') }}">
-@endpush
 
 @section('content')
 <div class="cp-edit-card">
