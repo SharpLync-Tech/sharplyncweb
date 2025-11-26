@@ -9,7 +9,17 @@
 <div class="cp-edit-card">
 
     <h2 class="cp-edit-title">Edit Your Profile</h2>
-
+{{-- ⚠️ DEBUG BLOCK START ⚠️ --}}
+    @if(old('address_line1', $profile->address_line1))
+        <div style="background: #ffdddd; color: #cc0000; padding: 10px; border: 1px solid #cc0000; margin-bottom: 20px;">
+            **DEBUG:** Stored Address Value Found: **{{ old('address_line1', $profile->address_line1) }}**
+        </div>
+    @else
+        <div style="background: #ddddff; color: #0000cc; padding: 10px; border: 1px solid #0000cc; margin-bottom: 20px;">
+            **DEBUG:** No Stored Address Value Found.
+        </div>
+    @endif
+    {{-- ⚠️ DEBUG BLOCK END ⚠️ --}}
     <form method="POST" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data">
         @csrf
 
