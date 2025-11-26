@@ -1,9 +1,6 @@
 {{-- 
  Page: customers/edit-profile.blade.php
- Version: 3.0
- - SharpLync Avatar Modal
- - Google Places Autocomplete
- - Clean layout, safe updates
+ Version: 3.1 — FIXED AVATAR MODAL (Proper overlay + placement)
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -20,7 +17,7 @@
     <h2 class="cp-edit-title">Edit Your Profile</h2>
 
     {{-- =========================== --}}
-    {{-- AVATAR & MODAL TRIGGER      --}}
+    {{-- AVATAR + PENCIL ICON        --}}
     {{-- =========================== --}}
     <div class="cp-edit-avatar-row">
         <div class="cp-edit-avatar-wrapper">
@@ -38,7 +35,6 @@
                 @endif
             </div>
 
-            {{-- Pencil icon --}}
             <button id="open-avatar-modal" class="cp-avatar-edit-btn">
                 ✎
             </button>
@@ -50,9 +46,8 @@
         </div>
     </div>
 
-
     {{-- =========================== --}}
-    {{-- EDIT FORM                  --}}
+    {{-- PROFILE FORM                --}}
     {{-- =========================== --}}
     <form method="POST" action="{{ route('customer.profile.update') }}">
         @csrf
@@ -72,20 +67,20 @@
         <div class="cp-field">
             <label>Street Address</label>
             <input type="text" id="address_line1" name="address_line1"
-                   placeholder="Start typing your address…"
-                   value="{{ old('address_line1', $profile->address_line1) }}">
+                   value="{{ old('address_line1', $profile->address_line1) }}"
+                   placeholder="Start typing your address…">
         </div>
 
         <div class="cp-grid-2">
             <div class="cp-field">
                 <label>City / Suburb</label>
-                <input id="city" name="city" type="text"
+                <input id="city" name="city"
                        value="{{ old('city', $profile->city) }}">
             </div>
 
             <div class="cp-field">
                 <label>State</label>
-                <input id="state" name="state" type="text"
+                <input id="state" name="state"
                        value="{{ old('state', $profile->state) }}">
             </div>
         </div>
@@ -100,10 +95,10 @@
             <div class="cp-field">
                 <label>Country</label>
                 <select id="country" name="country">
-                    @php $countryVal = old('country', $profile->country ?? 'Australia'); @endphp
-                    <option value="Australia" {{ $countryVal=='Australia'?'selected':'' }}>Australia</option>
-                    <option value="New Zealand" {{ $countryVal=='New Zealand'?'selected':'' }}>New Zealand</option>
-                    <option value="Other" {{ $countryVal=='Other'?'selected':'' }}>Other</option>
+                    @php $ctry = old('country', $profile->country ?? 'Australia'); @endphp
+                    <option value="Australia" {{ $ctry=='Australia'?'selected':'' }}>Australia</option>
+                    <option value="New Zealand" {{ $ctry=='New Zealand'?'selected':'' }}>New Zealand</option>
+                    <option value="Other" {{ $ctry=='Other'?'selected':'' }}>Other</option>
                 </select>
             </div>
         </div>
@@ -114,12 +109,15 @@
 
 </div>
 
+@endsection
+
 
 {{-- ====================================================== --}}
-{{-- AVATAR MODAL                                           --}}
+{{--              FIXED AVATAR MODAL (OUTSIDE CONTENT)       --}}
 {{-- ====================================================== --}}
 <div id="avatar-modal" class="cp-avatar-modal" aria-hidden="true">
     <div class="cp-avatar-modal-sheet">
+
         <header class="cp-avatar-modal-header">
             <h3>Update Profile Photo</h3>
             <button class="cp-avatar-modal-close">&times;</button>
@@ -134,34 +132,27 @@
 
             <input type="file" id="avatar-file-input" accept="image/*">
 
-            <button id="avatar-save-btn" class="cp-btn cp-teal-btn" disabled>
-                Save Photo
-            </button>
-
-            <button id="avatar-remove-btn" class="cp-btn cp-navy-btn">
-                Remove Photo
-            </button>
+            <button id="avatar-save-btn" class="cp-btn cp-teal-btn" disabled>Save Photo</button>
+            <button id="avatar-remove-btn" class="cp-btn cp-navy-btn">Remove Photo</button>
 
         </div>
+
     </div>
 </div>
-
-@endsection
 
 
 @push('scripts')
 
 {{-- Google Places --}}
-<script async
-        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initProfileAutocomplete">
+<script async 
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initProfileAutocomplete">
 </script>
 
-{{-- Avatar JS --}}
 <script src="{{ secure_asset('js/profile-photo.js') }}"></script>
 
+{{-- Autocomplete JS (unchanged) --}}
 <script>
 window.initProfileAutocomplete = function () {
-
     const addressInput = document.getElementById('address_line1');
     const cityEl = document.getElementById('city');
     const stateEl = document.getElementById('state');
