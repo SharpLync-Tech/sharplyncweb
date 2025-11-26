@@ -1,10 +1,4 @@
 <?php
-/**
- * SharpLync Customer Profile Controller
- * Version: 2.3 (Unified CRM-Compatible + Edit Mode + Xero Sync)
- * Description:
- *  Handles customer profile setup (Step 4 of onboarding) and profile editing.
- */
 
 namespace App\Http\Controllers\Customer;
 
@@ -12,12 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CRM\CustomerProfile;
-use App\Services\XeroService; // ✅ Added for Xero sync
+use App\Services\XeroService;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the setup profile form (used during onboarding)
+     * Display the setup profile form (onboarding)
      */
     public function create()
     {
@@ -54,16 +48,12 @@ class ProfileController extends Controller
             ])
         );
 
-        /**
-         * ✅ Xero Sync Integration
-         * Automatically creates a matching contact record in Xero
-         * when the customer finishes onboarding.
-         */
+        // Optional Xero sync
         try {
             $xero = new XeroService();
             $contactId = $xero->createContact([
                 'business_name' => $validated['business_name'],
-                'email' => $user->email,
+                'email'         => $user->email,
                 'mobile_number' => $validated['mobile_number'],
                 'address_line1' => $validated['address_line1'],
             ]);
@@ -77,11 +67,21 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the editable profile form (after setup)
+     * Display the editable profile form (post-onboarding)
      */
     public function edit()
     {
         $user = Auth::user();
+
+        // Auto-create a blank profile if missing
+        if (!$user->profile) {
+            $user->profile()->create([
+                'account_number' => 'SL' . rand(100000, 999999),
+                'business_name'  => $user->first_name . ' ' . $user->last_name,
+                'mobile_number'  => $user->phone,
+                'setup_completed' => 0,
+            ]);
+        }
 
         return view('customers.edit-profile', [
             'user' => $user,
@@ -92,21 +92,4 @@ class ProfileController extends Controller
     /**
      * Update profile data for existing customers
      */
-    public function update(Request $request)
-    {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'business_name'   => 'required|string|max:150',
-            'mobile_number'   => 'required|string|max:20',
-            'address_line1'   => 'required|string|max:150',
-            'postcode'        => 'required|string|max:10',
-            'preferred_contact_method' => 'nullable|string|max:20',
-            'notes'           => 'nullable|string',
-        ]);
-
-        $user->profile->update($validated);
-
-        return redirect()->route('customers.dashboard')->with('success', 'Profile updated successfully.');
-    }
-}
+    public function updat
