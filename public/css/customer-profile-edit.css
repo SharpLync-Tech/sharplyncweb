@@ -1,36 +1,26 @@
 /* ===================================================================
    SharpLync Customer Portal — Edit Profile Stylesheet
-   Version: v1.1 (Isolated + Protected from customer.css overrides)
+   Version: v1.1 (Standalone • Fully Responsive • Google Fix)
    Updated: 27 Nov 2025
+   Notes:
+   - Fully isolated from customer.css
+   - All Google Autocomplete styling included
+   - 100% width fix for the Google Places component
 =================================================================== */
 
 
 /* --------------------------------------------------------------
-   CARD WRAPPER (matches portal cp-card)
+   CARD WRAPPER
 -------------------------------------------------------------- */
 .cp-edit-card {
     background: #ffffff;
     color: #0A2A4D;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 2rem;
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
     box-sizing: border-box;
-}
-
-
-/* --------------------------------------------------------------
-   HARD OVERRIDES (prevents customer.css from affecting edit page)
--------------------------------------------------------------- */
-
-.cp-edit-card input,
-.cp-edit-card select,
-.cp-edit-card label,
-.cp-edit-card gmpx-place-autocomplete {
-    all: revert !important;
-    box-sizing: border-box !important;
-    font-family: 'Poppins', sans-serif !important;
 }
 
 
@@ -38,10 +28,9 @@
    PAGE TITLE
 -------------------------------------------------------------- */
 .cp-edit-title {
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1.75rem 0;
     font-size: 1.75rem;
     font-weight: 600;
-    color: #0A2A4D;
 }
 
 
@@ -79,7 +68,6 @@
     font-weight: 600;
     margin-bottom: 4px;
     display: block;
-    color: #0A2A4D;
 }
 
 .cp-edit-avatar-info input[type="file"] {
@@ -111,6 +99,7 @@
     background: #f9fbfd;
     font-size: 1rem;
     color: #0A2A4D;
+    box-sizing: border-box;
     transition: border .2s ease, box-shadow .2s ease;
 }
 
@@ -123,7 +112,7 @@
 
 
 /* --------------------------------------------------------------
-   GRID — CITY/STATE + POSTCODE/COUNTRY
+   GRID LAYOUT (City/State + Postcode/Country)
 -------------------------------------------------------------- */
 .cp-grid-2 {
     display: grid;
@@ -150,8 +139,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background .2s ease, transform .1s ease;
-    margin-top: 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    margin-top: 1.25rem;
 }
 
 .cp-edit-submit:hover {
@@ -160,26 +148,57 @@
 }
 
 
-/* --------------------------------------------------------------
-   MOBILE FIRST TWEAKS
--------------------------------------------------------------- */
-@media (max-width: 576px) {
+/* ==================================================================
+   GOOGLE PLACE AUTOCOMPLETE — FULL FIX + VISIBILITY
+   (Prevents customer.css from shrinking or overriding this component)
+=================================================================== */
 
-    .cp-edit-card {
-        padding: 1.5rem;
-    }
+/* Container fix — makes it behave like a normal input */
+.cp-edit-card gmpx-place-autocomplete {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    margin-top: .25rem;
+    margin-bottom: 1.25rem;
+    box-sizing: border-box !important;
+}
 
-    .cp-edit-avatar-row {
-        flex-direction: column;
-        text-align: center;
-    }
+/* Input inside shadow DOM */
+.cp-edit-card gmpx-place-autocomplete::part(input) {
+    width: 100% !important;
+    padding: 0.85rem 1rem !important;
+    background: #f9fbfd !important;
+    border: 1px solid #dce3ea !important;
+    border-radius: 10px !important;
+    font-size: 1rem !important;
+    font-family: 'Poppins', sans-serif !important;
+    color: #0A2A4D !important;
+    box-sizing: border-box !important;
+}
 
-    .cp-edit-avatar {
-        margin-bottom: 0.5rem;
-    }
+.cp-edit-card gmpx-place-autocomplete::part(input):focus {
+    border-color: #2CBFAE !important;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25) !important;
+}
 
-    .cp-edit-submit {
-        width: 100%;
-        text-align: center;
-    }
+/* Dropdown styling */
+.cp-edit-card gmpx-place-autocomplete::part(panel) {
+    background: #ffffff !important;
+    color: #0A2A4D !important;
+    border: 1px solid #ccc !important;
+    border-radius: 12px !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+    z-index: 999999 !important;
+}
+
+.cp-edit-card gmpx-place-autocomplete::part(option) {
+    padding: 10px 14px !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    color: #0A2A4D !important;
+}
+
+.cp-edit-card gmpx-place-autocomplete::part(option):hover {
+    background: rgba(44,191,174,0.1) !important;
 }
