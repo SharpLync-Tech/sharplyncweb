@@ -1,14 +1,7 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v4.0 (Google Autocomplete + Full Cleanup + Visibility Fixes)
+   Version: v4.1 (Google Autocomplete + Full Cleanup + Visibility Fixes)
    Updated: 26 Nov 2025
-
-   Improvements:
-   - Added full UI styling for Google PlaceAutocompleteElement (2025 API)
-   - Ensured all inputs & labels show correctly on gradient background
-   - Unified field spacing, card layout and typography
-   - Cleaned up duplicate rules from v3.1
-   - Improved mobile experience
 =================================================================== */
 
 
@@ -154,9 +147,14 @@ button.btn-primary:hover {
 label {
     display: block;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--ink);
     margin-bottom: 6px;
     font-size: 1rem;
+}
+
+/* layout helper for each field block */
+.cp-field {
+    margin-bottom: 1.25rem;
 }
 
 input[type="text"],
@@ -165,18 +163,20 @@ input[type="password"],
 select {
     width: 100%;
     padding: 0.85rem 1rem;
-    border: 1px solid rgba(255,255,255,0.25);
     border-radius: 10px;
-    background: rgba(255,255,255,0.9);
+    background: #f8fafc;
+    border: 1px solid #d7dfe8;
     font-size: 1rem;
     color: var(--ink);
     outline: none;
-    transition: border .2s ease, box-shadow .2s ease;
+    transition: border .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: var(--teal);
     box-shadow: 0 0 0 3px rgba(44,191,174,0.3);
+    background: #ffffff;
 }
 
 
@@ -203,7 +203,7 @@ input:focus, select:focus {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
 }
 
 .cp-avatar-large {
@@ -227,7 +227,13 @@ input:focus, select:focus {
 }
 
 .cp-avatar-actions label {
-    color: #ffffff;
+    color: var(--ink);
+}
+
+.cp-avatar-hint {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
 }
 
 .cp-avatar-actions input[type="file"] {
@@ -244,16 +250,14 @@ gmpx-place-autocomplete {
     display: block !important;
     width: 100% !important;
     min-height: 48px !important;
-    margin-top: .25rem;
-    margin-bottom: 1rem;
 }
 
 /* Input inside the component */
 gmpx-place-autocomplete::part(input) {
     padding: 0.85rem 1rem;
     border-radius: 10px;
-    background: rgba(255,255,255,0.95);
-    border: 1px solid rgba(255,255,255,0.25);
+    background: #f8fafc;
+    border: 1px solid #d7dfe8;
     color: var(--ink);
     font-size: 1rem;
     font-family: inherit;
@@ -264,6 +268,7 @@ gmpx-place-autocomplete::part(input) {
 gmpx-place-autocomplete::part(input):focus {
     border-color: var(--teal);
     box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+    background: #ffffff;
 }
 
 /* Dropdown */
@@ -309,6 +314,10 @@ gmpx-place-autocomplete::part(option):hover {
         height: 58px;
     }
 
+    .cp-main {
+        padding: 1.5rem 1rem 3rem;
+    }
+
     .cp-card {
         padding: 1.5rem;
     }
@@ -316,9 +325,10 @@ gmpx-place-autocomplete::part(option):hover {
     .cp-avatar-row {
         flex-direction: column;
         text-align: center;
+        align-items: center;
     }
 
     .cp-avatar-large {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 }
