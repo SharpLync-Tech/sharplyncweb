@@ -1,4 +1,4 @@
-@extends('customers.layouts.customer-layout')
+
 
 @section('title', 'Edit Profile')
 
