@@ -20,18 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // FIX: Use .text property to display the address string in the
-    // gmpx-place-autocomplete component's input field.
-    if (hidden.value) {
-        // Wait for the custom element to be defined before trying to set a property
-        customElements.whenDefined('gmpx-place-autocomplete').then(() => {
-             ac.text = hidden.value;
-             console.log("Restored address display:", hidden.value);
-        }).catch(err => {
-            console.error("Failed to define gmpx-place-autocomplete:", err);
-        });
-    }
-
+    
     ac.addEventListener("gmpx-placechange", () => {
 
         // When a place is selected, the component's .text property holds the display string.
