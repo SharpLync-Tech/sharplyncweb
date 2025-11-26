@@ -123,3 +123,4 @@ require __DIR__.'/services.php';
 require __DIR__.'/admin_cms.php';+
 require __DIR__.'/sms.php';
 require __DIR__ . '/contact.php';
+require __DIR__ . '/support.php';
