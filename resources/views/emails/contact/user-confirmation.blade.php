@@ -38,7 +38,7 @@
         Your message
     </h3>
     <p style="margin:0 0 18px 0; font-size:14px; line-height:1.6; color:#1A3152; white-space:pre-line;">
-        {{ $message }}
+        {{ $user_message }}
     </p>
 
     <p style="margin:0; font-size:13px; color:#6b7a90;">

@@ -34,6 +34,6 @@
         Message
     </h3>
     <p style="margin:0; font-size:14px; line-height:1.6; color:#1A3152; white-space:pre-line;">
-        {{ $message }}
+        {{ $user_message }}
     </p>
 @endsection

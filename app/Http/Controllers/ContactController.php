@@ -99,15 +99,15 @@ class ContactController extends Controller
 
         try {
             // 1) Email to SharpLync (admin notification)
-            Mail::send('emails.contact.admin-notification', $data, function ($message) use ($data) {
-                $message->to('info@sharplync.com.au')
+            Mail::send('emails.contact.admin-notification', $data, function ($user_message) use ($data) {
+                $user_message->to('info@sharplync.com.au')
                     ->subject('New Contact Form Message from ' . $data['name'])
                     ->from(config('mail.from.address'), 'SharpLync');
             });
 
             // 2) Confirmation email to the user (branded)
-            Mail::send('emails.contact.user-confirmation', $data, function ($message) use ($data) {
-                $message->to($data['email'], $data['name'])
+            Mail::send('emails.contact.user-confirmation', $data, function ($user_message) use ($data) {
+                $user_message->to($data['email'], $data['name'])
                     ->subject('We’ve received your message – SharpLync')
                     ->from(config('mail.from.address'), 'SharpLync');
             });
