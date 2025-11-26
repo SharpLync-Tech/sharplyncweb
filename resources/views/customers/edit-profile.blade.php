@@ -7,7 +7,7 @@
 
   {{-- DEBUG BANNER --}}
   <div style="background:#ffe4e4; padding:10px; border:2px solid red; margin-bottom:20px;">
-      <strong>DEBUG:</strong> This is the STEP 3 DEBUG VERSION of edit-profile.blade.php
+      <strong>DEBUG:</strong> This is the STEP 3 DEBUG VERSION of edit-profile.blade.php (env API key)
   </div>
 
   <h2>Edit Your Profile</h2>
@@ -54,7 +54,7 @@
     <input type="text" name="mobile_number"
            value="{{ old('mobile_number', $profile->mobile_number) }}" required>
 
-    {{-- STREET ADDRESS --}}
+    {{-- STREET ADDRESS (Google autocomplete target) --}}
     <label>Street Address</label>
     <input type="text"
            id="address_autocomplete"
@@ -115,63 +115,63 @@
 @section('scripts')
 
 <script>
-console.log("DEBUG: @section('scripts') loaded");
+console.log("DEBUG: Scripts block loaded");
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("DEBUG: DOMContentLoaded fired");
+    console.log("DEBUG: DOM ready");
 
-    const input = document.getElementById("address_autocomplete");
-    console.log("DEBUG: Address field present?", input);
+    var input = document.getElementById('address_autocomplete');
+    console.log("DEBUG: Input exists?", input);
 
     if (!input) {
-        console.error("DEBUG: address_autocomplete NOT FOUND");
+        console.log("DEBUG: No autocomplete input found");
         return;
     }
 
     try {
-        console.log("DEBUG: google object exists?", typeof google !== "undefined");
-        console.log("DEBUG: google.maps exists?", google && google.maps);
-        console.log("DEBUG: google.maps.places exists?", google && google.maps && google.maps.places);
+        console.log("DEBUG: Google object:", typeof google);
+        console.log("DEBUG: google.maps:", google && google.maps);
+        console.log("DEBUG: google.maps.places:", google && google.maps && google.maps.places);
 
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            componentRestrictions: { country: ["au", "nz"] },
-            fields: ["address_components", "formatted_address"]
+        var autocomplete = new google.maps.places.Autocomplete(input, {
+            componentRestrictions: { country: ['au', 'nz'] },
+            fields: ['address_components']
         });
 
-        console.log("DEBUG: Autocomplete object created:", autocomplete);
+        console.log("DEBUG: Autocomplete created");
 
-        autocomplete.addListener("place_changed", function () {
-            console.log("DEBUG: place_changed fired!");
-
-            const place = autocomplete.getPlace();
-            console.log("DEBUG: place object:", place);
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            console.log("DEBUG: place_changed triggered");
+            console.log(place);
 
             if (!place.address_components) {
-                console.error("DEBUG: NO address_components returned");
+                console.log("DEBUG: No address components returned");
                 return;
             }
 
-            const get = (type) => {
-                const comp = place.address_components.find(c => c.types.includes(type));
+            function find(type) {
+                var comp = place.address_components.find(function(c) {
+                    return c.types.indexOf(type) !== -1;
+                });
                 return comp ? comp.long_name : "";
-            };
+            }
 
-            document.getElementById("city").value     = get("locality") || get("postal_town") || "";
-            document.getElementById("state").value    = get("administrative_area_level_1") || "";
-            document.getElementById("postcode").value = get("postal_code") || "";
-            document.getElementById("country").value  = get("country") || "Australia";
-
-            console.log("DEBUG: Address auto-filled successfully!");
+            document.getElementById('city').value     = find('locality');
+            document.getElementById('state').value    = find('administrative_area_level_1');
+            document.getElementById('postcode').value = find('postal_code');
+            document.getElementById('country').value  = find('country');
         });
 
     } catch (err) {
-        console.error("DEBUG: Autocomplete init error:", err);
+        console.error("DEBUG: Autocomplete error:", err);
     }
 });
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"
-        onload="console.log('DEBUG: Google Maps API Loaded')"
-        onerror="console.error('DEBUG: Google Maps API FAILED to Load!')"></script>
+{{-- GOOGLE MAPS API WITH ENV VARIABLE --}}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places"
+        onload="console.log('DEBUG: Google JS Loaded')"
+        onerror="console.error('DEBUG: Google JS FAILED')"></script>
 
 @endsection
