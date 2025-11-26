@@ -63,7 +63,7 @@ class TicketController extends Controller
         }
 
         return redirect()
-            ->route('customer.support.show', $ticket)
+            ->route('customer.support.tickets.show', $ticket)
             ->with('success', 'Your support request has been submitted. Reference: ' . $ticket->reference);
     }
 
