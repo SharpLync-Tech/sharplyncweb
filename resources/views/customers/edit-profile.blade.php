@@ -1,107 +1,212 @@
-{{-- 
-    Standard Google Autocomplete Test (Barebones)
-    Purpose: To definitively check API key validity and Autocomplete interactivity 
-    using the simple, built-in Google Maps JavaScript method, bypassing the 
-    problematic gmpx-place-autocomplete component.
+{{-- Page: customers/profile/edit.blade.php
+     Version: v2.0 (Standard Places Autocomplete, no web components)
 --}}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Standard Autocomplete Test</title>
+@extends('customers.layouts.customer-layout')
 
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        input[type="text"] { border: 1px solid #ccc; padding: 10px; width: 300px; display: block; margin-bottom: 20px; }
-        pre { background: #eee; padding: 10px; border: 1px solid #ddd; white-space: pre-wrap; }
-        .success { color: green; font-weight: bold; }
-        .error { color: red; font-weight: bold; }
-    </style>
+@section('title', 'Edit Profile')
 
-    {{-- 1. LOAD GOOGLE MAPS JS API --}}
-    {{-- CRITICAL: Includes `libraries=places` and the mandatory `callback=initAutocomplete` --}}
+@push('styles')
+    <link rel="stylesheet" href="{{ secure_asset('css/customer-profile-edit.css') }}">
+    {{-- google-places.css is optional now; keep only if you want extra styling --}}
+    {{-- <link rel="stylesheet" href="{{ secure_asset('css/google-places.css') }}"> --}}
+@endpush
+
+@section('content')
+<div class="cp-edit-card">
+
+    <h2 class="cp-edit-title">Edit Your Profile</h2>
+
+    <form method="POST" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data">
+        @csrf
+
+        {{-- AVATAR --}}
+        <div class="cp-edit-avatar-row">
+            <div class="cp-edit-avatar">
+                @php
+                    $photo = $user->profile_photo ?? null;
+                    $initials = strtoupper(
+                        substr($user->first_name ?? 'U', 0, 1) .
+                        substr($user->last_name ?? 'X', 0, 1)
+                    );
+                @endphp
+
+                @if($photo)
+                    <img src="{{ asset('storage/' . $photo) }}" alt="Avatar">
+                @else
+                    <span>{{ $initials }}</span>
+                @endif
+            </div>
+
+            <div class="cp-edit-avatar-info">
+                <label>Profile Photo</label>
+                <input type="file" name="profile_photo" accept="image/*">
+                <p style="font-size: .85rem; color: #6b7a89;">Max 2MB · JPG, PNG, WebP</p>
+            </div>
+        </div>
+
+        {{-- BUSINESS NAME --}}
+        <div class="cp-field">
+            <label>Business Name</label>
+            <input
+                type="text"
+                name="business_name"
+                value="{{ old('business_name', $profile->business_name) }}"
+                required
+            >
+        </div>
+
+        {{-- MOBILE --}}
+        <div class="cp-field">
+            <label>Mobile Number</label>
+            <input
+                type="text"
+                name="mobile_number"
+                value="{{ old('mobile_number', $profile->mobile_number) }}"
+                required
+            >
+        </div>
+
+        {{-- STREET ADDRESS (STANDARD INPUT + AUTOCOMPLETE) --}}
+        <div class="cp-field">
+            <label>Street Address</label>
+            <input
+                type="text"
+                id="address_line1"
+                name="address_line1"
+                placeholder="Start typing your address…"
+                value="{{ old('address_line1', $profile->address_line1) }}"
+                autocomplete="street-address"
+            >
+        </div>
+
+        {{-- CITY + STATE --}}
+        <div class="cp-grid-2">
+            <div class="cp-field">
+                <label>City / Suburb</label>
+                <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    value="{{ old('city', $profile->city) }}"
+                >
+            </div>
+
+            <div class="cp-field">
+                <label>State</label>
+                <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    value="{{ old('state', $profile->state) }}"
+                >
+            </div>
+        </div>
+
+        {{-- POSTCODE + COUNTRY --}}
+        <div class="cp-grid-2">
+            <div class="cp-field">
+                <label>Postcode</label>
+                <input
+                    type="text"
+                    id="postcode"
+                    name="postcode"
+                    value="{{ old('postcode', $profile->postcode) }}"
+                >
+            </div>
+
+            <div class="cp-field">
+                <label>Country</label>
+                @php
+                    $country = old('country', $profile->country ?? 'Australia');
+                @endphp
+                <select id="country" name="country">
+                    <option value="Australia" {{ $country === 'Australia' ? 'selected' : '' }}>Australia</option>
+                    <option value="New Zealand" {{ $country === 'New Zealand' ? 'selected' : '' }}>New Zealand</option>
+                    <option value="Other" {{ $country === 'Other' ? 'selected' : '' }}>Other</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="cp-edit-submit" type="submit">Save Changes</button>
+    </form>
+
+</div>
+@endsection
+
+@push('scripts')
+    {{-- Google Maps JS – standard Places Autocomplete --}}
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initAutocomplete">
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initProfileAutocomplete">
     </script>
-</head>
-<body>
 
-<h1>Standard Google Autocomplete Test</h1>
+    <script>
+        // Called by the Google Maps script when it’s ready
+        window.initProfileAutocomplete = function () {
+            console.log('[PROFILE] initProfileAutocomplete fired');
 
-<label for="address_input">Address Input Field:</label>
-<input type="text" id="address_input" placeholder="Start typing an address (e.g., Sydney Opera House)">
+            const addressInput = document.getElementById('address_line1');
+            const cityInput     = document.getElementById('city');
+            const stateInput    = document.getElementById('state');
+            const postcodeInput = document.getElementById('postcode');
+            const countryInput  = document.getElementById('country');
 
-<h2>Debug Log:</h2>
-<pre id="debug-log">Waiting for API script to load...</pre>
-
-<script>
-// Global variables for easy access
-const debugLog = document.getElementById('debug-log');
-const inputElement = document.getElementById('address_input');
-
-// --- Step 0: Logging Function ---
-function log(msg, type = 'info') {
-    const time = new Date().toLocaleTimeString();
-    let prefix = `[${time}] ${msg}`;
-    
-    // Create the HTML log entry
-    let logEntry = document.createElement('div');
-    logEntry.innerHTML = prefix;
-    
-    if (type === 'success') {
-        logEntry.classList.add('success');
-    } else if (type === 'error') {
-        logEntry.classList.add('error');
-        console.error(msg);
-    }
-    
-    debugLog.appendChild(logEntry);
-    console.log(`[TEST LOG] ${msg}`);
-}
-
-// --- Step 1: Callback Function (Fires when Maps API is fully loaded) ---
-// This is called automatically by the Google Maps script due to `callback=initAutocomplete`
-window.initAutocomplete = function() {
-    log("STATUS 1: initAutocomplete() callback fired. This proves API key is likely valid.", 'success');
-    
-    if (typeof google === 'undefined' || typeof google.maps.places === 'undefined') {
-        log("ERROR 1: 'google.maps.places' library is missing or failed to load.", 'error');
-        return;
-    }
-    
-    log("STATUS 2: 'google.maps.places' library is available. Attempting initialization...", 'success');
-
-    // --- Step 2: Initialize Autocomplete Object ---
-    try {
-        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-            // Fields and component restrictions for relevance and cost control
-            fields: ["formatted_address", "address_components", "name"], 
-            componentRestrictions: { country: ["au", "nz"] }
-        });
-        
-        log("STATUS 3: Autocomplete object created successfully. INPUT IS NOW ACTIVE.", 'success');
-
-        // --- Step 3: Add Event Listener ---
-        autocomplete.addListener('place_changed', function() {
-            const place = autocomplete.getPlace();
-            
-            if (place.formatted_address) {
-                log(`EVENT: Place selected. Address: ${place.formatted_address}`, 'info');
-            } else {
-                log("EVENT: Place selected, but no formatted address was found.", 'error');
+            if (!addressInput) {
+                console.error('[PROFILE] address_line1 input not found');
+                return;
             }
-        });
 
-    } catch (error) {
-        log(`FATAL ERROR 3: Failed to initialize Autocomplete object. Error: ${error.message}`, 'error');
-    }
-};
+            if (!google || !google.maps || !google.maps.places) {
+                console.error('[PROFILE] google.maps.places not available');
+                return;
+            }
 
-// Log initial state
-log("Initial Check: Waiting for Google API script to load...");
-</script>
+            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                fields: ['formatted_address', 'address_components'],
+                componentRestrictions: { country: ['au', 'nz'] }
+            });
 
-</body>
-</html>
+            console.log('[PROFILE] Autocomplete attached to address_line1');
+
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+
+                if (!place || !place.address_components) {
+                    console.warn('[PROFILE] No address_components on selected place', place);
+                    return;
+                }
+
+                const comps = place.address_components;
+
+                const pick = (type) => {
+                    const c = comps.find(x => x.types.includes(type));
+                    return c ? c.long_name : '';
+                };
+
+                // Fill fields
+                addressInput.value = place.formatted_address || addressInput.value;
+                cityInput.value     = pick('locality') || pick('postal_town') || cityInput.value;
+                stateInput.value    = pick('administrative_area_level_1') || stateInput.value;
+                postcodeInput.value = pick('postal_code') || postcodeInput.value;
+
+                const countryName = pick('country');
+                if (countryName) {
+                    // Only set dropdown if country is in list
+                    if (countryName === 'Australia' || countryName === 'New Zealand') {
+                        countryInput.value = countryName;
+                    } else {
+                        countryInput.value = 'Other';
+                    }
+                }
+
+                console.log('[PROFILE] Autocomplete filled fields:', {
+                    address: addressInput.value,
+                    city: cityInput.value,
+                    state: stateInput.value,
+                    postcode: postcodeInput.value,
+                    country: countryInput.value
+                });
+            });
+        };
+    </script>
+@endpush
