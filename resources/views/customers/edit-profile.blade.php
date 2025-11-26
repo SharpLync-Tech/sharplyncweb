@@ -49,6 +49,10 @@
             font-size: 16px;
             width: 100%;
         }
+
+        * {
+        pointer-events: auto !important;
+    }
     </style>
 
 </head>
