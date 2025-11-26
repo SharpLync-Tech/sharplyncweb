@@ -94,7 +94,7 @@ class ContactController extends Controller
             'email'   => $validated['email'],
             'phone'   => $validated['phone'] ?? null,
             'subject' => $validated['subject'],
-            'message' => $validated['message'],
+            'user_message' => $validated['message'],
         ];
 
         try {
