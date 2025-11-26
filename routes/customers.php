@@ -1,14 +1,15 @@
 <?php
 /**
  * SharpLync Customer Routes
- * Version: 2.3 (Portal Ecosystem + Login-time 2FA)
- * Updated: 24 Nov 2025 by Max (ChatGPT)
+ * Version: 2.4 (Portal Ecosystem + Avatar Upload + Login-time 2FA)
+ * Updated: 26 Nov 2025 by Max (ChatGPT)
  */
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Customer\ProfileController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\Auth\ForgotPasswordController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\SecurityController;
+
 
 // ======================================================
 // PART 1 — CUSTOMER REGISTRATION & ONBOARDING
@@ -29,29 +31,16 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/set-password/{id}', [RegisterController::class, 'showPasswordForm'])->name('password.create');
 Route::post('/set-password/{id}', [RegisterController::class, 'savePassword'])->name('password.store');
 
-// Onboarding (CRM-linked profile setup)
+// CRM-linked profile onboarding
 Route::get('/customer/setup-profile', [ProfileController::class, 'create'])->name('profile.create');
 Route::post('/customer/setup-profile', [ProfileController::class, 'store'])->name('profile.store');
 
-// Edit & Update existing customer profile
+// Edit & Update customer profile
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('customer.profile.edit');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('customer.profile.update');
 
-// Onboarding completion screen
-Route::get('/customer/onboard-complete', fn() => view('customers.onboard-complete'))
-    ->name('onboard.complete');
-
-// Legacy onboarding test (safe to remove later)
-Route::get('/onboard', [CustomerController::class, 'create'])->name('customers.create');
-Route::post('/onboard', [CustomerController::class, 'store'])->name('customers.store');
-
-// Standalone portal test routes
-Route::get('/portal-standalone', fn() => view('customers.portal-standalone'))
-    ->name('customer.portal.standalone')
-    ->middleware('auth:customer');
-
-Route::get('/portal_test', fn() => view('customers.portal_test'))
-    ->name('customer.portal_test');
+// Onboarding completion
+Route::get('/customer/onboard-complete', fn() => view('customers.onboard-complete'))->name('onboard.complete');
 
 
 // ======================================================
@@ -62,11 +51,12 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('customer.
 Route::post('/login', [LoginController::class, 'login'])->name('customer.login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('customer.logout');
 
+
 // ======================================================
 // PART 2B — LOGIN-TIME 2FA (NO LOGIN REQUIRED)
 // ======================================================
 
-Route::middleware(['web'])
+Route::middleware('web')
     ->prefix('portal/security')
     ->name('customer.security.')
     ->group(function () {
@@ -97,15 +87,13 @@ Route::post('/password/reset', [ResetPasswordController::class, 'reset'])
 
 
 // ======================================================
-// PART 3 — CUSTOMER PORTAL (SECURE ECOSYSTEM)
+// PART 3 — CUSTOMER PORTAL (AUTH REQUIRED)
 // ======================================================
 
 Route::middleware(['auth:customer'])->group(function () {
 
-    // ===== Main Portal Landing =====
     Route::get('/portal', [DashboardController::class, 'index'])->name('customer.portal');
 
-    // ===== Core Sections =====
     Route::get('/portal/security', fn() => view('customers.security'))->name('customer.security');
     Route::get('/portal/support', fn() => view('customers.support'))->name('customer.support');
     Route::get('/portal/account', fn() => view('customers.account'))->name('customer.account');
@@ -127,27 +115,19 @@ Route::middleware(['auth:customer'])->group(function () {
 
 
     // ======================================================
-    // PART 4 — FILE DOWNLOADS (SECURE + LOGGED)
+    // PART 4 — SECURE FILE DOWNLOADS
     // ======================================================
     Route::get('/portal/teamviewer-download', function () {
+
         $user = Auth::user();
         $file = storage_path('app/secure_downloads/SharpLync_QuickSupport.exe');
 
-        if (!file_exists($file)) {
-            abort(404, 'Quick Support tool not found.');
-        }
+        if (!file_exists($file)) abort(404);
 
-        Log::info('TeamViewer downloaded by: ' . ($user->email ?? 'unknown') . ' (ID ' . ($user->id ?? '-') . ')');
+        Log::info('TeamViewer downloaded by ' . $user->email);
 
-        if (!request()->hasValidSignature()) {
-            abort(403, 'Invalid or expired download link.');
-        }
+        if (!request()->hasValidSignature()) abort(403);
 
-        return response()->download($file, 'SharpLync_QuickSupport.exe', [
-            'Content-Type'  => 'application/octet-stream',
-            'Cache-Control' => 'no-store, no-cache, must-revalidate',
-            'Pragma'        => 'no-cache',
-        ]);
-    })->middleware('auth:customer')->name('customer.teamviewer.download');
-
+        return response()->download($file, 'SharpLync_QuickSupport.exe');
+    })->name('customer.teamviewer.download');
 });

@@ -12,7 +12,7 @@ use App\Services\XeroService;
 class ProfileController extends Controller
 {
     /**
-     * Display the setup profile form (onboarding)
+     * Onboarding screen
      */
     public function create()
     {
@@ -29,7 +29,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Store new profile during onboarding
+     * Store profile during onboarding
      */
     public function store(Request $request)
     {
@@ -47,15 +47,12 @@ class ProfileController extends Controller
 
         $profile = CustomerProfile::updateOrCreate(
             ['user_id' => $user->id],
-            array_merge($validated, [
-                'setup_completed' => true,
-            ])
+            array_merge($validated, ['setup_completed' => true])
         );
 
-        /** OPTIONAL XERO SYNC — Safe Wrapped */
+        // Optional Xero sync
         try {
             $xero = new XeroService();
-
             $contactId = $xero->createContact([
                 'business_name' => $validated['business_name'],
                 'email'         => $user->email,
@@ -70,27 +67,26 @@ class ProfileController extends Controller
             $profile->update(['xero_contact_id' => $contactId]);
 
         } catch (\Exception $e) {
-            \Log::error('Xero sync failed (onboarding): ' . $e->getMessage());
+            \Log::error('Xero sync failed: ' . $e->getMessage());
         }
 
         return redirect()->route('onboard.complete');
     }
 
     /**
-     * Display the profile edit form
+     * Edit profile
      */
     public function edit()
     {
         $user = Auth::user();
 
-        // Create blank profile if missing
         if (!$user->profile) {
             $user->profile()->create([
                 'account_number' => 'SL' . rand(100000, 999999),
                 'business_name'  => $user->first_name . ' ' . $user->last_name,
                 'mobile_number'  => $user->phone,
+                'country'        => 'Australia',
                 'setup_completed' => 0,
-                'country' => 'Australia',
             ]);
         }
 
@@ -101,13 +97,12 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update profile for existing customers
+     * Update profile
      */
     public function update(Request $request)
     {
         $user = Auth::user();
 
-        /** FULL VALIDATION — Includes all address fields */
         $validated = $request->validate([
             'business_name' => 'required|string|max:150',
             'mobile_number' => 'required|string|max:20',
@@ -120,24 +115,12 @@ class ProfileController extends Controller
             'notes'         => 'nullable|string',
         ]);
 
-        /** UPDATE PROFILE MODEL */
-        $user->profile->update([
-            'business_name' => $validated['business_name'],
-            'mobile_number' => $validated['mobile_number'],
-            'address_line1' => $validated['address_line1'],
-            'city'          => $validated['city'] ?? null,
-            'state'         => $validated['state'] ?? null,
-            'postcode'      => $validated['postcode'],
-            'country'       => $validated['country'] ?? 'Australia',
-            'preferred_contact_method' => $validated['preferred_contact_method'] ?? null,
-            'notes'         => $validated['notes'] ?? null,
-        ]);
+        $user->profile->update($validated);
 
-        /** OPTIONAL XERO SYNC — UPDATE EXISTING CONTACT */
+        // Optional Xero sync
         try {
             if ($user->profile->xero_contact_id) {
                 $xero = new XeroService();
-
                 $xero->updateContact($user->profile->xero_contact_id, [
                     'business_name' => $validated['business_name'],
                     'email'         => $user->email,
@@ -149,33 +132,30 @@ class ProfileController extends Controller
                     'country'       => $validated['country'] ?? 'Australia',
                 ]);
             }
-
         } catch (\Exception $e) {
-            \Log::error('Xero sync failed (update): ' . $e->getMessage());
+            \Log::error('Xero sync failed: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Profile updated successfully.');
     }
 
 
-    /* ================================================================
-       NEW: UPDATE PROFILE PHOTO (CROPPED AVATAR)
-    ================================================================= */
+    // ======================================================
+    // PROFILE PHOTO — UPLOAD
+    // ======================================================
 
     public function updatePhoto(Request $request)
     {
         $user = Auth::user();
 
         $request->validate([
-            'profile_photo' => 'required|image|max:2048', // 2MB max
+            'profile_photo' => 'required|image|max:2048',
         ]);
 
-        // Delete old photo if exists
         if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
             Storage::disk('public')->delete($user->profile_photo);
         }
 
-        // Save new avatar
         $path = $request->file('profile_photo')->store('profile-photos', 'public');
 
         $user->update([
@@ -184,14 +164,13 @@ class ProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'path'    => asset('storage/' . $path),
+            'path' => asset('storage/' . $path),
         ]);
     }
 
-
-    /* ================================================================
-       NEW: REMOVE PROFILE PHOTO (RESET TO INITIALS)
-    ================================================================= */
+    // ======================================================
+    // PROFILE PHOTO — REMOVE
+    // ======================================================
 
     public function removePhoto()
     {
