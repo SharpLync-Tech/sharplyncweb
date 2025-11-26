@@ -1,27 +1,13 @@
 /* ===================================================================
    SharpLync Customer Portal Stylesheet
-   Version: v4.2 (Google Autocomplete Fix + Input Width Fix + Cleanup)
-   Updated: 27 Nov 2025
-
-   Changes from v4.1:
-   ✔ Force box-sizing everywhere to stop input overflow
-   ✔ Full styling support for Google PlaceAutocompleteElement (2025 API)
-   ✔ Ensured inputs NEVER exceed cp-card width
-   ✔ Fixed label visibility on gradient backgrounds
-   ✔ Fixed autocomplete height / padding mismatch
-   ✔ Cleaned duplicate and obsolete rules
+   Version: v4.1 (Google Autocomplete + Full Cleanup + Visibility Fixes)
+   Updated: 26 Nov 2025
 =================================================================== */
 
 
 /* --------------------------------------------------------------
-   0. GLOBAL RESET + BOX SIZING FIX (CRITICAL)
+   0. GLOBAL RESET
 -------------------------------------------------------------- */
-*,
-*::before,
-*::after {
-    box-sizing: border-box !important;
-}
-
 html, body {
     margin: 0;
     padding: 0;
@@ -30,7 +16,7 @@ html, body {
 
 
 /* --------------------------------------------------------------
-   1. ROOT VARIABLES + BACKGROUND
+   1. ROOT VARIABLES + BASE COLORS
 -------------------------------------------------------------- */
 .cp-root {
     --navy: #0A2A4D;
@@ -47,13 +33,16 @@ html, body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* links */
 .cp-root a {
     color: var(--teal);
+    text-decoration: none;
 }
 .cp-root a:hover {
     text-decoration: underline;
 }
 
+/* lock scroll when modal is open */
 .cp-root.modal-open {
     overflow: hidden;
 }
@@ -62,18 +51,17 @@ html, body {
 /* --------------------------------------------------------------
    2. HEADER + FOOTER
 -------------------------------------------------------------- */
-
 .cp-header {
     position: sticky;
     top: 0;
     z-index: 1000;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     padding: .75rem 1.25rem;
     backdrop-filter: blur(14px);
     background: rgba(10, 42, 77, .55);
-    border-bottom: 1px solid rgba(255,255,255,.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .cp-logo img {
@@ -91,8 +79,8 @@ html, body {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.3);
-    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: rgba(255, 255, 255, .1);
     color: #fff;
     cursor: pointer;
 }
@@ -100,7 +88,7 @@ html, body {
     background: rgba(44,191,174,.4);
 }
 
-/* Footer */
+/* footer */
 .cp-footer {
     background: var(--ink);
     color: #fff;
@@ -115,9 +103,8 @@ html, body {
 
 
 /* --------------------------------------------------------------
-   3. MAIN WRAPPER + CARD
+   3. MAIN LAYOUT
 -------------------------------------------------------------- */
-
 .cp-main {
     padding: 2rem 1rem 4rem;
 }
@@ -136,7 +123,6 @@ html, body {
 /* --------------------------------------------------------------
    4. BUTTONS
 -------------------------------------------------------------- */
-
 .cp-btn-primary,
 button.btn-primary {
     background: var(--teal);
@@ -146,9 +132,8 @@ button.btn-primary {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: background .2s ease;
+    transition: .2s ease;
 }
-
 .cp-btn-primary:hover,
 button.btn-primary:hover {
     background: #24a391;
@@ -156,7 +141,7 @@ button.btn-primary:hover {
 
 
 /* --------------------------------------------------------------
-   5. LABELS + INPUTS (GLOBAL FORM FIELDS)
+   5. INPUT FIELDS (GLOBAL)
 -------------------------------------------------------------- */
 
 label {
@@ -167,37 +152,42 @@ label {
     font-size: 1rem;
 }
 
+/* layout helper for each field block */
+.cp-field {
+    margin-bottom: 1.25rem;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"],
 select {
     width: 100%;
     padding: 0.85rem 1rem;
-    border: 1px solid rgba(10,42,77,0.25);
     border-radius: 10px;
-    background: rgba(255,255,255,0.95);
+    background: #f8fafc;
+    border: 1px solid #d7dfe8;
     font-size: 1rem;
     color: var(--ink);
     outline: none;
-    transition: border .2s ease, box-shadow .2s ease;
+    transition: border .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.3);
+    background: #ffffff;
 }
 
 
 /* --------------------------------------------------------------
    6. GRID UTILITIES
 -------------------------------------------------------------- */
-
 .cp-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
 }
-
 @media (max-width: 768px) {
     .cp-grid-2 {
         grid-template-columns: 1fr;
@@ -206,14 +196,14 @@ input:focus, select:focus {
 
 
 /* --------------------------------------------------------------
-   7. PROFILE AVATAR ROW
+   7. PROFILE CARD (AVATAR + FORM)
 -------------------------------------------------------------- */
 
 .cp-avatar-row {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
 }
 
 .cp-avatar-large {
@@ -240,63 +230,71 @@ input:focus, select:focus {
     color: var(--ink);
 }
 
+.cp-avatar-hint {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.cp-avatar-actions input[type="file"] {
+    margin-top: 6px;
+}
+
 
 /* --------------------------------------------------------------
    8. GOOGLE AUTOCOMPLETE (2025 API)
 -------------------------------------------------------------- */
 
-/* The Component Host */
+/* Container */
 gmpx-place-autocomplete {
     display: block !important;
     width: 100% !important;
-    margin-top: .25rem;
-    margin-bottom: 1rem;
-    min-height: 48px;
+    min-height: 48px !important;
 }
 
-/* The actual <input> inside shadow DOM */
+/* Input inside the component */
 gmpx-place-autocomplete::part(input) {
-    padding: 0.85rem 1rem !important;
-    border-radius: 10px !important;
-    border: 1px solid rgba(10,42,77,0.25) !important;
-    background: rgba(255,255,255,0.95) !important;
-    font-size: 1rem !important;
-    color: var(--ink) !important;
-    width: 100% !important;
-    height: 48px !important;
-    outline: none !important;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #d7dfe8;
+    color: var(--ink);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
 }
 
-/* On focus */
 gmpx-place-autocomplete::part(input):focus {
-    border-color: var(--teal) !important;
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25) !important;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+    background: #ffffff;
 }
 
-/* Autocomplete dropdown */
+/* Dropdown */
 gmpx-place-autocomplete::part(panel) {
-    background: #ffffff !important;
-    color: var(--ink) !important;
-    border-radius: 12px !important;
-    border: 1px solid #ccc !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     z-index: 999999 !important;
 }
 
 /* Dropdown items */
 gmpx-place-autocomplete::part(option) {
-    padding: 10px 14px !important;
-    font-size: 1rem !important;
-    color: var(--ink) !important;
+    padding: 10px 14px;
+    font-size: 1rem;
+    color: var(--ink);
+    cursor: pointer;
 }
-
 gmpx-place-autocomplete::part(option):hover {
-    background: rgba(44,191,174,0.1) !important;
+    background: rgba(44,191,174,0.1);
 }
 
 
 /* --------------------------------------------------------------
-   9. RESPONSIVE OPTIMIZATIONS
+   9. RESPONSIVE BEHAVIOUR
 -------------------------------------------------------------- */
 
 @media (max-width: 768px) {
@@ -316,6 +314,10 @@ gmpx-place-autocomplete::part(option):hover {
         height: 58px;
     }
 
+    .cp-main {
+        padding: 1.5rem 1rem 3rem;
+    }
+
     .cp-card {
         padding: 1.5rem;
     }
@@ -323,10 +325,57 @@ gmpx-place-autocomplete::part(option):hover {
     .cp-avatar-row {
         flex-direction: column;
         text-align: center;
+        align-items: center;
     }
 
     .cp-avatar-large {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* --------------------------------------------------------------
+   FIX: Ensure all inputs stay inside cp-card
+-------------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Ensure all form fields always fit inside card */
+.cp-card input[type="text"],
+.cp-card select {
+    max-width: 100%;
+}
+
+/* Google Autocomplete wrapper fix */
+gmpx-place-autocomplete {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Google Autocomplete internal input fix */
+gmpx-place-autocomplete::part(input) {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Grid fix for City/State & Postcode/Country */
+.cp-grid-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.cp-grid-2 > .cp-field {
+    width: 100%;
+}
+
+/* Prevent overflow on small screens AND desktops */
+@media (min-width: 769px) {
+    .cp-field input,
+    .cp-field select {
+        width: 100%;
     }
 }
 
+}
