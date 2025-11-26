@@ -22,18 +22,29 @@ class SecurityHeaders
         );
 
         // --- Content Security Policy (CSP) ---
-        // Allows assets from your own domains + Azure + HTTPS sources + Google Maps
-        $response->headers->set(
-            'Content-Security-Policy',
-            "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; ".
-            "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com; ".
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
-            "font-src 'self' data: https://fonts.gstatic.com; ".
-            "style-src 'self' 'unsafe-inline'; ".
-            "font-src 'self' data:; ".            
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https:; ".            
-            "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com;"
-        );
+            $response->headers->set(
+                'Content-Security-Policy',
+                "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; " .
+
+                // IMAGES (Google Maps + Your Storage)
+                "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com; " .
+
+                // STYLES (Allow inline + Google Fonts + unpkg for component styles)
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; " .
+
+                // FONTS (Google fonts + local)
+                "font-src 'self' data: https://fonts.gstatic.com; " .
+
+                // SCRIPTS (critical: allow Google Maps + gmpx extended components + inline shadow DOM scripts)
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https://unpkg.com https:; " .
+
+                // NETWORK/API CALLS
+                "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://unpkg.com; " .
+
+                // FRAMES (safe)
+                "frame-src 'self';"
+            );
+
 
         // --- Frame and Embedding Control ---
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
