@@ -557,6 +557,33 @@ html, body {
     cursor: not-allowed;
 }
 
+/* ===================================================================
+   FIX: Security Modal Layering & Click Issues
+   Added: 28 Nov 2025
+=================================================================== */
+
+/* Ensure backdrop is on top of header blur */
+.cp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 5000 !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure modal sheet is above backdrop */
+.cp-modal-sheet {
+    position: relative;
+    z-index: 5001 !important;
+    pointer-events: auto !important;
+}
+
+/* Allow page behind to be locked */
+body.modal-open {
+    overflow: hidden;
+}
+
+
+
 /* -------------------------------------------------------------------
    11. MOBILE RESPONSIVE (<= 768px)
 ------------------------------------------------------------------- */

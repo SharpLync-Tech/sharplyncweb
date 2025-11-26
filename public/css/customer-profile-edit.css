@@ -202,3 +202,21 @@
 .cp-edit-card gmpx-place-autocomplete::part(option):hover {
     background: rgba(44,191,174,0.1) !important;
 }
+
+/* Back to Portal button */
+.cp-edit-back-btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: #104976;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.cp-edit-back-btn:hover {
+    background: #0A2A4D;
+    transform: translateY(-2px);
+}
+

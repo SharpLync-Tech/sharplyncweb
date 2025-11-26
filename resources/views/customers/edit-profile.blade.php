@@ -1,5 +1,5 @@
 {{-- Page: customers/profile/edit.blade.php
-     Version: v2.0 (Standard Places Autocomplete, no web components)
+     Version: v2.1 (Standard Places Autocomplete + Back Button)
 --}}
 
 @extends('customers.layouts.customer-layout')
@@ -8,12 +8,17 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ secure_asset('css/customer-profile-edit.css') }}">
-    {{-- google-places.css is optional now; keep only if you want extra styling --}}
-    {{-- <link rel="stylesheet" href="{{ secure_asset('css/google-places.css') }}"> --}}
 @endpush
 
 @section('content')
 <div class="cp-edit-card">
+
+    {{-- 🔹 BACK TO PORTAL BUTTON --}}
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{{ url('/portal') }}" class="cp-edit-back-btn">
+            ← Back to Portal
+        </a>
+    </div>
 
     <h2 class="cp-edit-title">Edit Your Profile</h2>
 
@@ -67,7 +72,7 @@
             >
         </div>
 
-        {{-- STREET ADDRESS (STANDARD INPUT + AUTOCOMPLETE) --}}
+        {{-- STREET ADDRESS --}}
         <div class="cp-field">
             <label>Street Address</label>
             <input
@@ -135,13 +140,13 @@
 @endsection
 
 @push('scripts')
-    {{-- Google Maps JS – standard Places Autocomplete --}}
+    {{-- Google Maps JS --}}
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initProfileAutocomplete">
     </script>
 
     <script>
-        // Called by the Google Maps script when it’s ready
+        // Google Places callback
         window.initProfileAutocomplete = function () {
             console.log('[PROFILE] initProfileAutocomplete fired');
 
@@ -151,61 +156,32 @@
             const postcodeInput = document.getElementById('postcode');
             const countryInput  = document.getElementById('country');
 
-            if (!addressInput) {
-                console.error('[PROFILE] address_line1 input not found');
-                return;
-            }
-
-            if (!google || !google.maps || !google.maps.places) {
-                console.error('[PROFILE] google.maps.places not available');
-                return;
-            }
-
-            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            const ac = new google.maps.places.Autocomplete(addressInput, {
                 fields: ['formatted_address', 'address_components'],
                 componentRestrictions: { country: ['au', 'nz'] }
             });
 
-            console.log('[PROFILE] Autocomplete attached to address_line1');
-
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-
-                if (!place || !place.address_components) {
-                    console.warn('[PROFILE] No address_components on selected place', place);
-                    return;
-                }
+            ac.addListener('place_changed', () => {
+                const place = ac.getPlace();
+                if (!place.address_components) return;
 
                 const comps = place.address_components;
-
-                const pick = (type) => {
+                const pick = type => {
                     const c = comps.find(x => x.types.includes(type));
                     return c ? c.long_name : '';
                 };
 
-                // Fill fields
                 addressInput.value = place.formatted_address || addressInput.value;
-                cityInput.value     = pick('locality') || pick('postal_town') || cityInput.value;
-                stateInput.value    = pick('administrative_area_level_1') || stateInput.value;
+                cityInput.value    = pick('locality') || pick('postal_town') || cityInput.value;
+                stateInput.value   = pick('administrative_area_level_1') || stateInput.value;
                 postcodeInput.value = pick('postal_code') || postcodeInput.value;
 
                 const countryName = pick('country');
-                if (countryName) {
-                    // Only set dropdown if country is in list
-                    if (countryName === 'Australia' || countryName === 'New Zealand') {
-                        countryInput.value = countryName;
-                    } else {
-                        countryInput.value = 'Other';
-                    }
+                if (countryName === 'Australia' || countryName === 'New Zealand') {
+                    countryInput.value = countryName;
+                } else {
+                    countryInput.value = 'Other';
                 }
-
-                console.log('[PROFILE] Autocomplete filled fields:', {
-                    address: addressInput.value,
-                    city: cityInput.value,
-                    state: stateInput.value,
-                    postcode: postcodeInput.value,
-                    country: countryInput.value
-                });
             });
         };
     </script>
