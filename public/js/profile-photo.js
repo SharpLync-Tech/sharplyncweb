@@ -1,76 +1,99 @@
-// public/js/profile-photo.js
+/* ====================================================
+   SharpLync Profile Photo Manager
+   Version 1.0
+==================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("cp-photo-modal");
-    const openBtn = document.getElementById("cp-avatar-edit-btn");
-    const closeBtns = modal.querySelectorAll(".cp-photo-modal-close");
-    const fileInput = document.getElementById("cp-photo-file");
-    const previewImg = document.getElementById("cp-photo-preview");
-    const uploadBtn = document.getElementById("cp-photo-save-btn");
 
-    const csrf = document.querySelector('meta[name="csrf-token"]').content;
+    const modal = document.getElementById("avatar-modal");
+    const openBtn = document.getElementById("open-avatar-modal");
+    const closeBtn = document.querySelector(".cp-avatar-modal-close");
 
-    // ---------------------------
-    // OPEN MODAL
-    // ---------------------------
-    openBtn.addEventListener("click", () => {
-        modal.classList.add("visible");
+    const fileInput = document.getElementById("avatar-file-input");
+    const previewImg = document.getElementById("avatar-preview");
+    const saveBtn = document.getElementById("avatar-save-btn");
+    const removeBtn = document.getElementById("avatar-remove-btn");
+
+    /* ------------------------------------------------
+       OPEN & CLOSE MODAL
+    -------------------------------------------------- */
+    if (openBtn) openBtn.addEventListener("click", () => {
+        modal.classList.add("cp-visible");
     });
 
-    // ---------------------------
-    // CLOSE MODAL
-    // ---------------------------
-    closeBtns.forEach(btn =>
-        btn.addEventListener("click", () => modal.classList.remove("visible"))
-    );
+    if (closeBtn) closeBtn.addEventListener("click", () => {
+        modal.classList.remove("cp-visible");
+        resetPreview();
+    });
 
-    // ---------------------------
-    // LIVE PREVIEW
-    // ---------------------------
-    fileInput.addEventListener("change", function () {
-        const file = this.files[0];
-        if (!file) return;
+    modal.addEventListener("click", e => {
+        if (e.target === modal) {
+            modal.classList.remove("cp-visible");
+            resetPreview();
+        }
+    });
+
+
+    /* ------------------------------------------------
+       FILE PREVIEW
+    -------------------------------------------------- */
+    function resetPreview() {
+        previewImg.src = "";
+        saveBtn.disabled = true;
+        fileInput.value = "";
+    }
+
+    fileInput.addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (!file) {
+            resetPreview();
+            return;
+        }
 
         const reader = new FileReader();
         reader.onload = e => {
             previewImg.src = e.target.result;
+            saveBtn.disabled = false;
         };
         reader.readAsDataURL(file);
     });
 
-    // ---------------------------
-    // UPLOAD FILE
-    // ---------------------------
-    uploadBtn.addEventListener("click", () => {
+
+    /* ------------------------------------------------
+       UPLOAD PHOTO
+    -------------------------------------------------- */
+    saveBtn.addEventListener("click", () => {
+
         const file = fileInput.files[0];
-        if (!file) return alert("Please select a photo first.");
+        if (!file) return;
 
         const formData = new FormData();
         formData.append("profile_photo", file);
-        formData.append("_token", csrf);
-
-        uploadBtn.disabled = true;
-        uploadBtn.textContent = "Saving...";
+        formData.append("_token", document.querySelector("meta[name='csrf-token']").content);
 
         fetch("/profile/update-photo", {
             method: "POST",
             body: formData
         })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Update avatar instantly
-                    document.querySelector(".cp-avatar img")?.setAttribute("src", data.path);
-
-                    modal.classList.remove("visible");
-                } else {
-                    alert("Upload failed.");
-                }
-            })
-            .catch(() => alert("Upload error."))
-            .finally(() => {
-                uploadBtn.disabled = false;
-                uploadBtn.textContent = "Save Photo";
-            });
+        .then(r => r.json())
+        .then(() => {
+            location.reload();
+        });
     });
+
+
+    /* ------------------------------------------------
+       REMOVE PHOTO
+    -------------------------------------------------- */
+    removeBtn.addEventListener("click", () => {
+
+        fetch("/profile/remove-photo", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector("meta[name='csrf-token']").content
+            }
+        })
+        .then(() => location.reload());
+    });
+
 });

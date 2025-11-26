@@ -1,61 +1,48 @@
-/* ===================================================================
-   SharpLync Customer Portal — Edit Profile Stylesheet
-   Version: v1.1 (Standalone • Fully Responsive • Google Fix)
-   Updated: 27 Nov 2025
-   Notes:
-   - Fully isolated from customer.css
-   - All Google Autocomplete styling included
-   - 100% width fix for the Google Places component
-=================================================================== */
+/* ==========================================================
+   SharpLync – Edit Profile Styling
+   Version 3.0
+========================================================== */
 
-
-/* --------------------------------------------------------------
-   CARD WRAPPER
--------------------------------------------------------------- */
 .cp-edit-card {
-    background: #ffffff;
-    color: #0A2A4D;
-    border-radius: 18px;
+    background: #fff;
     padding: 2rem;
-    max-width: 900px;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    max-width: 780px;
     margin: 0 auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,.15);
-    box-sizing: border-box;
 }
 
-
-/* --------------------------------------------------------------
-   PAGE TITLE
--------------------------------------------------------------- */
 .cp-edit-title {
-    margin: 0 0 1.75rem 0;
-    font-size: 1.75rem;
-    font-weight: 600;
-}
-
-
-/* --------------------------------------------------------------
-   AVATAR ROW
--------------------------------------------------------------- */
-.cp-edit-avatar-row {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
+    font-size: 1.9rem;
+    font-weight: 700;
     margin-bottom: 2rem;
 }
 
-.cp-edit-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #104976;
-    color: #fff;
+.cp-edit-avatar-row {
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 2.1rem;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cp-edit-avatar-wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+}
+
+.cp-edit-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: #0A2A4D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
     font-weight: 700;
+    color: #fff;
+    overflow: hidden;
 }
 
 .cp-edit-avatar img {
@@ -64,159 +51,147 @@
     object-fit: cover;
 }
 
-.cp-edit-avatar-info label {
-    font-weight: 600;
-    margin-bottom: 4px;
-    display: block;
+.cp-avatar-edit-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2CBFAE;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
-.cp-edit-avatar-info input[type="file"] {
-    margin-top: 6px;
-}
-
-
-/* --------------------------------------------------------------
-   FORM FIELDS
--------------------------------------------------------------- */
-.cp-field {
-    margin-bottom: 1.25rem;
-}
-
+/* FORM FIELDS */
 .cp-field label {
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: .45rem;
     display: block;
-    font-size: 1rem;
-    color: #0A2A4D;
 }
 
 .cp-field input,
 .cp-field select {
     width: 100%;
-    padding: 0.85rem 1rem;
-    border: 1px solid #dce3ea;
-    border-radius: 10px;
-    background: #f9fbfd;
+    padding: .75rem 1rem;
+    border: 1px solid #cfd9e0;
+    border-radius: 8px;
     font-size: 1rem;
-    color: #0A2A4D;
-    box-sizing: border-box;
-    transition: border .2s ease, box-shadow .2s ease;
 }
 
-.cp-field input:focus,
-.cp-field select:focus {
-    border-color: #2CBFAE;
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
-    outline: none;
-}
-
-
-/* --------------------------------------------------------------
-   GRID LAYOUT (City/State + Postcode/Country)
--------------------------------------------------------------- */
 .cp-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .cp-grid-2 {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-/* --------------------------------------------------------------
-   SUBMIT BUTTON
--------------------------------------------------------------- */
 .cp-edit-submit {
     background: #2CBFAE;
-    color: #ffffff;
     border: none;
-    padding: .9rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
+    padding: .9rem 1.6rem;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background .2s ease, transform .1s ease;
-    margin-top: 1.25rem;
+    margin-top: 1rem;
 }
 
-.cp-edit-submit:hover {
-    background: #24a391;
-    transform: translateY(-1px);
-}
-
-
-/* ==================================================================
-   GOOGLE PLACE AUTOCOMPLETE — FULL FIX + VISIBILITY
-   (Prevents customer.css from shrinking or overriding this component)
-=================================================================== */
-
-/* Container fix — makes it behave like a normal input */
-.cp-edit-card gmpx-place-autocomplete {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: 48px !important;
-    margin-top: .25rem;
-    margin-bottom: 1.25rem;
-    box-sizing: border-box !important;
-}
-
-/* Input inside shadow DOM */
-.cp-edit-card gmpx-place-autocomplete::part(input) {
-    width: 100% !important;
-    padding: 0.85rem 1rem !important;
-    background: #f9fbfd !important;
-    border: 1px solid #dce3ea !important;
-    border-radius: 10px !important;
-    font-size: 1rem !important;
-    font-family: 'Poppins', sans-serif !important;
-    color: #0A2A4D !important;
-    box-sizing: border-box !important;
-}
-
-.cp-edit-card gmpx-place-autocomplete::part(input):focus {
-    border-color: #2CBFAE !important;
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25) !important;
-}
-
-/* Dropdown styling */
-.cp-edit-card gmpx-place-autocomplete::part(panel) {
-    background: #ffffff !important;
-    color: #0A2A4D !important;
-    border: 1px solid #ccc !important;
-    border-radius: 12px !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
-    z-index: 999999 !important;
-}
-
-.cp-edit-card gmpx-place-autocomplete::part(option) {
-    padding: 10px 14px !important;
-    font-size: 1rem !important;
-    cursor: pointer !important;
-    color: #0A2A4D !important;
-}
-
-.cp-edit-card gmpx-place-autocomplete::part(option):hover {
-    background: rgba(44,191,174,0.1) !important;
-}
-
-/* Back to Portal button */
-.cp-edit-back-btn {
+.cp-edit-cancel {
     display: inline-block;
-    padding: 0.6rem 1.2rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    color: #104976;
+    font-weight: 600;
+}
+
+
+/* ============================
+   AVATAR MODAL STYLES
+============================ */
+.cp-avatar-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+}
+
+.cp-avatar-modal.cp-visible {
+    display: flex;
+}
+
+.cp-avatar-modal-sheet {
+    background: #fff;
+    width: 440px;
+    padding: 1.8rem;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+}
+
+.cp-avatar-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.3rem;
+}
+
+.cp-avatar-modal-close {
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.cp-avatar-preview-box {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    margin-bottom: .5rem;
+}
+
+.cp-avatar-hint {
+    font-size: .85rem;
+    color: #6b7a89;
+}
+
+#avatar-file-input {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.cp-btn {
+    width: 100%;
+    margin-bottom: .75rem;
+    padding: .7rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+}
+
+.cp-teal-btn {
+    background: #2CBFAE;
+    color: #fff;
+}
+
+.cp-navy-btn {
     background: #104976;
     color: #fff;
-    font-weight: 600;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.1s ease;
 }
-
-.cp-edit-back-btn:hover {
-    background: #0A2A4D;
-    transform: translateY(-2px);
-}
-
