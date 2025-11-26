@@ -35,6 +35,6 @@
     © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, <span class="cp-hl">Modern Results</span>
   </footer>
 
-  @yield('scripts')
+  @stack('scripts')
 </body>
 </html>

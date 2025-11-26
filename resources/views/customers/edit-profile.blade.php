@@ -127,5 +127,18 @@
 @push('scripts')
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&v=weekly"></script>
     <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
+    
+    {{-- Inline script to set the text property immediately after the component is defined --}}
+    <script>
+        const ac_element = document.getElementById("address_autocomplete");
+        const initial_val = document.getElementById("address_line1").value;
+
+        if (ac_element && initial_val) {
+            customElements.whenDefined('gmpx-place-autocomplete').then(() => {
+                ac_element.text = initial_val;
+            });
+        }
+    </script>
+    
     <script src="{{ secure_asset('js/profile-edit.js') }}"></script>
 @endpush
