@@ -1,164 +1,127 @@
-<link rel="stylesheet" href="/css/customer-profile-edit.css">
-<link rel="stylesheet" href="/css/google-places.css">
+<!DOCTYPE html>
 
-@extends('customers.layouts.customer-layout')
-@section('title', 'Edit Profile')
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Places API Test</title>
+<style>
+body { font-family: sans-serif; background: #f0f4f8; padding: 20px; }
+.container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+.input-group { margin-bottom: 20px; }
+label { display: block; font-weight: bold; margin-bottom: 5px; color: #1e3a8a; }
+#address_input { width: 100%; padding: 10px; border: 2px solid #3b82f6; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border-color 0.3s; }
+#address_input:focus { border-color: #1d4ed8; outline: none; }
+.debug-area { margin-top: 20px; padding: 15px; border-radius: 8px; background: #ffebeb; border: 1px solid #f87171; color: #b91c1c; font-size: 0.9em; white-space: pre-wrap; }
+.success { background: #ebfff1; border: 1px solid #10b981; color: #065f46; }
+</style>
+
+{{-- 1. LOAD GOOGLE MAPS JS API (Essential: libraries=places) --}}
+{{-- Assuming GOOGLE_MAPS_API_KEY is available via Laravel config/environment --}}
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initAutocomplete">
+</script>
 
 
-@section('content')
-<div class="cp-edit-card">
+</head>
+<body>
 
-    <h2 class="cp-edit-title">Edit Your Profile</h2>
-{{-- ⚠️ DEBUG BLOCK START ⚠️ --}}
-    @if(old('address_line1', $profile->address_line1))
-        <div style="background: #ffdddd; color: #cc0000; padding: 10px; border: 1px solid #cc0000; margin-bottom: 20px;">
-            **DEBUG:** Stored Address Value Found: **{{ old('address_line1', $profile->address_line1) }}**
-        </div>
-    @else
-        <div style="background: #ddddff; color: #0000cc; padding: 10px; border: 1px solid #0000cc; margin-bottom: 20px;">
-            **DEBUG:** No Stored Address Value Found.
-        </div>
-    @endif
-    {{-- ⚠️ DEBUG BLOCK END ⚠️ --}}
-    <form method="POST" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data">
-        @csrf
+<div class="container">
+<h1>Google Places API Test</h1>
+<p>This page tests if the Maps API and Places service are initializing correctly.</p>
 
-        {{-- AVATAR --}}
-        <div class="cp-edit-avatar-row">
-            <div class="cp-edit-avatar">
-                @php
-                    $photo = $user->profile_photo ?? null;
-                    $initials = strtoupper(
-                        substr($user->first_name ?? 'U', 0, 1) .
-                        substr($user->last_name ?? 'X', 0, 1)
-                    );
-                @endphp
+<div class="input-group">
+    <label for="address_input">Street Address (Type here):</label>
+    <input type="text" id="address_input" placeholder="Start typing an address in Australia or NZ...">
+</div>
 
-                @if($photo)
-                    <img src="{{ asset('storage/' . $photo) }}" alt="Avatar">
-                @else
-                    <span>{{ $initials }}</span>
-                @endif
-            </div>
+<div id="debug_output" class="debug-area">
+    <p><strong>Status:</strong> Awaiting API initialization...</p>
+    <p><strong>Key:</strong> The key used is loaded from `env('GOOGLE_MAPS_API_KEY')`.</p>
+</div>
 
-            <div class="cp-edit-avatar-info">
-                <label>Profile Photo</label>
-                <input type="file" name="profile_photo" accept="image/*">
-                <p style="font-size: .85rem; color: #6b7a89;">Max 2MB · JPG, PNG, WebP</p>
-            </div>
-        </div>
-
-        {{-- BUSINESS NAME --}}
-        <div class="cp-field">
-            <label>Business Name</label>
-            <input type="text"
-                   name="business_name"
-                   value="{{ old('business_name', $profile->business_name) }}"
-                   required>
-        </div>
-
-        {{-- MOBILE --}}
-        <div class="cp-field">
-            <label>Mobile Number</label>
-            <input type="text"
-                   name="mobile_number"
-                   value="{{ old('mobile_number', $profile->mobile_number) }}"
-                   required>
-        </div>
-
-        {{-- ADDRESS --}}
-        <div class="cp-field">
-            <label>Street Address</label>
-            <style>
-        gmpx-place-autocomplete {
-            height: 50px !important;
-            width: 100% !important;
-            border: 2px solid red !important; /* Make the container visible */
-        }
-        gmpx-place-autocomplete::part(input) {
-            height: 46px !important;
-            width: 100% !important;
-            background: yellow !important; /* Make the input visible */
-        }
-    </style>
-            <gmpx-place-autocomplete
-                id="address_autocomplete"
-                placeholder="Start typing your address…"
-                autocomplete="street-address"                
-            ></gmpx-place-autocomplete>
-
-            <input type="hidden"
-                   id="address_line1"
-                   name="address_line1"
-                   value="{{ old('address_line1', $profile->address_line1) }}">
-        </div>
-
-        {{-- CITY + STATE --}}
-        <div class="cp-grid-2">
-            <div class="cp-field">
-                <label>City / Suburb</label>
-                <input id="city" name="city" type="text"
-                       value="{{ old('city', $profile->city) }}">
-            </div>
-
-            <div class="cp-field">
-                <label>State</label>
-                <input id="state" name="state" type="text"
-                       value="{{ old('state', $profile->state) }}">
-            </div>
-        </div>
-
-        {{-- POSTCODE + COUNTRY --}}
-        <div class="cp-grid-2">
-            <div class="cp-field">
-                <label>Postcode</label>
-                <input id="postcode" name="postcode" type="text"
-                       value="{{ old('postcode', $profile->postcode) }}">
-            </div>
-
-            <div class="cp-field">
-                <label>Country</label>
-                @php
-                    $country = old('country', $profile->country ?? 'Australia');
-                @endphp
-                <select id="country" name="country">
-                    <option value="Australia" {{ $country === 'Australia' ? 'selected' : '' }}>Australia</option>
-                    <option value="New Zealand" {{ $country === 'New Zealand' ? 'selected' : '' }}>New Zealand</option>
-                    <option value="Other" {{ $country === 'Other' ? 'selected' : '' }}>Other</option>
-                </select>
-            </div>
-        </div>
-
-        {{-- SUBMIT --}}
-        <button class="cp-edit-submit" type="submit">Save Changes</button>
-    </form>
 
 </div>
-@endsection
 
-@push('scripts')
-    {{-- Google Maps API and Libraries --}}
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&v=weekly"></script>
-    <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
-    
-    {{-- ⚡ NEW INLINE SCRIPT FOR PRE-FILL ⚡ --}}
-    <script>
-        // Get the elements
-        const ac_element = document.getElementById("address_autocomplete");
-        const initial_val = document.getElementById("address_line1").value;
+<script>
+const debugOutput = document.getElementById('debug_output');
+const inputElement = document.getElementById('address_input');
 
-        // Check if data exists and the component is on the page
-        if (ac_element && initial_val) {
-            // Wait for the custom element to be defined and registered by the browser
-            customElements.whenDefined('gmpx-place-autocomplete').then(() => {
-                ac_element.text = initial_val;
-                console.log("SUCCESS: Autocomplete pre-filled with:", initial_val);
-            });
-        } else {
-            console.log("Pre-fill skipped. Value or element missing.");
-        }
-    </script>
-    
-    {{-- Your main logic file --}}
-    <script src="{{ secure_asset('js/profile-edit.js') }}"></script>
-@endpush
+// --- Utility Functions ---
+
+function log(message, isSuccess = false) {
+    let content = debugOutput.innerHTML;
+    content += `&lt;p style=&quot;margin-top: 10px; color: ${isSuccess ? &#39;#065f46&#39; : &#39;#b91c1c&#39;}&quot;&gt;&lt;strong&gt;[${new Date().toLocaleTimeString()}]&lt;/strong&gt; ${message}&lt;/p&gt;`;
+    debugOutput.innerHTML = content;
+    if (isSuccess) {
+        debugOutput.classList.remove(&#39;debug-area&#39;);
+        debugOutput.classList.add(&#39;success&#39;);
+    }
+    console.log(`[TEST LOG] ${message}`);
+}
+
+// --- Core Autocomplete Initialization ---
+
+// The &#39;callback=initAutocomplete&#39; in the script URL executes this function
+// *after* the Google Maps JS API and Places library are fully loaded.
+function initAutocomplete() {
+    log(&quot;API Check: Google Maps JS API and Places Library loaded successfully.&quot;, true);
+
+    try {
+        // 1. Initialize Autocomplete on the input field
+        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
+            componentRestrictions: { country: [&quot;au&quot;, &quot;nz&quot;] },
+            fields: [&quot;formatted_address&quot;, &quot;address_components&quot;]
+        });
+        
+        log(&quot;Autocomplete object initialized successfully.&quot;, true);
+
+        // 2. Add Listener for Place Selection
+        autocomplete.addListener(&#39;place_changed&#39;, function() {
+            const place = autocomplete.getPlace();
+            
+            if (place.formatted_address) {
+                log(`Place Selected: ${place.formatted_address}`, true);
+            } else {
+                log(&quot;Warning: No formatted address found for selected place.&quot;);
+            }
+            
+            // Display all available components for debugging
+            let componentsLog = &quot;--- Address Components ---\n&quot;;
+            if (place.address_components) {
+                place.address_components.forEach(comp =&gt; {
+                    componentsLog += `Type: ${comp.types[0]}, Value: ${comp.long_name}\n`;
+                });
+            }
+            log(componentsLog);
+        });
+
+    } catch (error) {
+        log(`FATAL ERROR during initialization: ${error.message}`);
+    }
+}
+
+// Fallback if the script loads before the callback is registered (less common with &#39;callback&#39;)
+if (typeof google !== &#39;undefined&#39; &amp;&amp; typeof google.maps.places !== &#39;undefined&#39;) {
+    // If the script already loaded before this script, call it directly
+    // Note: This is usually not needed when using &#39;callback&#39;
+} else {
+    log(&quot;Waiting for Google API script to load...&quot;);
+}
+
+// --- Pre-fill Test (Simulate your existing data) ---
+// You can set the value directly on the standard input
+const simulatedAddress = &quot;728 Mt Hutt Rd&quot;;
+if (simulatedAddress) {
+    inputElement.value = simulatedAddress;
+    log(`Pre-fill Test: Standard input pre-filled with &quot;${simulatedAddress}&quot;`);
+}
+
+// Assign the callback function globally so the Google script can find it
+window.initAutocomplete = initAutocomplete;
+
+
+</script>
+
+</body>
+</html>
