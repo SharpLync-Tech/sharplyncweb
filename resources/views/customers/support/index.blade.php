@@ -35,7 +35,7 @@
     @else
         <div class="support-ticket-list">
             @foreach ($tickets as $ticket)
-                <a href="{{ route('customer.support.show', $ticket) }}" class="support-ticket-card">
+                <a href="{{ route('customer.support.tickets.show', $ticket) }}" class="support-ticket-card">
                     <div class="support-ticket-main">
                         <div class="support-ticket-heading">
                             <span class="support-ticket-ref">{{ $ticket->reference }}</span>
