@@ -1,6 +1,5 @@
 /* ==========================================================
-   SharpLync – Edit Profile Styling
-   Version 3.2 — Stable Avatar Modal
+   SharpLync — Edit Profile Styling (v4.0)
 ========================================================== */
 
 .cp-edit-card {
@@ -18,10 +17,7 @@
     margin-bottom: 2rem;
 }
 
-
-/* ============================
-   AVATAR + TRIGGER BUTTON
-============================ */
+/* AVATAR ROW */
 .cp-edit-avatar-row {
     display: flex;
     align-items: center;
@@ -55,12 +51,13 @@
     object-fit: cover;
 }
 
+/* Pencil button */
 .cp-avatar-edit-btn {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 34px;
-    height: 34px;
+    bottom: -4px;
+    right: -4px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #2CBFAE;
     border: none;
@@ -71,21 +68,9 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-    transition: 0.2s;
 }
 
-.cp-avatar-edit-btn:hover {
-    filter: brightness(1.1);
-}
-
-
-/* ============================
-   FORM FIELDS
-============================ */
-.cp-field {
-    margin-bottom: 1.4rem;
-}
-
+/* FORM FIELDS */
 .cp-field label {
     font-weight: 600;
     margin-bottom: .45rem;
@@ -105,6 +90,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .cp-edit-submit {
@@ -126,19 +112,9 @@
     font-weight: 600;
 }
 
-
-/* ============================
-   AVATAR MODAL (Overlay)
-============================ */
-/* Fix ghost "view" text on empty preview */
-#avatar-preview[src=""],
-#avatar-preview:not([src]) {
-    display: none;
-}
-
-/* Keep a clean round placeholder behind it */
-
-
+/* ===============================
+   AVATAR MODAL
+=============================== */
 .cp-avatar-modal {
     position: fixed;
     inset: 0;
@@ -147,7 +123,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 9000;
 }
 
 .cp-avatar-modal.cp-visible {
@@ -160,12 +136,6 @@
     padding: 1.8rem;
     border-radius: 14px;
     box-shadow: 0 5px 25px rgba(0,0,0,0.25);
-    animation: fadeUp .25s ease-out;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
 }
 
 .cp-avatar-modal-header {
@@ -180,28 +150,21 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #0A2A4D;
 }
 
 .cp-avatar-preview-box {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    overflow: hidden;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 #avatar-preview {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: #eee;
+    background: #e8eaed;
     object-fit: cover;
-    margin-bottom: .5rem;
+    display: block;
+    margin: 0 auto .5rem;
 }
 
 .cp-avatar-hint {
