@@ -11,17 +11,18 @@
 
 @section('content')
 <div class="support-wrapper">
-    <div class="support-header">
+    <div class="support-header">        
         <h1 class="support-title">
             {{ $ticket->subject }}
         </h1>
-        <p class="support-subtitle">
-            Reference: <strong>{{ $ticket->reference }}</strong>
-            <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
-        </p>
         <a href="{{ route('customer.support.index') }}" class="support-link-back">
             Back to my tickets
         </a>
+        <p class="support-subtitle">
+            <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
+            Reference: <strong>{{ $ticket->reference }}</strong>            
+        </p>
+        
     </div>
 
     @if (session('success'))
