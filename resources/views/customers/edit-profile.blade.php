@@ -7,7 +7,7 @@
 
   {{-- DEBUG BANNER --}}
   <div style="background:#ffe4e4; padding:10px; border:2px solid red; margin-bottom:20px;">
-      <strong>DEBUG:</strong> This is the STEP 3 DEBUG VERSION of edit-profile.blade.php (env API key)
+      <strong>DEBUG:</strong> Using NEW Google PlaceAutocompleteElement (2025 API)
   </div>
 
   <h2>Edit Your Profile</h2>
@@ -54,19 +54,25 @@
     <input type="text" name="mobile_number"
            value="{{ old('mobile_number', $profile->mobile_number) }}" required>
 
-    {{-- STREET ADDRESS (Google autocomplete target) --}}
+    {{-- GOOGLE PLACE AUTOCOMPLETE ELEMENT --}}
     <label>Street Address</label>
-    <input type="text"
-           id="address_autocomplete"
+
+    <gmpx-place-autocomplete
+        id="address_autocomplete"
+        placeholder="Start typing your address..."
+        style="width:100%; padding:12px; border:1px solid #dce3ea; border-radius:10px; background:#fff;"
+    ></gmpx-place-autocomplete>
+
+    {{-- Hidden actual address field --}}
+    <input type="hidden"
+           id="address_line1"
            name="address_line1"
-           value="{{ old('address_line1', $profile->address_line1) }}"
-           placeholder="Start typing your address..."
-           required>
+           value="{{ old('address_line1', $profile->address_line1) }}">
 
     {{-- CITY, STATE --}}
     <div class="cp-grid-2" style="border:2px dotted blue; padding:10px; margin-top:10px;">
         <div>
-            <label>City / Suburb (DEBUG visible)</label>
+            <label>City / Suburb</label>
             <input type="text"
                    id="city"
                    name="city"
@@ -74,7 +80,7 @@
         </div>
 
         <div>
-            <label>State (DEBUG visible)</label>
+            <label>State</label>
             <input type="text"
                    id="state"
                    name="state"
@@ -114,64 +120,61 @@
 
 @section('scripts')
 
+{{-- LOAD GOOGLE MAPS JS --}}
+<script 
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&v=weekly"
+    defer
+></script>
+
+{{-- LOAD GOOGLE EXTENDED WEB COMPONENTS (required for <gmpx-place-autocomplete>) --}}
+<script 
+    src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"
+    defer
+></script>
+
 <script>
-console.log("DEBUG: Scripts block loaded");
-
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("DEBUG: DOM ready");
+    console.log("DEBUG: DOM loaded (new Google PlaceAutocompleteElement)");
 
-    var input = document.getElementById('address_autocomplete');
-    console.log("DEBUG: Input exists?", input);
+    const ac = document.getElementById("address_autocomplete");
+    const addressField = document.getElementById("address_line1");
 
-    if (!input) {
-        console.log("DEBUG: No autocomplete input found");
+    if (!ac) {
+        console.error("DEBUG: Autocomplete element missing");
         return;
     }
 
-    try {
-        console.log("DEBUG: Google object:", typeof google);
-        console.log("DEBUG: google.maps:", google && google.maps);
-        console.log("DEBUG: google.maps.places:", google && google.maps && google.maps.places);
+    ac.addEventListener("gmpx-placechange", () => {
+        const placeString = ac.value;
+        console.log("DEBUG: PLACE CHANGED:", placeString);
 
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-            componentRestrictions: { country: ['au', 'nz'] },
-            fields: ['address_components']
-        });
+        // Save full formatted address
+        addressField.value = placeString;
 
-        console.log("DEBUG: Autocomplete created");
+        // Geocode to extract components
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: placeString }, function (results, status) {
+            if (status === "OK" && results[0]) {
+                const comps = results[0].address_components;
 
-        autocomplete.addListener('place_changed', function () {
-            var place = autocomplete.getPlace();
-            console.log("DEBUG: place_changed triggered");
-            console.log(place);
+                function find(type) {
+                    const c = comps.find(x => x.types.includes(type));
+                    return c ? c.long_name : "";
+                }
 
-            if (!place.address_components) {
-                console.log("DEBUG: No address components returned");
-                return;
+                document.getElementById("city").value     = find("locality") || find("postal_town") || "";
+                document.getElementById("state").value    = find("administrative_area_level_1") || "";
+                document.getElementById("postcode").value = find("postal_code") || "";
+                document.getElementById("country").value  = find("country") || "Australia";
+
+                console.log("DEBUG: Autofilled city/state/postcode");
+            } else {
+                console.error("DEBUG: Geocoder failed:", status);
             }
-
-            function find(type) {
-                var comp = place.address_components.find(function(c) {
-                    return c.types.indexOf(type) !== -1;
-                });
-                return comp ? comp.long_name : "";
-            }
-
-            document.getElementById('city').value     = find('locality');
-            document.getElementById('state').value    = find('administrative_area_level_1');
-            document.getElementById('postcode').value = find('postal_code');
-            document.getElementById('country').value  = find('country');
         });
+    });
 
-    } catch (err) {
-        console.error("DEBUG: Autocomplete error:", err);
-    }
 });
 </script>
-
-{{-- GOOGLE MAPS API WITH ENV VARIABLE --}}
-<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places"
-        onload="console.log('DEBUG: Google JS Loaded')"
-        onerror="console.error('DEBUG: Google JS FAILED')"></script>
 
 @endsection
