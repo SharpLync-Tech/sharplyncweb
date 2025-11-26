@@ -3,74 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Google API Debug</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #eef2f5;
-            padding: 40px;
-        }
-        h1 { margin-bottom: 20px; }
-        .box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        #debug-log {
-            white-space: pre-wrap;
-            background: #111;
-            color: #0f0;
-            padding: 15px;
-            border-radius: 6px;
-            min-height: 150px;
-            font-size: 14px;
-            overflow-y: auto;
-        }
-        gmpx-place-autocomplete {
-            display: block !important;
-            width: 100% !important;
-            margin-top: 10px;
-        }
-        gmpx-place-autocomplete::part(input) {
-            padding: 10px;
-            border: 1px solid #aaa;
-            font-size: 16px;
-            width: 100%;
-        }
-        * {
-        pointer-events: auto !important;
-    }
-    </style>
 </head>
 <body>
 <h1>Google Maps API Debug</h1>
-<div class="box">
+<div>
     <h3>Test Autocomplete Input</h3>
-    <gmpx-place-autocomplete
+    <gmpx-place-picker
         id="test_ac"
         placeholder="Start typing an address…"
-    ></gmpx-place-autocomplete>
+    ></gmpx-place-picker>
 </div>
-<div class="box">
+<div>
     <h3>Formatted Address:</h3>
-    <div id="formatted-output" style="padding:8px; background:#f5f5f5; border-radius:6px;">
+    <div id="formatted-output">
         (none yet)
     </div>
 </div>
-<div class="box">
+<div>
     <h3>Parsed Components</h3>
-    <div id="components-output" style="padding:8px; background:#fafafa; border-radius:6px;">
+    <div id="components-output">
         (none yet)
     </div>
 </div>
-<div class="box">
+<div>
     <h3>Debug Log</h3>
     <div id="debug-log">(waiting for events)</div>
 </div>
 
-<!-- Load Maps JS API asynchronously with callback -->
+<!-- Load Maps JS API asynchronously with callback (no libraries param) -->
 <script async src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initGoogleMaps"></script>
-<!-- Extended Components (keep as-is) -->
+<!-- Extended Components -->
 <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
 
 <script>
@@ -85,37 +47,38 @@ window.initGoogleMaps = async () => {
     try {
         log("PAGE LOADED - Starting async import...");
         
-        // Import the places library (required for new Places API)
+        // Import the places library
         await google.maps.importLibrary('places');
         log("google.maps.places imported successfully");
         
         const ac = document.getElementById("test_ac");
         if (!ac) {
-            log("ERROR: Autocomplete element not found");
+            log("ERROR: Place picker element not found");
             return;
         }
-        log("<gmpx-place-autocomplete> FOUND and ready");
+        log("<gmpx-place-picker> FOUND and ready");
 
-        // Update event to 'gmp-select' (modern equivalent)
-        ac.addEventListener("gmp-select", async (event) => {
-            const placePrediction = event.placePrediction;
-            const val = placePrediction ? placePrediction.text : "(empty)";
-            log("PLACE SELECT EVENT — Value: " + val);
+        ac.addEventListener("gmpx-placechange", () => {
+            const val = ac.text || "(empty)";
+            log("PLACE CHANGE EVENT — Value: " + val);
             
             document.getElementById("formatted-output").innerText = val;
 
-            // Use the new Place API for details (replaces Geocoder for better accuracy)
-            if (placePrediction) {
-                const place = placePrediction.toPlace();
-                await place.fetchFields({ fields: ['addressComponents', 'formattedAddress'] });
-                
-                let resultDump = place.formattedAddress + "\n";
-                place.addressComponents.forEach(c => {
-                    resultDump += c.types.join(", ") + ": " + c.longText + "\n";
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: val }, (results, status) => {
+                log("GEOCODER STATUS: " + status);
+                if (status !== "OK") {
+                    document.getElementById("components-output").innerText = "Geocoder failed: " + status;
+                    return;
+                }
+                let comps = results[0].address_components;
+                let resultDump = "";
+                comps.forEach(c => {
+                    resultDump += c.types.join(", ") + ": " + c.long_name + "\n";
                 });
                 document.getElementById("components-output").innerText = resultDump;
                 log("Address Components Parsed:\n" + resultDump);
-            }
+            });
         });
     } catch (error) {
         log("ERROR during import or init: " + error.message);
