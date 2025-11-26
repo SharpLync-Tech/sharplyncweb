@@ -5,6 +5,19 @@
 @section('content')
 <section class="content-hero fade-in">
 
+    {{-- Flash Messages --}}
+    @if(session('success'))
+        <div class="contact-alert contact-alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="contact-alert contact-alert-error">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- ===================== --}}
     {{-- Contact Us Title --}}
     {{-- ===================== --}}
@@ -23,12 +36,11 @@
     <div class="details-grid-wrapper fade-section">
         <h3 class="grid-heading">Connect with Us</h3>
 
-        {{-- This is the container that must use the 3-column grid --}}
-        <div class="details-grid"> 
+        <div class="details-grid">
 
             {{-- Block 1: Email Support --}}
             <div class="detail-item">
-                <div class="icon-wrapper"> 
+                <div class="icon-wrapper">
                     <img src="{{ asset('images/email.png') }}" alt="Email Icon" class="detail-icon">
                 </div>
                 <h4>Email Support</h4>
@@ -59,44 +71,90 @@
         </div>
     </div>
 
-
     {{-- =============================================== --}}
     {{-- Contact Form Section (Styled like Login Screen) --}}
     {{-- =============================================== --}}
     <div class="contact-form-card fade-section">
         <h3 class="form-heading">Send Us a Message</h3>
-        <form action="/submit-contact" method="POST" class="contact-form">
-            @csrf {{-- Laravel CSRF protection --}}
+
+        <form action="{{ route('contact.submit') }}" method="POST" class="contact-form">
+            @csrf
 
             {{-- Honeypot field for bot protection --}}
             <div class="form-group full-width" style="display:none; height:0; overflow:hidden;">
                 <label for="address_bot_trap">Do not fill this field (Bot Trap)</label>
                 <input type="text" id="address_bot_trap" name="address_bot_trap" value="">
             </div>
-            
+
+            {{-- reCAPTCHA token --}}
+            <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+
             <div class="form-group">
                 <label for="name">Your Name</label>
-                <input type="text" id="name" name="name" required placeholder="John Doe">
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ old('name') }}"
+                    required
+                    placeholder="John Doe">
+                @error('name')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="name@company.com">
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    required
+                    placeholder="name@company.com">
+                @error('email')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label for="phone">Phone Number (Optional)</label>
-                <input type="tel" id="phone" name="phone" placeholder="04XX XXX XXX">
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value="{{ old('phone') }}"
+                    placeholder="04XX XXX XXX">
+                @error('phone')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" required placeholder="Inquiry about Managed IT">
+                <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value="{{ old('subject') }}"
+                    required
+                    placeholder="Inquiry about Managed IT">
+                @error('subject')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group full-width">
                 <label for="message">Your Message</label>
-                <textarea id="message" name="message" rows="6" required placeholder="Tell us about your IT challenge or project..."></textarea>
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="6"
+                    required
+                    placeholder="Tell us about your IT challenge or project...">{{ old('message') }}</textarea>
+                @error('message')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="form-group full-width">
@@ -107,3 +165,24 @@
 
 </section>
 @endsection
+
+@push('scripts')
+    @if(config('services.recaptcha.key'))
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.key') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.ready(function () {
+                        grecaptcha.execute('{{ config('services.recaptcha.key') }}', { action: 'submit_contact' })
+                            .then(function (token) {
+                                var el = document.getElementById('recaptcha_token');
+                                if (el) {
+                                    el.value = token;
+                                }
+                            });
+                    });
+                }
+            });
+        </script>
+    @endif
+@endpush
