@@ -1,5 +1,7 @@
 /* ==========================================================
-   SharpLync — Edit Profile Styling (v4.0)
+   SharpLync — Edit Profile Styling (v4.1)
+   - Fix input overflow (box-sizing)
+   - Restore field spacing
 ========================================================== */
 
 .cp-edit-card {
@@ -71,6 +73,10 @@
 }
 
 /* FORM FIELDS */
+.cp-field {
+    margin-bottom: 1.1rem;
+}
+
 .cp-field label {
     font-weight: 600;
     margin-bottom: .45rem;
@@ -84,13 +90,14 @@
     border: 1px solid #cfd9e0;
     border-radius: 8px;
     font-size: 1rem;
+    box-sizing: border-box;   /* <<< important: no overflow */
 }
 
 .cp-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.1rem;
 }
 
 .cp-edit-submit {
@@ -152,9 +159,15 @@
     cursor: pointer;
 }
 
+.cp-avatar-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
 .cp-avatar-preview-box {
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 #avatar-preview {
@@ -173,13 +186,13 @@
 }
 
 #avatar-file-input {
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
     width: 100%;
 }
 
 .cp-btn {
     width: 100%;
-    margin-bottom: .75rem;
+    margin-bottom: .5rem;
     padding: .7rem;
     font-size: 1rem;
     border-radius: 8px;
