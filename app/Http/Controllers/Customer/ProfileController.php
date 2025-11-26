@@ -92,6 +92,21 @@ class ProfileController extends Controller
     /**
      * Update profile data for existing customers
      */
-    public function updat
+    public function update(Request $request)
+    {
+        $user = Auth::user();
 
+        $validated = $request->validate([
+            'business_name'   => 'required|string|max:150',
+            'mobile_number'   => 'required|string|max:20',
+            'address_line1'   => 'required|string|max:150',
+            'postcode'        => 'required|string|max:10',
+            'preferred_contact_method' => 'nullable|string|max:20',
+            'notes'           => 'nullable|string',
+        ]);
+
+        $user->profile->update($validated);
+
+        return back()->with('success', 'Profile updated successfully.');
+    }
 }
