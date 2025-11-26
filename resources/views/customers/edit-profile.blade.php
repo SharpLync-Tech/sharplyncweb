@@ -1,3 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Google API Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f5;
+            padding: 40px;
+        }
+        h1 { margin-bottom: 20px; }
+        .box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        #debug-log {
+            white-space: pre-wrap;
+            background: #111;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 150px;
+            font-size: 14px;
+            overflow-y: auto;
+        }
+        gmpx-place-autocomplete {
+            display: block !important;
+            width: 100% !important;
+            margin-top: 10px;
+        }
+        gmpx-place-autocomplete::part(input) {
+            padding: 10px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+            width: 100%;
+        }
+        * {
+        pointer-events: auto !important;
+    }
+    </style>
+</head>
 <body>
 <h1>Google Maps API Debug</h1>
 <div class="box">
@@ -24,8 +68,8 @@
     <div id="debug-log">(waiting for events)</div>
 </div>
 
-<!-- Load Maps JS API asynchronously (no libraries=places) -->
-<script async src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}"></script>
+<!-- Load Maps JS API asynchronously with callback -->
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initGoogleMaps"></script>
 <!-- Extended Components (keep as-is) -->
 <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"></script>
 
@@ -36,8 +80,8 @@ function log(msg) {
     dbg.textContent += msg + "\n";
 }
 
-// Wrap init in async IIFE for awaiting imports
-(async () => {
+// Define the callback function (runs after API loads)
+window.initGoogleMaps = async () => {
     try {
         log("PAGE LOADED - Starting async import...");
         
@@ -76,6 +120,7 @@ function log(msg) {
     } catch (error) {
         log("ERROR during import or init: " + error.message);
     }
-})();
+};
 </script>
 </body>
+</html>
