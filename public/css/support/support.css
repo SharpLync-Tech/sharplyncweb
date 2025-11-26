@@ -2,11 +2,16 @@
 /* SharpLync Support Module V1 - Customer Support UI
    Keeps styles fully isolated under .support-* classes. */
 
+/* Main wrapper card so support pages are readable on the gradient */
 .support-wrapper {
-    max-width: 960px;
+    max-width: 900px;
     margin: 2rem auto;
-    padding: 1.5rem;
+    padding: 2rem 2.5rem;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.10);
 }
+
 
 .support-header {
     display: flex;
@@ -17,26 +22,28 @@
 
 .support-title {
     font-size: 1.8rem;
-    margin: 0;
+    font-weight: 700;
+    margin: 0 0 0.4rem 0;
     color: #0A2A4D;
 }
 
 .support-subtitle {
-    margin: 0;
+    margin: 0 0 1.2rem 0;
     color: #4b5b70;
     font-size: 0.95rem;
 }
 
+
 .support-link-back {
-    font-size: 0.9rem;
+    color: #104976 !important;
+    font-weight: 600;
     text-decoration: none;
-    margin-top: 0.75rem;
-    color: #104976;
 }
 
 .support-link-back:hover {
     text-decoration: underline;
 }
+
 
 .support-btn-primary,
 .support-btn-secondary,
