@@ -69,6 +69,18 @@
         {{-- ADDRESS --}}
         <div class="cp-field">
             <label>Street Address</label>
+            <style>
+        gmpx-place-autocomplete {
+            height: 50px !important;
+            width: 100% !important;
+            border: 2px solid red !important; /* Make the container visible */
+        }
+        gmpx-place-autocomplete::part(input) {
+            height: 46px !important;
+            width: 100% !important;
+            background: yellow !important; /* Make the input visible */
+        }
+    </style>
             <gmpx-place-autocomplete
                 id="address_autocomplete"
                 placeholder="Start typing your address…"
