@@ -62,13 +62,11 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('customer.
 Route::post('/login', [LoginController::class, 'login'])->name('customer.login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('customer.logout');
 
-
 // ======================================================
 // PART 2B — LOGIN-TIME 2FA (NO LOGIN REQUIRED)
 // ======================================================
-// REQUIRED for 2FA modal to work
 
-Route::middleware(['web'])  // <-- CRITICAL: allows session to work
+Route::middleware(['web'])
     ->prefix('portal/security')
     ->name('customer.security.')
     ->group(function () {
@@ -114,6 +112,20 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/portal/billing', fn() => view('customers.billing'))->name('customer.billing');
     Route::get('/portal/documents', fn() => view('customers.documents'))->name('customer.documents');
 
+
+    // ======================================================
+    // PART 3A — PROFILE PHOTO ACTIONS (NEW)
+    // ======================================================
+
+    Route::post('/profile/update-photo',
+        [ProfileController::class, 'updatePhoto']
+    )->name('customer.profile.update-photo');
+
+    Route::post('/profile/remove-photo',
+        [ProfileController::class, 'removePhoto']
+    )->name('customer.profile.remove-photo');
+
+
     // ======================================================
     // PART 4 — FILE DOWNLOADS (SECURE + LOGGED)
     // ======================================================
@@ -137,4 +149,5 @@ Route::middleware(['auth:customer'])->group(function () {
             'Pragma'        => 'no-cache',
         ]);
     })->middleware('auth:customer')->name('customer.teamviewer.download');
+
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\CRM\CustomerProfile;
 use App\Services\XeroService;
 
@@ -154,5 +155,56 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Profile updated successfully.');
+    }
+
+
+    /* ================================================================
+       NEW: UPDATE PROFILE PHOTO (CROPPED AVATAR)
+    ================================================================= */
+
+    public function updatePhoto(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'profile_photo' => 'required|image|max:2048', // 2MB max
+        ]);
+
+        // Delete old photo if exists
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        // Save new avatar
+        $path = $request->file('profile_photo')->store('profile-photos', 'public');
+
+        $user->update([
+            'profile_photo' => $path
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'path'    => asset('storage/' . $path),
+        ]);
+    }
+
+
+    /* ================================================================
+       NEW: REMOVE PROFILE PHOTO (RESET TO INITIALS)
+    ================================================================= */
+
+    public function removePhoto()
+    {
+        $user = Auth::user();
+
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        $user->update([
+            'profile_photo' => null
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }
