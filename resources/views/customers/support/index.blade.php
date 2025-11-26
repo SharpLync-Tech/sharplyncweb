@@ -10,9 +10,6 @@
 @endpush
 
 @section('content')
-<a href="/portal" class="support-back-portal-btn">
-    Back to Portal
-</a>
 
 <div class="support-wrapper">
     <div class="support-header">
@@ -20,6 +17,9 @@
         <p class="support-subtitle">View and manage your support requests.</p>
         <a href="{{ route('customer.support.tickets.create') }}" class="support-btn-primary">
             + New Support Request
+        </a>
+        <a href="/portal">
+            Back to Portal
         </a>
     </div>
 
