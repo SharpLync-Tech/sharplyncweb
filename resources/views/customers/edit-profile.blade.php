@@ -6,7 +6,8 @@
 <section class="content-card fade-in">
   <h2>Edit Your Profile</h2>
 
-  <form method="POST" action="{{ route('profile.update') }}">
+  <form method="POST" action="{{ route('customer.profile.update') }}">
+
     @csrf
 
     <label>Business Name</label>
