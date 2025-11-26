@@ -126,10 +126,10 @@
     defer
 ></script>
 
-{{-- LOAD GOOGLE EXTENDED WEB COMPONENTS (required for <gmpx-place-autocomplete>) --}}
+{{-- LOAD EXTENDED COMPONENTS (REQUIRED for <gmpx-place-autocomplete>) --}}
 <script 
+    type="module"
     src="https://unpkg.com/@googlemaps/extended-component-library@0.6.1"
-    defer
 ></script>
 
 <script>
@@ -178,3 +178,4 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 @endsection
+
