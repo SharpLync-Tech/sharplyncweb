@@ -281,21 +281,27 @@
 /* -----------------------------------------------------------
    Back to Tickets – match "View earlier conversations" button
 ----------------------------------------------------------- */
-.support-back-btn {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid #cbd5e1; /* same faint border */
+.support-back-btn {   
+    display: inline-flex;
+    text-decoration: none !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid #d1d9e6;
+    background: #ffffff;
+    color: #104976;
     font-size: 0.9rem;
-    color: #0A2A4D;
-    text-decoration: none;
-    transition: all 0.15s ease;
-    margin-bottom: 10px; /* tighten spacing */
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .support-back-btn:hover {
-    background: #f1f5f9;
-    border-color: #b9c6d6;
+    background: #f5f7fb;
+    text-decoration: none !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
 }
 
 /* tighten spacing under timezone label */
