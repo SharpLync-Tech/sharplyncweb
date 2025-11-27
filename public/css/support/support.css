@@ -36,13 +36,27 @@
 
 
 .support-link-back {
-    color: #104976 !important;
-    font-weight: 600;
-    text-decoration: none;
+   display: inline-flex;
+    text-decoration: none !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid #d1d9e6;
+    background: #ffffff;
+    color: #104976;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
+
 .support-link-back:hover {
-    text-decoration: underline;
+    background: #f5f7fb;
+    text-decoration: none !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
 }
 
 
