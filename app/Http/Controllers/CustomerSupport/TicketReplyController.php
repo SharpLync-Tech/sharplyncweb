@@ -27,10 +27,12 @@ class TicketReplyController extends Controller
 
         $reply = TicketReply::create([
             'ticket_id'   => $ticket->id,
-            'customer_id' => $customer->id,
+            'user_type'   => 'customer',
+            'user_id'     => $customer->id,
             'message'     => $data['message'],
             'is_internal' => false,
         ]);
+
 
         // Update "last_reply_at" for list sorting
         $ticket->last_reply_at = now();
