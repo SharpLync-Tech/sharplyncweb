@@ -11,6 +11,14 @@
         {{-- ============================= --}}
         <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
         <li><a href="{{ route('admin.customers.index') }}">Customers</a></li>
+        <h5 class="mt-4 mb-2 text-muted text-uppercase small">Support</h5>
+        <ul class="list-unstyled">
+            <li>
+                <a href="{{ route('admin.support.tickets.index') }}">
+                    🧾 Support Tickets
+                </a>
+            </li>
+        </ul>
         <li><a href="{{ route('admin.testimonials.index') }}">Testimonials</a></li>
 
         <li><a href="{{ route('admin.devices.index') }}">Devices – All</a></li>

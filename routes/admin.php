@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SmsController;
 use App\Http\Controllers\Admin\PulseFeedController;
 use App\Http\Controllers\Admin\ComponentController;
 use App\Http\Controllers\Admin\Support\SupportTicketController;
+use App\Http\Controllers\Admin\Support\AdminTicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,42 +56,35 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
              ->name('admin.support.search');
 
 
-        /*
+       /*
         |--------------------------------------------------------------------------
-        | Support Tickets (NEW)
+        | Support Tickets (Admin)
         |--------------------------------------------------------------------------
         */
         Route::prefix('tickets')->group(function () {
-
-            // List all tickets
-            Route::get('/', [SupportTicketController::class, 'index'])
+            Route::get('/', [AdminTicketController::class, 'index'])
                 ->name('admin.support.tickets.index');
 
-            // View a single ticket
-            Route::get('/{ticket}', [SupportTicketController::class, 'show'])
+            Route::get('/{ticket}', [AdminTicketController::class, 'show'])
                 ->name('admin.support.tickets.show');
 
-            // Update status
-            Route::patch('/{ticket}/status', [SupportTicketController::class, 'updateStatus'])
+            Route::patch('/{ticket}/status', [AdminTicketController::class, 'updateStatus'])
                 ->name('admin.support.tickets.update-status');
 
-            // Update priority
-            Route::patch('/{ticket}/priority', [SupportTicketController::class, 'updatePriority'])
+            Route::patch('/{ticket}/priority', [AdminTicketController::class, 'updatePriority'])
                 ->name('admin.support.tickets.update-priority');
 
-            // Quick Resolve
-            Route::patch('/{ticket}/quick-resolve', [SupportTicketController::class, 'quickResolve'])
+            Route::patch('/{ticket}/quick-resolve', [AdminTicketController::class, 'quickResolve'])
                 ->name('admin.support.tickets.quick-resolve');
 
-            // Admin reply to customer
-            Route::post('/{ticket}/reply', [SupportTicketController::class, 'reply'])
+            Route::post('/{ticket}/reply', [AdminTicketController::class, 'reply'])
                 ->name('admin.support.tickets.reply');
 
-            // Internal notes
-            Route::post('/{ticket}/internal-notes', [SupportTicketController::class, 'storeInternalNote'])
+            Route::post('/{ticket}/internal-notes', [AdminTicketController::class, 'storeInternalNote'])
                 ->name('admin.support.tickets.internal-notes.store');
         });
     });
+
 
     /*
     |--------------------------------------------------------------------------
