@@ -1,4 +1,5 @@
 <!-- resources/views/emails/layouts/sharplync.blade.php -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +34,7 @@
                 <tr>
                     <td style="padding:30px;">
 
-                        {{ $slot }}
+                        @yield('content')
 
                     </td>
                 </tr>
