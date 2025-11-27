@@ -134,20 +134,31 @@
         </div>
 
         @foreach ($ticket->replies as $reply)
-            <div class="support-message {{ $reply->admin_id ? 'support-message-staff' : 'support-message-customer' }}">
-                <div class="support-message-header">
-                    <span class="support-message-author">
-                        {{ $reply->admin_id ? 'SharpLync Support' : ($customer->name ?? 'You') }}
-                    </span>
-                    <span class="support-message-time">
-                        {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
-                    </span>
-                </div>
-                <div class="support-message-body">
-                    {!! nl2br(e($reply->message)) !!}
-                </div>
-            </div>
-        @endforeach
+    <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
+        <div class="support-message-header">
+            <span class="support-message-author">
+
+                {{-- Correct author label --}}
+                @if ($reply->isCustomer())
+                    You
+                @elseif ($reply->isAdmin())
+                    SharpLync Support
+                @else
+                    Unknown
+                @endif
+
+            </span>
+            <span class="support-message-time">
+                {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
+            </span>
+        </div>
+
+        <div class="support-message-body">
+            {!! nl2br(e($reply->message)) !!}
+        </div>
+    </div>
+@endforeach
+
     </div>
 
     @if ($errors->any())

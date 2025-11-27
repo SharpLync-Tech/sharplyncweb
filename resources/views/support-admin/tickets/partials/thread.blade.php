@@ -13,11 +13,23 @@
 
         @forelse($messages as $msg)
             @php
-                $isCustomer = $msg->is_internal ? false : ($msg->customer_id !== null && $msg->admin_id === null);
-                $authorName = $isCustomer
-                    ? ($ticket->customerProfile->business_name
-                        ?? ($ticket->customerUser ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name : 'Customer'))
-                    : ($msg->admin?->name ?? 'Support Agent');
+                // New logic using user_type + author()
+
+                $isCustomer = $msg->isCustomer();
+                $isAdmin    = $msg->isAdmin();
+
+                // Name for display
+                if ($isCustomer) {
+                    $authorName = $ticket->customerProfile->business_name
+                        ?? ($ticket->customerUser
+                                ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
+                                : 'Customer');
+                } elseif ($isAdmin) {
+                    $authorName = $msg->author?->name ?? 'Support Agent';
+                } else {
+                    $authorName = 'Unknown';
+                }
+
             @endphp
 
             @include('support-admin.tickets.partials.message', [
@@ -37,5 +49,6 @@
                 </div>
             @endif
         @endforelse
+
     </div>
 </div>
