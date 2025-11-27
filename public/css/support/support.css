@@ -457,3 +457,91 @@
     text-decoration: none !important;
 }
 
+
+
+/* --------------------------------------------------
+   Ticket meta dropdown controls (status / priority)
+   -------------------------------------------------- */
+.support-meta-control {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.support-dropdown-toggle {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.support-dropdown-toggle:focus-visible {
+    outline: 2px solid #2CBFAE;
+    outline-offset: 2px;
+}
+
+/* Panel */
+.support-dropdown {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    min-width: 180px;
+    padding: 0.35rem 0.25rem 0.35rem 0.25rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #d0d8e2;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+    z-index: 30;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.16s ease-out, transform 0.16s ease-out;
+}
+
+.support-dropdown.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.support-dropdown-header {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7a92;
+}
+
+.support-dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.1rem 0;
+}
+
+.support-dropdown-option {
+    width: 100%;
+    text-align: left;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    color: #243248;
+}
+
+.support-dropdown-option:hover {
+    background: #f4f7fb;
+}
+
+.support-dropdown-option.is-active {
+    font-weight: 600;
+    color: #104976;
+}
+
+/* Keep pills looking like badges / chips even as buttons */
+.support-dropdown-toggle.support-badge,
+.support-dropdown-toggle.support-chip {
+    padding-inline: 0.7rem;
+}

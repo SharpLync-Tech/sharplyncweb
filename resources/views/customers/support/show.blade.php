@@ -32,12 +32,86 @@
     @endif
 
     <div class="support-ticket-meta-bar">
-        <span class="support-badge support-badge-{{ $ticket->status }}">
-            {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
-        </span>
-        <span class="support-chip support-chip-{{ $ticket->priority }}">
-            {{ ucfirst($ticket->priority) }} priority
-        </span>
+
+        {{-- Status pill with dropdown --}}
+        <div class="support-meta-control">
+            <button
+                type="button"
+                class="support-badge support-badge-{{ $ticket->status }} support-dropdown-toggle"
+                data-type="status"
+                data-current="{{ $ticket->status }}"
+                data-update-url="{{ route('customer.support.tickets.status.update', $ticket) }}"
+            >
+                {{ strtoupper(str_replace('_', ' ', $ticket->status)) }}
+            </button>
+
+            <div class="support-dropdown" data-dropdown-panel="ticket-status">
+                <div class="support-dropdown-header">Change status</div>
+                <ul class="support-dropdown-list">
+                    @php
+                        $statusOptions = [
+                            'open' => 'Open',
+                            'pending' => 'Pending',
+                            'waiting_on_customer' => 'Waiting on customer',
+                            'waiting_on_third_party' => 'Waiting on third party',
+                            'waiting_on_stock' => 'Waiting on stock',
+                            'resolved' => 'Resolved',
+                            'closed' => 'Closed',
+                        ];
+                    @endphp
+                    @foreach ($statusOptions as $value => $label)
+                        <li>
+                            <button
+                                type="button"
+                                class="support-dropdown-option {{ $ticket->status === $value ? 'is-active' : '' }}"
+                                data-value="{{ $value }}"
+                            >
+                                {{ $label }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+
+        {{-- Priority pill with dropdown --}}
+        <div class="support-meta-control">
+            <button
+                type="button"
+                class="support-chip support-chip-{{ $ticket->priority }} support-dropdown-toggle"
+                data-type="priority"
+                data-current="{{ $ticket->priority }}"
+                data-update-url="{{ route('customer.support.tickets.priority.update', $ticket) }}"
+            >
+                {{ ucfirst($ticket->priority) }} priority
+            </button>
+
+            <div class="support-dropdown" data-dropdown-panel="ticket-priority">
+                <div class="support-dropdown-header">Change priority</div>
+                <ul class="support-dropdown-list">
+                    @php
+                        $priorityOptions = [
+                            'low' => 'Low',
+                            'medium' => 'Medium',
+                            'high' => 'High',
+                            'urgent' => 'Urgent',
+                        ];
+                    @endphp
+                    @foreach ($priorityOptions as $value => $label)
+                        <li>
+                            <button
+                                type="button"
+                                class="support-dropdown-option {{ $ticket->priority === $value ? 'is-active' : '' }}"
+                                data-value="{{ $value }}"
+                            >
+                                {{ $label }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+
         <span class="support-ticket-date">
             Opened {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
         </span>
