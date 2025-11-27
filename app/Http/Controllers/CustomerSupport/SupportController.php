@@ -20,7 +20,7 @@ class SupportController extends Controller
 
         return view('customers.support.index', [
             'customer' => $customer,
-            'tickets' => $tickets,
+            'tickets'  => $tickets,
         ]);
     }
 }

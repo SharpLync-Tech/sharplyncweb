@@ -20,7 +20,7 @@
         </a>
         <p class="support-subtitle">
             <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
-            Reference: <strong>{{ $ticket->reference }}</strong>            
+            Support Reference: <strong>{{ $ticket->reference }}</strong>            
         </p>
         
     </div>

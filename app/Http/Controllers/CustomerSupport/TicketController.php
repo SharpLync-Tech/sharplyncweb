@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\CustomerSupport;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Support\TicketCreatedCustomer;
+use App\Mail\Support\TicketCreatedSupport;
 use App\Models\Support\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\Support\TicketCreated;
 
 class TicketController extends Controller
 {
@@ -23,42 +24,45 @@ class TicketController extends Controller
     }
 
     /**
-     * Store a newly created ticket.
+     * Store a new support ticket.
      */
     public function store(Request $request)
     {
         $customer = auth()->guard('customer')->user();
 
         $data = $request->validate([
-            'subject' => ['required', 'string', 'max:255'],
-            'priority' => ['required', 'in:low,medium,high,urgent'],
-            'message' => ['required', 'string'],
+            'subject'  => ['required', 'string', 'max:255'],
+            'priority' => ['required', 'in:low,medium,high'],
+            'message'  => ['required', 'string'],
         ]);
 
         $ticket = Ticket::create([
-            'customer_id' => $customer->id,
-            'reference' => Ticket::generateReference(),
-            'subject' => $data['subject'],
-            'message' => $data['message'],
-            'priority' => $data['priority'],
-            'status' => 'open',
-            'created_via' => 'portal',
+            'customer_id'  => $customer->id,
+            'reference'    => Ticket::generateReference(),
+            'subject'      => $data['subject'],
+            'priority'     => $data['priority'],
+            'message'      => $data['message'],
+            'status'       => Ticket::STATUS_OPEN,
+            'created_via'  => 'portal',
+            'last_reply_at'=> now(),
         ]);
 
-        // Email notification to internal support + customer (optional)
+        // --- Email notifications ---
         try {
-            $supportEmail = config('mail.support_address', env('SUPPORT_EMAIL', 'info@sharplync.com.au'));
-
-            if ($supportEmail) {
-                Mail::to($supportEmail)->send(new TicketCreated($ticket, $customer, true));
+            // Customer confirmation
+            if ($customer && $customer->email) {
+                Mail::to($customer->email)
+                    ->send(new TicketCreatedCustomer($ticket, $customer));
             }
 
-            // Send confirmation to customer
-            if ($customer->email) {
-                Mail::to($customer->email)->send(new TicketCreated($ticket, $customer, false));
+            // Internal notification
+            $supportAddress = config('mail.support_address', env('SUPPORT_EMAIL', config('mail.from.address')));
+            if ($supportAddress) {
+                Mail::to($supportAddress)
+                    ->send(new TicketCreatedSupport($ticket, $customer));
             }
         } catch (\Throwable $e) {
-            // Fail silently for now; ticket is still created.
+            // Ticket is still created – we don't want email failures to break the UX
             report($e);
         }
 
@@ -68,7 +72,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Show a single ticket + replies.
+     * Show a single ticket with replies.
      */
     public function show(Ticket $ticket)
     {
@@ -77,11 +81,13 @@ class TicketController extends Controller
         // Security: ensure ticket belongs to this customer
         abort_unless($ticket->customer_id === $customer->id, 404);
 
-        $ticket->load('replies');
+        $ticket->load(['replies' => function ($query) {
+            $query->orderBy('created_at', 'asc');
+        }]);
 
         return view('customers.support.show', [
             'customer' => $customer,
-            'ticket' => $ticket,
+            'ticket'   => $ticket,
         ]);
     }
 }

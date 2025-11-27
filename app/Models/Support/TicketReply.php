@@ -9,6 +9,9 @@ class TicketReply extends Model
 {
     use HasFactory;
 
+    /**
+     * Ticket replies also live in the CRM DB.
+     */
     protected $connection = 'crm';
 
     protected $table = 'support_ticket_replies';
