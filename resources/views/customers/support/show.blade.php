@@ -1,36 +1,33 @@
 {{-- resources/views/customers/support/show.blade.php --}}
-{{-- SharpLync Support Module V1: Ticket detail + replies (upgraded view) --}}
+{{-- SharpLync Support Module V1: Ticket detail + replies (upgraded view + Quill editor) --}}
 
 @extends('customers.layouts.customer-layout')
 
 @section('title', 'Ticket ' . $ticket->reference)
 
 @push('styles')
-     <!-- Quill editor styles -->
-    <link href="https://cdn.quilljs.com/1.3.7/quill.core.css" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-    <!-- Emoji plugin -->
-    <link href="https://cdn.jsdelivr.net/npm/quill-emoji@0.2.0/dist/quill-emoji.css" rel="stylesheet">
+    {{-- Local Quill CSS --}}
+    <link href="{{ secure_asset('vendor/quill/quill.core.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('vendor/quill/quill.snow.css') }}" rel="stylesheet">
 
+    {{-- Emoji plugin --}}
+    <link href="{{ secure_asset('vendor/quill/quill-emoji.css') }}" rel="stylesheet">
+
+    {{-- Support styling --}}
     <link rel="stylesheet" href="{{ secure_asset('css/support/support.css') }}">
-
 @endpush
 
 @section('content')
 <div class="support-wrapper">
     <div class="support-header">
-        <h1 class="support-title">
-            {{ $ticket->subject }}
-        </h1>
+        <h1 class="support-title">{{ $ticket->subject }}</h1>
 
         <a href="{{ route('customer.support.index') }}" class="support-btn-outline support-back-btn">
             Back to my tickets
         </a>
 
+        <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
 
-        <p class="support-timezone-note">
-            All times shown in AEST (Brisbane time).
-        </p>
         <p class="support-subtitle">
             Support Reference: <strong>{{ $ticket->reference }}</strong>
         </p>
@@ -53,9 +50,12 @@
         </div>
     @endif
 
-    <div class="support-ticket-meta-bar">
 
-        {{-- Status pill with dropdown --}}
+    {{-- ===========================
+        META BAR (unchanged)
+    ============================ --}}
+    <div class="support-ticket-meta-bar">
+        {{-- Status --}}
         <div class="support-meta-control">
             <button
                 type="button"
@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        {{-- Priority pill with dropdown --}}
+        {{-- Priority --}}
         <div class="support-meta-control">
             <button
                 type="button"
@@ -141,73 +141,75 @@
         @endif
     </div>
 
-    {{-- Reply box at the top if ticket is not closed/resolved --}}
+
+    {{-- ===========================
+        QUILL REPLY BOX
+    ============================ --}}
     @if($ticket->status !== 'closed' && $ticket->status !== 'resolved')
         <div class="support-reply-box">
-                <h2 class="support-reply-title">Add a reply</h2>
+            <h2 class="support-reply-title">Add a reply</h2>
 
-                <form action="{{ route('customer.support.tickets.reply.store', $ticket) }}"
-                    method="POST"
-                    class="support-form">
-                    @csrf
+            <form action="{{ route('customer.support.tickets.reply.store', $ticket) }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="support-form">
+                @csrf
 
-                    <div class="support-form-group">
-                        <label class="support-label">Your message</label>
+                <div class="support-form-group">
+                    <label class="support-label">Your message</label>
 
-                        <!-- Toolbar -->
-                        <div id="quill-toolbar" class="quill-toolbar">
-                            <span class="ql-formats">
-                                <button class="ql-bold"></button>
-                                <button class="ql-italic"></button>
-                                <button class="ql-underline"></button>
-                            </span>
+                    {{-- Quill Toolbar --}}
+                    <div id="quill-toolbar" class="quill-toolbar">
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                        </span>
 
-                            <span class="ql-formats">
-                                <button class="ql-list" value="bullet"></button>
-                            </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="bullet"></button>
+                        </span>
 
-                            <span class="ql-formats">
-                                <button class="ql-emoji"></button>
-                            </span>
+                        <span class="ql-formats">
+                            <button class="ql-emoji"></button>
+                        </span>
 
-                            <span class="ql-formats attach-btn">
-                                <label>
-                                    📎
-                                    <input type="file" name="attachment" hidden>
-                                </label>
-                            </span>
-                        </div>
-
-                        <!-- Quill Editor -->
-                        <div id="quill-editor" class="quill-editor"></div>
-
-                        <!-- Hidden input for Laravel -->
-                        <input type="hidden" name="message" id="quill-html">
+                        <span class="ql-formats attach-btn">
+                            <label>
+                                📎
+                                <input type="file" name="attachment" hidden>
+                            </label>
+                        </span>
                     </div>
 
-                    <div class="support-form-actions">
-                        <button type="submit" class="support-btn-primary">
-                            Send Reply
-                        </button>
-                    </div>
-                </form>
-            </div>
+                    {{-- Quill Editor --}}
+                    <div id="quill-editor" class="quill-editor"></div>
 
+                    {{-- Hidden input for Laravel --}}
+                    <input type="hidden" name="message" id="quill-html">
+                </div>
+
+                <div class="support-form-actions">
+                    <button type="submit" class="support-btn-primary">
+                        Send Reply
+                    </button>
+                </div>
+            </form>
+        </div>
     @else
         <div class="support-ticket-closed-note">
             This ticket is marked as <strong>{{ ucfirst($ticket->status) }}</strong>.
-            If you need further help on this issue, please open a new support request.
+            If you need further help, please open a new support request.
         </div>
     @endif
 
+
+    {{-- ===========================
+        REPLIES (LATEST 2 + COLLAPSE)
+    ============================ --}}
     @php
-        // Sort all replies newest → oldest
         $allRepliesDesc = $ticket->replies->sortByDesc('created_at')->values();
-
-        // Take the newest 2 replies for the visible area
         $latestReplies = $allRepliesDesc->take(2);
-
-        // Older replies = everything else, shown in "earlier conversation(s)"
         $olderReplies = $ticket->replies
             ->filter(fn($reply) => !$latestReplies->contains('id', $reply->id))
             ->sortBy('created_at')
@@ -216,7 +218,6 @@
 
     <div class="support-ticket-thread">
 
-        {{-- Latest messages (newest at the top) --}}
         @foreach ($latestReplies as $reply)
             <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
                 <div class="support-message-header">
@@ -239,7 +240,7 @@
             </div>
         @endforeach
 
-        {{-- Collapsible earlier conversation (original ticket + older replies) --}}
+
         @if($ticket->message || $olderReplies->isNotEmpty())
             <div class="support-older-wrapper">
                 <button type="button"
@@ -250,13 +251,10 @@
 
                 <div class="support-older-container" data-support-older-container hidden>
 
-                    {{-- Original ticket message (always oldest) --}}
                     @if ($ticket->message)
                         <div class="support-message support-message-customer">
                             <div class="support-message-header">
-                                <span class="support-message-author">
-                                    {{ $customer->name ?? 'You' }}
-                                </span>
+                                <span class="support-message-author">{{ $customer->name ?? 'You' }}</span>
                                 <span class="support-message-time">
                                     {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                                 </span>
@@ -267,7 +265,6 @@
                         </div>
                     @endif
 
-                    {{-- Older replies in chronological order --}}
                     @foreach ($olderReplies as $reply)
                         <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
                             <div class="support-message-header">
@@ -289,6 +286,7 @@
                             </div>
                         </div>
                     @endforeach
+
                 </div>
             </div>
         @endif
@@ -297,11 +295,19 @@
 </div>
 @endsection
 
-@push('scripts')
-    <!-- Quill JS -->
-    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
-    <!-- Emoji plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/quill-emoji@0.2.0/dist/quill-emoji.js"></script>
+@push('scripts')
+
+    {{-- Load Quill from local vendor folder --}}
+    <script src="{{ secure_asset('vendor/quill/quill.min.js') }}"></script>
+
+    {{-- Emoji plugin --}}
+    <script src="{{ secure_asset('vendor/quill/quill-emoji.js') }}"></script>
+
+    {{-- Support dropdown & toggle logic --}}
     <script src="{{ secure_asset('js/support/support.js') }}"></script>
+
+    {{-- NEW: Quill initialiser --}}
+    <script src="{{ secure_asset('js/support/support-quill.js') }}"></script>
+
 @endpush
