@@ -1,0 +1,206 @@
+/*
+ * File: public/css/admin/admin-tickets.css
+ * Description: Styling for SharpLync admin ticket portal
+ */
+
+.text-sharplync-navy {
+    color: #0A2A4D;
+}
+
+.btn-teal {
+    background-color: #2CBFAE;
+    border-color: #2CBFAE;
+    color: #ffffff;
+}
+
+.btn-teal:hover {
+    filter: brightness(0.95);
+    color: #ffffff;
+}
+
+/* Table */
+.admin-ticket-table tbody tr:hover {
+    background-color: #f7fbff;
+}
+
+.ticket-subject-link {
+    text-decoration: none;
+    color: #0A2A4D;
+}
+
+.ticket-subject-link:hover {
+    text-decoration: underline;
+}
+
+/* Priority badges */
+.priority-badge {
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.priority-low {
+    background-color: #e7f8f3;
+    color: #0b5345;
+}
+
+.priority-medium {
+    background-color: #fff4e5;
+    color: #b36b00;
+}
+
+.priority-high {
+    background-color: #ffe5e7;
+    color: #b91c1c;
+}
+
+/* Status badges */
+.status-badge {
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.status-open {
+    background-color: #e6f2ff;
+    color: #0b63ce;
+}
+
+.status-pending {
+    background-color: #fff9e6;
+    color: #92400e;
+}
+
+.status-resolved {
+    background-color: #e5f7ef;
+    color: #15803d;
+}
+
+.status-closed {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+/* Conversation */
+.ticket-conversation-wrapper {
+    max-height: 580px;
+    overflow-y: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background: radial-gradient(circle at top left, #f5fbff 0, #ffffff 45%);
+}
+
+.ticket-message-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+}
+
+.ticket-avatar {
+    display: flex;
+    align-items: flex-start;
+}
+
+.ticket-avatar span {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ticket-avatar-customer {
+    background-color: #e6f4ff;
+    color: #0A2A4D;
+}
+
+.ticket-avatar-admin {
+    background-color: #0A2A4D;
+    color: #ffffff;
+}
+
+.ticket-message-bubble {
+    max-width: 100%;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.8rem;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    position: relative;
+}
+
+@media (min-width: 576px) {
+    .ticket-message-bubble {
+        max-width: 80%;
+    }
+}
+
+.ticket-bubble-customer {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+.ticket-bubble-admin {
+    background: linear-gradient(135deg, #104976, #2CBFAE);
+    color: #ffffff;
+}
+
+.ticket-bubble-admin .ticket-message-meta span {
+    color: #e5f7ff;
+}
+
+.ticket-message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    gap: 1rem;
+}
+
+.ticket-message-author {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.ticket-message-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.ticket-message-body {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 0.1rem;
+}
+
+/* Internal notes */
+.ticket-internal-notes-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.ticket-note-item {
+    padding: 0.4rem 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+}
+
+/* Quick resolve button */
+.js-ticket-quick-resolve {
+    border-radius: 999px !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .admin-ticket-details-card .card-body,
+    .admin-ticket-conversation-card .card-body,
+    .admin-ticket-reply-card .card-body {
+        padding: 0.75rem;
+    }
+}

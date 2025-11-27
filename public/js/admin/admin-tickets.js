@@ -1,20 +1,14 @@
 /*
- * File: public/js/admin-tickets.js
- * Version: v1.0 (Phase 1)
- * Description:
- * - Small enhancements for admin ticket UI
- * - Quick resolve confirmation
+ * File: public/js/admin/admin-tickets.js
+ * Description: Small enhancements for SharpLync admin ticket portal
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Quick resolve buttons on index page
-    const quickResolveButtons = document.querySelectorAll('.ticket-quick-resolve-btn');
-
-    quickResolveButtons.forEach(function (btn) {
+    // Quick resolve buttons
+    document.querySelectorAll('.js-ticket-quick-resolve').forEach(function (btn) {
         btn.addEventListener('click', function () {
             const ticketId = this.getAttribute('data-ticket-id');
-            const url = this.getAttribute('data-ticket-resolve-url');
-
+            const url = this.getAttribute('data-resolve-url');
             if (!url) return;
 
             const confirmMsg = `Mark ticket #${ticketId} as resolved?`;
@@ -22,12 +16,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Create a tiny form and submit it
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = url;
 
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = document.querySelector('meta[name=\"csrf-token\"]');
             if (csrfToken) {
                 const inputCsrf = document.createElement('input');
                 inputCsrf.type = 'hidden';
@@ -46,4 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
             form.submit();
         });
     });
+
+    // Auto-scroll conversation to bottom
+    const convo = document.querySelector('.ticket-conversation-wrapper');
+    if (convo) {
+        convo.scrollTop = convo.scrollHeight;
+    }
 });
