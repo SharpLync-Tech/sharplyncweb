@@ -1,5 +1,5 @@
 {{-- resources/views/customers/support/show.blade.php --}}
-{{-- SharpLync Support Module V1: Ticket detail + replies --}}
+{{-- SharpLync Support Module V1: Ticket detail + replies (upgraded view) --}}
 
 @extends('customers.layouts.customer-layout')
 
@@ -11,23 +11,37 @@
 
 @section('content')
 <div class="support-wrapper">
-    <div class="support-header">        
+    <div class="support-header">
         <h1 class="support-title">
             {{ $ticket->subject }}
         </h1>
+
         <a href="{{ route('customer.support.index') }}" class="support-link-back">
             Back to my tickets
         </a>
-        <p class="support-subtitle">
-            <p class="support-timezone-note">All times shown in AEST (Brisbane time).</p>
-            Support Reference: <strong>{{ $ticket->reference }}</strong>            
+
+        <p class="support-timezone-note">
+            All times shown in AEST (Brisbane time).
         </p>
-        
+        <p class="support-subtitle">
+            Support Reference: <strong>{{ $ticket->reference }}</strong>
+        </p>
     </div>
 
     @if (session('success'))
         <div class="support-alert support-alert-success">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="support-alert support-alert-error">
+            <strong>Please check your reply:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
@@ -50,9 +64,9 @@
                 <ul class="support-dropdown-list">
                     @php
                         $statusOptions = [
-                            'open' => 'Open',                            
+                            'open'     => 'Open',
                             'resolved' => 'Resolved',
-                            'closed' => 'Closed',
+                            'closed'   => 'Closed',
                         ];
                     @endphp
                     @foreach ($statusOptions as $value => $label)
@@ -87,9 +101,9 @@
                 <ul class="support-dropdown-list">
                     @php
                         $priorityOptions = [
-                            'low' => 'Low',
+                            'low'    => 'Low',
                             'medium' => 'Medium',
-                            'high' => 'High',
+                            'high'   => 'High',
                             'urgent' => 'Urgent',
                         ];
                     @endphp
@@ -111,67 +125,15 @@
         <span class="support-ticket-date">
             Opened {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
         </span>
+
         @if($ticket->last_reply_at)
             <span class="support-ticket-date">
-                Last updated {{ $ticket->last_reply_at->diffForHumans() }}
+                Last updated {{ $ticket->last_reply_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
             </span>
         @endif
     </div>
 
-    <div class="support-ticket-thread">
-        <div class="support-message support-message-customer">
-            <div class="support-message-header">
-                <span class="support-message-author">
-                    {{ $customer->name ?? 'You' }}
-                </span>
-                <span class="support-message-time">
-                    {{ $ticket->created_at->format('d M Y, H:i') }}
-                </span>
-            </div>
-            <div class="support-message-body">
-                {!! nl2br(e($ticket->message)) !!}
-            </div>
-        </div>
-
-        @foreach ($ticket->replies as $reply)
-    <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
-        <div class="support-message-header">
-            <span class="support-message-author">
-
-                {{-- Correct author label --}}
-                @if ($reply->isCustomer())
-                    You
-                @elseif ($reply->isAdmin())
-                    SharpLync Support
-                @else
-                    Unknown
-                @endif
-
-            </span>
-            <span class="support-message-time">
-                {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
-            </span>
-        </div>
-
-        <div class="support-message-body">
-            {!! nl2br(e($reply->message)) !!}
-        </div>
-    </div>
-@endforeach
-
-    </div>
-
-    @if ($errors->any())
-        <div class="support-alert support-alert-error">
-            <strong>Please check your reply:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
+    {{-- Reply box at the top if ticket is not closed/resolved --}}
     @if($ticket->status !== 'closed' && $ticket->status !== 'resolved')
         <div class="support-reply-box">
             <h2 class="support-reply-title">Add a reply</h2>
@@ -202,6 +164,101 @@
             If you need further help on this issue, please open a new support request.
         </div>
     @endif
+
+    @php
+        // Sort all replies newest → oldest
+        $allRepliesDesc = $ticket->replies->sortByDesc('created_at')->values();
+
+        // Take the newest 2 replies for the visible area
+        $latestReplies = $allRepliesDesc->take(2);
+
+        // Older replies = everything else, shown in "earlier conversation(s)"
+        $olderReplies = $ticket->replies
+            ->filter(fn($reply) => !$latestReplies->contains('id', $reply->id))
+            ->sortBy('created_at')
+            ->values();
+    @endphp
+
+    <div class="support-ticket-thread">
+
+        {{-- Latest messages (newest at the top) --}}
+        @foreach ($latestReplies as $reply)
+            <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
+                <div class="support-message-header">
+                    <span class="support-message-author">
+                        @if ($reply->isCustomer())
+                            You
+                        @elseif ($reply->isAdmin())
+                            SharpLync Support
+                        @else
+                            Unknown
+                        @endif
+                    </span>
+                    <span class="support-message-time">
+                        {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
+                    </span>
+                </div>
+                <div class="support-message-body">
+                    {!! nl2br(e($reply->message)) !!}
+                </div>
+            </div>
+        @endforeach
+
+        {{-- Collapsible earlier conversation (original ticket + older replies) --}}
+        @if($ticket->message || $olderReplies->isNotEmpty())
+            <div class="support-older-wrapper">
+                <button type="button"
+                        class="support-older-toggle"
+                        data-support-older-toggle>
+                    View earlier conversation(s)
+                </button>
+
+                <div class="support-older-container" data-support-older-container hidden>
+
+                    {{-- Original ticket message (always oldest) --}}
+                    @if ($ticket->message)
+                        <div class="support-message support-message-customer">
+                            <div class="support-message-header">
+                                <span class="support-message-author">
+                                    {{ $customer->name ?? 'You' }}
+                                </span>
+                                <span class="support-message-time">
+                                    {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
+                                </span>
+                            </div>
+                            <div class="support-message-body">
+                                {!! nl2br(e($ticket->message)) !!}
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Older replies in chronological order --}}
+                    @foreach ($olderReplies as $reply)
+                        <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
+                            <div class="support-message-header">
+                                <span class="support-message-author">
+                                    @if ($reply->isCustomer())
+                                        You
+                                    @elseif ($reply->isAdmin())
+                                        SharpLync Support
+                                    @else
+                                        Unknown
+                                    @endif
+                                </span>
+                                <span class="support-message-time">
+                                    {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
+                                </span>
+                            </div>
+                            <div class="support-message-body">
+                                {!! nl2br(e($reply->message)) !!}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+    </div>
 </div>
 @endsection
 

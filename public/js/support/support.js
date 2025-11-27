@@ -1,16 +1,19 @@
-
 /* public/js/support/support.js */
 /* SharpLync Support Module V1
-   Status / priority dropdown handling.
+   Status / priority dropdown handling + earlier conversation toggle
 */
 
 document.addEventListener('DOMContentLoaded', function () {
     if (window.console && console.log) {
-        console.log('SharpLync Support Module JS loaded (dropdowns active).');
+        console.log('SharpLync Support Module JS loaded (dropdowns + toggle active).');
     }
 
     const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
+
+    /* ---------------------------------------------
+       DROPDOWN HANDLING (status & priority)
+    ----------------------------------------------*/
 
     function closeAllDropdowns(exceptEl) {
         document.querySelectorAll('.support-dropdown.is-open').forEach(function (panel) {
@@ -87,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    // We don't strictly need response JSON; ignore body on success.
                     return response.json().catch(function () { return {}; });
                 })
                 .then(function () {
@@ -123,9 +125,35 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Clicked somewhere else: close all dropdowns
+        // Click somewhere else: close all dropdowns
         if (!event.target.closest('.support-dropdown')) {
             closeAllDropdowns(null);
         }
     });
+
+    /* ---------------------------------------------
+       EARLIER CONVERSATION COLLAPSIBLE SECTION
+    ----------------------------------------------*/
+
+    const toggleOlderBtn = document.querySelector('[data-support-older-toggle]');
+    const olderContainer = document.querySelector('[data-support-older-container]');
+
+    if (toggleOlderBtn && olderContainer) {
+        const closedLabel = 'View earlier conversation(s)';
+        const openLabel = 'Hide earlier conversation(s)';
+
+        toggleOlderBtn.addEventListener('click', function () {
+            const isHidden = olderContainer.hasAttribute('hidden');
+
+            if (isHidden) {
+                olderContainer.removeAttribute('hidden');
+                toggleOlderBtn.textContent = openLabel;
+                toggleOlderBtn.classList.add('is-open');
+            } else {
+                olderContainer.setAttribute('hidden', 'hidden');
+                toggleOlderBtn.textContent = closedLabel;
+                toggleOlderBtn.classList.remove('is-open');
+            }
+        });
+    }
 });

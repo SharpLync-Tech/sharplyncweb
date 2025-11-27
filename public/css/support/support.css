@@ -566,3 +566,91 @@
 .support-dropdown-toggle.support-chip {
     padding-inline: 0.7rem;
 }
+
+/* -------------------------------------------
+   Message bubbles readability
+-------------------------------------------- */
+
+.support-message {
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.support-message-customer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+.support-message-staff {
+    background: #0A2A4D;
+    color: #ffffff;
+}
+
+.support-message-staff .support-message-body,
+.support-message-staff .support-message-author,
+.support-message-staff .support-message-time {
+    color: #ffffff;
+}
+
+.support-message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.support-message-author {
+    font-weight: 600;
+}
+
+.support-message-time {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* -------------------------------------------
+   Earlier conversation collapsible section
+-------------------------------------------- */
+
+.support-older-wrapper {
+    margin-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.support-older-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid #d1d9e6;
+    background: #ffffff;
+    color: #104976;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.support-older-toggle:hover {
+    background: #f5f7fb;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.support-older-toggle.is-open {
+    background: #104976;
+    color: #ffffff;
+    border-color: #104976;
+}
+
+.support-older-container {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #d1d9e6;
+    background: #ffffff; /* matches SharpLync card background */
+}
+
