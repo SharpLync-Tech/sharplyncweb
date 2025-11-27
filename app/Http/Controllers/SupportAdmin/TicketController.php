@@ -95,12 +95,13 @@ class TicketController extends Controller
         ]);
 
         SupportTicketReply::create([
-            'ticket_id'   => $ticket->id,
-            'customer_id' => $ticket->customer_id,
-            'admin_id'    => Auth::id(),
-            'message'     => $data['message'],
+            'ticket_id' => $ticket->id,
+            'user_type' => 'admin',
+            'user_id'   => Auth::id(),
+            'message'   => $data['message'],
             'is_internal' => 0,
         ]);
+
 
         $ticket->last_reply_at = now();
 
@@ -121,12 +122,13 @@ class TicketController extends Controller
         ]);
 
         SupportTicketReply::create([
-            'ticket_id'   => $ticket->id,
-            'customer_id' => $ticket->customer_id,
-            'admin_id'    => Auth::id(),
-            'message'     => $data['message'],
+            'ticket_id' => $ticket->id,
+            'user_type' => 'admin',
+            'user_id'   => Auth::id(),
+            'message'   => $data['message'],
             'is_internal' => 1,
         ]);
+
 
         return back()->with('success', 'Internal note added.');
     }
