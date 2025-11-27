@@ -20,9 +20,9 @@
                 <tr>
                     <td style="padding:30px 20px; background:#0A2A4D;" align="center">
 
-                        <img src="{{ asset('storage/uploads/webemail.png') }}" 
-                             alt="SharpLync" 
-                             style="max-width:220px; margin-bottom:10px;">
+                        <img src="https://sharplync.com.au/images/sharplync-logo.png"
+                            alt="SharpLync Logo"
+                            style="max-width:220px; margin-bottom:10px;">
 
                         <p style="margin:0; color:#2CBFAE; font-size:13px; letter-spacing:1px;">
                             YOUR PERSONAL TECH LINK, BACKED BY EXPERIENCE
