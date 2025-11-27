@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     if (window.console && console.log) {
-        console.log('SharpLync Support Module JS loaded (dropdowns + toggle active).');
+        console.log('SharpLync Support Module JS loaded (dropdowns + toggle + Quill active).');
     }
 
     const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
@@ -156,4 +156,35 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+
+    /* =====================================================
+       QUILL EDITOR (Customer reply box enhancement)
+    ====================================================== */
+
+    const quillEl = document.getElementById('quill-editor');
+    const hiddenInput = document.getElementById('quill-html');
+
+    if (quillEl && hiddenInput) {
+        console.log("Quill editor initialising…");
+
+        const quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: '#quill-toolbar'
+                },
+                "emoji-toolbar": true,
+                "emoji-textarea": true,
+                "emoji-shortname": true
+            },
+        });
+
+        // Push HTML into hidden input before POST
+        const form = quillEl.closest('form');
+        form.addEventListener('submit', function () {
+            hiddenInput.value = quill.root.innerHTML;
+        });
+    }
+
 });

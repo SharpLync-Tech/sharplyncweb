@@ -16,6 +16,13 @@
   {{-- Base portal stylesheet --}}
   <link rel="stylesheet" href="/css/customer.css?v=3003">
 
+  <!-- Quill Styles -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+
+  <!-- Emoji Plugin Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill-emoji@0.1.7/dist/quill-emoji.css">
+
+
   {{-- Page-specific styles (edit profile etc.) --}}
   @stack('styles')
 </head>
@@ -45,6 +52,11 @@
   {{-- 🚨 THIS WAS MISSING AND CAUSED EVERYTHING TO BREAK --}}
   @yield('scripts')
   @stack('scripts')
+  <!-- Quill Core -->
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+  <!-- Emoji plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/quill-emoji@0.1.7/dist/quill-emoji.js"></script>
 
 </body>
 </html>

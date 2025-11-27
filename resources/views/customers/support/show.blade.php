@@ -137,28 +137,55 @@
     {{-- Reply box at the top if ticket is not closed/resolved --}}
     @if($ticket->status !== 'closed' && $ticket->status !== 'resolved')
         <div class="support-reply-box">
-            <h2 class="support-reply-title">Add a reply</h2>
-            <form action="{{ route('customer.support.tickets.reply.store', $ticket) }}"
-                  method="POST"
-                  class="support-form">
-                @csrf
+                <h2 class="support-reply-title">Add a reply</h2>
 
-                <div class="support-form-group">
-                    <label for="message" class="support-label">Your message</label>
-                    <textarea id="message"
-                              name="message"
-                              class="support-textarea"
-                              rows="5"
-                              required>{{ old('message') }}</textarea>
-                </div>
+                <form action="{{ route('customer.support.tickets.reply.store', $ticket) }}"
+                    method="POST"
+                    class="support-form">
+                    @csrf
 
-                <div class="support-form-actions">
-                    <button type="submit" class="support-btn-primary">
-                        Send Reply
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div class="support-form-group">
+                        <label class="support-label">Your message</label>
+
+                        <!-- Toolbar -->
+                        <div id="quill-toolbar" class="quill-toolbar">
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                            </span>
+
+                            <span class="ql-formats">
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+
+                            <span class="ql-formats">
+                                <button class="ql-emoji"></button>
+                            </span>
+
+                            <span class="ql-formats attach-btn">
+                                <label>
+                                    📎
+                                    <input type="file" name="attachment" hidden>
+                                </label>
+                            </span>
+                        </div>
+
+                        <!-- Quill Editor -->
+                        <div id="quill-editor" class="quill-editor"></div>
+
+                        <!-- Hidden input for Laravel -->
+                        <input type="hidden" name="message" id="quill-html">
+                    </div>
+
+                    <div class="support-form-actions">
+                        <button type="submit" class="support-btn-primary">
+                            Send Reply
+                        </button>
+                    </div>
+                </form>
+            </div>
+
     @else
         <div class="support-ticket-closed-note">
             This ticket is marked as <strong>{{ ucfirst($ticket->status) }}</strong>.
