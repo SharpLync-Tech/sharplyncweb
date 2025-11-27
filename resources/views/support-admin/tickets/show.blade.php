@@ -28,13 +28,18 @@
     </div>
 
     <div class="support-admin-ticket-layout">
+
         <div class="support-admin-ticket-main">
+
+            {{-- ✅ MOVED REPLY BOX TO THE TOP --}}
+            @include('support-admin.tickets.partials.reply', ['ticket' => $ticket])
+
+            {{-- Thread now appears *after* the reply box --}}
             @include('support-admin.tickets.partials.thread', [
                 'ticket' => $ticket,
                 'messages' => $messages
             ])
 
-            @include('support-admin.tickets.partials.reply', ['ticket' => $ticket])
         </div>
 
         <aside class="support-admin-ticket-side">
@@ -45,5 +50,6 @@
                 'internalNotes' => $internalNotes
             ])
         </aside>
+
     </div>
 @endsection
