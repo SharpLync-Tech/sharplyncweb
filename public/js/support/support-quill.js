@@ -38,10 +38,10 @@ try {
 // -----------------------------------------------------
 // 2. Initialise Quill Editor
 // -----------------------------------------------------
-var quill = new Quill('#supportEditor', {
+var quill = new Quill('#quill-editor', {
     theme: 'snow',
     modules: {
-        toolbar: '#supportEditorToolbar',
+        toolbar: '#quill-toolbar',
         "emoji-toolbar": true,
         "emoji-textarea": false,
         "emoji-shortname": true,
