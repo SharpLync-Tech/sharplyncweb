@@ -299,10 +299,10 @@
 @push('scripts')
 
     {{-- Load Quill from local vendor folder --}}
-    <script src="{{ secure_asset('vendor/quill/quill.min.js') }}"></script>
+    <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
 
     {{-- Emoji plugin --}}
-    <script src="{{ secure_asset('vendor/quill/quill-emoji.js') }}"></script>
+    <script src="{{ secure_asset('quill/quill-emoji.js') }}"></script>
 
     {{-- Support dropdown & toggle logic --}}
     <script src="{{ secure_asset('js/support/support.js') }}"></script>

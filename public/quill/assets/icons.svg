@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Bold -->
+  <symbol id="ql-icon-bold" viewBox="0 0 18 18">
+    <path d="M5.5 4h4a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-2.5 3.35v.15a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5h-4a1 1 0 01-1-1v-12a1 1 0 011-1z"/>
+  </symbol>
+
+  <!-- Italic -->
+  <symbol id="ql-icon-italic" viewBox="0 0 18 18">
+    <path d="M7.5 4h3l-2 10h-3l2-10z"/>
+  </symbol>
+
+  <!-- Underline -->
+  <symbol id="ql-icon-underline" viewBox="0 0 18 18">
+    <path d="M5 4v6a4 4 0 008 0V4M4 14h10"/>
+  </symbol>
+
+  <!-- Strike -->
+  <symbol id="ql-icon-strike" viewBox="0 0 18 18">
+    <path d="M10.5 4h-3a4 4 0 000 8h3m0-8v8m-6-4h9"/>
+  </symbol>
+
+  <!-- Blockquote -->
+  <symbol id="ql-icon-blockquote" viewBox="0 0 18 18">
+    <path d="M7 5h-2l-2 4h2v5h4v-5l2-4h-2V5zm6 0h-2l-2 4h2v5h4v-5l2-4h-2V5z"/>
+  </symbol>
+
+  <!-- Code Block -->
+  <symbol id="ql-icon-code-block" viewBox="0 0 18 18">
+    <path d="M6 7l-4 4 4 4m6-8l4 4-4 4m-5-4h10"/>
+  </symbol>
+
+  <!-- Header (used for both header 1 & 2 dropdown) -->
+  <symbol id="ql-icon-header" viewBox="0 0 18 18">
+    <path d="M16 4v2h-2v8h-2V6h-2V4h6zM4 4v10h4a2 2 0 002-2v-2a2 2 0 00-2-2H4V6h4V4H4z"/>
+  </symbol>
+
+  <!-- List Ordered -->
+  <symbol id="ql-icon-list-ordered" viewBox="0 0 18 18">
+    <path d="M7 5h9m-9 4h9m-9 4h9M5 4h1v2H5V4zm0 6h1v4H5v-4zm-1 5h2v1H4v-1z"/>
+  </symbol>
+
+  <!-- List Bullet -->
+  <symbol id="ql-icon-list-bullet" viewBox="0 0 18 18">
+    <path d="M7 5h9m-9 4h9m-9 4h9M4 6.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+  </symbol>
+
+  <!-- Align (center, right, justify use the same base icon) -->
+  <symbol id="ql-icon-align" viewBox="0 0 18 18">
+    <path d="M3 5h12M3 9h12M3 13h12"/>
+  </symbol>
+
+  <!-- Direction RTL -->
+  <symbol id="ql-icon-direction" viewBox="0 0 18 18">
+    <path d="M10 4l4 4-4-4m-8 1h6m-6 4h9m-9 4h6"/>
+  </symbol>
+
+  <!-- Link -->
+  <symbol id="ql-icon-link" viewBox="0 0 18 18">
+    <path d="M10 12.828l-1.414 1.414a4 4 0 01-5.656 0l-1.414-1.414a4 4 0 010-5.656l2.828-2.828a4 4 0 015.656 0  l-1.414 1.414a2 2 0 00-2.828 0l-2.828 2.828a2 2 0 000 2.828l1.414 1.414a2 2 0 002.828 0L10 12.828zM8 5.172l1.414-1.414a4 4 0 015.656 0l1.414 1.414a4 4 0 010 5.656l-2.828 2.828a4 4 0 01-5.656 0l1.414-1.414a2 2 0 002.828 0l2.828-2.828a2 2 0 000-2.828L13.656 5.172a2 2 0 00-2.828 0L8 5.172z"/>
+  </symbol>
+
+  <!-- Image -->
+  <symbol id="ql-icon-image" viewBox="0 0 18 18">
+    <path d="M14 4H4a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V5a1 1 0 00-1-1zm-9.5 7l2-2 2.5 2.5L12 8l2 3H5z"/>
+    <circle cx="7" cy="7" r="1.5"/>
+  </symbol>
+
+  <!-- Video -->
+  <symbol id="ql-icon-video" viewBox="0 0 18 18">
+    <path d="M14 4H4a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V5a1 1 0 00-1-1zm-3 6.5l-5-3v6l5-3z"/>
+  </symbol>
+
+  <!-- Formula -->
+  <symbol id="ql-icon-formula" viewBox="0 0 18 18">
+    <path d="M13.5 14h-8l-1.5-4h2l-1.5 4h-2l2.5-7h2l1.5 4h-2l1.5-4h8l1 3h-2l-.5-1.5h-2l.5 1.5h-2l-1-3h3z"/>
+  </symbol>
+
+  <!-- Clean (remove formatting) -->
+  <symbol id="ql-icon-clean" viewBox="0 0 18 18">
+    <path d="M14.5 4l-11 11m0-11l11 11"/>
+  </symbol>
+
+  <!-- Background color -->
+  <symbol id="ql-icon-background" viewBox="0 0 18 18">
+    <path d="M5 13h8l-3.5-9-3.5 9zM4 16h10"/>
+  </symbol>
+
+  <!-- Text color -->
+  <symbol id="ql-icon-color" viewBox="0 0 18 18">
+    <path d="M5 13h8l-3.5-9-3.5 9zM4 16h10"/>
+  </symbol>
+
+  <!-- Font size -->
+  <symbol id="ql-icon-size" viewBox="0 0 18 18">
+    <path d="M13 5h3l-4 10h-2l-4-10h3m-4-1v2h2V4H8z"/>
+  </symbol>
+
+  <!-- Script (superscript/subscript) -->
+  <symbol id="ql-icon-script" viewBox="0 0 18 18">
+    <path d="M13.5 4a2.5 2.5 0 010 5h-3l-2 7H6l2-7H5.5a2.5 2.5 0 010-5h8V4h-3zm0 3h3a1.5 1.5 0 000-3h-3v3z"/>
+  </symbol>
+
+  <!-- Indent +1 / -1 -->
+  <symbol id="ql-icon-indent" viewBox="0 0 18 18">
+    <path d="M3 5h12M3 9h12M3 13h12M9 4l4 5-4 5"/>
+  </symbol>
+</svg>
