@@ -6,7 +6,14 @@
 @section('title', 'Ticket ' . $ticket->reference)
 
 @push('styles')
+     <!-- Quill editor styles -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.core.css" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <!-- Emoji plugin -->
+    <link href="https://cdn.jsdelivr.net/npm/quill-emoji@0.2.0/dist/quill-emoji.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ secure_asset('css/support/support.css') }}">
+
 @endpush
 
 @section('content')
@@ -291,5 +298,10 @@
 @endsection
 
 @push('scripts')
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+    <!-- Emoji plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/quill-emoji@0.2.0/dist/quill-emoji.js"></script>
     <script src="{{ secure_asset('js/support/support.js') }}"></script>
 @endpush
