@@ -1,54 +1,109 @@
+{{-- resources/views/support-admin/tickets/partials/thread.blade.php --}}
+{{-- SharpLync Admin Support Thread (Upgraded: matches customer UI flow) --}}
+
+@php
+    // Combine original ticket message + replies into a unified timeline
+    $allMessages = collect();
+
+    if ($ticket->message) {
+        $allMessages->push((object)[
+            'id'        => 'ticket-root',
+            'is_root'   => true,
+            'timestamp' => $ticket->created_at,
+            'body'      => $ticket->message,
+            'isCustomer'=> true,
+            'isAdmin'   => false,
+            'authorName'=> $ticket->customerProfile->business_name
+                ?? ($ticket->customerUser
+                        ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
+                        : 'Customer'),
+        ]);
+    }
+
+    foreach ($messages as $msg) {
+        $isCustomer = $msg->isCustomer();
+        $isAdmin    = $msg->isAdmin();
+
+        // Determine author name
+        if ($isCustomer) {
+            $authorName = $ticket->customerProfile->business_name
+                ?? ($ticket->customerUser
+                        ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
+                        : 'Customer');
+        } elseif ($isAdmin) {
+            $authorName = $msg->author?->name ?? 'Support Agent';
+        } else {
+            $authorName = 'Unknown';
+        }
+
+        $allMessages->push((object)[
+            'id'        => $msg->id,
+            'is_root'   => false,
+            'timestamp' => $msg->created_at,
+            'body'      => $msg->message,
+            'isCustomer'=> $isCustomer,
+            'isAdmin'   => $isAdmin,
+            'authorName'=> $authorName,
+        ]);
+    }
+
+    // Sort newest → oldest
+    $sortedDesc = $allMessages->sortByDesc('timestamp')->values();
+
+    // Latest 2 visible
+    $latestTwo = $sortedDesc->take(2);
+
+    // Older messages
+    $older = $sortedDesc->slice(2)->sortBy('timestamp')->values();
+@endphp
+
 <div class="support-admin-thread-card">
+
     <div class="support-admin-thread-list">
-        @if($ticket->message)
+
+        {{-- ===========================================
+             SHOW LATEST TWO MESSAGES
+        ============================================ --}}
+        @foreach($latestTwo as $msg)
             @include('support-admin.tickets.partials.message', [
-                'isCustomer' => true,
-                'authorName' => $ticket->customerProfile->business_name
-                    ?? ($ticket->customerUser ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name : 'Customer'),
-                'timestamp'  => $ticket->created_at,
-                'body'       => $ticket->message,
-                'label'      => 'Ticket created',
+                'isCustomer' => $msg->isCustomer,
+                'authorName' => $msg->authorName,
+                'timestamp'  => $msg->timestamp,
+                'body'       => $msg->body,
+                'label'      => $msg->isCustomer ? 'Customer' : 'Support',
             ])
-        @endif
+        @endforeach
 
-        @forelse($messages as $msg)
-            @php
-                // New logic using user_type + author()
 
-                $isCustomer = $msg->isCustomer();
-                $isAdmin    = $msg->isAdmin();
+        {{-- ===========================================
+             COLLAPSIBLE: "View earlier conversation(s)"
+        ============================================ --}}
+        @if($older->isNotEmpty())
+            <div class="support-admin-older-wrapper">
 
-                // Name for display
-                if ($isCustomer) {
-                    $authorName = $ticket->customerProfile->business_name
-                        ?? ($ticket->customerUser
-                                ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
-                                : 'Customer');
-                } elseif ($isAdmin) {
-                    $authorName = $msg->author?->name ?? 'Support Agent';
-                } else {
-                    $authorName = 'Unknown';
-                }
+                <button type="button"
+                        class="support-admin-older-toggle"
+                        data-admin-older-toggle>
+                    View earlier conversation(s)
+                </button>
 
-            @endphp
+                <div class="support-admin-older-container"
+                     data-admin-older-container
+                     hidden>
 
-            @include('support-admin.tickets.partials.message', [
-                'isCustomer' => $isCustomer,
-                'authorName' => $authorName,
-                'timestamp'  => $msg->created_at,
-                'body'       => $msg->message,
-                'label'      => $isCustomer ? 'Customer' : 'Support',
-            ])
-        @empty
-            @if(!$ticket->message)
-                <div class="support-admin-empty">
-                    <p class="support-admin-empty-title">No messages yet</p>
-                    <p class="support-admin-empty-text">
-                        Use the reply box below to start the conversation.
-                    </p>
+                    @foreach($older as $msg)
+                        @include('support-admin.tickets.partials.message', [
+                            'isCustomer' => $msg->isCustomer,
+                            'authorName' => $msg->authorName,
+                            'timestamp'  => $msg->timestamp,
+                            'body'       => $msg->body,
+                            'label'      => $msg->isCustomer ? 'Customer' : 'Support',
+                        ])
+                    @endforeach
+
                 </div>
-            @endif
-        @endforelse
+            </div>
+        @endif
 
     </div>
 </div>

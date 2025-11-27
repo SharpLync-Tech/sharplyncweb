@@ -841,4 +841,47 @@
     font-size: 15px;
 }
 
+/* Collapsible older section (Admin) */
+.support-admin-older-wrapper {
+    margin-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.support-admin-older-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid #d1d9e6;
+    background: #ffffff;
+    color: #104976;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s, transform .1s, color .15s;
+}
+
+.support-admin-older-toggle:hover {
+    background: #f5f7fb;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.support-admin-older-toggle.is-open {
+    background: #104976;
+    color: #ffffff;
+    border-color: #104976;
+}
+
+.support-admin-older-container {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #d1d9e6;
+    background: #ffffff;
+}
+
+
 
