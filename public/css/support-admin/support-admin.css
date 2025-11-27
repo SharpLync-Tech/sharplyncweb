@@ -796,3 +796,49 @@
     }
 }
 
+/* ===== MATCH CUSTOMER MESSAGE STYLING ===== */
+
+/* Customer message (white card) */
+.admin-message-customer {
+    background: #ffffff;
+    border: 1px solid #e6edf5;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    max-width: 720px;
+}
+
+/* Support message (navy card) */
+.admin-message-staff {
+    background: #0A2A4D; /* SharpLync navy */
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    max-width: 720px;
+}
+
+/* Header */
+.admin-message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.admin-message-author {
+    font-weight: 600;
+}
+
+.admin-message-time {
+    opacity: 0.75;
+    font-size: 14px;
+}
+
+/* Body */
+.admin-message-body {
+    white-space: pre-line;
+    font-size: 15px;
+}
+
+
