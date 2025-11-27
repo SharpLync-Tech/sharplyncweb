@@ -7,6 +7,7 @@
     </div>
 
     <div class="admin-message-body">
-        {!! nl2br(e($body)) !!}
+    {!! $body !!}
     </div>
+
 </div>
