@@ -361,22 +361,43 @@
 
 .support-message-customer {
     background: #ffffff;
-    border: 1px solid #d0d8e2;
+    border: 1px solid #e6edf5;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
 }
 
+
+/* STAFF MESSAGE (Agent Reply) */
 .support-message-staff {
-    background: #104976;
-    border: 1px solid #0A2A4D;
+    background: #0A2A4D;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* Staff message links */
+.support-message-staff a {
+    color: #2CBFAE;
+    text-decoration: underline;
+}
+
+/* Staff message body readability */
+.support-message-staff .support-message-body {
     color: #ffffff;
 }
 
+
 .support-message-staff .support-message-author {
+    font-weight: 600;
     color: #ffffff;
 }
 
 .support-message-staff .support-message-time {
-    color: #d0e3f7;
+    color: rgba(255, 255, 255, 0.8);
 }
+
 
 .support-reply-box {
     border-radius: 16px;
