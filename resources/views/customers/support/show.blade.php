@@ -50,11 +50,7 @@
                 <ul class="support-dropdown-list">
                     @php
                         $statusOptions = [
-                            'open' => 'Open',
-                            'pending' => 'Pending',
-                            'waiting_on_customer' => 'Waiting on customer',
-                            'waiting_on_third_party' => 'Waiting on third party',
-                            'waiting_on_stock' => 'Waiting on stock',
+                            'open' => 'Open',                            
                             'resolved' => 'Resolved',
                             'closed' => 'Closed',
                         ];
