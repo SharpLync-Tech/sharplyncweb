@@ -7,11 +7,11 @@
 
 @push('styles')
     {{-- Local Quill CSS --}}
-    <link href="{{ secure_asset('vendor/quill/quill.core.css') }}" rel="stylesheet">
-    <link href="{{ secure_asset('vendor/quill/quill.snow.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
 
     {{-- Emoji plugin --}}
-    <link href="{{ secure_asset('vendor/quill/quill-emoji.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('quill/quill-emoji.css') }}" rel="stylesheet">
 
     {{-- Support styling --}}
     <link rel="stylesheet" href="{{ secure_asset('css/support/support.css') }}">
@@ -298,7 +298,7 @@
 
 @push('scripts')
 
-    {{-- Load Quill from local vendor folder --}}
+    {{-- Load Quill from local folder --}}
     <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
 
     {{-- Emoji plugin --}}
