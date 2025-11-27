@@ -16,9 +16,10 @@
             {{ $ticket->subject }}
         </h1>
 
-        <a href="{{ route('customer.support.index') }}" class="support-link-back">
+        <a href="{{ route('customer.support.index') }}" class="support-btn-outline support-back-btn">
             Back to my tickets
         </a>
+
 
         <p class="support-timezone-note">
             All times shown in AEST (Brisbane time).

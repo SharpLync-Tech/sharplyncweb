@@ -278,6 +278,52 @@
     font-weight: 600;
 }
 
+/* -----------------------------------------------------------
+   Back to Tickets – match "View earlier conversations" button
+----------------------------------------------------------- */
+.support-back-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #cbd5e1; /* same faint border */
+    font-size: 0.9rem;
+    color: #0A2A4D;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    margin-bottom: 10px; /* tighten spacing */
+}
+
+.support-back-btn:hover {
+    background: #f1f5f9;
+    border-color: #b9c6d6;
+}
+
+/* tighten spacing under timezone label */
+.support-timezone-note {
+    margin-bottom: 4px !important;
+}
+
+
+/* ----- Tighten ticket header spacing ----- */
+.support-header {
+    margin-bottom: 0.75rem; /* reduce overall gap */
+}
+
+.support-header p {
+    margin: 0.25rem 0; /* tighten timezone + reference spacing */
+}
+
+.support-header .support-timezone-note {
+    margin-bottom: 0.25rem !important; /* specifically squash that line */
+}
+
+.support-title {
+    margin-bottom: 0.75rem; /* tighten title spacing */
+}
+
+.support-link-back {
+    margin-bottom: 0.25rem;
+}
 
 .support-input,
 .support-select,
