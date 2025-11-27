@@ -1,5 +1,5 @@
 {{-- resources/views/customers/support/show.blade.php --}}
-{{-- SharpLync Support Module V1: Ticket detail + replies (upgraded view + Quill editor) --}}
+{{-- SharpLync Support Module — Customer Ticket View (Quill-enabled) --}}
 
 @extends('customers.layouts.customer-layout')
 
@@ -19,6 +19,8 @@
 
 @section('content')
 <div class="support-wrapper">
+
+    {{-- HEADER --}}
     <div class="support-header">
         <h1 class="support-title">{{ $ticket->subject }}</h1>
 
@@ -33,6 +35,7 @@
         </p>
     </div>
 
+    {{-- ALERTS --}}
     @if (session('success'))
         <div class="support-alert support-alert-success">
             {{ session('success') }}
@@ -51,10 +54,9 @@
     @endif
 
 
-    {{-- ===========================
-        META BAR (unchanged)
-    ============================ --}}
+    {{-- META BAR --}}
     <div class="support-ticket-meta-bar">
+
         {{-- Status --}}
         <div class="support-meta-control">
             <button
@@ -79,11 +81,9 @@
                     @endphp
                     @foreach ($statusOptions as $value => $label)
                         <li>
-                            <button
-                                type="button"
-                                class="support-dropdown-option {{ $ticket->status === $value ? 'is-active' : '' }}"
-                                data-value="{{ $value }}"
-                            >
+                            <button type="button"
+                                    class="support-dropdown-option {{ $ticket->status === $value ? 'is-active' : '' }}"
+                                    data-value="{{ $value }}">
                                 {{ $label }}
                             </button>
                         </li>
@@ -117,11 +117,9 @@
                     @endphp
                     @foreach ($priorityOptions as $value => $label)
                         <li>
-                            <button
-                                type="button"
-                                class="support-dropdown-option {{ $ticket->priority === $value ? 'is-active' : '' }}"
-                                data-value="{{ $value }}"
-                            >
+                            <button type="button"
+                                    class="support-dropdown-option {{ $ticket->priority === $value ? 'is-active' : '' }}"
+                                    data-value="{{ $value }}">
                                 {{ $label }}
                             </button>
                         </li>
@@ -142,9 +140,9 @@
     </div>
 
 
-    {{-- ===========================
-        QUILL REPLY BOX
-    ============================ --}}
+    {{-- =====================================
+         REPLY BOX (ONLY IF NOT CLOSED)
+    ====================================== --}}
     @if($ticket->status !== 'closed' && $ticket->status !== 'resolved')
         <div class="support-reply-box">
             <h2 class="support-reply-title">Add a reply</h2>
@@ -158,7 +156,7 @@
                 <div class="support-form-group">
                     <label class="support-label">Your message</label>
 
-                    {{-- Quill Toolbar --}}
+                    {{-- Toolbar --}}
                     <div id="quill-toolbar" class="quill-toolbar">
                         <span class="ql-formats">
                             <button class="ql-bold"></button>
@@ -182,17 +180,15 @@
                         </span>
                     </div>
 
-                    {{-- Quill Editor --}}
+                    {{-- Editor --}}
                     <div id="quill-editor" class="quill-editor"></div>
 
-                    {{-- Hidden input for Laravel --}}
+                    {{-- Hidden field for HTML --}}
                     <input type="hidden" name="message" id="quill-html">
                 </div>
 
                 <div class="support-form-actions">
-                    <button type="submit" class="support-btn-primary">
-                        Send Reply
-                    </button>
+                    <button type="submit" class="support-btn-primary">Send Reply</button>
                 </div>
             </form>
         </div>
@@ -203,14 +199,14 @@
         </div>
     @endif
 
-
     {{-- ===========================
-        REPLIES (LATEST 2 + COLLAPSE)
+        MESSAGES DISPLAY
     ============================ --}}
     @php
         $allRepliesDesc = $ticket->replies->sortByDesc('created_at')->values();
-        $latestReplies = $allRepliesDesc->take(2);
-        $olderReplies = $ticket->replies
+        $latestReplies  = $allRepliesDesc->take(2);
+
+        $olderReplies   = $ticket->replies
             ->filter(fn($reply) => !$latestReplies->contains('id', $reply->id))
             ->sortBy('created_at')
             ->values();
@@ -218,6 +214,7 @@
 
     <div class="support-ticket-thread">
 
+        {{-- NEWEST 2 --}}
         @foreach ($latestReplies as $reply)
             <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
                 <div class="support-message-header">
@@ -230,19 +227,23 @@
                             Unknown
                         @endif
                     </span>
+
                     <span class="support-message-time">
                         {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                     </span>
                 </div>
+
                 <div class="support-message-body">
-                    {!! nl2br(e($reply->message)) !!}
+                    {!! $reply->message !!}
                 </div>
             </div>
         @endforeach
 
 
+        {{-- ORIGINAL TICKET + OLDER REPLIES --}}
         @if($ticket->message || $olderReplies->isNotEmpty())
             <div class="support-older-wrapper">
+
                 <button type="button"
                         class="support-older-toggle"
                         data-support-older-toggle>
@@ -251,22 +252,27 @@
 
                 <div class="support-older-container" data-support-older-container hidden>
 
+                    {{-- Original ticket --}}
                     @if ($ticket->message)
                         <div class="support-message support-message-customer">
                             <div class="support-message-header">
                                 <span class="support-message-author">{{ $customer->name ?? 'You' }}</span>
+
                                 <span class="support-message-time">
                                     {{ $ticket->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                                 </span>
                             </div>
+
                             <div class="support-message-body">
-                                {!! nl2br(e($ticket->message)) !!}
+                                {!! $ticket->message !!}
                             </div>
                         </div>
                     @endif
 
+                    {{-- Older replies --}}
                     @foreach ($olderReplies as $reply)
                         <div class="support-message {{ $reply->isAdmin() ? 'support-message-staff' : 'support-message-customer' }}">
+
                             <div class="support-message-header">
                                 <span class="support-message-author">
                                     @if ($reply->isCustomer())
@@ -277,13 +283,16 @@
                                         Unknown
                                     @endif
                                 </span>
+
                                 <span class="support-message-time">
                                     {{ $reply->created_at->timezone('Australia/Brisbane')->format('d M Y, H:i') }}
                                 </span>
                             </div>
+
                             <div class="support-message-body">
-                                {!! nl2br(e($reply->message)) !!}
+                                {!! $reply->message !!}
                             </div>
+
                         </div>
                     @endforeach
 
@@ -297,17 +306,15 @@
 
 
 @push('scripts')
-
-    {{-- Load Quill from local folder --}}
+    {{-- Quill --}}
     <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
 
     {{-- Emoji plugin --}}
     <script src="{{ secure_asset('quill/quill-emoji.js') }}"></script>
 
-    {{-- Support dropdown & toggle logic --}}
+    {{-- UI logic --}}
     <script src="{{ secure_asset('js/support/support.js') }}"></script>
 
-    {{-- NEW: Quill initialiser --}}
+    {{-- Quill initialiser --}}
     <script src="{{ secure_asset('js/support/support-quill.js') }}"></script>
-
 @endpush
