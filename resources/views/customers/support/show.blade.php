@@ -68,6 +68,12 @@
             >
                 {{ strtoupper(str_replace('_', ' ', $ticket->status)) }}
             </button>
+            @if ($ticket->status === 'waiting_on_customer')
+                <div class="support-status-wrapper">
+                    <span class="support-status-dot"></span>
+                    <span class="support-status-text">Waiting on you</span>
+                </div>
+            @endif
 
             <div class="support-dropdown" data-dropdown-panel="ticket-status">
                 <div class="support-dropdown-header">Change status</div>
@@ -174,7 +180,7 @@
 
                         <span class="ql-formats attach-btn">
                             <label>
-                                📎
+                                📤
                                 <input type="file" name="attachment" hidden>
                             </label>
                         </span>
