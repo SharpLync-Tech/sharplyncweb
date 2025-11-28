@@ -82,31 +82,7 @@ class TicketReplyController extends Controller
         return redirect()
             ->route('customer.support.tickets.show', $ticket)
             ->with('success', 'Your reply has been added to this ticket.');
-    }
-
-
-
-    /**
-     * Download attachment (PRIVATE)
-     */
-    public function download(TicketReply $reply)
-    {
-        $customer = auth()->guard('customer')->user();
-
-        // Ticket must belong to this customer
-        if (!$reply->ticket || $reply->ticket->customer_id !== $customer->id) {
-            abort(404);
-        }
-
-        if (!$reply->attachment_path) {
-            abort(404);
-        }
-
-        return Storage::disk('local')->download(
-            $reply->attachment_path,
-            $reply->attachment_original_name ?? 'attachment'
-        );
-    }
+    }    
 
     /**
      * Download attachment (PRIVATE)
