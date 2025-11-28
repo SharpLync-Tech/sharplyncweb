@@ -107,4 +107,26 @@ class TicketReplyController extends Controller
             $reply->attachment_original_name ?? 'attachment'
         );
     }
+
+    /**
+     * Download attachment (PRIVATE)
+     */
+
+            public function download(TicketReply $reply)
+        {
+            // security check:
+            $customer = auth()->guard('customer')->user();
+            abort_unless($reply->ticket->customer_id === $customer->id, 404);
+
+            if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
+                abort(404, 'File not found');
+            }
+
+            return \Storage::download(
+                $reply->attachment_path,
+                $reply->attachment_original_name,
+                ['Content-Type' => $reply->attachment_mime]
+            );
+        }
+
 }

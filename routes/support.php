@@ -67,6 +67,10 @@ Route::middleware(['web', 'auth:customer'])
         * Download attachment
         * ------------------------- */
         Route::get('/attachment/{reply}', [TicketReplyController::class, 'download'])
-            ->name('attachment.download');            
+            ->name('attachment.download'); 
+            
+        Route::get('/support/attachment/{reply}', [TicketReplyController::class, 'download'])
+        ->name('support.attachment.download');
+
             
     });

@@ -235,7 +235,16 @@
 
                 <div class="support-message-body">
                     {!! $reply->message !!}
+
+                    @if($reply->attachment_path)
+                        <div class="support-attachment-file">
+                            📎 <a href="{{ route('customer.support.attachment.download', $reply->id) }}">
+                                {{ $reply->attachment_original_name }}
+                            </a>
+                        </div>
+                    @endif
                 </div>
+
             </div>
         @endforeach
 
