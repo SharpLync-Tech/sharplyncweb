@@ -46,7 +46,14 @@
     {{-- LEFT COLUMN --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
-            <div class="cp-avatar">{{ $photo }}</div> 
+            <div class="cp-avatar"> 
+                
+            @if($photo)
+                    <img id="current-avatar" src="{{ $photo }}" alt="Avatar">
+                @else
+                    <span id="current-avatar-initials">{{ $initials }}</span>
+                @endif</div>
+                 
             <div class="cp-name-group">
                 <h3>{{ $fullName }}</h3>
                 <p class="cp-member-status">{{ $status }}</p>
