@@ -250,6 +250,12 @@ html, body {
     text-transform: uppercase;
 }
 
+  .cp-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+   }
+
 .cp-profile-header h3 {
     margin: 0;
     font-size: 1.75rem;
