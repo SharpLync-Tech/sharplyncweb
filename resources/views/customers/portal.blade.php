@@ -46,14 +46,19 @@
     {{-- LEFT COLUMN --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
-            <div class="cp-avatar"> 
+            <div class="cp-avatar">
+                
+            @php
+                    $photo = $user->profile_photo ? asset('storage/'.$user->profile_photo) : null;
+                    $initials = strtoupper(substr($user->first_name,0,1) . substr($user->last_name,0,1));
+            @endphp
                 
             @if($photo)
                     <img id="current-avatar" src="{{ $photo }}" alt="Avatar">
                 @else
                     <span id="current-avatar-initials">{{ $initials }}</span>
                 @endif</div>
-                 
+
             <div class="cp-name-group">
                 <h3>{{ $fullName }}</h3>
                 <p class="cp-member-status">{{ $status }}</p>
