@@ -59,6 +59,11 @@
 
         {{-- Status --}}
         <div class="support-meta-control">
+            @if ($ticket->status === 'waiting_on_customer')
+                <div class="support-status-wrapper">
+                    <span class="support-status-dot"></span>                    
+                </div>
+            @endif
             <button
                 type="button"
                 class="support-badge support-badge-{{ $ticket->status }} support-dropdown-toggle"
@@ -68,12 +73,7 @@
             >
                 {{ strtoupper(str_replace('_', ' ', $ticket->status)) }}
             </button>
-            @if ($ticket->status === 'waiting_on_customer')
-                <div class="support-status-wrapper">
-                    <span class="support-status-dot"></span>
-                    <span class="support-status-text">Waiting on you</span>
-                </div>
-            @endif
+            
 
             <div class="support-dropdown" data-dropdown-panel="ticket-status">
                 <div class="support-dropdown-header">Change status</div>
