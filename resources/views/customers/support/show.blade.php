@@ -244,7 +244,7 @@
 
                     @if($reply->attachment_path)
                         <div class="support-attachment-file">
-                            📎 <a href="{{ route('customer.support.attachment.download', $reply->id) }}">
+                            📤 <a href="{{ route('customer.support.attachment.download', $reply->id) }}">
                                 {{ $reply->attachment_original_name }}
                             </a>
                         </div>

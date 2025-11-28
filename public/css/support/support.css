@@ -595,6 +595,40 @@
     margin-bottom: 20px;
 }
 
+/* Fix Quill toolbar icons (B, I, U, list, emoji, upload) */
+.quill-toolbar button svg,
+.quill-toolbar .ql-stroke {
+    stroke: var(--teal) !important;
+}
+
+.quill-toolbar .ql-fill {
+    fill: var(--teal) !important;
+}
+
+/* Hover state (stay teal or slightly darker teal—your pick) */
+.quill-toolbar button:hover svg,
+.quill-toolbar button:hover .ql-stroke,
+.quill-toolbar button:hover .ql-fill {
+    stroke: var(--teal) !important;
+    fill: var(--teal) !important;
+    opacity: 0.85; /* subtle feedback without turning black */
+}
+
+/* Active/pressed */
+.quill-toolbar button:active svg,
+.quill-toolbar button:active .ql-stroke,
+.quill-toolbar button:active .ql-fill {
+    stroke: var(--teal) !important;
+    fill: var(--teal) !important;
+}
+
+/* Remove Quill default black icon styling */
+.ql-toolbar .ql-picker-label svg,
+.ql-toolbar .ql-picker-item svg {
+    stroke: var(--teal) !important;
+}
+
+
 
 
 /* Responsive */
