@@ -62,4 +62,11 @@ Route::middleware(['web', 'auth:customer'])
          * ------------------------- */
         Route::post('/tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])
             ->name('tickets.priority.update');
+
+        /* -------------------------
+        * Download attachment
+        * ------------------------- */
+        Route::get('/attachment/{reply}', [TicketReplyController::class, 'download'])
+            ->name('attachment.download');            
+            
     });

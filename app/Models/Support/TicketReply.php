@@ -15,7 +15,11 @@ class TicketReply extends Model
         'user_id',
         'message',
         'is_internal',
+        'attachment_path',
+        'attachment_original_name',
+        'attachment_mime',
     ];
+
 
     public function ticket()
     {

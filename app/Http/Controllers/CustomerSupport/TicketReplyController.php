@@ -8,6 +8,7 @@ use App\Models\Support\Ticket;
 use App\Models\Support\TicketReply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class TicketReplyController extends Controller
 {
@@ -21,24 +22,53 @@ class TicketReplyController extends Controller
         // Make sure this ticket belongs to the logged-in customer
         abort_unless($ticket->customer_id === $customer->id, 404);
 
+        // Validate text + optional file
         $data = $request->validate([
-            'message' => ['required', 'string'],
+            'message'    => ['required', 'string'],
+            'attachment' => ['nullable', 'file', 'max:5120'], // 5MB
         ]);
 
-        $reply = TicketReply::create([
-            'ticket_id'   => $ticket->id,
-            'user_type'   => 'customer',
-            'user_id'     => $customer->id,
-            'message'     => $data['message'],
-            'is_internal' => false,
-        ]);
+        // Create reply object
+        $reply = new TicketReply();
+        $reply->ticket_id   = $ticket->id;
+        $reply->user_type   = 'customer';
+        $reply->user_id     = $customer->id;
+        $reply->message     = $data['message'];
+        $reply->is_internal = false;
+
+        /**
+         * ============================
+         * FILE UPLOAD HANDLING
+         * ============================
+         */
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+
+            // Private storage path: storage/app/support_attachments/{ticket_id}/
+            $path = $file->store("support_attachments/{$ticket->id}", 'local');
+
+            $reply->attachment_path          = $path;
+            $reply->attachment_original_name = $file->getClientOriginalName();
+            $reply->attachment_mime          = $file->getClientMimeType();
+        }
+
+        $reply->save();
 
 
-        // Update "last_reply_at" for list sorting
+        /**
+         * ===================================
+         * Update "last_reply_at" for sorting
+         * ===================================
+         */
         $ticket->last_reply_at = now();
         $ticket->save();
 
-        // Notify internal support team only (customer does not get email for their own reply)
+
+        /**
+         * =================================================
+         * Notify internal support team (customer never gets email)
+         * =================================================
+         */
         try {
             $supportAddress = config('mail.support_address', env('SUPPORT_EMAIL', config('mail.from.address')));
             if ($supportAddress) {
@@ -52,5 +82,29 @@ class TicketReplyController extends Controller
         return redirect()
             ->route('customer.support.tickets.show', $ticket)
             ->with('success', 'Your reply has been added to this ticket.');
+    }
+
+
+
+    /**
+     * Download attachment (PRIVATE)
+     */
+    public function download(TicketReply $reply)
+    {
+        $customer = auth()->guard('customer')->user();
+
+        // Ticket must belong to this customer
+        if (!$reply->ticket || $reply->ticket->customer_id !== $customer->id) {
+            abort(404);
+        }
+
+        if (!$reply->attachment_path) {
+            abort(404);
+        }
+
+        return Storage::disk('local')->download(
+            $reply->attachment_path,
+            $reply->attachment_original_name ?? 'attachment'
+        );
     }
 }
