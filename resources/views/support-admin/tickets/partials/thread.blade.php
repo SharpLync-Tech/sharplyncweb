@@ -66,12 +66,19 @@
         ============================================ --}}
         @foreach($latestTwo as $msg)
             @include('support-admin.tickets.partials.message', [
-                'isCustomer' => $msg->isCustomer,
-                'authorName' => $msg->authorName,
-                'timestamp'  => $msg->timestamp,
-                'body'       => $msg->body,
-                'label'      => $msg->isCustomer ? 'Customer' : 'Support',
+                'isCustomer'               => $msg->isCustomer,
+                'authorName'               => $msg->authorName,
+                'timestamp'                => $msg->timestamp,
+                'body'                     => $msg->body,
+                'label'                    => $msg->isCustomer ? 'Customer' : 'Support',
+
+                // NEW
+                'message_id'               => $msg->id,
+                'attachment_path'          => $msg->attachment_path ?? null,
+                'attachment_original_name' => $msg->attachment_original_name ?? null,
+                'attachment_mime'          => $msg->attachment_mime ?? null,
             ])
+
         @endforeach
 
 
