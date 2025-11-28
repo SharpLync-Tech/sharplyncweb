@@ -628,6 +628,24 @@
     stroke: var(--teal) !important;
 }
 
+/* Fix leaked top rounded corners on Quill editor */
+.quill-editor {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+/* Also flatten the inner Quill editable area */
+.ql-container.ql-snow {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+/* Ensure toolbar keeps its own rounded look */
+.quill-toolbar {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
 
 
 
