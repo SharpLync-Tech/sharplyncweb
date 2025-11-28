@@ -646,6 +646,15 @@
     border-bottom-right-radius: 0 !important;
 }
 
+/* Make the emoji picker icon teal instead of dark grey */
+.ql-emoji-picker,
+.ql-emoji-picker svg,
+.ql-emoji-picker span,
+.ql-emoji-picker:before {
+    color: #2CBFAE !important;
+    fill: #2CBFAE !important;
+}
+
 
 
 
