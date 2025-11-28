@@ -46,7 +46,7 @@
     {{-- LEFT COLUMN --}}
     <div class="cp-profile-card">
         <div class="cp-profile-header">
-            <div class="cp-avatar">{{ $initials }}</div>
+            <div class="cp-avatar">{{ $photo }}</div> 
             <div class="cp-name-group">
                 <h3>{{ $fullName }}</h3>
                 <p class="cp-member-status">{{ $status }}</p>
