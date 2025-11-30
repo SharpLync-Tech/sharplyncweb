@@ -8,13 +8,13 @@ use App\Http\Controllers\PolicyController;
 
 
 
-
-Route::get('/', fn() => view('welcome'));
+Route::get('/', fn() => view('home'));
+// Route::get('/', fn() => view('welcome'));
 Route::get('/contact', fn() => view('contact'));
 Route::get('/style-preview', fn() => view('style-preview'));
 Route::get('/mobile-preview', fn() => view('mobile-preview'));
 Route::get('/components', fn() => view('components'));
-Route::get('/home', fn() => view('home'));
+// Route::get('/home', fn() => view('home'));
 Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
