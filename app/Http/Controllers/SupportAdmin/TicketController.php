@@ -102,7 +102,6 @@ class TicketController extends Controller
             'is_internal' => 0,
         ]);
 
-
         $ticket->last_reply_at = now();
 
         if (in_array($ticket->status, ['resolved', 'closed'], true)) {
@@ -128,7 +127,6 @@ class TicketController extends Controller
             'message'   => $data['message'],
             'is_internal' => 1,
         ]);
-
 
         return back()->with('success', 'Internal note added.');
     }
@@ -157,25 +155,10 @@ class TicketController extends Controller
     }
 
     public function download(\App\Models\Support\TicketReply $reply)
-{
-    // AdminAuth middleware sets this
-    $admin = session('admin_id');
+    {
+        // 🔥 DEBUG — SHOW ALL SESSION VALUES
+        dd(session()->all());
 
-    if (!$admin) {
-        abort(403, 'Not authorized');
+        // (nothing else below will run)
     }
-
-    if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
-        abort(404, 'File not found');
-    }
-
-    return \Storage::download(
-        $reply->attachment_path,
-        $reply->attachment_original_name,
-        ['Content-Type' => $reply->attachment_mime]
-    );
-}
-
-
-
 }
