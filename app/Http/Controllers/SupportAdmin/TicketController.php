@@ -157,23 +157,25 @@ class TicketController extends Controller
     }
 
     public function download(\App\Models\Support\TicketReply $reply)
-    {
-        // Must be logged in as admin
-        $admin = auth()->guard('admin')->user();
+{
+    // AdminAuth middleware sets this
+    $admin = session('admin_id');
 
-        if (!$admin) {
-            abort(403);
-        }
-
-        if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
-            abort(404, 'File not found');
-        }
-
-        return \Storage::download(
-            $reply->attachment_path,
-            $reply->attachment_original_name,
-            ['Content-Type' => $reply->attachment_mime]
-        );
+    if (!$admin) {
+        abort(403, 'Not authorized');
     }
+
+    if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
+        abort(404, 'File not found');
+    }
+
+    return \Storage::download(
+        $reply->attachment_path,
+        $reply->attachment_original_name,
+        ['Content-Type' => $reply->attachment_mime]
+    );
+}
+
+
 
 }
