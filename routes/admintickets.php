@@ -27,4 +27,8 @@ Route::middleware(['web', 'admin.auth'])
 
         Route::post('/tickets/{ticket}/internal-notes', [SupportAdminTicketController::class, 'storeInternalNote'])
             ->name('tickets.internal-notes.store');
+
+        Route::get('/attachment/{reply}', [SupportAdminTicketController::class, 'download'])
+            ->name('attachment.download');
+
     });

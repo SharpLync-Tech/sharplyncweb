@@ -155,4 +155,24 @@ class TicketController extends Controller
             'urgent' => 'Urgent',
         ];
     }
+
+    public function download(\App\Models\Support\TicketReply $reply)
+    {
+        // Must be logged in as admin
+        $admin = auth()->user();
+        if (!$admin) {
+            abort(403);
+        }
+
+        if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
+            abort(404, 'File not found');
+        }
+
+        return \Storage::download(
+            $reply->attachment_path,
+            $reply->attachment_original_name,
+            ['Content-Type' => $reply->attachment_mime]
+        );
+    }
+
 }
