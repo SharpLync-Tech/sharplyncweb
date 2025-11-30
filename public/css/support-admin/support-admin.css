@@ -883,5 +883,68 @@
     background: #ffffff;
 }
 
+/* ============================================================
+   QUILL EDITOR STYLING
+============================================================ */
+
+.quill-toolbar {
+    background: #ffffff;
+    border: 1px solid #d3dbe4;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Quill icons */
+.quill-toolbar .ql-formats button {
+    border: none;
+    background: none;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.quill-toolbar .ql-formats button:hover svg {
+    color: #2CBFAE; /* SharpLync teal */
+}
+
+/* Editor box */
+.quill-editor {
+    background: #ffffff;
+    border: 1px solid #d3dbe4;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    min-height: 160px;
+    padding: 14px;
+    font-size: 15px;
+}
+
+/* Make the placeholder text nice */
+.ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #6b7785;
+}
+
+/* Attachment button */
+.attach-btn label {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Match the customer reply card spacing */
+.support-admin-reply-card {
+    background: #ffffff;
+    padding: 24px 28px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+    margin-bottom: 24px;
+}
+
+
 
 
