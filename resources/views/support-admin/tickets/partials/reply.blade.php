@@ -4,15 +4,42 @@
 
         <form method="POST"
               action="{{ route('support-admin.tickets.reply', $ticket) }}"
+              enctype="multipart/form-data"
               class="support-admin-form">
             @csrf
 
             <div class="support-admin-form-group">
                 <label class="support-admin-label">Your message</label>
-                <textarea name="message"
-                          rows="4"
-                          class="support-admin-textarea"
-                          placeholder="Type your reply to the customer...">{{ old('message') }}</textarea>
+
+                {{-- Toolbar --}}
+                <div id="admin-quill-toolbar" class="quill-toolbar">
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-emoji"></button>
+                    </span>
+
+                    <span class="ql-formats attach-btn">
+                        <label>
+                            📤
+                            <input type="file" name="attachment" hidden>
+                        </label>
+                    </span>
+                </div>
+
+                {{-- Editor --}}
+                <div id="admin-quill-editor" class="quill-editor"></div>
+
+                {{-- Hidden HTML --}}
+                <input type="hidden" name="message" id="admin-quill-html">
             </div>
 
             <div class="support-admin-form-actions">
@@ -22,6 +49,7 @@
             </div>
         </form>
     </div>
+
 @else
     <div class="support-admin-closed-note">
         <strong>This ticket is closed.</strong>

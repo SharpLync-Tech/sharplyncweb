@@ -2,6 +2,15 @@
 
 @section('title', $ticket->subject)
 
+@push('styles')
+    {{-- Quill CSS --}}
+    <link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
+
+    {{-- Emoji plugin --}}
+    <link href="{{ secure_asset('quill/quill-emoji.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
     <div class="support-admin-header">
         <h1 class="support-admin-title">{{ $ticket->subject }}</h1>
@@ -31,10 +40,10 @@
 
         <div class="support-admin-ticket-main">
 
-            {{-- ✅ MOVED REPLY BOX TO THE TOP --}}
+            {{-- Reply box (Now Quill-powered) --}}
             @include('support-admin.tickets.partials.reply', ['ticket' => $ticket])
 
-            {{-- Thread now appears *after* the reply box --}}
+            {{-- Thread after reply box --}}
             @include('support-admin.tickets.partials.thread', [
                 'ticket' => $ticket,
                 'messages' => $messages
@@ -53,3 +62,39 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    {{-- Quill Core --}}
+    <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
+
+    {{-- Emoji plugin --}}
+    <script src="{{ secure_asset('quill/quill-emoji.js') }}"></script>
+
+    {{-- Admin Quill initialiser --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quillEl = document.getElementById('admin-quill-editor');
+            const hiddenInput = document.getElementById('admin-quill-html');
+
+            if (quillEl && hiddenInput) {
+                const quill = new Quill('#admin-quill-editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: {
+                            container: '#admin-quill-toolbar'
+                        },
+                        "emoji-toolbar": true,
+                        "emoji-textarea": true,
+                        "emoji-shortname": true
+                    }
+                });
+
+                // Push HTML into hidden input before POST
+                const form = quillEl.closest('form');
+                form.addEventListener('submit', function () {
+                    hiddenInput.value = quill.root.innerHTML;
+                });
+            }
+        });
+    </script>
+@endpush

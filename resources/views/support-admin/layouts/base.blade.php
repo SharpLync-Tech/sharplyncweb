@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>{{ $title ?? 'SharpDesk Admin' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" href="{{ asset('css/support-admin/support-admin.css') }}?v=1.0">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     @stack('styles')
 </head>
 <body class="support-admin-body">
@@ -34,6 +37,7 @@
 </div>
 
 <script src="{{ asset('js/support-admin/support-admin.js') }}?v=1.0"></script>
+
 @stack('scripts')
 </body>
 </html>
