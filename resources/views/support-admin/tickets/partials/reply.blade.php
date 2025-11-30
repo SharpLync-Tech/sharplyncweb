@@ -1,60 +1,139 @@
-@if($ticket->status !== 'closed')
-    <div class="support-admin-reply-card">
-        <h2 class="support-admin-reply-title">Add a reply</h2>
+{{-- resources/views/support-admin/tickets/partials/thread.blade.php --}}
+{{-- SharpLync Admin Support Thread (Upgraded: matches customer UI flow) --}}
 
-        <form method="POST"
-              action="{{ route('support-admin.tickets.reply', $ticket) }}"
-              enctype="multipart/form-data"
-              class="support-admin-form">
-            @csrf
+@php
+    // Combine original ticket message + replies into a unified timeline
+    $allMessages = collect();
 
-            <div class="support-admin-form-group">
-                <label class="support-admin-label">Your message</label>
+    /* ============================================================
+        ROOT TICKET MESSAGE
+    ============================================================ */
+    if ($ticket->message) {
+        $allMessages->push((object)[
+            'id'                          => 'ticket-root',
+            'is_root'                     => true,
+            'timestamp'                   => $ticket->created_at,
+            'body'                        => $ticket->message,
+            'isCustomer'                  => true,
+            'isAdmin'                     => false,
+            'authorName'                  => $ticket->customerProfile->business_name
+                                                ?? ($ticket->customerUser
+                                                        ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
+                                                        : 'Customer'),
 
-                {{-- Toolbar --}}
-                <div id="admin-quill-toolbar" class="quill-toolbar">
-                    <span class="ql-formats">
-                        <button class="ql-bold"></button>
-                        <button class="ql-italic"></button>
-                        <button class="ql-underline"></button>
-                    </span>
+            // Ticket message never has attachments, keep null
+            'attachment_path'             => null,
+            'attachment_original_name'    => null,
+            'attachment_mime'             => null,
+        ]);
+    }
 
-                    <span class="ql-formats">
-                        <button class="ql-list" value="bullet"></button>
-                    </span>
+    /* ============================================================
+        REPLIES
+    ============================================================ */
+    foreach ($messages as $msg) {
+        $isCustomer = $msg->isCustomer();
+        $isAdmin    = $msg->isAdmin();
 
-                    <span class="ql-formats">
-                        <button class="ql-emoji"></button>
-                    </span>
+        // Determine author name
+        if ($isCustomer) {
+            $authorName = $ticket->customerProfile->business_name
+                ?? ($ticket->customerUser
+                        ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
+                        : 'Customer');
+        } elseif ($isAdmin) {
+            $authorName = $msg->author?->name ?? 'Support Agent';
+        } else {
+            $authorName = 'Unknown';
+        }
 
-                    <span class="ql-formats attach-btn">
-                        <label>
-                            📤
-                            <input type="file" name="attachment" hidden>
-                        </label>
-                    </span>
-                </div>
+        // PUSH FULL MESSAGE INCLUDING ATTACHMENTS
+        $allMessages->push((object)[
+            'id'                          => $msg->id,
+            'is_root'                     => false,
+            'timestamp'                   => $msg->created_at,
+            'body'                        => $msg->message,
+            'isCustomer'                  => $isCustomer,
+            'isAdmin'                     => $isAdmin,
+            'authorName'                  => $authorName,
 
-                {{-- Editor --}}
-                <div id="admin-quill-editor" class="quill-editor"></div>
+            // 🔥 These were missing — CRITICAL FIX
+            'attachment_path'             => $msg->attachment_path,
+            'attachment_original_name'    => $msg->attachment_original_name,
+            'attachment_mime'             => $msg->attachment_mime,
+        ]);
+    }
 
-                {{-- Hidden HTML --}}
-                <input type="hidden" name="message" id="admin-quill-html">
-            </div>
+    /* ============================================================
+        SORTING
+    ============================================================ */
+    $sortedDesc = $allMessages->sortByDesc('timestamp')->values();
 
-            <div class="support-admin-form-actions">
-                <button type="submit" class="support-admin-btn-primary">
-                    Send reply
+    // Latest 2 visible
+    $latestTwo = $sortedDesc->take(2);
+
+    // Older messages
+    $older = $sortedDesc->slice(2)->sortBy('timestamp')->values();
+@endphp
+
+<div class="support-admin-thread-card">
+    <div class="support-admin-thread-list">
+
+        {{-- ===========================================
+             SHOW LATEST TWO MESSAGES
+        ============================================ --}}
+        @foreach($latestTwo as $msg)
+            @include('support-admin.tickets.partials.message', [
+                'isCustomer'               => $msg->isCustomer,
+                'authorName'               => $msg->authorName,
+                'timestamp'                => $msg->timestamp,
+                'body'                     => $msg->body,
+                'label'                    => $msg->isCustomer ? 'Customer' : 'Support',
+
+                // FULL ATTACHMENT SUPPORT
+                'message_id'               => $msg->id,
+                'attachment_path'          => $msg->attachment_path,
+                'attachment_original_name' => $msg->attachment_original_name,
+                'attachment_mime'          => $msg->attachment_mime,
+            ])
+        @endforeach
+
+
+        {{-- ===========================================
+             OLDER MESSAGES (COLLAPSIBLE)
+        ============================================ --}}
+        @if($older->isNotEmpty())
+            <div class="support-admin-older-wrapper">
+
+                <button type="button"
+                        class="support-admin-older-toggle"
+                        data-admin-older-toggle>
+                    View earlier conversation(s)
                 </button>
-            </div>
-        </form>
-    </div>
 
-@else
-    <div class="support-admin-closed-note">
-        <strong>This ticket is closed.</strong>
-        <span class="support-admin-closed-text">
-            Change the status above if you need to reopen and reply again.
-        </span>
+                <div class="support-admin-older-container"
+                     data-admin-older-container
+                     hidden>
+
+                    @foreach($older as $msg)
+                        @include('support-admin.tickets.partials.message', [
+                            'isCustomer'               => $msg->isCustomer,
+                            'authorName'               => $msg->authorName,
+                            'timestamp'                => $msg->timestamp,
+                            'body'                     => $msg->body,
+                            'label'                    => $msg->isCustomer ? 'Customer' : 'Support',
+
+                            // FULL ATTACHMENT SUPPORT
+                            'message_id'               => $msg->id,
+                            'attachment_path'          => $msg->attachment_path,
+                            'attachment_original_name' => $msg->attachment_original_name,
+                            'attachment_mime'          => $msg->attachment_mime,
+                        ])
+                    @endforeach
+
+                </div>
+            </div>
+        @endif
+
     </div>
-@endif
+</div>
