@@ -156,9 +156,19 @@ class TicketController extends Controller
 
     public function download(\App\Models\Support\TicketReply $reply)
     {
-        // 🔥 DEBUG — SHOW ALL SESSION VALUES
-        dd(session()->all());
+        // ✔ Correct session key for logged-in admin
+        if (!session()->has('admin_user')) {
+            abort(403, 'Not authorized');
+        }
 
-        // (nothing else below will run)
+        if (!$reply->attachment_path || !\Storage::exists($reply->attachment_path)) {
+            abort(404, 'File not found');
+        }
+
+        return \Storage::download(
+            $reply->attachment_path,
+            $reply->attachment_original_name,
+            ['Content-Type' => $reply->attachment_mime]
+        );
     }
 }
