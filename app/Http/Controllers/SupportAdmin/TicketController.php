@@ -159,7 +159,8 @@ class TicketController extends Controller
     public function download(\App\Models\Support\TicketReply $reply)
     {
         // Must be logged in as admin
-        $admin = auth()->user();
+        $admin = auth()->guard('admin')->user();
+
         if (!$admin) {
             abort(403);
         }
