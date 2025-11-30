@@ -970,6 +970,34 @@
     margin-top: 14px !important;
 }
 
+/* ============================================================
+   SHARPLYNC SUPPORT ADMIN — TEAL TOOLBAR ICONS
+============================================================ */
+
+/* Make all toolbar SVG icons teal by default */
+.quill-toolbar .ql-formats button svg {
+    color: #2CBFAE !important;
+    stroke: #2CBFAE !important;
+    fill: #2CBFAE !important;
+}
+
+/* Ensure emojis and other icons also get teal tone */
+.ql-toolbar .ql-emoji {
+    color: #2CBFAE !important;
+}
+
+/* Attachment icon teal */
+.attach-btn label {
+    color: #2CBFAE !important;
+}
+
+/* On hover: slightly brighter teal for interaction feedback */
+.quill-toolbar .ql-formats button:hover svg {
+    color: #32d8c5 !important;
+    stroke: #32d8c5 !important;
+}
+
+
 
 
 
