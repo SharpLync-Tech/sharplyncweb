@@ -45,7 +45,8 @@ class TicketReplyController extends Controller
             $file = $request->file('attachment');
 
             // Private storage path: storage/app/support_attachments/{ticket_id}/
-            $path = $file->store("support_attachments/{$ticket->id}", 'local');
+            $path = $file->store("support_attachments/{$ticket->id}", 'public');
+
 
             $reply->attachment_path          = $path;
             $reply->attachment_original_name = $file->getClientOriginalName();
