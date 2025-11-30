@@ -17,6 +17,9 @@
                 ?? ($ticket->customerUser
                         ? $ticket->customerUser->first_name . ' ' . $ticket->customerUser->last_name
                         : 'Customer'),
+            'attachment_path' => null,
+            'attachment_original_name' => null,
+            'attachment_mime' => null,
         ]);
     }
 
@@ -24,7 +27,6 @@
         $isCustomer = $msg->isCustomer();
         $isAdmin    = $msg->isAdmin();
 
-        // Determine author name
         if ($isCustomer) {
             $authorName = $ticket->customerProfile->business_name
                 ?? ($ticket->customerUser
@@ -44,6 +46,11 @@
             'isCustomer'=> $isCustomer,
             'isAdmin'   => $isAdmin,
             'authorName'=> $authorName,
+
+            // FULL attachment propagation
+            'attachment_path'          => $msg->attachment_path,
+            'attachment_original_name' => $msg->attachment_original_name,
+            'attachment_mime'          => $msg->attachment_mime,
         ]);
     }
 
@@ -58,7 +65,6 @@
 @endphp
 
 <div class="support-admin-thread-card">
-
     <div class="support-admin-thread-list">
 
         {{-- ===========================================
@@ -72,18 +78,16 @@
                 'body'                     => $msg->body,
                 'label'                    => $msg->isCustomer ? 'Customer' : 'Support',
 
-                // NEW
                 'message_id'               => $msg->id,
-                'attachment_path'          => $msg->attachment_path ?? null,
-                'attachment_original_name' => $msg->attachment_original_name ?? null,
-                'attachment_mime'          => $msg->attachment_mime ?? null,
+                'attachment_path'          => $msg->attachment_path,
+                'attachment_original_name' => $msg->attachment_original_name,
+                'attachment_mime'          => $msg->attachment_mime,
             ])
-
         @endforeach
 
 
         {{-- ===========================================
-             COLLAPSIBLE: "View earlier conversation(s)"
+             OLDER MESSAGES (COLLAPSIBLE)
         ============================================ --}}
         @if($older->isNotEmpty())
             <div class="support-admin-older-wrapper">
@@ -100,11 +104,17 @@
 
                     @foreach($older as $msg)
                         @include('support-admin.tickets.partials.message', [
-                            'isCustomer' => $msg->isCustomer,
-                            'authorName' => $msg->authorName,
-                            'timestamp'  => $msg->timestamp,
-                            'body'       => $msg->body,
-                            'label'      => $msg->isCustomer ? 'Customer' : 'Support',
+                            'isCustomer'               => $msg->isCustomer,
+                            'authorName'               => $msg->authorName,
+                            'timestamp'                => $msg->timestamp,
+                            'body'                     => $msg->body,
+                            'label'                    => $msg->isCustomer ? 'Customer' : 'Support',
+
+                            // FIX: Pass attachments for ALL messages
+                            'message_id'               => $msg->id,
+                            'attachment_path'          => $msg->attachment_path,
+                            'attachment_original_name' => $msg->attachment_original_name,
+                            'attachment_mime'          => $msg->attachment_mime,
                         ])
                     @endforeach
 
