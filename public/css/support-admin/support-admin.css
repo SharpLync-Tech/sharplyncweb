@@ -887,63 +887,89 @@
    QUILL EDITOR STYLING
 ============================================================ */
 
-.quill-toolbar {
-    background: #ffffff;
-    border: 1px solid #d3dbe4;
-    border-radius: 8px 8px 0 0;
-    padding: 8px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+
+/* Reply box container */
+.support-admin-reply-card {
+    background: #ffffff !important;
+    padding: 24px 30px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.10) !important;
+    margin-bottom: 28px !important;
 }
 
-/* Quill icons */
-.quill-toolbar .ql-formats button {
-    border: none;
-    background: none;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
+/* Title */
+.support-admin-reply-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+    color: #0A2A4D !important;
+}
+
+/* Quill toolbar */
+.quill-toolbar {
+    background: #ffffff !important;
+    border: 1px solid #d3dbe4 !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 10px 12px !important;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    gap: 10px;
+}
+
+/* Quill toolbar buttons */
+.quill-toolbar .ql-formats button {
+    border: none !important;
+    background: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
 }
 
 .quill-toolbar .ql-formats button:hover svg {
-    color: #2CBFAE; /* SharpLync teal */
+    color: #2CBFAE !important; /* teal glow on hover */
 }
 
-/* Editor box */
+/* Editor styling */
 .quill-editor {
-    background: #ffffff;
-    border: 1px solid #d3dbe4;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    min-height: 160px;
-    padding: 14px;
-    font-size: 15px;
+    background: #ffffff !important;
+    border: 1px solid #d3dbe4 !important;
+    border-top: none !important;
+    border-radius: 0 0 10px 10px !important;
+    min-height: 180px !important;
+    padding: 16px !important;
+    font-size: 15px !important;
 }
 
-/* Make the placeholder text nice */
+/* Placeholder text */
 .ql-editor.ql-blank::before {
-    font-style: normal;
-    color: #6b7785;
+    color: #6b7785 !important;
+    font-style: normal !important;
 }
 
-/* Attachment button */
+/* Attachment */
 .attach-btn label {
-    cursor: pointer;
-    font-size: 20px;
+    cursor: pointer !important;
+    font-size: 22px !important;
 }
 
-/* Match the customer reply card spacing */
-.support-admin-reply-card {
-    background: #ffffff;
-    padding: 24px 28px;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
-    margin-bottom: 24px;
+/* Fix emoji icon size */
+.ql-emoji {
+    font-size: 18px !important;
 }
+
+/* Force spacing to match customer layout */
+.support-admin-form-group {
+    margin-bottom: 10px !important;
+}
+
+/* Make the send button match customer spacing */
+.support-admin-form-actions {
+    margin-top: 14px !important;
+}
+
 
 
 
