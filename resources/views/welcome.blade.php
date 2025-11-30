@@ -3,49 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SharpLync - Coming Soon</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <title>Welcome to SharpLync</title>
+
+  <!-- Minimal responsive tuning for mobile only -->
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #0A2A4D 0%, #104976 45%, #2CBFAE 100%);
-      font-family: 'Inter', 'Open Sans', system-ui, sans-serif;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    img {
-      height: 200px;
-      width: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
-    }
-
-    h1 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-
     @media (max-width: 768px) {
-      img {
-        height: 180px;
+      img[alt="SharpLync Logo"] {
+        top: 30px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: 60px !important;
+        width: auto !important;
       }
-      h1 {
-        font-size: clamp(1.5rem, 6vw, 2rem);
+
+      p.tagline {
+        top: 75% !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+        font-size: clamp(0.9rem, 3.2vw, 1.1rem) !important; /* slightly smaller text */
+        max-width: 80vw !important; /* balanced width */
+        color: #ffffff !important;
+        line-height: 1.2 !important; /* tighter line height */
+        letter-spacing: 0.3px !important; /* minor tweak for cleaner wrap */
+        word-spacing: 0 !important;
+      }
+
+
+      div.button-container {
+        bottom: 3vh !important;
+      }
+
+      div.button-container a {
+        padding: 12px 38px !important;
+        font-size: 1rem !important;
+        border-width: 2px !important;
+        max-width: 80vw !important;
+      }
+
+      /* Slightly darker overlay for text clarity */
+      div.overlay {
+        background: rgba(10,42,77,0.4) !important;
       }
     }
   </style>
 </head>
 
-<body>
-  <img src="{{ asset('images/logo1.png') }}" alt="SharpLync Logo">
-  <h1>Coming Soon</h1>
+<body style="margin:0;padding:0;overflow:hidden;background-color:#0A2A4D;font-family:'Inter','Open Sans',system-ui,sans-serif;">
+
+  <!-- Hero Section -->
+  <div style="
+      position:relative;
+      width:100vw;
+      height:100vh;
+      overflow:hidden;
+      background-image:url('{{ asset('images/hero-bg.jpg') }}');
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
+      filter:brightness(1.1) contrast(1.05) saturate(1.05);
+  ">
+
+    <!-- SharpLync Logo -->
+    <img src="{{ asset('images/sharplync-logo.png') }}"
+         alt="SharpLync Logo"
+         style="
+            position:absolute;
+            top:70px;
+            left:70px;
+            height:85px;
+            width:auto;
+            z-index:3;
+            filter:drop-shadow(0 0 8px rgba(0,0,0,0.5));
+         ">
+
+    <!-- Tagline -->
+        <p class="tagline" style="
+            position:absolute;
+            top:20%;
+            right:5%;
+            transform:translateY(-50%);
+            color:#ffffff;
+            font-size:clamp(1rem,2.2vw,1.5rem);
+            font-weight:400;
+            text-shadow:0 2px 8px rgba(0,0,0,0.7);
+            z-index:3;
+            max-width:clamp(280px, 35vw, 420px); /* flexible width */
+            line-height:1.3;
+            text-align:left;
+            word-spacing:1px;
+        ">
+          Helping you stay connected, secure, and productive.
+        </p>
+
+
+    <!-- Explore Button -->
+    <div class="button-container" style="
+        position:absolute;
+        bottom:10vh;
+        left:50%;
+        transform:translateX(-50%);
+        text-align:center;
+        z-index:3;
+    ">
+      <a href="{{ url('/style-preview') }}"
+         style="
+            display:inline-block;
+            border:2px solid #ffffff;
+            color:#ffffff;
+            font-weight:700;
+            font-size:1.1rem;
+            padding:14px 46px;
+            border-radius:6px;
+            text-decoration:none;
+            letter-spacing:0.5px;
+            transition:all 0.3s ease;
+            background:transparent;
+         "
+         onmouseover="this.style.backgroundColor='#00FFFF';this.style.color='#0A2A4D';this.style.transform='scale(1.05)';"
+         onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';this.style.transform='scale(1)';">
+         Explore SharpLync
+      </a>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(10,42,77,0.25);
+        z-index:2;
+    "></div>
+  </div>
+
 </body>
 </html>
