@@ -78,14 +78,15 @@
 @section('scripts')
 <script>
     window.cpRoutes = {
-        emailSend:    "{{ route('customer.security.email.send-code') }}",
-        emailVerify:  "{{ route('customer.security.email.verify-code') }}",
-        emailDisable: "{{ route('customer.security.email.disable') }}",
-        authStart:    "{{ route('customer.security.auth.start') }}",
-        authVerify:   "{{ route('customer.security.auth.verify') }}",
-        passwordReset: "{{ route('customer.security.password.send-reset-link') }}",
-        authDisable:  "{{ route('customer.security.auth.disable') }}"
-    };
+            emailSend:    "{{ route('customer.security.email.send-code') }}",
+            emailVerify:  "{{ route('customer.security.email.verify-code') }}",
+            emailDisable: "{{ route('customer.security.email.disable') }}",
+            authStart:    "{{ route('customer.security.auth.start') }}",
+            authVerify:   "{{ route('customer.security.auth.verify') }}",
+            authDisable:  "{{ route('customer.security.auth.disable') }}",
+            passwordSendReset: "{{ route('customer.security.password.send-reset-link') }}"
+        };
+
     window.cpCsrf = "{{ csrf_token() }}";
 </script>
 

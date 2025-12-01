@@ -347,37 +347,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //
     // ==========================================================
-    // 🔥 NEW SECTION — PASSWORD RESET (Step 3)
+    //  NEW SECTION — PASSWORD RESET (Step 3)
     // ==========================================================
-    (function () {
+            (function () {
 
-        const resetBtn = document.getElementById('cp-password-reset-request');
+            const resetBtn = document.getElementById('cp-password-reset-request');
 
-        if (!resetBtn) return;
+            if (!resetBtn) return;
 
-        resetBtn.addEventListener('click', () => {
+            resetBtn.addEventListener('click', () => {
 
-            fetch('/portal/security/password/reset-request', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': window.cpCsrf
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-
-                    if (!data.success) {
-                        alert(data.message || "Could not send password reset link.");
-                        return;
+                fetch(window.cpRoutes.passwordSendReset, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.cpCsrf
                     }
-
-                    alert("Password reset email sent! Check your inbox.");
                 })
-                .catch(() => alert("Server error sending password reset email."));
-        });
+                    .then(res => res.json())
+                    .then(data => {
 
-    })();
+                        if (!data.success) {
+                            alert(data.message || "Could not send password reset link.");
+                            return;
+                        }
+
+                        alert("Password reset email sent! Check your inbox.");
+                    })
+                    .catch(() => alert("Server error sending password reset email."));
+            });
+
+        })();
+
 
 
 }); // END DOMContentLoaded
