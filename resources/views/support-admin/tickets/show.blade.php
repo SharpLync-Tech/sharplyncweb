@@ -3,11 +3,8 @@
 @section('title', $ticket->subject)
 
 @push('styles')
-    {{-- Quill CSS --}}
     <link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
     <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
-
-    {{-- Emoji plugin --}}
     <link href="{{ secure_asset('quill/quill-emoji.css') }}" rel="stylesheet">
 @endpush
 
@@ -40,10 +37,10 @@
 
         <div class="support-admin-ticket-main">
 
-            {{-- Reply box (Now Quill-powered) --}}
+            {{-- Reply box --}}
             @include('support-admin.tickets.partials.reply', ['ticket' => $ticket])
 
-            {{-- Thread after reply box --}}
+            {{-- Thread --}}
             @include('support-admin.tickets.partials.thread', [
                 'ticket' => $ticket,
                 'messages' => $messages
@@ -53,7 +50,6 @@
 
         <aside class="support-admin-ticket-side">
             @include('support-admin.tickets.partials.details', ['ticket' => $ticket])
-
             @include('support-admin.tickets.partials.notes', [
                 'ticket' => $ticket,
                 'internalNotes' => $internalNotes
@@ -64,15 +60,12 @@
 @endsection
 
 @push('scripts')
-    {{-- Quill Core --}}
     <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
-
-    {{-- Emoji plugin --}}
     <script src="{{ secure_asset('quill/quill-emoji.js') }}"></script>
 
-    {{-- Admin Quill initialiser --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
             const quillEl = document.getElementById('admin-quill-editor');
             const hiddenInput = document.getElementById('admin-quill-html');
 
@@ -85,11 +78,10 @@
                         },
                         "emoji-toolbar": true,
                         "emoji-textarea": true,
-                        "emoji-shortname": true
+                        "emoji-shortname": true,
                     }
                 });
 
-                // Push HTML into hidden input before POST
                 const form = quillEl.closest('form');
                 form.addEventListener('submit', function () {
                     hiddenInput.value = quill.root.innerHTML;
