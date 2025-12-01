@@ -8,6 +8,11 @@
 
 @section('title', 'Customer Portal')
 
+@push('styles')
+<link rel="stylesheet" href="/css/password-sspin.css">
+@endpush
+
+
 @section('content')
 @php
     use Illuminate\Support\Str;
