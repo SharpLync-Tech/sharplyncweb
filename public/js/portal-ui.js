@@ -170,10 +170,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    //
     // ==========================================================
     // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
     // ==========================================================
     (function () {
+
         const modal = document.getElementById('cp-security-modal');
         const openBtn = document.getElementById('cp-open-security-modal');
         const sheet = modal?.querySelector('.cp-modal-sheet');
@@ -198,15 +200,18 @@ document.addEventListener("DOMContentLoaded", function () {
         modal?.addEventListener('click', e => {
             if (!sheet.contains(e.target)) closeModal();
         });
+
     })();
 
 
+    //
     // ==========================================================
-    // PASSWORD + SSPIN MODAL CONTROLLER
+    // NEW PASSWORD & SSPIN MODAL CONTROLLER
     // ==========================================================
     (function () {
+
         const passModal = document.getElementById('cp-password-modal');
-        const openPassBtn = document.getElementById('cp-open-password-modal');
+        const openPassBtn = document.getElementById('cp-open-password-modal'); // from Security card
         const passSheet = passModal?.querySelector('.cp-modal-sheet');
         const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
         const root = document.querySelector('.cp-root');
@@ -229,26 +234,32 @@ document.addEventListener("DOMContentLoaded", function () {
         passModal?.addEventListener('click', e => {
             if (!passSheet.contains(e.target)) closePassModal();
         });
+
     })();
 
 
+    //
     // ==========================================================
-    // DASHBOARD "Create/Manage" → OPEN MODAL
+    // DASHBOARD "Manage" BUTTON → OPEN PASSWORD/SSPIN MODAL
     // ==========================================================
     (function () {
-        const btns = document.querySelectorAll('#cp-open-password-modal-from-preview');
+
+        const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
         const openPassBtn = document.getElementById('cp-open-password-modal');
 
-        btns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                openPassBtn?.click();
+        if (manageBtn && openPassBtn) {
+            manageBtn.addEventListener('click', () => {
+                openPassBtn.click();
             });
-        });
+        }
+
     })();
 
 
+
+    //
     // ==========================================================
-    // SSPIN CONTROLLER (UNMASKED)
+    // SSPIN — FULL FRONT-END CONTROLLER (UNCHANGED)
     // ==========================================================
     (function () {
 
@@ -256,13 +267,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const inputEl = document.getElementById('cp-sspin-input');
         const generateBtn = document.getElementById('cp-sspin-generate');
         const saveBtn = document.getElementById('cp-sspin-save');
-        const previewEl = document.getElementById('cp-sspin-preview');
+        const dashboardPreview = document.getElementById('cp-sspin-preview');
 
         if (!displayEl || !inputEl) return;
 
-        // ----------------------------------------------------------
-        // GENERATE NEW SSPIN
-        // ----------------------------------------------------------
+        // Generate PIN
         if (generateBtn) {
             generateBtn.addEventListener('click', () => {
 
@@ -276,25 +285,24 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(res => res.json())
                     .then(data => {
 
-                        if (!data.success || !data.sspin) {
-                            alert("Error generating PIN.");
+                        if (!data.success) {
+                            alert("Could not generate PIN.");
                             return;
                         }
 
                         inputEl.value = data.sspin;
                         displayEl.textContent = data.sspin;
 
-                        if (previewEl) previewEl.textContent = data.sspin;
+                        if (dashboardPreview) {
+                            dashboardPreview.textContent = data.sspin;
+                        }
 
                     })
                     .catch(() => alert("Error generating PIN."));
             });
         }
 
-
-        // ----------------------------------------------------------
-        // SAVE SSPIN
-        // ----------------------------------------------------------
+        // Save PIN
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
 
@@ -317,12 +325,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
 
                         if (!data.success) {
-                            alert("Error saving PIN.");
+                            alert("Could not save PIN.");
                             return;
                         }
 
                         displayEl.textContent = pin;
-                        if (previewEl) previewEl.textContent = pin;
+
+                        if (dashboardPreview) {
+                            dashboardPreview.textContent = pin;
+                        }
 
                         alert("Support PIN saved.");
                     })
@@ -332,4 +343,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })();
 
-});
+
+
+    //
+    // ==========================================================
+    // 🔥 NEW SECTION — PASSWORD RESET (Step 3)
+    // ==========================================================
+    (function () {
+
+        const resetBtn = document.getElementById('cp-password-reset-request');
+
+        if (!resetBtn) return;
+
+        resetBtn.addEventListener('click', () => {
+
+            fetch('/portal/security/password/reset-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': window.cpCsrf
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        alert(data.message || "Could not send password reset link.");
+                        return;
+                    }
+
+                    alert("Password reset email sent! Check your inbox.");
+                })
+                .catch(() => alert("Server error sending password reset email."));
+        });
+
+    })();
+
+
+}); // END DOMContentLoaded

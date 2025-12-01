@@ -44,6 +44,11 @@ Route::middleware(['auth:customer'])
 
         Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
             ->name('sspin.save');
+
+        // SEND PASSWORD RESET LINK (from inside portal)
+        Route::post('/password/send-reset-link', [SecurityController::class, 'sendPasswordResetLink'])
+            ->name('password.send-reset-link');
+   
     });
 
 /**
@@ -59,3 +64,4 @@ Route::prefix('login/2fa')
         Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
             ->name('verify');
     });
+.

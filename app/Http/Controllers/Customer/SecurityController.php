@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use App\Models\CRM\User;
 use App\Mail\TwoFactorEmailCode;
 use PragmaRX\Google2FA\Google2FA;
@@ -83,7 +84,7 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
-     | EMAIL 2FA — DISABLE (NEW)
+     | EMAIL 2FA — DISABLE
      * ============================================================ */
     public function disableEmail2FA(Request $request)
     {
@@ -278,16 +279,13 @@ class SecurityController extends Controller
             ], 401);
         }
 
-        // Generate a valid 6-digit PIN
         $newPin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        // Save into CRM database
         DB::connection('crm')
             ->table('users')
             ->where('id', $user->id)
             ->update(['sspin' => $newPin]);
 
-        // Refresh the model instance so $user->sspin updates too
         $user->refresh();
 
         return response()->json([
@@ -296,10 +294,8 @@ class SecurityController extends Controller
         ]);
     }
 
-
-
     /* ============================================================
-    | SSPIN — SAVE TO DATABASE
+    | SSPIN — SAVE
     * ============================================================ */
     public function saveSSPIN(Request $request)
     {
@@ -317,7 +313,6 @@ class SecurityController extends Controller
 
             Log::info("Saving SSPIN for user {$user->id}: {$request->sspin}");
 
-            // Save to crm.users.sspin
             $user->sspin = $request->sspin;
             $user->save();
 
@@ -332,7 +327,6 @@ class SecurityController extends Controller
             return response()->json(['success' => false, 'message' => 'Server error'], 500);
         }
     }
-
 
     /* ============================================================
      | SSPIN — SAVE USER-ENTERED PIN
@@ -351,7 +345,7 @@ class SecurityController extends Controller
             ], 401);
         }
 
-        $user->sspin = $request->input('sspin'); // <-- correct DB column
+        $user->sspin = $request->input('sspin');
         $user->save();
 
         return response()->json([
@@ -360,4 +354,36 @@ class SecurityController extends Controller
             'sspin'   => $user->sspin,
         ]);
     }
+
+    /* ============================================================
+     | PASSWORD RESET — SEND RESET LINK (NEW)
+     * ============================================================ */
+    public function sendPasswordResetLink(Request $request)
+    {
+        $user = auth('customer')->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not authenticated'
+            ], 401);
+        }
+
+        $status = Password::broker('customers')->sendResetLink([
+            'email' => $user->email
+        ]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Password reset link sent.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unable to send reset link.'
+        ], 500);
+    }
+
 }
