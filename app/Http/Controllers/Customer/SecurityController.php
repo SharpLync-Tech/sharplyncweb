@@ -265,33 +265,37 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
- | SSPIN — GENERATE
- * ============================================================ */
-public function generateSSPIN(Request $request)
-{
-    try {
+    | SSPIN — GENERATE
+    * ============================================================ */
+    public function generateSSPIN(Request $request)
+    {
         $user = auth('customer')->user();
 
         if (!$user) {
-            Log::warning('SSPIN generate blocked: unauthenticated');
-            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Not authenticated'
+            ], 401);
         }
 
-        // Generate random 6-digit PIN
-        $pin = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Generate a valid 6-digit PIN
+        $newPin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        Log::info("Generated SSPIN for user {$user->id}: $pin");
+        // Save into CRM database
+        DB::connection('crm')
+            ->table('users')
+            ->where('id', $user->id)
+            ->update(['sspin' => $newPin]);
+
+        // Refresh the model instance so $user->sspin updates too
+        $user->refresh();
 
         return response()->json([
             'success' => true,
-            'pin'     => $pin,
+            'sspin'   => $newPin
         ]);
-
-    } catch (\Throwable $e) {
-        Log::error('SSPIN generate error: ' . $e->getMessage());
-        return response()->json(['success' => false, 'message' => 'Server error'], 500);
     }
-}
+
 
 
     /* ============================================================
