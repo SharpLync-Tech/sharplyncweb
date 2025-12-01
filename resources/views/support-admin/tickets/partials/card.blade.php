@@ -8,13 +8,7 @@
 
     <div class="support-admin-ticket-heading">
 
-        {{-- ============================
-             RED PULSING DOT (NEW)
-        ============================ --}}
-        @if($ticket->status === 'waiting_for_support')
-            <span class="support-admin-status-dot"></span>
-        @endif
-
+        {{-- Title + Reference --}}
         <div>
             @if($ticket->reference)
                 <div class="support-admin-ticket-ref">
@@ -27,7 +21,16 @@
         </div>
 
         <div class="support-admin-ticket-status">
-            <span class="support-admin-badge support-admin-badge-status-{{ $ticket->status ?? 'open' }}">
+            <span class="support-admin-badge support-admin-badge-status-{{ $ticket->status ?? 'open' }}"
+                  style="display:flex; align-items:center; gap:6px;">
+
+                {{-- ============================
+                     RED PULSING DOT (correct placement)
+                ============================ --}}
+                @if($ticket->status === 'waiting_for_support')
+                    <span class="support-admin-status-dot"></span>
+                @endif
+
                 {{ ucfirst(str_replace('_',' ', $ticket->status ?? 'open')) }}
             </span>
         </div>
@@ -66,7 +69,7 @@
 </a>
 
 {{-- ============================
-     PULSING DOT STYLES (NEW)
+     PULSING DOT STYLES
 ============================ --}}
 <style>
 .support-admin-status-dot {
@@ -74,11 +77,9 @@
     height: 12px;
     border-radius: 50%;
     background: #ff4d4f;
-    margin-right: 10px;
     display: inline-block;
     box-shadow: 0 0 0 rgba(255, 77, 79, 0.6);
     animation: adminPulse 1.3s infinite;
-    align-self: center;
 }
 
 @keyframes adminPulse {
