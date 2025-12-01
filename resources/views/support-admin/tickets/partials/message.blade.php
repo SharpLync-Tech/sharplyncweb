@@ -15,7 +15,7 @@
         {{-- Attachment --}}
         @if(!empty($attachment_path ?? null))
             <div class="admin-message-attachment" style="margin-top:10px;">
-                📎 <a href="{{ route('support-admin.attachment.download', $message_id) }}"
+                📤 <a href="{{ route('support-admin.attachment.download', $message_id) }}"
                       style="color:#0A4A7A; font-weight:600;"
                       target="_blank">
                     {{ $attachment_original_name }}
