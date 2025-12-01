@@ -194,18 +194,17 @@
 
                     <!-- Attachment Preview (before sending) -->
 
-                <img id="customer-attachment-thumb"
+                <div id="customer-attachment-preview"
                     style="
-                        width: 48px !important;
-                        height: 48px !important;
-                        min-width: 48px !important;
-                        min-height: 48px !important;
-                        max-width: 48px !important;
-                        max-height: 48px !important;
-                        border-radius: 6px;
-                        object-fit: cover !important;
-                        background: #f2f4f7;
                         display: none;
+                        margin-top: 14px;
+                        padding: 12px 14px;
+                        background: #ffffff;
+                        border: 1px solid #e0e7ef;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
                     ">
 
                     <img id="customer-attachment-thumb"
