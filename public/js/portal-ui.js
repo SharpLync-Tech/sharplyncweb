@@ -36,12 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //
 // ==========================================================
-// NEW PASSWORD & SSPIN MODAL CONTROLLER
+// PASSWORD & SSPIN MODAL CONTROLLER
 // ==========================================================
 (function(){
 
     const passModal     = document.getElementById('cp-password-modal');
-    const openPassBtn   = document.getElementById('cp-open-password-modal');    // button in Security card
+    const openPassBtn   = document.getElementById('cp-open-password-modal'); // button in Security card
     const passSheet     = passModal?.querySelector('.cp-modal-sheet');
     const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
     const root          = document.querySelector('.cp-root');
@@ -65,21 +65,25 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!passSheet.contains(e.target)) closePassModal();
     });
 
+    // expose open function globally for other scripts (optional but handy)
+    window.openPassModal = openPassModal;
+
 })();
 
 
 //
 // ==========================================================
-// NEW: DASHBOARD SSPIN "MANAGE" BUTTON → OPEN PASSWORD MODAL
+// DASHBOARD SSPIN PREVIEW BUTTON → OPEN PASSWORD MODAL
 // ==========================================================
 (function(){
 
-    const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
-    const openPassBtn = document.getElementById('cp-open-password-modal'); // existing open button
+    const manageBtn   = document.getElementById('cp-open-password-modal-from-preview');
+    const openPassBtn = document.getElementById('cp-open-password-modal');
 
-    if (manageBtn && openPassBtn) {
+    // If SSPIN preview has its own "Manage" button
+    if (manageBtn) {
         manageBtn.addEventListener('click', () => {
-            openPassBtn.click();  // triggers the real modal opener
+            openPassBtn?.click();  // triggers actual opener
         });
     }
 
