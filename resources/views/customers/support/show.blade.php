@@ -61,7 +61,7 @@
         <div class="support-meta-control">
             @if ($ticket->status === 'waiting_on_customer')
                 <div class="support-status-wrapper">
-                    <span class="support-status-dot"></span>
+                    <span class="support-status-dot"></span>                    
                 </div>
             @endif
             <button
@@ -73,6 +73,7 @@
             >
                 {{ strtoupper(str_replace('_', ' ', $ticket->status)) }}
             </button>
+            
 
             <div class="support-dropdown" data-dropdown-panel="ticket-status">
                 <div class="support-dropdown-header">Change status</div>
@@ -191,56 +192,57 @@
                     {{-- Hidden field for HTML --}}
                     <input type="hidden" name="message" id="quill-html">
 
+                    <!-- Attachment Preview (before sending) -->
 
-                    <!-- ================================
-                         FILE PREVIEW (before sending)
-                    ================================= -->
                 <div id="customer-attachment-preview"
                     style="
-                        display:none;
-                        margin-top:14px;
-                        padding:12px 14px;
-                        background:#ffffff;
-                        border:1px solid #e0e7ef;
-                        border-radius:10px;
-                        align-items:center;
-                        gap:14px;
+                        display: none;
+                        margin-top: 14px;
+                        padding: 12px 14px;
+                        background: #ffffff;
+                        border: 1px solid #e0e7ef;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
                     ">
 
                     <img id="customer-attachment-thumb"
                         style="
-                            width:48px;
-                            height:48px;
-                            border-radius:6px;
-                            object-fit:cover;
-                            background:#f2f4f7;
-                            display:none;
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 6px;
+                            object-fit: cover;
+                            background: #f2f4f7;
+                            display: none;
                         ">
 
                     <div style="flex:1;">
                         <div id="customer-attachment-name"
-                            style="font-weight:600; color:#0A2A4D; font-size:15px;">
+                            style="font-weight: 600; color:#0A2A4D; font-size: 15px;">
                         </div>
 
                         <div id="customer-attachment-size"
-                            style="font-size:13px; color:#6c7a89; margin-top:2px;">
+                            style="font-size: 13px; color:#6c7a89; margin-top: 2px;">
                         </div>
                     </div>
 
                     <button type="button"
                             id="customer-attachment-remove"
                             style="
-                                background:none;
-                                border:none;
-                                font-size:20px;
-                                color:#d9534f;
-                                cursor:pointer;
+                                background: none;
+                                border: none;
+                                font-size: 20px;
+                                color: #d9534f;
+                                cursor: pointer;
                             ">
                         ✖
                     </button>
                 </div>
 
 
+
+                </div>
 
                 <div class="support-form-actions">
                     <button type="submit" class="support-btn-primary">Send Reply</button>
@@ -253,7 +255,6 @@
             If you need further help, please open a new support request.
         </div>
     @endif
-
 
     {{-- ===========================
         MESSAGES DISPLAY
@@ -383,7 +384,6 @@
     {{-- Quill initialiser --}}
     <script src="{{ secure_asset('js/support/support-quill.js') }}"></script>
 
-    {{-- Attachment Preview Script --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -403,11 +403,12 @@
                     return;
                 }
 
-                // File name + size
+                // Determine file size for display
+                const sizeKB = (file.size / 1024).toFixed(1);
+                sizeEl.textContent = `${sizeKB} KB`;
                 nameEl.textContent = file.name;
-                sizeEl.textContent = (file.size / 1024).toFixed(1) + " KB";
 
-                // Thumbnails for images
+                // Show thumbnail for images
                 if (file.type.startsWith('image/')) {
                     thumb.style.display = "block";
                     thumb.src = URL.createObjectURL(file);
@@ -415,17 +416,17 @@
                     thumb.style.display = "none";
                 }
 
-                previewBox.style.display = "flex";
+                previewBox.style.display = "block";
             });
 
+            // Remove attachment
             removeBtn.addEventListener('click', function () {
                 fileInput.value = "";
-                thumb.src = "";
-                thumb.style.display = "none";
                 previewBox.style.display = "none";
+                thumb.src = "";
             });
 
         });
-    </script>
+        </script>
 
 @endpush
