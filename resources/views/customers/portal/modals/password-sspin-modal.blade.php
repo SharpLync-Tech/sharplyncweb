@@ -1,36 +1,32 @@
 {{-- =================================================================== --}}
-{{--  SharpLync — Password & SSPIN Modal                                  --}}
+{{--  SharpLync Customer Portal — Password & SSPIN Modal V2 (Unmasked)   --}}
 {{--  File: resources/views/customers/portal/modals/password-sspin-modal --}}
 {{-- =================================================================== --}}
 
 @php
     $sspin = $u->sspin ?? null;
-    $masked = $sspin ? '••••••' : 'Not set';
 @endphp
 
 <div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
     <div class="cp-modal-sheet">
 
-        {{-- ====================================================== --}}
-        {{-- Modal Header                                           --}}
-        {{-- ====================================================== --}}
         <header class="cp-modal-header">
             <div>
-                <h3>Password & Support PIN</h3>
-                <p class="cp-modal-subtitle">Update your login password or Support PIN.</p>
+                <h3>Password & SSPIN Settings</h3>
+                <p class="cp-modal-subtitle">
+                    Update your login password or Support PIN.
+                </p>
             </div>
             <button class="cp-password-close">&times;</button>
         </header>
 
-        {{-- ====================================================== --}}
-        {{-- Modal Body                                             --}}
-        {{-- ====================================================== --}}
         <div class="cp-modal-body">
 
-            {{-- ============================ --}}
-            {{-- CHANGE PASSWORD SECTION      --}}
-            {{-- ============================ --}}
+            {{-- ======================================================= --}}
+            {{-- PASSWORD SECTION                                        --}}
+            {{-- ======================================================= --}}
             <div class="cp-sec-card">
+
                 <h4>Change Password</h4>
 
                 <label class="cp-sec-label">Current Password</label>
@@ -46,43 +42,36 @@
                     <button class="cp-btn cp-teal-btn">Update Password</button>
                     <button class="cp-btn cp-navy-btn">I Forgot My Password</button>
                 </div>
+
             </div>
 
-
-            {{-- ============================ --}}
-            {{-- SSPIN SECTION                --}}
-            {{-- ============================ --}}
+            {{-- ======================================================= --}}
+            {{-- SSPIN SECTION (UNMASKED)                                --}}
+            {{-- ======================================================= --}}
             <div class="cp-sec-card">
 
                 <h4>Support PIN (SSPIN)</h4>
 
                 <p class="cp-sec-desc" style="margin-bottom:.3rem;">Your current Support PIN:</p>
 
-                {{-- Dynamic display --}}
-                <div id="cp-sspin-display" style="font-size:2rem; font-weight:700; letter-spacing:.35rem;">
-                    {{ $sspin ? $sspin : 'Not set' }}
+                {{-- ALWAYS SHOW FULL SSPIN --}}
+                <div id="cp-sspin-display"
+                     style="font-size:1.8rem; font-weight:700; letter-spacing:.15rem;">
+                    {{ $sspin ?? 'Not set' }}
                 </div>
 
                 <div style="display:flex; gap:.75rem; margin-top:.75rem;">
-                    <button id="cp-sspin-toggle" class="cp-btn cp-navy-btn">
-                        {{ $sspin ? 'Hide PIN' : 'Show PIN' }}
-                    </button>
-
-                    <button id="cp-sspin-generate" class="cp-btn cp-teal-btn">
-                        Generate New PIN
-                    </button>
+                    <button id="cp-sspin-generate" class="cp-btn cp-teal-btn">Generate New PIN</button>
                 </div>
 
-                {{-- NEW PIN INPUT --}}
+                {{-- ENTER NEW PIN --}}
                 <label class="cp-sec-label" style="margin-top:1rem;">Enter new PIN</label>
-                <input
-                    type="text"
-                    maxlength="6"
-                    class="cp-input"
-                    id="cp-sspin-input"
-                    placeholder="123456"
-                    value="{{ $sspin ?? '' }}"
-                >
+                <input type="text"
+                       maxlength="6"
+                       class="cp-input"
+                       id="cp-sspin-input"
+                       placeholder="123456"
+                       value="{{ $sspin ?? '' }}">
 
                 <button id="cp-sspin-save" class="cp-btn cp-teal-btn" style="margin-top:1rem;">
                     Save SSPIN
@@ -91,9 +80,6 @@
 
         </div>
 
-        {{-- ====================================================== --}}
-        {{-- Modal Footer                                           --}}
-        {{-- ====================================================== --}}
         <footer class="cp-modal-footer">
             <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">Close</button>
         </footer>

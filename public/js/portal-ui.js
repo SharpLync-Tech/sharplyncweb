@@ -1,11 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    //
     // ==========================================================
-    // ORIGINAL SECURITY MODAL (2FA) — UNCHANGED
+    // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
     // ==========================================================
     (function () {
-
         const modal = document.getElementById('cp-security-modal');
         const openBtn = document.getElementById('cp-open-security-modal');
         const sheet = modal?.querySelector('.cp-modal-sheet');
@@ -30,19 +28,15 @@ document.addEventListener("DOMContentLoaded", function () {
         modal?.addEventListener('click', e => {
             if (!sheet.contains(e.target)) closeModal();
         });
-
     })();
 
 
-
-    //
     // ==========================================================
     // PASSWORD + SSPIN MODAL CONTROLLER
     // ==========================================================
     (function () {
-
         const passModal = document.getElementById('cp-password-modal');
-        const openPassBtn = document.getElementById('cp-open-password-modal'); 
+        const openPassBtn = document.getElementById('cp-open-password-modal');
         const passSheet = passModal?.querySelector('.cp-modal-sheet');
         const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
         const root = document.querySelector('.cp-root');
@@ -65,70 +59,39 @@ document.addEventListener("DOMContentLoaded", function () {
         passModal?.addEventListener('click', e => {
             if (!passSheet.contains(e.target)) closePassModal();
         });
-
     })();
 
 
-
-    //
     // ==========================================================
-    // DASHBOARD PREVIEW BUTTON → OPEN PASSWORD/SSPIN MODAL
+    // DASHBOARD "Create/Manage" → OPEN MODAL
     // ==========================================================
     (function () {
-
-        const previewButton = document.getElementById('cp-open-password-modal-from-preview');
+        const btns = document.querySelectorAll('#cp-open-password-modal-from-preview');
         const openPassBtn = document.getElementById('cp-open-password-modal');
 
-        if (previewButton && openPassBtn) {
-            previewButton.addEventListener('click', () => openPassBtn.click());
-        }
-
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                openPassBtn?.click();
+            });
+        });
     })();
 
 
-
-    //
     // ==========================================================
-    // SSPIN CONTROLLER — COMPLETE, FINAL VERSION
+    // SSPIN CONTROLLER (UNMASKED)
     // ==========================================================
     (function () {
 
-        // IDs MUST MATCH MODAL HTML EXACTLY
         const displayEl = document.getElementById('cp-sspin-display');
         const inputEl = document.getElementById('cp-sspin-input');
-        const showBtn = document.getElementById('cp-sspin-toggle');
         const generateBtn = document.getElementById('cp-sspin-generate');
         const saveBtn = document.getElementById('cp-sspin-save');
-
-        const dashboardPreview = document.getElementById('cp-sspin-preview');
+        const previewEl = document.getElementById('cp-sspin-preview');
 
         if (!displayEl || !inputEl) return;
 
-        let showing = false;
-
-
-
-        //
         // ----------------------------------------------------------
-        // SHOW / HIDE PIN
-        // ----------------------------------------------------------
-        if (showBtn) {
-            showBtn.addEventListener('click', () => {
-
-                if (!inputEl.value) return;
-
-                showing = !showing;
-
-                displayEl.textContent = showing ? inputEl.value : "••••••";
-                showBtn.textContent = showing ? "Hide PIN" : "Show PIN";
-            });
-        }
-
-
-
-        //
-        // ----------------------------------------------------------
-        // GENERATE NEW PIN
+        // GENERATE NEW SSPIN
         // ----------------------------------------------------------
         if (generateBtn) {
             generateBtn.addEventListener('click', () => {
@@ -143,29 +106,24 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(res => res.json())
                     .then(data => {
 
-                        if (!data.success) {
-                            alert(data.message || "Could not generate PIN.");
+                        if (!data.success || !data.sspin) {
+                            alert("Error generating PIN.");
                             return;
                         }
 
-                        const newPin = data.sspin;
+                        inputEl.value = data.sspin;
+                        displayEl.textContent = data.sspin;
 
-                        inputEl.value = newPin;
-                        displayEl.textContent = showing ? newPin : "••••••";
+                        if (previewEl) previewEl.textContent = data.sspin;
 
-                        if (dashboardPreview) {
-                            dashboardPreview.textContent = "••••••";
-                        }
                     })
                     .catch(() => alert("Error generating PIN."));
             });
         }
 
 
-
-        //
         // ----------------------------------------------------------
-        // SAVE PIN
+        // SAVE SSPIN
         // ----------------------------------------------------------
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
@@ -189,15 +147,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
 
                         if (!data.success) {
-                            alert(data.message || "Could not save PIN.");
+                            alert("Error saving PIN.");
                             return;
                         }
 
-                        displayEl.textContent = showing ? pin : "••••••";
-
-                        if (dashboardPreview) {
-                            dashboardPreview.textContent = "••••••";
-                        }
+                        displayEl.textContent = pin;
+                        if (previewEl) previewEl.textContent = pin;
 
                         alert("Support PIN saved.");
                     })
