@@ -9,12 +9,7 @@ Route::middleware(['auth:customer'])
     ->name('customer.security.')
     ->group(function () {
 
-        // ==========================
         // EMAIL 2FA
-        // ==========================
-        Route::post('/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
-            ->name('2fa.email.toggle');
-
         Route::post('/email/send-code', [SecurityController::class, 'sendEmail2FACode'])
             ->name('email.send-code');
 
@@ -24,9 +19,7 @@ Route::middleware(['auth:customer'])
         Route::post('/email/disable', [SecurityController::class, 'disableEmail2FA'])
             ->name('email.disable');
 
-        // ==========================
-        // AUTHENTICATOR APP
-        // ==========================
+        // AUTHENTICATOR
         Route::post('/auth/start', [SecurityController::class, 'startApp2FASetup'])
             ->name('auth.start');
 
@@ -36,28 +29,21 @@ Route::middleware(['auth:customer'])
         Route::post('/auth/disable', [SecurityController::class, 'disableApp2FA'])
             ->name('auth.disable');
 
-        // ==========================
-        // SSPIN ROUTES (FIXED & INSIDE GROUP)
-        // ==========================
+        // SSPIN
         Route::post('/sspin/generate', [SecurityController::class, 'generateSSPIN'])
             ->name('sspin.generate');
 
         Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
             ->name('sspin.save');
 
-        // SEND PASSWORD RESET LINK (from inside portal)
-        Route::post('/password/send-reset-link', [SecurityController::class, 'sendPasswordResetLink'])
+        // PASSWORD RESET (correct fix)
+        Route::post('/password/send-reset-link', [SecurityController::class, 'requestPasswordReset'])
             ->name('password.send-reset-link');
-   
     });
 
-/**
- * LOGIN-TIME 2FA
- */
 Route::prefix('login/2fa')
     ->name('customer.login.2fa.')
     ->group(function () {
-
         Route::post('/send',   [TwoFactorLoginController::class, 'send'])
             ->name('send');
 
