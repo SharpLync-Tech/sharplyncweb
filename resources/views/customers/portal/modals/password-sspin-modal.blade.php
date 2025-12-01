@@ -1,11 +1,13 @@
-{{-- 
-  Partial: customers/portal/modals/password-sspin-modal.blade.php
-  Password + SSPIN modal — unchanged 
---}}
+{{-- ============================================================
+     FILE: password-sspin-modal.blade.php
+     PURPOSE: Password + SSPIN modal
+     UPDATED SECTIONS ARE CLEARLY MARKED
+   ============================================================ --}}
 
 <div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
     <div class="cp-modal-sheet">
 
+        {{-- Modal Header --}}
         <header class="cp-modal-header">
             <div>
                 <h3>Password & SSPIN Settings</h3>
@@ -13,12 +15,15 @@
                     Update your login password or Support PIN.
                 </p>
             </div>
+
             <button class="cp-password-close">&times;</button>
         </header>
 
         <div class="cp-modal-body">
 
-            {{-- PASSWORD SECTION --}}
+            {{-- ============================================================
+                 🔥 UPDATED SECTION #1 — CLEAN TIGHT PASSWORD AREA
+               ============================================================ --}}
             <div class="cp-sec-card">
 
                 <h4>Change Password</h4>
@@ -38,9 +43,13 @@
                 </div>
 
             </div>
+            {{-- ============================================================ --}}
 
-            {{-- SSPIN SECTION --}}
-            <div class="cp-sec-card">
+
+            {{-- ============================================================
+                 🔥 UPDATED SECTION #2 — SSPIN SECTION (HIDDEN BY DEFAULT)
+               ============================================================ --}}
+            <div class="cp-sec-card" id="cp-sspin-section" style="display:none;">
 
                 <h4>Support PIN (SSPIN)</h4>
 
@@ -58,9 +67,11 @@
 
                 <button class="cp-btn cp-teal-btn" style="margin-top:1rem;">Save SSPIN</button>
             </div>
+            {{-- ============================================================ --}}
 
         </div>
 
+        {{-- Modal Footer --}}
         <footer class="cp-modal-footer">
             <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">Close</button>
         </footer>
