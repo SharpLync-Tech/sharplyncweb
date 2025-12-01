@@ -209,12 +209,12 @@
 
                     <img id="customer-attachment-thumb"
                         style="
-                            width: 48px;
-                            height: 48px;
-                            border-radius: 6px;
-                            object-fit: cover;
-                            background: #f2f4f7;
-                            display: none;
+                            width: 48px !important;
+                            height: 48px !important;
+                            border-radius: 6px !important;
+                            object-fit: cover !important;
+                            background: #f2f4f7 !important;
+                            
                         ">
 
                     <div style="flex:1;">
