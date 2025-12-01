@@ -64,4 +64,3 @@ Route::prefix('login/2fa')
         Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
             ->name('verify');
     });
-.

@@ -84,7 +84,7 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
-     | EMAIL 2FA — DISABLE
+     | EMAIL 2FA — DISABLE (NEW)
      * ============================================================ */
     public function disableEmail2FA(Request $request)
     {
@@ -129,17 +129,11 @@ class SecurityController extends Controller
         );
 
         try {
-            $renderer = new ImageRenderer(
-                new RendererStyle(200),
-                new SvgImageBackEnd()
-            );
-
+            $renderer = new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd());
             $writer  = new Writer($renderer);
             $svgData = $writer->writeString($otpauth);
-
             $qrBase64 = 'data:image/svg+xml;base64,' . base64_encode($svgData);
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success'     => true,
                 'secret'      => $secret,
@@ -266,8 +260,8 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
-    | SSPIN — GENERATE
-    * ============================================================ */
+     | SSPIN — GENERATE
+     * ============================================================ */
     public function generateSSPIN(Request $request)
     {
         $user = auth('customer')->user();
@@ -295,8 +289,8 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
-    | SSPIN — SAVE
-    * ============================================================ */
+     | SSPIN — SAVE TO DATABASE
+     * ============================================================ */
     public function saveSSPIN(Request $request)
     {
         try {
@@ -333,9 +327,7 @@ class SecurityController extends Controller
      * ============================================================ */
     public function saveSupportPin(Request $request)
     {
-        $request->validate([
-            'sspin' => ['required', 'digits:6'],
-        ]);
+        $request->validate(['sspin' => ['required', 'digits:6']]);
 
         $user = auth('customer')->user();
         if (!$user) {
@@ -355,10 +347,11 @@ class SecurityController extends Controller
         ]);
     }
 
+
     /* ============================================================
-     | PASSWORD RESET — SEND RESET LINK (NEW)
+     | 🔥 NEW SECTION — PASSWORD RESET REQUEST (Step 4)
      * ============================================================ */
-    public function sendPasswordResetLink(Request $request)
+    public function requestPasswordReset(Request $request)
     {
         $user = auth('customer')->user();
 
@@ -369,21 +362,31 @@ class SecurityController extends Controller
             ], 401);
         }
 
-        $status = Password::broker('customers')->sendResetLink([
-            'email' => $user->email
-        ]);
+        try {
+            $status = Password::broker('customers')->sendResetLink([
+                'email' => $user->email
+            ]);
 
-        if ($status === Password::RESET_LINK_SENT) {
+            if ($status !== Password::RESET_LINK_SENT) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __($status)
+                ], 400);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Password reset link sent.'
             ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error("Password reset request error: {$e->getMessage()}");
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not send password reset email.'
+            ], 500);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Unable to send reset link.'
-        ], 500);
     }
-
 }
