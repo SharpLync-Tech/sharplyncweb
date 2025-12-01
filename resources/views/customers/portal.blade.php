@@ -83,7 +83,10 @@
             <p>Manage your login security and two-factor authentication options.</p>
             <div class="cp-security-footer">
                 <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
-                    Manage Security
+                    2FA Settings
+                </button>
+                <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
+                    Password & SSPIN Settings
                 </button>
             </div>
         </div>
