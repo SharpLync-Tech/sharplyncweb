@@ -7,6 +7,7 @@ use App\Models\SupportAdmin\SupportTicket;
 use App\Models\SupportAdmin\SupportTicketReply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
@@ -91,19 +92,39 @@ class TicketController extends Controller
     public function reply(SupportTicket $ticket, Request $request)
     {
         $data = $request->validate([
-            'message' => ['required', 'string'],
+            'message'    => ['required', 'string'],
+            'attachment' => ['nullable', 'file', 'max:5120'], // ✔ Allow file upload (5MB)
         ]);
 
-        SupportTicketReply::create([
-            'ticket_id' => $ticket->id,
-            'user_type' => 'admin',
-            'user_id'   => Auth::id(),
-            'message'   => $data['message'],
-            'is_internal' => 0,
-        ]);
+        // Create reply object so we can attach file data
+        $reply = new SupportTicketReply();
+        $reply->ticket_id = $ticket->id;
+        $reply->user_type = 'admin';
+        $reply->user_id   = Auth::id();
+        $reply->message   = $data['message'];
+        $reply->is_internal = 0;
 
+        // ====================================================
+        // ✔ ADDED: Attachment handling (same as customer side)
+        // ====================================================
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+
+            // Save file in same path structure customer uses
+            $path = $file->store("support_attachments/{$ticket->id}", 'local');
+
+            $reply->attachment_path = $path;
+            $reply->attachment_original_name = $file->getClientOriginalName();
+            $reply->attachment_mime = $file->getClientMimeType();
+        }
+        // ====================================================
+
+        $reply->save();
+
+        // Set last reply timestamp
         $ticket->last_reply_at = now();
 
+        // If ticket was closed/resolved, reopen it
         if (in_array($ticket->status, ['resolved', 'closed'], true)) {
             $ticket->status = 'pending';
             $ticket->closed_at = null;
@@ -156,7 +177,6 @@ class TicketController extends Controller
 
     public function download(\App\Models\Support\TicketReply $reply)
     {
-        // ✔ Correct session key for logged-in admin
         if (!session()->has('admin_user')) {
             abort(403, 'Not authorized');
         }
