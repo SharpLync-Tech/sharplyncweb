@@ -1,11 +1,8 @@
 {{-- =================================================================== --}}
-{{--  SharpLync Customer Portal — Password & SSPIN Modal V2 (Unmasked)   --}}
+{{--  SharpLync Customer Portal — Password & SSPIN Modal                 --}}
 {{--  File: resources/views/customers/portal/modals/password-sspin-modal --}}
+{{--  NOTE: Only PASSWORD SECTION has been changed in this step          --}}
 {{-- =================================================================== --}}
-
-@php
-    $sspin = $u->sspin ?? null;
-@endphp
 
 <div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
     <div class="cp-modal-sheet">
@@ -23,57 +20,78 @@
         <div class="cp-modal-body">
 
             {{-- ======================================================= --}}
-            {{-- PASSWORD SECTION                                        --}}
+            {{-- [SECTION A] PASSWORD RESET VIA EMAIL (NEW FLOW)         --}}
+            {{--       - Step 1 change: UI only                          --}}
+            {{--       - No direct password change in the portal modal   --}}
             {{-- ======================================================= --}}
             <div class="cp-sec-card">
 
                 <h4>Change Password</h4>
 
-                <label class="cp-sec-label">Current Password</label>
-                <input type="password" class="cp-input" id="cp-pass-current">
+                <p class="cp-sec-desc" style="margin-bottom: .75rem;">
+                    For security, password changes are handled via a secure link
+                    sent to your email address. Click the button below and follow
+                    the link in your inbox to choose a new password.
+                </p>
 
-                <label class="cp-sec-label" style="margin-top:.55rem;">New Password</label>
-                <input type="password" class="cp-input" id="cp-pass-new">
+                <p class="cp-sec-desc" style="font-size: .9rem; color: #63718a;">
+                    Email on file: <strong>{{ $email }}</strong>
+                </p>
 
-                <label class="cp-sec-label" style="margin-top:.55rem;">Confirm Password</label>
-                <input type="password" class="cp-input" id="cp-pass-confirm">
-
-                <div style="display:flex; gap:.75rem; margin-top:1rem;">
-                    <button class="cp-btn cp-teal-btn">Update Password</button>
-                    <button class="cp-btn cp-navy-btn">I Forgot My Password</button>
+                <div style="margin-top: 1rem;">
+                    {{-- IMPORTANT: This button will be wired in JS in the next step --}}
+                    <button
+                        id="cp-password-reset-request"
+                        class="cp-btn cp-teal-btn">
+                        Send Password Reset Link
+                    </button>
                 </div>
 
             </div>
 
             {{-- ======================================================= --}}
-            {{-- SSPIN SECTION (UNMASKED)                                --}}
+            {{-- [SECTION B] SSPIN MANAGEMENT (UNCHANGED FUNCTIONALLY)   --}}
+            {{--    - Uses existing SSPIN logic                          --}}
+            {{--    - Still fully controlled by JS & SecurityController  --}}
             {{-- ======================================================= --}}
             <div class="cp-sec-card">
 
                 <h4>Support PIN (SSPIN)</h4>
 
-                <p class="cp-sec-desc" style="margin-bottom:.3rem;">Your current Support PIN:</p>
+                <p class="cp-sec-desc" style="margin-bottom:.3rem;">
+                    Your current Support PIN:
+                </p>
 
-                {{-- ALWAYS SHOW FULL SSPIN --}}
-                <div id="cp-sspin-display"
-                     style="font-size:1.8rem; font-weight:700; letter-spacing:.15rem;">
-                    {{ $sspin ?? 'Not set' }}
+                {{-- Current SSPIN value (shown in clear once logged in) --}}
+                <div
+                    id="cp-sspin-display"
+                    style="font-size: 2rem; font-weight: 700; color:#0A2A4D; letter-spacing:.45rem; margin:.5rem 0 1rem;">
+                    {{ $u->sspin ?? '------' }}
                 </div>
 
-                <div style="display:flex; gap:.75rem; margin-top:.75rem;">
-                    <button id="cp-sspin-generate" class="cp-btn cp-teal-btn">Generate New PIN</button>
+                <div style="display:flex; gap:.75rem; margin-bottom:1rem;">
+                    {{-- Generate new random 6-digit PIN (handled in JS) --}}
+                    <button id="cp-sspin-generate" class="cp-btn cp-teal-btn">
+                        Generate New PIN
+                    </button>
                 </div>
 
-                {{-- ENTER NEW PIN --}}
-                <label class="cp-sec-label" style="margin-top:1rem;">Enter new PIN</label>
-                <input type="text"
-                       maxlength="6"
-                       class="cp-input"
-                       id="cp-sspin-input"
-                       placeholder="123456"
-                       value="{{ $sspin ?? '' }}">
+                <label class="cp-sec-label" style="margin-top:.25rem;">
+                    Enter new PIN
+                </label>
 
-                <button id="cp-sspin-save" class="cp-btn cp-teal-btn" style="margin-top:1rem;">
+                <input
+                    type="text"
+                    maxlength="6"
+                    class="cp-input"
+                    id="cp-sspin-input"
+                    value="{{ $u->sspin ?? '' }}"
+                    placeholder="123456">
+
+                <button
+                    id="cp-sspin-save"
+                    class="cp-btn cp-teal-btn"
+                    style="margin-top:1rem;">
                     Save SSPIN
                 </button>
             </div>
@@ -81,7 +99,9 @@
         </div>
 
         <footer class="cp-modal-footer">
-            <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">Close</button>
+            <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">
+                Close
+            </button>
         </footer>
 
     </div>
