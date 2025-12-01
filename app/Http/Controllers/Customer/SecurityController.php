@@ -348,45 +348,49 @@ class SecurityController extends Controller
     }
 
 
-    /* ============================================================
-     | 🔥 NEW SECTION — PASSWORD RESET REQUEST (Step 4)
-     * ============================================================ */
-    public function requestPasswordReset(Request $request)
-    {
-        $user = auth('customer')->user();
+            /* ============================================================
+        | 🔥 FIXED — PASSWORD RESET REQUEST
+        * ============================================================ */
+        public function requestPasswordReset(Request $request)
+        {
+            $user = auth('customer')->user();
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Not authenticated'
-            ], 401);
-        }
-
-        try {
-            $status = Password::broker('customers')->sendResetLink([
-                'email' => $user->email
-            ]);
-
-            if ($status !== Password::RESET_LINK_SENT) {
+            if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => __($status)
-                ], 400);
+                    'message' => 'Not authenticated'
+                ], 401);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Password reset link sent.'
-            ]);
+            try {
 
-        } catch (\Throwable $e) {
+                // IMPORTANT — correct broker name
+                $status = Password::broker('crm_users')->sendResetLink([
+                    'email' => $user->email
+                ]);
 
-            Log::error("Password reset request error: {$e->getMessage()}");
+                if ($status !== Password::RESET_LINK_SENT) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __($status)
+                    ], 400);
+                }
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Could not send password reset email.'
-            ], 500);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password reset link sent.'
+                ]);
+
+            } catch (\Throwable $e) {
+
+                Log::error("Password reset request error: {$e->getMessage()}");
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not send password reset email.'
+                ], 500);
+            }
         }
-    }
+
+
 }
