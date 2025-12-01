@@ -425,10 +425,9 @@
             {{-- PASSWORD SECTION --}}
             <div class="cp-sec-card cp-sec-bordered">
 
-                <h4 style="margin-bottom:1rem;">Change Password</h4>
+                <h4>Change Password</h4>
 
-                {{-- 2-column input grid --}}
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="cp-pass-grid">
 
                     <div>
                         <label class="cp-sec-label">Current Password</label>
@@ -444,7 +443,6 @@
                         <label class="cp-sec-label">Confirm Password</label>
                         <input type="password" id="cp-pass-confirm" class="cp-input">
                     </div>
-
                 </div>
 
                 <div style="margin-top:1.25rem; display:flex; gap:.5rem;">
@@ -458,10 +456,11 @@
                 </div>
 
                 <p id="cp-pass-msg" 
-                   class="cp-sec-desc" 
-                   style="display:none; margin-top:.75rem;">
+                class="cp-sec-desc" 
+                style="display:none; margin-top:.75rem;">
                 </p>
             </div>
+
 
             {{-- SSPIN SECTION --}}
             <div class="cp-sec-card cp-sec-bordered" style="margin-top:1.8rem;">

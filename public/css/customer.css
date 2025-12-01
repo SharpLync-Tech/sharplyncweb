@@ -701,4 +701,108 @@ body.modal-open {
         70% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
+
+    /* ------------------------------------------------------------- */
+    /*  MODAL CLOSE BUTTON - ROUND + TEAL                            */
+    /* ------------------------------------------------------------- */
+    .cp-password-close {
+        background: #2CBFAE;
+        color: white;
+        border: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: 0.2s ease;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    .cp-password-close:hover {
+        background: #26a696;
+        transform: scale(1.07);
+    }
+
+
+    /* ------------------------------------------------------------- */
+    /*  INPUT FIELDS - SHARPLYNC STYLE                               */
+    /* ------------------------------------------------------------- */
+    .cp-input {
+        width: 100%;
+        padding: .55rem .75rem;
+        border: 1px solid #d1d9df;
+        border-radius: 10px;
+        background: #ffffff;
+        font-size: .95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+
+    .cp-input:focus {
+        outline: none;
+        border-color: #2CBFAE;
+        box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+    }
+
+
+    /* ------------------------------------------------------------- */
+    /*  MAKE PASSWORD + SSPIN CARDS SMALLER                          */
+    /* ------------------------------------------------------------- */
+    #cp-password-modal .cp-sec-card {
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #cp-password-modal .cp-modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 1rem;
+    }
+
+    /* Spacing tweaks */
+    #cp-password-modal h4 {
+        margin-bottom: .75rem;
+    }
+
+    #cp-password-modal .cp-sec-label {
+        font-weight: 600;
+        margin-bottom: .3rem;
+        display: inline-block;
+    }
+
+
+    /* ------------------------------------------------------------- */
+    /*  GRID FOR PASSWORD INPUTS                                     */
+    /* ------------------------------------------------------------- */
+    .cp-pass-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media(max-width: 700px) {
+        .cp-pass-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    /* ------------------------------------------------------------- */
+    /*  SSPIN DISPLAY                                                 */
+    /* ------------------------------------------------------------- */
+    #cp-sspin-display {
+        font-size: 1.8rem;
+        letter-spacing: .35rem;
+        margin-top: .5rem;
+        margin-bottom: 1rem;
+    }
+
+ 
 }
