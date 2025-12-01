@@ -10,7 +10,7 @@
         {{-- Modal Header --}}
         <header class="cp-modal-header">
             <div>
-                <h3>Password & SSPIN Settings</h3>
+                <h3>Password Settings</h3>
                 <p class="cp-modal-subtitle">
                     Update your login password or Support PIN.
                 </p>
@@ -47,7 +47,7 @@
 
 
             {{-- ============================================================
-                 🔥 UPDATED SECTION #2 — SSPIN SECTION (HIDDEN BY DEFAULT)
+                 UPDATED SECTION #2 — SSPIN SECTION (HIDDEN BY DEFAULT)
                ============================================================ --}}
             <div class="cp-sec-card" id="cp-sspin-section" style="display:none;">
 

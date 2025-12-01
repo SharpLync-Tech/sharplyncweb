@@ -33,23 +33,42 @@
                 Customer since: {{ $user->created_at->format('F Y') }}
             </p>
 
-            {{-- ============================================================
-                 🔥 UPDATED SECTION #1 — SSPIN PREVIEW ON DASHBOARD
-                 This is the ONLY new part for this file.
-               ============================================================ --}}
-            @if(isset($user->support_pin))
-                <p class="cp-detail-line" style="margin-top: .4rem;">
-                    Support PIN:
-                    <span id="cp-sspin-preview">••••••</span>
+            {{-- =============================== --}}
+            {{-- SSPIN PREVIEW (ALWAYS SHOWN)   --}}
+            {{-- =============================== --}}
+            <p class="cp-detail-line" style="display:flex; align-items:center; gap:.5rem; margin-top:.35rem;">
 
+                <span>Support PIN:</span>
+
+                @if(!empty($u->support_pin))
+                    {{-- Masked PIN --}}
+                    <span id="cp-sspin-preview" style="letter-spacing:.3rem; font-weight:600;">
+                        ••••••
+                    </span>
+
+                    {{-- Manage button --}}
                     <button 
                         id="cp-open-password-modal-from-preview"
-                        class="cp-btn cp-small-btn cp-navy-btn"
-                        style="margin-left:.75rem; padding:.25rem .7rem; font-size:.75rem;">
+                        class="cp-btn cp-small-btn cp-navy-btn" 
+                        style="padding:.25rem .7rem; font-size:.75rem;">
                         Manage
                     </button>
-                </p>
-            @endif
+
+                @else
+                    {{-- No PIN set --}}
+                    <span style="font-weight:600; color:#888;">Not set</span>
+
+                    {{-- Create button --}}
+                    <button 
+                        id="cp-open-password-modal-from-preview"
+                        class="cp-btn cp-small-btn cp-teal-btn" 
+                        style="padding:.25rem .7rem; font-size:.75rem;">
+                        Create
+                    </button>
+                @endif
+
+            </p>
+
             {{-- ============================================================ --}}
 
         </div>

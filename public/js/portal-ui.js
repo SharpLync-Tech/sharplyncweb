@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ============================================================
-    // 🔥 UPDATED SECTION #1 — PASSWORD & SSPIN MODAL
+    //  UPDATED SECTION #1 — PASSWORD & SSPIN MODAL
     // ============================================================
     (function(){
 
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ============================================================
-    // 🔥 UPDATED SECTION #2 — DASHBOARD SSPIN "MANAGE" BUTTON
+    //  UPDATED SECTION #2 — DASHBOARD SSPIN "MANAGE" BUTTON
     // ============================================================
     (function(){
 
