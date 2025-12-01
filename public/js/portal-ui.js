@@ -345,39 +345,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    //
-    // ==========================================================
-    //  NEW SECTION — PASSWORD RESET (Step 3)
-    // ==========================================================
-            (function () {
+    // =======================================================================
+// SharpLync Portal UI — Password Reset Button Handler (Updated Dec 2025)
+// =======================================================================
 
-            const resetBtn = document.getElementById('cp-password-reset-request');
+(function () {
 
-            if (!resetBtn) return;
+    const resetBtn = document.getElementById('cp-password-reset-request');
 
-            resetBtn.addEventListener('click', () => {
+    if (!resetBtn) return;
 
-                fetch(window.cpRoutes.passwordSendReset, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': window.cpCsrf
-                    }
-                })
-                    .then(res => res.json())
-                    .then(data => {
+    resetBtn.addEventListener('click', () => {
 
-                        if (!data.success) {
-                            alert(data.message || "Could not send password reset link.");
-                            return;
-                        }
+        // ✅ Uses NEW dynamic route defined in portal.blade.php
+        fetch(window.cpRoutes.passwordSendReset, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.cpCsrf
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
 
-                        alert("Password reset email sent! Check your inbox.");
-                    })
-                    .catch(() => alert("Server error sending password reset email."));
+                if (!data.success) {
+                    alert(data.message || "Could not send password reset link.");
+                    return;
+                }
+
+                alert("Password reset email sent! Check your inbox.");
+            })
+            .catch(() => {
+                alert("Server error sending password reset email.");
             });
+    });
 
-        })();
+})();
 
 
 
