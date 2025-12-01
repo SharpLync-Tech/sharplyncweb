@@ -997,28 +997,28 @@
     stroke: #32d8c5 !important;
 }
 
-/* ===========================================
-   SHARPLYNC ADMIN — Pulsing red status dot
-   For urgent states: waiting_on_customer + waiting_for_support
-=========================================== */
-
-.support-status-dot.admin-alert {
-    background-color: #ff3b3b; /* solid red */
-    box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7);
-    animation: adminPulse 1.6s infinite ease-out;
+.admin-status-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff4d4f;
+    border-radius: 50%;
+    display: inline-block;
+    animation: adminPulse 1.4s ease-in-out infinite;
+    box-shadow: 0 0 0 rgba(255, 77, 79, 0.6);
 }
 
 @keyframes adminPulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7);
+        box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.6);
     }
     70% {
-        box-shadow: 0 0 0 12px rgba(255, 59, 59, 0);
+        box-shadow: 0 0 0 10px rgba(255, 77, 79, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 59, 59, 0);
+        box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
     }
 }
+
 
 
 

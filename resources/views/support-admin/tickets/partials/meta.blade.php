@@ -23,9 +23,17 @@
             <div class="support-admin-meta-control">
                 <button type="button"
                         class="support-admin-dropdown-toggle support-admin-badge support-admin-badge-status-{{ $ticket->status ?? 'open' }}"
-                        data-dropdown-toggle="status">
+                        data-dropdown-toggle="status"
+                        style="display:flex; align-items:center; gap:8px;">
+
+                    {{-- 🔴 Pulsing red dot (only for waiting_for_support) --}}
+                    @if($ticket->status === 'waiting_for_support')
+                        <span class="admin-status-dot"></span>
+                    @endif
+
                     {{ strtoupper(str_replace('_',' ', $ticket->status ?? 'open')) }}
                 </button>
+
 
                 <div class="support-admin-dropdown" data-dropdown-panel="status">
                     <div class="support-admin-dropdown-header">Change status</div>
