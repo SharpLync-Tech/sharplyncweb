@@ -137,10 +137,15 @@
         </header>
 
         <div class="cp-modal-body">
-            {{-- YOUR ENTIRE ORIGINAL WORKING 2FA MODAL CONTENT GOES HERE --}}
-            {{-- I am NOT rewriting it because YOU SAID this version works --}}
-            {{-- Paste your working modal content exactly as-is --}}
-            {!! $twoFaModalContent ?? '' !!}
+            <div class="cp-activity-card cp-security-card">
+            <h4>Security</h4>
+            <p>Manage your login security and two-factor authentication options.</p>
+            <div class="cp-security-footer">
+                <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
+                    Manage Security
+                </button>
+            </div>
+        </div>
         </div>
 
         <footer class="cp-modal-footer">
