@@ -4,24 +4,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================================
     // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
     // ==========================================================
-    (function(){
+    (function () {
 
-        const modal     = document.getElementById('cp-security-modal');
-        const openBtn   = document.getElementById('cp-open-security-modal');
-        const sheet     = modal?.querySelector('.cp-modal-sheet');
+        const modal = document.getElementById('cp-security-modal');
+        const openBtn = document.getElementById('cp-open-security-modal');
+        const sheet = modal?.querySelector('.cp-modal-sheet');
         const closeBtns = modal?.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
-        const root      = document.querySelector('.cp-root');
+        const root = document.querySelector('.cp-root');
 
-        function openModal(){
+        function openModal() {
             modal.classList.add('cp-modal-visible');
             modal.setAttribute('aria-hidden', 'false');
-            if(root) root.classList.add('modal-open');
+            if (root) root.classList.add('modal-open');
         }
 
-        function closeModal(){
+        function closeModal() {
             modal.classList.remove('cp-modal-visible');
-            modal.setAttribute('aria-hidden','true');
-            if(root) root.classList.remove('modal-open');
+            modal.setAttribute('aria-hidden', 'true');
+            if (root) root.classList.remove('modal-open');
         }
 
         if (openBtn) openBtn.addEventListener('click', openModal);
@@ -36,15 +36,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //
     // ==========================================================
-    // PASSWORD & SSPIN MODAL CONTROLLER
+    // NEW PASSWORD & SSPIN MODAL CONTROLLER
     // ==========================================================
-    (function(){
+    (function () {
 
-        const passModal     = document.getElementById('cp-password-modal');
-        const openPassBtn   = document.getElementById('cp-open-password-modal');
-        const passSheet     = passModal?.querySelector('.cp-modal-sheet');
+        const passModal = document.getElementById('cp-password-modal');
+        const openPassBtn = document.getElementById('cp-open-password-modal'); // from Security card
+        const passSheet = passModal?.querySelector('.cp-modal-sheet');
         const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
-        const root          = document.querySelector('.cp-root');
+        const root = document.querySelector('.cp-root');
 
         function openPassModal() {
             passModal.classList.add('cp-modal-visible');
@@ -70,132 +70,146 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //
     // ==========================================================
-    // DASHBOARD "MANAGE" BUTTON → OPEN PASSWORD MODAL
+    // DASHBOARD "Manage" BUTTON → OPEN PASSWORD/SSPIN MODAL
     // ==========================================================
-    (function(){
+    (function () {
 
-        const manageBtn  = document.getElementById('cp-open-password-modal-from-preview');
+        const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
         const openPassBtn = document.getElementById('cp-open-password-modal');
 
         if (manageBtn && openPassBtn) {
-            manageBtn.addEventListener('click', () => openPassBtn.click());
+            manageBtn.addEventListener('click', () => {
+                openPassBtn.click();
+            });
         }
 
     })();
 
 
+
     //
     // ==========================================================
-    // SSPIN FULL LOGIC (SHOW, GENERATE, SAVE)
+    // SSPIN — FULL FRONT-END CONTROLLER
     // ==========================================================
-    (function() {
+    (function () {
 
-        const showBtn     = document.getElementById('cp-sspin-show');
-        const genBtn      = document.getElementById('cp-sspin-generate');
-        const input       = document.getElementById('cp-sspin-input');
-        const display     = document.getElementById('cp-sspin-display');     // modal display
-        const saveBtn     = document.querySelector('#cp-password-modal button.cp-btn.cp-teal-btn:last-of-type');
-        const previewSpan = document.getElementById('cp-sspin-preview');      // dashboard masked preview
+        const displayEl = document.getElementById('cp-sspin-display');
+        const inputEl = document.getElementById('cp-sspin-input');
+        const showBtn = document.getElementById('cp-sspin-toggle');
+        const generateBtn = document.getElementById('cp-sspin-generate');
+        const saveBtn = document.getElementById('cp-sspin-save');
 
-        let revealed = false;
-        const MASKED = '••••••';
+        const dashboardPreview = document.getElementById('cp-sspin-preview');
+        const openPassBtn = document.getElementById('cp-open-password-modal');
+
+        if (!displayEl || !inputEl) return; // modal not present
+
+        let showing = false; // toggle state
 
 
-        // --- Show / Hide SSPIN ---
-        if (showBtn && display) {
+        //
+        // ----------------------------------------------------------
+        // TOGGLE SHOW / HIDE PIN
+        // ----------------------------------------------------------
+        //
+        if (showBtn) {
             showBtn.addEventListener('click', () => {
-                if (!revealed) {
-                    // Show actual PIN safely
-                    display.textContent = input.value || display.dataset.realPin || MASKED;
+
+                if (!inputEl.value) return;
+
+                showing = !showing;
+
+                if (showing) {
+                    displayEl.textContent = inputEl.value;
                     showBtn.textContent = "Hide PIN";
-                    revealed = true;
                 } else {
-                    // Hide back to bullets
-                    display.textContent = MASKED;
+                    displayEl.textContent = "••••••";
                     showBtn.textContent = "Show PIN";
-                    revealed = false;
                 }
             });
         }
 
 
-        // --- Generate New SSPIN ---
-        if (genBtn && display && input) {
-            genBtn.addEventListener('click', async () => {
+        //
+        // ----------------------------------------------------------
+        // GENERATE NEW PIN
+        // ----------------------------------------------------------
+        //
+        if (generateBtn) {
+            generateBtn.addEventListener('click', () => {
 
-                try {
-                    const res = await fetch('/portal/security/sspin/generate', {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": window.cpCsrf
-                        }
-                    });
-
-                    const data = await res.json();
-
-                    if (data.success) {
-                        const newPin = data.pin.toString();
-
-                        // Update modal display + input
-                        input.value = newPin;
-                        display.dataset.realPin = newPin;
-
-                        if (revealed) display.textContent = newPin;
-                        else display.textContent = MASKED;
-
-                        // Update dashboard preview immediately
-                        if (previewSpan) previewSpan.textContent = MASKED;
+                fetch('/portal/security/sspin/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.cpCsrf
                     }
+                })
+                    .then(res => res.json())
+                    .then(data => {
 
-                } catch (e) {
-                    console.error("SSPIN generation error:", e);
-                }
+                        if (!data.success) {
+                            alert("Could not generate PIN.");
+                            return;
+                        }
+
+                        // update modal
+                        inputEl.value = data.sspin;
+                        displayEl.textContent = showing ? data.sspin : "••••••";
+
+                        // update dashboard preview
+                        if (dashboardPreview) {
+                            dashboardPreview.textContent = "••••••";
+                        }
+
+                    })
+                    .catch(() => alert("Error generating PIN."));
             });
         }
 
 
-        // --- Save SSPIN ---
-        if (saveBtn && input) {
-            saveBtn.addEventListener('click', async () => {
+        //
+        // ----------------------------------------------------------
+        // SAVE ENTERED PIN
+        // ----------------------------------------------------------
+        //
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
 
-                const newPin = input.value.trim();
+                const pin = inputEl.value.trim();
 
-                if (!/^\d{6}$/.test(newPin)) {
-                    alert("SSPIN must be 6 digits only.");
+                if (!/^[0-9]{6}$/.test(pin)) {
+                    alert("PIN must be exactly 6 digits.");
                     return;
                 }
 
-                try {
-                    const res = await fetch('/portal/security/sspin/save', {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": window.cpCsrf
-                        },
-                        body: JSON.stringify({ sspin: newPin })
-                    });
+                fetch('/portal/security/sspin/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.cpCsrf
+                    },
+                    body: JSON.stringify({ sspin: pin })
+                })
+                    .then(res => res.json())
+                    .then(data => {
 
-                    const data = await res.json();
-
-                    if (data.success) {
-
-                        // Update modal display
-                        display.dataset.realPin = newPin;
-                        if (revealed) display.textContent = newPin;
-                        else display.textContent = MASKED;
-
-                        // Update dashboard preview
-                        if (previewSpan) {
-                            previewSpan.textContent = MASKED;
+                        if (!data.success) {
+                            alert("Could not save PIN.");
+                            return;
                         }
 
-                        alert("Support PIN updated successfully.");
-                    }
+                        // Update modal
+                        displayEl.textContent = showing ? pin : "••••••";
 
-                } catch (e) {
-                    console.error("SSPIN save error:", e);
-                }
+                        // Update dashboard preview
+                        if (dashboardPreview) {
+                            dashboardPreview.textContent = "••••••";
+                        }
+
+                        alert("Support PIN saved.");
+                    })
+                    .catch(() => alert("Error saving PIN."));
             });
         }
 

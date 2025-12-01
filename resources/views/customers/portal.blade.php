@@ -47,21 +47,22 @@
 <div class="cp-card cp-dashboard-grid">
 
     {{-- LEFT COLUMN --}}
-    @include('customers.portal.profile-card')
+        @include('customers.portal.profile-card', ['u' => $u])
 
-    {{-- RIGHT COLUMN --}}
-    <div class="cp-activity-column">
+        {{-- RIGHT COLUMN --}}
+        <div class="cp-activity-column">
 
-        {{-- SECURITY CARD --}}
-        @include('customers.portal.security-card')
+            {{-- SECURITY CARD --}}
+            @include('customers.portal.security-card', ['u' => $u])
 
-        {{-- SUPPORT CARD --}}
-        @include('customers.portal.support-card')
+            {{-- SUPPORT CARD --}}
+            @include('customers.portal.support-card', ['u' => $u])
 
-        {{-- ACCOUNT CARD --}}
-        @include('customers.portal.account-card')
+            {{-- ACCOUNT CARD --}}
+            @include('customers.portal.account-card', ['u' => $u])
 
-    </div>
+        </div>
+
 </div>
 
 {{-- ======================================================= --}}

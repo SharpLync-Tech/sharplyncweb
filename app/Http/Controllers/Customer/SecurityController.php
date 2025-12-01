@@ -264,49 +264,56 @@ class SecurityController extends Controller
         ]);
     }
 
-
     /* ============================================================
-     | SSPIN — SAVE  (NEW)
+     | SSPIN — GENERATE 6-DIGIT SUPPORT PIN
      * ============================================================ */
-    public function saveSSPIN(Request $request)
+    public function generateSupportPin(Request $request)
     {
-        $request->validate([
-            'sspin' => 'required|digits:6'
-        ]);
-
         $user = auth('customer')->user();
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Not authenticated',
+            ], 401);
         }
 
-        $user->support_pin = $request->sspin;
+        // 6-digit numeric PIN, zero-padded
+        $pin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $user->sspin = $pin; // <-- correct DB column
         $user->save();
 
         return response()->json([
             'success' => true,
-            'pin'     => $user->support_pin
+            'message' => 'Support PIN generated.',
+            'sspin'   => $pin,
         ]);
     }
 
-
     /* ============================================================
-     | SSPIN — GENERATE (NEW)
+     | SSPIN — SAVE USER-ENTERED PIN
      * ============================================================ */
-    public function generateSSPIN()
+    public function saveSupportPin(Request $request)
     {
+        $request->validate([
+            'sspin' => ['required', 'digits:6'],
+        ]);
+
         $user = auth('customer')->user();
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Not authenticated',
+            ], 401);
         }
 
-        $pin = rand(100000, 999999);
-
-        $user->support_pin = $pin;
+        $user->sspin = $request->input('sspin'); // <-- correct DB column
         $user->save();
 
         return response()->json([
             'success' => true,
-            'pin'     => $pin
+            'message' => 'Support PIN saved.',
+            'sspin'   => $user->sspin,
         ]);
     }
 }
