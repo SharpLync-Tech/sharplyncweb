@@ -193,16 +193,51 @@
                     <input type="hidden" name="message" id="quill-html">
 
                     <!-- Attachment Preview (before sending) -->
-                    <div id="customer-attachment-preview" class="support-attachment-preview" style="display:none;">
-                        <div class="support-attachment-item">
-                            <img id="customer-attachment-thumb" class="support-attachment-thumb" style="display:none;">
-                            <div class="support-attachment-info">
-                                <span id="customer-attachment-name"></span>
-                                <span id="customer-attachment-size" class="support-attachment-size"></span>
-                            </div>
-                            <button type="button" id="customer-attachment-remove" class="support-attachment-remove">✖</button>
-                        </div>
+                <div id="customer-attachment-preview"
+                    class="support-attachment-preview"
+                    style="
+                        display:none;
+                        margin-top: 12px;
+                        padding: 12px;
+                        background: #fff;
+                        border-radius: 12px;
+                        border: 1px solid #e6eff5;
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
+                    ">
+                    
+                    <img id="customer-attachment-thumb"
+                        class="support-attachment-thumb"
+                        style="
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 8px;
+                            object-fit: cover;
+                            display:none;
+                        ">
+
+                    <div class="support-attachment-info" style="flex: 1;">
+                        <div id="customer-attachment-name"
+                            style="font-weight: 600; color: #0A2A4D; font-size: 15px;"></div>
+                        <div id="customer-attachment-size"
+                            style="font-size: 13px; opacity: 0.7;"></div>
                     </div>
+
+                    <button type="button"
+                            id="customer-attachment-remove"
+                            class="support-attachment-remove"
+                            style="
+                                background: none;
+                                border: none;
+                                font-size: 20px;
+                                cursor: pointer;
+                                color: #d9534f;
+                            ">
+                        ✖
+                    </button>
+                </div>
+
 
                 </div>
 
