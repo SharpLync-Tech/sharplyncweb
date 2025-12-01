@@ -196,25 +196,25 @@
 
                 <div id="customer-attachment-preview"
                     style="
-                        display: none !important;
-                        margin-top: 14px !important;
-                        padding: 12px 14px !important;
-                        background: #ffffff !important;
-                        border: 1px solid #e0e7ef !important;
-                        border-radius: 10px !important;
-                        display: flex !important;
-                        align-items: center !important;
-                        gap: 14px !important;
+                        display: none;
+                        margin-top: 14px;
+                        padding: 12px 14px;
+                        background: #ffffff;
+                        border: 1px solid #e0e7ef;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
                     ">
 
                     <img id="customer-attachment-thumb"
                         style="
-                            width: 48px !important;
-                            height: 48px !important;
-                            border-radius: 6px !important;
-                            object-fit: cover !important;
-                            background: #f2f4f7 !important;
-                            display: none !important;
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 6px;
+                            object-fit: cover;
+                            background: #f2f4f7;
+                            display: none;
                         ">
 
                     <div style="flex:1;">
@@ -385,48 +385,54 @@
     <script src="{{ secure_asset('js/support/support-quill.js') }}"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener("DOMContentLoaded", function () {
 
-            const fileInput = document.querySelector('input[name="attachment"]');
-            const previewBox = document.getElementById('customer-attachment-preview');
-            const thumb = document.getElementById('customer-attachment-thumb');
-            const nameEl = document.getElementById('customer-attachment-name');
-            const sizeEl = document.getElementById('customer-attachment-size');
-            const removeBtn = document.getElementById('customer-attachment-remove');
+                const quillInitCheck = setInterval(() => {
+                    const fileInput = document.querySelector('#quill-toolbar input[type="file"]');
+                    if (!fileInput) return;
 
-            if (!fileInput) return;
+                    clearInterval(quillInitCheck);
 
-            fileInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (!file) {
-                    previewBox.style.display = "none";
-                    return;
-                }
+                    const previewBox = document.getElementById('customer-attachment-preview');
+                    const thumb = document.getElementById('customer-attachment-thumb');
+                    const nameEl = document.getElementById('customer-attachment-name');
+                    const sizeEl = document.getElementById('customer-attachment-size');
+                    const removeBtn = document.getElementById('customer-attachment-remove');
 
-                // Determine file size for display
-                const sizeKB = (file.size / 1024).toFixed(1);
-                sizeEl.textContent = `${sizeKB} KB`;
-                nameEl.textContent = file.name;
+                    fileInput.addEventListener('change', function () {
+                        const file = this.files[0];
+                        if (!file) {
+                            previewBox.style.display = "none";
+                            return;
+                        }
 
-                // Show thumbnail for images
-                if (file.type.startsWith('image/')) {
-                    thumb.style.display = "block";
-                    thumb.src = URL.createObjectURL(file);
-                } else {
-                    thumb.style.display = "none";
-                }
+                        // Show size + name
+                        sizeEl.textContent = (file.size / 1024).toFixed(1) + " KB";
+                        nameEl.textContent = file.name;
 
-                previewBox.style.display = "block";
+                        // Use FileReader (works inside iframes)
+                        const reader = new FileReader();
+                        reader.onload = function (evt) {
+                            if (file.type.startsWith("image/")) {
+                                thumb.style.display = "block";
+                                thumb.src = evt.target.result;
+                            } else {
+                                thumb.style.display = "none";
+                            }
+                            previewBox.style.display = "flex";
+                        };
+                        reader.readAsDataURL(file);
+                    });
+
+                    removeBtn.addEventListener('click', function () {
+                        fileInput.value = "";
+                        previewBox.style.display = "none";
+                        thumb.src = "";
+                    });
+
+                }, 150);
             });
+            </script>
 
-            // Remove attachment
-            removeBtn.addEventListener('click', function () {
-                fileInput.value = "";
-                previewBox.style.display = "none";
-                thumb.src = "";
-            });
-
-        });
-        </script>
 
 @endpush
