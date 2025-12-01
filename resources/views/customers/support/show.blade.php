@@ -195,53 +195,52 @@
                     <!-- ================================
                          FILE PREVIEW (before sending)
                     ================================= -->
-                    <div id="customer-attachment-preview"
-                         style="
+                <div id="customer-attachment-preview"
+                    style="
+                        display:none;
+                        margin-top:14px;
+                        padding:12px 14px;
+                        background:#ffffff;
+                        border:1px solid #e0e7ef;
+                        border-radius:10px;
+                        align-items:center;
+                        gap:14px;
+                    ">
+
+                    <img id="customer-attachment-thumb"
+                        style="
+                            width:48px;
+                            height:48px;
+                            border-radius:6px;
+                            object-fit:cover;
+                            background:#f2f4f7;
                             display:none;
-                            margin-top:14px;
-                            padding:12px 14px;
-                            background:#ffffff;
-                            border:1px solid #e0e7ef;
-                            border-radius:10px;
-                            display:flex;
-                            align-items:center;
-                            gap:14px;
-                         ">
+                        ">
 
-                        <img id="customer-attachment-thumb"
-                             style="
-                                width:48px;
-                                height:48px;
-                                border-radius:6px;
-                                object-fit:cover;
-                                background:#f2f4f7;
-                                display:none;
-                             ">
-
-                        <div style="flex:1;">
-                            <div id="customer-attachment-name"
-                                 style="font-weight:600; color:#0A2A4D; font-size:15px;">
-                            </div>
-
-                            <div id="customer-attachment-size"
-                                 style="font-size:13px; color:#6c7a89; margin-top:2px;">
-                            </div>
+                    <div style="flex:1;">
+                        <div id="customer-attachment-name"
+                            style="font-weight:600; color:#0A2A4D; font-size:15px;">
                         </div>
 
-                        <button type="button"
-                                id="customer-attachment-remove"
-                                style="
-                                    background:none;
-                                    border:none;
-                                    font-size:20px;
-                                    color:#d9534f;
-                                    cursor:pointer;
-                                ">
-                            ✖
-                        </button>
+                        <div id="customer-attachment-size"
+                            style="font-size:13px; color:#6c7a89; margin-top:2px;">
+                        </div>
                     </div>
 
+                    <button type="button"
+                            id="customer-attachment-remove"
+                            style="
+                                background:none;
+                                border:none;
+                                font-size:20px;
+                                color:#d9534f;
+                                cursor:pointer;
+                            ">
+                        ✖
+                    </button>
                 </div>
+
+
 
                 <div class="support-form-actions">
                     <button type="submit" class="support-btn-primary">Send Reply</button>
