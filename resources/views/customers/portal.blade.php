@@ -1,6 +1,6 @@
 {{-- 
   Page: resources/views/customers/portal.blade.php
-  Version: v4.1 (Stable: 2FA Modals Inline + Password/SSPIN Modal Added)
+  Version: v4.0 (2FA + Password/SSPIN Modal Integration)
   Updated: 30 Nov 2025 by Max
 --}}
 
@@ -9,7 +9,6 @@
 @section('title', 'Customer Portal')
 
 @section('content')
-
 @php
     use Illuminate\Support\Str;
 
@@ -21,7 +20,6 @@
     $status = ucfirst($u->account_status ?? 'Active');
     $since  = $u && $u->created_at ? $u->created_at->format('F Y') : null;
 
-    // Mask email
     $maskedEmail = null;
     if ($email && str_contains($email, '@')) {
         [$local, $domain] = explode('@', $email);
@@ -78,16 +76,15 @@
 
             <div class="cp-security-footer" style="display:flex; gap:.5rem; flex-wrap:wrap;">
                 
-                {{-- 2FA Settings Button --}}
+                {{-- 2FA MODAL BUTTON --}}
                 <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
                     2FA Settings
                 </button>
 
-                {{-- NEW Password + SSPIN Modal Button --}}
+                {{-- NEW PASSWORD & SSPIN MODAL BUTTON --}}
                 <button id="cp-open-password-modal" class="cp-btn cp-small-btn cp-teal-btn">
                     Password & SSPIN Settings
                 </button>
-
             </div>
         </div>
 
@@ -96,10 +93,7 @@
             <h4>Support</h4>
             <p>Need help? View support tickets or connect for remote assistance.</p>
             <div class="cp-support-footer">
-                <a href="{{ route('customer.support.index') }}" class="cp-btn cp-small-btn cp-teal-btn">
-                    Open Support
-                </a>
-
+                <a href="{{ route('customer.support.index') }}" class="cp-btn cp-small-btn cp-teal-btn">Open Support</a>
                 <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
                    class="cp-btn cp-small-btn cp-teal-btn">
                     Download Quick Support
@@ -118,57 +112,23 @@
     </div>
 </div>
 
-
-
 {{-- ======================================================= --}}
-{{-- EXISTING FULL 2FA SECURITY MODAL (INLINE + WORKING) --}}
-{{-- EXACT COPY of your current working version --}}
+{{-- EXISTING SECURITY (2FA) MODAL --}}
 {{-- ======================================================= --}}
-
-<div id="cp-security-modal" class="cp-modal-backdrop" aria-hidden="true">
-    <div class="cp-modal-sheet">
-
-        <header class="cp-modal-header">
-            <div>
-                <h3 id="cpSecurityTitle">Security & Login Protection</h3>
-                <p class="cp-modal-subtitle">Manage how you protect access to your SharpLync portal.</p>
-            </div>
-            <button class="cp-modal-close">&times;</button>
-        </header>
-
-        <div class="cp-modal-body">
-            <div class="cp-activity-card cp-security-card">
-            <h4>Security</h4>
-            <p>Manage your login security and two-factor authentication options.</p>
-            <div class="cp-security-footer">
-                <button id="cp-open-security-modal" class="cp-btn cp-small-btn cp-teal-btn">
-                    Manage Security
-                </button>
-            </div>
-        </div>
-        </div>
-
-        <footer class="cp-modal-footer">
-            <button class="cp-btn cp-small-btn cp-navy-btn cp-modal-close-btn">
-                Close
-            </button>
-        </footer>
-    </div>
-</div>
-
-
+@include('customers.security._modal')
 
 {{-- ======================================================= --}}
 {{-- NEW PASSWORD & SSPIN MODAL --}}
 {{-- ======================================================= --}}
-
 <div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
     <div class="cp-modal-sheet">
 
         <header class="cp-modal-header">
             <div>
                 <h3>Password & SSPIN Settings</h3>
-                <p class="cp-modal-subtitle">Update your login password or Support PIN.</p>
+                <p class="cp-modal-subtitle">
+                    Update your login password or Support PIN.
+                </p>
             </div>
             <button class="cp-password-close">&times;</button>
         </header>
@@ -242,7 +202,6 @@
 </div>
 
 @endsection
-
 
 @section('scripts')
 <script src="/js/portal-ui.js"></script>
