@@ -196,15 +196,15 @@
 
                 <div id="customer-attachment-preview"
                     style="
-                        display: none;
-                        margin-top: 14px;
-                        padding: 12px 14px;
-                        background: #ffffff;
-                        border: 1px solid #e0e7ef;
-                        border-radius: 10px;
-                        display: flex;
-                        align-items: center;
-                        gap: 14px;
+                        display: none !important;
+                        margin-top: 14px !important;
+                        padding: 12px 14px !important;
+                        background: #ffffff !important;
+                        border: 1px solid #e0e7ef !important;
+                        border-radius: 10px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 14px !important;
                     ">
 
                     <img id="customer-attachment-thumb"
