@@ -45,10 +45,16 @@
 
 @section('content')
     <div class="support-admin-header">
-        <h1 class="support-admin-title">{{ $ticket->subject }}</h1>
+
+        
+        <h1 class="support-admin-title">
+            {{ $ticket->reference }} — {{ $ticket->subject }}
+        </h1>
+
         <a href="{{ route('support-admin.tickets.index') }}" class="support-admin-link-back">
             Back to tickets
         </a>
+
         <p class="support-admin-subtitle">
             All times shown in AEST (Brisbane time).
         </p>
