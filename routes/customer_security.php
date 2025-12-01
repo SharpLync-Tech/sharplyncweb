@@ -9,51 +9,42 @@ Route::middleware(['auth:customer'])
     ->name('customer.security.')
     ->group(function () {
 
-        // EMAIL 2FA TOGGLE (legacy, currently unused but kept intact)
+        // ==========================
+        // EMAIL 2FA
+        // ==========================
         Route::post('/2fa/email/toggle', [SecurityController::class, 'toggleEmail'])
             ->name('2fa.email.toggle');
 
-        // EMAIL 2FA — SEND CODE
         Route::post('/email/send-code', [SecurityController::class, 'sendEmail2FACode'])
             ->name('email.send-code');
 
-        // EMAIL 2FA — VERIFY CODE
         Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
             ->name('email.verify-code');
 
-        // EMAIL 2FA — DISABLE
         Route::post('/email/disable', [SecurityController::class, 'disableEmail2FA'])
             ->name('email.disable');
 
-        // AUTH APP — START SETUP
+        // ==========================
+        // AUTHENTICATOR APP
+        // ==========================
         Route::post('/auth/start', [SecurityController::class, 'startApp2FASetup'])
             ->name('auth.start');
 
-        // AUTH APP — VERIFY SETUP
         Route::post('/auth/verify', [SecurityController::class, 'verifyApp2FASetup'])
             ->name('auth.verify');
 
-        // AUTH APP — DISABLE
         Route::post('/auth/disable', [SecurityController::class, 'disableApp2FA'])
             ->name('auth.disable');
 
-
-
-        // ======================================================
-        // 🆕 SSPIN ROUTES (ADDED — NO OTHER CHANGES)
-        // ======================================================
-
-        // Save a manually entered SSPIN
-        Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
-            ->name('sspin.save');
-
-        // Generate a new random SSPIN
+        // ==========================
+        // SSPIN ROUTES (FIXED & INSIDE GROUP)
+        // ==========================
         Route::post('/sspin/generate', [SecurityController::class, 'generateSSPIN'])
             ->name('sspin.generate');
 
-
+        Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
+            ->name('sspin.save');
     });
-
 
 /**
  * LOGIN-TIME 2FA
