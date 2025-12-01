@@ -190,11 +190,9 @@
                     <div id="quill-editor" class="quill-editor"></div>
 
                     {{-- Hidden field for HTML --}}
-                    <input type="hidden" name="message" id="quill-html">                    
+                    <input type="hidden" name="message" id="quill-html">
 
-                </div>
-
-                <!-- Attachment Preview (before sending) -->
+                    <!-- Attachment Preview (before sending) -->
                     <div id="customer-attachment-preview" class="support-attachment-preview" style="display:none;">
                         <div class="support-attachment-item">
                             <img id="customer-attachment-thumb" class="support-attachment-thumb" style="display:none;">
@@ -205,6 +203,8 @@
                             <button type="button" id="customer-attachment-remove" class="support-attachment-remove">✖</button>
                         </div>
                     </div>
+
+                </div>
 
                 <div class="support-form-actions">
                     <button type="submit" class="support-btn-primary">Send Reply</button>
@@ -345,4 +345,50 @@
 
     {{-- Quill initialiser --}}
     <script src="{{ secure_asset('js/support/support-quill.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const fileInput = document.querySelector('input[name="attachment"]');
+            const previewBox = document.getElementById('customer-attachment-preview');
+            const thumb = document.getElementById('customer-attachment-thumb');
+            const nameEl = document.getElementById('customer-attachment-name');
+            const sizeEl = document.getElementById('customer-attachment-size');
+            const removeBtn = document.getElementById('customer-attachment-remove');
+
+            if (!fileInput) return;
+
+            fileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) {
+                    previewBox.style.display = "none";
+                    return;
+                }
+
+                // Determine file size for display
+                const sizeKB = (file.size / 1024).toFixed(1);
+                sizeEl.textContent = `${sizeKB} KB`;
+                nameEl.textContent = file.name;
+
+                // Show thumbnail for images
+                if (file.type.startsWith('image/')) {
+                    thumb.style.display = "block";
+                    thumb.src = URL.createObjectURL(file);
+                } else {
+                    thumb.style.display = "none";
+                }
+
+                previewBox.style.display = "block";
+            });
+
+            // Remove attachment
+            removeBtn.addEventListener('click', function () {
+                fileInput.value = "";
+                previewBox.style.display = "none";
+                thumb.src = "";
+            });
+
+        });
+        </script>
+
 @endpush
