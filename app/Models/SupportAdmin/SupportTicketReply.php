@@ -8,6 +8,8 @@ use App\Models\Support\TicketReply as CustomerReply;
 
 class SupportTicketReply extends Model
 {
+    protected $connection = 'crm';
+
     protected $table = 'support_ticket_replies';
 
     protected $fillable = [
