@@ -6,6 +6,41 @@
     <link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
     <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
     <link href="{{ secure_asset('quill/quill-emoji.css') }}" rel="stylesheet">
+
+    <style>
+        /* ======================================================
+           ADMIN STATUS DOT — RED PULSING (WAITING ON SUPPORT)
+        =======================================================*/
+        .admin-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-status-dot {
+            width: 12px;
+            height: 12px;
+            background: #ff3b30; /* Red */
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 59, 48, 0.6);
+            animation: admin-pulse 1.2s infinite ease-in-out;
+        }
+
+        @keyframes admin-pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 6px rgba(255, 59, 48, 0.6);
+            }
+            50% {
+                transform: scale(1.35);
+                box-shadow: 0 0 14px rgba(255, 59, 48, 0.9);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 6px rgba(255, 59, 48, 0.6);
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -26,11 +61,23 @@
     @endif
 
     <div class="support-admin-ticket-meta-card">
-        @include('support-admin.tickets.partials.meta', [
-            'ticket' => $ticket,
-            'statusOptions' => $statusOptions,
-            'priorityOptions' => $priorityOptions
-        ])
+
+        {{-- ================================
+             META + STATUS DOT (new)
+        ================================= --}}
+        <div class="admin-status-wrapper">
+
+            {{-- FLASHING DOT ONLY WHEN SUPPORT MUST REPLY --}}
+            @if($ticket->status === 'waiting_on_support')
+                <span class="admin-status-dot"></span>
+            @endif
+
+            @include('support-admin.tickets.partials.meta', [
+                'ticket' => $ticket,
+                'statusOptions' => $statusOptions,
+                'priorityOptions' => $priorityOptions
+            ])
+        </div>
     </div>
 
     <div class="support-admin-ticket-layout">
