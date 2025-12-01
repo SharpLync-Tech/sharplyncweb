@@ -406,122 +406,81 @@
     </div>
 </div>
 
-{{-- ======================================================= --}}
-{{-- NEW PASSWORD & SSPIN MODAL (CLEANED STYLING) --}}
-{{-- ======================================================= --}}
-<div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
-    <div class="cp-modal-sheet">
+        {{-- ======================================================= --}}
+        {{-- NEW PASSWORD & SSPIN MODAL (UPDATED LAYOUT)            --}}
+        {{-- ======================================================= --}}
+        <div id="cp-password-modal" class="cp-modal-backdrop" aria-hidden="true">
+            <div class="cp-modal-sheet">
 
-        <header class="cp-modal-header" style="position:relative;">
-            <div>
-                <h3>Password & SSPIN Settings</h3>
-                <p class="cp-modal-subtitle">Update your login password or Support PIN.</p>
-            </div>
-
-            {{-- FIXED CLOSE BUTTON POSITION --}}
-            <button class="cp-password-close" 
-                    style="position:absolute; top:14px; right:18px; font-size:1.6rem;">
-                &times;
-            </button>
-        </header>
-
-        <div class="cp-modal-body">
-
-            {{-- PASSWORD SECTION --}}
-            <div class="cp-sec-card cp-sec-bordered">
-
-                <h4>Change Password</h4>
-
-                <div class="cp-pass-grid">
-
+                <header class="cp-modal-header">
                     <div>
+                        <h3>Password & SSPIN Settings</h3>
+                        <p class="cp-modal-subtitle">
+                            Update your login password or Support PIN.
+                        </p>
+                    </div>
+
+                    <button class="cp-password-close">&times;</button>
+                </header>
+
+                <div class="cp-modal-body">
+
+                    {{-- ======================= --}}
+                    {{-- CHANGE PASSWORD SECTION --}}
+                    {{-- ======================= --}}
+                    <div class="cp-sec-card">
+
+                        <h4>Change Password</h4>
+
                         <label class="cp-sec-label">Current Password</label>
-                        <input type="password" id="cp-pass-current" class="cp-input">
+                        <input type="password" class="cp-input" id="cp-pass-current">
+
+                        <label class="cp-sec-label" style="margin-top:.75rem;">New Password</label>
+                        <input type="password" class="cp-input" id="cp-pass-new">
+
+                        <label class="cp-sec-label" style="margin-top:.75rem;">Confirm Password</label>
+                        <input type="password" class="cp-input" id="cp-pass-confirm">
+
+                        <div style="display:flex; gap:.75rem; margin-top:1.2rem;">
+                            <button class="cp-btn cp-teal-btn">Update Password</button>
+                            <button class="cp-btn cp-navy-btn">I Forgot My Password</button>
+                        </div>
+
                     </div>
 
-                    <div>
-                        <label class="cp-sec-label">New Password</label>
-                        <input type="password" id="cp-pass-new" class="cp-input">
+                    {{-- ======================= --}}
+                    {{-- SSPIN SECTION           --}}
+                    {{-- ======================= --}}
+                    <div class="cp-sec-card">
+
+                        <h4>Support PIN (SSPIN)</h4>
+
+                        <p class="cp-sec-desc" style="margin-bottom:.3rem;">Your current Support PIN:</p>
+
+                        <div id="cp-sspin-display">••••••</div>
+
+                        <div style="display:flex; gap:.75rem;">
+                            <button id="cp-sspin-show" class="cp-btn cp-navy-btn">Show PIN</button>
+                            <button id="cp-sspin-generate" class="cp-btn cp-teal-btn">Generate New PIN</button>
+                        </div>
+
+                        <label class="cp-sec-label" style="margin-top:1rem;">Enter new PIN</label>
+                        <input type="text" maxlength="6" class="cp-input" id="cp-sspin-input" placeholder="123456">
+
+                        <button class="cp-btn cp-teal-btn" style="margin-top:1.2rem;">Save SSPIN</button>
                     </div>
 
-                    <div>
-                        <label class="cp-sec-label">Confirm Password</label>
-                        <input type="password" id="cp-pass-confirm" class="cp-input">
-                    </div>
                 </div>
 
-                <div style="margin-top:1.25rem; display:flex; gap:.5rem;">
-                    <button id="cp-pass-save" class="cp-btn cp-teal-btn">
-                        Update Password
+                <footer class="cp-modal-footer">
+                    <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">
+                        Close
                     </button>
-
-                    <button id="cp-pass-forgot" class="cp-btn cp-small-btn cp-navy-btn">
-                        I Forgot My Password
-                    </button>
-                </div>
-
-                <p id="cp-pass-msg" 
-                class="cp-sec-desc" 
-                style="display:none; margin-top:.75rem;">
-                </p>
-            </div>
-
-
-            {{-- SSPIN SECTION --}}
-            <div class="cp-sec-card cp-sec-bordered" style="margin-top:1.8rem;">
-
-                <h4 style="margin-bottom:1rem;">Support PIN (SSPIN)</h4>
-
-                <p class="cp-sec-desc">Your current Support PIN:</p>
-
-                <p id="cp-sspin-display"
-                   style="font-size:1.8rem; font-weight:700; 
-                          letter-spacing:.4rem; margin:.5rem 0 1rem;">
-                   ••••••
-                </p>
-
-                <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-                    <button id="cp-sspin-toggle" class="cp-btn cp-small-btn cp-navy-btn">
-                        Show PIN
-                    </button>
-
-                    <button id="cp-sspin-generate" class="cp-btn cp-small-btn cp-teal-btn">
-                        Generate New PIN
-                    </button>
-                </div>
-
-                <div style="margin-top:1.25rem; max-width:200px;">
-                    <label class="cp-sec-label">Or enter your own PIN</label>
-                    <input id="cp-sspin-input"
-                           maxlength="6"
-                           inputmode="numeric"
-                           class="cp-input"
-                           placeholder="123456"
-                           style="text-align:center; font-weight:600; letter-spacing:.2rem;">
-                </div>
-
-                <button id="cp-sspin-save" 
-                        class="cp-btn cp-teal-btn"
-                        style="margin-top:1.2rem;">
-                    Save SSPIN
-                </button>
-
-                <p id="cp-sspin-msg" 
-                   class="cp-sec-desc" 
-                   style="display:none; margin-top:.75rem;">
-                </p>
+                </footer>
 
             </div>
         </div>
 
-        <footer class="cp-modal-footer">
-            <button class="cp-btn cp-small-btn cp-navy-btn cp-password-close">
-                Close
-            </button>
-        </footer>
-
-    </div>
-</div>
 
 
 
