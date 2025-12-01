@@ -263,4 +263,50 @@ class SecurityController extends Controller
             'redirect' => route('customer.portal')
         ]);
     }
+
+
+    /* ============================================================
+     | SSPIN — SAVE  (NEW)
+     * ============================================================ */
+    public function saveSSPIN(Request $request)
+    {
+        $request->validate([
+            'sspin' => 'required|digits:6'
+        ]);
+
+        $user = auth('customer')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        $user->support_pin = $request->sspin;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'pin'     => $user->support_pin
+        ]);
+    }
+
+
+    /* ============================================================
+     | SSPIN — GENERATE (NEW)
+     * ============================================================ */
+    public function generateSSPIN()
+    {
+        $user = auth('customer')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        $pin = rand(100000, 999999);
+
+        $user->support_pin = $pin;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'pin'     => $pin
+        ]);
+    }
 }

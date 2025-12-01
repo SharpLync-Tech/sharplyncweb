@@ -21,7 +21,7 @@ Route::middleware(['auth:customer'])
         Route::post('/email/verify-code', [SecurityController::class, 'verifyEmail2FACode'])
             ->name('email.verify-code');
 
-        // EMAIL 2FA — DISABLE (NEW)
+        // EMAIL 2FA — DISABLE
         Route::post('/email/disable', [SecurityController::class, 'disableEmail2FA'])
             ->name('email.disable');
 
@@ -36,7 +36,24 @@ Route::middleware(['auth:customer'])
         // AUTH APP — DISABLE
         Route::post('/auth/disable', [SecurityController::class, 'disableApp2FA'])
             ->name('auth.disable');
+
+
+
+        // ======================================================
+        // 🆕 SSPIN ROUTES (ADDED — NO OTHER CHANGES)
+        // ======================================================
+
+        // Save a manually entered SSPIN
+        Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
+            ->name('sspin.save');
+
+        // Generate a new random SSPIN
+        Route::post('/sspin/generate', [SecurityController::class, 'generateSSPIN'])
+            ->name('sspin.generate');
+
+
     });
+
 
 /**
  * LOGIN-TIME 2FA
