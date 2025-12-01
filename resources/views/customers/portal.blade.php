@@ -83,6 +83,7 @@
         emailDisable: "{{ route('customer.security.email.disable') }}",
         authStart:    "{{ route('customer.security.auth.start') }}",
         authVerify:   "{{ route('customer.security.auth.verify') }}",
+        passwordReset: "{{ route('customer.security.password.send-reset-link') }}",
         authDisable:  "{{ route('customer.security.auth.disable') }}"
     };
     window.cpCsrf = "{{ csrf_token() }}";
