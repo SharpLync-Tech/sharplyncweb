@@ -92,6 +92,22 @@ class TicketReplyController extends Controller
          * ===================================
          */
         $ticket->last_reply_at = now();
+
+        /**
+         * ===================================================
+         * NEW FEATURE:
+         * If customer replies AND status = waiting_on_customer
+         * → auto-switch to waiting_for_support
+         * ===================================================
+         */
+        if ($ticket->status === 'waiting_on_customer') {
+            \Log::info('DEBUG: Auto-status flip → waiting_for_support', [
+                'ticket_id' => $ticket->id,
+            ]);
+
+            $ticket->status = 'waiting_for_support';
+        }
+
         $ticket->save();
 
         /**

@@ -37,6 +37,7 @@ class Ticket extends Model
     public const STATUS_OPEN                = 'open';
     public const STATUS_PENDING             = 'pending';
     public const STATUS_WAITING_CUSTOMER    = 'waiting_customer';
+    public const STATUS_WAITING_FOR_SUPPORT = 'waiting_for_support';
     public const STATUS_WAITING_THIRD_PARTY = 'waiting_third_party';
     public const STATUS_WAITING_STOCK       = 'waiting_stock';
     public const STATUS_RESOLVED            = 'resolved';
