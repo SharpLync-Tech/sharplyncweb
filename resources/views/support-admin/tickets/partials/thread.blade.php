@@ -44,6 +44,8 @@
             'isCustomer'=> $isCustomer,
             'isAdmin'   => $isAdmin,
             'authorName'=> $authorName,
+
+            // Attachments (may be null)
             'attachment_path'          => $msg->attachment_path ?? null,
             'attachment_original_name' => $msg->attachment_original_name ?? null,
             'attachment_mime'          => $msg->attachment_mime ?? null,
@@ -56,9 +58,8 @@
     // Latest 2 messages
     $latestTwo = $sortedDesc->take(2);
 
-    // Older messages (the rest)
-    // ❗ FIX: Sort older messages newest → oldest (instead of ascending)
-    $older = $sortedDesc->slice(2)->values(); 
+    // Older messages (newest → oldest)
+    $older = $sortedDesc->slice(2)->values();
 @endphp
 
 <div class="support-admin-thread-card">
@@ -74,13 +75,13 @@
                 'body'                     => $msg->body,
 
                 'message_id'               => $msg->id,
-                'attachment_path'          => $msg->attachment_path,
-                'attachment_original_name' => $msg->attachment_original_name,
-                'attachment_mime'          => $msg->attachment_mime,
+                'attachment_path'          => $msg->attachment_path ?? null,
+                'attachment_original_name' => $msg->attachment_original_name ?? null,
+                'attachment_mime'          => $msg->attachment_mime ?? null,
             ])
         @endforeach
 
-        {{-- Older messages toggle --}}
+        {{-- Older messages --}}
         @if($older->isNotEmpty())
             <div class="support-admin-older-wrapper">
 
@@ -102,9 +103,9 @@
                             'body'                     => $msg->body,
 
                             'message_id'               => $msg->id,
-                            'attachment_path'          => $msg->attachment_path,
-                            'attachment_original_name' => $msg->attachment_original_name,
-                            'attachment_mime'          => $msg->attachment_mime,
+                            'attachment_path'          => $msg->attachment_path ?? null,
+                            'attachment_original_name' => $msg->attachment_original_name ?? null,
+                            'attachment_mime'          => $msg->attachment_mime ?? null,
                         ])
                     @endforeach
 
