@@ -1,15 +1,14 @@
-/* ============================================================
-   FILE: portal-ui.js
-   PURPOSE: Control both modals + SSPIN preview link
-   UPDATED SECTIONS ARE CLEARLY MARKED
-   ============================================================ */
+// ======================================================================
+// SharpLync Portal UI Controller
+// Version 3.1  (Create SSPIN → Opens Password Modal)
+// ======================================================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ============================================================
-    // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
-    // ============================================================
-    (function(){
+    // ==========================================================
+    // ORIGINAL 2FA MODAL CONTROLLER
+    // ==========================================================
+    (function () {
 
         const modal     = document.getElementById('cp-security-modal');
         const openBtn   = document.getElementById('cp-open-security-modal');
@@ -17,20 +16,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const closeBtns = modal?.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
         const root      = document.querySelector('.cp-root');
 
-        function openModal(){
+        function openModal() {
             modal.classList.add('cp-modal-visible');
             modal.setAttribute('aria-hidden', 'false');
-            if(root) root.classList.add('modal-open');
+            root?.classList.add('modal-open');
         }
 
-        function closeModal(){
+        function closeModal() {
             modal.classList.remove('cp-modal-visible');
-            modal.setAttribute('aria-hidden','true');
-            if(root) root.classList.remove('modal-open');
+            modal.setAttribute('aria-hidden', 'true');
+            root?.classList.remove('modal-open');
         }
 
-        if (openBtn) openBtn.addEventListener('click', openModal);
-        if (closeBtns) closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+        openBtn?.addEventListener('click', openModal);
+        closeBtns?.forEach(btn => btn.addEventListener('click', closeModal));
 
         modal?.addEventListener('click', e => {
             if (!sheet.contains(e.target)) closeModal();
@@ -39,14 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
 
-
-    // ============================================================
-    //  UPDATED SECTION #1 — PASSWORD & SSPIN MODAL
-    // ============================================================
-    (function(){
+    // ==========================================================
+    // PASSWORD + SSPIN MODAL CONTROLLER
+    // ==========================================================
+    (function () {
 
         const passModal     = document.getElementById('cp-password-modal');
-        const openPassBtn   = document.getElementById('cp-open-password-modal');
+        const openPassBtn   = document.getElementById('cp-open-password-modal');   // Security card button
         const passSheet     = passModal?.querySelector('.cp-modal-sheet');
         const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
         const root          = document.querySelector('.cp-root');
@@ -54,17 +52,17 @@ document.addEventListener("DOMContentLoaded", function () {
         function openPassModal() {
             passModal.classList.add('cp-modal-visible');
             passModal.setAttribute('aria-hidden', 'false');
-            if (root) root.classList.add('modal-open');
+            root?.classList.add('modal-open');
         }
 
         function closePassModal() {
             passModal.classList.remove('cp-modal-visible');
             passModal.setAttribute('aria-hidden', 'true');
-            if (root) root.classList.remove('modal-open');
+            root?.classList.remove('modal-open');
         }
 
-        if (openPassBtn) openPassBtn.addEventListener('click', openPassModal);
-        if (passCloseBtns) passCloseBtns.forEach(btn => btn.addEventListener('click', closePassModal));
+        openPassBtn?.addEventListener('click', openPassModal);
+        passCloseBtns?.forEach(btn => btn.addEventListener('click', closePassModal));
 
         passModal?.addEventListener('click', e => {
             if (!passSheet.contains(e.target)) closePassModal();
@@ -73,21 +71,33 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
 
-
-    // ============================================================
-    //  UPDATED SECTION #2 — DASHBOARD SSPIN "MANAGE" BUTTON
-    // ============================================================
-    (function(){
+    // ==========================================================
+    // SSPIN PREVIEW — MANAGE → OPEN PASSWORD MODAL
+    // ==========================================================
+    (function () {
 
         const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
         const openPassBtn = document.getElementById('cp-open-password-modal');
 
-        if (manageBtn && openPassBtn) {
-            manageBtn.addEventListener('click', () => {
-                openPassBtn.click();
-            });
-        }
+        manageBtn?.addEventListener('click', () => {
+            openPassBtn.click();
+        });
 
     })();
 
-}); // END DOMContentLoaded
+
+    // ==========================================================
+    // SSPIN PREVIEW — CREATE → OPEN PASSWORD MODAL
+    // ==========================================================
+    (function () {
+
+        const createBtn = document.getElementById('cp-create-sspin-btn');
+        const openPassBtn = document.getElementById('cp-open-password-modal');
+
+        createBtn?.addEventListener('click', () => {
+            openPassBtn.click();
+        });
+
+    })();
+
+});
