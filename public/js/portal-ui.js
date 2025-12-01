@@ -1,9 +1,8 @@
-// public/js/portal-ui.js
 document.addEventListener("DOMContentLoaded", function () {
 
 //
 // ==========================================================
-// 2FA SECURITY MODAL (EXISTING)
+// ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
 // ==========================================================
 (function(){
 
@@ -28,15 +27,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (openBtn) openBtn.addEventListener('click', openModal);
     if (closeBtns) closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
-    modal?.addEventListener('click', e=>{
+    modal?.addEventListener('click', e => {
         if (!sheet.contains(e.target)) closeModal();
     });
 
 })();
-    
+
+
 //
 // ==========================================================
-// NEW PASSWORD & SSPIN MODAL
+// NEW PASSWORD & SSPIN MODAL CONTROLLER
 // ==========================================================
 (function(){
 
@@ -66,5 +66,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 })();
-    
+
 });
