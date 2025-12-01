@@ -6,13 +6,7 @@
 <div class="support-admin-ticket-meta-bar">
     <div class="support-admin-ticket-meta-main">
 
-        {{-- ERROR FIX: Removed the old pulsing dot above the reference --}}
-
-        @if($ticket->reference)
-            <div class="support-admin-ticket-ref">
-                {{ $ticket->reference }}
-            </div>
-        @endif
+      
 
         <div class="support-admin-ticket-meta-chips">
             <div class="support-admin-meta-control">
