@@ -191,6 +191,19 @@
 
                     {{-- Hidden field for HTML --}}
                     <input type="hidden" name="message" id="quill-html">
+
+                    <!-- Attachment Preview (before sending) -->
+                    <div id="customer-attachment-preview" class="support-attachment-preview" style="display:none;">
+                        <div class="support-attachment-item">
+                            <img id="customer-attachment-thumb" class="support-attachment-thumb" style="display:none;">
+                            <div class="support-attachment-info">
+                                <span id="customer-attachment-name"></span>
+                                <span id="customer-attachment-size" class="support-attachment-size"></span>
+                            </div>
+                            <button type="button" id="customer-attachment-remove" class="support-attachment-remove">✖</button>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="support-form-actions">
