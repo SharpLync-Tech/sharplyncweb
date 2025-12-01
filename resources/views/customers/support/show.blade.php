@@ -214,7 +214,7 @@
                             border-radius: 6px !important;
                             object-fit: cover !important;
                             background: #f2f4f7 !important;
-                            
+                            display: none !important;
                         ">
 
                     <div style="flex:1;">
