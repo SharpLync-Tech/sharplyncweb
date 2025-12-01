@@ -5,6 +5,14 @@
 
 <div class="support-admin-ticket-meta-bar">
     <div class="support-admin-ticket-meta-main">
+
+        {{-- =========================================
+             PULSING DOT (NEW)
+        ========================================== --}}
+        @if($ticket->status === 'waiting_for_support')
+            <span class="support-admin-status-dot"></span>
+        @endif
+
         @if($ticket->reference)
             <div class="support-admin-ticket-ref">
                 {{ $ticket->reference }}
@@ -12,14 +20,7 @@
         @endif
 
         <div class="support-admin-ticket-meta-chips">
-
             <div class="support-admin-meta-control">
-
-                {{-- 🔴 ADD RED PULSING DOT ONLY WHEN WAITING ON SUPPORT --}}
-                @if($ticket->status === 'waiting_on_support')
-                    <span class="support-admin-status-dot"></span>
-                @endif
-
                 <button type="button"
                         class="support-admin-dropdown-toggle support-admin-badge support-admin-badge-status-{{ $ticket->status ?? 'open' }}"
                         data-dropdown-toggle="status">
@@ -101,34 +102,31 @@
     </div>
 </div>
 
-@push('styles')
+{{-- PULSING DOT CSS --}}
 <style>
-/* =======================
-   🔴 ADMIN RED PULSE DOT
- ======================= */
 .support-admin-status-dot {
-    width: 10px;
-    height: 10px;
-    background: #ff3b3b;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
+    background: #ff4d4f;
+    margin-right: 10px;
     display: inline-block;
-    margin-right: 6px;
-    position: relative;
-    top: 2px;
-    box-shadow: 0 0 0 rgba(255, 59, 59, 0.6);
-    animation: supportAdminPulse 1.3s infinite ease-out;
+    box-shadow: 0 0 0 rgba(255, 77, 79, 0.6);
+    animation: adminPulse 1.3s infinite;
 }
 
-@keyframes supportAdminPulse {
+@keyframes adminPulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.5);
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.6);
     }
     70% {
-        box-shadow: 0 0 0 8px rgba(255, 59, 59, 0);
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(255, 77, 79, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 59, 59, 0);
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
     }
 }
 </style>
-@endpush
