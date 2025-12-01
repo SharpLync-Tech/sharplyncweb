@@ -10,7 +10,9 @@
 <div class="cp-profile-card">
     <div class="cp-profile-header">
 
-        {{-- Avatar --}}
+        {{-- =============================================================== --}}
+        {{-- AVATAR                                                            --}}
+        {{-- =============================================================== --}}
         <div class="cp-avatar">
             @php
                 $photo = $u->profile_photo ? asset('storage/'.$u->profile_photo) : null;
@@ -24,9 +26,13 @@
             @endif
         </div>
 
-        {{-- Name & Details --}}
+        {{-- =============================================================== --}}
+        {{-- NAME + STATUS + DETAILS                                          --}}
+        {{-- =============================================================== --}}
         <div class="cp-name-group">
+
             <h3>{{ $fullName }}</h3>
+
             <p class="cp-member-status">{{ $status }}</p>
 
             <p class="cp-detail-line">
@@ -37,41 +43,45 @@
                 <p class="cp-detail-line">Customer since: {{ $since }}</p>
             @endif
 
+
             {{-- =============================================================== --}}
-            {{-- SSPIN PREVIEW (Create / Manage)                                 --}}
+            {{-- SSPIN PREVIEW — UPDATED FOR LIVE JS (FINAL VERSION)            --}}
             {{-- =============================================================== --}}
-            <p class="cp-detail-line" style="margin-top:.35rem;">
+            <p class="cp-detail-line" style="margin-top: .35rem;">
                 Support PIN:
-                @if(!$sspin)
-                    <span style="color:#555;">Not set</span>
 
-                    {{-- CREATE BUTTON --}}
-                    <button
-                        id="cp-open-password-modal-from-preview"
-                        class="cp-btn cp-small-btn cp-teal-btn"
-                        style="margin-left:.5rem; padding:.28rem .75rem; font-size:.75rem;">
+                {{-- ALWAYS show preview span with ID --}}
+                <span id="cp-sspin-preview" style="margin-left: .25rem;">
+                    @if(!$sspin)
+                        Not set
+                    @else
+                        {{ str_repeat('•', strlen($sspin)) }}
+                    @endif
+                </span>
+
+                {{-- ACTION BUTTON (create/manage) --}}
+                <button
+                    id="cp-open-password-modal-from-preview"
+                    class="cp-btn cp-small-btn cp-teal-btn"
+                    style="margin-left:.65rem; padding:.28rem .75rem; font-size:.75rem;">
+                    @if(!$sspin)
                         Create
-                    </button>
-
-                @else
-                    {{-- Masked preview --}}
-                    <span id="cp-sspin-preview" style="letter-spacing:.20rem;">
-                        •• •• ••
-                    </span>
-
-                    {{-- MANAGE BUTTON --}}
-                    <button
-                        id="cp-open-password-modal-from-preview"
-                        class="cp-btn cp-small-btn cp-navy-btn"
-                        style="margin-left:.75rem; padding:.28rem .75rem; font-size:.75rem;">
+                    @else
                         Manage
-                    </button>
-                @endif
+                    @endif
+                </button>
             </p>
+
+            {{-- =============================================================== --}}
+            {{-- END SSPIN PREVIEW                                               --}}
+            {{-- =============================================================== --}}
+
         </div>
     </div>
 
+    {{-- EDIT PROFILE BUTTON --}}
     <div class="cp-profile-actions">
-        <a href="{{ route('customer.profile.edit') }}" class="cp-btn cp-edit-profile">Edit Profile</a>
+        <a href="{{ route('customer.profile.edit') }}"
+           class="cp-btn cp-edit-profile">Edit Profile</a>
     </div>
 </div>

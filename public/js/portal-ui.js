@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //
     // ==========================================================
-    // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
+    // ORIGINAL SECURITY MODAL (2FA) — UNCHANGED
     // ==========================================================
     (function () {
 
@@ -34,14 +34,15 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
 
+
     //
     // ==========================================================
-    // NEW PASSWORD & SSPIN MODAL CONTROLLER
+    // PASSWORD + SSPIN MODAL CONTROLLER
     // ==========================================================
     (function () {
 
         const passModal = document.getElementById('cp-password-modal');
-        const openPassBtn = document.getElementById('cp-open-password-modal'); // from Security card
+        const openPassBtn = document.getElementById('cp-open-password-modal'); 
         const passSheet = passModal?.querySelector('.cp-modal-sheet');
         const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
         const root = document.querySelector('.cp-root');
@@ -68,19 +69,18 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
 
+
     //
     // ==========================================================
-    // DASHBOARD "Manage" BUTTON → OPEN PASSWORD/SSPIN MODAL
+    // DASHBOARD PREVIEW BUTTON → OPEN PASSWORD/SSPIN MODAL
     // ==========================================================
     (function () {
 
-        const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
+        const previewButton = document.getElementById('cp-open-password-modal-from-preview');
         const openPassBtn = document.getElementById('cp-open-password-modal');
 
-        if (manageBtn && openPassBtn) {
-            manageBtn.addEventListener('click', () => {
-                openPassBtn.click();
-            });
+        if (previewButton && openPassBtn) {
+            previewButton.addEventListener('click', () => openPassBtn.click());
         }
 
     })();
@@ -89,10 +89,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //
     // ==========================================================
-    // SSPIN — FULL FRONT-END CONTROLLER
+    // SSPIN CONTROLLER — COMPLETE, FINAL VERSION
     // ==========================================================
     (function () {
 
+        // IDs MUST MATCH MODAL HTML EXACTLY
         const displayEl = document.getElementById('cp-sspin-display');
         const inputEl = document.getElementById('cp-sspin-input');
         const showBtn = document.getElementById('cp-sspin-toggle');
@@ -100,18 +101,17 @@ document.addEventListener("DOMContentLoaded", function () {
         const saveBtn = document.getElementById('cp-sspin-save');
 
         const dashboardPreview = document.getElementById('cp-sspin-preview');
-        const openPassBtn = document.getElementById('cp-open-password-modal');
 
-        if (!displayEl || !inputEl) return; // modal not present
+        if (!displayEl || !inputEl) return;
 
-        let showing = false; // toggle state
+        let showing = false;
+
 
 
         //
         // ----------------------------------------------------------
-        // TOGGLE SHOW / HIDE PIN
+        // SHOW / HIDE PIN
         // ----------------------------------------------------------
-        //
         if (showBtn) {
             showBtn.addEventListener('click', () => {
 
@@ -119,22 +119,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 showing = !showing;
 
-                if (showing) {
-                    displayEl.textContent = inputEl.value;
-                    showBtn.textContent = "Hide PIN";
-                } else {
-                    displayEl.textContent = "••••••";
-                    showBtn.textContent = "Show PIN";
-                }
+                displayEl.textContent = showing ? inputEl.value : "••••••";
+                showBtn.textContent = showing ? "Hide PIN" : "Show PIN";
             });
         }
+
 
 
         //
         // ----------------------------------------------------------
         // GENERATE NEW PIN
         // ----------------------------------------------------------
-        //
         if (generateBtn) {
             generateBtn.addEventListener('click', () => {
 
@@ -149,30 +144,29 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
 
                         if (!data.success) {
-                            alert("Could not generate PIN.");
+                            alert(data.message || "Could not generate PIN.");
                             return;
                         }
 
-                        // update modal
-                        inputEl.value = data.sspin;
-                        displayEl.textContent = showing ? data.sspin : "••••••";
+                        const newPin = data.sspin;
 
-                        // update dashboard preview
+                        inputEl.value = newPin;
+                        displayEl.textContent = showing ? newPin : "••••••";
+
                         if (dashboardPreview) {
                             dashboardPreview.textContent = "••••••";
                         }
-
                     })
                     .catch(() => alert("Error generating PIN."));
             });
         }
 
 
+
         //
         // ----------------------------------------------------------
-        // SAVE ENTERED PIN
+        // SAVE PIN
         // ----------------------------------------------------------
-        //
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
 
@@ -195,14 +189,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
 
                         if (!data.success) {
-                            alert("Could not save PIN.");
+                            alert(data.message || "Could not save PIN.");
                             return;
                         }
 
-                        // Update modal
                         displayEl.textContent = showing ? pin : "••••••";
 
-                        // Update dashboard preview
                         if (dashboardPreview) {
                             dashboardPreview.textContent = "••••••";
                         }
@@ -215,4 +207,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })();
 
-}); // END DOMContentLoaded
+});
