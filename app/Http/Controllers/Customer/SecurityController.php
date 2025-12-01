@@ -265,30 +265,70 @@ class SecurityController extends Controller
     }
 
     /* ============================================================
-     | SSPIN — GENERATE 6-DIGIT SUPPORT PIN
-     * ============================================================ */
-    public function generateSupportPin(Request $request)
-    {
+ | SSPIN — GENERATE
+ * ============================================================ */
+public function generateSSPIN(Request $request)
+{
+    try {
         $user = auth('customer')->user();
+
         if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Not authenticated',
-            ], 401);
+            Log::warning('SSPIN generate blocked: unauthenticated');
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
         }
 
-        // 6-digit numeric PIN, zero-padded
-        $pin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Generate random 6-digit PIN
+        $pin = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        $user->sspin = $pin; // <-- correct DB column
-        $user->save();
+        Log::info("Generated SSPIN for user {$user->id}: $pin");
 
         return response()->json([
             'success' => true,
-            'message' => 'Support PIN generated.',
-            'sspin'   => $pin,
+            'pin'     => $pin,
         ]);
+
+    } catch (\Throwable $e) {
+        Log::error('SSPIN generate error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Server error'], 500);
     }
+}
+
+
+    /* ============================================================
+    | SSPIN — SAVE TO DATABASE
+    * ============================================================ */
+    public function saveSSPIN(Request $request)
+    {
+        try {
+            $user = auth('customer')->user();
+
+            if (!$user) {
+                Log::warning('SSPIN save blocked: unauthenticated');
+                return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+            }
+
+            $request->validate([
+                'sspin' => 'required|digits:6'
+            ]);
+
+            Log::info("Saving SSPIN for user {$user->id}: {$request->sspin}");
+
+            // Save to crm.users.sspin
+            $user->sspin = $request->sspin;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'sspin'   => $user->sspin,
+                'message' => 'SSPIN updated successfully.'
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('SSPIN save error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
+        }
+    }
+
 
     /* ============================================================
      | SSPIN — SAVE USER-ENTERED PIN
