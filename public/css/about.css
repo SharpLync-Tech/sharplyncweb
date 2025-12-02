@@ -1,64 +1,13 @@
 /* ============================================================
-   ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.3
-        Works on Desktop & Mobile.
-        Hamburge menu issue and story not colapsing. 
-        Modals working.  
+   ABOUT PAGE — CLEANED STYLESHEET
+   Version: 2.0 (Global nav + global footer)
    ============================================================ */
 
-body.about-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #e9f4f3;
-}
-
-/* Load script font */
-/* Moved to about-base blade - @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-
-/* ============================================================
-   TOP HEADER (UNCHANGED)
-   ============================================================ */
-
-.about-header {
-    position: sticky;
-    top: 0;
-    z-index: 2000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 1.5rem;
-    background: linear-gradient(
-        135deg,
-        rgba(10, 42, 77, 0.85) 0%,
-        rgba(16, 73, 118, 0.65) 40%,
-        rgba(44, 191, 174, 0.45) 100%
-    );
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
-.about-header .logo img {
-    height: 80px;
-    width: auto;
-    margin-bottom: -5px;
-    transition: all 0.3s ease;
-}
-
-.hamburger {
-    font-size: 2rem;
-    color: #2CBFAE;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-@media (max-width: 900px) {
-    .about-header .logo img { height: 65px; }
-}
-@media (max-width: 500px) {
-    .about-header .logo img { height: 58px; }
-    .hamburger { font-size: 1.8rem; }
+/* Make sure content starts below sticky global header */
+.content-hero {
+    padding: 6rem 10% 4rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
 }
 
 /* ============================================================
@@ -68,6 +17,7 @@ body.about-body {
 .about-title-wrapper {
     text-align: center;
     margin-top: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .about-title {
@@ -152,7 +102,7 @@ body.about-body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 #toggleStory:hover,
@@ -160,8 +110,6 @@ body.about-body {
     background: rgba(44, 191, 174, 0.5);
     color: #0A2A4D;
 }
-
-
 
 /* Subtitle heading */
 .story-text h3 {
@@ -203,8 +151,61 @@ body.about-body {
     }
 }
 
+/* Signature block (About page) ------------------ */
+.story-signature {
+    margin-top: 1.4rem;
+    text-align: left; /* change to center if preferred */
+}
+
+/* Name */
+.story-signature .sig-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2CBFAE; /* SharpLync teal */
+    margin-bottom: 4px; /* tighter spacing */
+}
+
+/* Role */
+.story-signature .sig-role {
+    font-size: 0.95rem;
+    color: #0A2A4D;
+    opacity: 0.85;
+    margin-bottom: 6px;
+}
+
+/* LinkedIn icon */
+.story-signature .sig-linkedin img {
+    width: 30px;
+    height: 30px;
+    opacity: 0.85;
+    transition: 0.2s ease;
+}
+
+.story-signature .sig-linkedin img:hover {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .story-signature .sig-linkedin img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Teal divider line above signature */
+.story-divider,
+.story-text hr {
+    border: none;
+    border-top: 2px solid #2CBFAE; /* SharpLync teal */
+    width: 100%;
+    margin: 1.8rem 0 1rem;
+    opacity: 0.6; /* tweak if needed */
+}
+
 /* ============================================================
-   TESTIMONIALS (UNCHANGED)
+   TESTIMONIALS
    ============================================================ */
 
 .testimonials-section {
@@ -286,7 +287,7 @@ body.about-body {
 }
 
 /* ============================================================
-   MODAL (UNCHANGED)
+   MODAL
    ============================================================ */
 
 .testimonial-modal {
@@ -336,7 +337,6 @@ body.about-body {
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
-
 /* Soft glow when open (optional but NICE) */
 .testimonial-modal.open .testimonial-modal-dialog {
     box-shadow: 0 0 24px rgba(44, 191, 174, 0.45);
@@ -376,9 +376,6 @@ body.about-body {
     z-index: 1;
 }
 
- /* Decorative quote mark */
-
-
 @media (max-width: 768px) {
     .testimonial-modal-quote {
         font-size: 70px;
@@ -387,8 +384,6 @@ body.about-body {
         opacity: 0.15;
     }
 }
-
-
 
 /* Teal accent separator (thin line) */
 .testimonial-modal-separator {
@@ -425,77 +420,6 @@ body.about-body {
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ============================================================
-   OVERLAY MENU — FORCED OVERRIDES (fixes bullets + top-left issue)
-   ============================================================ */
-
-.overlay-menu {
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(10, 42, 77, 0.85) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-
-    display: none !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    z-index: 99999 !important;
-}
-
-/* When opened */
-.overlay-menu.show {
-    display: flex !important;
-}
-
-/* Close button */
-.overlay-menu .close-menu {
-    position: absolute !important;
-    top: 20px !important;
-    right: 30px !important;
-    background: none !important;
-    border: none !important;
-    color: #2CBFAE !important;
-    font-size: 2.4rem !important;
-    cursor: pointer !important;
-}
-
-/* Remove bullets, align center */
-.overlay-menu ul {
-    list-style: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    text-align: center !important;
-}
-
-.overlay-menu ul li {
-    margin: 1.4rem 0 !important;
-}
-
-.overlay-menu ul li a {
-    color: #ffffff !important;
-    font-size: 1.8rem !important;
-    text-decoration: none !important;
-}
-
-/* ==================== FOOTER ==================== */
-footer {
-  background-color: #0A2A4D;
-  color: white;
-  text-align: center;
-  padding: 2rem 10%;
-}
-.social-icons img {
-  width: 28px; height: 28px;
-  margin: 0 0.5rem;
-  transition: transform 0.3s, filter 0.3s;
-}
-.social-icons img:hover {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 6px #2CBFAE);
-}
-
 /* MOBILE FIX — prevent tall modal from going off-screen */
 @media (max-width: 768px) {
 
@@ -518,90 +442,31 @@ footer {
     }
 }
 
-
-/* Signature block (About page) ------------------ */
-.story-signature {
-    margin-top: 1.4rem;
-    text-align: left; /* change to center if preferred */
-}
-
-/* Name */
-.story-signature .sig-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #2CBFAE; /* SharpLync teal */
-    margin-bottom: 4px; /* tighter spacing */
-}
-
-/* Role */
-.story-signature .sig-role {
-    font-size: 0.95rem;
-    color: #0A2A4D;
-    opacity: 0.85;
-    margin-bottom: 6px;
-}
-
-/* LinkedIn icon */
-.story-signature .sig-linkedin img {
-    width: 30px;
-    height: 30px;
-    opacity: 0.85;
-    transition: 0.2s ease;
-}
-
-.story-signature .sig-linkedin img:hover {
-    opacity: 1;
-    transform: scale(1.08);
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .story-signature .sig-linkedin img {
-        width: 20px;
-        height: 20px;
-    }
-}
-
-/* Teal divider line above signature */
-.story-divider,
-.story-text hr {
-    border: none;
-    border-top: 2px solid #2CBFAE; /* SharpLync teal */
-    width: 100%;
-    margin: 1.8rem 0 1rem;
-    opacity: 0.6; /* tweak if needed */
-}
-
-
 /* ============================================================
    POLICY CONTENT CARD (For Terms & Conditions and Privacy)
    ============================================================ */
 
 /* Wrapper for the entire content area on policy pages */
 .policy-page-wrapper {
-    /* Ensures content is centered and contained */
     max-width: 1100px; 
     margin: 0 auto 3rem;
 }
 
 /* Styles for the main white content card */
 .policy-content-card {
-    background: #ffffff; /* White background */
-    color: #0A2A4D; /* Dark blue text color for readability on white */
+    background: #ffffff;
+    color: #0A2A4D;
     border-radius: 20px;
     padding: 2.2rem 2.5rem; 
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
     margin: 1.5rem auto 3rem; 
-    
-    /* Ensure text within the card looks correct */
     line-height: 1.7;
     font-weight: 300;
 }
 
-/* Styling for headings and list items within the white policy card */
 .policy-content-card h2, 
 .policy-content-card h3 {
-    color: #0A2A4D; /* Dark blue for headings */
+    color: #0A2A4D;
     font-weight: 600;
     margin-top: 1.5rem;
     margin-bottom: 0.8rem;
@@ -613,7 +478,7 @@ footer {
 
 /* Style the download link in the title wrapper */
 .download-link a {
-    color: #2CBFAE; /* Teal color for contrast */
+    color: #2CBFAE;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -622,7 +487,6 @@ footer {
 .download-link a:hover {
     color: #4df0d8;
 }
-
 
 /* Mobile adjustments for the policy card */
 @media (max-width: 768px) {

@@ -1,5 +1,9 @@
-@extends('layouts.about-base')
+<!-- @extends('layouts.about-base') -->
+@extends('layouts.base')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/about.css') }}">
+@endpush
 
 @section('title', 'SharpLync | About')
 
@@ -67,7 +71,7 @@
 
               <a href="https://www.linkedin.com/in/jcbrits/" 
                 class="sig-linkedin" target="_blank">
-                <img src="/images/linkedin.png" alt="LinkedIn">
+                <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn">
               </a>
           </div>
 
@@ -292,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const name     = fromCard?.dataset.name || '';
     const who      = fromCard?.dataset.who || '';
 
-    
     if (modalText) modalText.textContent = fullText;
     if (modalName) modalName.textContent = name;
 
@@ -301,13 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modalRole.style.display = who ? 'block' : 'none';
     }
 
-
     stopCycle();
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
     modal.setAttribute('aria-hidden', 'false');
   }
-
 
   function closeModal() {
     if (!modal) return;
