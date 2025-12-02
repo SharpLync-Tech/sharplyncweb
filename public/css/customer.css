@@ -38,7 +38,7 @@ html, body {
 }
 
 .cp-root a {
-    color: var(--blue);
+    color: var(--card);
     text-decoration: none;
 }
 
@@ -115,10 +115,12 @@ html, body {
 /* Brand color variations */
 .cp-teal-btn {
     background: var(--teal);
+    border: 1px solid var(--navy);
 }
 
 .cp-teal-btn:hover {
     background: #20A694;
+     text-decoration: none !important;
 }
 
 .cp-navy-btn {
@@ -280,7 +282,7 @@ html, body {
 
 /* Edit Profile button styling */
 .cp-edit-profile {
-    background: #E9EEF5;
+    background: var(--teal);
     color: var(--blue);
     font-size: .9rem;
     padding: .6rem 1.1rem;
