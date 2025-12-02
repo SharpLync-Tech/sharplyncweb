@@ -16,21 +16,24 @@
 
 .about-title-wrapper {
     text-align: center;
-    margin-top: 1.5rem;
-    margin-bottom: 2rem;
+    margin: 3rem 0 2rem;
 }
 
 .about-title {
-    font-size: 2.7rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
+    font-size: 3.2rem;
+    font-weight: 800; /* MATCH HOME */
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35); /* SAME DEPTH AS HOME */
 }
 
 .about-title .gradient {
     background: linear-gradient(90deg, #2CBFAE, #4df0d8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-weight: 800; /* IMPORTANT → makes the teal word match home */
 }
+
 
 .about-subtitle {
     font-size: 1.1rem;
