@@ -341,7 +341,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-                    alert("Password updated successfully.");
+                    // Hide the password modal
+                        document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
+
+                    // Show the success modal
+                        document.getElementById('cp-password-success-modal').classList.add('cp-modal-visible');
+
                     newPassInput.value     = "";
                     confirmPassInput.value = "";
                 })
@@ -349,5 +354,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     })();
+
+            /* ==========================================================
+        PASSWORD SUCCESS MODAL — CLOSE BUTTON
+        ========================================================== */
+        (function () {
+
+            const successModal = document.getElementById('cp-password-success-modal');
+            const successClose = document.getElementById('cp-password-success-close');
+            const root = document.querySelector('.cp-root');
+
+            if (successClose) {
+                successClose.addEventListener('click', () => {
+                    successModal.classList.remove('cp-modal-visible');
+                    if (root) root.classList.remove('modal-open');
+                });
+            }
+
+        })();
+
 
 }); // END DOMContentLoaded
