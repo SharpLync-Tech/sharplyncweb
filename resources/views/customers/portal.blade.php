@@ -47,21 +47,21 @@
 <div class="cp-card cp-dashboard-grid">
 
     {{-- LEFT COLUMN --}}
-        @include('customers.portal.profile-card', ['u' => $u])
+    @include('customers.portal.profile-card', ['u' => $u])
 
-        {{-- RIGHT COLUMN --}}
-        <div class="cp-activity-column">
+    {{-- RIGHT COLUMN --}}
+    <div class="cp-activity-column">
 
-            {{-- SECURITY CARD --}}
-            @include('customers.portal.security-card', ['u' => $u])
+        {{-- SECURITY CARD --}}
+        @include('customers.portal.security-card', ['u' => $u])
 
-            {{-- SUPPORT CARD --}}
-            @include('customers.portal.support-card', ['u' => $u])
+        {{-- SUPPORT CARD --}}
+        @include('customers.portal.support-card', ['u' => $u])
 
-            {{-- ACCOUNT CARD --}}
-            @include('customers.portal.account-card', ['u' => $u])
+        {{-- ACCOUNT CARD --}}
+        @include('customers.portal.account-card', ['u' => $u])
 
-        </div>
+    </div>
 
 </div>
 
@@ -83,7 +83,10 @@
         emailDisable: "{{ route('customer.security.email.disable') }}",
         authStart:    "{{ route('customer.security.auth.start') }}",
         authVerify:   "{{ route('customer.security.auth.verify') }}",
-        authDisable:  "{{ route('customer.security.auth.disable') }}"
+        authDisable:  "{{ route('customer.security.auth.disable') }}",
+
+        // 👉 NEW direct password update route:
+        passwordUpdate: "{{ route('customer.security.password.update') }}"
     };
 
     window.cpCsrf = "{{ csrf_token() }}";
