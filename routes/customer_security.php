@@ -36,17 +36,20 @@ Route::middleware(['auth:customer'])
         Route::post('/sspin/save', [SecurityController::class, 'saveSSPIN'])
             ->name('sspin.save');
 
-        // PASSWORD RESET (correct fix)
-        Route::post('/password/send-reset-link', [SecurityController::class, 'requestPasswordReset'])
-            ->name('password.send-reset-link');
+        // PASSWORD RESET         
+        Route::post('/password/update', [SecurityController::class, 'updatePassword'])
+            ->name('password.update');
+
     });
 
-Route::prefix('login/2fa')
-    ->name('customer.login.2fa.')
-    ->group(function () {
-        Route::post('/send',   [TwoFactorLoginController::class, 'send'])
-            ->name('send');
+        Route::prefix('login/2fa')
+            ->name('customer.login.2fa.')
+            ->group(function () {
+                Route::post('/send',   [TwoFactorLoginController::class, 'send'])
+                    ->name('send');
 
-        Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
-            ->name('verify');
+                Route::post('/verify', [TwoFactorLoginController::class, 'verify'])
+                    ->name('verify');
     });
+
+

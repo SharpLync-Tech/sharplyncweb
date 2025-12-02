@@ -348,49 +348,44 @@ class SecurityController extends Controller
     }
 
 
-            /* ============================================================
-        | 🔥 FIXED — PASSWORD RESET REQUEST
+         /* ============================================================
+        | DIRECT PASSWORD UPDATE (No email flow)
         * ============================================================ */
-        public function requestPasswordReset(Request $request)
+        public function updatePassword(Request $request)
         {
             $user = auth('customer')->user();
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Not authenticated'
+                    'message' => 'Not authenticated.'
                 ], 401);
             }
 
+            // Validate input
+            $request->validate([
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
+
             try {
-
-                // IMPORTANT — correct broker name
-                $status = Password::broker('crm_users')->sendResetLink([
-                    'email' => $user->email
-                ]);
-
-                if ($status !== Password::RESET_LINK_SENT) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => __($status)
-                    ], 400);
-                }
+                // Update CRM password
+                $user->password = bcrypt($request->password);
+                $user->save();
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Password reset link sent.'
+                    'message' => 'Password updated successfully.'
                 ]);
 
             } catch (\Throwable $e) {
 
-                Log::error("Password reset request error: {$e->getMessage()}");
+                \Log::error("Password update error: {$e->getMessage()}");
 
                 return response()->json([
                     'success' => false,
-                    'message' => 'Could not send password reset email.'
+                    'message' => 'Could not update password.'
                 ], 500);
             }
         }
-
 
 }

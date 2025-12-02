@@ -107,7 +107,6 @@ document.addEventListener("DOMContentLoaded", function () {
         showMain();
     }
 
-    // Modal events
     if (openBtn) openBtn.addEventListener('click', openModal);
     closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
@@ -115,7 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!sheet.contains(e.target)) closeModal();
     });
 
-    // Toggle logic
     if (emailToggle) {
         emailToggle.addEventListener('change', function(){
             this.checked ? showEmailSetup() : showMain();
@@ -137,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backEmailBtn) backEmailBtn.addEventListener('click', showMain);
     if (backAuthBtn)  backAuthBtn.addEventListener('click', showMain);
 
-    // OTP UX
+    // OTP input behaviour
     otpInputs.forEach((input, idx)=>{
         input.addEventListener('input', e=>{
             e.target.value = e.target.value.replace(/\D/g,'');
@@ -168,220 +166,215 @@ document.addEventListener("DOMContentLoaded", function () {
 
 }); // END DOMContentLoaded
 
+
+/* ==========================================================
+   ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
+========================================================== */
 document.addEventListener("DOMContentLoaded", function () {
 
-    //
-    // ==========================================================
-    // ORIGINAL 2FA MODAL CONTROLLER — UNCHANGED
-    // ==========================================================
-    (function () {
+(function () {
+    const modal = document.getElementById('cp-security-modal');
+    const openBtn = document.getElementById('cp-open-security-modal');
+    const sheet = modal?.querySelector('.cp-modal-sheet');
+    const closeBtns = modal?.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
+    const root = document.querySelector('.cp-root');
 
-        const modal = document.getElementById('cp-security-modal');
-        const openBtn = document.getElementById('cp-open-security-modal');
-        const sheet = modal?.querySelector('.cp-modal-sheet');
-        const closeBtns = modal?.querySelectorAll('.cp-modal-close, .cp-modal-close-btn');
-        const root = document.querySelector('.cp-root');
+    function openModal() {
+        modal.classList.add('cp-modal-visible');
+        modal.setAttribute('aria-hidden', 'false');
+        if (root) root.classList.add('modal-open');
+    }
 
-        function openModal() {
-            modal.classList.add('cp-modal-visible');
-            modal.setAttribute('aria-hidden', 'false');
-            if (root) root.classList.add('modal-open');
-        }
+    function closeModal() {
+        modal.classList.remove('cp-modal-visible');
+        modal.setAttribute('aria-hidden', 'true');
+        if (root) root.classList.remove('modal-open');
+    }
 
-        function closeModal() {
-            modal.classList.remove('cp-modal-visible');
-            modal.setAttribute('aria-hidden', 'true');
-            if (root) root.classList.remove('modal-open');
-        }
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (closeBtns) closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
-        if (openBtn) openBtn.addEventListener('click', openModal);
-        if (closeBtns) closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+    modal?.addEventListener('click', e => {
+        if (!sheet.contains(e.target)) closeModal();
+    });
 
-        modal?.addEventListener('click', e => {
-            if (!sheet.contains(e.target)) closeModal();
-        });
+})();
 
-    })();
-
-
-    //
-    // ==========================================================
-    // NEW PASSWORD & SSPIN MODAL CONTROLLER
-    // ==========================================================
-    (function () {
-
-        const passModal = document.getElementById('cp-password-modal');
-        const openPassBtn = document.getElementById('cp-open-password-modal'); // from Security card
-        const passSheet = passModal?.querySelector('.cp-modal-sheet');
-        const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
-        const root = document.querySelector('.cp-root');
-
-        function openPassModal() {
-            passModal.classList.add('cp-modal-visible');
-            passModal.setAttribute('aria-hidden', 'false');
-            if (root) root.classList.add('modal-open');
-        }
-
-        function closePassModal() {
-            passModal.classList.remove('cp-modal-visible');
-            passModal.setAttribute('aria-hidden', 'true');
-            if (root) root.classList.remove('modal-open');
-        }
-
-        if (openPassBtn) openPassBtn.addEventListener('click', openPassModal);
-        if (passCloseBtns) passCloseBtns.forEach(btn => btn.addEventListener('click', closePassModal));
-
-        passModal?.addEventListener('click', e => {
-            if (!passSheet.contains(e.target)) closePassModal();
-        });
-
-    })();
-
-
-    //
-    // ==========================================================
-    // DASHBOARD "Manage" BUTTON → OPEN PASSWORD/SSPIN MODAL
-    // ==========================================================
-    (function () {
-
-        const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
-        const openPassBtn = document.getElementById('cp-open-password-modal');
-
-        if (manageBtn && openPassBtn) {
-            manageBtn.addEventListener('click', () => {
-                openPassBtn.click();
-            });
-        }
-
-    })();
-
-
-
-    //
-    // ==========================================================
-    // SSPIN — FULL FRONT-END CONTROLLER (UNCHANGED)
-    // ==========================================================
-    (function () {
-
-        const displayEl = document.getElementById('cp-sspin-display');
-        const inputEl = document.getElementById('cp-sspin-input');
-        const generateBtn = document.getElementById('cp-sspin-generate');
-        const saveBtn = document.getElementById('cp-sspin-save');
-        const dashboardPreview = document.getElementById('cp-sspin-preview');
-
-        if (!displayEl || !inputEl) return;
-
-        // Generate PIN
-        if (generateBtn) {
-            generateBtn.addEventListener('click', () => {
-
-                fetch('/portal/security/sspin/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': window.cpCsrf
-                    }
-                })
-                    .then(res => res.json())
-                    .then(data => {
-
-                        if (!data.success) {
-                            alert("Could not generate PIN.");
-                            return;
-                        }
-
-                        inputEl.value = data.sspin;
-                        displayEl.textContent = data.sspin;
-
-                        if (dashboardPreview) {
-                            dashboardPreview.textContent = data.sspin;
-                        }
-
-                    })
-                    .catch(() => alert("Error generating PIN."));
-            });
-        }
-
-        // Save PIN
-        if (saveBtn) {
-            saveBtn.addEventListener('click', () => {
-
-                const pin = inputEl.value.trim();
-
-                if (!/^[0-9]{6}$/.test(pin)) {
-                    alert("PIN must be exactly 6 digits.");
-                    return;
-                }
-
-                fetch('/portal/security/sspin/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': window.cpCsrf
-                    },
-                    body: JSON.stringify({ sspin: pin })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-
-                        if (!data.success) {
-                            alert("Could not save PIN.");
-                            return;
-                        }
-
-                        displayEl.textContent = pin;
-
-                        if (dashboardPreview) {
-                            dashboardPreview.textContent = pin;
-                        }
-
-                        alert("Support PIN saved.");
-                    })
-                    .catch(() => alert("Error saving PIN."));
-            });
-        }
-
-    })();
-
-
-
-    // =======================================================================
-// SharpLync Portal UI — Password Reset Button Handler (Updated Dec 2025)
-// =======================================================================
-
+/* ==========================================================
+   PASSWORD + SSPIN MODAL CONTROLLER
+========================================================== */
 (function () {
 
-    const resetBtn = document.getElementById('cp-password-reset-request');
+    const passModal = document.getElementById('cp-password-modal');
+    const openPassBtn = document.getElementById('cp-open-password-modal');
+    const passSheet = passModal?.querySelector('.cp-modal-sheet');
+    const passCloseBtns = passModal?.querySelectorAll('.cp-password-close');
+    const root = document.querySelector('.cp-root');
 
-    if (!resetBtn) return;
+    function openPassModal() {
+        passModal.classList.add('cp-modal-visible');
+        passModal.setAttribute('aria-hidden', 'false');
+        if (root) root.classList.add('modal-open');
+    }
 
-    resetBtn.addEventListener('click', () => {
+    function closePassModal() {
+        passModal.classList.remove('cp-modal-visible');
+        passModal.setAttribute('aria-hidden', 'true');
+        if (root) root.classList.remove('modal-open');
+    }
 
-        // ✅ Uses NEW dynamic route defined in portal.blade.php
-        fetch(window.cpRoutes.passwordSendReset, {
+    if (openPassBtn) openPassBtn.addEventListener('click', openPassModal);
+    if (passCloseBtns) passCloseBtns.forEach(btn => btn.addEventListener('click', closePassModal));
+
+    passModal?.addEventListener('click', e => {
+        if (!passSheet.contains(e.target)) closePassModal();
+    });
+
+})();
+
+/* ==========================================================
+   DASHBOARD "Manage" BUTTON → OPEN PASSWORD/SSPIN MODAL
+========================================================== */
+(function () {
+    const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
+    const openPassBtn = document.getElementById('cp-open-password-modal');
+    if (manageBtn && openPassBtn) {
+        manageBtn.addEventListener('click', () => openPassBtn.click());
+    }
+})();
+
+/* ==========================================================
+   SSPIN CONTROLLER — UNCHANGED
+========================================================== */
+(function () {
+
+    const displayEl = document.getElementById('cp-sspin-display');
+    const inputEl = document.getElementById('cp-sspin-input');
+    const generateBtn = document.getElementById('cp-sspin-generate');
+    const saveBtn = document.getElementById('cp-sspin-save');
+    const dashboardPreview = document.getElementById('cp-sspin-preview');
+
+    if (!displayEl || !inputEl) return;
+
+    // Generate PIN
+    if (generateBtn) {
+        generateBtn.addEventListener('click', () => {
+
+            fetch('/portal/security/sspin/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': window.cpCsrf
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        alert("Could not generate PIN.");
+                        return;
+                    }
+
+                    inputEl.value = data.sspin;
+                    displayEl.textContent = data.sspin;
+
+                    if (dashboardPreview) dashboardPreview.textContent = data.sspin;
+
+                })
+                .catch(() => alert("Error generating PIN."));
+        });
+    }
+
+    // Save PIN
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+
+            const pin = inputEl.value.trim();
+
+            if (!/^[0-9]{6}$/.test(pin)) {
+                alert("PIN must be exactly 6 digits.");
+                return;
+            }
+
+            fetch('/portal/security/sspin/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': window.cpCsrf
+                },
+                body: JSON.stringify({ sspin: pin })
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        alert("Could not save PIN.");
+                        return;
+                    }
+
+                    displayEl.textContent = pin;
+
+                    if (dashboardPreview) {
+                        dashboardPreview.textContent = pin;
+                    }
+
+                    alert("Support PIN saved.");
+                })
+                .catch(() => alert("Error saving PIN."));
+        });
+    }
+
+})();
+
+/* ==========================================================
+   ✅ DIRECT PASSWORD UPDATE (NO OLD PASSWORD)
+========================================================== */
+(function () {
+
+    const savePasswordBtn  = document.getElementById('cp-password-save');
+    const newPassInput     = document.getElementById('cp-new-password');
+    const confirmPassInput = document.getElementById('cp-confirm-password');
+
+    if (!savePasswordBtn) return;
+
+    savePasswordBtn.addEventListener('click', () => {
+
+        const pass = newPassInput.value.trim();
+        const confirm = confirmPassInput.value.trim();
+
+        if (pass.length < 8) {
+            alert("Password must be at least 8 characters.");
+            return;
+        }
+
+        if (pass !== confirm) {
+            alert("Passwords do not match.");
+            return;
+        }
+
+        fetch('/portal/security/password/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': window.cpCsrf
-            }
+            },
+            body: JSON.stringify({
+                password: pass
+            })
         })
             .then(res => res.json())
             .then(data => {
 
                 if (!data.success) {
-                    alert(data.message || "Could not send password reset link.");
+                    alert(data.message || "Could not update password.");
                     return;
                 }
 
-                alert("Password reset email sent! Check your inbox.");
+                alert("Password updated successfully.");
+                newPassInput.value = "";
+                confirmPassInput.value = "";
             })
-            .catch(() => {
-                alert("Server error sending password reset email.");
-            });
+            .catch(() => alert("Server error updating password."));
     });
 
 })();
-
-
-
-}); // END DOMContentLoaded

@@ -19,7 +19,41 @@
 
         <div class="cp-modal-body">
 
-            
+            {{-- ======================================================= --}}
+            {{-- [SECTION A] CHANGE PASSWORD DIRECTLY (NO EMAIL FLOW)    --}}
+            {{-- ======================================================= --}}
+            <div class="cp-sec-card">
+
+                <h4>Change Password</h4>
+
+                <p class="cp-sec-desc" style="margin-bottom: .75rem;">
+                    Set a new password for your SharpLync account.
+                </p>
+
+                <label class="cp-sec-label">New Password</label>
+                <input 
+                    type="password" 
+                    id="cp-new-password" 
+                    class="cp-input" 
+                    placeholder="Enter new password">
+
+                <label class="cp-sec-label" style="margin-top:.75rem;">Confirm New Password</label>
+                <input 
+                    type="password" 
+                    id="cp-confirm-password" 
+                    class="cp-input" 
+                    placeholder="Re-enter new password">
+
+                <button
+                    id="cp-password-save"
+                    class="cp-btn cp-teal-btn"
+                    style="margin-top:1rem;">
+                    Save New Password
+                </button>
+
+            </div>
+
+
             {{-- ======================================================= --}}
             {{-- [SECTION B] SSPIN MANAGEMENT (UNCHANGED FUNCTIONALLY)   --}}
             {{--    - Uses existing SSPIN logic                          --}}
