@@ -292,7 +292,8 @@ html, body {
 }
 
 .cp-edit-profile:hover {
-    background: #D6E1F0;
+    background: #20A694;
+    text-decoration: none !important;
 }
 
 /* -------------------------------------------------------------------
