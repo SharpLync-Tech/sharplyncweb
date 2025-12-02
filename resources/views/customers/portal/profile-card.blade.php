@@ -27,15 +27,9 @@
         {{-- Name & Details --}}
         <div class="cp-name-group">
             <h3>{{ $fullName }}</h3>
-            <p class="cp-member-status">{{ $status }}</p>
+            <p class="cp-member-status">{{ $status }}</p>          
 
-            <p class="cp-detail-line">
-                Email: <a href="mailto:{{ $email }}">{{ $email }}</a>
-            </p>
-
-            @if($since)
-                <p class="cp-detail-line">Customer since: {{ $since }}</p>
-            @endif
+            
 
             {{-- =============================================================== --}}
             {{-- SSPIN (Always Visible — No Masking)                            --}}
