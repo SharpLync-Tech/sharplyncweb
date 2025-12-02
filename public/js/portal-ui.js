@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
             showMain();
         }
 
-        // Modal events
         if (openBtn) openBtn.addEventListener('click', openModal);
         closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
@@ -119,7 +118,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Toggle logic
         if (emailToggle) {
             emailToggle.addEventListener('change', function () {
                 this.checked ? showEmailSetup() : showMain();
@@ -141,7 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (backEmailBtn) backEmailBtn.addEventListener('click', showMain);
         if (backAuthBtn)  backAuthBtn.addEventListener('click', showMain);
 
-        // OTP behaviour
         otpInputs.forEach((input, idx) => {
             input.addEventListener('input', e => {
                 e.target.value = e.target.value.replace(/\D/g, '');
@@ -203,7 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Dashboard "Manage" → open password/SSPIN modal
         const manageBtn = document.getElementById('cp-open-password-modal-from-preview');
         if (manageBtn && openPassBtn) {
             manageBtn.addEventListener('click', () => openPassBtn.click());
@@ -224,7 +220,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!displayEl || !inputEl) return;
 
-        // Generate PIN
         if (generateBtn) {
             generateBtn.addEventListener('click', () => {
 
@@ -255,7 +250,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Save PIN
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
 
@@ -288,17 +282,14 @@ document.addEventListener("DOMContentLoaded", function () {
                             dashboardPreview.textContent = pin;
                         }
 
-                        // Close the SSPIN section modal if needed
                     document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
 
-                    // Show SSPIN success modal
                     const sspinModal = document.getElementById('cp-sspin-success-modal');
                     const root = document.querySelector('.cp-root');
 
                     sspinModal.classList.add('cp-modal-visible');
                     if (root) root.classList.add('modal-open');
 
-                    // Auto-close after 2s
                     setTimeout(() => {
                         sspinModal.classList.remove('cp-modal-visible');
                         if (root) root.classList.remove('modal-open');
@@ -322,6 +313,32 @@ document.addEventListener("DOMContentLoaded", function () {
         const confirmPassInput = document.getElementById('cp-confirm-password');
 
         if (!savePasswordBtn || !newPassInput || !confirmPassInput) return;
+
+        /* ==========================================================
+           LIVE PASSWORD MATCH CHECK (added)
+        ========================================================== */
+        function checkPasswordMatch() {
+            const p1 = newPassInput.value.trim();
+            const p2 = confirmPassInput.value.trim();
+
+            if (p1.length < 8) {
+                savePasswordBtn.disabled = true;
+                return;
+            }
+
+            if (p1 !== p2) {
+                savePasswordBtn.disabled = true;
+                return;
+            }
+
+            // enable save only if valid
+            savePasswordBtn.disabled = false;
+        }
+
+        newPassInput.addEventListener("input", checkPasswordMatch);
+        confirmPassInput.addEventListener("input", checkPasswordMatch);
+        savePasswordBtn.disabled = true;
+
 
         savePasswordBtn.addEventListener('click', () => {
 
@@ -356,14 +373,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-                    // Hide the password modal
                         document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
 
-                    // Show the success modal
                         document.getElementById('cp-password-success-modal').classList.add('cp-modal-visible');
 
                     newPassInput.value     = "";
                     confirmPassInput.value = "";
+                    savePasswordBtn.disabled = true;
                 })
                 .catch(() => alert("Server error updating password."));
         });
@@ -405,7 +421,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             })();
-
-
 
 }); // END DOMContentLoaded
