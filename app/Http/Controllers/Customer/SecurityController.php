@@ -348,7 +348,7 @@ class SecurityController extends Controller
     }
 
 
-         /* ============================================================
+        /* ============================================================
         | DIRECT PASSWORD UPDATE (No email flow)
         * ============================================================ */
         public function updatePassword(Request $request)
@@ -362,13 +362,13 @@ class SecurityController extends Controller
                 ], 401);
             }
 
-            // Validate input
+            // Validate input (NO confirmation rule)
             $request->validate([
-                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'password' => ['required', 'string', 'min:8'],
             ]);
 
             try {
-                // Update CRM password
+                // Update password directly
                 $user->password = bcrypt($request->password);
                 $user->save();
 
@@ -387,5 +387,4 @@ class SecurityController extends Controller
                 ], 500);
             }
         }
-
 }
