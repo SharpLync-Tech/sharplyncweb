@@ -51,7 +51,7 @@
 </main>
 
 <footer class="cp-footer">
-    © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, <span class="cp-hl">Modern Results</span>
+    © 2025 SharpLync Pty Ltd · All rights reserved · Straightforward Support, <span class="cp-hl">Modern Results</span>
   </footer>
 
 <script>

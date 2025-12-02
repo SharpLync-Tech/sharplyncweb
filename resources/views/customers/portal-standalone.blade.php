@@ -228,7 +228,7 @@
       </section>
 
       <p class="cp-footnote">
-        SharpLync – Old School Support, <span class="cp-hl">Modern Results</span>
+        SharpLync – Straightforward Support, <span class="cp-hl">Modern Results</span>
       </p>
     </div>
   </main>
@@ -242,7 +242,7 @@
   <!-- Site Footer -->
   <footer class="cp-footer">
     <p>© {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
-    <p>Old School Support, <span class="cp-hl">Modern Results</span></p>
+    <p>Straightforward Support, <span class="cp-hl">Modern Results</span></p>
   </footer>
 
   <script>

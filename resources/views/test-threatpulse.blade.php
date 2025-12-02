@@ -12,7 +12,7 @@
 @section('content')
 <section class="hero">
   <div class="hero-text">    
-    <h1>Old School Support.<br><span>Modern Results.</span></h1>
+    <h1>Straightforward Support.<br><span>Modern Results.</span></h1>
     <p>Reliable IT solutions designed for modern businesses — delivered by real human experts who get it done right, the first time.</p>
     
     <div class="hero-buttons">
