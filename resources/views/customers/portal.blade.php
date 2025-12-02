@@ -71,6 +71,8 @@
 
 @include('customers.portal.modals.security-modal')
 @include('customers.portal.modals.password-sspin-modal')
+@include('customers.portal.modals.password-success-modal')
+
 
 @endsection
 
@@ -84,8 +86,6 @@
         authStart:    "{{ route('customer.security.auth.start') }}",
         authVerify:   "{{ route('customer.security.auth.verify') }}",
         authDisable:  "{{ route('customer.security.auth.disable') }}",
-
-        // 👉 NEW direct password update route:
         passwordUpdate: "{{ route('customer.security.password.update') }}"
     };
 
