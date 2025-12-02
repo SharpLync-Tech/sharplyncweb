@@ -312,111 +312,63 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
 
-            /* ==========================================================
-            LIVE PASSWORD VALIDATION + STRENGTH METER
-            ========================================================== */
-            (function () {
+    /* ==========================================================
+       DIRECT PASSWORD UPDATE (NO OLD PASSWORD)
+    ========================================================== */
+    (function () {
 
-                const pass1 = document.getElementById('cp-new-password');
-                const pass2 = document.getElementById('cp-confirm-password');
-                const saveBtn = document.getElementById('cp-password-save');
+        const savePasswordBtn  = document.getElementById('cp-password-save');
+        const newPassInput     = document.getElementById('cp-new-password');
+        const confirmPassInput = document.getElementById('cp-confirm-password');
 
-                const barFill = document.getElementById('cp-pass-strength-fill');
-                const barText = document.getElementById('cp-pass-strength-text');
+        if (!savePasswordBtn || !newPassInput || !confirmPassInput) return;
 
-                if (!pass1 || !pass2 || !saveBtn) return;
+        savePasswordBtn.addEventListener('click', () => {
 
-                // Inline message for mismatch / short password
-                const msg = document.createElement('div');
-                msg.style.fontSize = "0.85rem";
-                msg.style.marginTop = "6px";
-                msg.style.color = "#e84c4c";
-                msg.style.display = "none";
-                pass2.parentNode.insertBefore(msg, pass2.nextSibling);
+            const pass     = newPassInput.value.trim();
+            const confirm  = confirmPassInput.value.trim();
 
-                function passwordStrength(pw) {
-                    let score = 0;
+            if (pass.length < 8) {
+                alert("Password must be at least 8 characters.");
+                return;
+            }
 
-                    if (pw.length >= 8) score++;
-                    if (pw.length >= 12) score++;
-                    if (/[A-Z]/.test(pw)) score++;
-                    if (/[a-z]/.test(pw)) score++;
-                    if (/[0-9]/.test(pw)) score++;
-                    if (/[^A-Za-z0-9]/.test(pw)) score++; // symbol
+            if (pass !== confirm) {
+                alert("Passwords do not match.");
+                return;
+            }
 
-                    return score;
-                }
+            fetch('/portal/security/password/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': window.cpCsrf
+                },
+                body: JSON.stringify({
+                    password: pass
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
 
-                function renderStrength(score) {
-                    const percent = Math.min((score / 6) * 100, 100);
-
-                    barFill.style.width = percent + "%";
-
-                    if (score <= 1) {
-                        barFill.style.background = "#e84c4c";
-                        barText.textContent = "Very Weak";
-                    } else if (score <= 2) {
-                        barFill.style.background = "#ff9800";
-                        barText.textContent = "Weak";
-                    } else if (score <= 3) {
-                        barFill.style.background = "#ffc107";
-                        barText.textContent = "Medium";
-                    } else if (score <= 4) {
-                        barFill.style.background = "#8bc34a";
-                        barText.textContent = "Strong";
-                    } else {
-                        barFill.style.background = "#2CBFAE"; // SharpLync teal
-                        barText.textContent = "Very Strong";
-                    }
-                }
-
-                function validate() {
-                    const p1 = pass1.value.trim();
-                    const p2 = pass2.value.trim();
-
-                    // Strength indicator updates no matter what
-                    renderStrength(passwordStrength(p1));
-
-                    // No password → disable everything
-                    if (!p1) {
-                        msg.style.display = "none";
-                        saveBtn.disabled = true;
-                        saveBtn.classList.add("disabled");
+                    if (!data.success) {
+                        alert(data.message || "Could not update password.");
                         return;
                     }
 
-                    // Too short
-                    if (p1.length < 8) {
-                        msg.textContent = "Password must be at least 8 characters.";
-                        msg.style.display = "block";
-                        saveBtn.disabled = true;
-                        saveBtn.classList.add("disabled");
-                        return;
-                    }
+                    // Hide the password modal
+                        document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
 
-                    // Mismatch
-                    if (p1 !== p2) {
-                        msg.textContent = "Passwords do not match.";
-                        msg.style.display = "block";
-                        saveBtn.disabled = true;
-                        saveBtn.classList.add("disabled");
-                        return;
-                    }
+                    // Show the success modal
+                        document.getElementById('cp-password-success-modal').classList.add('cp-modal-visible');
 
-                    // All good → enable Save
-                    msg.style.display = "none";
-                    saveBtn.disabled = false;
-                    saveBtn.classList.remove("disabled");
-                }
+                    newPassInput.value     = "";
+                    confirmPassInput.value = "";
+                })
+                .catch(() => alert("Server error updating password."));
+        });
 
-                pass1.addEventListener("input", validate);
-                pass2.addEventListener("input", validate);
-
-                // Start disabled
-                saveBtn.disabled = true;
-                saveBtn.classList.add("disabled");
-            })();
-
+    })();
 
             /* ==========================================================
             PASSWORD SUCCESS MODAL — CLOSE BUTTON
