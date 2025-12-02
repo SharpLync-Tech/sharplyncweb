@@ -312,6 +312,56 @@ document.addEventListener("DOMContentLoaded", function () {
         const newPassInput     = document.getElementById('cp-new-password');
         const confirmPassInput = document.getElementById('cp-confirm-password');
 
+        /* Start password match logic */
+        /* LIVE PASSWORD MISMATCH WARNING (micro-patch) */
+        let passWarning = document.createElement("div");
+        passWarning.style.color = "#e74c3c";
+        passWarning.style.fontSize = "0.85rem";
+        passWarning.style.marginTop = "4px";
+        passWarning.style.display = "none";
+        confirmPassInput.parentNode.insertBefore(passWarning, confirmPassInput.nextSibling);
+
+        function checkPasswordMatch() {
+            const p1 = newPassInput.value.trim();
+            const p2 = confirmPassInput.value.trim();
+
+            // Reset if empty
+            if (!p1 && !p2) {
+                passWarning.style.display = "none";
+                savePasswordBtn.disabled = true;
+                return;
+            }
+
+            // Too short
+            if (p1.length < 8) {
+                passWarning.textContent = "Password must be at least 8 characters.";
+                passWarning.style.display = "block";
+                savePasswordBtn.disabled = true;
+                return;
+            }
+
+            // Mismatch
+            if (p1 !== p2) {
+                passWarning.textContent = "Passwords do not match.";
+                passWarning.style.display = "block";
+                savePasswordBtn.disabled = true;
+                return;
+            }
+
+            // All good
+            passWarning.style.display = "none";
+            savePasswordBtn.disabled = false;
+        }
+
+            newPassInput.addEventListener("input", checkPasswordMatch);
+            confirmPassInput.addEventListener("input", checkPasswordMatch);
+
+            // Always start disabled
+            savePasswordBtn.disabled = true;
+
+            // End password match logic
+
+
         if (!savePasswordBtn || !newPassInput || !confirmPassInput) return;
 
         /* ==========================================================
