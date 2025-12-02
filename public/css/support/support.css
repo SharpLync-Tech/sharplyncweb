@@ -42,7 +42,7 @@
     justify-content: center;
     gap: 0.4rem;
     border: 1px solid #d1d9e6;
-    background: #ffffff;
+    background: #104976;
     color: #104976;
     font-size: 0.9rem;
     padding: 0.35rem 0.9rem;
@@ -53,7 +53,8 @@
 
 
 .support-link-back:hover {
-    background: #f5f7fb;
+    background: #104976;
+    border: 2px solid #2CBFAE;
     text-decoration: none !important;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     transform: translateY(-1px);
@@ -77,12 +78,14 @@
 }
 
 .support-btn-primary {
+    text-decoration: none !important;
     background: #104976;
     color: #ffffff !important;
     box-shadow: 0 6px 16px rgba(16, 73, 118, 0.25);
 }
 
 .support-btn-primary:hover {
+    border: 2px solid #2CBFAE;
     transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(16, 73, 118, 0.3);
 }
