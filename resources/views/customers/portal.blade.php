@@ -92,6 +92,6 @@
     window.cpCsrf = "{{ csrf_token() }}";
 </script>
 
-<script src="/js/portal-ui.js"></script>
+<script src="/js/portal-ui.js?v=2"></script>
 <script src="/js/security.js"></script>
 @endsection
