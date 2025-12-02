@@ -359,6 +359,70 @@ document.addEventListener("DOMContentLoaded", function () {
         savePasswordBtn.disabled = true;
 
 
+            /* ==========================================================
+            PASSWORD STRENGTH INDICATOR (SAFEST VERSION)
+            ========================================================== */
+            (function () {
+
+                const pass1   = document.getElementById('cp-new-password');
+                const barFill = document.getElementById('cp-pass-strength-fill');
+                const barText = document.getElementById('cp-pass-strength-text');
+
+                if (!pass1 || !barFill || !barText) return;
+
+                function strengthScore(pw) {
+                    let score = 0;
+
+                    if (pw.length >= 8)  score++;
+                    if (pw.length >= 12) score++;
+                    if (/[A-Z]/.test(pw)) score++;
+                    if (/[a-z]/.test(pw)) score++;
+                    if (/[0-9]/.test(pw)) score++;
+                    if (/[^A-Za-z0-9]/.test(pw)) score++; // symbol
+
+                    return score;
+                }
+
+                function renderStrength() {
+                    const pw = pass1.value.trim();
+                    const score = strengthScore(pw);
+                    const percent = Math.min((score / 6) * 100, 100);
+
+                    barFill.style.width = percent + "%";
+
+                    if (!pw) {
+                        barFill.style.background = "#e5e5e5";
+                        barText.textContent = "";
+                        return;
+                    }
+
+                    if (score <= 1) {
+                        barFill.style.background = "#e84c4c";
+                        barText.textContent = "Very Weak";
+                    } 
+                    else if (score <= 2) {
+                        barFill.style.background = "#ff9800";
+                        barText.textContent = "Weak";
+                    } 
+                    else if (score <= 3) {
+                        barFill.style.background = "#ffc107";
+                        barText.textContent = "Medium";
+                    } 
+                    else if (score <= 4) {
+                        barFill.style.background = "#8bc34a";
+                        barText.textContent = "Strong";
+                    } 
+                    else {
+                        barFill.style.background = "#2CBFAE"; // SharpLync teal
+                        barText.textContent = "Very Strong";
+                    }
+                }
+
+                pass1.addEventListener("input", renderStrength);
+            })();
+
+
+
         /* ==========================================================
            SAVE PASSWORD
         ========================================================== */
