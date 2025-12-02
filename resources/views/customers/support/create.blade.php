@@ -17,7 +17,7 @@
             Tell us what’s going on and we’ll get you back on track.
         </p>
         <a href="{{ route('customer.support.index') }}" class="support-link-back">
-            ← Back to my tickets
+            Back to my tickets
         </a>
     </div>
 

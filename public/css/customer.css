@@ -807,5 +807,18 @@ body.modal-open {
         margin-bottom: 1rem;
     }
 
+        /* Center Security Buttons on Mobile */
+    @media (max-width: 768px) {
+        .cp-security-footer .cp-btn {
+            display: inline-block;
+            margin: 0.5rem auto;      /* centers them horizontally */
+        }
+
+        .cp-security-footer {
+            text-align: center !important;
+        }
+    }
+
+
  
 }
