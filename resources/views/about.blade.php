@@ -1,15 +1,10 @@
-<!-- =====================
-     Works on Desktop & Mobile.
-     Hamburge menu not overlaying. 
-     Modals working.    
-     ===================== -->
-
 @extends('layouts.base')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/about.css') }}">
+
 <link rel="stylesheet" href="{{ asset('css/sharplync.css') }}">
 <link rel="stylesheet" href="{{ asset('css/sharplync-nav.css') }}">
+<link rel="stylesheet" href="{{ asset('css/about.css') }}">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 @endpush
