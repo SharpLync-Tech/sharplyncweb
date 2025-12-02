@@ -27,10 +27,9 @@
         {{-- Name & Details --}}
         <div class="cp-name-group">
             <h3>{{ $fullName }}</h3>
-            <p class="cp-member-status">{{ $status }}</p>          
+            <p class="cp-member-status">{{ $status }}</p>       
 
             
-
             {{-- =============================================================== --}}
             {{-- SSPIN (Always Visible — No Masking)                            --}}
             {{-- =============================================================== --}}
