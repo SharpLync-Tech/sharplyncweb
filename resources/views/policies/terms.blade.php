@@ -1,5 +1,5 @@
 {{-- resources/views/policies/terms.blade.php --}}
-@extends('layouts.policy-base')
+@extends('layouts.base')
 
 @section('title', 'SharpLync | Terms & Conditions')
 
