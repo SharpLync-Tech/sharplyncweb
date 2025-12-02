@@ -282,23 +282,23 @@ document.addEventListener("DOMContentLoaded", function () {
                             dashboardPreview.textContent = pin;
                         }
 
-                    document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
+                        document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
 
-                    const sspinModal = document.getElementById('cp-sspin-success-modal');
-                    const root = document.querySelector('.cp-root');
+                        const sspinModal = document.getElementById('cp-sspin-success-modal');
+                        const root = document.querySelector('.cp-root');
 
-                    sspinModal.classList.add('cp-modal-visible');
-                    if (root) root.classList.add('modal-open');
+                        sspinModal.classList.add('cp-modal-visible');
+                        if (root) root.classList.add('modal-open');
 
-                    setTimeout(() => {
-                        sspinModal.classList.remove('cp-modal-visible');
-                        if (root) root.classList.remove('modal-open');
-                    }, 2000);
+                        setTimeout(() => {
+                            sspinModal.classList.remove('cp-modal-visible');
+                            if (root) root.classList.remove('modal-open');
+                        }, 2000);
 
-                                        })
-                                        .catch(() => alert("Error saving PIN."));
-                                });
-                            }
+                    })
+                    .catch(() => alert("Error saving PIN."));
+            });
+        }
 
     })();
 
@@ -312,27 +312,30 @@ document.addEventListener("DOMContentLoaded", function () {
         const newPassInput     = document.getElementById('cp-new-password');
         const confirmPassInput = document.getElementById('cp-confirm-password');
 
-        /* Start password match logic */
-        /* LIVE PASSWORD MISMATCH WARNING (micro-patch) */
+        if (!savePasswordBtn || !newPassInput || !confirmPassInput) return;
+
+        /* ==========================================================
+           LIVE PASSWORD MATCH VALIDATION (FINAL FIXED VERSION)
+        ========================================================== */
+
         let passWarning = document.createElement("div");
         passWarning.style.color = "#e74c3c";
         passWarning.style.fontSize = "0.85rem";
         passWarning.style.marginTop = "4px";
         passWarning.style.display = "none";
+
         confirmPassInput.parentNode.insertBefore(passWarning, confirmPassInput.nextSibling);
 
         function checkPasswordMatch() {
             const p1 = newPassInput.value.trim();
             const p2 = confirmPassInput.value.trim();
 
-            // Reset if empty
             if (!p1 && !p2) {
                 passWarning.style.display = "none";
                 savePasswordBtn.disabled = true;
                 return;
             }
 
-            // Too short
             if (p1.length < 8) {
                 passWarning.textContent = "Password must be at least 8 characters.";
                 passWarning.style.display = "block";
@@ -340,7 +343,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Mismatch
             if (p1 !== p2) {
                 passWarning.textContent = "Passwords do not match.";
                 passWarning.style.display = "block";
@@ -348,40 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // All good
             passWarning.style.display = "none";
-            savePasswordBtn.disabled = false;
-        }
-
-            newPassInput.addEventListener("input", checkPasswordMatch);
-            confirmPassInput.addEventListener("input", checkPasswordMatch);
-
-            // Always start disabled
-            savePasswordBtn.disabled = true;
-
-            // End password match logic
-
-
-        if (!savePasswordBtn || !newPassInput || !confirmPassInput) return;
-
-        /* ==========================================================
-           LIVE PASSWORD MATCH CHECK (added)
-        ========================================================== */
-        function checkPasswordMatch() {
-            const p1 = newPassInput.value.trim();
-            const p2 = confirmPassInput.value.trim();
-
-            if (p1.length < 8) {
-                savePasswordBtn.disabled = true;
-                return;
-            }
-
-            if (p1 !== p2) {
-                savePasswordBtn.disabled = true;
-                return;
-            }
-
-            // enable save only if valid
             savePasswordBtn.disabled = false;
         }
 
@@ -390,6 +359,9 @@ document.addEventListener("DOMContentLoaded", function () {
         savePasswordBtn.disabled = true;
 
 
+        /* ==========================================================
+           SAVE PASSWORD
+        ========================================================== */
         savePasswordBtn.addEventListener('click', () => {
 
             const pass     = newPassInput.value.trim();
@@ -423,9 +395,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-                        document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
+                    document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
 
-                        document.getElementById('cp-password-success-modal').classList.add('cp-modal-visible');
+                    document.getElementById('cp-password-success-modal').classList.add('cp-modal-visible');
 
                     newPassInput.value     = "";
                     confirmPassInput.value = "";
@@ -436,40 +408,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })();
 
-            /* ==========================================================
-            PASSWORD SUCCESS MODAL — CLOSE BUTTON
-            ========================================================== */
-            (function () {
 
-                const successModal = document.getElementById('cp-password-success-modal');
-                const successClose = document.getElementById('cp-password-success-close');
-                const root = document.querySelector('.cp-root');
+    /* ==========================================================
+       PASSWORD SUCCESS MODAL — CLOSE BUTTON
+    ========================================================== */
+    (function () {
 
-                if (successClose) {
-                    successClose.addEventListener('click', () => {
-                        successModal.classList.remove('cp-modal-visible');
-                        if (root) root.classList.remove('modal-open');
-                    });
-                }
+        const successModal = document.getElementById('cp-password-success-modal');
+        const successClose = document.getElementById('cp-password-success-close');
+        const root = document.querySelector('.cp-root');
 
-            })();
+        if (successClose) {
+            successClose.addEventListener('click', () => {
+                successModal.classList.remove('cp-modal-visible');
+                if (root) root.classList.remove('modal-open');
+            });
+        }
 
-            /* ==========================================================
-            SSPIN SUCCESS MODAL — CLOSE BUTTON + Auto-close
-            ========================================================== */
-            (function () {
+    })();
 
-                const sspinModal = document.getElementById('cp-sspin-success-modal');
-                const sspinClose = document.getElementById('cp-sspin-success-close');
-                const root = document.querySelector('.cp-root');
 
-                if (sspinClose) {
-                    sspinClose.addEventListener('click', () => {
-                        sspinModal.classList.remove('cp-modal-visible');
-                        if (root) root.classList.remove('modal-open');
-                    });
-                }
+    /* ==========================================================
+       SSPIN SUCCESS MODAL — CLOSE BUTTON
+    ========================================================== */
+    (function () {
 
-            })();
+        const sspinModal = document.getElementById('cp-sspin-success-modal');
+        const sspinClose = document.getElementById('cp-sspin-success-close');
+        const root = document.querySelector('.cp-root');
+
+        if (sspinClose) {
+            sspinClose.addEventListener('click', () => {
+                sspinModal.classList.remove('cp-modal-visible');
+                if (root) root.classList.remove('modal-open');
+            });
+        }
+
+    })();
+
 
 }); // END DOMContentLoaded
