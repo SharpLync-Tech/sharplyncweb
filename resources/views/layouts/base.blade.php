@@ -202,6 +202,9 @@
 
     <!-- ========================= MAIN ========================= -->
     <main>
+        <div style="color: red; text-align:center; margin-top: 2rem;">
+        LAYOUT CONTENT TEST
+    </div>
         @yield('content')
     </main>
 
