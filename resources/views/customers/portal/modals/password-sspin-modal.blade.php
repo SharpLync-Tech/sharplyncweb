@@ -37,6 +37,21 @@
                     class="cp-input" 
                     placeholder="Enter new password">
 
+                <div id="cp-pass-strength-wrapper" style="margin-top:6px;">
+                    <div id="cp-pass-strength-bar"
+                        style="height:6px; width:100%; border-radius:4px; background:#e5e5e5; overflow:hidden;">
+                        <div id="cp-pass-strength-fill"
+                            style="height:100%; width:0%; background:#2CBFAE; transition:width .25s;"></div>
+                    </div>
+                    <div id="cp-pass-strength-text"
+                        style="margin-top:4px; font-size:.85rem; color:#63718a;">
+                        <!-- dynamic -->
+                    </div>
+                </div>
+
+
+
+
                 <label class="cp-sec-label" style="margin-top:.75rem;">Confirm New Password</label>
                 <input 
                     type="password" 
