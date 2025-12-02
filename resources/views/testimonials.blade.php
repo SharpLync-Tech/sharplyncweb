@@ -2,6 +2,10 @@
 
 @extends('layouts.base')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
+@endpush
+
 @section('title', 'SharpLync | Testimonials')
 
 @php
