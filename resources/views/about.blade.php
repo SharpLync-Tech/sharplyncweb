@@ -1,4 +1,3 @@
-<!-- @extends('layouts.about-base') -->
 @extends('layouts.base')
 
 @push('styles')
@@ -73,6 +72,10 @@
                 class="sig-linkedin" target="_blank">
                 <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn">
               </a>
+          </div>
+
+          <div class="story-testimonial-link">
+              <a href="/testimonials">Read what others say</a>
           </div>
 
 
