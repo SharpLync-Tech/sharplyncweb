@@ -288,11 +288,26 @@ document.addEventListener("DOMContentLoaded", function () {
                             dashboardPreview.textContent = pin;
                         }
 
-                        alert("Support PIN saved.");
-                    })
-                    .catch(() => alert("Error saving PIN."));
-            });
-        }
+                        // Close the SSPIN section modal if needed
+                    document.getElementById('cp-password-modal').classList.remove('cp-modal-visible');
+
+                    // Show SSPIN success modal
+                    const sspinModal = document.getElementById('cp-sspin-success-modal');
+                    const root = document.querySelector('.cp-root');
+
+                    sspinModal.classList.add('cp-modal-visible');
+                    if (root) root.classList.add('modal-open');
+
+                    // Auto-close after 2s
+                    setTimeout(() => {
+                        sspinModal.classList.remove('cp-modal-visible');
+                        if (root) root.classList.remove('modal-open');
+                    }, 2000);
+
+                                        })
+                                        .catch(() => alert("Error saving PIN."));
+                                });
+                            }
 
     })();
 
@@ -356,22 +371,41 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
 
             /* ==========================================================
-        PASSWORD SUCCESS MODAL — CLOSE BUTTON
-        ========================================================== */
-        (function () {
+            PASSWORD SUCCESS MODAL — CLOSE BUTTON
+            ========================================================== */
+            (function () {
 
-            const successModal = document.getElementById('cp-password-success-modal');
-            const successClose = document.getElementById('cp-password-success-close');
-            const root = document.querySelector('.cp-root');
+                const successModal = document.getElementById('cp-password-success-modal');
+                const successClose = document.getElementById('cp-password-success-close');
+                const root = document.querySelector('.cp-root');
 
-            if (successClose) {
-                successClose.addEventListener('click', () => {
-                    successModal.classList.remove('cp-modal-visible');
-                    if (root) root.classList.remove('modal-open');
-                });
-            }
+                if (successClose) {
+                    successClose.addEventListener('click', () => {
+                        successModal.classList.remove('cp-modal-visible');
+                        if (root) root.classList.remove('modal-open');
+                    });
+                }
 
-        })();
+            })();
+
+            /* ==========================================================
+            SSPIN SUCCESS MODAL — CLOSE BUTTON + Auto-close
+            ========================================================== */
+            (function () {
+
+                const sspinModal = document.getElementById('cp-sspin-success-modal');
+                const sspinClose = document.getElementById('cp-sspin-success-close');
+                const root = document.querySelector('.cp-root');
+
+                if (sspinClose) {
+                    sspinClose.addEventListener('click', () => {
+                        sspinModal.classList.remove('cp-modal-visible');
+                        if (root) root.classList.remove('modal-open');
+                    });
+                }
+
+            })();
+
 
 
 }); // END DOMContentLoaded

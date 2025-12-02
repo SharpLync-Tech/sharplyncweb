@@ -72,6 +72,8 @@
 @include('customers.portal.modals.security-modal')
 @include('customers.portal.modals.password-sspin-modal')
 @include('customers.portal.modals.password-success-modal')
+@include('customers.portal.modals.sspin-success-modal')
+
 
 
 @endsection
