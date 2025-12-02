@@ -1,4 +1,3 @@
-<!-- @extends('layouts.about-base') -->
 @extends('layouts.base')
 
 @push('styles')
