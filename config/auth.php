@@ -7,8 +7,8 @@ return [
     | Default Authentication Settings
     |--------------------------------------------------------------------------
     |
-    | By default, the app will use the "customer" guard and "crm_users" provider
-    | so authentication flows use your CRM-linked user model.
+    | By default, the app will use the "customer" guard and "crm_users" 
+    | provider so authentication flows use your CRM-linked user model.
     |
     */
 
@@ -22,9 +22,7 @@ return [
     | Authentication Guards
     |--------------------------------------------------------------------------
     |
-    | Define guards for your app. We keep only two:
-    | - "web" (optional) for internal/admin
-    | - "customer" for your CRM user accounts
+    | Define guards for your app.
     |
     */
 
@@ -45,8 +43,7 @@ return [
     | User Providers
     |--------------------------------------------------------------------------
     |
-    | Providers tell Laravel how to fetch user records.
-    | CRM users use App\Models\CRM\User and connect to your CRM DB.
+    | CRM users come from your CRM DB. Internal/admin users come from CMS DB.
     |
     */
 
@@ -67,16 +64,19 @@ return [
     | Password Reset Configuration
     |--------------------------------------------------------------------------
     |
-    | Password reset table and expiration times for each user type.
+    | HERE is where we tell Laravel which DB connection the broker should use.
+    | This is the fix.
     |
     */
 
     'passwords' => [
+
         'crm_users' => [
             'provider' => 'crm_users',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
+            'connection' => 'crm',   // 👈 CRITICAL FIX — NOW RESET TOKENS USE CRM DB
         ],
 
         'users' => [
@@ -84,6 +84,7 @@ return [
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
+            // Admin/CMS resets remain on default MySQL (CMS DB)
         ],
     ],
 
@@ -91,11 +92,8 @@ return [
     |--------------------------------------------------------------------------
     | Password Timeout
     |--------------------------------------------------------------------------
-    |
-    | Number of seconds before a password confirmation times out.
-    | (3 hours by default)
-    |
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
 ];
