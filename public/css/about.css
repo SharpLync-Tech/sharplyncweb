@@ -1,6 +1,6 @@
 /* ============================================================
    ABOUT PAGE — CLEANED STYLESHEET
-   Version: 2.0 (Global nav + global footer)
+   Version: 2.1 (No testimonials, improved mobile card + heading)
    ============================================================ */
 
 /* Make sure content starts below sticky global header */
@@ -16,22 +16,22 @@
 
 .about-title-wrapper {
     text-align: center;
-    margin: 3rem 0 2rem;
+    margin: 1.2rem 0 2rem; /* moved up slightly */
 }
 
 .about-title {
     font-size: 3.2rem;
-    font-weight: 800; /* MATCH HOME */
+    font-weight: 800;
     letter-spacing: -0.5px;
     color: #ffffff;
-    text-shadow: 0 3px 10px rgba(0,0,0,0.35); /* SAME DEPTH AS HOME */
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35);
 }
 
 .about-title .gradient {
     background: linear-gradient(90deg, #2CBFAE, #4df0d8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 800; /* IMPORTANT → makes the teal word match home */
+    font-weight: 800;
 }
 
 .story-testimonial-link {
@@ -49,8 +49,6 @@
 .story-testimonial-link a:hover {
     color: #4df0d8;
 }
-
-
 
 .about-subtitle {
     font-size: 1.1rem;
@@ -150,16 +148,19 @@
 .story-text .toggle-btn,
 #toggleStory {
     margin-top: 1.3rem;
-    display: block;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Hide image on mobile & stack layout */
+/* Mobile — wider + centered white card */
 @media (max-width: 768px) {
     .story-card-split {
         flex-direction: column;
         padding: 1.6rem 1.2rem;
+
+        width: 95%;      /* slightly wider */
+        max-width: 95%;  /* matching width */
+        margin: 0 auto;  /* perfectly centered */
     }
 
     .story-image {
@@ -171,21 +172,19 @@
     }
 }
 
-/* Signature block (About page) ------------------ */
+/* Signature block */
 .story-signature {
     margin-top: 1.4rem;
-    text-align: left; /* change to center if preferred */
+    text-align: left;
 }
 
-/* Name */
 .story-signature .sig-name {
     font-weight: 600;
     font-size: 1.1rem;
-    color: #2CBFAE; /* SharpLync teal */
-    margin-bottom: 4px; /* tighter spacing */
+    color: #2CBFAE;
+    margin-bottom: 4px;
 }
 
-/* Role */
 .story-signature .sig-role {
     font-size: 0.95rem;
     color: #0A2A4D;
@@ -193,298 +192,78 @@
     margin-bottom: 6px;
 }
 
-/* LinkedIn icon */
-.story-signature .sig-linkedin img {
-    width: 30px;
-    height: 30px;
-    opacity: 0.85;
-    transition: 0.2s ease;
+/* LinkedIn (modern badge) */
+.sig-linkedin-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(44, 191, 174, 0.15);
+    border: 1px solid rgba(44, 191, 174, 0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: 0.25s ease;
+    cursor: pointer;
 }
 
-.story-signature .sig-linkedin img:hover {
-    opacity: 1;
-    transform: scale(1.08);
+.sig-linkedin-modern:hover {
+    background: rgba(44, 191, 174, 0.35);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 12px rgba(44, 191, 174, 0.45);
 }
 
-/* Mobile adjustments */
+.linkedin-svg {
+    width: 18px;
+    height: 18px;
+    fill: #2CBFAE;
+    transition: fill 0.25s ease;
+}
+
+.sig-linkedin-modern:hover .linkedin-svg {
+    fill: #ffffff;
+}
+
+/* Mobile signature tweaks */
 @media (max-width: 768px) {
-    .story-signature .sig-linkedin img {
-        width: 20px;
-        height: 20px;
+    .story-signature .sig-linkedin-modern {
+        width: 26px;
+        height: 26px;
     }
 }
 
-/* Teal divider line above signature */
+/* Divider */
 .story-divider,
 .story-text hr {
     border: none;
-    border-top: 2px solid #2CBFAE; /* SharpLync teal */
+    border-top: 2px solid #2CBFAE;
     width: 100%;
-    margin: 1.8rem 0 1rem;
-    opacity: 0.6; /* tweak if needed */
+    margin: 1.6rem 0 1rem;
+    opacity: 0.6;
 }
 
 /* ============================================================
-   TESTIMONIALS
+   POLICY CONTENT CARD (T&Cs and Privacy)
    ============================================================ */
 
-.testimonials-section {
-    margin-top: 4rem;
-    text-align: center;
-}
-
-.testimonial-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    margin-top: 2.5rem;
-}
-
-.testimonial-container {
-    position: relative;
-}
-
-.testimonial {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-}
-
-.testimonial.active {
-    position: relative;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-}
-
-.testimonial-meta h4 {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-.testimonial-role {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
-.testimonial-preview {
-    margin-top: 1rem;
-    line-height: 1.6;
-}
-
-.testimonial-read-more {
-    margin-top: 1rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 4px;
-    border: none;
-    color: #ffffff;
-    background: rgba(44, 191, 174, 0.3);
-    cursor: pointer;
-}
-.testimonial-read-more:hover {
-    background: rgba(44, 191, 174, 0.5);
-}
-
-.testimonial-dots {
-    margin-top: 1.5rem;
-    margin-bottom: 6rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.7rem;
-}
-
-.testimonial-dot {
-    width: 12px;
-    height: 12px;
-    border: 2px solid #2CBFAE;
-    border-radius: 50%;
-    background: transparent;
-    cursor: pointer;
-}
-.testimonial-dot.active {
-    background: #2CBFAE;
-}
-
-/* ============================================================
-   MODAL
-   ============================================================ */
-
-.testimonial-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-}
-.testimonial-modal.open {
-    display: flex;
-}
-
-/* Dark backdrop */
-.testimonial-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(5, 18, 35, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-/* === GLASSY DIALOG CARD === */
-.testimonial-modal-dialog {
-    position: relative;
-    max-width: 850px;
-    width: 92%;
-
-    /* Frosted Glass */
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    padding: 2.5rem 2.8rem;
-
-    box-shadow: inset 0 0 35px rgba(255, 255, 255, 0.08);
-    animation: modalIn 0.25s ease;
-    color: #fff;
-}
-
-.testimonial-modal-text,
-.testimonial-modal-name,
-.testimonial-modal-role {
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
-}
-
-/* Soft glow when open (optional but NICE) */
-.testimonial-modal.open .testimonial-modal-dialog {
-    box-shadow: 0 0 24px rgba(44, 191, 174, 0.45);
-    transform: scale(1.01);
-}
-
-/* Decorative quote mark */
-.testimonial-modal-dialog::before {
-    content: "❝";
-    font-size: 120px;
-    color: rgba(255, 255, 255, 0.09);
-    position: absolute;
-    top: -45px;
-    left: 25px;
-    z-index: 0;
-}
-
-/* Close button */
-.testimonial-modal-close {
-    position: absolute;
-    right: 18px;
-    top: 15px;
-    font-size: 1.7rem;
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    z-index: 10;
-}
-
-/* Modal text */
-.testimonial-modal-text {
-    margin-top: 1.2rem;
-    line-height: 1.7;
-    font-size: 1.05rem;
-    position: relative;
-    z-index: 1;
-}
-
-@media (max-width: 768px) {
-    .testimonial-modal-quote {
-        font-size: 70px;
-        top: -30px;
-        left: 15px;
-        opacity: 0.15;
-    }
-}
-
-/* Teal accent separator (thin line) */
-.testimonial-modal-separator {
-    width: 70px;
-    height: 2px;
-    background: linear-gradient(90deg, #2CBFAE, #00E6BE);
-    margin: 2rem 0 1rem;
-    border-radius: 2px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Name / Who styling */
-.testimonial-modal-name {
-    font-size: 1.15rem;
-    font-weight: 600;
-    position: relative;
-    z-index: 1;
-}
-
-/* Role / Company */
-.testimonial-modal-role {
-    font-size: 0.9rem;
-    letter-spacing: 0.3px;
-    opacity: 0.85;
-    margin-top: 4px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Animation */
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* MOBILE FIX — prevent tall modal from going off-screen */
-@media (max-width: 768px) {
-
-    .testimonial-modal-dialog {
-        max-height: 85vh;         /* modal never exceeds mobile screen */
-        overflow-y: auto;         /* scrolls inside */
-        -webkit-overflow-scrolling: touch;
-        padding-top: 3.5rem;      /* ensures close button never overlaps text */
-    }
-
-    .testimonial-modal-close {
-        position: sticky !important;
-        top: 0;
-        right: 12px;
-        z-index: 9999;
-        background: rgba(10, 42, 77, 0.85);  /* keeps it readable even over text */
-        backdrop-filter: blur(6px);
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-}
-
-/* ============================================================
-   POLICY CONTENT CARD (For Terms & Conditions and Privacy)
-   ============================================================ */
-
-/* Wrapper for the entire content area on policy pages */
 .policy-page-wrapper {
-    max-width: 1100px; 
+    max-width: 1100px;
     margin: 0 auto 3rem;
 }
 
-/* Styles for the main white content card */
 .policy-content-card {
     background: #ffffff;
     color: #0A2A4D;
     border-radius: 20px;
-    padding: 2.2rem 2.5rem; 
+    padding: 2.2rem 2.5rem;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-    margin: 1.5rem auto 3rem; 
+    margin: 1.5rem auto 3rem;
     line-height: 1.7;
     font-weight: 300;
 }
 
-.policy-content-card h2, 
+.policy-content-card h2,
 .policy-content-card h3 {
     color: #0A2A4D;
     font-weight: 600;
@@ -496,7 +275,6 @@
     margin-bottom: 1rem;
 }
 
-/* Style the download link in the title wrapper */
 .download-link a {
     color: #2CBFAE;
     text-decoration: none;
@@ -508,7 +286,6 @@
     color: #4df0d8;
 }
 
-/* Mobile adjustments for the policy card */
 @media (max-width: 768px) {
     .policy-content-card {
         padding: 1.6rem 1.2rem;

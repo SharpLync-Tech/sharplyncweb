@@ -71,9 +71,12 @@
               <div class="sig-role">Founder & Lead Engineer</div>
 
               <a href="https://www.linkedin.com/in/jcbrits/" 
-                class="sig-linkedin" target="_blank">
-                <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn">
+                class="sig-linkedin-modern" target="_blank" aria-label="LinkedIn Profile">
+                  <svg viewBox="0 0 24 24" class="linkedin-svg">
+                      <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4V8zm7.5 0h3.8v2.2h.1c.5-1 1.7-2.2 3.9-2.2 4.2 0 5 2.8 5 6.4V24h-4v-7.8c0-1.9 0-4.3-2.6-4.3s-3 2-3 4.1V24h-4V8z"/>
+                  </svg>
               </a>
+
           </div>
 
           <div class="story-testimonial-link">
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => {
       expanded = !expanded;
       storyFull.classList.toggle('collapsed', !expanded);
-      toggleBtn.textContent = expanded ? 'Show Less –' : 'Continue My Story...';
+      toggleBtn.textContent = expanded ? 'Show Less' : 'Continue My Story...';
     });
   }
 
