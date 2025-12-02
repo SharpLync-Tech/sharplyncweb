@@ -1,9 +1,6 @@
-
-
 @extends('layouts.base')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/sharplync-nav.css') }}">
 <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
 @endpush
 
