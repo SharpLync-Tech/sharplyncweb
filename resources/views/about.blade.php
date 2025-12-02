@@ -4,7 +4,8 @@
      Modals working.    
      ===================== -->
 
-@extends('layouts.about-base')
+<!-- @extends('layouts.about-base') -->
+@extends('layouts.base')
 
 @section('title', 'SharpLync | About')
 
