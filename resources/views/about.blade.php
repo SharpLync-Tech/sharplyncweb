@@ -2,6 +2,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/about.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 @endpush
 
 @section('title', 'SharpLync | About')
@@ -75,7 +77,7 @@
           </div>
 
           <div class="story-testimonial-link">
-              <a href="/testimonials">Read what others say →</a>
+              <a href="/testimonials">Read what others say</a>
           </div>
 
           <button id="toggleStory" class="toggle-btn">Continue My Story...</button>
