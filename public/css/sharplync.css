@@ -8,6 +8,14 @@
 */
 
 /* ==================== GLOBAL ==================== */
+
+/* Apply gradient to all pages EXCEPT those with a .hero section */
+body:not(:has(.hero)) {
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    background-attachment: fixed;
+}
+
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
