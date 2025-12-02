@@ -1,4 +1,4 @@
-@extends('layouts.contact-base')
+<!-- @extends('layouts.contact-base') -->
 <!-- @extends('layouts.base') -->
 
 @section('title', 'SharpLync | Contact Us')
