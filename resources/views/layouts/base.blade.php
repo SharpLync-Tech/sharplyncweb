@@ -44,7 +44,7 @@
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
 
-    <!-- New header / nav styles (split nav + search) -->
+    <!-- NEW HEADER STYLES (SPLIT NAV + SEARCH) -->
     <style>
         .main-header {
             display: flex;
@@ -52,8 +52,11 @@
             justify-content: space-between;
             padding: 0 2rem;
             height: 90px;
-            position: relative;
-            z-index: 50;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, rgba(10, 42, 77, 0.85) 0%, rgba(16, 73, 118, 0.65) 40%, rgba(44, 191, 174, 0.45) 100%);
+            backdrop-filter: blur(6px);
         }
 
         .nav-left,
@@ -64,10 +67,7 @@
             gap: 2rem;
         }
 
-        .logo img {
-            height: 42px;
-        }
-
+        /* Links */
         .nav-link {
             color: rgba(255,255,255,0.9);
             text-decoration: none;
@@ -83,7 +83,12 @@
             color: #2CBFAE !important;
         }
 
-        /* Search bar */
+        /* Logo */
+        .logo img {
+            height: 42px;
+        }
+
+        /* Search Bar */
         .nav-search {
             position: relative;
             width: 360px;
@@ -93,22 +98,18 @@
         .nav-search input {
             width: 100%;
             padding: 10px 14px 10px 40px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: none;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
-            color: #fff;
+            color: white;
             font-size: 15px;
             outline: none;
             transition: box-shadow 0.25s ease;
         }
 
-        .nav-search input::placeholder {
-            color: rgba(255,255,255,0.6);
-        }
-
         .nav-search input:focus {
-            box-shadow: 0 0 8px #2CBFAE;
+            box-shadow: 0 0 9px #2CBFAE;
         }
 
         .nav-search-icon {
@@ -116,12 +117,13 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 16px;
-            color: rgba(255,255,255,0.7);
+            font-size: 15px;
+            opacity: 0.7;
         }
 
-        /* Hamburger default hidden on desktop, shown on mobile via existing CSS + this backup */
+        /* Hamburger */
         .hamburger {
+            display: none;
             background: none;
             border: none;
             font-size: 32px;
@@ -130,37 +132,83 @@
         }
 
         @media (max-width: 980px) {
+
             .nav-left .nav-link,
             .nav-right .nav-link,
             .nav-center {
                 display: none;
             }
 
-            .main-header {
-                padding: 0 1rem;
+            .hamburger {
+                display: block;
             }
+        }
+
+        /* MOBILE NAV (formerly overlay-menu) */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(10,42,77,0.92);
+            backdrop-filter: blur(10px);
+            overflow-x: hidden;
+            transition: width 0.3s ease;
+            z-index: 5000;
+            padding-top: 60px;
+        }
+
+        .mobile-nav.show {
+            width: 260px;
+        }
+
+        .mobile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mobile-nav a {
+            display: block;
+            padding: 16px 26px;
+            font-size: 1.3rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .mobile-nav a:hover {
+            color: #2CBFAE;
+        }
+
+        .close-mobile-nav {
+            position: absolute;
+            top: 10px;
+            right: 22px;
+            font-size: 38px;
+            background: none;
+            border: none;
+            color: #2CBFAE;
+            cursor: pointer;
         }
     </style>
 
-    <!-- Additional page-specific styles -->
     @stack('styles')
-
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
-    <!-- ============================================= -->
-    <!-- LOGIN-TIME 2FA MODAL CSS (SharpLync WOW v2.0) -->
-    <!-- ============================================= -->
 </head>
 
 <body>
+
     <!-- ========================= HEADER ========================= -->
     <header class="main-header">
+
         <!-- LEFT -->
         <div class="nav-left">
-            <a href="{{ url('/') }}" class="logo">
+            <a href="/" class="logo">
                 <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
             </a>
-            <a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
-            <a href="{{ url('/services') }}" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
+            <a href="/" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
+            <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
         </div>
 
         <!-- CENTER -->
@@ -173,26 +221,48 @@
 
         <!-- RIGHT -->
         <div class="nav-right">
-            <a href="{{ url('/about') }}" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
-            <a href="{{ url('/testimonials') }}" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
-            <a href="{{ url('/contact') }}" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
-            <a href="{{ url('/login') }}" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
+            <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
+            <a href="/testimonials" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
+            <a href="/contact" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
+            <a href="/login" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
 
-            <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
+            <button class="hamburger" onclick="toggleMobileNav()">☰</button>
         </div>
+
     </header>
 
-    <!-- ========================= OVERLAY MENU ========================= -->
-    <div id="overlayMenu" class="overlay-menu" role="navigation" aria-label="Main menu">
-        <button class="close-menu" onclick="toggleMenu()" aria-label="Close navigation menu">×</button>
+    <!-- ========================= MOBILE NAV ========================= -->
+    <div id="mobileNav" class="mobile-nav">
+        <button class="close-mobile-nav" onclick="toggleMobileNav()">×</button>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/services">Services</a></li>
+
+            <li style="padding: 16px 26px;">
+                <input type="text" placeholder="Search..." style="
+                    width: 100%;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    border: none;
+                    outline: none;">
+            </li>
+
+            <li><a href="/about">About</a></li>
+            <li><a href="/testimonials">Testimonials</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </div>
+
+    <!-- ========================= ORIGINAL OVERLAY MENU (UNTOUCHED) ========================= -->
+    <div id="overlayMenu" class="overlay-menu" role="navigation">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+
         <ul>
             @foreach(($menuItems ?? []) as $item)
                 <li>
-                    <a 
-                        href="{{ $item->url }}"
-                        onclick="toggleMenu()"
-                        @if($item->open_in_new_tab) target="_blank" @endif
-                    >
+                    <a href="{{ $item->url }}" onclick="toggleMenu()" @if($item->open_in_new_tab) target="_blank" @endif>
                         {{ $item->label }}
                     </a>
                 </li>
@@ -202,9 +272,6 @@
 
     <!-- ========================= MAIN ========================= -->
     <main>
-        <div style="color: red; text-align:center; margin-top: 2rem;">
-        LAYOUT CONTENT TEST
-    </div>
         @yield('content')
     </main>
 
@@ -222,14 +289,18 @@
 
     <!-- ========================= SCRIPTS ========================= -->
     <script>
-        // Toggle overlay menu
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('show');
+        }
+
+        // Existing overlay menu script
         function toggleMenu() {
             const overlay = document.getElementById('overlayMenu');
             overlay.classList.toggle('show');
             document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : 'auto';
         }
 
-        // Fade-in on scroll
+        // Fade in elements on scroll
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -240,6 +311,8 @@
             document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
         });
     </script>
-    @stack('scripts')   
+
+    @stack('scripts')
+
 </body>
 </html>
