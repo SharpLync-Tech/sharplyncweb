@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
-        <script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
+    <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-2SCQ2YCEW8');
-        </script>
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync | IT Support & Cloud Services')</title>
@@ -39,27 +39,147 @@
     </script>
     @endverbatim
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
-    
+
+    <!-- New header / nav styles (split nav + search) -->
+    <style>
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 90px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .nav-left,
+        .nav-center,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo img {
+            height: 42px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.25s ease;
+        }
+
+        .nav-link:hover {
+            color: #2CBFAE;
+        }
+
+        .nav-active {
+            color: #2CBFAE !important;
+        }
+
+        /* Search bar */
+        .nav-search {
+            position: relative;
+            width: 360px;
+            max-width: 100%;
+        }
+
+        .nav-search input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: box-shadow 0.25s ease;
+        }
+
+        .nav-search input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .nav-search input:focus {
+            box-shadow: 0 0 8px #2CBFAE;
+        }
+
+        .nav-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Hamburger default hidden on desktop, shown on mobile via existing CSS + this backup */
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        @media (max-width: 980px) {
+            .nav-left .nav-link,
+            .nav-right .nav-link,
+            .nav-center {
+                display: none;
+            }
+
+            .main-header {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+
     <!-- Additional page-specific styles -->
     @stack('styles')
 
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
     <!-- ============================================= -->
-<!-- LOGIN-TIME 2FA MODAL CSS (SharpLync WOW v2.0) -->
-<!-- ============================================= -->
+    <!-- LOGIN-TIME 2FA MODAL CSS (SharpLync WOW v2.0) -->
+    <!-- ============================================= -->
 </head>
 
 <body>
     <!-- ========================= HEADER ========================= -->
     <header class="main-header">
-        <div class="logo">
-            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+        <!-- LEFT -->
+        <div class="nav-left">
+            <a href="{{ url('/') }}" class="logo">
+                <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+            </a>
+            <a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
+            <a href="{{ url('/services') }}" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
         </div>
-        <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
+
+        <!-- CENTER -->
+        <div class="nav-center">
+            <div class="nav-search">
+                <span class="nav-search-icon">🔍</span>
+                <input type="text" placeholder="Search SharpLync...">
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="nav-right">
+            <a href="{{ url('/about') }}" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
+            <a href="{{ url('/testimonials') }}" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
+            <a href="{{ url('/contact') }}" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
+            <a href="{{ url('/login') }}" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
+
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu">☰</button>
+        </div>
     </header>
 
     <!-- ========================= OVERLAY MENU ========================= -->
@@ -77,8 +197,7 @@
                     </a>
                 </li>
             @endforeach
-            </ul>
-
+        </ul>
     </div>
 
     <!-- ========================= MAIN ========================= -->
