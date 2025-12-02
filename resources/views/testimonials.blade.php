@@ -1,5 +1,6 @@
 
-@extends('layouts.testimonials-base')
+<!-- @extends('layouts.testimonials-base') -->
+@extends('layouts.base')
 
 @section('title', 'SharpLync | Testimonials')
 
