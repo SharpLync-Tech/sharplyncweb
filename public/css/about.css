@@ -1,632 +1,306 @@
-/* ============================================================
-   ABOUT PAGE — ISOLATED STYLESHEET
-   Version: 1.3
-        Works on Desktop & Mobile.
-        Hamburge menu issue and story not colapsing. 
-        Modals working.  
-   ============================================================ */
+/* ===========================================================
+   SharpLync — ABOUT PAGE STYLESHEET (v3.0)
+   Updated: 03 Dec 2025
+   Notes:
+   - Removes forced white background from entire page
+   - Converts layout into modern white "card blocks"
+   - Keeps global gradient from base layout visible
+   - Smooth animations + cleaner spacing + readability upgrades
+=========================================================== */
 
-body.about-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    color: #e9f4f3;
+/* ===========================
+   GLOBAL SECTION WRAPPER
+=========================== */
+.content-hero {
+    background: transparent !important;
+    padding: 4rem 10% 6rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Load script font */
-/* Moved to about-base blade - @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-
-/* ============================================================
-   TOP HEADER (UNCHANGED)
-   ============================================================ */
-
-.about-header {
-    position: sticky;
-    top: 0;
-    z-index: 2000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 1.5rem;
-    background: linear-gradient(
-        135deg,
-        rgba(10, 42, 77, 0.85) 0%,
-        rgba(16, 73, 118, 0.65) 40%,
-        rgba(44, 191, 174, 0.45) 100%
-    );
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+/* Fade-in used throughout */
+.fade-section {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-section.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.about-header .logo img {
-    height: 80px;
-    width: auto;
-    margin-bottom: -5px;
-    transition: all 0.3s ease;
-}
-
-.hamburger {
-    font-size: 2rem;
-    color: #2CBFAE;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-@media (max-width: 900px) {
-    .about-header .logo img { height: 65px; }
-}
-@media (max-width: 500px) {
-    .about-header .logo img { height: 58px; }
-    .hamburger { font-size: 1.8rem; }
-}
-
-/* ============================================================
-   SUBTITLE + HEADING FIX (CENTER + GRADIENT)
-   ============================================================ */
-
+/* ===========================
+   TITLE — "About SharpLync"
+=========================== */
 .about-title-wrapper {
     text-align: center;
-    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
 }
 
 .about-title {
-    font-size: 2.7rem;
+    font-size: 2.6rem;
+    color: #0A2A4D;
     font-weight: 700;
-    margin-bottom: 0.4rem;
 }
 
 .about-title .gradient {
-    background: linear-gradient(90deg, #2CBFAE, #4df0d8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #2CBFAE;
 }
 
-.about-subtitle {
-    font-size: 1.1rem;
-    text-align: center;
-    margin: 10px auto 35px;
-    max-width: 960px;
-    color: rgba(233, 244, 243, 0.85);
-    font-weight: 300;
-    line-height: 1.5;
-}
-
-/* ============================================================
-   SPLIT-LAYOUT MY STORY CARD (WHITE CARD)
-   ============================================================ */
-
+/* ===========================
+   STORY CARD — SPLIT LAYOUT
+=========================== */
 .story-card-split {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
     background: #ffffff;
-    color: #0A2A4D;
-    border-radius: 20px;
-    padding: 2rem 2.2rem;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-    max-width: 1100px;
-    margin: 0 auto 3rem;
+    padding: 2.5rem;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    align-items: flex-start;
+    margin-bottom: 4rem;
 }
 
-/* Left image */
-.story-image {
-    width: 43%;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
+/* Left Image */
 .story-image img {
     width: 100%;
-    height: auto;
-    display: block;
+    max-width: 480px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    object-fit: cover;
 }
 
-/* Right content */
+/* Right Side */
 .story-text {
     flex: 1;
 }
 
 /* Script heading */
-.story-text .story-script-title {
+.story-script-title {
     font-family: 'Great Vibes', cursive;
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    margin-top: 0.3rem;
+    font-size: 2.6rem;
     color: #2CBFAE;
-    text-align: center;
+    margin-bottom: 0.4rem;
 }
 
-/* My Story collapse control */
-#storyFull.collapsed {
-    display: none !important;
-}
-
-#toggleStory,
-.toggle-btn {
-    display: block;
-    margin: 1.3rem auto 0;
-    padding: 0.6rem 1.2rem;
-    background: #0A2A4D;
-    color: #ffffff;
-    border: 1px solid rgba(44, 191, 174, 0.6);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.3s ease;
-}
-
-#toggleStory:hover,
-.toggle-btn:hover {
-    background: rgba(44, 191, 174, 0.5);
-    color: #0A2A4D;
-}
-
-
-
-/* Subtitle heading */
+/* Section subheading */
 .story-text h3 {
-    text-align: center;
-    margin-bottom: 1.1rem;
+    margin-top: 0;
+    font-size: 1.4rem;
     color: #0A2A4D;
     font-weight: 600;
-    font-size: 1.3rem;
-}
-
-.story-text p {
     margin-bottom: 1rem;
+}
+
+/* Paragraph styling */
+.story-text p {
+    color: #0A2A4D;
+    font-size: 1rem;
     line-height: 1.65;
-    font-weight: 300;
+    margin-bottom: 1rem;
 }
 
-/* Center the Continue button */
-.story-text .toggle-btn,
-#toggleStory {
-    margin-top: 1.3rem;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+/* Divider */
+.story-divider {
+    margin: 2rem 0 1.5rem;
+    border: none;
+    border-top: 2px solid rgba(0,0,0,0.07);
 }
 
-/* Hide image on mobile & stack layout */
-@media (max-width: 768px) {
-    .story-card-split {
-        flex-direction: column;
-        padding: 1.6rem 1.2rem;
-    }
-
-    .story-image {
-        display: none;
-    }
-
-    .story-text .story-script-title {
-        font-size: 2.4rem;
-    }
+/* Signature block */
+.story-signature {
+    margin-bottom: 2rem;
+}
+.sig-name {
+    color: #2CBFAE;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+.sig-role {
+    font-size: 0.95rem;
+    color: #6b7a89;
+    margin-bottom: 0.6rem;
+}
+.sig-linkedin img {
+    width: 30px;
+    transition: transform 0.2s;
+}
+.sig-linkedin img:hover {
+    transform: scale(1.15);
 }
 
-/* ============================================================
-   TESTIMONIALS (UNCHANGED)
-   ============================================================ */
+/* Expand/Collapse button */
+.toggle-btn {
+    background-color: #2CBFAE;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.6rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+.toggle-btn:hover {
+    background-color: #32d7c0;
+    transform: translateY(-2px);
+}
 
+/* Full story reveal */
+#storyFull.collapsed {
+    display: none;
+}
+
+/* ===========================
+   TESTIMONIALS SECTION
+=========================== */
 .testimonials-section {
-    margin-top: 4rem;
     text-align: center;
+    padding-top: 1rem;
 }
 
+.testimonials-section h3 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #0A2A4D;
+    margin-bottom: 1.8rem;
+}
+
+/* Container */
 .testimonial-wrapper {
-    max-width: 900px;
+    max-width: 820px;
     margin: 0 auto;
-    margin-top: 2.5rem;
 }
 
+/* Carousel */
 .testimonial-container {
     position: relative;
+    min-height: 180px;
 }
 
+/* Each card */
 .testimonial {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
+    display: none;
+    background: #ffffff;
+    padding: 1.8rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.09);
+    text-align: left;
 }
-
 .testimonial.active {
-    position: relative;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
+    display: block;
 }
 
+/* Name + Role */
 .testimonial-meta h4 {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 1.2rem;
+    color: #0A2A4D;
+    font-weight: 700;
 }
 .testimonial-role {
-    font-size: 0.9rem;
-    opacity: 0.85;
+    font-size: 0.95rem;
+    color: #6b7a89;
+    margin-bottom: 1rem;
 }
 
+/* Preview text */
 .testimonial-preview {
-    margin-top: 1rem;
+    font-size: 1rem;
     line-height: 1.6;
+    color: #0A2A4D;
+    margin-bottom: 1.2rem;
 }
 
+/* Read More button */
 .testimonial-read-more {
-    margin-top: 1rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 4px;
+    background: none;
     border: none;
-    color: #ffffff;
-    background: rgba(44, 191, 174, 0.3);
+    color: #2CBFAE;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
 }
-.testimonial-read-more:hover {
-    background: rgba(44, 191, 174, 0.5);
-}
 
+/* Dots */
 .testimonial-dots {
-    margin-top: 1.5rem;
-    margin-bottom: 6rem;
+    margin-top: 1rem;
     display: flex;
     justify-content: center;
-    gap: 0.7rem;
+    gap: 10px;
 }
-
 .testimonial-dot {
     width: 12px;
     height: 12px;
-    border: 2px solid #2CBFAE;
+    background: #bcd8d4;
     border-radius: 50%;
-    background: transparent;
+    border: none;
     cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
 }
 .testimonial-dot.active {
     background: #2CBFAE;
+    transform: scale(1.2);
 }
 
-/* ============================================================
-   MODAL (UNCHANGED)
-   ============================================================ */
-
+/* ===========================
+   MODAL
+=========================== */
 .testimonial-modal {
-    position: fixed;
-    inset: 0;
     display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
 }
 .testimonial-modal.open {
     display: flex;
 }
-
-/* Dark backdrop */
 .testimonial-modal-backdrop {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    background: rgba(5, 18, 35, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(0,0,0,0.5);
 }
-
-/* === GLASSY DIALOG CARD === */
 .testimonial-modal-dialog {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    margin: auto;
     position: relative;
-    max-width: 850px;
-    width: 92%;
-
-    /* Frosted Glass */
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    padding: 2.5rem 2.8rem;
-
-    box-shadow: inset 0 0 35px rgba(255, 255, 255, 0.08);
-    animation: modalIn 0.25s ease;
-    color: #fff;
 }
-
-.testimonial-modal-text,
-.testimonial-modal-name,
-.testimonial-modal-role {
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
-}
-
-
-/* Soft glow when open (optional but NICE) */
-.testimonial-modal.open .testimonial-modal-dialog {
-    box-shadow: 0 0 24px rgba(44, 191, 174, 0.45);
-    transform: scale(1.01);
-}
-
-/* Decorative quote mark */
-.testimonial-modal-dialog::before {
-    content: "❝";
-    font-size: 120px;
-    color: rgba(255, 255, 255, 0.09);
-    position: absolute;
-    top: -45px;
-    left: 25px;
-    z-index: 0;
-}
-
-/* Close button */
 .testimonial-modal-close {
     position: absolute;
-    right: 18px;
-    top: 15px;
-    font-size: 1.7rem;
+    top: 14px;
+    right: 16px;
+    font-size: 2rem;
     background: none;
     border: none;
-    color: #fff;
+    color: #2CBFAE;
     cursor: pointer;
-    z-index: 10;
 }
-
-/* Modal text */
 .testimonial-modal-text {
-    margin-top: 1.2rem;
-    line-height: 1.7;
-    font-size: 1.05rem;
-    position: relative;
-    z-index: 1;
-}
-
- /* Decorative quote mark */
-
-
-@media (max-width: 768px) {
-    .testimonial-modal-quote {
-        font-size: 70px;
-        top: -30px;
-        left: 15px;
-        opacity: 0.15;
-    }
-}
-
-
-
-/* Teal accent separator (thin line) */
-.testimonial-modal-separator {
-    width: 70px;
-    height: 2px;
-    background: linear-gradient(90deg, #2CBFAE, #00E6BE);
-    margin: 2rem 0 1rem;
-    border-radius: 2px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Name / Who styling */
-.testimonial-modal-name {
-    font-size: 1.15rem;
-    font-weight: 600;
-    position: relative;
-    z-index: 1;
-}
-
-/* Role / Company */
-.testimonial-modal-role {
-    font-size: 0.9rem;
-    letter-spacing: 0.3px;
-    opacity: 0.85;
-    margin-top: 4px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Animation */
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ============================================================
-   OVERLAY MENU — FORCED OVERRIDES (fixes bullets + top-left issue)
-   ============================================================ */
-
-.overlay-menu {
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(10, 42, 77, 0.85) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-
-    display: none !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    z-index: 99999 !important;
-}
-
-/* When opened */
-.overlay-menu.show {
-    display: flex !important;
-}
-
-/* Close button */
-.overlay-menu .close-menu {
-    position: absolute !important;
-    top: 20px !important;
-    right: 30px !important;
-    background: none !important;
-    border: none !important;
-    color: #2CBFAE !important;
-    font-size: 2.4rem !important;
-    cursor: pointer !important;
-}
-
-/* Remove bullets, align center */
-.overlay-menu ul {
-    list-style: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    text-align: center !important;
-}
-
-.overlay-menu ul li {
-    margin: 1.4rem 0 !important;
-}
-
-.overlay-menu ul li a {
-    color: #ffffff !important;
-    font-size: 1.8rem !important;
-    text-decoration: none !important;
-}
-
-/* ==================== FOOTER ==================== */
-footer {
-  background-color: #0A2A4D;
-  color: white;
-  text-align: center;
-  padding: 2rem 10%;
-}
-.social-icons img {
-  width: 28px; height: 28px;
-  margin: 0 0.5rem;
-  transition: transform 0.3s, filter 0.3s;
-}
-.social-icons img:hover {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 6px #2CBFAE);
-}
-
-/* MOBILE FIX — prevent tall modal from going off-screen */
-@media (max-width: 768px) {
-
-    .testimonial-modal-dialog {
-        max-height: 85vh;         /* modal never exceeds mobile screen */
-        overflow-y: auto;         /* scrolls inside */
-        -webkit-overflow-scrolling: touch;
-        padding-top: 3.5rem;      /* ensures close button never overlaps text */
-    }
-
-    .testimonial-modal-close {
-        position: sticky !important;
-        top: 0;
-        right: 12px;
-        z-index: 9999;
-        background: rgba(10, 42, 77, 0.85);  /* keeps it readable even over text */
-        backdrop-filter: blur(6px);
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-}
-
-
-/* Signature block (About page) ------------------ */
-.story-signature {
-    margin-top: 1.4rem;
-    text-align: left; /* change to center if preferred */
-}
-
-/* Name */
-.story-signature .sig-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #2CBFAE; /* SharpLync teal */
-    margin-bottom: 4px; /* tighter spacing */
-}
-
-/* Role */
-.story-signature .sig-role {
-    font-size: 0.95rem;
+    margin: 1rem 0;
+    line-height: 1.6;
     color: #0A2A4D;
-    opacity: 0.85;
-    margin-bottom: 6px;
 }
-
-/* LinkedIn icon */
-.story-signature .sig-linkedin img {
-    width: 30px;
-    height: 30px;
-    opacity: 0.85;
-    transition: 0.2s ease;
+.testimonial-modal-separator {
+    height: 2px;
+    background: rgba(0,0,0,0.08);
+    margin: 1rem 0;
 }
-
-.story-signature .sig-linkedin img:hover {
-    opacity: 1;
-    transform: scale(1.08);
+.testimonial-modal-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0A2A4D;
 }
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .story-signature .sig-linkedin img {
-        width: 20px;
-        height: 20px;
-    }
-}
-
-/* Teal divider line above signature */
-.story-divider,
-.story-text hr {
-    border: none;
-    border-top: 2px solid #2CBFAE; /* SharpLync teal */
-    width: 100%;
-    margin: 1.8rem 0 1rem;
-    opacity: 0.6; /* tweak if needed */
-}
-
-
-/* ============================================================
-   POLICY CONTENT CARD (For Terms & Conditions and Privacy)
-   ============================================================ */
-
-/* Wrapper for the entire content area on policy pages */
-.policy-page-wrapper {
-    /* Ensures content is centered and contained */
-    max-width: 1100px; 
-    margin: 0 auto 3rem;
-}
-
-/* Styles for the main white content card */
-.policy-content-card {
-    background: #ffffff; /* White background */
-    color: #0A2A4D; /* Dark blue text color for readability on white */
-    border-radius: 20px;
-    padding: 2.2rem 2.5rem; 
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-    margin: 1.5rem auto 3rem; 
-    
-    /* Ensure text within the card looks correct */
-    line-height: 1.7;
-    font-weight: 300;
-}
-
-/* Styling for headings and list items within the white policy card */
-.policy-content-card h2, 
-.policy-content-card h3 {
-    color: #0A2A4D; /* Dark blue for headings */
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.8rem;
-}
-
-.policy-content-card p {
+.testimonial-modal-role {
+    color: #6b7a89;
     margin-bottom: 1rem;
 }
 
-/* Style the download link in the title wrapper */
-.download-link a {
-    color: #2CBFAE; /* Teal color for contrast */
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.download-link a:hover {
-    color: #4df0d8;
-}
-
-
-/* Mobile adjustments for the policy card */
-@media (max-width: 768px) {
-    .policy-content-card {
-        padding: 1.6rem 1.2rem;
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 940px) {
+    .story-card-split {
+        flex-direction: column;
     }
 }
