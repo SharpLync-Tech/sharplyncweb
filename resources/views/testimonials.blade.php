@@ -4,6 +4,8 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
+<link rel="stylesheet" href="{{ asset('css/sharplync.css') }}">
+<link rel="stylesheet" href="{{ asset('css/sharplync-nav.css') }}">
 @endpush
 
 @section('title', 'SharpLync | Testimonials')
