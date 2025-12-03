@@ -585,6 +585,11 @@ blockquote {
         overflow-y: auto;
     }
 
+    .modal-badge {
+        display: none !important;
+
+    }
+
     .modal-top-bar {
         height: 6px;
         background: #2CBFAE;
@@ -607,6 +612,10 @@ blockquote {
         background: rgba(255,255,255,0.15);
     }
 
+    .modal-badge {
+        display: none !important;
+    }
+
     .modal-close {
         position: fixed !important;
         top: 12px;
@@ -618,5 +627,10 @@ blockquote {
         color: #0A2A4D !important;
         border: none !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr !important;
+        gap: 50px; /* optional – tighter spacing on phones */
     }
 }
