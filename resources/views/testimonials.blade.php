@@ -116,11 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalName.textContent = card.dataset.name;
             modalRole.textContent = card.dataset.who;
 
-            // NEW — Get initials from the card badge
-            const initialsEl = card.querySelector('.initial-badge');
-            if (initialsEl) {
-                modalInitials.textContent = initialsEl.textContent;
-            }
+            
 
             // Show modal
             modal.classList.add('open');
