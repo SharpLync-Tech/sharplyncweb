@@ -386,4 +386,12 @@ blockquote {
         max-height: 85vh;
         border-radius: 12px;
     }
+
+    /* -------------------------------------------------
+    Disable global footer for testimonials page only
+    ------------------------------------------------- */
+        .testimonials-page + .cp-footer {
+            display: none !important;
+        }
+
 }
