@@ -63,7 +63,7 @@
 
               <p>Launching <strong>SharpLync</strong> was a proactive decision. It was the moment to take my entire range of skills—from the electrical fitter's precision to the system administrator's strategic vision—and focus them entirely on helping businesses get IT right.</p>
 
-              <p>I believe in Straightforward Support support with modern results: being reliable, approachable, and genuinely invested in helping people make the most of their technology. Because at the end of the day, it’s not just about systems, it’s about people.</p>
+              <p>I believe in Straightforward Support, support that is reliable, approachable, and genuinely invested in helping people make the most of their technology. It’s not just about systems; it’s about people.</p>
           </div>
           <hr class="story-divider">
           <div class="story-signature">
