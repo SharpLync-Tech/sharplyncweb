@@ -9,8 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Only testimonials stylesheet (prevents global CSS bleed) -->
-     <link rel="stylesheet" href="{{ secure_asset('css/sharplync-nav.css') }}">
-     <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
 <body class="testimonials-body">
