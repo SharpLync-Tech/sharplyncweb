@@ -70,6 +70,7 @@
             <li><a href="/about" onclick="toggleMenu()">About</a></li>
             <li><a href="/testimonials" class="active" onclick="toggleMenu()">Testimonials</a></li>
             <li><a href="/contact" onclick="toggleMenu()">Contact</a></li>
+            <li><a href="/register">Register</a></li>
             <li><a href="/login" onclick="toggleMenu()">Login</a></li>
         </ul>
     </div>
