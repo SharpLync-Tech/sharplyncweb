@@ -65,14 +65,6 @@
             <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
         </div>
 
-        <!-- CENTER -->
-        <div class="nav-center">
-            <div class="nav-search">
-                <span class="nav-search-icon">🔍</span>
-                <input type="text" placeholder="Search SharpLync...">
-            </div>
-        </div>
-
         <!-- RIGHT -->
         <div class="nav-right">
             <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
@@ -91,17 +83,7 @@
 
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/services">Services</a></li>
-
-            <li style="padding: 16px 26px;">
-                <input type="text" placeholder="Search..." style="
-                    width: 100%;
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    border: none;
-                    outline: none;">
-            </li>
-
+            <li><a href="/services">Services</a></li>        
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials">Testimonials</a></li>
             <li><a href="/contact">Contact</a></li>
