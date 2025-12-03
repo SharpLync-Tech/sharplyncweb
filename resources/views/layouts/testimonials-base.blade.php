@@ -27,15 +27,7 @@
             </a>
             <a href="/" class="nav-link">Home</a>
             <a href="/services" class="nav-link">Services</a>
-        </div>
-
-        <!-- CENTER (Search Bar) -->
-        <div class="nav-center">
-            <div class="nav-search">
-                <span class="nav-search-icon">🔍</span>
-                <input type="text" placeholder="Search SharpLync...">
-            </div>
-        </div>
+        </div>        
 
         <!-- RIGHT -->
         <div class="nav-right">
