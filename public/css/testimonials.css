@@ -400,6 +400,7 @@ blockquote {
 
 .tl-role {
     font-size: 0.95rem;
+    color: #2CBFAE;
     opacity: 0.7;
     margin-top: 0.2rem;
 }
@@ -449,19 +450,62 @@ blockquote {
     display: flex;
 }
 
-/* DESKTOP — WHITE MODAL */
+/* -----------------------------------------
+   DESKTOP MODAL — “CARD POPPED OUT” STYLE
+   ----------------------------------------- */
 .modal-dialog {
-    background: #ffffff;          /* desktop: white card */
-    color: #0A2A4D;               /* navy text */
+    background: #ffffff;
+    color: #0A2A4D;
     max-width: 950px;
     width: 100%;
     padding: 3.2rem 3rem 2.8rem;
     border-radius: 28px;
     position: relative;
+
+    /* NEW — matches testimonial card */
+    border-top: 6px solid #2CBFAE;
+    border: 1px solid rgba(44,191,174,0.25);
+
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
     transform: translateY(20px) scale(0.95);
     opacity: 0;
     animation: modalPopIn .35s ease forwards;
+}
+
+/* ❝ decorative quote */
+.modal-dialog::before {
+    content: "❝";
+    font-size: 90px;
+    color: rgba(10,42,77,0.08);
+    position: absolute;
+    top: 30px;
+    left: 32px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* -----------------------------------------
+   INITIAL BADGE (Dynamic Initials)
+   ----------------------------------------- */
+.modal-badge {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #2CBFAE;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.45rem;
+
+    position: absolute;
+    top: -36px;
+    left: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
+    z-index: 10;
 }
 
 /* Animation */
@@ -477,22 +521,27 @@ blockquote {
     position: absolute;
     top: 18px;
     right: 22px;
-    background: rgba(44, 191, 174, 0.15);
-    border: 2px solid rgba(44, 191, 174, 0.3);
-    color: #2CBFAE;
+
+    background: #178C7F;
+    border: 2px solid #178C7F;
+    color: #fff;
+
     width: 42px;
     height: 42px;
     border-radius: 50%;
+
     font-size: 1.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
+
     cursor: pointer;
     transition: 0.25s ease;
 }
 
 .modal-close:hover {
     background: #2CBFAE;
+    border-color: #2CBFAE;
     color: #0A2A4D;
 }
 
@@ -505,85 +554,52 @@ blockquote {
     white-space: pre-line;
 }
 
-/* Divider line */
+/* Divider */
 .modal-separator {
     height: 1px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.12);
     margin: 1rem 0 1.6rem;
 }
 
-/* Author name */
+/* Name (navy) */
 .modal-name {
     font-size: 1.45rem;
     font-weight: 600;
-    margin-bottom: 0.2rem;
     color: #0A2A4D;
 }
 
-/* Author role */
+/* Role (teal) */
 .modal-role {
     font-size: 1.05rem;
-    opacity: 0.8;
-    margin-bottom: 0.3rem;
-    color: #0A2A4D;
+    font-weight: 500;
+    color: #2CBFAE;
 }
 
 /* ============================================================
-   RESPONSIVE BREAKPOINTS
+   MOBILE — DARK VERSION
    ============================================================ */
-
-/* Tablet View (992px to 641px): Stack cards but keep them wide */
-@media (max-width: 992px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        gap: 40px;
-    }
-}
-
-/* Mobile View (max-width: 640px): layout + DARK MODAL */
 @media (max-width: 640px) {
 
-    .testimonials-grid-section {
-        padding: 40px 0 100px;
-    }
-
-    .testimonials-header h1 {
-        font-size: 2.4rem;
-    }
-
-    .testimonials-header p {
-        font-size: 1.1rem;
-    }
-
-    .testimonials-grid-section .container {
-        padding: 0 1rem;
-    }
-
-    .testimonial-card {
-        padding: 4rem 1.5rem 2rem;
-    }
-
-    .initial-badge {
-        top: -30px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .tl-header .logo img {
-        height: 60px;
-    }
-
-    /* MOBILE — DARK NAVY MODAL */
     .modal-dialog {
         background: #0A2A4D !important;
         color: #ffffff !important;
         border-radius: 18px;
-        padding: 2.6rem 1.6rem 2rem;
-        max-height: 90vh;
-        overflow-y: auto;
+        padding: 3rem 1.6rem 2rem;
+        border: none;
+    }
+
+    /* Badge centered on mobile */
+    .modal-badge {
+        left: 50%;
+        transform: translateX(-50%);
+        top: -34px;
+    }
+
+    /* Light ❝ on dark background */
+    .modal-dialog::before {
+        color: rgba(255,255,255,0.08) !important;
+        left: 18px;
+        top: 18px;
     }
 
     .modal-text,
@@ -592,21 +608,25 @@ blockquote {
         color: #ffffff !important;
     }
 
+    .modal-role {
+        color: #2CBFAE !important;
+    }
+
     .modal-separator {
         background: rgba(255, 255, 255, 0.15) !important;
     }
 
-    /* Floating close button on mobile */
+    /* Mobile floating close button */
     .modal-close {
         position: fixed !important;
         top: 12px;
         right: 12px;
         width: 44px;
         height: 44px;
-        font-size: 1.5rem;
-        border: none;
+        font-size: 1.45rem;
         background: #2CBFAE !important;
         color: #0A2A4D !important;
+        border: none !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.45);
     }
 }
