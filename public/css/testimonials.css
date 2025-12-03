@@ -13,11 +13,11 @@
    ============================================================ */
 
 /* RESET ONLY FOR NAV */
-.isolated-header,
-.isolated-header * {
+.isolated-header {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+
 
 /* DESKTOP NAVBAR */
 .isolated-header {
