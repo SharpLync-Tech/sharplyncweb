@@ -1,0 +1,437 @@
+/* ============================================================
+   SharpLync x Trend Micro Partner Page
+   File: public/css/trendmicro.css
+   Version: 1.0
+   Notes:
+   - Uses SharpLync gradient + teal style with Trend Micro red accents
+   - Scoped under .tm-page to avoid conflicts
+   ============================================================ */
+
+.tm-page {
+    color: #F7F9FB;
+}
+
+/* ---------------------------
+   Shared tokens
+---------------------------- */
+.tm-page {
+    --tm-navy: #0A2A4D;
+    --tm-deep-teal: #104976;
+    --tm-teal: #2CBFAE;
+    --tm-red: #E60012; /* Trend Micro red */
+    --tm-bg-soft: #061729;
+}
+
+/* ---------------------------
+   HERO
+---------------------------- */
+.tm-hero {
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    padding: 6rem 10% 4.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.tm-hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2.7fr);
+    gap: 3rem;
+    align-items: center;
+}
+
+.tm-hero-text {
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.9s ease forwards;
+    opacity: 0;
+    transform: translateY(25px);
+}
+
+.tm-kicker {
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 0.8rem;
+}
+
+.tm-hero-text h1 {
+    font-size: 2.8rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.35);
+}
+
+.tm-hero-sub {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: rgba(233,244,243,0.9);
+    max-width: 620px;
+}
+
+/* Partner badge */
+.tm-partner-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.8rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 14px;
+    background: radial-gradient(circle at top left,
+        rgba(230,0,18,0.22), rgba(6,23,41,0.96));
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.18);
+}
+
+.tm-logo-wrap {
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 0.5rem 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tm-logo-wrap img {
+    display: block;
+    height: 40px;
+    width: auto;
+}
+
+.tm-badge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.tm-badge-title {
+    font-weight: 600;
+    font-size: 0.98rem;
+}
+
+.tm-badge-note {
+    font-size: 0.85rem;
+    color: rgba(233,244,243,0.85);
+}
+
+/* Hero buttons */
+.tm-hero-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+}
+
+.tm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.tm-btn-primary {
+    background-color: #2CBFAE;
+    color: #06202A;
+    box-shadow: 0 0 18px rgba(44,191,174,0.8);
+}
+
+.tm-btn-primary:hover {
+    background-color: #35E0C2;
+    transform: translateY(-1px);
+    box-shadow: 0 0 26px rgba(44,191,174,0.9);
+}
+
+.tm-btn-ghost {
+    border: 1px solid rgba(255,255,255,0.7);
+    color: #ffffff;
+    background: transparent;
+}
+
+.tm-btn-ghost:hover {
+    background: rgba(6,23,41,0.6);
+    transform: translateY(-1px);
+}
+
+/* Right hero panel */
+.tm-hero-panel {
+    position: relative;
+    z-index: 1;
+    background: radial-gradient(circle at top,
+        rgba(44,191,174,0.25), rgba(6,23,41,0.98));
+    border-radius: 18px;
+    padding: 1.8rem 1.9rem 1.6rem;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.16);
+    color: #E9F4F3;
+    animation: fadeUp 1s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+    transform: translateY(25px);
+}
+
+.tm-panel-heading {
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+.tm-panel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.3rem;
+}
+
+.tm-panel-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.45rem;
+}
+
+.tm-dot {
+    width: 9px;
+    height: 9px;
+    margin-top: 0.35rem;
+    border-radius: 50%;
+    background: #2CBFAE;
+    box-shadow: 0 0 10px rgba(44,191,174,0.8);
+    flex-shrink: 0;
+}
+
+.tm-panel-foot {
+    font-size: 0.9rem;
+    color: rgba(233,244,243,0.85);
+    border-top: 1px solid rgba(255,255,255,0.18);
+    padding-top: 0.75rem;
+}
+
+/* ---------------------------
+   SECTIONS – BASE
+---------------------------- */
+.tm-section {
+    padding: 4.5rem 10%;
+    background: #F7F9FB;
+    color: #0A2A4D;
+}
+
+.tm-section:nth-of-type(2n) {
+    background: #E7EFF7;
+}
+
+.tm-section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.tm-section h2 {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+}
+
+.tm-section-sub {
+    max-width: 720px;
+    margin: 0 auto 2.4rem;
+    font-size: 1rem;
+    color: #42576A;
+    line-height: 1.7;
+}
+
+/* Card grid */
+.tm-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 2rem;
+}
+
+.tm-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.7rem 1.7rem 1.6rem;
+    box-shadow: 0 8px 24px rgba(10,42,77,0.14);
+    text-align: left;
+    border: 1px solid rgba(10,42,77,0.06);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.tm-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.6rem;
+}
+
+.tm-card p {
+    font-size: 0.96rem;
+    line-height: 1.7;
+    color: #45576A;
+}
+
+.tm-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 32px rgba(10,42,77,0.22);
+    border-color: rgba(44,191,174,0.8);
+}
+
+/* Features grid (4 up) */
+.tm-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 1.8rem;
+    margin-top: 0.5rem;
+}
+
+.tm-feature {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.5rem 1.5rem 1.4rem;
+    text-align: left;
+    box-shadow: 0 6px 20px rgba(10,42,77,0.10);
+    border: 1px solid rgba(10,42,77,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.tm-feature::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left,
+        rgba(230,0,18,0.12), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+
+.tm-feature h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.55rem;
+    position: relative;
+    z-index: 1;
+}
+
+.tm-feature p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #45576A;
+    position: relative;
+    z-index: 1;
+}
+
+.tm-feature:hover::before {
+    opacity: 1;
+}
+
+/* ---------------------------
+   CTA BAND
+---------------------------- */
+.tm-cta {
+    background: radial-gradient(circle at top,
+        rgba(230,0,18,0.25), #0A2A4D 55%);
+    color: #FFFFFF;
+    padding: 4.2rem 10%;
+}
+
+.tm-cta-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.tm-cta-inner h2 {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+}
+
+.tm-cta-inner p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(233,244,243,0.92);
+    margin-bottom: 2rem;
+}
+
+.tm-cta-btn {
+    box-shadow: 0 0 24px rgba(44,191,174,0.85);
+}
+
+/* ---------------------------
+   ANIMATIONS
+---------------------------- */
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------------------------
+   RESPONSIVE
+---------------------------- */
+@media (max-width: 1100px) {
+    .tm-hero-inner {
+        grid-template-columns: minmax(0,1.3fr);
+    }
+    .tm-hero-panel {
+        margin-top: 2.5rem;
+        max-width: 520px;
+    }
+}
+
+@media (max-width: 900px) {
+    .tm-hero {
+        padding: 5rem 7% 3.5rem;
+    }
+
+    .tm-section {
+        padding: 3.8rem 7%;
+    }
+
+    .tm-card-grid {
+        grid-template-columns: minmax(0,1fr);
+    }
+
+    .tm-feature-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .tm-hero-text h1 {
+        font-size: 2.1rem;
+    }
+    .tm-hero-sub {
+        font-size: 1rem;
+    }
+    .tm-partner-badge {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .tm-logo-wrap img {
+        height: 34px;
+    }
+    .tm-feature-grid {
+        grid-template-columns: minmax(0,1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .tm-hero {
+        padding: 4.2rem 6% 3.2rem;
+    }
+    .tm-hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .tm-btn {
+        width: 100%;
+    }
+}

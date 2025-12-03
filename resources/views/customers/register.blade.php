@@ -4,11 +4,6 @@
   Description: Removed Google and Microsoft login actions for streamlined email-only registration.  
   Last updated: 11 Nov 2025 by Max  
 --}}
-<style>
-    .hero-cpu-bg {
-        display: none !important;
-    }
-</style>
 
 @extends('layouts.base')
 @section('title', 'Create Your SharpLync Account')
