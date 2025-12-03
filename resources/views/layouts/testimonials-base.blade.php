@@ -34,6 +34,7 @@
             <a href="/about" class="nav-link">About</a>
             <a href="/testimonials" class="nav-link nav-active">Testimonials</a>
             <a href="/contact" class="nav-link">Contact</a>
+            <a href="/register" class="nav-link">Register</a>            
             <a href="/login" class="nav-link">Login</a>
 
             <button class="hamburger" onclick="toggleMobileNav()">☰</button>
@@ -57,23 +58,7 @@
             <li><a href="/login">Login</a></li>
         </ul>
     </div>
-
-    <!-- ===========================================================
-         TESTIMONIALS OVERLAY MENU (your version)
-    ============================================================ -->
-    <div id="overlayMenu" class="overlay-menu">
-        <button class="close-menu" onclick="toggleMenu()">×</button>
-
-        <ul>
-            <li><a href="/" onclick="toggleMenu()">Home</a></li>
-            <li><a href="/services" onclick="toggleMenu()">Services</a></li>
-            <li><a href="/about" onclick="toggleMenu()">About</a></li>
-            <li><a href="/testimonials" class="active" onclick="toggleMenu()">Testimonials</a></li>
-            <li><a href="/contact" onclick="toggleMenu()">Contact</a></li>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login" onclick="toggleMenu()">Login</a></li>
-        </ul>
-    </div>
+    
 
     <!-- ===========================================================
          MAIN CONTENT
@@ -84,8 +69,7 @@
 
     <!-- FOOTER (kept your smaller, clean one) -->
     <footer class="cp-footer">
-        © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support,
-        <span class="cp-hl">Modern Results</span>
+        © 2025 SharpLync Pty Ltd. All rights reserved.
     </footer>
 
 
