@@ -427,6 +427,25 @@ blockquote {
     opacity: 0.8;
 }
 
+    /* ============================================
+    FIX: Keep global nav colours on this page
+    ============================================ */
+
+    .main-header .nav-link {
+        color: #0A2A4D;              /* Navy text */
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .main-header .nav-link:hover {
+        color: #2CBFAE;              /* Teal on hover */
+    }
+
+    .main-header .nav-link.nav-active {
+        color: #2CBFAE;              /* Active page = teal */
+    }
+
+
 /* ============================================================
    MODAL — DESKTOP WHITE / MOBILE DARK
    ============================================================ */
