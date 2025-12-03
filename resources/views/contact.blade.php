@@ -11,7 +11,8 @@
 
     <div class="contact-hero-inner">
         <h1 class="contact-title">
-            <span class="white-text">Contact</span> <span class="gradient">SharpLync</span>
+            <span class="white-text">Contact</span>
+            <span class="brand-gradient">SharpLync</span>
         </h1>
         <p class="contact-subtitle">
             We're here to help your business get IT right. Let's talk about your technology needs.
