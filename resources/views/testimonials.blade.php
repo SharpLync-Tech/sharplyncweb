@@ -1,156 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'SharpLync | Testimonials')</title>
 
-@extends('layouts.testimonials-base')
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-@section('title', 'SharpLync | Testimonials')
+    <!-- 🟢 Load global SharpLync navigation styles -->
+    <link rel="stylesheet" href="{{ secure_asset('css/sharplync-nav.css') }}">
 
-@php
-    use Illuminate\Support\Str;
-@endphp
+    <!-- 🟢 Load testimonials-specific styles -->
+    <link rel="stylesheet" href="{{ secure_asset('css/testimonials.css') }}">
 
-@section('content')
-<section class="testimonials-grid-section">
-    <div class="container">
-        {{-- Page heading --}}
-        <div class="testimonials-header">
-            <h1>The Foundation of SharpLync: Trusted Expertise</h1>
-            <p>Endorsements from industry leaders, colleagues, and partners who vouch for our founder's track record, technical integrity, and commitment to exceptional service.</p>
+    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
+</head>
+
+<body class="testimonials-body">
+
+    <!-- ===========================================================
+         GLOBAL SHARPLYNC NAVIGATION (FULLY MATCHES MAIN SITE)
+    ============================================================ -->
+    <header class="main-header">
+
+        <!-- LEFT -->
+        <div class="nav-left">
+            <a href="/" class="logo">
+                <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
+            </a>
+            <a href="/" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
+            <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
         </div>
 
-        {{-- Grid Container --}}
-        <div class="grid-container">
-            @forelse($testimonials as $t)
-                @php
-                    // Build "who" line - position and company
-                    $who = collect([$t->customer_position, $t->customer_company])->filter()->implode(' — ');
-
-                    // Initials from customer name
-                    $nameParts = preg_split('/\s+/', trim($t->customer_name));
-                    $initials = '';
-                    foreach ($nameParts as $p) {
-                        if ($p !== '') { $initials .= mb_substr($p, 0, 1); }
-                    }
-
-                    // Card content
-                    $text = strip_tags($t->testimonial_text);
-                    $preview = Str::limit($text, 280, '... <a href="#" class="expand-link" data-open-modal>Read more</a>');
-                @endphp
-
-                <article 
-                    class="testimonial-card"
-                    data-fulltext="{{ e($t->testimonial_text) }}"
-                    data-name="{{ e($t->customer_name) }}"
-                    data-who="{{ e($who) }}"
-                >
-                    <div class="initial-badge">{{ $initials }}</div>
-
-                    <blockquote>
-                        {{-- Output the preview text; if full text is short, it will display the whole thing --}}
-                        <p class="quote-text">{!! $preview !!}</p>
-                    </blockquote>
-
-                    <footer class="author-info">
-                        <strong class="tl-name">{{ $t->customer_name }}</strong>
-                        @if($who)
-                            <span class="tl-role">{{ $who }}</span>
-                        @endif
-                    </footer>
-                </article>
-            @empty
-                <div class="empty-state">
-                    <p>No testimonials available yet. Please check back soon.</p>
-                </div>
-            @endforelse
+        <!-- CENTER -->
+        <div class="nav-center">
+            <div class="nav-search">
+                <span class="nav-search-icon">🔍</span>
+                <input type="text" placeholder="Search SharpLync...">
+            </div>
         </div>
+
+        <!-- RIGHT -->
+        <div class="nav-right">
+            <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
+            <a href="/testimonials" class="nav-link nav-active">Testimonials</a>
+            <a href="/contact" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
+            <a href="/login" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
+
+            <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+        </div>
+
+    </header>
+
+    <!-- ===========================================================
+         MOBILE NAV (IDENTICAL TO MAIN SITE)
+    ============================================================ -->
+    <div id="mobileNav" class="mobile-nav">
+        <button class="close-mobile-nav" onclick="toggleMobileNav()">×</button>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/services">Services</a></li>
+
+            <li style="padding: 16px 26px;">
+                <input type="text" placeholder="Search..." style="
+                    width: 100%;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    border: none;
+                    outline: none;">
+            </li>
+
+            <li><a href="/about">About</a></li>
+            <li><a href="/testimonials" class="active">Testimonials</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
     </div>
 
-    {{-- Modal for full testimonial --}}
-    <div id="testimonialModal" aria-hidden="true">
-        <div class="modal-dialog" role="dialog" aria-modal="true">
+    <!-- ===========================================================
+         OVERLAY MENU (GLOBAL)
+    ============================================================ -->
+    <div id="overlayMenu" class="overlay-menu" role="navigation">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
 
-            {{-- NEW teal top border --}}
-            <div class="modal-top-bar"></div>
-
-            {{-- NEW dynamic initials badge --}}
-            <div id="modalInitials" class="modal-badge"></div>
-
-            {{-- Close button --}}
-            <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
-
-            {{-- Modal text --}}
-            <p id="modalText" class="modal-text"></p>
-            <div class="modal-separator"></div>
-            <p id="modalName" class="modal-name"></p>
-            <p id="modalRole" class="modal-role"></p>
-        </div>
-
+        <ul>
+            <li><a href="/" onclick="toggleMenu()">Home</a></li>
+            <li><a href="/services" onclick="toggleMenu()">Services</a></li>
+            <li><a href="/about" onclick="toggleMenu()">About</a></li>
+            <li><a href="/testimonials" class="active" onclick="toggleMenu()">Testimonials</a></li>
+            <li><a href="/contact" onclick="toggleMenu()">Contact</a></li>
+            <li><a href="/login" onclick="toggleMenu()">Login</a></li>
+        </ul>
     </div>
-</section>
-@endsection
 
-@push('scripts')
-<script>
-// Modal Logic (simplified from your original)
-document.addEventListener('DOMContentLoaded', () => {
+    <!-- ===========================================================
+         MAIN CONTENT
+    ============================================================ -->
+    <main>
+        @yield('content')
+    </main>
 
-    const modal = document.getElementById('testimonialModal');
-    const modalClose = modal.querySelector('.modal-close');
-    const modalText = document.getElementById('modalText');
-    const modalName = document.getElementById('modalName');
-    const modalRole = document.getElementById('modalRole');
-    const modalInitials = document.getElementById('modalInitials'); // NEW
+    <!-- ===========================================================
+         FOOTER (CLEAN MINI FOOTER)
+    ============================================================ -->
+    <footer class="cp-footer">
+        © {{ date('Y') }} SharpLync Pty Ltd · All rights reserved · Old School Support,
+        <span class="cp-hl">Modern Results</span>
+    </footer>
 
-    // Open Modal
-    document.querySelectorAll('[data-open-modal]').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-
-            const card = e.target.closest('.testimonial-card');
-            if (!card) return;
-
-            // Full text
-            modalText.innerHTML = card.dataset.fulltext.replace(/\n/g, '<br>');
-
-            // Name + role
-            modalName.textContent = card.dataset.name;
-            modalRole.textContent = card.dataset.who;
-
-            // NEW — Get initials from the card badge
-            const initialsEl = card.querySelector('.initial-badge');
-            if (initialsEl) {
-                modalInitials.textContent = initialsEl.textContent;
-            }
-
-            // Show modal
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        });
-    });
-
-    // Close modal
-    function closeModal() {
-        modal.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    modalClose.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', e => {
-        if (e.target === modal) closeModal();
-    });
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
-            closeModal();
+    <!-- ===========================================================
+         SCRIPTS
+    ============================================================ -->
+    <script>
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('show');
         }
-    });
 
-    // Menu toggle logic
-    window.toggleMenu = function() {
-        const overlay = document.getElementById('overlayMenu');
-        overlay.classList.toggle('show');
-        document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : '';
-    }
-});
-</script>
+        function toggleMenu() {
+            const overlay = document.getElementById('overlayMenu');
+            overlay.classList.toggle('show');
+            document.body.style.overflow =
+                overlay.classList.contains('show') ? 'hidden' : '';
+        }
+    </script>
 
-@endpush
+    @stack('scripts')
+
+</body>
+</html>
