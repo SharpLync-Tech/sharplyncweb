@@ -506,3 +506,40 @@ footer {
   .hero-text h1 { font-size: 1.9rem; }
   .hero-cpu-bg { display: none !important; }
 }
+
+
+/* ============================
+   FIX HERO FOR LAPTOP SCREENS
+   ============================ */
+@media (max-width: 1600px) and (min-width: 769px) {
+
+    /* Shrink CPU image */
+    .hero-cpu-bg img {
+        max-width: 350px;     /* was probably 500-600px */
+        opacity: 0.8;         /* optional – softens it */
+        right: 20px;          /* pull it away from text */
+        top: 120px;           /* adjust vertical */
+    }
+
+    /* Tweak main heading so it wraps cleaner */
+    .hero-title {
+        font-size: 2.6rem;
+        line-height: 1.2;
+        max-width: 600px;
+    }
+
+    /* Subheading */
+    .hero-sub {
+        font-size: 1.15rem;
+        max-width: 600px;
+    }
+}
+
+/* ======================================
+   EXTRA SAFETY – Hide CPU earlier if tiny
+   ====================================== */
+@media (max-width: 950px) {
+    .hero-cpu-bg {
+        display: none !important;
+    }
+}
