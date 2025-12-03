@@ -9,7 +9,6 @@
 
 }
 
-
 .testimonials-body {    
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -20,7 +19,6 @@
 main {
     overflow: visible !important;
 }
-
 
 .tl-header {
     display: flex;
@@ -85,7 +83,7 @@ main {
     ============================================================ */
 
 .testimonials-grid-section {
-    padding: 60px 0 140px;
+    padding: 60px 0 160px; /* FIXED — footer spacing added */
     background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
     min-height: 100vh;
 }
@@ -122,18 +120,16 @@ main {
 /* --- Grid Container --- */
 .grid-container {
     display: grid;
-    /* Desktop: Two columns of equal size */
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
-    align-items: stretch; /* Makes all cards fill the row height */
+    align-items: stretch;
     margin-top: 40px;
 }
 
-/* --- Testimonial Card (Now Grid Item) --- */
+/* --- Testimonial Card --- */
 .testimonial-card {
     background: #fff;
     border-radius: 20px;
-    /* Enhanced styling for a more modern, layered look */
     border-top: 6px solid #2CBFAE;
     padding: 2.5rem 2.8rem 2.5rem;
     color: #0A2A4D;
@@ -147,23 +143,23 @@ main {
     box-shadow: 0 18px 40px rgba(0,0,0,0.2);
 }
 
-/* Decorative large quote (Tuned for new card style) */
+/* Decorative quote */
 .testimonial-card::before {
     content: "❝";
     font-size: 80px;
     color: rgba(10,42,77,0.08);
     position: absolute;
     top: 40px;
-    right: 620px; /* Moved to top right */
+    right: 620px;
     line-height: 1;
 }
 
-/* --- Initial Bubble --- */
+/* Initial Badge */
 .initial-badge {
     width: 65px;
     height: 65px;
     border-radius: 50%;
-    background: #2CBFAE; /* Primary color background */
+    background: #2CBFAE;
     color: #fff;
     display: flex;
     align-items: center;
@@ -171,7 +167,7 @@ main {
     font-weight: 700;
     font-size: 1.4rem;
     position: absolute;
-    top: -32px; /* Pull it outside the card */
+    top: -32px;
     left: 28px;
     box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
 }
@@ -220,22 +216,28 @@ blockquote {
     margin-top: 0.2rem;
 }
 
+/* ============================================================
+    FIXED — Footer no longer collides with cards
+    ============================================================ */
 .cp-footer {
     background: #0A2A4D;
     color: #fff;
     text-align: center;
-    padding: 1.25rem;
+    padding: 2rem 1rem; /* more breathing room */
     font-size: .95rem;
-    margin-top: 2rem;
+
+    /* NEW — ensures footer is clearly separate from cards */
+    margin-top: 80px;
+    border-top: 3px solid rgba(44,191,174,0.4);
 }
+
 .cp-footer .cp-hl {
     color: #2CBFAE;
     font-weight: 700;
 }
 
-
 /* ============================================================
-    MODAL STYLES (Retained & Tidied)
+    MODAL
     ============================================================ */
 #testimonialModal {
     position: fixed;
@@ -263,10 +265,8 @@ blockquote {
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     transform: scale(0.95);
     animation: modalScaleIn 0.3s ease-out forwards;
-    
-    /* 🛠️ MODAL CONTENT SCROLL FIX */
-    max-height: 90vh; 
-    overflow-y: auto; 
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 @keyframes modalScaleIn {
@@ -274,7 +274,6 @@ blockquote {
 }
 
 .modal-close {
-    /* 🛠️ DEFAULT DESKTOP/LARGE SCREEN STYLES */
     position: absolute; 
     top: 18px;
     right: 20px;
@@ -284,7 +283,7 @@ blockquote {
     color: #2CBFAE;
     cursor: pointer;
     line-height: 1;
-    z-index: 1000; /* Ensure it stays above content */
+    z-index: 1000;
     padding: 0;
 }
 
@@ -324,24 +323,19 @@ blockquote {
     RESPONSIVE BREAKPOINTS
     ============================================================ */
 
-/* Tablet View (992px to 641px): Stack cards but keep them wide */
 @media (max-width: 992px) {
     .grid-container {
-        /* Switch to a single column grid for medium screens */
         grid-template-columns: 1fr; 
         max-width: 700px; 
         margin-left: auto;
         margin-right: auto;
-        /* 🛠️ CARD SPACING FIX */
         gap: 40px; 
     }
 }
 
-
-/* Mobile View (max-width: 640px): Stacked and narrow */
 @media (max-width: 640px) {
     .testimonials-grid-section {
-        padding: 40px 0 100px; /* 🛠️ Increased section padding */
+        padding: 40px 0 120px; /* keep footer spaced */
     }
 
     .testimonials-header h1 {
@@ -359,7 +353,6 @@ blockquote {
         padding: 4rem 1.5rem 2rem;
     }
 
-    /* Reset the badge position for narrow screens */
     .initial-badge {
         top: -30px;
         left: 50%;
@@ -367,16 +360,15 @@ blockquote {
     }
 
     .tl-header .logo img {
-        height: 60px; /* Smaller logo on mobile */
+        height: 60px;
     }
 
-    /* 🛠️ FLOATING MODAL CLOSE BUTTON FIX */
     .modal-close {
-        position: fixed; /* Always visible regardless of modal content scroll */
+        position: fixed;
         top: 10px;
         right: 10px;
         z-index: 999999; 
-        width: 44px; /* Larger hit area */
+        width: 44px;
         height: 44px;
         border-radius: 50%; 
         background: #2CBFAE;
@@ -390,7 +382,7 @@ blockquote {
     
     .modal-dialog {
         padding: 3rem 1.5rem 2rem; 
-        margin-top: 50px; /* Push the dialog down to not be under the fixed close button */
+        margin-top: 50px;
         max-height: 85vh;
         border-radius: 12px;
     }
