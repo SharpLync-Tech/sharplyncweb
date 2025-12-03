@@ -450,9 +450,7 @@ blockquote {
     display: flex;
 }
 
-/* -----------------------------------------
-   DESKTOP MODAL — “CARD POPPED OUT” STYLE
-   ----------------------------------------- */
+/* DESKTOP — WHITE MODAL */
 .modal-dialog {
     background: #ffffff;
     color: #0A2A4D;
@@ -461,51 +459,10 @@ blockquote {
     padding: 3.2rem 3rem 2.8rem;
     border-radius: 28px;
     position: relative;
-
-    /* NEW — matches testimonial card */
-    border-top: 6px solid #2CBFAE;
-    border: 1px solid rgba(44,191,174,0.25);
-
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
     transform: translateY(20px) scale(0.95);
     opacity: 0;
     animation: modalPopIn .35s ease forwards;
-}
-
-/* ❝ decorative quote */
-.modal-dialog::before {
-    content: "❝";
-    font-size: 90px;
-    color: rgba(10,42,77,0.08);
-    position: absolute;
-    top: 30px;
-    left: 32px;
-    line-height: 1;
-    pointer-events: none;
-}
-
-/* -----------------------------------------
-   INITIAL BADGE (Dynamic Initials)
-   ----------------------------------------- */
-.modal-badge {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #2CBFAE;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 1.45rem;
-
-    position: absolute;
-    top: -36px;
-    left: 32px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
-    z-index: 10;
 }
 
 /* Animation */
@@ -516,25 +473,60 @@ blockquote {
     }
 }
 
-/* Close button (desktop) */
+/* ============================================================
+   TOP TEAL BORDER & INITIAL BADGE
+   ============================================================ */
+
+/* Top teal bar */
+.modal-top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background: #2CBFAE;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    z-index: 5;
+}
+
+/* Initials badge */
+.modal-badge {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #2CBFAE;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.45rem;
+    position: absolute;
+    top: -36px;
+    left: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
+    z-index: 10;
+}
+
+/* ============================================================
+   CLOSE BUTTON
+   ============================================================ */
+
 .modal-close {
     position: absolute;
     top: 18px;
     right: 22px;
-
-    background: #178C7F;
+    background: #178C7F;         /* darker teal */
     border: 2px solid #178C7F;
-    color: #fff;
-
+    color: #ffffff;
     width: 42px;
     height: 42px;
     border-radius: 50%;
-
     font-size: 1.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
-
     cursor: pointer;
     transition: 0.25s ease;
 }
@@ -545,7 +537,10 @@ blockquote {
     color: #0A2A4D;
 }
 
-/* Modal text */
+/* ============================================================
+   TEXT STYLES
+   ============================================================ */
+
 .modal-text {
     font-size: 1.18rem;
     line-height: 1.85;
@@ -554,21 +549,21 @@ blockquote {
     white-space: pre-line;
 }
 
-/* Divider */
 .modal-separator {
     height: 1px;
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.1);
     margin: 1rem 0 1.6rem;
 }
 
-/* Name (navy) */
+/* Navy name */
 .modal-name {
     font-size: 1.45rem;
     font-weight: 600;
+    margin-bottom: 0.2rem;
     color: #0A2A4D;
 }
 
-/* Role (teal) */
+/* Teal role/company */
 .modal-role {
     font-size: 1.05rem;
     font-weight: 500;
@@ -576,7 +571,7 @@ blockquote {
 }
 
 /* ============================================================
-   MOBILE — DARK VERSION
+   MOBILE — DARK NAVY MODAL
    ============================================================ */
 @media (max-width: 640px) {
 
@@ -584,22 +579,9 @@ blockquote {
         background: #0A2A4D !important;
         color: #ffffff !important;
         border-radius: 18px;
-        padding: 3rem 1.6rem 2rem;
-        border: none;
-    }
-
-    /* Badge centered on mobile */
-    .modal-badge {
-        left: 50%;
-        transform: translateX(-50%);
-        top: -34px;
-    }
-
-    /* Light ❝ on dark background */
-    .modal-dialog::before {
-        color: rgba(255,255,255,0.08) !important;
-        left: 18px;
-        top: 18px;
+        padding: 2.6rem 1.6rem 2rem;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .modal-text,
@@ -608,25 +590,27 @@ blockquote {
         color: #ffffff !important;
     }
 
-    .modal-role {
-        color: #2CBFAE !important;
-    }
-
     .modal-separator {
         background: rgba(255, 255, 255, 0.15) !important;
     }
 
-    /* Mobile floating close button */
+    /* Floating mobile close button */
     .modal-close {
         position: fixed !important;
         top: 12px;
         right: 12px;
         width: 44px;
         height: 44px;
-        font-size: 1.45rem;
+        font-size: 1.5rem;
+        border: none;
         background: #2CBFAE !important;
         color: #0A2A4D !important;
-        border: none !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+    }
+
+    /* Reposition badge for mobile */
+    .modal-badge {
+        left: 50%;
+        transform: translateX(-50%);
     }
 }

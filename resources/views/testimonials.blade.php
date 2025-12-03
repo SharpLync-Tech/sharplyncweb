@@ -66,60 +66,85 @@
     {{-- Modal for full testimonial --}}
     <div id="testimonialModal" aria-hidden="true">
         <div class="modal-dialog" role="dialog" aria-modal="true">
+
+            {{-- NEW teal top border --}}
+            <div class="modal-top-bar"></div>
+
+            {{-- NEW dynamic initials badge --}}
+            <div id="modalInitials" class="modal-badge"></div>
+
+            {{-- Close button --}}
             <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
+
+            {{-- Modal text --}}
             <p id="modalText" class="modal-text"></p>
             <div class="modal-separator"></div>
             <p id="modalName" class="modal-name"></p>
             <p id="modalRole" class="modal-role"></p>
         </div>
+
     </div>
 </section>
 @endsection
 
 @push('scripts')
 <script>
-// Modal Logic (simplified from your original - )
+// Modal Logic (simplified from your original)
 document.addEventListener('DOMContentLoaded', () => {
+
     const modal = document.getElementById('testimonialModal');
     const modalClose = modal.querySelector('.modal-close');
     const modalText = document.getElementById('modalText');
     const modalName = document.getElementById('modalName');
     const modalRole = document.getElementById('modalRole');
-    
+    const modalInitials = document.getElementById('modalInitials'); // NEW
+
     // Open Modal
     document.querySelectorAll('[data-open-modal]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
+
             const card = e.target.closest('.testimonial-card');
-            if (card) {
-                modalText.innerHTML = card.dataset.fulltext.replace(/\n/g, '<br>'); // preserve line breaks
-                modalName.textContent = card.dataset.name;
-                modalRole.textContent = card.dataset.who;
-                modal.classList.add('open');
-                document.body.style.overflow = 'hidden';
+            if (!card) return;
+
+            // Full text
+            modalText.innerHTML = card.dataset.fulltext.replace(/\n/g, '<br>');
+
+            // Name + role
+            modalName.textContent = card.dataset.name;
+            modalRole.textContent = card.dataset.who;
+
+            // NEW — Get initials from the card badge
+            const initialsEl = card.querySelector('.initial-badge');
+            if (initialsEl) {
+                modalInitials.textContent = initialsEl.textContent;
             }
+
+            // Show modal
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
         });
     });
 
-    // Close Modal
+    // Close modal
     function closeModal() {
         modal.classList.remove('open');
         document.body.style.overflow = '';
     }
-    
+
     modalClose.addEventListener('click', closeModal);
+
     modal.addEventListener('click', e => {
-        if (e.target === modal) {
-            closeModal();
-        }
+        if (e.target === modal) closeModal();
     });
+
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.classList.contains('open')) {
             closeModal();
         }
     });
 
-    // Menu toggle logic (moved from layout)
+    // Menu toggle logic
     window.toggleMenu = function() {
         const overlay = document.getElementById('overlayMenu');
         overlay.classList.toggle('show');
@@ -127,4 +152,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
 @endpush
