@@ -28,6 +28,14 @@ body:not(:has(.hero)) {
     box-shadow: 0 2px 8px rgba(0,0,0,0.25); /* NEW */
 }
 
+.gradient {
+    background: linear-gradient(to right, #2CBFAE, #5CE1E6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; /* This is the key to making the gradient visible */
+    white-space: nowrap; 
+}
+
 /* ===========================
    NAV GROUPS
    =========================== */
