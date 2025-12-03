@@ -585,6 +585,16 @@ blockquote {
         overflow-y: auto;
     }
 
+    .modal-name {
+        border-left: none !important;
+        padding-left: 0 !important;
+    }
+    
+    .modal-role {
+        border-left: none !important;
+        padding-left: 0 !important;
+    }   
+
     .modal-badge {
         display: none !important;
 
