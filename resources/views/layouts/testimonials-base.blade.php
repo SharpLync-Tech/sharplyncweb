@@ -50,16 +50,6 @@
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/services">Services</a></li>
-
-            <li style="padding: 16px 26px;">
-                <input type="text" placeholder="Search..." style="
-                    width: 100%;
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    border: none;
-                    outline: none;">
-            </li>
-
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials" class="active">Testimonials</a></li>
             <li><a href="/contact">Contact</a></li>
