@@ -119,7 +119,7 @@
     height: 100%;
     background: rgba(10, 42, 77, 0.95);
     backdrop-filter: blur(8px);
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: 0.3s ease;
     z-index: 99999;
     padding-top: 60px;
