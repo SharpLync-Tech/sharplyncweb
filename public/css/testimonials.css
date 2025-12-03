@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.85rem 2rem;
-    background: rgba(10, 42, 77, 0.70);
+    background: linear-gradient(135deg, rgba(10, 42, 77, 0.85) 0%, rgba(16, 73, 118, 0.65) 40%, rgba(44, 191, 174, 0.45) 100%);
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
@@ -46,7 +46,7 @@
 
 /* Nav links */
 .isolated-header .nav-link {
-    color: #eaf6f6;
+    color: #0A2A4D;
     text-decoration: none;
     font-weight: 500;
     font-size: 1.05rem;
@@ -56,11 +56,11 @@
 }
 
 .isolated-header .nav-link:hover {
-    color: #2CBFAE;
+    color: #0a8576;
 }
 
 .isolated-header .nav-active {
-    color: #2CBFAE !important;
+    color: #0a8576 !important;
 }
 
 /* CENTER SEARCH BAR */
@@ -491,7 +491,7 @@ blockquote {
 /* INITIALS BADGE (MATCHES CARD BADGE) */
 .modal-badge {
     position: absolute;
-    top: 350px;
+    top: -28px;
     left: 40px;
 
     background: #2CBFAE;
@@ -554,8 +554,6 @@ blockquote {
 }
 
 .modal-name {
-    border-left: 60px solid #FFFFFF;
-    padding-left: 1.2rem;
     font-size: 1.45rem;
     font-weight: 600;
     margin-bottom: 0.2rem;
@@ -563,8 +561,6 @@ blockquote {
 }
 
 .modal-role {
-    border-left: 60px solid #FFFFFF;
-    padding-left: 1.2rem;
     font-size: 1.05rem;
     font-weight: 500;
     color: #2CBFAE; /* teal */
@@ -620,4 +616,3 @@ blockquote {
         box-shadow: 0 4px 12px rgba(0,0,0,0.45);
     }
 }
-
