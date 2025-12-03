@@ -72,9 +72,6 @@
             {{-- NEW teal top border --}}
             <div class="modal-top-bar"></div>
 
-            {{-- NEW dynamic initials badge --}}
-            <div id="modalInitials" class="modal-badge"></div>
-
             {{-- Close button --}}
             <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
 
