@@ -17,7 +17,7 @@
     <!-- ===========================================================
          BRAND-NEW SHARPLYNC NAV (HTML ONLY — NO global CSS loaded)
     ============================================================ -->
-    <header class="main-header isolated-header">
+    <header class="main-header">
 
         <!-- LEFT -->
         <div class="nav-left">
