@@ -9,63 +9,50 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Testimonials stylesheet only -->
+    <!-- ONLY this stylesheet to avoid homepage/marketing CSS -->
     <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 </head>
 
 <body class="testimonials-body">
 
-    <!-- TOP NAVBAR (Same as new global nav) -->
-    <header class="global-header">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">
-                <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
-            </a>
-
-            <!-- Full Nav (desktop) -->
-            <nav class="nav-links">
-                <a href="/">Home</a>
-                <a href="/services">Services</a>
-                <a href="/about">About</a>
-                <a href="/testimonials" class="active">Testimonials</a>
-                <a href="/contact">Contact</a>
-                <a href="/login" class="nav-login">Login</a>
-            </nav>
-
-            <!-- Mobile Hamburger -->
-            <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+    <!-- NEW NAVBAR (Pure, isolated) -->
+    <header class="tl-header">
+        <div class="logo">
+            <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
         </div>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
     </header>
 
-    <!-- MOBILE OVERLAY MENU -->
-    <div id="mobileMenu" class="mobile-overlay">
-        <button class="close-btn" onclick="toggleMenu()">×</button>
+    <!-- OVERLAY MENU -->
+    <div id="overlayMenu" class="overlay-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
 
-        <div class="overlay-links">
-            <a href="/">Home</a>
-            <a href="/services">Services</a>
-            <a href="/about">About</a>
-            <a href="/testimonials" class="active">Testimonials</a>
-            <a href="/contact">Contact</a>
-            <a href="/login">Login</a>
-        </div>
+        <ul>
+            <li><a href="/" onclick="toggleMenu()">Home</a></li>
+            <li><a href="/services" onclick="toggleMenu()">Services</a></li>
+            <li><a href="/about" onclick="toggleMenu()">About</a></li>
+            <li><a href="/testimonials" class="active" onclick="toggleMenu()">Testimonials</a></li>
+            <li><a href="/contact" onclick="toggleMenu()">Contact</a></li>
+            <li><a href="/login" onclick="toggleMenu()">Login</a></li>
+        </ul>
     </div>
 
-    <!-- MAIN PAGE CONTENT -->
     <main>
         @yield('content')
     </main>
 
-    <!-- NO GLOBAL FOOTER HERE (prevents Blue Tetris Doom) -->
+    <!-- Optional footer -->
+    <footer class="cp-footer">
+        © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, <span class="cp-hl">Modern Results</span>
+    </footer>
 
 <script>
 function toggleMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('show');
-    document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
+    const overlay = document.getElementById('overlayMenu');
+    overlay.classList.toggle('show');
+    document.body.style.overflow = overlay.classList.contains('show') ? 'hidden' : '';
 }
 </script>
 
