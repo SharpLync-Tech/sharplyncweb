@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
-        <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-2SCQ2YCEW8');
-        </script>
-        
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync | Testimonials')</title>
@@ -51,7 +41,7 @@
 </main>
 
 <footer class="cp-footer">
-    © 2025 SharpLync Pty Ltd · All rights reserved · Straightforward Support, <span class="cp-hl">Modern Results</span>
+    © 2025 SharpLync Pty Ltd · All rights reserved · Old School Support, <span class="cp-hl">Modern Results</span>
   </footer>
 
 <script>
