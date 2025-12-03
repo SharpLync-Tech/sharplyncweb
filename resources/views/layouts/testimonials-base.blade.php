@@ -68,7 +68,7 @@
 
     <!-- FOOTER (kept your smaller, clean one) -->
      <footer>
-        <div class="footer-content">
+        <div class="footer-content-testimonials">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
             <div class="social-icons">
                 <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
