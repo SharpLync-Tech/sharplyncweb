@@ -28,7 +28,7 @@
         {{-- Email --}}
         <div class="info-card">
             <div class="info-icon">
-                <img src="{{ asset('images/mail.png') }}" alt="Email" />
+                <img src="{{ asset('images/email.png') }}" alt="Email" />
             </div>
             <h4>Email Support</h4>
             <p>For general enquiries and service questions.</p>
