@@ -405,17 +405,21 @@ blockquote {
     margin-top: 0.2rem;
 }
 
-.cp-footer {
-    background: #0A2A4D;
-    color: #fff;
-    text-align: center;
-    padding: 1.25rem;
-    font-size: .95rem;
-    margin-top: 2rem;
+/* ==================== FOOTER ==================== */ 
+footer {
+  background-color: #0A2A4D;
+  color: white;
+  text-align: center;
+  padding: 2rem 10%;
 }
-.cp-footer .cp-hl {
-    color: #2CBFAE;
-    font-weight: 700;
+.social-icons img {
+  width: 28px; height: 28px;
+  margin: 0 0.5rem;
+  transition: transform 0.3s, filter 0.3s;
+}
+.social-icons img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px #2CBFAE);
 }
 
 
