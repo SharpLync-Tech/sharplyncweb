@@ -13,7 +13,7 @@
    ============================================================ */
 
 /* RESET ONLY FOR NAV */
-.isolated-header {
+.main-header {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
