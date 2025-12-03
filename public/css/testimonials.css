@@ -1,204 +1,397 @@
-/* ============================================================
-   SHARPLYNC TESTIMONIALS — TRUE MASONRY GRID
-   Version 2.0
-   ============================================================ */
+.cp-root {
+    --navy: #0A2A4D;
+    --blue: #104976;
+    --teal: #2CBFAE;
+    --ink: #0A2A4D;
+    --card: #ffffff;
+    --muted: #6b7a89;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .25);
 
-/* Page wrapper */
-.testimonials-grid-section {
-    padding: 7rem 6% 5rem;
-    color: #fff;
 }
 
-/* Header section */
-.testimonials-header {
-    text-align: center;
-    max-width: 900px;
-    margin: 0 auto 4rem;
+
+.testimonials-body {    
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    color: #e9f4f3;
+    overflow-x: hidden;
 }
 
-.testimonials-header h1 {
-    font-size: 2.6rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #ffffff;
-    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+main {
+    overflow: visible !important;
 }
 
-.testimonials-header p {
-    font-size: 1.1rem;
-    line-height: 1.65;
-    opacity: 0.85;
-}
 
-/* ============================================================
-   MASONRY GRID (REAL PINTEREST-STYLE)
-   ============================================================ */
-
-.grid-container {
-    column-count: 3;         /* ← REAL MASONRY */
-    column-gap: 2.2rem;      /* spacing between columns */
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-@media (max-width: 1100px) {
-    .grid-container {
-        column-count: 2;
-    }
-}
-@media (max-width: 700px) {
-    .grid-container {
-        column-count: 1;
-    }
-}
-
-/* Each card */
-.testimonial-card {
-    display: inline-block; /* ← REQUIRED for masonry */
-    width: 100%;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 1.8rem 2rem 2.5rem;
-
-    border-radius: 18px;
-    margin: 0 0 2.2rem; /* bottom spacing */
-
+.tl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+    background: rgba(10, 42, 77, 0.6);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    color: #fff;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-    animation: fadeUp 0.6s ease both;
 }
 
-/* Soft fade up animation */
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+.tl-header .logo img {
+    height: 80px;
 }
 
-/* Initial badge (circle w/ initials) */
-.initial-badge {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    border: 2px solid #2CBFAE;
-    color: #2CBFAE;
-    font-size: 1.35rem;
-    font-weight: 600;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 1.2rem;
-}
-
-/* Text body */
-.quote-text {
-    line-height: 1.65;
-    font-weight: 300;
-    margin-bottom: 2rem;
-}
-
-/* Read more link (inside preview) */
-.expand-link {
-    color: #2CBFAE;
-    text-decoration: none;
-    font-weight: 500;
-}
-.expand-link:hover {
-    color: #4df0d8;
-}
-
-/* Footer / name / role */
-.author-info {
-    margin-top: 1.3rem;
-}
-
-.tl-name {
-    font-size: 1.15rem;
-    font-weight: 600;
-    display: block;
-}
-
-.tl-role {
-    opacity: 0.75;
-    font-size: 0.95rem;
-}
-
-/* ============================================================
-   MODAL
-   ============================================================ */
-
-#testimonialModal {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 42, 77, 0.75);
-    backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-}
-
-#testimonialModal.open {
-    display: flex;
-}
-
-.modal-dialog {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 18px;
-    padding: 2.4rem 2.8rem;
-    width: 92%;
-    max-width: 800px;
-
-    backdrop-filter: blur(12px);
-    box-shadow: inset 0 0 40px rgba(255,255,255,0.06);
-
-    animation: modalPop 0.35s ease;
-}
-
-@keyframes modalPop {
-    from { transform: scale(0.92); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-
-/* Modal close */
-.modal-close {
-    position: absolute;
-    top: 12px;
-    right: 18px;
-    border: none;
-    background: none;
+.hamburger {
     font-size: 2rem;
-    color: #fff;
+    color: #2CBFAE;
+    background: none;
+    border: none;
     cursor: pointer;
 }
 
-/* Modal text */
-.modal-text {
+/* ==================== OVERLAY MENU ==================== */
+.overlay-menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 42, 77, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 2000;
+}
+.overlay-menu.show { opacity: 1; visibility: visible; }
+
+.overlay-menu ul { list-style: none; text-align: center; padding: 0; }
+.overlay-menu li { margin: 1.4rem 0; }
+.overlay-menu a {
+  color: white;
+  font-size: 1.8rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.overlay-menu a:hover { color: #2CBFAE; }
+
+.close-menu {
+  position: absolute; top: 20px; right: 30px;
+  font-size: 2.4rem; color: #2CBFAE;
+  cursor: pointer; border: none; background: none;
+}
+
+/* ============================================================
+    TESTIMONIALS SECTION (GRID LAYOUT)
+    ============================================================ */
+
+.testimonials-grid-section {
+    padding: 60px 0 140px;
+    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
+    min-height: 100vh;
+}
+
+.testimonials-grid-section .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    padding-top: 0px;
+}
+
+.testimonials-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 80px;
+}
+
+.testimonials-header h1 {
+    font-size: 3.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #c0f0ec);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; 
+}
+
+.testimonials-header p {
+    font-size: 1.3rem;
     line-height: 1.7;
-    font-size: 1.05rem;
-    margin-bottom: 1.8rem;
+    opacity: 0.92;
+}
+
+/* --- Grid Container --- */
+.grid-container {
+    display: grid;
+    /* Desktop: Two columns of equal size */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    align-items: stretch; /* Makes all cards fill the row height */
+    margin-top: 40px;
+}
+
+/* --- Testimonial Card (Now Grid Item) --- */
+.testimonial-card {
+    background: #fff;
+    border-radius: 20px;
+    /* Enhanced styling for a more modern, layered look */
+    border-top: 6px solid #2CBFAE;
+    padding: 2.5rem 2.8rem 2.5rem;
+    color: #0A2A4D;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+}
+
+/* Decorative large quote (Tuned for new card style) */
+.testimonial-card::before {
+    content: "❝";
+    font-size: 80px;
+    color: rgba(10,42,77,0.08);
+    position: absolute;
+    top: 40px;
+    right: 620px; /* Moved to top right */
+    line-height: 1;
+}
+
+/* --- Initial Bubble --- */
+.initial-badge {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #2CBFAE; /* Primary color background */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.4rem;
+    position: absolute;
+    top: -32px; /* Pull it outside the card */
+    left: 28px;
+    box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
+}
+
+blockquote {
+    margin: 2.5rem 0 1.2rem;
+    line-height: 1.7;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: #2c2c2c;
+}
+
+.quote-text {
+    margin: 0;
+}
+
+.expand-link {
+    color: #2CBFAE;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.expand-link:hover {
+    color: #1a8b79;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.tl-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0A2A4D;
+    line-height: 1.2;
+}
+
+.tl-role {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+}
+
+.cp-footer {
+    background: #0A2A4D;
+    color: #fff;
+    text-align: center;
+    padding: 1.25rem;
+    font-size: .95rem;
+    margin-top: 2rem;
+}
+.cp-footer .cp-hl {
+    color: #2CBFAE;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+    MODAL STYLES (Retained & Tidied)
+    ============================================================ */
+#testimonialModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(5,18,35,0.85);
+    backdrop-filter: blur(10px);
+    z-index: 999999;
+    overflow-y: auto; 
+    padding: 20px;
+}
+
+#testimonialModal.open { display: flex; }
+
+.modal-dialog {
+    background: #0A2A4D; 
+    padding: 3rem 2.8rem;
+    border-radius: 20px;
+    max-width: 850px;
+    width: 100%;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.95);
+    animation: modalScaleIn 0.3s ease-out forwards;
+    
+    /* 🛠️ MODAL CONTENT SCROLL FIX */
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+@keyframes modalScaleIn {
+    to { transform: scale(1); }
+}
+
+.modal-close {
+    /* 🛠️ DEFAULT DESKTOP/LARGE SCREEN STYLES */
+    position: absolute; 
+    top: 18px;
+    right: 20px;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: #2CBFAE;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 1000; /* Ensure it stays above content */
+    padding: 0;
+}
+
+.modal-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    white-space: pre-line; 
+    margin-bottom: 2rem;
 }
 
 .modal-separator {
-    width: 70px;
-    height: 2px;
-    margin: 1.8rem 0;
-    background: linear-gradient(90deg, #2CBFAE, #00E6BE);
-    border-radius: 2px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 1.5rem 0;
 }
 
 .modal-name {
+    font-size: 1.4rem;
     font-weight: 600;
-    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
 }
 
 .modal-role {
+    font-size: 1.1rem;
     opacity: 0.8;
-    font-size: 0.95rem;
-    margin-top: 4px;
+}
+
+.empty-state {
+    grid-column: 1 / -1; 
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.3rem;
+    opacity: 0.8;
+}
+
+/* ============================================================
+    RESPONSIVE BREAKPOINTS
+    ============================================================ */
+
+/* Tablet View (992px to 641px): Stack cards but keep them wide */
+@media (max-width: 992px) {
+    .grid-container {
+        /* Switch to a single column grid for medium screens */
+        grid-template-columns: 1fr; 
+        max-width: 700px; 
+        margin-left: auto;
+        margin-right: auto;
+        /* 🛠️ CARD SPACING FIX */
+        gap: 40px; 
+    }
+}
+
+
+/* Mobile View (max-width: 640px): Stacked and narrow */
+@media (max-width: 640px) {
+    .testimonials-grid-section {
+        padding: 40px 0 100px; /* 🛠️ Increased section padding */
+    }
+
+    .testimonials-header h1 {
+        font-size: 2.4rem;
+    }
+    .testimonials-header p {
+        font-size: 1.1rem;
+    }
+
+    .testimonials-grid-section .container {
+        padding: 0 1rem;
+    }
+    
+    .testimonial-card {
+        padding: 4rem 1.5rem 2rem;
+    }
+
+    /* Reset the badge position for narrow screens */
+    .initial-badge {
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .tl-header .logo img {
+        height: 60px; /* Smaller logo on mobile */
+    }
+
+    /* 🛠️ FLOATING MODAL CLOSE BUTTON FIX */
+    .modal-close {
+        position: fixed; /* Always visible regardless of modal content scroll */
+        top: 10px;
+        right: 10px;
+        z-index: 999999; 
+        width: 44px; /* Larger hit area */
+        height: 44px;
+        border-radius: 50%; 
+        background: #2CBFAE;
+        color: #fff;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
+    }
+    
+    .modal-dialog {
+        padding: 3rem 1.5rem 2rem; 
+        margin-top: 50px; /* Push the dialog down to not be under the fixed close button */
+        max-height: 85vh;
+        border-radius: 12px;
+    }
 }
