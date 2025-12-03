@@ -552,6 +552,49 @@ blockquote {
     color: #2CBFAE;
 }
 
+/* ================================
+   MODAL — TOP TEAL BORDER
+================================ */
+.modal-top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: #2CBFAE;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    z-index: 3;
+}
+
+/* ================================
+   MODAL — INITIAL BADGE
+================================ */
+.modal-badge {
+    position: absolute;
+    top: -28px;
+    left: 40px;
+
+    background: #2CBFAE;
+    color: white;
+
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 600;
+    font-size: 1.25rem;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+
+    z-index: 4;
+}
+
+
 /* ============ MOBILE ============ */
 @media (max-width: 640px) {
 
