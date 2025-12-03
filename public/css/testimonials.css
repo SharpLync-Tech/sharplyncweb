@@ -437,7 +437,7 @@ blockquote {
     display: none;
     justify-content: center;
     align-items: center;
-    background: rgba(5,18,35,0.65);
+    background: rgba(5, 18, 35, 0.65);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     z-index: 999999;
@@ -449,7 +449,7 @@ blockquote {
     display: flex;
 }
 
-/* DESKTOP — WHITE MODAL */
+/* DESKTOP — WHITE MODAL CARD */
 .modal-dialog {
     background: #ffffff;
     color: #0A2A4D;
@@ -463,49 +463,63 @@ blockquote {
     opacity: 0;
     animation: modalPopIn .35s ease forwards;
 
-    /* 🟢 FIX: allow top bar to be clipped by curves */
+    /* ensures inner elements (like top bar) stay clipped to the card */
     overflow: hidden;
 }
 
-/* Teal top border inside the radius */
-.modal-dialog::before {
-    content: "";
+/* POP-IN ANIMATION */
+@keyframes modalPopIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* TEAL TOP STRIP (MATCHES CARD BORDER) */
+.modal-top-bar {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 8px;
     background: #2CBFAE;
-    z-index: 0;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    z-index: 1;
 }
 
-/* MOVE INITIAL BADGE ABOVE TOP BAR */
-.modal-initial-badge {
+/* INITIALS BADGE (MATCHES CARD BADGE) */
+.modal-badge {
     position: absolute;
-    top: -30px;
+    top: -28px;
     left: 40px;
+
+    background: #2CBFAE;
+    color: #ffffff;
+
     width: 65px;
     height: 65px;
     border-radius: 50%;
-    background: #2CBFAE;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.4rem;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 8px 18px rgba(44,191,174,0.45);
-    z-index: 10;
+
+    font-weight: 700;
+    font-size: 1.4rem;
+
+    box-shadow: 0 8px 18px rgba(44,191,174,0.45);
+    z-index: 4;
 }
 
-/* Close button */
+/* CLOSE BUTTON */
 .modal-close {
     position: absolute;
     top: 18px;
     right: 22px;
     background: #178C7F;
     border: 2px solid #178C7F;
-    color: #fff;
+    color: #ffffff;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -515,7 +529,7 @@ blockquote {
     justify-content: center;
     cursor: pointer;
     transition: 0.25s ease;
-    z-index: 11;
+    z-index: 5;
 }
 
 .modal-close:hover {
@@ -524,7 +538,7 @@ blockquote {
     color: #0A2A4D;
 }
 
-/* Text inside modal */
+/* MODAL TEXT CONTENT */
 .modal-text {
     font-size: 1.18rem;
     line-height: 1.85;
@@ -543,59 +557,19 @@ blockquote {
     font-size: 1.45rem;
     font-weight: 600;
     margin-bottom: 0.2rem;
-    color: #0A2A4D;
+    color: #0A2A4D; /* navy */
 }
 
 .modal-role {
     font-size: 1.05rem;
     font-weight: 500;
-    color: #2CBFAE;
+    color: #2CBFAE; /* teal */
 }
 
-/* ================================
-   MODAL — TOP TEAL BORDER
-================================ */
-.modal-top-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 10px;
-    background: #2CBFAE;
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
-    z-index: 3;
-}
+/* ============================================================
+   MOBILE — DARK CARD STYLE
+   ============================================================ */
 
-/* ================================
-   MODAL — INITIAL BADGE
-================================ */
-.modal-badge {
-    position: absolute;
-    top: -28px;
-    left: 40px;
-
-    background: #2CBFAE;
-    color: white;
-
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: 600;
-    font-size: 1.25rem;
-
-    box-shadow: 0 6px 18px rgba(0,0,0,0.20);
-
-    z-index: 4;
-}
-
-
-/* ============ MOBILE ============ */
 @media (max-width: 640px) {
 
     .modal-dialog {
@@ -607,14 +581,26 @@ blockquote {
         overflow-y: auto;
     }
 
-    .modal-dialog::before {
-        background: #2CBFAE;
+    .modal-top-bar {
         height: 6px;
+        background: #2CBFAE;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
     }
 
-    .modal-initial-badge {
+    .modal-badge {
         left: 50%;
         transform: translateX(-50%);
+    }
+
+    .modal-text,
+    .modal-name,
+    .modal-role {
+        color: #ffffff !important;
+    }
+
+    .modal-separator {
+        background: rgba(255,255,255,0.15);
     }
 
     .modal-close {
@@ -630,3 +616,4 @@ blockquote {
         box-shadow: 0 4px 12px rgba(0,0,0,0.45);
     }
 }
+
