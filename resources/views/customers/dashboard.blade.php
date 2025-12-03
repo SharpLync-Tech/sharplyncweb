@@ -60,7 +60,7 @@
       <button type="submit" class="btn-primary w-full">Log Out</button>
     </form>
 
-    <p class="portal-note">SharpLync – Straightforward Support, <span class="highlight">Modern Results</span></p>
+    <p class="portal-note">SharpLync – Your Business,<span class="highlight">Secure & Connected.</span></p>
 
   </div>
 </section>

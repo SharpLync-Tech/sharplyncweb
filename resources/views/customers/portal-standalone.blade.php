@@ -228,7 +228,7 @@
       </section>
 
       <p class="cp-footnote">
-        SharpLync – Straightforward Support, <span class="cp-hl">Modern Results</span>
+        SharpLync – Your Business,<span class="cp-hl">Secure & Connected.</span>
       </p>
     </div>
   </main>
