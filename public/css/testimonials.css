@@ -1,3 +1,7 @@
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+
 .cp-root {
     --navy: #0A2A4D;
     --blue: #104976;
@@ -6,41 +10,31 @@
     --card: #ffffff;
     --muted: #6b7a89;
     --shadow: 0 10px 30px rgba(0, 0, 0, .25);
-
 }
 
 /* ============================================================
-   SHARPLYNC – ISOLATED NAVIGATION CSS (for TESTIMONIALS ONLY)
-   Pure, self-contained, and safe from global stylesheet bleed.
+   ISOLATED NAVIGATION (TESTIMONIALS ONLY)
    ============================================================ */
 
-/* RESET ONLY FOR NAV */
 .isolated-header,
 .isolated-header * {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
-/* =========================================
-   DESKTOP NAVBAR
-   ========================================= */
 .isolated-header {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0.85rem 2rem;
-
     background: rgba(10, 42, 77, 0.70);
     backdrop-filter: blur(10px);
-
     position: sticky;
     top: 0;
     z-index: 9999;
 }
 
-/* LEFT AREA: Logo + nav links */
 .isolated-header .nav-left {
     display: flex;
     align-items: center;
@@ -51,7 +45,6 @@
     height: 60px;
 }
 
-/* Nav links */
 .isolated-header .nav-link {
     color: #eaf6f6;
     text-decoration: none;
@@ -70,7 +63,6 @@
     color: #2CBFAE !important;
 }
 
-/* CENTER SEARCH BAR */
 .isolated-header .nav-center {
     flex: 1;
     display: flex;
@@ -87,11 +79,6 @@
     max-width: 80%;
 }
 
-.isolated-header .nav-search-icon {
-    margin-right: 8px;
-    opacity: 0.7;
-}
-
 .isolated-header .nav-search input {
     border: none;
     outline: none;
@@ -101,35 +88,21 @@
     width: 100%;
 }
 
-/* RIGHT SIDE */
-.isolated-header .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-/* Mobile menu icon */
 .isolated-header .hamburger {
+    display: none;
     font-size: 2rem;
     background: none;
     border: none;
     color: #2CBFAE;
     cursor: pointer;
-    display: none; /* Hidden on desktop */
 }
 
-
-/* =========================================
-   MOBILE NAV
-   ========================================= */
 .isolated-mobile-nav {
     position: fixed;
     top: 0; left: 0;
-    width: 100%; 
-    height: 100%;
+    width: 100%; height: 100%;
     background: rgba(10, 42, 77, 0.95);
     backdrop-filter: blur(8px);
-
     transform: translateX(-100%);
     transition: 0.3s ease;
     z-index: 99999;
@@ -146,57 +119,36 @@
     margin: 0;
 }
 
-.isolated-mobile-nav li {
-    margin: 1.2rem 0;
-    text-align: left;
-}
-
 .isolated-mobile-nav a {
     color: #eaf6f6;
     font-size: 1.4rem;
     padding: 12px 28px;
     display: block;
     text-decoration: none;
-    transition: color 0.3s;
 }
 
 .isolated-mobile-nav a:hover {
     color: #2CBFAE;
 }
 
-/* Close button */
 .isolated-mobile-nav .close-mobile-nav {
     position: absolute;
     top: 15px;
     right: 20px;
+    font-size: 2.4rem;
     background: none;
     border: none;
-    font-size: 2.4rem;
     color: #2CBFAE;
-    cursor: pointer;
 }
 
-
-/* =========================================
-   RESPONSIVE BREAKPOINTS
-   ========================================= */
 @media (max-width: 980px) {
-
-    /* Hide center search + desktop links */
     .isolated-header .nav-left .nav-link,
     .isolated-header .nav-right .nav-link,
     .isolated-header .nav-center {
         display: none;
     }
-
-    /* Show hamburger */
     .isolated-header .hamburger {
         display: block;
-    }
-
-    /* Make logo centered */
-    .isolated-header .nav-left {
-        gap: 12px;
     }
 }
 
@@ -204,85 +156,18 @@
     .isolated-header .logo img {
         height: 48px;
     }
-
-    .isolated-mobile-nav a {
-        font-size: 1.25rem;
-    }
 }
 
-.testimonials-body {    
+/* ============================================================
+   TESTIMONIALS BODY + GRID
+   ============================================================ */
+
+.testimonials-body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     color: #e9f4f3;
     overflow-x: hidden;
 }
-
-main {
-    overflow: visible !important;
-}
-
-
-.tl-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 5000;
-    background: rgba(10, 42, 77, 0.6);
-    backdrop-filter: blur(10px);
-}
-
-.tl-header .logo img {
-    height: 80px;
-}
-
-.hamburger {
-    font-size: 2rem;
-    color: #2CBFAE;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-/* ==================== OVERLAY MENU ==================== */
-.overlay-menu {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(10, 42, 77, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0; visibility: hidden;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-  z-index: 2000;
-}
-.overlay-menu.show { opacity: 1; visibility: visible; }
-
-.overlay-menu ul { list-style: none; text-align: center; padding: 0; }
-.overlay-menu li { margin: 1.4rem 0; }
-.overlay-menu a {
-  color: white;
-  font-size: 1.8rem;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-.overlay-menu a:hover { color: #2CBFAE; }
-
-.close-menu {
-  position: absolute; top: 20px; right: 30px;
-  font-size: 2.4rem; color: #2CBFAE;
-  cursor: pointer; border: none; background: none;
-}
-
-/* ============================================================
-    TESTIMONIALS SECTION (GRID LAYOUT)
-    ============================================================ */
 
 .testimonials-grid-section {
     padding: 60px 0 140px;
@@ -294,7 +179,6 @@ main {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 1.5rem;
-    padding-top: 0px;
 }
 
 .testimonials-header {
@@ -310,36 +194,30 @@ main {
     background: linear-gradient(to right, #fff, #c0f0ec);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent; 
+    color: transparent;
 }
 
 .testimonials-header p {
     font-size: 1.3rem;
-    line-height: 1.7;
     opacity: 0.92;
 }
 
-/* --- Grid Container --- */
 .grid-container {
     display: grid;
-    /* Desktop: Two columns of equal size */
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
-    align-items: stretch; /* Makes all cards fill the row height */
     margin-top: 40px;
 }
 
-/* --- Testimonial Card (Now Grid Item) --- */
 .testimonial-card {
     background: #fff;
     border-radius: 20px;
-    /* Enhanced styling for a more modern, layered look */
     border-top: 6px solid #2CBFAE;
-    padding: 2.5rem 2.8rem 2.5rem;
+    padding: 2.5rem 2.8rem;
     color: #0A2A4D;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: 0.3s;
 }
 
 .testimonial-card:hover {
@@ -347,23 +225,20 @@ main {
     box-shadow: 0 18px 40px rgba(0,0,0,0.2);
 }
 
-/* Decorative large quote (Tuned for new card style) */
 .testimonial-card::before {
     content: "❝";
     font-size: 80px;
     color: rgba(10,42,77,0.08);
     position: absolute;
     top: 40px;
-    right: 620px; /* Moved to top right */
-    line-height: 1;
+    left: 40px;
 }
 
-/* --- Initial Bubble --- */
 .initial-badge {
     width: 65px;
     height: 65px;
     border-radius: 50%;
-    background: #2CBFAE; /* Primary color background */
+    background: #2CBFAE;
     color: #fff;
     display: flex;
     align-items: center;
@@ -371,7 +246,7 @@ main {
     font-weight: 700;
     font-size: 1.4rem;
     position: absolute;
-    top: -32px; /* Pull it outside the card */
+    top: -32px;
     left: 28px;
     box-shadow: 0 8px 20px rgba(44, 191, 174, 0.4);
 }
@@ -381,43 +256,12 @@ blockquote {
     line-height: 1.7;
     font-size: 1.15rem;
     font-style: italic;
-    color: #2c2c2c;
-}
-
-.quote-text {
-    margin: 0;
-}
-
-.expand-link {
-    color: #2CBFAE;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s;
-}
-
-.expand-link:hover {
-    color: #1a8b79;
 }
 
 .author-info {
-    display: flex;
-    flex-direction: column;
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid #eee;
-}
-
-.tl-name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #0A2A4D;
-    line-height: 1.2;
-}
-
-.tl-role {
-    font-size: 0.95rem;
-    opacity: 0.7;
-    margin-top: 0.2rem;
 }
 
 .cp-footer {
@@ -428,58 +272,54 @@ blockquote {
     font-size: .95rem;
     margin-top: 2rem;
 }
+
 .cp-footer .cp-hl {
     color: #2CBFAE;
-    font-weight: 700;
 }
 
-
 /* ============================================================
-   MODAL — SharpLync Premium Redesign
+   NEW MODAL SYSTEM
    ============================================================ */
 
-/* Background overlay */
+/* Overlay */
 #testimonialModal {
     position: fixed;
     inset: 0;
     display: none;
     justify-content: center;
     align-items: center;
-
     background: rgba(5, 18, 35, 0.65);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
     z-index: 999999;
     padding: 30px;
     overflow-y: auto;
 }
 
-#testimonialModal.open {
-    display: flex;
-}
+#testimonialModal.open { display: flex; }
 
-/* Modal container */
+/* ============================================================
+   DESKTOP — WHITE MODAL
+   ============================================================ */
+
 .modal-dialog {
-    background: linear-gradient(145deg, #0A2A4D 0%, #0F375D 100%);
-    color: #fff;
+    background: #ffffff;
+    color: #0A2A4D;
 
-    max-width: 950px;
+    max-width: 900px;
     width: 100%;
-    padding: 3.2rem 3rem 2.8rem;
+    padding: 3rem 3rem 2.5rem;
 
-    border-radius: 28px;
+    border-radius: 24px;
     position: relative;
 
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 25px 80px rgba(0,0,0,0.35);
 
-    /* animation */
     transform: translateY(20px) scale(0.95);
     opacity: 0;
-    animation: modalPopIn .35s ease forwards;
+    animation: modalPopIn .35s ease-out forwards;
 }
 
-/* Modal animation */
+/* Animation */
 @keyframes modalPopIn {
     to {
         opacity: 1;
@@ -487,11 +327,11 @@ blockquote {
     }
 }
 
-/* Close button */
+/* Close button (desktop) */
 .modal-close {
     position: absolute;
     top: 18px;
-    right: 22px;
+    right: 20px;
 
     background: rgba(44, 191, 174, 0.15);
     border: 2px solid rgba(44, 191, 174, 0.3);
@@ -502,55 +342,39 @@ blockquote {
     border-radius: 50%;
 
     font-size: 1.3rem;
-    line-height: 1;
 
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
-    transition: 0.25s ease;
 }
 
-.modal-close:hover {
-    background: #2CBFAE;
-    color: #0A2A4D;
-    transform: scale(1.12);
-}
-
-/* Modal text */
+/* Text */
 .modal-text {
-    font-size: 1.18rem;
+    font-size: 1.15rem;
     line-height: 1.85;
-    margin-bottom: 2.4rem;
-    font-weight: 300;
+    margin-bottom: 2.2rem;
     white-space: pre-line;
 }
 
-/* Divider line */
 .modal-separator {
     height: 1px;
-    background: rgba(255, 255, 255, 0.12);
-    margin: 1rem 0 1.6rem;
+    background: rgba(0,0,0,0.10);
+    margin: 1.4rem 0;
 }
 
-/* Author name */
 .modal-name {
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 0.2rem;
 }
 
-/* Author role */
 .modal-role {
-    font-size: 1.05rem;
-    opacity: 0.85;
-    margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+    opacity: 0.8;
 }
-
 
 /* ============================================================
-   RESPONSIVE MOBILE MODAL
+   MOBILE — DARK NAVY MODAL
    ============================================================ */
 
 @media (max-width: 640px) {
@@ -560,11 +384,15 @@ blockquote {
     }
 
     .modal-dialog {
+        background: #0A2A4D;
+        color: #ffffff;
+
         padding: 2.6rem 1.6rem 2rem;
-        border-radius: 18px;
+        border-radius: 16px;
 
         max-height: 88vh;
         overflow-y: auto;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.5);
     }
 
     .modal-text {
@@ -580,7 +408,7 @@ blockquote {
         font-size: 0.95rem;
     }
 
-    /* Floating fixed close button for small screens */
+    /* Floating close button */
     .modal-close {
         position: fixed;
         top: 12px;
@@ -588,18 +416,13 @@ blockquote {
 
         width: 44px;
         height: 44px;
-        font-size: 1.5rem;
 
         background: #2CBFAE;
-        color: #fff;
         border: none;
+        color: #ffffff;
+
+        font-size: 1.5rem;
+        border-radius: 50%;
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    
-    .modal-dialog {
-        padding: 3rem 1.5rem 2rem; 
-        margin-top: 50px; /* Push the dialog down to not be under the fixed close button */
-        max-height: 85vh;
-        border-radius: 12px;
     }
 }
