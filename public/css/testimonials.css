@@ -124,7 +124,7 @@ body:not(:has(.hero)) {
 
 @media (max-width: 480px) {
     .isolated-header .logo img {
-        height: 48px;
+        height: 60px;
     }
 
     .isolated-mobile-nav a {
