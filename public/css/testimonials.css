@@ -613,4 +613,13 @@ blockquote {
         grid-template-columns: 1fr !important;
         gap: 50px; /* optional – tighter spacing on phones */
     }
+
+    .testimonials-header h1 {
+        font-size: 2rem; 
+        margin-bottom: 0.8rem;
+    }
+
+    .testimonials-header p {
+        font-size: 1rem;
+    }
 }

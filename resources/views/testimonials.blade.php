@@ -12,7 +12,7 @@
     <div class="container">
         {{-- Page heading --}}
         <div class="testimonials-header">
-            <h1>The Foundation of SharpLync: Trusted Expertise</h1>
+            <h1>The Foundation of SharpLync:<span class="gradient">Trusted Expertise</span></h1>
             <p>Endorsements from industry leaders, colleagues, and partners who vouch for our founder's track record, technical integrity, and commitment to exceptional service.</p>
         </div>
 
