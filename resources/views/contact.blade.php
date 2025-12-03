@@ -28,7 +28,7 @@
         {{-- Email --}}
         <div class="info-card">
             <div class="info-icon">
-                <img src="{{ asset('images/icons/mail.svg') }}" alt="Email" />
+                <img src="{{ asset('images/icons/mail.png') }}" alt="Email" />
             </div>
             <h4>Email Support</h4>
             <p>For general enquiries and service questions.</p>
@@ -38,7 +38,7 @@
         {{-- LinkedIn --}}
         <div class="info-card">
             <div class="info-icon">
-                <img src="{{ asset('images/icons/linkedin.svg') }}" alt="LinkedIn" />
+                <img src="{{ asset('images/icons/linkedin.png') }}" alt="LinkedIn" />
             </div>
             <h4>LinkedIn</h4>
             <p>Updates, announcements and professional insights.</p>
@@ -49,7 +49,7 @@
         {{-- Facebook --}}
         <div class="info-card">
             <div class="info-icon">
-                <img src="{{ asset('images/icons/facebook.svg') }}" alt="Facebook" />
+                <img src="{{ asset('images/icons/facebook.png') }}" alt="Facebook" />
             </div>
             <h4>Facebook</h4>
             <p>See our latest news and community updates.</p>
