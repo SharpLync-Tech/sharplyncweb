@@ -137,7 +137,7 @@ class ServicesController extends Controller
                 'id'    => 'hardware-repair',
                 'title' => 'Laptop & Desktop Repairs',
                 'short' => 'Laptop screens, battery replacements & more.',
-                'long'  => 'We source, replacements parts and can fix laptops and desktops',
+                'long'  => 'We source, replacement parts and can fix laptops and desktops',
                 'subs'  => [
                     'Laptops, desktops, batteries & screens',
                     'Networking & Wi-Fi hardware',
