@@ -27,14 +27,23 @@ body {
 
 .contact-title {
     font-family: "Poppins", sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: 3.2rem;
+    font-weight: 800;
     letter-spacing: -0.5px;
-    margin-bottom: 0.8rem;
+    color: #ffffff;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+
+.contact-title .brand-gradient {
+    background: linear-gradient(90deg, #2CBFAE, #4df0d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
 }
 
 
 .contact-subtitle {
+    font-family: "Poppins", sans-serif;
     font-size: 1.2rem;
     opacity: 0.9;
     max-width: 700px;
