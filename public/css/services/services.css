@@ -263,28 +263,59 @@
     font-weight: 700;
 }
 
-.tm-badge-card {
+/* ===============================
+   Trend Micro Partner Badge
+   =============================== */
+.partner-badge {
+    display: flex;
+    text-decoration: none;
+    margin-top: 2rem;
+}
+
+.partner-badge-inner {
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    background: rgba(10,42,77,0.8);
-    padding: 1.3rem 1.6rem;
-    border-radius: 14px;
-    margin: 1.8rem auto;
-    max-width: 520px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.28);
+    gap: 1.6rem;
+    padding: 1.8rem 2.2rem;
+    border-radius: 20px;
+
+    background: linear-gradient(135deg,
+        rgba(44, 191, 174, 0.08) 0%,
+        rgba(10, 42, 77, 0.65) 60%
+    );
+
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    transition: 0.25s ease;
 }
 
-.tm-badge-icon {
-    height: 36px;
-    width: auto;
-    filter: drop-shadow(0 0 3px rgba(230,0,18,0.7));
-}
+    .partner-badge-inner:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+    }
 
-.tm-badge-card span {
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-}
+    .partner-badge-logo {
+        width: 160px;
+        border-radius: 12px;
+        background: white;
+        padding: 10px 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+
+    .partner-badge-text h4 {
+        margin: 0;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .partner-badge-text p {
+        margin: 4px 0 0;
+        color: rgba(255,255,255,0.85);
+        font-size: 0.95rem;
+    }
+
 
 
 /* One-time fade-in arrow animation */

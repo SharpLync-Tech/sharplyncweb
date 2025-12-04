@@ -72,14 +72,20 @@
             <div class="mock-text">
                 <p id="expLong"></p>
 
-                {{-- 🔥 Trend Micro Partner Badge (Shown only when data exists) --}}
-                <div id="partnerBadge" class="tm-badge-card" style="display:none;">
-                    <img id="partnerBadgeLogo" class="tm-badge-icon" alt="Partner Logo">
-                    <div>
-                        <strong id="partnerBadgeTitle"></strong><br>
-                        <span id="partnerBadgeText"></span>
+                {{-- PARTNER BADGE (Clickable, premium style) --}}
+                <a href="{{ url('/trend-micro') }}" id="partnerBadge" class="partner-badge" style="display:none;">
+
+                    <div class="partner-badge-inner">
+                        <img id="partnerBadgeLogo" src="" alt="Trend Micro Partner" class="partner-badge-logo">
+
+                        <div class="partner-badge-text">
+                            <h4 id="partnerBadgeTitle">Official Trend Micro Partner</h4>
+                            <p id="partnerBadgeText">Powered by the Trend Micro Vision One™ security platform.</p>
+                        </div>
                     </div>
-                </div>
+
+                </a>
+
 
                 <h4>Included Services</h4>
                 <ul id="expSubs"></ul>
