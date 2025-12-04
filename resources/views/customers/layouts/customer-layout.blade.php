@@ -16,6 +16,10 @@
     {{-- Base customer portal stylesheet --}}
     <link rel="stylesheet" href="/css/customer.css?v=3003">
 
+    {{-- Remote Support Download stylesheet --}}
+    <link rel="stylesheet" href="{{ asset('css/customer-remote-support.css') }}">
+
+
     {{-- LOCAL Quill styles --}}
     <link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
     <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">

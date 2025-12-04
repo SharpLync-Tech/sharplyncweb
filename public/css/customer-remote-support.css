@@ -1,0 +1,179 @@
+/* 
+   SharpLync Remote Support Page Styles
+   File: public/css/customer-remote-support.css
+*/
+
+.sl-remote-support-page {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.sl-remote-support-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2rem 2.25rem;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(10, 42, 77, 0.06);
+}
+
+.sl-remote-support-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.sl-remote-support-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    background: radial-gradient(circle at 30% 20%, #2CBFAE, #104976);
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(44, 191, 174, 0.7);
+}
+
+.sl-remote-support-title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #0A2A4D;
+}
+
+.sl-remote-support-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    color: #576574;
+}
+
+.sl-remote-support-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sl-remote-support-text p {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #34495e;
+}
+
+/* Warning block */
+
+.sl-remote-support-warning {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem 1.1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    background: rgba(255, 243, 205, 0.9);
+    border: 1px solid #ffecb5;
+}
+
+.sl-remote-support-warning-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #b7791f;
+}
+
+.sl-remote-support-warning-text h2 {
+    margin: 0 0 0.35rem;
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #b7791f;
+}
+
+.sl-remote-support-warning-text p {
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+    color: #5a4630;
+}
+
+/* Meta text */
+
+.sl-remote-support-meta {
+    font-size: 0.9rem;
+    color: #576574;
+}
+
+.sl-remote-support-version {
+    margin: 0 0 0.25rem;
+}
+
+.sl-remote-support-note {
+    margin: 0;
+    font-style: italic;
+}
+
+/* Button */
+
+.sl-remote-support-actions {
+    margin-top: 0.5rem;
+}
+
+.sl-remote-support-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.6rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #2CBFAE, #104976);
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(16, 73, 118, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background 0.15s ease-out;
+}
+
+.sl-remote-support-button-icon {
+    font-size: 1.1rem;
+}
+
+.sl-remote-support-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.5), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+
+.sl-remote-support-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 30px rgba(16, 73, 118, 0.55);
+}
+
+.sl-remote-support-button:hover::after {
+    opacity: 1;
+}
+
+.sl-remote-support-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 10px 18px rgba(16, 73, 118, 0.4);
+}
+
+/* Responsive */
+
+@media (max-width: 640px) {
+    .sl-remote-support-card {
+        padding: 1.5rem 1.25rem;
+        border-radius: 16px;
+    }
+
+    .sl-remote-support-header {
+        align-items: flex-start;
+    }
+
+    .sl-remote-support-title {
+        font-size: 1.35rem;
+    }
+}

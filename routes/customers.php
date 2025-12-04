@@ -115,19 +115,47 @@ Route::middleware(['auth:customer'])->group(function () {
 
 
     // ======================================================
-    // PART 4 — SECURE FILE DOWNLOADS
-    // ======================================================
-    Route::get('/portal/teamviewer-download', function () {
+        // PART 4 — REMOTE SUPPORT (UI PAGE + DOWNLOAD)
+        // ======================================================
 
-        $user = Auth::user();
-        $file = storage_path('app/secure_downloads/SharpLync_QuickSupport.exe');
+        // Remote Support UI page (PRETTY UI)
+        Route::get('/portal/remote-support', function () {
+            return view('customers.portal.remote-support');
+        })->name('customer.remote-support');
 
-        if (!file_exists($file)) abort(404);
 
-        Log::info('TeamViewer downloaded by ' . $user->email);
+        // Logged-in customers — direct download (NO signature needed)
+        Route::get('/portal/teamviewer-download', function () {
 
-        if (!request()->hasValidSignature()) abort(403);
+            $user = Auth::user();
+            $file = storage_path('app/secure_downloads/SharpLync_QuickSupport.exe');
 
-        return response()->download($file, 'SharpLync_QuickSupport.exe');
-    })->name('customer.teamviewer.download');
+            if (!file_exists($file)) {
+                Log::warning('TeamViewer download attempted but file missing.');
+                abort(404, 'Remote support tool not available.');
+            }
+
+            Log::info('TeamViewer downloaded by ' . ($user->email ?? 'Unknown User'));
+
+            // SIGNATURE CHECK REMOVED — logged-in customers do NOT need it
+
+            return response()->download($file, 'SharpLync_QuickSupport.exe');
+        })->name('customer.teamviewer.download');
+
+
+        // OPTIONAL — Signed expiring link for ad-hoc customers
+        // (Not used in portal, but used when YOU send a link)
+        Route::get('/portal/teamviewer-download/signed', function () {
+
+            if (!request()->hasValidSignature()) abort(403);
+
+            $file = storage_path('app/secure_downloads/SharpLync_QuickSupport.exe');
+            if (!file_exists($file)) abort(404);
+
+            Log::info('SIGNED TeamViewer link used (ad-hoc user).');
+
+            return response()->download($file, 'SharpLync_QuickSupport.exe');
+
+        })->name('customer.teamviewer.download.signed');
+
 });

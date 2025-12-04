@@ -13,8 +13,8 @@
             Open Support
         </a>
 
-        <a href="{{ route('customer.teamviewer.download') }}" class="btn btn-teal">
-            Download SharpLync Remote Support
+        <a href="{{ route('customer.remote-support') }}" class="btn btn-teal">
+            Remote Support
         </a>
     </div>
 </div>
