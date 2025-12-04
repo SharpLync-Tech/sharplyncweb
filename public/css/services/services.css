@@ -263,6 +263,30 @@
     font-weight: 700;
 }
 
+.tm-badge-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(10,42,77,0.8);
+    padding: 1.3rem 1.6rem;
+    border-radius: 14px;
+    margin: 1.8rem auto;
+    max-width: 520px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.28);
+}
+
+.tm-badge-icon {
+    height: 36px;
+    width: auto;
+    filter: drop-shadow(0 0 3px rgba(230,0,18,0.7));
+}
+
+.tm-badge-card span {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+}
+
+
 /* One-time fade-in arrow animation */
 @keyframes arrowFadeIn {
     0% {
