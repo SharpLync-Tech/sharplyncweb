@@ -478,81 +478,34 @@ footer {
 .onboard-divider::before { left: 0; }
 .onboard-divider::after { right: 0; }
 
-/*
-|---------------------------------------------------------------
-| MEDIUM SCREENS (Up to 640px) - Tablet Portrait
-|---------------------------------------------------------------
-*/
-    @media (max-width: 640px) {
-      .testimonials-section .nav-btn {
-        width: 44px;
-        height: 44px;
-      }
-    }
-
-    ---
-
-    /*
-    |---------------------------------------------------------------
-    | SMALL SCREENS (Up to 600px)
-    |---------------------------------------------------------------
-    */
-    @media (max-width: 600px) {
-      .onboard-card {
-        padding: 2rem 1.5rem;
-      }
-      .onboard-title {
-        font-size: 1.5rem;
-      }
-      .onboard-subtitle {
-        font-size: 0.95rem;
-      }
-    }
-
-    ---
-
-    /*
-    |---------------------------------------------------------------
-    | EXTRA SMALL SCREENS (Up to 500px) - Mobile
-    |---------------------------------------------------------------
-    */
-    @media (max-width: 500px) {
-      .main-header .logo img {
-        height: 90px; /* Restore logo height for small mobile screens */
-      }
-      .hero-logo {
-        width: 140px;
-      }
-      .hero-text h1 {
-        font-size: 1.9rem;
-      }
-      .hero-cpu-bg {
-        display: none !important; /* Hide background image on smallest screens */
-      }
-    }
-    📝 Su
-    ---
-
-    /*
-    |---------------------------------------------------------------
-    | EXTRA SMALL SCREENS (Up to 500px) - Mobile
-    |---------------------------------------------------------------
-    */
-    @media (max-width: 500px) {
-      .main-header .logo img {
-        height: 90px; /* Restore logo height for small mobile screens */
-      }
-      .hero-logo {
-        width: 140px;
-      }
-      .hero-text h1 {
-        font-size: 1.9rem;
-      }
-      .hero-cpu-bg {
-        display: none !important; /* Hide background image on smallest screens */
-      }
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .main-header .logo img { height: 65px; }
+  .hero { padding: 5rem 6% 6rem; }
+  .hero-logo { display: none; }
+  .hero-cpu-bg img {
+    width: 450px;
+    margin-top: -8rem;
+    margin-right: -2rem;
+    opacity: 0.4;
+  }
+  .hero-cards { gap: 1.5rem; }
+  .tile { flex: 1 1 90%; }
 }
-
+@media (max-width: 640px){
+  .testimonials-section .nav-btn{ width: 44px; height: 44px; }
+}
+@media (max-width: 600px) {
+  .onboard-card { padding: 2rem 1.5rem; }
+  .onboard-title { font-size: 1.5rem; }
+  .onboard-subtitle { font-size: 0.95rem; }
+}
+@media (max-width: 500px) {
+  .main-header .logo img { height: 85px; }
+  .hero-logo { width: 140px; }
+  .hero-text h1 { font-size: 1.9rem; }
+  .hero-cpu-bg { display: none !important; }
+}
 
 
 /* ============================
