@@ -482,7 +482,7 @@ footer {
 @media (max-width: 900px) {
   .main-header .logo img { height: 65px; }
   .hero { padding: 5rem 6% 6rem; }
-  .hero-logo { width: 180px; }
+  .hero-logo { display: none; }
   .hero-cpu-bg img {
     width: 450px;
     margin-top: -8rem;
@@ -501,7 +501,7 @@ footer {
   .onboard-subtitle { font-size: 0.95rem; }
 }
 @media (max-width: 500px) {
-  .main-header .logo img { height: 85px; }
+  .main-header .logo img { height: 90px; }
   .hero-logo { width: 140px; }
   .hero-text h1 { font-size: 1.9rem; }
   .hero-cpu-bg { display: none !important; }
