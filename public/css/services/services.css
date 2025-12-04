@@ -288,9 +288,65 @@
     box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255,255,255,0.08);
 
-    transition: 0.25s ease;}
+    transition: 0.25s ease;
+}
 
-  
+   /* ============================================
+   Trend Micro Partner Card — Exact Copy
+   ============================================ */
+.tm-partner-card {
+    display: block;
+    text-decoration: none;
+    margin-top: 2rem;
+}
+
+.tm-card-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+
+    padding: 1.8rem 2.4rem;
+    border-radius: 22px;
+
+    background: linear-gradient(135deg,
+        rgba(28, 202, 235, 0.15) 0%,
+        rgba(10, 42, 77, 0.9) 100%
+    );
+
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(6px);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+        .tm-card-inner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+        }
+
+        .tm-card-logo {
+            width: 170px;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+        }
+
+        .tm-card-text h4 {
+            margin: 0;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .tm-card-text p {
+            margin: 6px 0 0;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.45;
+            max-width: 420px;
+        }
+
 
 
 
