@@ -304,11 +304,13 @@
 .tm-badge-title {
     font-weight: 600;
     font-size: 0.98rem;
+    color: #ffffff !important;
 }
 
 .tm-badge-note {
     font-size: 0.85rem;
     color: rgba(233,244,243,0.85);
+    text-decoration: none !important;
 }
 
 /* One-time fade-in arrow animation */
