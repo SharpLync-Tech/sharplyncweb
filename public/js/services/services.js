@@ -10,6 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const expLong = document.getElementById("expLong");
     const expSubs = document.getElementById("expSubs");
 
+    // ⭐ Partner Badge Elements
+    const partnerBadge = document.getElementById("partnerBadge");
+    const partnerBadgeLogo = document.getElementById("partnerBadgeLogo");
+    const partnerBadgeTitle = document.getElementById("partnerBadgeTitle");
+    const partnerBadgeText = document.getElementById("partnerBadgeText");
+
     const closeBtn = document.getElementById("closeExpanded");
 
     // =========================
@@ -26,6 +32,19 @@ document.addEventListener("DOMContentLoaded", () => {
             expIcon.src = tile.dataset.icon;
             expImage.src = tile.dataset.image;
 
+            // -------------------------
+            // ⭐ TREND MICRO BADGE LOGIC
+            // -------------------------
+            if (tile.dataset.partnerLogo) {
+                partnerBadge.style.display = "flex";
+                partnerBadgeLogo.src = tile.dataset.partnerLogo;
+                partnerBadgeTitle.textContent = tile.dataset.partnerTitle;
+                partnerBadgeText.textContent = tile.dataset.partnerText;
+            } else {
+                partnerBadge.style.display = "none";
+            }
+
+            // Included services
             expSubs.innerHTML = "";
             JSON.parse(tile.dataset.subs).forEach(text => {
                 const li = document.createElement("li");
@@ -51,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.classList.remove("hidden");
         // ==== window.scrollTo({ top: 0 }); Removed by Jannie ====
         expanded.scrollIntoView({ behavior: "instant", block: "start" }); // ==== Added by Jannie ====
-
     });
 
 });

@@ -32,7 +32,13 @@
              data-long="{{ $cat['long'] }}"
              data-icon="{{ asset($cat['icon']) }}"
              data-image="{{ asset($cat['image']) }}"
-             data-subs='@json($cat["subs"])'>
+             data-subs='@json($cat["subs"])'
+             @if(isset($cat["partner_badge"]))
+                data-partner-logo="{{ $cat['partner_badge']['logo'] }}"
+                data-partner-title="{{ $cat['partner_badge']['title'] }}"
+                data-partner-text="{{ $cat['partner_badge']['text'] }}"
+             @endif
+        >
 
             <div class="tile-header">
                 <img src="{{ asset($cat['icon']) }}" class="tile-icon">
@@ -40,6 +46,7 @@
                 <p>{{ $cat['short'] }}</p>
                 <button class="tile-toggle">Learn More</button>
             </div>
+
         </div>
         @endforeach
     </div>
@@ -53,7 +60,6 @@
             <p id="expShort"></p>
             <button id="closeExpanded" class="mock-close-btn">Close</button>
             <a href="https://sharplync.com.au/contact" class="mock-cta-btn">Let’s Get You Sorted</a>
-
         </div>
 
         <hr class="mock-divider">
@@ -65,6 +71,16 @@
 
             <div class="mock-text">
                 <p id="expLong"></p>
+
+                {{-- 🔥 Trend Micro Partner Badge (Shown only when data exists) --}}
+                <div id="partnerBadge" class="tm-badge-card" style="display:none;">
+                    <img id="partnerBadgeLogo" class="tm-badge-icon" alt="Partner Logo">
+                    <div>
+                        <strong id="partnerBadgeTitle"></strong><br>
+                        <span id="partnerBadgeText"></span>
+                    </div>
+                </div>
+
                 <h4>Included Services</h4>
                 <ul id="expSubs"></ul>
             </div>
