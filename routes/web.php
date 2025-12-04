@@ -4,7 +4,7 @@
         use App\Http\Controllers\PageController;
         use App\Http\Controllers\Auth\VerifyController;
         use App\Http\Controllers\Admin\LogViewerController;
-        use App\Http\Controllers\PolicyController;
+        
 
         Route::get('/', fn() => view('/home')); // Home Page
         // Route::get('/', fn() => view('coming_soon')); // Coming Soon
