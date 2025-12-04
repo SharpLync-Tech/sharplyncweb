@@ -35,14 +35,8 @@ class ServicesController extends Controller
                     'Security reviews & hardening',
                 ],
                 'icon'  => asset('images/security.png'),
-                'image' => asset('images/cyber_security.png'),
-
+                'image' => asset('images/cyber_security.png'),                
                 
-                'partner_badge' => [
-                    'logo' => asset('images/partners/trend-micro-partner.png'),
-                    'title' => 'Official Trend Micro Partner',
-                    'text'  => 'Secured by the Trend Micro Vision One™ security platform.',
-                ],
             ],
 
 
