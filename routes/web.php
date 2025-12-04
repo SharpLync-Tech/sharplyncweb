@@ -15,6 +15,11 @@
         Route::get('/components', fn() => view('components'));
         Route::get('/home', fn() => view('home'));
         Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
+        
+        // Policy Pages        
+        Route::get('/terms', fn() => view('terms'));
+        Route::get('/privacy', fn() => view('privacy'));
+        
 
         Route::get('/about', [PageController::class, 'about'])->name('about');
         Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
