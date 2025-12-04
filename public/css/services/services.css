@@ -264,118 +264,52 @@
 }
 
 /* ===============================
-   Trend Micro Partner Badge
+   Trend Micro Partner Badge (TM hero clone)
    =============================== */
-.partner-badge {
-    display: flex;
-    text-decoration: none;
-    margin-top: 2rem;
-}
-
-.partner-badge-inner {
-    width: 100%;
+.tm-partner-badge {
     display: flex;
     align-items: center;
-    gap: 1.6rem;
-    padding: 1.8rem 2.2rem;
-    border-radius: 20px;
-
-    background: linear-gradient(135deg,
-        rgba(44, 191, 174, 0.08) 0%,
-        rgba(10, 42, 77, 0.65) 60%
-    );
-
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255,255,255,0.08);
-
-    transition: 0.25s ease;
+    gap: 1rem;
+    margin-top: 1.8rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 14px;
+    background: radial-gradient(circle at top left,
+        rgba(230,0,18,0.22), rgba(6,23,41,0.96));
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.18);
 }
 
-   /* ============================================
-   Trend Micro Partner Card — Exact Copy
-   ============================================ */
-.tm-partner-card {
-    display: block;
-    text-decoration: none;
-    margin-top: 2rem;
-}
-
-.tm-card-inner {
+.tm-logo-wrap {
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 0.5rem 0.7rem;
     display: flex;
     align-items: center;
-    gap: 1.8rem;
-
-    padding: 1.8rem 2.4rem;
-    border-radius: 22px;
-
-    background: linear-gradient(135deg,
-        rgba(28, 202, 235, 0.15) 0%,
-        rgba(10, 42, 77, 0.9) 100%
-    );
-
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255,255,255,0.10);
-    backdrop-filter: blur(6px);
-
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    justify-content: center;
+    filter: drop-shadow(0 0 6px rgba(230, 0, 18, 0.55));
 }
 
-        .tm-card-inner:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
-        }
+.tm-logo-wrap img {
+    height: 30px;
+    transform: translateY(1px);
+}
 
-        .tm-card-logo {
-            width: 170px;
-            background: white;
-            border-radius: 12px;
-            padding: 12px 18px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-        }
+.tm-badge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
 
-        .tm-card-text h4 {
-            margin: 0;
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 1.15rem;
-        }
+.tm-badge-title {
+    font-weight: 600;
+    font-size: 0.98rem;
+}
 
-        .tm-card-text p {
-            margin: 6px 0 0;
-            color: rgba(255,255,255,0.85);
-            line-height: 1.45;
-            max-width: 420px;
-        }
-
-        /* ----------------------------- */
-        /* MOBILE FIX FOR TM PARTNER BOX */
-        /* ----------------------------- */
-        @media (max-width: 768px) {
-            .tm-partner-box {
-                flex-direction: column !important;
-                align-items: center !important;
-                text-align: center !important;
-                padding: 1.8rem 1.5rem !important;
-            }
-
-            .tm-partner-logo {
-                width: 140px !important;
-                margin: 0 0 1rem 0 !important;
-            }
-
-            .tm-partner-text h3 {
-                font-size: 1.2rem !important;
-                line-height: 1.4 !important;
-            }
-
-            .tm-partner-text p {
-                font-size: 0.95rem !important;
-                margin: 0 auto !important;
-                max-width: 260px;
-            }
-        }
-
-
+.tm-badge-note {
+    font-size: 0.85rem;
+    color: rgba(233,244,243,0.85);
+}
 
 /* One-time fade-in arrow animation */
 @keyframes arrowFadeIn {
@@ -427,7 +361,6 @@
     background: #35e0c2 !important;
 }
 
-
 .mock-close-btn:hover {
     background: rgba(44,191,174,0.25);
 }
@@ -473,5 +406,17 @@
     .service-tile.active {
         transform: none !important;
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+    }
+}
+
+/* Mobile layout for TM badge – same as TM page */
+@media (max-width: 700px) {
+    .tm-partner-badge {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tm-logo-wrap img {
+        height: 34px;
     }
 }

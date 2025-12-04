@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // ⭐ TREND MICRO BADGE LOGIC
             // -------------------------
             if (tile.dataset.partnerLogo) {
-                partnerBadge.style.display = "flex";
+                partnerBadge.style.display = "block";
                 partnerBadgeLogo.src = tile.dataset.partnerLogo;
                 partnerBadgeTitle.textContent = tile.dataset.partnerTitle;
                 partnerBadgeText.textContent = tile.dataset.partnerText;
