@@ -480,9 +480,9 @@ footer {
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
-  .main-header .logo img { height: 85px; }
+  .main-header .logo img { height: 65px; }
   .hero { padding: 5rem 6% 6rem; }
-  .hero-logo { display: none !important; }
+  .hero-logo { display: none !important;; }
   .hero-cpu-bg img {
     width: 450px;
     margin-top: -8rem;
@@ -493,20 +493,16 @@ footer {
   .tile { flex: 1 1 90%; }
 }
 @media (max-width: 640px){
-  .main-header .logo img { height: 85px; }
-  .hero-logo { display: none !important; }
   .testimonials-section .nav-btn{ width: 44px; height: 44px; }
 }
 @media (max-width: 600px) {
-  .main-header .logo img { height: 85px; }
-  .hero-logo { display: none !important; }
   .onboard-card { padding: 2rem 1.5rem; }
   .onboard-title { font-size: 1.5rem; }
   .onboard-subtitle { font-size: 0.95rem; }
 }
 @media (max-width: 500px) {
   .main-header .logo img { height: 85px; }
-  .hero-logo { display: none !important; }
+  .hero-logo { width: 140px; }
   .hero-text h1 { font-size: 1.9rem; }
   .hero-cpu-bg { display: none !important; }
 }
