@@ -8,7 +8,7 @@
 
         Route::get('/', fn() => view('/home')); // Home Page
         // Route::get('/', fn() => view('coming_soon')); // Coming Soon
-        // Route::get('/', fn() => view('welcome')); Sydney
+        Route::get('/welcome', fn() => view('welcome')); //Sydney
         Route::get('/contact', fn() => view('contact'));
         Route::get('/style-preview', fn() => view('style-preview'));
         Route::get('/mobile-preview', fn() => view('mobile-preview'));
