@@ -75,7 +75,7 @@
                 {{-- TREND MICRO PARTNER BADGE (Exact TM page design) --}}
                 <a href="{{ url('/trend-micro') }}" id="partnerBadge" class="tm-partner-card" style="display:none;">
                     <div class="tm-card-inner">
-                        <img id="partnerBadgeLogo" src="images/partners/trend-micro-partner.png" alt="Trend Micro Logo" class="tm-card-logo">
+                        <img id="partnerBadgeLogo" src="" alt="Trend Micro Logo" class="tm-card-logo">
                         <div class="tm-card-text">
                             <h4 id="partnerBadgeTitle">Official Trend Micro Partner</h4>
                             <p id="partnerBadgeText">

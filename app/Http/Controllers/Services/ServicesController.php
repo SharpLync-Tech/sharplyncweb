@@ -39,7 +39,7 @@ class ServicesController extends Controller
 
                 
                 'partner_badge' => [
-                    'logo' => asset('images/partners/tball.png'),
+                    'logo' => asset('images/partners/trend-micro-partner.png'),
                     'title' => 'Official Trend Micro Partner',
                     'text'  => 'Secured by the Trend Micro Vision One™ security platform.',
                 ],
