@@ -10,6 +10,8 @@
         gtag('config', 'G-2SCQ2YCEW8');
     </script>
 
+    <script type="text/javascript" src="https://res.public.onecdn.static.microsoft/customerconnect/v1/7dttl/init.js" id="chatbot" environmentId="57be5f9e-a694-ec8b-aecc-f80d412e15c8" crossorigin="anonymous"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync | IT Support & Cloud Services')</title>
@@ -116,14 +118,8 @@
     </main>
 
     <!-- ========================= FOOTER ========================= -->
-     
-    <script>
-          type="text/javascript" 
-          src="https://res.public.onecdn.static.microsoft/customerconnect/v1/7dttl/init.js" 
-          id="chatbot" 
-          environmentId="57be5f9e-a694-ec8b-aecc-f80d412e15c8" 
-          crossorigin="anonymous">
-    </script>
+
+    
 
     <footer>
         <div class="footer-content">
