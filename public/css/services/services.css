@@ -347,6 +347,33 @@
             max-width: 420px;
         }
 
+        /* ----------------------------- */
+        /* MOBILE FIX FOR TM PARTNER BOX */
+        /* ----------------------------- */
+        @media (max-width: 768px) {
+            .tm-partner-box {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 1.8rem 1.5rem !important;
+            }
+
+            .tm-partner-logo {
+                width: 140px !important;
+                margin: 0 0 1rem 0 !important;
+            }
+
+            .tm-partner-text h3 {
+                font-size: 1.2rem !important;
+                line-height: 1.4 !important;
+            }
+
+            .tm-partner-text p {
+                font-size: 0.95rem !important;
+                margin: 0 auto !important;
+                max-width: 260px;
+            }
+        }
 
 
 
