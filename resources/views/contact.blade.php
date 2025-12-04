@@ -15,75 +15,102 @@
             <span class="brand-gradient">SharpLync</span>
         </h1>
         <p class="contact-subtitle">
-            We're here to help your business get IT right. Let's talk about your technology needs.
+            Choose the best way to reach our team. We’re here to help your business get IT right.
         </p>
     </div>
 
 </section>
 
-<section class="contact-info-section fade-in">
+{{-- ============================= --}}
+{{-- TALK TO US SECTION            --}}
+{{-- ============================= --}}
+<section class="contact-section contact-talk fade-in">
+    <div class="contact-section-inner">
 
-    <div class="contact-info-grid">
+        <h2 class="contact-section-title">Talk to Us</h2>
+        <p class="contact-section-subtitle">
+            Need help now? Use one of these direct support channels.
+        </p>
 
-        {{-- Email --}}
-        <div class="info-card">
-            <div class="info-icon">
-                <img src="{{ asset('images/email.png') }}" alt="Email" />
+        <div class="contact-grid contact-grid-talk">
+
+            {{-- Email --}}
+            <div class="glass-card">
+                <div class="glass-icon">
+                    <img src="{{ asset('images/email.png') }}" alt="Email" />
+                </div>
+                <h4>Email Support</h4>
+                <p>For general enquiries and service questions.</p>
+                <a href="mailto:info@sharplync.com.au" class="glass-link">info@sharplync.com.au</a>
             </div>
-            <h4>Email Support</h4>
-            <p>For general enquiries and service questions.</p>
-            <a href="mailto:info@sharplync.com.au" class="info-link">info@sharplync.com.au</a>
-        </div>
 
-        {{-- Phone --}}
-        <div class="info-card">
-            <div class="info-icon">
-                <img src="{{ asset('images/phone.png') }}" alt="Phone" />
+            {{-- Phone --}}
+            <div class="glass-card">
+                <div class="glass-icon">
+                    <img src="{{ asset('images/phone.png') }}" alt="Phone" />
+                </div>
+                <h4>Call Us</h4>
+                <p>Fast support for urgent enquiries.</p>
+                <a href="tel:0492 014 463" class="glass-link">0492 014 463</a>
             </div>
-            <h4>Call Us</h4>
-            <p>Fast support for urgent enquiries.</p>
-            <a href="tel:0492 014 463" class="info-link">0492 014 463</a>
-        </div>
 
-        {{-- WhatsApp --}}
-        <div class="info-card">
-            <div class="info-icon">
-                <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp" />
+            {{-- WhatsApp --}}
+            <div class="glass-card">
+                <div class="glass-icon">
+                    <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp" />
+                </div>
+                <h4>WhatsApp</h4>
+                <p>Quick messaging for fast support and updates.</p>
+                <a href="https://wa.me/message/K7U44ZE6X53LH1"
+                   target="_blank" class="glass-link">Chat with us</a>
             </div>
-            <h4>WhatsApp</h4>
-            <p>
-                Quick messaging for fast support and updates.
-            </p>
-            <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank" class="info-link">
-                Chat with us
-            </a>
-        </div>
 
-        {{-- LinkedIn --}}
-        <div class="info-card">
-            <div class="info-icon">
-                <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn" />
-            </div>
-            <h4>LinkedIn</h4>
-            <p>Updates, announcements and professional insights.</p>
-            <a href="https://www.linkedin.com/company/sharplync"
-               target="_blank" class="info-link">Connect with us</a>
         </div>
-
-        {{-- Facebook --}}
-        <div class="info-card">
-            <div class="info-icon">
-                <img src="{{ asset('images/facebook.png') }}" alt="Facebook" />
-            </div>
-            <h4>Facebook</h4>
-            <p>See our latest news and community updates.</p>
-            <a href="https://www.facebook.com/SharpLync"
-               target="_blank" class="info-link">Join our community</a>
-        </div>
-
     </div>
 </section>
 
+{{-- ============================= --}}
+{{-- CONNECT WITH US SECTION       --}}
+{{-- ============================= --}}
+<section class="contact-section contact-connect fade-in">
+    <div class="contact-section-inner">
+
+        <h2 class="contact-section-title">Connect With Us</h2>
+        <p class="contact-section-subtitle">
+            Stay in the loop with SharpLync news, updates and insights.
+        </p>
+
+        <div class="contact-grid contact-grid-connect">
+
+            {{-- LinkedIn --}}
+            <div class="glass-card glass-card-alt">
+                <div class="glass-icon">
+                    <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn" />
+                </div>
+                <h4>LinkedIn</h4>
+                <p>Updates, announcements and professional insights.</p>
+                <a href="https://www.linkedin.com/company/sharplync"
+                   target="_blank" class="glass-link">Connect with us</a>
+            </div>
+
+            {{-- Facebook --}}
+            <div class="glass-card glass-card-alt">
+                <div class="glass-icon">
+                    <img src="{{ asset('images/facebook.png') }}" alt="Facebook" />
+                </div>
+                <h4>Facebook</h4>
+                <p>See our latest news and community updates.</p>
+                <a href="https://www.facebook.com/SharpLync"
+                   target="_blank" class="glass-link">Join our community</a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{-- ============================= --}}
+{{-- CONTACT FORM SECTION          --}}
+{{-- ============================= --}}
 <section class="contact-form-section fade-in">
 
     <div class="contact-form-card">
