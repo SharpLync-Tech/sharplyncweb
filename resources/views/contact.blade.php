@@ -54,7 +54,7 @@
             <p>
                 Quick messaging for fast support and updates.
             </p>
-            <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank">
+            <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank" class="info-link">
                 Chat with us
             </a>
         </div>
