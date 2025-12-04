@@ -1,38 +1,28 @@
-{{-- resources/views/policies/privacy.blade.php --}}
-@extends('layouts.base')
+@extends('policies.layout')
 
-@section('title', 'SharpLync | Terms & Conditions')
+@section('policy_title', 'Privacy Policy')
+@section('policy_version', 'v1.3')
+@section('policy_updated', '5 December 2025')
 
-@section('policy-title')
-    Terms & <span class="gradient">Conditions</span>
-@endsection
+@section('policy_content')
 
-{{-- These values will be passed from the controller later --}}
-@section('pdf-url', $pdfUrl ?? null)
+<div class="policy-section">
+    <h2>Introduction</h2>
+    <p>Welcome to SharpLync. These terms govern your use of our services...</p>
+</div>
 
-@section('policy-content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8">
-                <div class="card shadow-lg">
-                    <div class="card-body p-4">
-                        {{-- This variable is where your converted PDF text will go. --}}
-                        {{-- We use {!! !!} to render HTML if the content is marked up (e.g., from PDF conversion) --}}
-                        @if(isset($content) && !empty($content))
-                            {!! $content !!}
-                        @else
-                            <p>The Terms & Conditions document is currently unavailable. Please check back later.</p>
-                        @endif
+<div class="policy-divider"></div>
 
-                        {{-- Download link at the bottom --}}
-                        @if(isset($pdfUrl) && !empty($pdfUrl))
-                            <div class="text-center mt-4">
-                                <a href="{{ $pdfUrl }}" class="btn btn-primary" download>Download the official document (PDF)</a>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="policy-section">
+    <h2>Use of Services</h2>
+    <p>You agree not to misuse or interfere with our systems...</p>
+</div>
+
+<div class="policy-divider"></div>
+
+<div class="policy-section">
+    <h2>Support & Responsibilities</h2>
+    <p>SharpLync aims to provide reliable and professional technical support...</p>
+</div>
+
 @endsection

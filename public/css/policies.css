@@ -1,0 +1,164 @@
+/* ============================================================
+   SharpLync Policies Stylesheet (with TOC, dark mode, scroll)
+   ONLY affects .policy-* classes
+============================================================ */
+
+:root {
+    --sl-text: #0A2A4D;
+    --sl-accent: #2CBFAE;
+    --sl-muted: #666;
+    --sl-bg: #ffffff;
+    --sl-card: #ffffff;
+}
+
+/* Dark mode auto-detect */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --sl-text: #e5e5e5;
+        --sl-muted: #bbbbbb;
+        --sl-bg: #0b1621;
+        --sl-card: #152232;
+    }
+}
+
+body {
+    background: var(--sl-bg);
+    transition: background 0.3s ease;
+}
+
+/* Main container */
+.policy-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 3rem auto;
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
+/* Card */
+.policy-container {
+    flex: 1;
+    padding: 2.5rem;
+    background: var(--sl-card);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Title + Version */
+.policy-title {
+    font-size: 2.3rem;
+    font-weight: 600;
+    color: var(--sl-text);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+.policy-version {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--sl-muted);
+}
+
+/* Updated line */
+.policy-updated {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--sl-muted);
+    margin-bottom: 2rem;
+}
+
+/* Each section */
+.policy-section {
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.5s ease;
+}
+.policy-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Heading anchor behavior */
+.policy-section h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--sl-text);
+    margin-bottom: 0.8rem;
+    scroll-margin-top: 90px;
+    cursor: pointer;
+}
+.policy-section h2:hover {
+    color: var(--sl-accent);
+}
+
+/* Divider */
+.policy-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+    margin: 2.5rem 0;
+}
+
+/* Text */
+.policy-section p,
+.policy-section li {
+    font-size: 1rem;
+    line-height: 1.65rem;
+    color: var(--sl-text);
+}
+.policy-section ul {
+    padding-left: 1.2rem;
+}
+
+/* ============================================================
+   Sticky TOC
+============================================================ */
+.policy-toc {
+    position: sticky;
+    top: 120px;
+    min-width: 230px;
+    background: var(--sl-card);
+    padding: 1.5rem;
+    border-radius: 16px;
+    height: max-content;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.policy-toc h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--sl-text);
+}
+
+.policy-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.policy-toc li {
+    margin-bottom: 0.7rem;
+}
+
+.policy-toc a {
+    color: var(--sl-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+.policy-toc a.active {
+    color: var(--sl-accent);
+    font-weight: 600;
+}
+.policy-toc a:hover {
+    color: var(--sl-accent);
+}
+
+/* Mobile - hide TOC */
+@media (max-width: 920px) {
+    .policy-wrapper {
+        flex-direction: column;
+    }
+    .policy-toc {
+        display: none;
+    }
+}
