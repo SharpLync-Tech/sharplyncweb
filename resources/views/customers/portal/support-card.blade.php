@@ -13,9 +13,8 @@
             Open Support
         </a>
 
-        <a href="{{ URL::temporarySignedRoute('customer.teamviewer.download', now()->addMinutes(5)) }}"
-           class="cp-btn cp-small-btn cp-teal-btn">
-            Download Quick Support
+        <a href="{{ route('customer.teamviewer.download') }}" class="btn btn-teal">
+            Download SharpLync Remote Support
         </a>
     </div>
 </div>
