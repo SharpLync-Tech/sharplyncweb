@@ -45,6 +45,19 @@
             <a href="tel:0492 014 463" class="info-link">0492 014 463</a>
         </div>
 
+        {{-- WhatsApp --}}
+        <div class="info-card">
+            <div class="info-icon">
+                <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp" />
+            </div>
+            <h4>WhatsApp</h4>
+            <p>
+                Quick messaging for fast support and updates.
+            </p>
+            <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank">
+                Chat with us
+            </a>
+        </div>
 
         {{-- LinkedIn --}}
         <div class="info-card">
