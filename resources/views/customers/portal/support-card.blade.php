@@ -13,7 +13,7 @@
             Open Support
         </a>
 
-        <a href="{{ route('customer.remote-support') }}" class="btn btn-teal">
+        <a href="{{ route('customer.remote-support') }}" class="cp-btn cp-small-btn cp-teal-btn">
             Remote Support
         </a>
     </div>
