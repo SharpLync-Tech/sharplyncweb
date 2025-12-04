@@ -70,12 +70,14 @@
     font-size: 28px;
     line-height: 1;
     text-decoration: none;
-    color: #8aa1b2;
+    color: #0A2A4D;
     font-weight: 300;
+    opacity: 0.55;
     transition: color 0.18s ease, transform 0.18s ease;
 }
 
 .sl-remote-support-close-btn:hover {
+    opacity: 1;
     color: #0A2A4D;
     transform: scale(1.15);
 }
