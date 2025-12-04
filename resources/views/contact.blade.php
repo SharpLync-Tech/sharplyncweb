@@ -42,7 +42,7 @@
             </div>
             <h4>Call Us</h4>
             <p>Fast support for urgent enquiries.</p>
-            <a href="tel:0404 442 066" class="info-link">0404 442 066</a>
+            <a href="tel:0492 014 463" class="info-link">0404 442 066</a>
         </div>
 
 
