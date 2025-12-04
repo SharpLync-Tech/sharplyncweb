@@ -13,7 +13,7 @@ class ServicesController extends Controller
                 'id'    => 'remote-support',
                 'title' => 'Remote Support',
                 'short' => 'Instant help wherever you are',
-                'long'  => 'Fast, friendly remote support to keep your people working, without waiting days for someone to show up. Screensharing, quick fixes, and real humans on the other end.',
+                'long'  => 'Fast, friendly remote support to keep your people working, without waiting days for someone to show up. Screen sharing, quick fixes, and real humans on the other end.',
                 'subs'  => [
                     'Remote troubleshooting & fixes',
                     'Application and OS support',
@@ -137,7 +137,7 @@ class ServicesController extends Controller
                 'id'    => 'hardware-repair',
                 'title' => 'Laptop & Desktop Repairs',
                 'short' => 'Laptop screens, battery replacements & more.',
-                'long'  => 'We source, repalcement parts and can fix laptops and desktops',
+                'long'  => 'We source, replacements parts and can fix laptops and desktops',
                 'subs'  => [
                     'Laptops, desktops, batteries & screens',
                     'Networking & Wi-Fi hardware',
