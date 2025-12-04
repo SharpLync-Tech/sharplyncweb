@@ -8,9 +8,7 @@
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-2SCQ2YCEW8');
-    </script>
-
-    <script type="text/javascript" src="https://res.public.onecdn.static.microsoft/customerconnect/v1/7dttl/init.js" id="chatbot" environmentId="57be5f9e-a694-ec8b-aecc-f80d412e15c8" crossorigin="anonymous"></script>
+    </script>   
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
