@@ -36,7 +36,15 @@ class ServicesController extends Controller
                 ],
                 'icon'  => asset('images/security.png'),
                 'image' => asset('images/cyber_security.png'),
+
+                
+                'partner_badge' => [
+                    'logo' => asset('images/partners/tball.png'),
+                    'title' => 'Official Trend Micro Partner',
+                    'text'  => 'Secured by the Trend Micro Vision One™ security platform.',
+                ],
             ],
+
 
             [
                 'id'    => 'cloud-m365',
