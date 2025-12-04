@@ -7,123 +7,106 @@
 @section('title', 'Contact SharpLync')
 
 @section('content')
+
 <section class="contact-hero">
-
-    <div class="contact-hero-inner">
-        <h1 class="contact-title">
-            <span class="white-text">Contact</span>
-            <span class="brand-gradient">SharpLync</span>
-        </h1>
-        <p class="contact-subtitle">
-            Choose the best way to reach our team. We’re here to help your business get IT right.
-        </p>
-    </div>
-
+    <h1 class="contact-title">
+        <span class="white-text">Contact</span>
+        <span class="brand-gradient">SharpLync</span>
+    </h1>
+    <p class="contact-subtitle">
+        Choose the best way to reach our team. We're here to help your business get IT right.
+    </p>
 </section>
 
-{{-- ============================= --}}
-{{-- TALK TO US SECTION            --}}
-{{-- ============================= --}}
-<section class="contact-section contact-talk fade-in">
-    <div class="contact-section-inner">
+{{-- TALK TO US --}}
+<section class="contact-info-section fade-in">
+    <div>
+        <h2 class="section-heading">Talk to Us</h2>
+        <p class="section-sub">Need help now? Use one of these direct support channels.</p>
 
-        <h2 class="contact-section-title">Talk to Us</h2>
-        <p class="contact-section-subtitle">
-            Need help now? Use one of these direct support channels.
-        </p>
-
-        <div class="contact-grid contact-grid-talk">
+        <div class="contact-info-grid talk">
 
             {{-- Email --}}
-            <div class="glass-card">
-                <div class="glass-icon">
+            <div class="info-card">
+                <div class="info-icon">
                     <img src="{{ asset('images/email.png') }}" alt="Email" />
                 </div>
                 <h4>Email Support</h4>
                 <p>For general enquiries and service questions.</p>
-                <a href="mailto:info@sharplync.com.au" class="glass-link">info@sharplync.com.au</a>
+                <a href="mailto:info@sharplync.com.au" class="info-link">info@sharplync.com.au</a>
             </div>
 
             {{-- Phone --}}
-            <div class="glass-card">
-                <div class="glass-icon">
+            <div class="info-card">
+                <div class="info-icon">
                     <img src="{{ asset('images/phone.png') }}" alt="Phone" />
                 </div>
                 <h4>Call Us</h4>
                 <p>Fast support for urgent enquiries.</p>
-                <a href="tel:0492 014 463" class="glass-link">0492 014 463</a>
+                <a href="tel:0492014463" class="info-link">0492 014 463</a>
             </div>
 
             {{-- WhatsApp --}}
-            <div class="glass-card">
-                <div class="glass-icon">
+            <div class="info-card">
+                <div class="info-icon">
                     <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp" />
                 </div>
                 <h4>WhatsApp</h4>
                 <p>Quick messaging for fast support and updates.</p>
-                <a href="https://wa.me/message/K7U44ZE6X53LH1"
-                   target="_blank" class="glass-link">Chat with us</a>
+                <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank" class="info-link">
+                    Chat with us
+                </a>
             </div>
 
         </div>
     </div>
 </section>
 
-{{-- ============================= --}}
-{{-- CONNECT WITH US SECTION       --}}
-{{-- ============================= --}}
-<section class="contact-section contact-connect fade-in">
-    <div class="contact-section-inner">
+{{-- CONNECT WITH US --}}
+<section class="contact-info-section fade-in">
+    <div>
+        <h2 class="section-heading">Connect With Us</h2>
+        <p class="section-sub">Stay in the loop with SharpLync news, updates and insights.</p>
 
-        <h2 class="contact-section-title">Connect With Us</h2>
-        <p class="contact-section-subtitle">
-            Stay in the loop with SharpLync news, updates and insights.
-        </p>
-
-        <div class="contact-grid contact-grid-connect">
+        <div class="contact-info-grid connect">
 
             {{-- LinkedIn --}}
-            <div class="glass-card glass-card-alt">
-                <div class="glass-icon">
+            <div class="info-card">
+                <div class="info-icon">
                     <img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn" />
                 </div>
                 <h4>LinkedIn</h4>
                 <p>Updates, announcements and professional insights.</p>
-                <a href="https://www.linkedin.com/company/sharplync"
-                   target="_blank" class="glass-link">Connect with us</a>
+                <a href="https://www.linkedin.com/company/sharplync" target="_blank" class="info-link">
+                    Connect with us
+                </a>
             </div>
 
             {{-- Facebook --}}
-            <div class="glass-card glass-card-alt">
-                <div class="glass-icon">
+            <div class="info-card">
+                <div class="info-icon">
                     <img src="{{ asset('images/facebook.png') }}" alt="Facebook" />
                 </div>
                 <h4>Facebook</h4>
                 <p>See our latest news and community updates.</p>
-                <a href="https://www.facebook.com/SharpLync"
-                   target="_blank" class="glass-link">Join our community</a>
+                <a href="https://www.facebook.com/SharpLync" target="_blank" class="info-link">
+                    Join our community
+                </a>
             </div>
 
         </div>
     </div>
 </section>
 
-{{-- ============================= --}}
-{{-- CONTACT FORM SECTION          --}}
-{{-- ============================= --}}
+{{-- CONTACT FORM --}}
 <section class="contact-form-section fade-in">
-
     <div class="contact-form-card">
-
         <h3 class="form-title">Send Us a Message</h3>
 
-        <form method="POST" action="{{ route('contact.submit') }}" class="contact-form">
+        <form method="POST" action="{{ route('contact.submit') }}">
             @csrf
 
-            {{-- Honeypot --}}
             <input type="text" name="address_bot_trap" style="display:none;">
-
-            {{-- Recaptcha --}}
             <input type="hidden" id="recaptcha_token" name="recaptcha_token">
 
             <div class="form-row">
@@ -166,10 +149,9 @@
 
         </form>
     </div>
-
 </section>
 
-{{-- Success Modal --}}
+{{-- SUCCESS MODAL --}}
 <div id="contactSuccessModal" class="contact-modal-overlay" style="display:none;">
     <div class="contact-modal">
         <div class="contact-modal-icon">✓</div>
