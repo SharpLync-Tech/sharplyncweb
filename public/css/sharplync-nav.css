@@ -112,6 +112,27 @@ body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ===================================
+   Trend Micro Nav Link
+   =================================== */
+.tm-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem; /* spacing between icon + text */
+}
+
+.tm-nav-icon {
+    height: 18px;
+    width: auto;
+    filter: drop-shadow(0 0 4px rgba(230, 0, 18, 0.65));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+/* Hover effect – sexy but subtle */
+.tm-nav-link:hover .tm-nav-icon {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 6px rgba(230, 0, 18, 0.9));
+}
 
 /* ===========================
    LOGO

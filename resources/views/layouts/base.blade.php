@@ -70,7 +70,12 @@
             <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
             <a href="/testimonials" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
             <a href="/contact" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
-            <a href="/register" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Register</a>
+            <a href="/trend-micro" class="nav-link tm-nav-link {{ request()->is('trend-micro') ? 'nav-active' : '' }}">
+                    <img src="{{ asset('images/partners/tball.png') }}" alt="Trend Micro" class="tm-nav-icon">
+                    Trend Micro
+            </a>
+
+            <a href="/register" class="nav-link {{ request()->is('register') ? 'nav-active' : '' }}">Register</a>
             <a href="/login" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
 
             <button class="hamburger" onclick="toggleMobileNav()">☰</button>
@@ -87,11 +92,23 @@
             <li><a href="/services">Services</a></li>        
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials">Testimonials</a></li>
+
+            <!-- Trend Micro Link -->
+            <li>
+                <a href="/trend-micro" style="display:flex;align-items:center;gap:10px;">
+                    <img src="{{ asset('images/partners/tball.png') }}" 
+                        alt="Trend Micro" 
+                        style="height:18px;width:auto;filter:drop-shadow(0 0 4px rgba(230,0,18,0.65));">
+                    Trend Micro
+                </a>
+            </li>
+
             <li><a href="/contact">Contact</a></li>
             <li><a href="/register">Register</a></li>
             <li><a href="/login">Login</a></li>
         </ul>
     </div>
+
 
     <!-- ========================= ORIGINAL OVERLAY MENU (UNTOUCHED) ========================= -->
     <div id="overlayMenu" class="overlay-menu" role="navigation">
