@@ -32,12 +32,7 @@
         Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
 
         // Trend Micro
-        Route::view('/trend-micro', 'trend-micro')->name('trend-micro');
-
-
-        // Policy Pages
-        Route::get('/terms', [PolicyController::class, 'termsAndConditions'])->name('terms');
-        Route::get('/privacy', [PolicyController::class, 'privacyPolicy'])->name('privacy');
+        Route::view('/trend-micro', 'trend-micro')->name('trend-micro');        
 
         // DB Content Testing Routes
         use App\Models\CMS\Service;
