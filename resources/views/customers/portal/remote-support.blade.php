@@ -12,6 +12,9 @@
 
     <div class="sl-remote-support-card">
 
+        {{-- CLOSE BUTTON --}}
+        <a href="{{ route('customer.portal') }}" class="sl-remote-support-close-btn">×</a>
+
         <div class="sl-remote-support-header">
             <div class="sl-remote-support-icon">🖥️</div>
             <div>

@@ -62,6 +62,30 @@
     color: #34495e;
 }
 
+/* Close button */
+.sl-remote-support-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 28px;
+    line-height: 1;
+    text-decoration: none;
+    color: #8aa1b2;
+    font-weight: 300;
+    transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.sl-remote-support-close-btn:hover {
+    color: #0A2A4D;
+    transform: scale(1.15);
+}
+
+/* Ensure the card can position absolutely-placed elements */
+.sl-remote-support-card {
+    position: relative;
+}
+
+
 /* Warning block */
 
 .sl-remote-support-warning {
