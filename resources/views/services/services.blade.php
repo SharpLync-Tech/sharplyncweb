@@ -73,17 +73,17 @@
                 <p id="expLong"></p>
 
                 {{-- TREND MICRO PARTNER BADGE (Exact TM page design) --}}
-                <div class="tm-partner-badge">
-                    <div class="tm-logo-wrap">
-                        {{-- 🔁 Update the logo path to match your actual asset name --}}
-                        <img src="{{ asset('images/partners/trend-micro-partner.png') }}" 
-                             alt="Trend Micro Partner Logo">
+                <a href="{{ url('/trend-micro') }}" id="partnerBadge" class="tm-partner-card" style="display:none;">
+                    <div class="tm-card-inner">
+                        <img id="partnerBadgeLogo" src="images/partners/trend-micro-partner.png" alt="Trend Micro Logo" class="tm-card-logo">
+                        <div class="tm-card-text">
+                            <h4 id="partnerBadgeTitle">Official Trend Micro Partner</h4>
+                            <p id="partnerBadgeText">
+                                Powered by the Trend Micro Vision One™ security platform.
+                            </p>
+                        </div>
                     </div>
-                    <div class="tm-badge-text">
-                        <span class="tm-badge-title">Official Trend Micro Partner</span>
-                        <span class="tm-badge-note">Powered by the Trend Micro Vision One™ security platform.</span>
-                    </div>
-                </div>
+                </a>
 
 
 
