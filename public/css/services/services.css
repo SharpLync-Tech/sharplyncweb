@@ -409,6 +409,24 @@
         transform: none !important;
         box-shadow: 0 12px 32px rgba(0,0,0,0.35);
     }
+
+    /* Center Trend Micro badge on mobile */
+        .tm-card-inner {
+            flex-direction: column !important;
+            text-align: center !important;
+            justify-content: center !important;
+        }
+
+        /* Center the logo */
+        .tm-card-logo {
+            margin: 0 auto !important;
+        }
+
+        /* Center the text block */
+        .tm-card-text {
+            text-align: center !important;
+        }
+
 }
 
 /* Mobile layout for TM badge – same as TM page */
