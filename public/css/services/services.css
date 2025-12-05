@@ -375,6 +375,11 @@
         display: none !important;
     }
 
+    /* Add space since the logo is gone */
+    .services-hero .hero-text {
+        margin-top: 2.5rem !important;
+    }
+
     .mock-wrapper {
         padding: 2rem;
     }
