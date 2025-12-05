@@ -17,12 +17,11 @@
         Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
         
         // Policy Pages 
-        Route::view('/policies', 'policies.index')->name('policies.index');       
+        Route::get('/policies', fn() => view('policies.index'))->name('policies.index');      
         Route::get('/policies/terms', fn() => view('policies.terms'));
-        Route::get('/policies/privacy', fn() => view('policies.privacy'));
+        Route::get('/policies/privacy', fn() => view('policies.privacy'));    
 
-        
-
+     
         Route::get('/about', [PageController::class, 'about'])->name('about');
         Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 
