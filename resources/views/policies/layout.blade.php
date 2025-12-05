@@ -6,13 +6,11 @@
 
 <div class="policy-wrapper">
 
-    {{-- Sticky Table of Contents (ONLY if the page defines one) --}}
-    @hasSection('policy_toc')
-        <aside class="policy-toc">
-            <h3>On This Page</h3>
-            <ul id="policy-toc-list"></ul>
-        </aside>
-    @endif
+    <!-- Sticky Table of Contents -->
+    <aside class="policy-toc">
+        <h3>On This Page</h3>
+        <ul id="policy-toc-list"></ul>
+    </aside>
 
     <div class="policy-container">
         <h1 class="policy-title">@yield('policy_title')</h1>
@@ -26,12 +24,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-
-    // Prevent TOC JS from running on pages with NO TOC
-    const tocList = document.getElementById("policy-toc-list");
-    if (!tocList) return;
-
     const sections = document.querySelectorAll(".policy-section");
+    const tocList = document.getElementById("policy-toc-list");
 
     // ==== Auto-generate Table of Contents ====
     sections.forEach((sec, index) => {
@@ -84,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
     window.addEventListener("scroll", reveal);
     reveal();
 });

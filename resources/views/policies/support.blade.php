@@ -75,8 +75,8 @@
 <div class="policy-section">
     <h2>If You Suspect a Scam</h2>
     <p>
-        If anyone claiming to be from SharpLync breaks any part of this policy —  
-        especially if they request unusual payments, ask for credentials, or rush you —  
+        If anyone claiming to be from SharpLync breaks any part of this policy,  
+        especially if they request unusual payments, ask for credentials, or rush you,  
         treat the situation as suspicious immediately.
     </p>
 
