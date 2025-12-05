@@ -68,13 +68,13 @@
         @yield('content')
     </main>
 
-    <footer>
-        <div class="footer-content">
-            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.<p>
+    <!-- FOOTER (kept your smaller, clean one) --> 
+     <footer>
+        <div class="footer-content-testimonials">
+            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
             <p>  
                 <span class="sl-builtby">Designed & built by SharpLync</span>
             </p>
-            
             <div class="social-icons">
                 <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
                 <a href="https://www.facebook.com/SharpLync"><img src="{{ asset('images/facebook.png') }}" alt="Facebook"></a>
