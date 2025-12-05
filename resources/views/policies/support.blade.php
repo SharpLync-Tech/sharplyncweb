@@ -1,138 +1,166 @@
-@extends('policies.layout')
-
-@section('policy_title', 'Secure Remote Support Policy')
-@section('policy_back')
-<div class="policy-back-wrapper">
-    <a href="/policies/hub" class="policy-back-btn">Back to Policies</a>
-</div>
-@endsection 
-@section('policy_version', 'v1.4')
-@section('policy_updated', '5 December 2025')
-
 @section('policy_content')
 
 <div class="policy-section">
-    <h2>Our Commitment to Your Security</h2>
+    <h2>SharpLync Secure Remote Support Policy</h2>
     <p>
-        At SharpLync, your security comes first — every time. Remote support is an essential part of 
-        modern IT service, but it is also one of the most commonly exploited methods used by scammers.  
-        To protect you, we follow strict verification and safety procedures that make it impossible  
-        for an unauthorised person to gain access to your computer under the SharpLync name.
+        At SharpLync, your security is our highest priority. We use industry-leading, secure remote access tools to 
+        provide efficient support. We understand that these same tools can be exploited by malicious actors 
+        (scammers). This document outlines our strict protocol to ensure your safety and give you absolute 
+        confidence that you are connecting only with an authenticated SharpLync representative.
     </p>
 </div>
 
 <div class="policy-divider"></div>
 
 <div class="policy-section">
-    <h2>Two-Way Identity Verification Protocol</h2>
+    <h2>1. Our Commitment to Your Security</h2>
     <p>
-        No remote support session can begin until both sides have been fully verified.  
-        This process ensures you are speaking to a legitimate SharpLync technician — and that we are  
-        assisting the correct person.
-    </p>
-
-    <h3 style="margin-top:1rem;">1. You Verify Us First (Your Personal Verification PIN)</h3>
-    <ul>
-        <li><strong>The Challenge:</strong> You must request your confidential Personal Verification PIN from the technician.</li>
-        <li><strong>The Proof:</strong> The technician will provide the exact PIN stored in your secure customer profile.</li>
-        <li><strong>Your Confirmation:</strong> If the PIN does not match what you have on record, the call must be ended immediately.</li>
-    </ul>
-
-    <h3 style="margin-top:1rem;">2. SharpLync Verifies You (Session PIN)</h3>
-    <p>
-        After we have proven our identity, we will issue a unique, time-sensitive 
-        <strong>Session PIN</strong>. This PIN is required to begin the remote support session.
-    </p>
-
-    <p><strong>Remote access will only begin once:</strong></p>
-    <ul>
-        <li>Your Personal Verification PIN is successfully confirmed</li>
-        <li>You receive and enter the one-time Session PIN</li>
-    </ul>
-
-    <p>
-        This process ensures that remote access is always initiated by you — never by us — and  
-        only after you confirm the connection is genuine.
+        We take customer security and the integrity of our support process extremely seriously. We have implemented 
+        several clear, non-negotiable procedures that we will follow on every single remote support call. If any person 
+        claiming to be from SharpLync deviates from this protocol, you must immediately terminate the call.
     </p>
 </div>
 
 <div class="policy-divider"></div>
 
 <div class="policy-section">
-    <h2>Strict Financial Safety Rules</h2>
+    <h2>2. The Two-Way Identity Verification Protocol</h2>
     <p>
-        SharpLync technicians follow strict financial protection standards designed to eliminate the  
-        risk of fraud or pressured payments during remote sessions.
+        To ensure absolute security, we use a two-step verification process where you, the customer, confirm our identity 
+        first. This requires your Personal Verification PIN, which is confidential and known only to you and SharpLync's 
+        secure system.
+    </p>
+
+    <p>Before we proceed with any remote connection or sensitive discussion, the following mandatory steps must occur:</p>
+
+    <h3 style="margin-top:1rem;">Customer Requests PIN (The Challenge)</h3>
+    <p>You, the customer, must ask the SharpLync technician to provide your confidential Personal Verification PIN.</p>
+
+    <h3 style="margin-top:1rem;">SharpLync Provides Customer PIN (The Proof)</h3>
+    <p>The technician will read back this exact PIN from your secure account record.</p>
+
+    <h3 style="margin-top:1rem;">Customer Verifies Identity (The Veto)</h3>
+    <p>
+        You must confirm that the PIN provided by the technician matches your Personal Verification PIN. If the PIN does 
+        not match, you must immediately hang up.
+    </p>
+
+    <h3 style="margin-top:1rem;">Forward Identification (Session PIN)</h3>
+    <p>
+        Once our identity is confirmed, the technician will then provide a unique, time-sensitive Session PIN which is 
+        required to start the actual remote connection software.
+    </p>
+
+    <h3 style="margin-top:1rem;">Connection Only After Verification</h3>
+    <p>
+        We will only begin the remote connection process once both the Personal Verification PIN (Step 3) and the 
+        Session PIN (Step 4) are successfully verified.
+    </p>
+
+    <p><strong>You identify us first</strong>, using a secret only you and our secure system know. This guarantees our authenticity.</p>
+</div>
+
+<div class="policy-divider"></div>
+
+<div class="policy-section">
+    <h2>3. Strict Financial Security Rules</h2>
+    <p>
+        SharpLync has an absolute, zero-tolerance policy regarding customer financial security. We insist on the 
+        following rules during any remote support session:
     </p>
 
     <ul>
-        <li><strong>No banking websites</strong> may be open during a session.</li>
-        <li><strong>No technician will ever request passwords</strong> or financial credentials.</li>
-        <li><strong>Only official Xero invoices</strong> are used for billing and payment processing.</li>
-        <li><strong>Approved payment methods:</strong> Credit Card, PayPal, Bank Transfer.</li>
-        <li><strong>We will never request payment</strong> via gift cards, cryptocurrency, or cash withdrawals.</li>
-        <li><strong>No technician will ever instruct you</strong> to visit your bank or call your bank.</li>
+        <li>
+            <span class="sl-icon-bad">✘</span>
+            <strong>No Open Banking Sites:</strong> We insist that all banking websites, financial applications, and 
+            investment accounts are closed or minimized before we establish a remote connection.
+        </li>
+
+        <li>
+            <span class="sl-icon-bad">✘</span>
+            <strong>No Password Requests:</strong> SharpLync technicians will not ask for your banking passwords, 
+            credit card PINs, or any login credentials related to your financial institutions.
+        </li>
+
+        <li>
+            <span class="sl-icon-good">✓</span>
+            <strong>Secure Invoicing Only:</strong> We only process invoices and payments using our official 
+            financial system, Xero. You will receive an official Xero invoice via email.
+        </li>
+
+        <li>
+            <span class="sl-icon-good">✓</span>
+            <strong>Approved Payment Methods:</strong> Payments for SharpLync services can only be made online 
+            via the official Xero invoice link using: Credit Card, PayPal, or Bank Transfer.
+        </li>
+
+        <li>
+            <span class="sl-icon-bad">✘</span>
+            <strong>Never Gift Cards:</strong> SharpLync will never ask for payment in the form of gift cards 
+            (e.g., Apple, Amazon, Google Play, etc.).
+        </li>
+
+        <li>
+            <span class="sl-icon-bad">✘</span>
+            <strong>Never Cryptocurrency:</strong> SharpLync will never ask for payment in the form of 
+            cryptocurrency (e.g., Bitcoin, Ethereum, etc.).
+        </li>
+
+        <li>
+            <span class="sl-icon-bad">✘</span>
+            <strong>Never Bank Visits:</strong> We will never ask you to ring your bank, travel to your bank, 
+            or withdraw cash for payment of our services.
+        </li>
     </ul>
 </div>
 
 <div class="policy-divider"></div>
 
 <div class="policy-section">
-    <h2>If You Suspect a Scam</h2>
+    <h2>4. What To Do If You Suspect a Scam</h2>
     <p>
-        If anyone claiming to be from SharpLync breaks any part of this policy,  
-        especially if they request unusual payments, ask for credentials, or rush you,  
-        treat the situation as suspicious immediately.
+        If anyone claiming to be from SharpLync asks for any of the forbidden payment methods (gift cards, crypto, 
+        cash withdrawal) or pressures you to provide banking details or open financial websites:
     </p>
 
-    <ul class="sl-warning-list">
-    <li><span class="sl-icon-bad">✘</span> Hang up immediately</li>
-    <li><span class="sl-icon-bad">✘</span> Do not allow any remote access</li>
-    <li><span class="sl-icon-good">✓</span> Call the official SharpLync support number to verify the incident</li>
-</ul>
-
-
-
+    <ul>
+        <li><span class="sl-icon-good">✓</span> Hang up the phone immediately.</li>
+        <li><span class="sl-icon-bad">✘</span> Do not provide them with any information or allow a connection.</li>
+        <li><span class="sl-icon-good">✓</span> Immediately call our main, verified SharpLync number to report the incident.</li>
+    </ul>
 </div>
 
 <div class="policy-divider"></div>
 
 <div class="policy-section">
-    <h2>Tools, Transparency & Your Control</h2>
+    <h2>5. Building Trust Through Transparency and Control</h2>
 
-    <h3 style="margin-top:1rem;">A. Tools We Use</h3>
+    <h3 style="margin-top:1rem;">A. Clear Access Scope and Tools</h3>
     <p>
-        SharpLync uses secure, industry-trusted remote support platforms such as TeamViewer.  
-        These tools are encrypted and safe, but since scammers often misuse their names,  
-        our verification protocol (Section 2) must always occur first.
+        Tools Used: We currently use professional, encrypted remote desktop solutions such as TeamViewer. These 
+        tools are secure, but we understand their names are sometimes misused by scammers. Always refer to Section 2 
+        for identity verification first.
     </p>
 
     <p>
-        Remote access is always <strong>one-time only</strong> unless you provide written approval  
-        for unattended access.
+        <strong>One-Time Access:</strong> The Session PIN provided in Section 2 ensures a one-time, session-only 
+        connection. Once the session is closed, the technician cannot reconnect unless a new, unique Session PIN is 
+        granted by you. We do not install permanent, unattended access without your explicit, separate, written consent.
     </p>
 
-    <h3 style="margin-top:1rem;">B. Your Control During the Session</h3>
-    <ul>
-        <li>You must remain at your computer and actively monitor the session.</li>
-        <li>Technicians will clearly explain major actions before performing them.</li>
-        <li>You may terminate the session at any time by closing the window.</li>
-        <li>If something feels wrong, disconnect immediately and contact us.</li>
-    </ul>
+    <h3 style="margin-top:1rem;">B. Customer Control and Monitoring</h3>
+    <p><strong>Watch Our Every Move:</strong> You must stay at your computer and monitor the screen while the remote session is active. Our technicians will verbally explain every major action they take.</p>
+    <p><strong>Terminate Anytime:</strong> You can terminate the remote connection immediately at any time by simply closing the remote control software window or using the disconnect button. If you feel uncomfortable, disconnect and call us back.</p>
 
-    <h3 style="margin-top:1rem;">C. Session Logging & Privacy</h3>
-    <ul>
-        <li>All remote sessions are <strong>logged and video recorded</strong> for security, quality and dispute resolution.</li>
-        <li>Technicians will not access personal files unless you request it for troubleshooting.</li>
-        <li>All data handling follows the SharpLync Privacy Policy.</li>
-    </ul>
+    <h3 style="margin-top:1rem;">C. Session Logging and Privacy</h3>
+    <p><strong>Session Records:</strong> For quality assurance, security, and dispute resolution, all remote support sessions are video recorded and logged.</p>
+    <p><strong>Data Privacy:</strong> Our technicians are strictly prohibited from viewing or copying your personal files unless directed by you as part of a troubleshooting task. We adhere to our comprehensive Privacy Policy.</p>
 
     <h3 style="margin-top:1rem;">D. Post-Session Protocol</h3>
-    <ul>
-        <li>We confirm that the session has fully ended on both sides.</li>
-        <li>The Session PIN expires immediately after use.</li>
-        <li>No technician can reconnect without a brand-new PIN supplied by you.</li>
-    </ul>
+    <p>
+        <strong>Guaranteed Disconnect:</strong> Upon completion of the support session, the SharpLync technician will confirm the session 
+        has been securely terminated and will verify that the temporary access link has expired.
+    </p>
 </div>
 
 <div class="policy-divider"></div>
@@ -140,9 +168,7 @@
 <div class="policy-section">
     <h2>Summary</h2>
     <p>
-        SharpLync’s Secure Remote Support Policy ensures every remote session is safe, authenticated  
-        and fully controlled by you. By following these steps, both you and SharpLync remain protected  
-        against impersonation, fraud and unauthorised access.
+        By adhering to this protocol, we can ensure every support session is secure and trustworthy.
     </p>
 </div>
 
