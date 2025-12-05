@@ -191,7 +191,7 @@
 
     <h3>7.1 Privacy Policy</h3>
     <p>
-        Our Privacy Policy (at https://sharplync.com.au/privacy) governs data handling per 
+        Our Privacy Policy (at https://sharplync.com.au/policies/privacy) governs data handling per 
         Privacy Act 1988 (Cth). You consent to collection and use as described.
     </p>
 
