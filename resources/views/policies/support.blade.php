@@ -68,7 +68,7 @@
     </p>
 
     <ul>
-        <li><span class="sl-icon-bad">✘ No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.</li>
+        <li><strong>✘ No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.</li>
         <li><strong>✘ No Password Requests:</strong> We will never ask for banking passwords, credit card PINs, or any login credentials.</li>
         <li><strong>✓ Secure Invoicing Only:</strong> All payments are processed via official Xero invoices emailed directly to you.</li>
         <li><strong>✓ Approved Payment Methods:</strong> Credit Card, PayPal, or Bank Transfer via Xero invoice only.</li>
@@ -88,10 +88,9 @@
     </p>
 
     <ul>
-        <li><span class="sl-icon-bad">✘</span> Hang up immediately</li>
-        <li><span class="sl-icon-bad">✘</span> Do not allow any remote access</li>
-        <li><span class="sl-icon-good">✓</span> Call the official SharpLync support number to verify the incident</li>
-
+        <li>✓ Hang up the phone immediately.</li>
+        <li>✘ Do not provide any information or allow a connection.</li>
+        <li>✓ Immediately call our main, verified SharpLync number to report the incident.</li>
     </ul>
 </div>
 
