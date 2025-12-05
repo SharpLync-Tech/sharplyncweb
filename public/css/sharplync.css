@@ -478,6 +478,11 @@ footer {
 .onboard-divider::before { left: 0; }
 .onboard-divider::after { right: 0; }
 
+.sl-builtby {
+    opacity: 0.7;
+}
+
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
   .main-header .logo img { height: 65px; }

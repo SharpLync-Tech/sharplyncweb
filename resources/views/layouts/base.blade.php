@@ -70,7 +70,7 @@
             <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
             <a href="/testimonials" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
             <a href="/contact" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>           
-            <li><a href="{{ route('policies.index') }}">Policies</a></li>
+            <a href="{{ route('policies.index') }}">Policies</a>
             <a href="/register" class="nav-link {{ request()->is('register') ? 'nav-active' : '' }}">Register</a>
             <a href="/login" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
 
@@ -89,6 +89,7 @@
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials">Testimonials</a></li>
             <li><a href="/contact">Contact</a></li>
+            <li><a href="{{ route('policies.index') }}">Policies</a></li>
             <li><a href="/register">Register</a></li>
             <li><a href="/login">Login</a></li>
         </ul>
@@ -121,7 +122,10 @@
 
     <footer>
         <div class="footer-content">
-            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.  
+                <span class="sl-builtby">— Designed & built by SharpLync</span>
+            </p>
+            
             <div class="social-icons">
                 <a href="https://www.linkedin.com/company/sharplync"><img src="{{ asset('images/linkedin.png') }}" alt="LinkedIn"></a>
                 <a href="https://www.facebook.com/SharpLync"><img src="{{ asset('images/facebook.png') }}" alt="Facebook"></a>
