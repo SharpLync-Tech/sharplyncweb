@@ -9,7 +9,7 @@
 <div class="policy-section">
     <h2>Introduction and Acceptance</h2>
     <p><strong>Parties:</strong> These Terms and Conditions govern the agreement between
-    SharpLync Pty Ltd (ACN 692146839) ("SharpLync", "We", "Us", "Our") and the Customer
+    SharpLync Pty Ltd, ("SharpLync", "We", "Us", "Our") and the Customer
     ("You", "Your").</p>
 
     <p><strong>Acceptance:</strong> By accepting a Quote/SOW, engaging SharpLync, or using our
