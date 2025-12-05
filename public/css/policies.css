@@ -138,6 +138,31 @@ body {
     font-weight: 700;
 }
 
+.sl-warning-list {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.sl-warning-list li {
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem; /* tighten spacing */
+}
+
+.sl-icon-bad {
+    color: #ff4d6d; /* red */
+    font-size: 1.1rem;
+}
+
+.sl-icon-good {
+    color: #2cbfae; /* SharpLync teal */
+    font-size: 1.1rem;
+}
+
+
 
 /* ============================================================
    Sticky TOC

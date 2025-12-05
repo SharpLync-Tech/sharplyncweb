@@ -81,9 +81,9 @@
     </p>
 
     <ul class="sl-warning-list">
-        <li>❌ Hang up immediately</li>
+        <li><span class="sl-icon-bad">❌</span> Hang up immediately</li>
         <li>❌ Do not allow any remote access</li>
-        <li><span class="sl-tick">✔️</span> Call the official SharpLync support number to verify the incident</li>
+        <li><span class="sl-icon-good">✔️</span> Call the official SharpLync support number to verify the incident</li>
     </ul>
 
 </div>
