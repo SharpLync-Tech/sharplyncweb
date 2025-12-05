@@ -21,14 +21,14 @@
             <a href="/policies/terms" class="policy-card">
                 <h3>Terms & Conditions</h3>
                 <p>Service agreements, obligations, warranties & legal terms.</p>
-                <span class="policy-card-link">View →</span>
+                <span class="policy-card-link">View</span>
             </a>
 
             <!-- PRIVACY -->
             <a href="/policies/privacy" class="policy-card">
                 <h3>Privacy Policy</h3>
                 <p>How SharpLync collects, stores, secures & uses personal data.</p>
-                <span class="policy-card-link">View →</span>
+                <span class="policy-card-link">View</span>
             </a>
 
             <!-- REMOTE SUPPORT -->
