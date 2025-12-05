@@ -21,6 +21,8 @@
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy')); 
         Route::get('/policies/support', fn() => view('policies.support'));
+        Route::get('/policies/security', fn() => view('policies.security'));
+
         
         // Vendors
         Route::get('/vendors', function () {
