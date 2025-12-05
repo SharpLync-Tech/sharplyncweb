@@ -20,7 +20,13 @@
         Route::get('/policies/hub', fn() => view('policies.hub'))->name('policies.hub');  
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy')); 
-        Route::get('/policies/support', fn() => view('policies.support')); 
+        Route::get('/policies/support', fn() => view('policies.support'));
+        
+        // Vendors
+        Route::get('/vendors', function () {
+            return view('vendors.vendors');
+            })->name('vendors');
+
           
 
      
