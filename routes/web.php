@@ -17,7 +17,7 @@
         Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
         
         // Policy Pages 
-        Route::get('/policies', 'policies.index')->name('policies.index');       
+        Route::view('/policies', 'policies.index')->name('policies.index');       
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy'));
 
