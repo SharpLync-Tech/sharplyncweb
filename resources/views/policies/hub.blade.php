@@ -40,10 +40,11 @@
 
 
             <!-- SECURITY POLICY -->
-            <div class="policy-card">
+            <a href="/policies/security" class="policy-card">
+                            <div class="policy-card">
                 <h3>Security Policy</h3>
                 <p>Cybersecurity controls & SOC alignment. (Future)</p>
-                <span class="policy-card-link">Coming Soon</span>
+                <span class="policy-card-link">View</span>
             </div>
 
         </div>
