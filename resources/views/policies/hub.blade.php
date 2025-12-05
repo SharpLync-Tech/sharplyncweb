@@ -17,13 +17,13 @@
 
         <div class="policy-grid">
 
-            <a href="{{ route('policies.terms') }}" class="policy-card">
+            <a href="/terms" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Terms & Conditions</a> 
                 <h3>Terms & Conditions</h3>
                 <p>Service agreement, obligations, fees, warranties, and legal terms.</p>
                 <span class="policy-card-link">View →</span>
             </a>
 
-            <a href="{{ route('policies.privacy') }}" class="policy-card">
+            <a href="/privacy" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Privacy</a>
                 <h3>Privacy Policy</h3>
                 <p>How SharpLync collects, stores, secures, and uses personal information.</p>
                 <span class="policy-card-link">View →</span>
