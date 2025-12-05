@@ -70,7 +70,12 @@
             <a href="/about" class="nav-link {{ request()->is('about') ? 'nav-active' : '' }}">About</a>
             <a href="/testimonials" class="nav-link {{ request()->is('testimonials') ? 'nav-active' : '' }}">Testimonials</a>
             <a href="/contact" class="nav-link {{ request()->is('contact') ? 'nav-active' : '' }}">Contact</a>
-            <a href="/policies" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Policies</a>        
+            <a href="/policies" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Policies</a>
+            <<a href="{{ route('policies.index') }}" 
+                    class="nav-link {{ request()->is('policies*') ? 'nav-active' : '' }}">
+                    Policies
+            </a>
+        
             <a href="/register" class="nav-link {{ request()->is('register') ? 'nav-active' : '' }}">Register</a>
             <a href="/login" class="nav-link {{ request()->is('login') ? 'nav-active' : '' }}">Login</a>
 
