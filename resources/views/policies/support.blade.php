@@ -68,43 +68,13 @@
     </p>
 
     <ul>
-        <ul>
-    <li>
-        <span class="sl-icon-bad">✘</span>
-        <strong>No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.
-    </li>
-
-    <li>
-        <span class="sl-icon-bad">✘</span>
-        <strong>No Password Requests:</strong> We will never ask for banking passwords, credit card PINs, or any login credentials.
-    </li>
-
-    <li>
-        <span class="sl-icon-good">✓</span>
-        <strong>Secure Invoicing Only:</strong> All payments are processed via official Xero invoices emailed directly to you.
-    </li>
-
-    <li>
-        <span class="sl-icon-good">✓</span>
-        <strong>Approved Payment Methods:</strong> Credit Card, PayPal, or Bank Transfer via Xero invoice only.
-    </li>
-
-    <li>
-        <span class="sl-icon-bad">✘</span>
-        <strong>Never Gift Cards:</strong> We will never request Apple, Amazon, Google Play, or any other gift cards.
-    </li>
-
-    <li>
-        <span class="sl-icon-bad">✘</span>
-        <strong>Never Cryptocurrency:</strong> We will never request Bitcoin, Ethereum, or any other crypto payment.
-    </li>
-
-    <li>
-        <span class="sl-icon-bad">✘</span>
-        <strong>Never Bank Visits:</strong> We will never ask you to ring your bank, drive to your bank, or withdraw cash.
-    </li>
-</ul>
-
+        <li><span class="sl-icon-bad">✘ No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.</li>
+        <li><strong>✘ No Password Requests:</strong> We will never ask for banking passwords, credit card PINs, or any login credentials.</li>
+        <li><strong>✓ Secure Invoicing Only:</strong> All payments are processed via official Xero invoices emailed directly to you.</li>
+        <li><strong>✓ Approved Payment Methods:</strong> Credit Card, PayPal, or Bank Transfer via Xero invoice only.</li>
+        <li><strong>✘ Never Gift Cards:</strong> We will never request Apple, Amazon, Google Play, or any other gift cards.</li>
+        <li><strong>✘ Never Cryptocurrency:</strong> We will never request Bitcoin, Ethereum, or any other crypto payment.</li>
+        <li><strong>✘ Never Bank Visits:</strong> We will never ask you to ring your bank, drive to your bank, or withdraw cash.</li>
     </ul>
 </div>
 
