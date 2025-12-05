@@ -46,6 +46,7 @@
                 <p>Cybersecurity controls & SOC alignment. (Future)</p>
                 <span class="policy-card-link">View</span>
             </div>
+            </a>
 
         </div>
 
