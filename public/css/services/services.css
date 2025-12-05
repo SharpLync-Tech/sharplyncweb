@@ -370,6 +370,11 @@
 /* ==================== MOBILE ==================== */
 @media (max-width: 768px) {
 
+    /* Hide hero logo on mobile only */
+    .services-hero .hero-logo {
+        display: none !important;
+    }
+
     .mock-wrapper {
         padding: 2rem;
     }
@@ -411,23 +416,21 @@
     }
 
     /* Center Trend Micro badge on mobile */
-        .tm-card-inner {
-            flex-direction: column !important;
-            text-align: center !important;
-            justify-content: center !important;
-        }
+    .tm-card-inner {
+        flex-direction: column !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
 
-        /* Center the logo */
-        .tm-card-logo {
-            margin: 0 auto !important;
-        }
+    .tm-card-logo {
+        margin: 0 auto !important;
+    }
 
-        /* Center the text block */
-        .tm-card-text {
-            text-align: center !important;
-        }
-
+    .tm-card-text {
+        text-align: center !important;
+    }
 }
+
 
     /* MOBILE FIX: Center Trend Micro badge */
     .tm-partner-badge {
