@@ -17,29 +17,33 @@
 
         <div class="policy-grid">
 
-            <a href="/terms" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Terms & Conditions</a> 
+            <!-- TERMS -->
+            <a href="/policies/terms" class="policy-card">
                 <h3>Terms & Conditions</h3>
-                <p>Service agreement, obligations, fees, warranties, and legal terms.</p>
+                <p>Service agreements, obligations, warranties & legal terms.</p>
                 <span class="policy-card-link">View →</span>
             </a>
 
-            <a href="/privacy" class="nav-link {{ request()->is('policies') ? 'nav-active' : '' }}">Privacy</a>
+            <!-- PRIVACY -->
+            <a href="/policies/privacy" class="policy-card">
                 <h3>Privacy Policy</h3>
-                <p>How SharpLync collects, stores, secures, and uses personal information.</p>
+                <p>How SharpLync collects, stores, secures & uses personal data.</p>
                 <span class="policy-card-link">View →</span>
             </a>
 
-            <a href="#" class="policy-card">
+            <!-- REMOTE SUPPORT -->
+            <div class="policy-card">
                 <h3>Remote Support Policy</h3>
-                <p>How remote access works, permissions, security controls, and safety.</p>
+                <p>Access handling, permissions & support security processes.</p>
                 <span class="policy-card-link">Coming Soon</span>
-            </a>
+            </div>
 
-            <a href="#" class="policy-card">
+            <!-- SECURITY POLICY -->
+            <div class="policy-card">
                 <h3>Security Policy</h3>
-                <p>Cybersecurity controls, data protection, SOC alignment. (Future)</p>
+                <p>Cybersecurity controls & SOC alignment. (Future)</p>
                 <span class="policy-card-link">Coming Soon</span>
-            </a>
+            </div>
 
         </div>
 

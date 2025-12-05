@@ -16,12 +16,11 @@
         Route::get('/home', fn() => view('home'));
         Route::get('/test-threatpulse', fn() => view('test-threatpulse'));
         
-        // Policy Pages 
-        
+        // Policy Pages         
         Route::get('/policies/hub', fn() => view('policies.hub'))->name('policies.hub');  
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy'));  
-        Route::get('/policies/test', fn() => view('policies.test'));   
+          
 
      
         Route::get('/about', [PageController::class, 'about'])->name('about');
