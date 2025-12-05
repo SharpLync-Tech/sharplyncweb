@@ -125,7 +125,7 @@
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.<p>
             <p>  
-                <span class="sl-builtby">— Designed & built by SharpLync</span>
+                <span class="sl-builtby">Designed & built by SharpLync</span>
             </p>
             
             <div class="social-icons">

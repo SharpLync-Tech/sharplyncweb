@@ -82,11 +82,12 @@
         you must treat the situation as suspicious.
     </p>
 
-    <ul>
-        <li>❌ <strong>Hang up immediately</strong></li>
-        <li>❌ <strong>Do not allow any remote access</strong></li>
-        <li>✅ <strong>Call our official SharpLync support number</strong> to verify the incident</li>
+    <ul class="sl-warning-list">
+        <li>❌ Hang up immediately</li>
+        <li>❌ Do not allow any remote access</li>
+        <li><span class="sl-tick">✔️</span> Call our official SharpLync support number to verify the incident</li>
     </ul>
+
 </div>
 
 <div class="policy-divider"></div>
