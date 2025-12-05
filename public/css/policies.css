@@ -35,6 +35,15 @@ body {
     padding: 0 1rem;
 }
 
+.policy-section h3 {
+    color: var(--sl-text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    opacity: 0.9; /* boosts visibility on dark cards */
+}
+
+
 /* Card */
 .policy-container {
     flex: 1;
