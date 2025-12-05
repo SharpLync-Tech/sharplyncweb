@@ -145,6 +145,27 @@ body {
     line-height: 1;
 }
 
+.policy-back-wrapper {
+    margin-bottom: 1rem;
+}
+
+.policy-back-btn {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    color: var(--sl-accent);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.policy-back-btn:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-3px);
+}
+
+
 
 
 

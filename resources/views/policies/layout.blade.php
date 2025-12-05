@@ -13,6 +13,7 @@
     </aside>
 
     <div class="policy-container">
+        @yield('policy_back')
         <h1 class="policy-title">@yield('policy_title')</h1>
         <div class="policy-version">Version: @yield('policy_version')</div>
         <div class="policy-updated">Last updated: @yield('policy_updated')</div>
