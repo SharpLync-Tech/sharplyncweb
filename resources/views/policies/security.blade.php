@@ -63,6 +63,33 @@
         Through this platform, SharpLync receives a unified view of threats, real-time alerts, and automated actions 
         to contain and neutralise risks quickly.
     </p>
+
+    <h3>3.1 Trend Micro Code Security (GitHub Integration)</h3>
+    <p>
+        SharpLync integrates Trend Micro’s Code Security platform with our GitHub organization to identify 
+        vulnerabilities, exposed secrets, misconfigurations, and malware within our software repositories. 
+        This integration provides continuous insight into code security risks without modifying or impacting 
+        the codebase itself.
+    </p>
+
+    <p>
+        The Trend Micro GitHub integration operates in a read-only capacity, performing automated scans of 
+        selected repositories to detect:
+    </p>
+
+    <ul>
+        <li>Critical, high, medium, and low severity vulnerabilities in dependencies</li>
+        <li>Exposed credentials, secrets, API keys, or tokens within committed code</li>
+        <li>Potentially malicious or suspicious code artefacts</li>
+        <li>Misconfigurations in application structure or repository settings</li>
+    </ul>
+
+    <p>
+        Findings are surfaced through the Vision One console where they are reviewed and addressed as part of 
+        SharpLync’s secure development lifecycle. Trend Micro Code Security does not write to, change, or alter 
+        any repository content, ensuring SharpLync’s development workflow remains uninterrupted.
+    </p>
+
 </div>
 
 <div class="policy-divider"></div>
