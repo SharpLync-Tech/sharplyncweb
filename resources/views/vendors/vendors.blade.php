@@ -64,7 +64,7 @@
                 {{-- Trend Micro --}}
                 <article class="v-card">
                     <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/trend-micro-partner.png') }}" class="v-logo">
+                    <img src="{{ asset('images/partners/tball.png') }}" class="v-logo">
                     <h3>Trend Micro</h3>
                     <p>Enterprise-level security and Vision One XDR protection — paired with SharpLync’s
                        practical, real-world cybersecurity support.</p>
