@@ -18,9 +18,7 @@
         
         // Policy Pages 
         
-        Route::get('/policies/', fn() => view('policies.index'))->name('policies.index');
-        Route::get('/policies', fn() => redirect('/policies/'));
-     
+            
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy'));    
 
