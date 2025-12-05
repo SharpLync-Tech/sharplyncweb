@@ -68,13 +68,13 @@
     </p>
 
     <ul>
-        <li><strong>✘ No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.</li>
-        <li><strong>✘ No Password Requests:</strong> We will never ask for banking passwords, credit card PINs, or any login credentials.</li>
-        <li><strong>✓ Secure Invoicing Only:</strong> All payments are processed via official Xero invoices emailed directly to you.</li>
-        <li><strong>✓ Approved Payment Methods:</strong> Credit Card, PayPal, or Bank Transfer via Xero invoice only.</li>
-        <li><strong>✘ Never Gift Cards:</strong> We will never request Apple, Amazon, Google Play, or any other gift cards.</li>
-        <li><strong>✘ Never Cryptocurrency:</strong> We will never request Bitcoin, Ethereum, or any other crypto payment.</li>
-        <li><strong>✘ Never Bank Visits:</strong> We will never ask you to ring your bank, drive to your bank, or withdraw cash.</li>
+        <li><strong>❌ No Open Banking Sites:</strong> All banking websites, financial applications, and investment accounts must be closed or minimized before we establish a remote connection.</li>
+        <li><strong>❌ No Password Requests:</strong> We will never ask for banking passwords, credit card PINs, or any login credentials.</li>
+        <li><strong>✅ Secure Invoicing Only:</strong> All payments are processed via official Xero invoices emailed directly to you.</li>
+        <li><strong>✅ Approved Payment Methods:</strong> Credit Card, PayPal, or Bank Transfer via Xero invoice only.</li>
+        <li><strong>❌ Never Gift Cards:</strong> We will never request Apple, Amazon, Google Play, or any other gift cards.</li>
+        <li><strong>❌ Never Cryptocurrency:</strong> We will never request Bitcoin, Ethereum, or any other crypto payment.</li>
+        <li><strong>❌ Never Bank Visits:</strong> We will never ask you to ring your bank, drive to your bank, or withdraw cash.</li>
     </ul>
 </div>
 
@@ -88,9 +88,9 @@
     </p>
 
     <ul>
-        <li>✓ Hang up the phone immediately.</li>
-        <li>✘ Do not provide any information or allow a connection.</li>
-        <li>✓ Immediately call our main, verified SharpLync number to report the incident.</li>
+        <li>✅ Hang up the phone immediately.</li>
+        <li>❌ Do not provide any information or allow a connection.</li>
+        <li>✅ Immediately call our main, verified SharpLync number to report the incident.</li>
     </ul>
 </div>
 
