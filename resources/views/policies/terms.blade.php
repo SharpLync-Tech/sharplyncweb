@@ -19,7 +19,7 @@
     <h3>1.1 Parties</h3>
     <p>
         These Terms and Conditions ("Terms") form a legally binding agreement between 
-        SharpLync Pty Ltd (ACN 692146839, "SharpLync," "We," "Us," or "Our") and the customer 
+        SharpLync Pty Ltd ("SharpLync," "We," "Us," or "Our") and the customer 
         ("Customer," "You," or "Your"), as identified in the Service Agreement, Quote, or 
         Statement of Work ("SOW").
     </p>
