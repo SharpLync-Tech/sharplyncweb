@@ -18,10 +18,10 @@
         
         // Policy Pages 
         
-        Route::get('/policies', fn() => view('policies.hub'))->name('policies.hub');  
+        Route::get('/policies/hub', fn() => view('policies.hub'))->name('policies.hub');  
         Route::get('/policies/terms', fn() => view('policies.terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy'));  
-         Route::get('/policies/test', fn() => view('policies.test'));   
+        Route::get('/policies/test', fn() => view('policies.test'));   
 
      
         Route::get('/about', [PageController::class, 'about'])->name('about');
