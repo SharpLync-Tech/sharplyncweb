@@ -1,6 +1,11 @@
 @extends('policies.layout')
 
 @section('policy_title', 'Privacy Policy')
+@section('policy_back')
+<div class="policy-back-wrapper">
+    <a href="/policies/hub" class="policy-back-btn">Back to Policies</a>
+</div>
+@endsection
 @section('policy_version', 'v1.3')
 @section('policy_updated', '5 December 2025')
 

@@ -3,7 +3,7 @@
 @section('policy_title', 'Terms & Conditions')
 @section('policy_back')
 <div class="policy-back-wrapper">
-    <a href="/policies/hub" class="policy-back-btn">← Back to Policies</a>
+    <a href="/policies/hub" class="policy-back-btn">Back to Policies</a>
 </div>
 @endsection
 
