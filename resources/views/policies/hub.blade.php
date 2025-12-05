@@ -43,7 +43,7 @@
             <a href="/policies/security" class="policy-card">
                             <div class="policy-card">
                 <h3>Security Policy</h3>
-                <p>Cybersecurity controls & SOC alignment. (Future)</p>
+                <p>Cybersecurity controls & Security Operations Center (SOC) alignment.</p>
                 <span class="policy-card-link">View</span>
             </div>
             </a>
