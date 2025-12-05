@@ -32,12 +32,12 @@
             </a>
 
             <!-- REMOTE SUPPORT -->
-            <div class="policy-card">
-                <a href="/policies/support" class="policy-card">
+            <a href="/policies/support" class="policy-card">
                 <h3>Remote Support Policy</h3>
                 <p>Access handling, permissions & support security processes.</p>
                 <span class="policy-card-link">View</span>
-            </div>
+            </a>
+
 
             <!-- SECURITY POLICY -->
             <div class="policy-card">
