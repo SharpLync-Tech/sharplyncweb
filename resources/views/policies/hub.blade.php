@@ -40,8 +40,7 @@
 
 
             <!-- SECURITY POLICY -->
-            <a href="/policies/security" class="policy-card">
-                            <div class="policy-card">
+            <a href="/policies/security" class="policy-card">                            
                 <h3>Security Policy</h3>
                 <p>Cybersecurity controls & Security Operations Center (SOC) alignment.</p>
                 <span class="policy-card-link">View</span>
