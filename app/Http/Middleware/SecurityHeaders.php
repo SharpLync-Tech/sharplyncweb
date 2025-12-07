@@ -15,36 +15,45 @@ class SecurityHeaders
         $response = $next($request);
 
         // --- Strict Transport Security ---
-        // Forces HTTPS connections for 1 year, including subdomains
         $response->headers->set(
             'Strict-Transport-Security',
             'max-age=31536000; includeSubDomains; preload'
         );
 
         // --- Content Security Policy (CSP) ---
-            $response->headers->set(
-                'Content-Security-Policy',
+        $response->headers->set(
+            'Content-Security-Policy',
                 "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; " .
 
-                // IMAGES (Google Maps + Your Storage)
-                "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com; " .
+                // IMAGES (Google Maps + GA + local + inlined data)
+                "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com https://www.google-analytics.com; " .
 
-                // STYLES (Allow inline + Google Fonts + unpkg for component styles)
+                // STYLES (Google Fonts + inline needed for Blade/Tailwind + unpkg)
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; " .
 
-                // FONTS (Google fonts + local)
+                // FONTS (Google Fonts + local)
                 "font-src 'self' data: https://fonts.gstatic.com; " .
 
-                // SCRIPTS (critical: allow Google Maps + gmpx extended components + inline shadow DOM scripts)
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com https://unpkg.com https:; " .
+                // SCRIPTS (GA4 + GTM + Maps + unpkg + inline shadow DOM)
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
+                    . "https://maps.googleapis.com "
+                    . "https://maps.gstatic.com "
+                    . "https://unpkg.com "
+                    . "https://www.googletagmanager.com "
+                    . "https://www.google-analytics.com "
+                    . "https:; " .
 
-                // NETWORK/API CALLS
-                "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://unpkg.com; " .
+                // OUTBOUND NETWORK CALLS (GA4 + GTM + Maps)
+                "connect-src 'self' "
+                    . "https://maps.googleapis.com "
+                    . "https://maps.gstatic.com "
+                    . "https://unpkg.com "
+                    . "https://www.google-analytics.com "
+                    . "https://www.googletagmanager.com; " .
 
-                // FRAMES (safe)
+                // Frames
                 "frame-src 'self';"
-            );
-
+        );
 
         // --- Frame and Embedding Control ---
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
@@ -55,11 +64,10 @@ class SecurityHeaders
         // --- Referrer Policy ---
         $response->headers->set('Referrer-Policy', 'no-referrer-when-downgrade');
 
-        // --- XSS Protection (legacy, still useful for old browsers) ---
+        // --- XSS Protection (legacy but harmless) ---
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
         // --- Permissions Policy ---
-        // Controls browser features like camera, microphone, geolocation, etc.
         $response->headers->set(
             'Permissions-Policy',
             "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
