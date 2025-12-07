@@ -11,33 +11,48 @@
     </script>   
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SharpLync | IT Support & Cloud Services')</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@yield('title', 'SharpLync | IT Support & Cloud Services for Queensland Businesses')</title>
 
-    <meta name="description" content="SharpLync delivers reliable IT support, cloud services, and technology solutions across the Granite Belt and beyond. Straightforward Support, modern results.">
-    <meta name="keywords" content="SharpLync, IT Support, Cloud Services, Managed IT, Granite Belt, Warwick, Stanthorpe, Tenterfield">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://sharplync.com.au/">
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-    <meta name="author" content="SharpLync Pty Ltd">
+        <!-- Primary SEO -->
+        <meta name="description" content="SharpLync provides expert IT support, cybersecurity, and cloud services for businesses across Queensland. Proudly serving Stanthorpe and the Granite Belt with modern, reliable technology solutions.">
+        <meta name="keywords" content="IT Support Queensland, IT Support Stanthorpe, Managed Services Queensland, Cloud Services QLD, Cybersecurity Granite Belt, Business IT Support, SharpLync">
+        <meta name="robots" content="index, follow">
 
-    {{-- Structured data for Google / Knowledge Graph --}}
-    @verbatim
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "SharpLync Pty Ltd",
-      "url": "https://sharplync.com.au",
-      "logo": "https://sharplync.com.au/images/sharplync-logo.png",
-      "sameAs": [
-        "https://www.linkedin.com/company/sharplync",
-        "https://x.com/sharplync"
-      ],
-      "description": "SharpLync provides professional IT support, cloud solutions, and managed services with a personal touch."
-    }
-    </script>
-    @endverbatim
+        <!-- Canonical -->
+        <link rel="canonical" href="https://sharplync.com.au/">
+
+        <!-- Sitemap reference -->
+        <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+        <meta name="author" content="SharpLync Pty Ltd">
+
+        {{-- Structured data for Google / Knowledge Graph --}}
+        @verbatim
+        <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "SharpLync Pty Ltd",
+        "image": "https://sharplync.com.au/images/sharplync-logo.png",
+        "@id": "https://sharplync.com.au",
+        "url": "https://sharplync.com.au",
+        "telephone": "+61 492 014 463",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Stanthorpe",
+            "addressRegion": "QLD",
+            "addressCountry": "AU"
+        },
+        "description": "SharpLync provides IT support, managed services, cloud solutions, and cybersecurity for businesses across Queensland.",
+        "sameAs": [
+            "https://www.linkedin.com/company/sharplync",
+            "https://x.com/sharplync"
+        ]
+        }
+        </script>
+@endverbatim
+
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
