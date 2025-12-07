@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- ========================= -->
+    <!--       CORE PAGES          -->
+    <!-- ========================= -->
+
+    <url>
+        <loc>https://sharplync.com.au/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/about</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/services</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/testimonials</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- ========================= -->
+    <!--         POLICIES          -->
+    <!-- ========================= -->
+
+    <!-- Policy Hub -->
+    <url>
+        <loc>https://sharplync.com.au/policies/hub</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Individual Policy Pages -->
+    <url>
+        <loc>https://sharplync.com.au/policies/terms</loc>
+        <changefreq>yearly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/policies/privacy</loc>
+        <changefreq>yearly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/policies/security</loc>
+        <changefreq>yearly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/policies/remote-support</loc>
+        <changefreq>yearly</changefreq>
+    </url>
+
+    <!-- ========================= -->
+    <!--      AUTH & ACCOUNT       -->
+    <!-- ========================= -->
+
+    <url>
+        <loc>https://sharplync.com.au/register</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://sharplync.com.au/login</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+</urlset>

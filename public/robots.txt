@@ -1,2 +1,83 @@
+# ============================================================
+# SharpLync Robots.txt (Production)
+# Purpose: Allow full indexing of public content while blocking
+#          private systems, portals, dashboards, admin areas,
+#          and sensitive internal paths.
+# Last updated: 07 Dec 2025
+# ============================================================
+
 User-agent: *
-Disallow:
+
+# ===============================
+# ALLOW PUBLIC WEBSITE CONTENT
+# ===============================
+Allow: /
+
+# ===============================
+# BLOCK PRIVATE & SENSITIVE AREAS
+# ===============================
+
+# Admin Portal
+Disallow: /admin/
+Disallow: /admin/*
+
+# Customer Portal
+Disallow: /customers/
+Disallow: /customers/*
+
+# Login & Registration (Google recommends blocking sign-in pages)
+Disallow: /login
+Disallow: /register
+Disallow: /password-reset
+Disallow: /forgot-password
+Disallow: /verify-email
+Disallow: /auth/*
+
+# API & Webhooks
+Disallow: /api/
+Disallow: /api/*
+
+# Background / Internal tools
+Disallow: /system/
+Disallow: /maintenance/
+Disallow: /debug/
+Disallow: /health
+Disallow: /status
+
+# Laravel internals & infrastructure
+Disallow: /storage/
+Disallow: /storage/*
+Disallow: /vendor/
+Disallow: /vendor/*
+Disallow: /logs/
+Disallow: /logs/*
+Disallow: /.env
+Disallow: /server-status
+Disallow: /server-info
+
+# Prevent crawling query strings (clean SEO)
+Disallow: /*?*
+Disallow: /*&*
+
+# ===============================
+# SPECIAL BOT HANDLING
+# ===============================
+
+# Block AI scrapers & shady bots (optional but recommended)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+# ===============================
+# SITEMAP LOCATION
+# ===============================
+
+Sitemap: https://sharplync.com.au/sitemap.xml
