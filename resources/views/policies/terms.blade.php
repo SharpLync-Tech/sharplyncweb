@@ -19,7 +19,7 @@
     <h3>1.1 Parties</h3>
     <p>
         These Terms and Conditions ("Terms") form a legally binding agreement between 
-        SharpLync Pty Ltd ("SharpLync," "We," "Us," or "Our") and the customer 
+        SharpLync Pty Ltd (ACN 692146839, "SharpLync," "We," "Us," or "Our") and the customer 
         ("Customer," "You," or "Your"), as identified in the Service Agreement, Quote, or 
         Statement of Work ("SOW").
     </p>
@@ -74,7 +74,8 @@
     <h3>3.2 Customer Responsibility for Security and Data Backup</h3>
     <p>
         You are solely responsible for Your systems' security and data backups, including 
-        compliance with Australian cyber security laws (e.g., Cyber Security Act 2024 (Cth)).
+        compliance with Australian cyber security laws (for example, under applicable Commonwealth 
+        legislation).
     </p>
 
     <p><strong>Security:</strong> Maintain up-to-date anti-virus, firewalls, and access controls. SharpLync 
@@ -82,7 +83,7 @@
 
     <p><strong>Data Backup:</strong> Unless a separate managed backup SOW exists, You handle all backups. 
         SharpLync is not liable for data loss, corruption, or disclosure except for Our gross 
-        negligence or willful misconduct, proven by You.</p>
+        negligence or wilful misconduct, proven by You.</p>
 </div>
 
 <div class="policy-divider"></div>
@@ -103,12 +104,13 @@
     </p>
 
     <h3>4.3 Retention of Title (Hardware) and PPSA</h3>
-    <p><strong>Retention of Title (ROT) and PMSI:</strong> Notwithstanding delivery, the title (legal 
-        ownership) of any hardware, equipment, or goods supplied, resold, or installed by 
-        SharpLync to the Customer (the "Goods") remains vested in SharpLync and does not pass 
+    <p><strong>Retention of Title (ROT) and Purchase Money Security Interest (PMSI):</strong> 
+        Notwithstanding delivery, the title (legal ownership) of any hardware, equipment, or goods supplied, resold, 
+        or installed by SharpLync to the Customer (the "Goods") remains vested in SharpLync and does not pass 
         to the Customer until the full price for those specific Goods and all other amounts owing 
         by the Customer to SharpLync have been paid in full. This ROT constitutes a security 
-        interest and specifically a Purchase Money Security Interest (PMSI) under the PPSA.</p>
+        interest and specifically a PMSI under the <strong>Personal Property Securities Act 2009 (Cth) (PPSA)</strong>.
+    </p>
 
     <p><strong>Risk:</strong> The risk of loss or damage to the Goods passes to the Customer upon 
         delivery or installation.</p>
@@ -123,7 +125,7 @@
         enter the Customer's premises (or any premises where the Goods are reasonably 
         believed to be located) to repossess and resell the Goods. The Customer indemnifies 
         SharpLync for any damage caused during repossession, provided such damage is not 
-        caused by Our gross negligence or willful misconduct.</p>
+        caused by Our gross negligence or wilful misconduct.</p>
 
     <p><strong>PPSA Acknowledgement and Waiver:</strong> The Customer acknowledges and agrees 
         that SharpLync may register its security interest (including the PMSI) in the Goods and 
@@ -153,7 +155,7 @@
 
     <h3>6.1 Exclusion of Consequential Loss</h3>
     <p>
-        To the maximum extent permitted by law (including ACL), SharpLync excludes liability 
+        To the maximum extent permitted by law (including the ACL), SharpLync excludes liability 
         for indirect, special, consequential, or punitive damages, including loss of profits, data, 
         business, or goodwill.
     </p>
@@ -162,7 +164,7 @@
     <p>
         Our total liability (in contract, tort, or otherwise) is limited to the fees You paid for the 
         relevant Services in the three (3) months preceding the claim, except for gross 
-        negligence or willful misconduct.
+        negligence or wilful misconduct.
     </p>
 
     <h3>6.3 Indemnity</h3>
@@ -173,14 +175,14 @@
 
     <ul>
         <li>(a) Your misuse of Services;</li>
-        <li>(b) Breaches of Your obligations (e.g., security, data);</li>
+        <li>(b) Breaches of Your obligations (for example, security, data, or access controls);</li>
         <li>(c) Third-party claims from Your use, except to the extent caused by Our gross 
-            negligence or willful misconduct.</li>
+            negligence or wilful misconduct.</li>
     </ul>
 
     <p>
-        SharpLync provides limited indemnity to You solely for third-party IP infringement 
-        claims arising directly from Our Services, up to the liability cap.
+        SharpLync provides limited indemnity to You solely for third-party intellectual property 
+        infringement claims arising directly from Our Services, up to the liability cap.
     </p>
 </div>
 
@@ -191,14 +193,14 @@
 
     <h3>7.1 Privacy Policy</h3>
     <p>
-        Our Privacy Policy (at https://sharplync.com.au/policies/privacy) governs data handling per 
-        Privacy Act 1988 (Cth). You consent to collection and use as described.
+        Our Privacy Policy (available at <a href="/policies/privacy">/policies/privacy</a>) governs data handling under 
+        the Privacy Act 1988 (Cth, Commonwealth of Australia). You consent to collection and use as described.
     </p>
 
     <h3>7.2 Remote Support Policy</h3>
     <p>
-        Remote access follows Our policy. You authorize access and indemnify Us for related 
-        risks.
+        Remote access follows Our Remote Support Policy. You authorise access and 
+        indemnify Us for related risks, in accordance with that policy.
     </p>
 </div>
 
@@ -207,8 +209,9 @@
 <div class="policy-section">
     <h2>8. Force Majeure</h2>
     <p>
-        Neither party is liable for delays from events beyond reasonable control (e.g., cyber 
-        attacks, natural disasters), provided notice is given and efforts made to mitigate.
+        Neither party is liable for delays from events beyond reasonable control (for example, 
+        cyber attacks, natural disasters, power outages, or major network failures), provided 
+        notice is given and reasonable efforts are made to mitigate the impact.
     </p>
 </div>
 
@@ -219,14 +222,14 @@
 
     <h3>9.1 Termination for Breach</h3>
     <p>
-        Either party may terminate immediately if the other materially breaches (unremedied 
-        within 14 days' notice) or becomes insolvent.
+        Either party may terminate immediately if the other materially breaches these Terms 
+        (and does not remedy that breach within 14 days of written notice) or becomes insolvent.
     </p>
 
     <h3>9.2 Consequences</h3>
     <p>
-        Upon termination: Pay all fees due; Services cease; Sections 3, 4, 5, 6, 7, 9, 10, 11 
-        survive.
+        Upon termination: You must pay all fees due; Services cease; and sections 3, 4, 5, 6, 7, 9, 
+        10 and 11 survive termination.
     </p>
 </div>
 
@@ -235,9 +238,11 @@
 <div class="policy-section">
     <h2>10. Dispute Resolution</h2>
     <p>
-        Disputes are resolved by arbitration under Australian Centre for International 
-        Commercial Arbitration rules, in Brisbane, QLD. This does not prevent seeking urgent 
-        injunctive relief.
+        Any dispute arising out of or in connection with these Terms will be submitted to 
+        arbitration administered by the <strong>Australian Centre for International Commercial Arbitration (ACICA)</strong> 
+        according to the ACICA Arbitration Rules. The seat of arbitration will be Brisbane, 
+        Queensland. This does not prevent either party from seeking urgent injunctive or 
+        interlocutory relief from a court of competent jurisdiction.
     </p>
 </div>
 
@@ -248,18 +253,23 @@
 
     <h3>11.1 Governing Law</h3>
     <p>
-        Governed by laws of Queensland and Commonwealth of Australia. Parties submit to 
-        exclusive jurisdiction of QLD courts.
+        These Terms are governed by the laws of Queensland and the Commonwealth of Australia. 
+        The parties submit to the exclusive jurisdiction of the courts of Queensland and the 
+        Federal Court of Australia.
     </p>
 
     <h3>11.2 Entire Agreement</h3>
     <p>
-        These Terms constitute the entire agreement; no waivers unless written.
+        These Terms, together with any SOWs or Quotes, constitute the entire agreement between 
+        the parties in relation to the Services and supersede all prior discussions or understandings, 
+        whether written or oral.
     </p>
 
     <h3>11.3 Severability</h3>
     <p>
-        Invalid provisions are severed or modified to comply with law, preserving intent.
+        If any provision of these Terms is held to be invalid, illegal, or unenforceable, that provision 
+        will be severed or read down to the minimum extent necessary, and the remaining provisions 
+        will continue in full force and effect.
     </p>
 </div>
 
