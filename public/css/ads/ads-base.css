@@ -16,9 +16,13 @@ body.ads-body {
 }
 
 .ads-header {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
     background: linear-gradient(135deg, #0A2A4D, #2CBFAE);
     padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .ads-header-inner {
@@ -28,6 +32,11 @@ body.ads-body {
     align-items: center;
     gap: 1rem;
     justify-content: flex-start;
+}
+
+.ads-header.stuck {
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    background: linear-gradient(135deg, #081d38, #259d8d);
 }
 
 .ads-logo-wrap {
@@ -222,7 +231,7 @@ body.ads-body {
     }
 
     .ads-logo {
-    height: 75px;   /* bigger mobile size */
+    height: 80px;   /* bigger mobile size */
     }
 
     .ads-header-tagline {

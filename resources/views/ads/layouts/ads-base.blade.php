@@ -24,14 +24,16 @@
 </head>
 <body class="ads-body">
 
+    {{-- ===========================================
+         STICKY HEADER (Logo link + mobile centering)
+    ============================================ --}}
     <header class="ads-header">
         <div class="ads-header-inner">
-            {{-- Standard SharpLync logo (nav version path; adjust if needed) --}}
             <div class="ads-logo-wrap">
                 <a href="{{ url('/') }}" class="ads-logo-link">
-                <img src="{{ asset('images/sharplync-logo.png') }}" 
-                alt="SharpLync Logo" 
-                class="ads-logo">
+                    <img src="{{ asset('images/sharplync-logo.png') }}" 
+                         alt="SharpLync Logo"
+                         class="ads-logo">
                 </a>
             </div>
 
@@ -53,6 +55,18 @@
             <p class="ads-footer-built">Site designed &amp; built by SharpLync.</p>
         </div>
     </footer>
+
+    {{-- Sticky header visual state --}}
+    <script>
+        document.addEventListener("scroll", () => {
+            const header = document.querySelector(".ads-header");
+            if (window.scrollY > 10) {
+                header.classList.add("stuck");
+            } else {
+                header.classList.remove("stuck");
+            }
+        });
+    </script>
 
 </body>
 </html>
