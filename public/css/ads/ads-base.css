@@ -36,7 +36,7 @@ body.ads-body {
 }
 
 .ads-logo {
-    height: 40px;
+    height: 58px;
     width: auto;
     display: block;
 }
@@ -217,7 +217,17 @@ body.ads-body {
 @media (max-width: 640px) {
     .ads-header-inner {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center !important;
+        text-align: center;
+    }
+
+    .ads-logo {
+    height: 70px;   /* bigger mobile size */
+    }
+
+    .ads-header-tagline {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
     }
 
     .ads-main {

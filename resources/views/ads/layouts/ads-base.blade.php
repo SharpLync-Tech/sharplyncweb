@@ -28,10 +28,13 @@
         <div class="ads-header-inner">
             {{-- Standard SharpLync logo (nav version path; adjust if needed) --}}
             <div class="ads-logo-wrap">
+                <a href="{{ url('/') }}" class="ads-logo-link">
                 <img src="{{ asset('images/sharplync-logo.png') }}" 
-                     alt="SharpLync Logo" 
-                     class="ads-logo">
+                alt="SharpLync Logo" 
+                class="ads-logo">
+                </a>
             </div>
+
             <div class="ads-header-tagline">
                 <span>Business IT Support • Cybersecurity • Remote Help</span>
             </div>
