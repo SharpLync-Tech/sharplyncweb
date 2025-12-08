@@ -120,3 +120,4 @@
         require __DIR__ . '/contact.php';
         require __DIR__ . '/support.php';
         require __DIR__ . '/admintickets.php';
+        require __DIR__ . '/ads.php';
