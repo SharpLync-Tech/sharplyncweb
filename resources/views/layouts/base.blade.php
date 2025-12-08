@@ -18,6 +18,7 @@
         <meta name="description" content="SharpLync provides expert IT support, cybersecurity, and cloud services for businesses across Queensland. Proudly serving Stanthorpe and the Granite Belt with modern, reliable technology solutions.">
         <meta name="keywords" content="IT Support Queensland, IT Support Stanthorpe, Managed Services Queensland, Cloud Services QLD, Cybersecurity Granite Belt, Business IT Support, SharpLync">
         <meta name="robots" content="index, follow">
+        <meta name="facebook-domain-verification" content="nlot90unrp0fw2s4uquw1q8hnxnh7a" />
 
         <!-- Canonical -->
         <link rel="canonical" href="https://sharplync.com.au/">
