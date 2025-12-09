@@ -13,8 +13,10 @@
 
 <header class="admin-header">
     <div class="header-left">
-        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="admin-logo">
-    </div>
+    <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="admin-logo">
+    <span class="admin-title">Admin Portal</span>
+</div>
+
 
     <div class="header-right">
         <div class="header-profile">
