@@ -75,6 +75,11 @@
     display: flex;
     align-items: center;
     gap: 16px;
+
+    background: rgba(255,255,255,0.08);
+    padding: 6px 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
 }
 
 .header-profile {
@@ -89,6 +94,7 @@
     height: 34px;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.4);
+    transition: 0.2s ease;
 }
 
 .logout-btn {
@@ -100,6 +106,11 @@
     border-radius: 8px;
     text-decoration: none;
     transition: 0.2s ease;
+}
+
+.header-profile img:hover {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 10px rgba(44,191,174,0.6);
 }
 
 .logout-btn:hover {

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync Admin Portal')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="{{ asset('css/admin/admin.css') }}?v={{ time() }}" rel="stylesheet">
 
 </head>
@@ -11,20 +12,23 @@
 <body class="admin-portal">
 
 <header class="admin-header">
-    <h1>SharpLync Admin Portal</h1>
+    <div class="header-left">
+        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="admin-logo">
+    </div>
 
     <div class="header-right">
         <div class="header-profile">
             <img
                 src="https://ui-avatars.com/api/?name={{ urlencode(session('admin_user')['displayName'] ?? 'SharpLync Admin') }}&background=0A2A4D&color=fff&size=36"
                 alt="Profile">
-            <span style="font-weight:700;">
+            <span class="admin-username">
                 {{ session('admin_user')['displayName'] ?? 'SharpLync Admin' }}
             </span>
         </div>
         <a href="{{ url('/admin/logout') }}" class="logout-btn">Logout</a>
     </div>
 </header>
+
 
 {{-- ⭐ FIX: Proper wrapper to hold sidebar + main content --}}
 <div class="admin-container" style="display:flex;min-height:calc(100vh - 70px);">
