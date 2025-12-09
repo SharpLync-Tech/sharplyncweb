@@ -10,7 +10,24 @@
 
     <!-- Only testimonials stylesheet (prevents global CSS bleed) -->
     <link rel="stylesheet" href="{{ asset('css/testimonials.css') }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
+    @stack('styles')
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48.png') }}">
+
+    <!-- Apple Touch -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+
+    <!-- Android / Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('android-chrome-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('android-chrome-512.png') }}">
+
+    <!-- ICO fallback -->
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+</head>
+
 </head>
 <body class="testimonials-body">
 
