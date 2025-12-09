@@ -478,3 +478,67 @@
     gap: 12px;
 }
 
+/* FORM ELEMENTS */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #0A2A4D;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #d7dee8;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.2s ease;
+    background: #fff;
+}
+
+.form-input:focus {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+}
+
+/* FORM ROWS (2-column layout) */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.form-col {
+    display: flex;
+    flex-direction: column;
+}
+
+/* CHECKBOXES */
+.form-checkbox-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+/* ACTION BUTTONS */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
