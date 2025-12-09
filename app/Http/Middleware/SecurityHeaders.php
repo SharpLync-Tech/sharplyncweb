@@ -62,7 +62,8 @@ class SecurityHeaders
                     . "https://www.googleadservices.com; " .
 
                 // Frames
-                "frame-src 'self';"
+                "frame-src 'self' https://www.googletagmanager.com;"
+
         );
 
         // --- Frame and Embedding Control ---
