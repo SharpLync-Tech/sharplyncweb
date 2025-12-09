@@ -511,9 +511,10 @@
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-    margin-bottom: 18px;
+    gap: 20px 24px; /* uniform spacing horizontally + vertically */
+    width: 100%;
 }
+
 
 .form-col {
     display: flex;
@@ -541,4 +542,23 @@
     gap: 12px;
     margin-top: 10px;
 }
+
+.admin-card {
+    overflow: visible; /* prevents inner elements from clipping against rounded edges */
+}
+
+.form-input {
+    width: 100%;
+    box-sizing: border-box;  /* ensures no overflow */
+}
+
+textarea.form-input {
+    resize: vertical;
+    border-radius: 10px;
+}
+
+.admin-card {
+    padding: 28px 32px;
+}
+
 
