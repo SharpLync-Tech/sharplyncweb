@@ -28,7 +28,7 @@
 }
 
 .admin-logo {
-    height: 38px;          /* fixed height */
+    height: 80px;          /* fixed height */
     width: auto;           /* auto-scale */
     max-width: 180px;      /* safety limit */
     object-fit: contain;   /* keep proportions */
