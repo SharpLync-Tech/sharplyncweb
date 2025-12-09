@@ -419,3 +419,62 @@
     font-size: 12px;
 }
 
+/* BADGES */
+.badge {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.badge-on {
+    background: #2CBFAE;
+    color: #06202A;
+}
+
+.badge-off {
+    background: #d0d7e2;
+    color: #44556b;
+}
+
+/* MODAL OVERLAY */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* MODAL BOX */
+.modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    width: 380px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+/* Modal actions */
+.modal-actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
