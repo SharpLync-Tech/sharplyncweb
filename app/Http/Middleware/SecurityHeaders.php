@@ -25,31 +25,41 @@ class SecurityHeaders
             'Content-Security-Policy',
                 "default-src 'self' https://sharplync.com.au https://sharplink.com.au https://*.azurewebsites.net; " .
 
-                // IMAGES (Google Maps + GA + local + inlined data)
-                "img-src 'self' data: https: http: https://maps.gstatic.com https://maps.googleapis.com https://www.google-analytics.com; " .
+                // IMAGES (Google Maps + GA + Google Ads + local + inline)
+                "img-src 'self' data: https: http: "
+                    . "https://maps.gstatic.com "
+                    . "https://maps.googleapis.com "
+                    . "https://www.google-analytics.com "
+                    . "https://googleads.g.doubleclick.net "
+                    . "https://www.googleadservices.com "
+                    . "https://www.googletagmanager.com; " .
 
-                // STYLES (Google Fonts + inline needed for Blade/Tailwind + unpkg)
+                // STYLES
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; " .
 
-                // FONTS (Google Fonts + local)
+                // FONTS
                 "font-src 'self' data: https://fonts.gstatic.com; " .
 
-                // SCRIPTS (GA4 + GTM + Maps + unpkg + inline shadow DOM)
+                // SCRIPTS (GA4 + GTM + Google Ads + Maps + inline)
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' "
                     . "https://maps.googleapis.com "
                     . "https://maps.gstatic.com "
                     . "https://unpkg.com "
                     . "https://www.googletagmanager.com "
                     . "https://www.google-analytics.com "
+                    . "https://googleads.g.doubleclick.net "
+                    . "https://www.googleadservices.com "
                     . "https:; " .
 
-                // OUTBOUND NETWORK CALLS (GA4 + GTM + Maps)
+                // CONNECT (GA4 + GTM + Google Ads + Maps)
                 "connect-src 'self' "
                     . "https://maps.googleapis.com "
                     . "https://maps.gstatic.com "
                     . "https://unpkg.com "
                     . "https://www.google-analytics.com "
-                    . "https://www.googletagmanager.com; " .
+                    . "https://www.googletagmanager.com "
+                    . "https://googleads.g.doubleclick.net "
+                    . "https://www.googleadservices.com; " .
 
                 // Frames
                 "frame-src 'self';"
