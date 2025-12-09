@@ -282,3 +282,140 @@
     background: #2CBFAE;
     box-shadow: 0 0 12px rgba(44,191,174,0.9);
 }
+
+/* =========================================
+   PAGE TITLES & TOP BAR
+========================================= */
+.admin-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.admin-top-bar h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0A2A4D;
+    margin: 0;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.2s ease;
+}
+
+.btn-primary {
+    background: #2CBFAE;
+    color: #06202A;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #25a594;
+}
+
+.btn-accent {
+    background: #0A2A4D;
+    color: white;
+    font-weight: 600;
+}
+
+.btn-accent:hover {
+    background: #083257;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+}
+
+/* =========================================
+   CARDS
+========================================= */
+.admin-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    margin-bottom: 22px;
+}
+
+.admin-card h3 {
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0A2A4D;
+}
+
+/* =========================================
+   OVERVIEW GRID
+========================================= */
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    gap: 14px;
+    margin-top: 6px;
+}
+
+.overview-item {
+    background: #ffffff;
+    border: 1px solid #e7edf3;
+    padding: 14px;
+    border-radius: 10px;
+}
+
+.overview-item strong {
+    color: #0A2A4D;
+}
+
+/* =========================================
+   TABLE STYLES
+========================================= */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table thead tr {
+    background: #f1f4f8;
+}
+
+.table thead th {
+    padding: 10px;
+    text-align: left;
+    color: #0A2A4D;
+    font-weight: 600;
+}
+
+.table tbody td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e9ef;
+}
+
+/* Success / Error badge */
+.sms-badge-success {
+    background: #2CBFAE;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.sms-badge-failure {
+    background: #dc3545;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+

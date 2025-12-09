@@ -3,8 +3,9 @@
 @section('title', 'Customer Profile')
 
 @section('content')
+
   {{-- Header --}}
-  <div class="admin-top-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+  <div class="admin-top-bar">
     <h2>{{ $customer->company_name ?? 'Customer' }}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <a class="btn btn-accent" href="{{ route('admin.customers.index') }}">Back to Customers</a>
@@ -22,35 +23,43 @@
   {{-- Overview --}}
   <div class="admin-card">
     <h3>Overview</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:10px;">
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;">
+
+    <div class="overview-grid">
+
+      <div class="overview-item">
         <strong>Company</strong><br>{{ $customer->company_name ?? '—' }}
       </div>
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;">
+
+      <div class="overview-item">
         <strong>Contact</strong><br>{{ $customer->contact_name ?? '—' }}
       </div>
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;">
+
+      <div class="overview-item">
         <strong>Email</strong><br>{{ $customer->email ?? '—' }}
       </div>
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;">
+
+      <div class="overview-item">
         <strong>Phone</strong><br>{{ $customer->phone ?? '—' }}
       </div>
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;">
+
+      <div class="overview-item">
         <strong>Status</strong><br>{{ $customer->status ?? 'active' }}
       </div>
 
       @if(!empty($customer->notes))
-      <div style="background:#fff;border:1px solid #e7edf3;border-radius:10px;padding:14px;grid-column:1/-1;">
+      <div class="overview-item" style="grid-column:1 / -1;">
         <strong>Notes</strong>
         <div style="margin-top:6px;white-space:pre-wrap;">{{ $customer->notes }}</div>
       </div>
       @endif
+
     </div>
   </div>
 
-  {{-- Next actions --}}
+  {{-- Next Actions --}}
   <div class="admin-card">
     <h3>Next Actions</h3>
+
     <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
       <a class="btn btn-primary" href="#" aria-disabled="true">Open Customer Portal (impersonate)</a>
       <a class="btn btn-primary" href="#" aria-disabled="true">View Devices</a>
@@ -65,7 +74,7 @@
     </div>
   </div>
 
-  {{-- ⭐ CUSTOMER SMS HISTORY PANEL --}}
+  {{-- CUSTOMER SMS HISTORY --}}
   <div class="admin-card" style="margin-top:24px;">
       <h3>SMS History</h3>
 
@@ -82,44 +91,34 @@
           </div>
       @else
           <div style="overflow-x:auto;margin-top:10px;">
-              <table class="table" style="width:100%;border-collapse:collapse;">
+              <table class="table">
                   <thead>
-                      <tr style="background:#f1f4f8;">
-                          <th style="padding:8px 10px;">Date</th>
-                          <th style="padding:8px 10px;">Admin</th>
-                          <th style="padding:8px 10px;">Message</th>
-                          <th style="padding:8px 10px;">Code</th>
-                          <th style="padding:8px 10px;">Status</th>
+                      <tr>
+                          <th>Date</th>
+                          <th>Admin</th>
+                          <th>Message</th>
+                          <th>Code</th>
+                          <th>Status</th>
                       </tr>
                   </thead>
                   <tbody>
                       @foreach($smsLogs as $log)
-                          <tr style="border-bottom:1px solid #e8eef3;">
-                              <td style="padding:8px 10px;">
-                                  {{ $log->created_at->format('d M Y, H:i') }}
-                              </td>
+                          <tr>
+                              <td>{{ $log->created_at->format('d M Y, H:i') }}</td>
 
-                              <td style="padding:8px 10px;">
-                                  {{ $log->admin_name ?? '—' }}
-                              </td>
+                              <td>{{ $log->admin_name ?? '—' }}</td>
 
-                              <td style="padding:8px 10px;max-width:350px;">
+                              <td style="max-width:350px;">
                                   {{ \Illuminate\Support\Str::limit($log->message, 60) }}
                               </td>
 
-                              <td style="padding:8px 10px;">
-                                  {{ $log->verification_code ?? '—' }}
-                              </td>
+                              <td>{{ $log->verification_code ?? '—' }}</td>
 
-                              <td style="padding:8px 10px;">
+                              <td>
                                   @if($log->status === 'success')
-                                      <span style="background:#2CBFAE;color:white;padding:4px 8px;border-radius:6px;font-size:12px;">
-                                          Success
-                                      </span>
+                                      <span class="sms-badge-success">Success</span>
                                   @else
-                                      <span style="background:#dc3545;color:white;padding:4px 8px;border-radius:6px;font-size:12px;">
-                                          {{ $log->status }}
-                                      </span>
+                                      <span class="sms-badge-failure">{{ $log->status }}</span>
                                   @endif
                               </td>
                           </tr>
