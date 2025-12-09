@@ -27,6 +27,43 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.35);
 }
 
+.admin-header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+    opacity: 0.7;
+}
+
+.header-profile img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    transition: 0.2s ease;
+}
+
+.header-profile img:hover {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 10px rgba(44,191,174,0.6);
+}
+
+.logout-btn {
+    line-height: 1;
+}
+
+.header-right {
+    background: rgba(255,255,255,0.08);
+    padding: 6px 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
+}
+
+
+
 .admin-header h1 {
     font-size: 1.35rem;
     font-weight: 600;
