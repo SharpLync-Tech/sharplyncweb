@@ -3,61 +3,126 @@
 @section('title', 'Add Testimonial')
 
 @section('content')
-  <h2>Add New Testimonial</h2>
-  <p class="mt-1">Enter customer feedback below and save to the SharpLync CMS.</p>
 
-  <div class="admin-card mt-2" style="max-width:900px;">
-    <form action="{{ route('admin.testimonials.store') }}" method="POST">
-      @csrf
+    <div class="admin-top-bar" style="margin-bottom: 12px;">
+        <h2>Add New Testimonial</h2>
+    </div>
 
-      <div class="mt-2">
-        <label style="font-weight:700;">Customer Name *</label>
-        <input name="customer_name" type="text" value="{{ old('customer_name') }}" class="form-control" required>
-        @error('customer_name') <div class="form-help" style="color:#C62828">{{ $message }}</div> @enderror
-      </div>
+    <p style="margin-top:-6px;color:#4b5a6a;">
+        Enter customer feedback below and save to the SharpLync CMS.
+    </p>
 
-      <div class="form-row mt-2">
-        <div class="form-col">
-          <label style="font-weight:700;">Position (optional)</label>
-          <input name="customer_position" type="text" value="{{ old('customer_position') }}" class="form-control">
-        </div>
-        <div class="form-col">
-          <label style="font-weight:700;">Company (optional)</label>
-          <input name="customer_company" type="text" value="{{ old('customer_company') }}" class="form-control">
-        </div>
-      </div>
+    <div class="admin-card" style="max-width:900px;">
 
-      <div class="mt-2">
-        <label style="font-weight:700;">Testimonial *</label>
-        <textarea name="testimonial_text" rows="7" class="form-control" required>{{ old('testimonial_text') }}</textarea>
-      </div>
+        <form action="{{ route('admin.testimonials.store') }}" method="POST">
+            @csrf
 
-      <div class="form-row mt-2">
-        <div class="form-col">
-          <label style="font-weight:700;">Rating (1–5)</label>
-          <input name="rating" type="number" min="1" max="5" value="{{ old('rating') }}" class="form-control">
-        </div>
-        <div class="form-col">
-          <label style="font-weight:700;">Display Order (0+)</label>
-          <input name="display_order" type="number" min="0" value="{{ old('display_order', 0) }}" class="form-control">
-        </div>
-      </div>
+            {{-- CUSTOMER NAME --}}
+            <div class="form-group">
+                <label class="form-label">Customer Name *</label>
+                <input 
+                    name="customer_name"
+                    type="text"
+                    class="form-input"
+                    value="{{ old('customer_name') }}"
+                    required
+                >
+                @error('customer_name')
+                    <div class="form-help" style="color:#C62828">{{ $message }}</div>
+                @enderror
+            </div>
 
-      <div class="mt-2" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
-        <label style="display:flex;align-items:center;gap:8px;">
-          <input type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}>
-          Featured
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;">
-          <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
-          Active
-        </label>
-      </div>
+            {{-- POSITION + COMPANY --}}
+            <div class="form-row">
+                <div class="form-col">
+                    <label class="form-label">Position (optional)</label>
+                    <input 
+                        name="customer_position"
+                        type="text"
+                        class="form-input"
+                        value="{{ old('customer_position') }}"
+                    >
+                </div>
 
-      <div class="mt-3" style="display:flex;gap:12px;">
-        <button type="submit" class="btn btn-accent">Save Testimonial</button>
-        <a href="{{ route('admin.testimonials.index') }}" class="btn btn-ghost">Cancel</a>
-      </div>
-    </form>
-  </div>
+                <div class="form-col">
+                    <label class="form-label">Company (optional)</label>
+                    <input 
+                        name="customer_company"
+                        type="text"
+                        class="form-input"
+                        value="{{ old('customer_company') }}"
+                    >
+                </div>
+            </div>
+
+            {{-- TESTIMONIAL --}}
+            <div class="form-group">
+                <label class="form-label">Testimonial *</label>
+                <textarea 
+                    name="testimonial_text"
+                    rows="7"
+                    class="form-input"
+                    required
+                >{{ old('testimonial_text') }}</textarea>
+            </div>
+
+            {{-- RATING + ORDER --}}
+            <div class="form-row">
+                <div class="form-col">
+                    <label class="form-label">Rating (1–5)</label>
+                    <input 
+                        name="rating"
+                        type="number"
+                        min="1"
+                        max="5"
+                        class="form-input"
+                        value="{{ old('rating') }}"
+                    >
+                </div>
+
+                <div class="form-col">
+                    <label class="form-label">Display Order (0+)</label>
+                    <input 
+                        name="display_order"
+                        type="number"
+                        min="0"
+                        class="form-input"
+                        value="{{ old('display_order', 0) }}"
+                    >
+                </div>
+            </div>
+
+            {{-- CHECKBOXES --}}
+            <div class="form-checkbox-row">
+                <label class="form-checkbox">
+                    <input 
+                        type="checkbox" 
+                        name="is_featured" 
+                        value="1" 
+                        {{ old('is_featured') ? 'checked' : '' }}
+                    >
+                    <span>Featured</span>
+                </label>
+
+                <label class="form-checkbox">
+                    <input 
+                        type="checkbox" 
+                        name="is_active" 
+                        value="1" 
+                        {{ old('is_active', 1) ? 'checked' : '' }}
+                    >
+                    <span>Active</span>
+                </label>
+            </div>
+
+            {{-- ACTION BUTTONS --}}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-accent">Save Testimonial</button>
+                <a href="{{ route('admin.testimonials.index') }}" class="btn btn-ghost">Cancel</a>
+            </div>
+
+        </form>
+
+    </div>
+
 @endsection
