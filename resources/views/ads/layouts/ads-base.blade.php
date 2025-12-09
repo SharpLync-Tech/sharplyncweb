@@ -10,30 +10,41 @@
     <title>@yield('title', 'SharpLync | Business IT Support')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {{-- IMPORTANT: keep ads pages hidden until we’re ready --}}
+    {{-- Google Analytics (GA4) --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2SCQ2YCEW8');
+    </script>
+
+    {{-- Google Ads Global Site Tag --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17789891633"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-17789891633');
+    </script>
+
+    {{-- IMPORTANT: Ads landing pages should not be indexed --}}
     <meta name="robots" content="noindex, nofollow">
 
-    {{-- Optional: separate favicon for ads if you want, otherwise reuse main --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}">
 
-    {{-- Fonts (local to ads) --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    {{-- Isolated ads stylesheet --}}
     <link rel="stylesheet" href="{{ asset('css/ads/ads-base.css') }}">
 </head>
+
 <body class="ads-body">
 
-    {{-- ===========================================
-         STICKY HEADER (Logo link + mobile centering)
-    ============================================ --}}
     <header class="ads-header">
         <div class="ads-header-inner">
             <div class="ads-logo-wrap">
                 <a href="{{ url('/') }}" class="ads-logo-link">
-                    <img src="{{ asset('images/sharplync-logo.png') }}" 
-                         alt="SharpLync Logo"
-                         class="ads-logo">
+                    <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="ads-logo">
                 </a>
             </div>
 
@@ -56,7 +67,6 @@
         </div>
     </footer>
 
-    {{-- Sticky header visual state --}}
     <script>
         document.addEventListener("scroll", () => {
             const header = document.querySelector(".ads-header");
