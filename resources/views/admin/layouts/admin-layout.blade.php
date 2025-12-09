@@ -12,12 +12,18 @@
 <body class="admin-portal">
 
 <header class="admin-header">
+
+    {{-- Left: Logo --}}
     <div class="header-left">
-    <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="admin-logo">
-    <span class="admin-title">Admin Portal</span>
-</div>
+        <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo" class="admin-logo">
+    </div>
 
+    {{-- Centered Text --}}
+    <div class="header-center">
+        Admin Portal
+    </div>
 
+    {{-- Right: Profile + Logout --}}
     <div class="header-right">
         <div class="header-profile">
             <img
@@ -29,7 +35,9 @@
         </div>
         <a href="{{ url('/admin/logout') }}" class="logout-btn">Logout</a>
     </div>
+
 </header>
+
 
 
 {{-- ⭐ FIX: Proper wrapper to hold sidebar + main content --}}
