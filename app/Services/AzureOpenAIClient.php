@@ -51,10 +51,8 @@ class AzureOpenAIClient
                         'temperature' => 0.2,
                         'max_tokens' => 300
                     ]
-
-
+                ]
             );
-
 
             return json_decode($response->getBody()->getContents(), true);
 
