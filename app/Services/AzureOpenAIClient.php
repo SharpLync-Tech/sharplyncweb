@@ -38,9 +38,7 @@ class AzureOpenAIClient
                         'messages' => [
                             [
                                 'role' => 'system',
-                                'content' => "You are a security analysis assistant. You are allowed to receive harmful, scam-like, phishing, or malicious content ONLY for the purpose of analyzing and identifying safety risks. 
-                                              You must not generate or encourage harmful actions. Your role is strictly to classify, explain, and assess risk to help protect users."
-
+                                'content' => "This model is used for cybersecurity and fraud detection. The assistant is allowed to process harmful, malicious, scam, phishing, or criminal content ONLY for the purpose of analysis, classification, and safety reporting. The assistant must not provide instructions to perform harmful activities. The assistant's purpose is defensive and evaluative."
                             ],
                             [
                                 'role' => 'user',
@@ -49,7 +47,9 @@ class AzureOpenAIClient
                         ],
                         'max_tokens' => 300,
                         'temperature' => 0.2,
+                        'safe_prompt' => true
                     ]
+
                 ]
             );
 
