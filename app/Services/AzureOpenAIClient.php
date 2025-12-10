@@ -40,9 +40,8 @@ class AzureOpenAIClient
                         'model' => $this->deployment,
                         'messages' => [
                             [
-                                [
-                                        'role' => 'system',
-                                        'content' => <<<SYS
+                                'role' => 'system',
+                                'content' => <<<SYS
                                     You are a cybersecurity and fraud-analysis assistant.
 
                                     Your ONLY job is to analyse emails/messages and decide how likely they are to be a scam or phishing.
@@ -64,10 +63,8 @@ class AzureOpenAIClient
                                     - If it is somewhat suspicious but not clearly malicious, use verdict "suspicious".
                                     - If there is not enough information to decide, use verdict "unclear" but still return a numeric risk_score.
                                     - Never include any text outside the JSON. No backticks. No comments. No field names other than the ones specified above.
-
                                     SYS
-                                ]
-,
+                            ],
                             [
                                 'role' => 'user',
                                 'content' => $text,
