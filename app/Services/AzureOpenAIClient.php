@@ -27,14 +27,16 @@ class AzureOpenAIClient
     {
         try {
             $response = $this->client->post(
-                "/openai/v1/chat/completions",
+                "/openai/deployments/{$this->deployment}/chat/completions",
                 [
                     'headers' => [
-                        'Content-Type'  => 'application/json',
-                        'api-key'       => $this->apiKey,
+                        'Content-Type' => 'application/json',
+                        'api-key' => $this->apiKey,
+                    ],
+                    'query' => [
+                        'api-version' => '2024-10-01-preview'
                     ],
                     'json' => [
-                        'model' => $this->deployment,
                         'messages' => [
                             [
                                 'role' => 'system',
@@ -45,13 +47,13 @@ class AzureOpenAIClient
                                 'content' => $text,
                             ]
                         ],
-                        'max_tokens' => 300,
                         'temperature' => 0.2,
+                        'max_tokens' => 300,
                         'safe_prompt' => true
                     ]
-
                 ]
             );
+
 
             return json_decode($response->getBody()->getContents(), true);
 
