@@ -7,3 +7,8 @@ Route::get('/ai-test', function (AzureOpenAIClient $client) {
 
     return response()->json($result);
 });
+
+Route::get('/dns-test', function () {
+    return gethostbyname('sharplync-openai-aue.openai.azure.com');
+});
+
