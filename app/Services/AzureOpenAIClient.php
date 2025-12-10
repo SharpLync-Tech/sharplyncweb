@@ -38,7 +38,9 @@ class AzureOpenAIClient
                         'messages' => [
                             [
                                 'role' => 'system',
-                                'content' => 'You are a scam detection assistant. Identify scam indicators, risk level, and explain in plain English.'
+                                'content' => "You are a security analysis assistant. You are allowed to receive harmful, scam-like, phishing, or malicious content ONLY for the purpose of analyzing and identifying safety risks. 
+                                              You must not generate or encourage harmful actions. Your role is strictly to classify, explain, and assess risk to help protect users."
+
                             ],
                             [
                                 'role' => 'user',
