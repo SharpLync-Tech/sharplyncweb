@@ -37,6 +37,7 @@ class AzureOpenAIClient
                         'api-version' => '2024-10-01-preview'
                     ],
                     'json' => [
+                        'model' => $this->deployment,
                         'messages' => [
                             [
                                 'role' => 'system',
@@ -48,10 +49,10 @@ class AzureOpenAIClient
                             ]
                         ],
                         'temperature' => 0.2,
-                        'max_tokens' => 300,
-                        'safe_prompt' => true
+                        'max_tokens' => 300
                     ]
-                ]
+
+
             );
 
 
