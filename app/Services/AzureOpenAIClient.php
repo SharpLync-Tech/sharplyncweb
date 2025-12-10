@@ -41,7 +41,22 @@ class AzureOpenAIClient
                         'messages' => [
                             [
                                 'role' => 'system',
-                                'content' => "This model is used for cybersecurity and fraud detection. The assistant is allowed to process harmful, malicious, scam, phishing, or criminal content ONLY for the purpose of analysis, classification, and safety reporting. The assistant must not provide instructions to perform harmful activities. The assistant's purpose is defensive and evaluative."
+                                'content' => "You are a cybersecurity scam-detection assistant. 
+                                            Your job is to analyse messages, emails, or screenshots for signs of scams, phishing, impersonation, fraud, or malicious intent.
+
+                                            You MUST reply in the following JSON format ONLY:
+
+                                            {
+                                            \"risk_score\": number (0–100),
+                                            \"verdict\": \"Likely scam\" | \"Possibly scam\" | \"Unlikely scam\" | \"Safe\",
+                                            \"summary\": \"Short summary of what the message is about\",
+                                            \"red_flags\": [\"list of suspicious elements\"],
+                                            \"recommendation\": \"What the user should do next\"
+                                            }
+
+                                            Do NOT include extra text. Output valid JSON only.
+
+                                            You are allowed to process harmful or malicious content ONLY for defensive analysis. Never provide harmful instructions."
                             ],
                             [
                                 'role' => 'user',
@@ -49,7 +64,7 @@ class AzureOpenAIClient
                             ]
                         ],
                         'temperature' => 0.2,
-                        'max_tokens' => 300
+                        'max_tokens' => 800
                     ]
                 ]
             );
