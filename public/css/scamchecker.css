@@ -210,27 +210,35 @@ textarea:focus {
 }
 
 /* Sweeping animated arc */
+/* Improve sweep visibility */
 .ring-sweep {
     fill: none;
     stroke: #2CBFAE;
     stroke-width: 12;
     stroke-linecap: round;
-    stroke-dasharray: 40 410; /* segment + gap */
-    transform-origin: 50% 50%;
-    animation: rotateSweep 1.2s linear infinite;
+    stroke-dasharray: 70 360; /* bigger bright segment */
+    animation: rotateSweep 1.1s linear infinite;
+    opacity: 1;
 }
 
-/* Segment sweep rotation */
+/* So the background ring is more subtle */
+.ring-bg {
+    stroke: rgba(255, 255, 255, 0.07);
+}
+
+/* Cleaner rotation */
 @keyframes rotateSweep {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
 
-/* SharpLync Arrow */
+/* Improve the triangle look */
 .arrow {
-    fill: #2CBFAE;
-    opacity: 0.9;
+    fill: #20bfa7;
+    opacity: 0.95;
+    transform-origin: 50% 50%;
 }
+
 
 
 /* ============================================
@@ -275,6 +283,19 @@ textarea:focus {
 .scam-btn.outline:hover {
     background: #ffffff22;
 }
+
+/* Hide form fields when scanning */
+#form-area.scanning textarea,
+#form-area.scanning input[type="file"],
+#form-area.scanning #check-btn {
+    display: none !important;
+}
+
+/* ALSO hide the Win95 Clear button during scan */
+#form-area.scanning #clear-btn {
+    display: none !important;
+}
+
 
 
 
