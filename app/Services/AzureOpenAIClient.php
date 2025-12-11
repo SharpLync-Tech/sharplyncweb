@@ -27,8 +27,9 @@ class AzureOpenAIClient
      * Public method called by controller
      */
     public function analyze(string $text): ?array
-    dd("USING NEW CLIENT"); // TEMP DEBUG
     {
+        dd("USING NEW CLIENT"); // TEMP DEBUG – MUST FIRE IF NEW FILE IS ACTIVE
+
         // Clean input (remove HTML, MIME, etc.)
         $cleaned = $this->cleanInput($text);
 
@@ -77,7 +78,6 @@ class AzureOpenAIClient
                         'api-version' => '2024-10-01-preview'
                     ],
                     'json' => [
-                        // Force JSON output
                         'response_format' => [
                             'type' => 'json_object'
                         ],
@@ -114,7 +114,6 @@ class AzureOpenAIClient
             return json_decode($response->getBody()->getContents(), true);
 
         } catch (\Exception $e) {
-            // Return exception in a structured way
             return [
                 'error' => [
                     'message' => $e->getMessage(),
@@ -178,7 +177,6 @@ class AzureOpenAIClient
             return $decoded;
         }
 
-        // Invalid JSON — return raw text for debugging
         return [
             'risk_score' => 0,
             'verdict' => 'invalid_json',
