@@ -194,16 +194,7 @@
                 <div class="section-title">Recommended Action</div>
                 <p>{!! nl2br(e($recommended)) !!}</p>
 
-            </div>
-
-        {{-- ========================================================= --}}
-        {{-- UNEXPECTED FORMAT --}}
-        {{-- ========================================================= --}}
-        @else
-            <div class="raw-output">
-                <pre>{{ print_r($result, true) }}</pre>
-            </div>
-        @endif
+            </div>        
 
     </div>
 
