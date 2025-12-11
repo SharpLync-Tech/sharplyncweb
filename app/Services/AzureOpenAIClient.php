@@ -33,6 +33,8 @@ class AzureOpenAIClient
 
         // 2️⃣ First attempt
         $response1 = $this->sendToAzure($cleanedText);
+        dd($response1['choices'][0]['message']['content'] ?? 'NO CONTENT RETURNED');
+
         $decoded1  = $this->forceValidJson($response1);
 
         if ($decoded1 !== null) {
