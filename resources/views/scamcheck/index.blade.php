@@ -89,17 +89,6 @@
     <button type="submit">Check Message</button>
 </form>
 
-{{-- ========================================================= --}}
-{{-- DEBUG BLOCK — Shows raw Azure output (temporary/safe)     --}}
-{{-- ========================================================= --}}
-@if(isset($result))
-    <div class="raw-output" style="margin-top:20px; background:#eef; padding:15px; border:1px solid #ccd;">
-        <h3>Raw Output (Debug)</h3>
-        <pre>{{ print_r($result, true) }}</pre>
-    </div>
-@endif
-{{-- END DEBUG BLOCK --}}
-
 @if(isset($result))
 
     <div class="result-container">
