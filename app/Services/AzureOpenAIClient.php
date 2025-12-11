@@ -31,29 +31,28 @@ class AzureOpenAIClient
         // 1️⃣ Clean emails / HTML / MIME noise BEFORE sending to AI
         $cleanedText = $this->cleanInput($text);
 
-        // 2️⃣ First attempt
-        $response1 = $this->sendToAzure($cleanedText);
+        // 2️⃣ Single request (no retry!) to avoid rate-limit bursts
+        $response = $this->sendToAzure($cleanedText);
 
-        // 🔍 TEMP DEBUG - Dump the entire Azure response so we can see the real error.
-        dd($response1);
-
-        $decoded1  = $this->forceValidJson($response1);
-
-
-        if ($decoded1 !== null) {
-            return $decoded1;
+        // If API returned error format
+        if (isset($response['error'])) {
+            return [
+                'risk_score' => 10,
+                'verdict' => 'unclear',
+                'summary' => 'Azure returned an error: ' . ($response['message'] ?? 'Unknown error'),
+                'red_flags' => [],
+                'recommended_action' => 'Try again later.',
+            ];
         }
 
-        // 3️⃣ Retry with slight modified prompt (AI tends to comply second time)
-        $retryText = "REMINDER: Output ONLY valid JSON.\n\n" . $cleanedText;
-        $response2 = $this->sendToAzure($retryText);
-        $decoded2  = $this->forceValidJson($response2);
+        // Try to parse JSON
+        $decoded = $this->forceValidJson($response);
 
-        if ($decoded2 !== null) {
-            return $decoded2;
+        if ($decoded !== null) {
+            return $decoded;
         }
 
-        // 4️⃣ Hard fallback — safe, low-risk default
+        // 3️⃣ Hard fallback — safe, low-risk default
         return [
             'risk_score' => 10,
             'verdict' => 'likely legitimate',
@@ -75,7 +74,7 @@ class AzureOpenAIClient
                 [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'api-key' => $this->apiKey,
+                        'api-key'      => $this->apiKey,
                     ],
                     'query' => [
                         'api-version' => '2024-10-01-preview'
@@ -83,7 +82,7 @@ class AzureOpenAIClient
                     'json' => [
                         'model' => $this->deployment,
 
-                        // ⭐ Force Azure to output ONLY JSON
+                        // Force JSON output
                         'response_format' => [
                             'type' => 'json_object'
                         ],
@@ -96,16 +95,15 @@ You are a cybersecurity scam-detection assistant.
 
 Your ONLY job is to analyse emails, messages, or screenshots for signs of phishing, fraud, or impersonation.
 
-🔒 STRICT OUTPUT RULES:
+STRICT OUTPUT RULES:
 - You MUST ALWAYS output ONLY a valid JSON object.
 - NO backticks.
 - NO markdown.
 - NO explanation outside JSON.
 - NO commentary.
 - NO extra text.
-- NO quotes around JSON keys that break structure.
 
-The JSON MUST have EXACTLY:
+JSON MUST HAVE EXACTLY:
 {
   "risk_score": <integer 0-100>,
   "verdict": "likely scam" | "suspicious" | "unclear" | "likely legitimate",
@@ -114,11 +112,9 @@ The JSON MUST have EXACTLY:
   "recommended_action": "<action the user should take>"
 }
 
-If email is legitimate → risk_score 0–20, verdict "likely legitimate".
-If unclear → risk_score 30–60.
-If scam → risk_score 70–100.
-
-You are allowed to process malicious content ONLY for defensive analysis.
+Legitimate email → risk_score 0–20.
+Unclear → risk_score 30–60.
+Scam → risk_score 70–100.
 SYS
                             ],
                             [
@@ -137,7 +133,7 @@ SYS
 
         } catch (\Exception $e) {
             return [
-                'error' => true,
+                'error'   => true,
                 'message' => $e->getMessage(),
             ];
         }
@@ -149,18 +145,14 @@ SYS
      */
     protected function cleanInput(string $raw): string
     {
-        // Remove MIME headers (everything before first blank line)
         $parts = preg_split("/\R\R/", $raw, 2);
         $body  = $parts[1] ?? $raw;
 
-        // Remove HTML tags
         $body = strip_tags($body);
 
-        // Remove quoted-printable artifacts (=0A, soft breaks)
         $body = preg_replace('/=\R/', '', $body);
         $body = preg_replace('/=([0-9A-F]{2})/', '', $body);
 
-        // Normalize whitespace
         return trim($body);
     }
 
