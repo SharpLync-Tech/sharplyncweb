@@ -7,36 +7,30 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
-<div class="scam-page">
+<div class="sc-page">
+<div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
+    <h2 class="scam-result-title">SharpLync Scam Checker (Test Page)</h2>
 
-        <h2 class="scam-hero-title">SharpLync Scam Checker (Test Page)</h2>
+    <form method="POST" action="/scam-checker" enctype="multipart/form-data">
+        @csrf
+
         <p class="scam-hero-sub">Paste text OR upload an email (.eml/.msg/.txt):</p>
 
-        {{-- ============================
-             FORM
-        ============================ --}}
-        <form method="POST" action="/scam-checker" enctype="multipart/form-data">
-            @csrf
+        <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
 
-            <textarea name="message" rows="10" class="scam-textarea">
-@if(isset($input)){{ $input }}@endif
-            </textarea>
+        <br><br>
 
-            <div class="scam-file-wrap">
-                <input type="file" name="file" class="scam-file">
-            </div>
+        <input type="file" name="file" class="scam-file">
 
-            <button type="submit" class="scam-btn">Check Message</button>
-        </form>
+        <br><br>
 
-        {{-- ============================
-             RESULTS
-        ============================ --}}
-        @if(isset($result))
-        <div class="result-container" style="margin-top:50px;">
+        <button type="submit" class="scam-btn">Check Message</button>
 
+    </form>
+
+    @if(isset($result))
+        <div class="result-container" style="margin-top:40px;">
             <h3 class="scam-result-title">Scam Analysis Result</h3>
 
             {{-- Azure error --}}
@@ -72,7 +66,8 @@
                                 (str_contains($v, 'suspicious') || str_contains($v, 'unclear') ? 'sus' : 'safe');
                         }
                     } else {
-                        // Legacy parsing (unchanged)
+
+                        // Legacy parsing
                         $lines = explode("\n", $result);
                         $verdict = '';
                         $score = '';
@@ -90,6 +85,7 @@
                             if (stripos($trim, 'Summary:') === 0) { $summary = trim(substr($trim, 8)); $mode='summary'; continue; }
                             if (stripos($trim, 'Red Flags:') === 0 || stripos($trim,'Reasons:')===0) { $mode='flags'; continue; }
                             if (stripos($trim, 'Recommended Action:') === 0) { $recommended = trim(substr($trim, 20)); $mode='recommended'; continue; }
+                            if (stripos($trim, 'Recommendation:') === 0) { $recommended = trim(substr($trim, 13)); $mode='recommended'; continue; }
 
                             if ($mode === 'summary') { $summary .= "\n".$trim; continue; }
                             if ($mode === 'flags') {
@@ -175,7 +171,7 @@
             });
         </script>
 
-        @endif {{-- end result --}}
-    </div>
+    @endif
+</div>
 </div>
 @endsection
