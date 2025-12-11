@@ -41,23 +41,28 @@
     @endif
 
 
-    <!-- SHIELDSCAN LOADER -->
+    <!-- SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="scan-cycle">
+        <div class="tc-cinema-loader">
+            <div class="tc-icon-layer">
+                {{-- Step 1: Email arrives --}}
+                <img src="{{ asset('images/email.png') }}"
+                    alt="Email icon"
+                    class="tc-icon tc-icon-email">
 
-            <!-- Email Icon -->
-            <img src="/images/email.png" class="scan-icon scan-email">
+                {{-- Step 2: Scanning ring --}}
+                <div class="tc-scan-ring"></div>
 
-            <!-- Shield Icon -->
-            <img src="/images/security.png" class="scan-icon scan-shield">
+                {{-- Step 3: Shield with tick (secure) --}}
+                <img src="{{ asset('images/security.png') }}"
+                    alt="Secure shield icon"
+                    class="tc-icon tc-icon-shield">
+            </div>
 
-            <!-- Check Pulse -->
-            <div class="scan-checkmark"></div>
-
+            <p class="scan-text">Scanning for threats…</p>
         </div>
-
-        <p class="scan-text">Scanning for threats…</p>
     </div>
+
 
 
 

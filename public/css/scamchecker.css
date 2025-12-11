@@ -150,6 +150,15 @@ textarea:focus {
     transform: translateY(-1px);
 }
 
+/* Scan status text */
+.scan-text {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    color: #ffffff !important;   /* force white */
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0,0,0,0.45); /* little glow so it pops */
+}
+
 
 /* ------------------------------
    RESULT BOX
@@ -228,49 +237,140 @@ textarea:focus {
 
 
 /* ================================
-   THREATCHECK — EMAIL → SHIELD → CHECK
+   SharpLync ThreatCheck – Cinematic Loader
+   Email → Scan → Shield
 ================================ */
 
-.scan-cycle {
+.tc-cinema-loader {
+    margin-top: 30px;
+}
+
+.tc-icon-layer {
     position: relative;
     width: 120px;
     height: 120px;
     margin: 0 auto;
 }
 
-.scan-icon {
+/* Base icon styling */
+.tc-icon {
     position: absolute;
-    width: 120px;
-    height: 120px;
+    top: 50%;
+    left: 50%;
+    width: 96px;
+    height: auto;
+    transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-/* Stage 1: Email */
-.scan-email {
-    animation: emailStage 2.4s infinite;
+/* Email icon phase */
+.tc-icon-email {
+    animation: tcEmailPhase 2.6s ease-in-out infinite;
+    filter:
+        drop-shadow(0 0 12px rgba(44,191,174,0.35))
+        brightness(1.08)
+        saturate(1.15);
 }
 
-/* Stage 2: Shield */
-.scan-shield {
-    animation: shieldStage 2.4s infinite;
+/* Shield icon phase */
+.tc-icon-shield {
+    animation: tcShieldPhase 2.6s ease-in-out infinite;
+    filter:
+        drop-shadow(0 0 16px rgba(44,191,174,0.65))
+        brightness(1.1)
+        saturate(1.1);
 }
 
-/* Stage 3: Checkmark Pulse */
-.scan-checkmark {
+/* Scanning ring */
+.tc-scan-ring {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 4px solid #2CBFAE;
-    border-left: none;
-    border-top: none;
-    transform: rotate(45deg);
-    top: 40px;
-    left: 40px;
+    top: 50%;
+    left: 50%;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid rgba(44,191,174,0.16);
+    box-shadow: 0 0 0 rgba(44,191,174,0);
+    transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
-    animation: checkmarkStage 2.4s infinite;
+    animation: tcRingPhase 2.6s linear infinite;
 }
+
+/* Email appears first, then fades up/out */
+@keyframes tcEmailPhase {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    5% {
+        opacity: 1;
+    }
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -54%) scale(1);
+    }
+    30% {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(0.9);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(0.9);
+    }
+}
+
+/* Ring kicks in after email, then spins & glows, then fades */
+@keyframes tcRingPhase {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+        box-shadow: 0 0 0 rgba(44,191,174,0);
+    }
+    18% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.85) rotate(0deg);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.9) rotate(360deg);
+        box-shadow: 0 0 22px rgba(44,191,174,0.45);
+    }
+    70% {
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(44,191,174,0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9) rotate(450deg);
+    }
+}
+
+/* Shield fades in as ring finishes, then does a soft “lock in” */
+@keyframes tcShieldPhase {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    55% {
+        opacity: 0;
+    }
+    65% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    85% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.98);
+    }
+}
+
 
 
 /* -------------------------------
