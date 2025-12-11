@@ -43,25 +43,24 @@
 
     <!-- SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="tc-cinema-loader">
-            <div class="tc-icon-layer">
-                {{-- Step 1: Email arrives --}}
-                <img src="{{ asset('images/email.png') }}"
-                    alt="Email icon"
-                    class="tc-icon tc-icon-email">
-
-                {{-- Step 2: Scanning ring --}}
-                <div class="tc-scan-ring"></div>
-
-                {{-- Step 3: Shield with tick (secure) --}}
-                <img src="{{ asset('images/security.png') }}"
-                    alt="Secure shield icon"
-                    class="tc-icon tc-icon-shield">
+            <div class="tc-wheel-loader">
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
+                <div class="tc-seg"></div>
             </div>
 
             <p class="scan-text">Scanning for threats…</p>
         </div>
-    </div>
+
 
 
 
