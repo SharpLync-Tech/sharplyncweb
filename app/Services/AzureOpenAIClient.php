@@ -27,6 +27,7 @@ class AzureOpenAIClient
      * Public method called by controller
      */
     public function analyze(string $text): ?array
+    dd("USING NEW CLIENT"); // TEMP DEBUG
     {
         // Clean input (remove HTML, MIME, etc.)
         $cleaned = $this->cleanInput($text);
