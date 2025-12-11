@@ -158,3 +158,57 @@ input[type="file"] {
     font-family: 'Poppins', sans-serif;
     font-size: 0.85rem;
 }
+
+/* Fix page collapsing under footer */
+.sc-page {
+    padding-top: 80px;
+    padding-bottom: 120px;
+    min-height: 80vh;
+}
+
+/* Beautiful modern button (no Windows 95 crimes) */
+.sc-btn {
+    background: #2CBFAE;
+    color: #06202A;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sc-btn:hover {
+    background: #35d8c4;
+    transform: translateY(-1px);
+}
+
+/* Textarea styling (TM style) */
+textarea {
+    border: 1px solid #d8e2ea;
+    border-radius: 10px;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+}
+
+/* Result card tweaks */
+.result-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 28px;
+    border-left-width: 6px;
+}
+
+.result-box.danger { border-left-color: #e60012; }
+.result-box.sus    { border-left-color: #ed6c02; }
+.result-box.safe   { border-left-color: #2CBFAE; }
+

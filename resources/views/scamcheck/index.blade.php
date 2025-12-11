@@ -7,6 +7,7 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
+<div class="sc-page">
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
     <h2>SharpLync Scam Checker (Test Page)</h2>
@@ -175,5 +176,6 @@
         </script>
 
     @endif {{-- end result --}}
+</div>
 </div>
 @endsection
