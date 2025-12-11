@@ -245,9 +245,7 @@ textarea:focus {
    Hide form elements during scanning
    ============================================ */
 
-#form-area.scanning textarea,
-#form-area.scanning input[type="file"],
-#form-area.scanning .scam-btn {
+#form-area.scanning form {
     display: none !important;
 }
 
