@@ -23,18 +23,18 @@ class AzureOpenAIClient
         ]);
     }
 
+
     /**
      * Main analyzer method
      */
     public function analyze(string $text): ?string
     {
-        // Clean EML / HTML / MIME noise
-        $cleaned = $this->cleanInput($text);
+        // Extract URLs + clean EML/HTML
+        $cleaned = $this->cleanInputAndExtractUrls($text);
 
-        // Single, simple call
+        // Send to Azure
         $response = $this->sendToAzure($cleaned);
 
-        // Azure error? Show it directly.
         if (isset($response['error'])) {
             return "ERROR FROM AZURE:\n" . json_encode($response['error'], JSON_PRETTY_PRINT);
         }
@@ -45,6 +45,7 @@ class AzureOpenAIClient
 
         return $response['choices'][0]['message']['content'];
     }
+
 
     /**
      * Send request to Azure OpenAI
@@ -65,13 +66,12 @@ class AzureOpenAIClient
                     'json' => [
                         'messages' => [
 
-                            // SYSTEM ROLE — tuned scam analysis instructions
+                            // SYSTEM ROLE — tuned with URL analysis
                             [
                                 'role' => 'system',
                                 'content' =>
                                     "You are a cybersecurity scam-detection assistant.\n\n" .
-                                    "Your job is to analyse emails/messages and rate how likely they are to be a scam or phishing.\n\n" .
-                                    "You MUST always respond in this exact simple text format:\n" .
+                                    "You MUST always respond in this exact simple text structure:\n" .
                                     "Scam Analysis Result\n\n" .
                                     "Verdict: <likely scam | suspicious | unclear | likely legitimate>\n" .
                                     "Risk Score: <0-100>\n" .
@@ -80,41 +80,37 @@ class AzureOpenAIClient
                                     " - <item 1>\n" .
                                     " - <item 2>\n" .
                                     "Recommended Action: <what the user should do>\n\n" .
-                                    "SCORING GUIDELINES:\n" .
-                                    "- 0–20: clearly legitimate (normal transactional email, no strong red flags).\n" .
-                                    "- 21–40: mostly legitimate but with minor concerns (still \"likely legitimate\").\n" .
-                                    "- 41–69: \"suspicious\" or \"unclear\" — some red flags but not obviously a scam.\n" .
-                                    "- 70–100: clearly malicious or very high risk (\"likely scam\").\n\n" .
-                                    "IMPORTANT CALIBRATION:\n" .
-                                    "- DO NOT mark an email as high risk ONLY because it contains:\n" .
-                                    "  * an attached PDF invoice, or\n" .
-                                    "  * tracking links (e.g. safelinks.protection.outlook.com, safelink.emails.azure.net), or\n" .
-                                    "  * standard branding/language from large providers.\n" .
-                                    "- Those can be normal for legitimate invoices from Microsoft or other large vendors.\n" .
-                                    "- Treat these as red flags ONLY when combined with other serious issues like domain mismatch, fake login pages, obvious spoofing, or threats.\n\n" .
-                                    "WHEN TO USE \"LIKELY LEGITIMATE\":\n" .
-                                    "- The message looks like a normal invoice or notification from a known provider.\n" .
-                                    "- Language, formatting and structure look professional and consistent.\n" .
-                                    "- No clear domain mismatch or obvious spoofed links.\n\n" .
-                                    "WHEN TO USE \"LIKELY SCAM\":\n" .
-                                    "- Sender domain or URLs clearly do NOT match the claimed organisation.\n" .
-                                    "- Strong urgency, threats, or pressure to act immediately.\n" .
-                                    "- Requests to enter credentials, payment details, or sensitive info via unfamiliar pages.\n\n" .
-                                    "GENERAL RULE:\n" .
-                                    "- Be willing to classify emails as \"likely legitimate\" with a low risk score when they look like normal system-generated mail from known services.\n" .
-                                    "- Reserve high scores (70+) for emails that show strong phishing/scam patterns.\n" .
-                                    "- Keep your explanation and red flags practical and easy to understand by non-technical users.\n"
+
+                                    // URL analysis focus
+                                    "URL Analysis Rules:\n" .
+                                    "- ALWAYS analyze every URL under 'Detected URLs'.\n" .
+                                    "- If a URL domain does NOT match the claimed sender (e.g., Meta but domain is *.pages.dev), treat as a MAJOR red flag.\n" .
+                                    "- Non-official login pages, suspicious hosting (pages.dev, weebly, godaddysites, blogspot, tinyurl, bit.ly, etc.) should raise the risk score.\n" .
+                                    "- Microsoft SafeLinks (safelinks.protection.outlook.com, safelink.emails.azure.net) are NORMAL and NOT a scam indicator by themselves.\n" .
+                                    "- High-risk indicators include:\n" .
+                                    "  * domain mismatch\n" .
+                                    "  * obfuscated URLs\n" .
+                                    "  * links requiring credential login\n" .
+                                    "  * unusual TLDs\n" .
+                                    "  * recently created domains (guess based on appearance)\n\n" .
+
+                                    "SCORING:\n" .
+                                    "- 0–20 → likely legitimate\n" .
+                                    "- 21–40 → minor concerns but mostly legitimate\n" .
+                                    "- 41–69 → suspicious / unclear\n" .
+                                    "- 70–100 → likely scam\n\n" .
+
+                                    "Be decisive. If the URLs strongly indicate phishing, score HIGH."
                             ],
 
-                            // USER ROLE — actual content
                             [
                                 'role' => 'user',
-                                'content' => "Analyze this email or message and follow the format exactly:\n\n" . $text
+                                'content' => "Analyze this email or message:\n\n" . $text
                             ]
                         ],
 
                         'temperature' => 0.2,
-                        'max_tokens'  => 800,
+                        'max_tokens'  => 900,
                     ]
                 ]
             );
@@ -131,23 +127,67 @@ class AzureOpenAIClient
         }
     }
 
+
+
     /**
-     * Clean .eml, HTML, MIME artifacts
+     * Clean email AND extract URLs BEFORE stripping HTML
      */
-    protected function cleanInput(string $raw): string
+    protected function cleanInputAndExtractUrls(string $raw): string
     {
-        // Remove MIME headers (body begins after first blank line)
+        $original = $raw;
+
+        // -----------------------------------
+        // 1. Extract URLs from HTML & text
+        // -----------------------------------
+        $urls = [];
+
+        // From href=""
+        preg_match_all('/href=["\']([^"\']+)["\']/i', $raw, $matches1);
+        if (!empty($matches1[1])) {
+            $urls = array_merge($urls, $matches1[1]);
+        }
+
+        // From raw plain text URLs
+        preg_match_all('/https?:\/\/[^\s<>"\'()]+/i', $raw, $matches2);
+        if (!empty($matches2[0])) {
+            $urls = array_merge($urls, $matches2[0]);
+        }
+
+        // Unique + clean URLs
+        $urls = array_values(array_unique($urls));
+
+        $urlList = "";
+        if (!empty($urls)) {
+            $urlList .= "Detected URLs:\n";
+            foreach ($urls as $u) {
+                $urlList .= $u . "\n";
+            }
+            $urlList .= "\n";
+        }
+
+        // -----------------------------------
+        // 2. Strip MIME headers (get body)
+        // -----------------------------------
         $parts = preg_split("/\R\R/", $raw, 2);
         $body  = $parts[1] ?? $raw;
 
-        // Remove HTML tags
+        // -----------------------------------
+        // 3. Remove HTML tags AFTER extracting URLs
+        // -----------------------------------
         $body = strip_tags($body);
 
-        // Remove quoted-printable soft line breaks (=)
+        // -----------------------------------
+        // 4. Clean quoted-printable soft breaks
+        // -----------------------------------
         $body = preg_replace('/=\R/', '', $body);
         $body = preg_replace('/=([0-9A-F]{2})/', '', $body);
 
         // Normalize whitespace
-        return trim($body);
+        $body = trim($body);
+
+        // -----------------------------------
+        // 5. Append extracted URLs at the end
+        // -----------------------------------
+        return $body . "\n\n" . $urlList;
     }
 }
