@@ -1,5 +1,5 @@
 /* ============================================================
-   SharpLync Scam Checker Styling (Clean + Fixed)
+   SharpLync ThreatCheck — Clean, Final Stylesheet
    ============================================================ */
 
 .sc-page {
@@ -8,25 +8,61 @@
 }
 
 /* ------------------------------
-   Hero Titles
+   THREATCHECK TITLE
 ------------------------------ */
-.scam-result-title,
-.scam-hero-title {
-    color: #ffffff !important;
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+.threat-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 35px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: default;
+
+    /* Gradient SharpLync style */
+    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    transition: 0.3s ease;
 }
 
-.scam-hero-sub {
-    color: rgba(255,255,255,0.85);
-    font-size: 1rem;
-    margin-bottom: 8px;
+.threat-title:hover {
+    text-shadow: 0 0 18px rgba(44,191,174,0.55);
+    transform: translateY(-2px);
 }
+
+/* Underline Bar */
+.threat-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+    border-radius: 10px;
+    transition: width 0.45s ease;
+}
+
+.threat-title:hover::after {
+    width: 100%;
+}
+
+/* Shield Icon */
+.shield-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 6px;
+    filter: drop-shadow(0 0 8px rgba(44,191,174,0.45));
+}
+
 
 /* ------------------------------
-   Textarea
+   TEXTAREA INPUT
 ------------------------------ */
 textarea {
     border: 1px solid #d8e2ea;
@@ -43,8 +79,9 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
 }
 
+
 /* ------------------------------
-   Buttons
+   BUTTONS
 ------------------------------ */
 .scam-btn {
     background: #2CBFAE;
@@ -65,7 +102,6 @@ textarea:focus {
     transform: translateY(-1px);
 }
 
-/* Outline button for CLEAR */
 .scam-btn.outline {
     background: transparent;
     border: 2px solid #ffffff66;
@@ -76,8 +112,9 @@ textarea:focus {
     background: #ffffff22;
 }
 
+
 /* ------------------------------
-   File Upload (Modern)
+   FILE UPLOAD BUTTON
 ------------------------------ */
 .sc-page input[type="file"] {
     color: #FFFFFF !important;
@@ -105,15 +142,16 @@ textarea:focus {
     transform: translateY(-1px);
 }
 
+
 /* ------------------------------
-   Result Card
+   RESULT BOX
 ------------------------------ */
 .result-box {
     background: #ffffff;
     border-radius: 16px;
     padding: 28px;
     margin-top: 1.5rem;
-    border-left: 8px solid #2CBFAE; /* default */
+    border-left: 8px solid #2CBFAE;
 }
 
 .result-box.safe   { border-left-color: #2CBFAE; }
@@ -123,12 +161,17 @@ textarea:focus {
 .red-flag-list {
     margin-left: 1rem;
 }
+
 .red-flag-list li {
     margin-bottom: 4px;
 }
 
+.result-box.danger ul li::marker { color: #e53935; }
+.result-box.sus    ul li::marker { color: #ff9800; }
+
+
 /* ------------------------------
-   Verdict Dot Indicators
+   VERDICT DOT ANIMATIONS
 ------------------------------ */
 .verdict-dot {
     display: inline-block;
@@ -140,47 +183,44 @@ textarea:focus {
     top: 2px;
 }
 
-/* Pulsing Red (Danger) */
+/* Danger Pulse */
 .verdict-dot.danger {
     background: #e53935;
     animation: pulseDanger 0.9s ease-in-out infinite;
 }
 
 @keyframes pulseDanger {
-    0% { box-shadow: 0 0 0 rgba(229,57,53,0.0); transform: scale(0.9); }
-    50% { box-shadow: 0 0 40px rgba(229,57,53,1); transform: scale(1.4); }
+    0%   { box-shadow: 0 0 0 rgba(229,57,53,0.0); transform: scale(0.9); }
+    50%  { box-shadow: 0 0 40px rgba(229,57,53,1); transform: scale(1.4); }
     100% { box-shadow: 0 0 0 rgba(229,57,53,0.0); transform: scale(0.9); }
 }
 
-/* Amber (Suspicious) */
+/* Suspicious soft pulse */
 .verdict-dot.sus {
     background: #ff9800;
     animation: pulseSus 2.4s ease-in-out infinite;
 }
 
 @keyframes pulseSus {
-    0% { box-shadow: 0 0 0 rgba(255,152,0,0.0); }
-    50% { box-shadow: 0 0 10px rgba(255,152,0,0.45); }
-    100% { box-shadow: 0 0 0 rgba(255,152,0,0.0); }
+    0%   { box-shadow: 0 0 0 rgba(255,152,0,0); }
+    50%  { box-shadow: 0 0 10px rgba(255,152,0,0.4); }
+    100% { box-shadow: 0 0 0 rgba(255,152,0,0); }
 }
 
-/* Green (Safe) */
+/* Safe shimmer */
 .verdict-dot.safe {
     background: #2CBFAE;
-    animation: pulseSafe 1.2s ease-out 1;
+    animation: pulseSafe 1.1s ease-out 1;
 }
 
 @keyframes pulseSafe {
-    0% { box-shadow: 0 0 0 rgba(44,191,174,0.0); }
-    100% { box-shadow: 0 0 10px rgba(44,191,174,0.4); }
+    from { box-shadow: 0 0 0 rgba(44,191,174,0); }
+    to   { box-shadow: 0 0 10px rgba(44,191,174,0.5); }
 }
 
-/* Red and amber bullets */
-.result-box.danger ul li::marker { color: #e53935; }
-.result-box.sus ul li::marker { color: #ff9800; }
 
 /* ------------------------------
-   Scan Loader Animation
+   SHIELDSCAN LOADER
 ------------------------------ */
 .scan-loader {
     text-align: center;
@@ -195,60 +235,6 @@ textarea:focus {
     font-weight: 600;
 }
 
-.scan-svg {
-    width: 120px;
-    height: 120px;
-}
-
-.ring-bg {
-    fill: none;
-    stroke: rgba(255,255,255,0.07);
-    stroke-width: 12;
-}
-
-.ring-sweep {
-    fill: none;
-    stroke: #2CBFAE;
-    stroke-width: 12;
-    stroke-linecap: round;
-    stroke-dasharray: 70 360;
-    animation: rotateSweep 1.1s linear infinite;
-}
-
-@keyframes rotateSweep {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-.arrow {
-    fill: #20bfa7;
-    opacity: 0.95;
-}
-
-/* ------------------------------
-   FORM HIDING WHEN SCANNING
------------------------------- */
-
-/* Hide only the form elems — no duplicate rules! */
-#form-area.scanning form {
-    display: none !important;
-}
-
-/* ------------------------------
-   FINAL FIX — FORCE HIDE EVERYTHING
------------------------------- */
-#form-area.scanning * {
-    display: none !important;
-}
-
-#form-area.scanning {
-    min-height: 140px; /* prevents layout jump */
-}
-
-/* ================================
-   SHARPLYNC SHIELDSCAN LOADER
-================================ */
-
 .shield-scan {
     width: 120px;
     height: 140px;
@@ -256,6 +242,7 @@ textarea:focus {
     margin: 0 auto;
 }
 
+/* Shield outline */
 .shield-outline {
     width: 100%;
     height: 100%;
@@ -265,11 +252,10 @@ textarea:focus {
     animation: shieldPulse 2.2s ease-in-out infinite;
 }
 
-/* Pulse effect */
 @keyframes shieldPulse {
-    0%   { box-shadow: 0 0 0 rgba(44,191,174,0.0); }
+    0%   { box-shadow: 0 0 0 rgba(44,191,174,0); }
     50%  { box-shadow: 0 0 22px rgba(44,191,174,0.45); }
-    100% { box-shadow: 0 0 0 rgba(44,191,174,0.0); }
+    100% { box-shadow: 0 0 0 rgba(44,191,174,0); }
 }
 
 /* Radar sweep */
@@ -278,8 +264,8 @@ textarea:focus {
     width: 100%;
     height: 100%;
     background: conic-gradient(
-        rgba(44,191,174,0.45),
-        rgba(44,191,174,0.0) 60%
+        rgba(44,191,174,0.5),
+        rgba(44,191,174,0) 60%
     );
     border-radius: 60% 60% 70% 70%;
     animation: radarSweep 1.8s linear infinite;
@@ -292,116 +278,44 @@ textarea:focus {
 }
 
 
-/* Main ThreatCheck Title */
-.threat-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2.8rem;
-    font-weight: 800;
-    margin-bottom: 35px;
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    cursor: default;
-
-    /* SharpLync gradient */
-    background: linear-gradient(90deg, #2CBFAE 0%, #0A2A4D 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    text-shadow: 0 4px 14px rgba(0,0,0,0.2);
-    transition: 0.3s ease;
+/* ------------------------------
+   FORM HIDING DURING SCAN
+------------------------------ */
+#form-area.scanning * {
+    display: none !important;
 }
 
-/* Glow on hover */
-.threat-title:hover {
-    text-shadow: 0 0 18px rgba(44,191,174,0.55);
-    transform: translateY(-2px);
+#form-area.scanning {
+    min-height: 140px;
 }
-
-/* Animated underline bar */
-.threat-title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-    width: 0%;
-    height: 4px;
-    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
-    border-radius: 10px;
-    transition: width 0.45s ease;
-}
-
-.threat-title:hover::after {
-    width: 100%;
-}
-
-/* Shield icon next to title */
-.shield-icon {
-    width: 32px;
-    height: 32px;
-    margin-right: 6px;
-    filter: drop-shadow(0 0 8px rgba(44,191,174,0.4));
-}
-
-
 
 
 /* ------------------------------
-   Mobile Fixes
+   MOBILE RESPONSIVE
 ------------------------------ */
 @media (max-width: 600px) {
 
-    .scam-hero-title {
-        font-size: 1.6rem;
+    .threat-title {
+        font-size: 2.1rem;
         line-height: 1.3;
-        padding: 0 10px;
-        text-align: left;
-    }
-
-    .sc-page {
-        padding-top: 40px;
-        padding-bottom: 80px;
     }
 
     textarea {
+        padding: 10px;
         font-size: 0.9rem;
         border-radius: 8px;
-        padding: 10px;
-    }
-
-    input[type="file"] {
-        font-size: 0.85rem;
-        max-width: 95%;
-        display: block;
-        margin: 0.4rem 0 1rem;
     }
 
     .scam-btn {
         width: 100%;
-        font-size: 1rem;
         padding: 0.9rem 1.4rem;
         border-radius: 12px;
     }
 
-    .result-container h3 {
-        font-size: 1.4rem !important;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-        padding-left: 4px;
-    }
-
     .result-box {
         padding: 18px !important;
-        font-size: 0.95rem;
-        border-radius: 12px;
         margin-left: 6px;
         margin-right: 6px;
-    }
-
-    .result-box.safe,
-    .result-box.sus,
-    .result-box.danger {
         border-left-width: 6px !important;
     }
 }

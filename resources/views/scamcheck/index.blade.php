@@ -4,12 +4,13 @@
 <link rel="stylesheet" href="{{ asset('css/scamchecker.css') }}">
 @endpush
 
-@section('title', 'SharpLync Scam Checker')
+@section('title', 'SharpLync ThreatCheck')
 
 @section('content')
 <div class="sc-page">
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
+    <!-- THREATCHHECK HEADER -->
     <h2 class="threat-title">
         <svg class="shield-icon" viewBox="0 0 64 64">
             <path d="M32 4L8 14v14c0 14.6 10 28.4 24 32c14-3.6 24-17.4 24-32V14L32 4z"
@@ -25,14 +26,15 @@
     </h2>
 
 
-
-    <!-- FORM AREA -->
+    <!-- FORM AREA (hidden after scan automatically) -->
     @if(!isset($result))
     <div id="form-area">
         <form id="scam-form" method="POST" action="/scam-checker" enctype="multipart/form-data">
             @csrf        
 
-            <textarea name="message" rows="10" placeholder="Paste text OR upload an email (.eml/.msg/.txt):">@if(isset($input)){{ $input }}@endif</textarea>
+            <textarea name="message" rows="10" placeholder="Paste text OR upload an email (.eml/.msg/.txt):">
+@if(isset($input)){{ $input }}@endif
+            </textarea>
 
             <br><br>
             <input type="file" name="file">
@@ -46,7 +48,8 @@
     </div>
     @endif
 
-    <!-- SINGLE SCAN LOADER -->
+
+    <!-- SHIELDSCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
         <div class="shield-scan">
             <div class="shield-outline"></div>
@@ -54,8 +57,6 @@
         </div>
         <p class="scan-text">Scanning for threats…</p>
     </div>
-
-
 
 
     {{-- RESULTS --}}
@@ -133,7 +134,6 @@
 
 </div>
 </div>
-
 @endsection
 
 
@@ -146,24 +146,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const formArea = document.getElementById("form-area");
     const loader   = document.getElementById("scan-loader");
 
-    form.addEventListener("submit", function (e) {
+    if (form) {
+        form.addEventListener("submit", function (e) {
 
-        e.preventDefault(); // STOP instant submit
+            e.preventDefault(); // STOP instant submit
+            formArea.classList.add("scanning");
+            loader.style.display = "block";
 
-        console.log("FORM SUBMISSION INTERCEPTED — starting scan animation");
-
-        // Hide form fields
-        formArea.classList.add("scanning");
-
-        // Show spinning loader
-        loader.style.display = "block";
-
-        // Give animation time to start before page reload
-        setTimeout(() => {
-            form.submit(); // now submit for real
-        }, 300);
-    });
+            setTimeout(() => form.submit(), 250);
+        });
+    }
 });
+
 
 // Clear button
 function clearScamForm() {
