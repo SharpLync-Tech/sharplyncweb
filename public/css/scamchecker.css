@@ -132,3 +132,29 @@
     margin-bottom: 0.4rem;
     color: #333;
 }
+
+/* Modern button */
+.sc-btn {
+    display: inline-block;
+    padding: 0.75rem 1.4rem;
+    background: #2CBFAE;
+    color: #06202A !important;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sc-btn:hover {
+    background: #35e0c2;
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(44,191,174,0.65);
+}
+
+input[type="file"] {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+}

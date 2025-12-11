@@ -7,59 +7,36 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
-<div class="scam-page">
+<div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    {{-- ===========================
-         SIMPLE HERO SECTION
-    ============================ --}}
-    <section class="scam-hero">
-        <div class="scam-hero-inner">
-            <h1>SharpLync Scam Checker</h1>
-            <p class="scam-hero-sub">
-                Paste an email or upload a file — we’ll analyse it for signs of phishing, scams, 
-                or suspicious behaviour using advanced AI-driven checks.
-            </p>
-        </div>
-    </section>
+    <h2>SharpLync Scam Checker (Test Page)</h2>
 
+    <form method="POST" action="/scam-checker" enctype="multipart/form-data">
+        @csrf
 
-    {{-- ===========================
-         FORM SECTION
-    ============================ --}}
-    <section class="scam-section">
-        <div class="scam-section-inner">
+        <p>Paste text OR upload an email (.eml/.msg/.txt):</p>
 
-            <form method="POST" action="/scam-checker" enctype="multipart/form-data" class="scam-form">
-                @csrf
+        <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
 
-                <label class="scam-label">Paste text OR upload an email (.eml/.msg/.txt):</label>
+        <br><br>
 
-                <textarea name="message" rows="10" class="scam-input">
-@if(isset($input)){{ $input }}@endif
-</textarea>
+        <input type="file" name="file">
 
-                <div class="scam-file-wrap">
-                    <input type="file" name="file">
-                </div>
+        <br><br>
 
-                <button type="submit" class="scam-btn-primary">Check Message</button>
-            </form>
+        <button type="submit" class="sc-btn">Check Message</button>
+    </form>
 
-        </div>
-    </section>
-
-
-    {{-- ===========================
-         RESULT SECTION
+    {{-- ============================
+         RESULTS
     ============================ --}}
     @if(isset($result))
-    <section class="scam-section">
-        <div class="scam-section-inner">
+        <div class="result-container" style="margin-top:40px;">
+            <h3>Scam Analysis Result</h3>
 
-            <h2 class="scam-section-title">Scam Analysis Result</h2>
-
+            {{-- Azure error --}}
             @if(is_array($result) && isset($result['error']))
-                <div class="scam-result-card danger">
+                <div class="result-box danger">
                     <strong>Azure Error:</strong>
                     <pre>{{ print_r($result, true) }}</pre>
                 </div>
@@ -72,7 +49,7 @@
                     $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
 
                     if ($isJson) {
-                        $verdict     = $json['verdict'] ?? '';
+                        $verdict     = ucfirst($json['verdict'] ?? '');
                         $score       = $json['risk_score'] ?? 'N/A';
                         $summary     = $json['summary'] ?? '';
                         $redFlags    = $json['red_flags'] ?? [];
@@ -90,6 +67,7 @@
                                 (str_contains($v, 'suspicious') || str_contains($v, 'unclear') ? 'sus' : 'safe');
                         }
                     } else {
+
                         // Legacy parsing (unchanged)
                         $lines = explode("\n", $result);
                         $verdict = '';
@@ -103,7 +81,7 @@
                             $trim = trim($line);
                             if ($trim === '') continue;
 
-                            if (stripos($trim, 'Verdict:') === 0) { $verdict = trim(substr($trim, 8)); $mode=null; continue; }
+                            if (stripos($trim, 'Verdict:') === 0) { $verdict = ucfirst(trim(substr($trim, 8))); $mode=null; continue; }
                             if (stripos($trim, 'Risk Score:') === 0) { $score = trim(substr($trim, 11)); $mode=null; continue; }
                             if (stripos($trim, 'Summary:') === 0) { $summary = trim(substr($trim, 8)); $mode='summary'; continue; }
                             if (stripos($trim, 'Red Flags:') === 0 || stripos($trim,'Reasons:')===0) { $mode='flags'; continue; }
@@ -122,9 +100,7 @@
                             $summary = $redFlags[0];
                         }
 
-                        $scoreNum = $score !== '' ?
-                            (int) filter_var($score, FILTER_SANITIZE_NUMBER_INT)
-                            : null;
+                        $scoreNum = $score !== '' ? (int) filter_var($score, FILTER_SANITIZE_NUMBER_INT) : null;
 
                         $severityClass =
                             $scoreNum >= 70 ? 'danger' :
@@ -134,16 +110,16 @@
 
                 {{-- JSON MODE --}}
                 @if($isJson)
-                    <div class="scam-result-card {{ $severityClass }}">
-                        <p><strong>Verdict:</strong> {{ $verdict }}</p>
-                        <p><strong>Risk Score:</strong> {{ is_numeric($score) ? $score : 'N/A' }}</p>
+                    <div class="result-box {{ $severityClass }}">
+                        <p><span class="value">Verdict:</span> {{ $verdict }}</p>
+                        <p><span class="value">Risk Score:</span> {{ is_numeric($score) ? $score : 'N/A' }}</p>
 
-                        <h4 class="scam-subtitle">Summary</h4>
+                        <div class="section-title">Summary</div>
                         <p>{!! nl2br(e($summary)) !!}</p>
 
-                        <h4 class="scam-subtitle">Red Flags</h4>
+                        <div class="section-title">Red Flags</div>
                         @if(count($redFlags))
-                            <ul class="scam-flag-list">
+                            <ul class="red-flag-list">
                                 @foreach($redFlags as $flag)
                                     <li>{{ $flag }}</li>
                                 @endforeach
@@ -152,22 +128,22 @@
                             <p>No major red flags detected.</p>
                         @endif
 
-                        <h4 class="scam-subtitle">Recommended Action</h4>
+                        <div class="section-title">Recommended Action</div>
                         <p>{!! nl2br(e($recommended)) !!}</p>
                     </div>
 
-                {{-- LEGACY --}}
+                {{-- LEGACY MODE --}}
                 @else
-                    <div class="scam-result-card {{ $severityClass }}">
-                        <p><strong>Verdict:</strong> {{ $verdict }}</p>
-                        <p><strong>Risk Score:</strong> {{ $scoreNum ?? 'N/A' }}</p>
+                    <div class="result-box {{ $severityClass }}">
+                        <p><span class="value">Verdict:</span> {{ $verdict }}</p>
+                        <p><span class="value">Risk Score:</span> {{ $scoreNum ?? 'N/A' }}</p>
 
-                        <h4 class="scam-subtitle">Summary</h4>
+                        <div class="section-title">Summary</div>
                         <p>{!! nl2br(e($summary)) !!}</p>
 
-                        <h4 class="scam-subtitle">Red Flags</h4>
+                        <div class="section-title">Red Flags</div>
                         @if(count($redFlags))
-                            <ul class="scam-flag-list">
+                            <ul class="red-flag-list">
                                 @foreach($redFlags as $flag)
                                     <li>{{ $flag }}</li>
                                 @endforeach
@@ -176,16 +152,28 @@
                             <p>No major red flags detected.</p>
                         @endif
 
-                        <h4 class="scam-subtitle">Recommended Action</h4>
+                        <div class="section-title">Recommended Action</div>
                         <p>{!! nl2br(e($recommended)) !!}</p>
                     </div>
                 @endif
 
             @endif
-
         </div>
-    </section>
-    @endif
 
+        {{-- ============================
+             AUTO SCROLL TO RESULTS
+        ============================ --}}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const el = document.querySelector('.result-container');
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 300);
+                }
+            });
+        </script>
+
+    @endif {{-- end result --}}
 </div>
 @endsection
