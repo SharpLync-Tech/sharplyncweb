@@ -122,15 +122,26 @@ textarea:focus {
 }
 
 /* Red (danger) — gentle pulse */
+/* Red (danger) — gentle pulse */
+
 .verdict-dot.danger {
     background: #e53935;
-    animation: pulseDanger 1.6s ease-in-out infinite;
+    animation: pulseDanger 0.9s ease-in-out infinite;
 }
 
 @keyframes pulseDanger {
-    0%   { box-shadow: 0 0 0 rgba(229,57,53,0.0); }
-    50%  { box-shadow: 0 0 10px rgba(229,57,53,0.55); }
-    100% { box-shadow: 0 0 0 rgba(229,57,53,0.0); }
+    0% {
+        box-shadow: 0 0 0 rgba(229,57,53,0.0);
+        transform: scale(0.9);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(229,57,53,1);
+        transform: scale(1.4);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(229,57,53,0.0);
+        transform: scale(0.9);
+    }
 }
 
 /* Amber (suspicious) — soft breathing */

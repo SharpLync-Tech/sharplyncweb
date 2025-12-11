@@ -10,7 +10,7 @@
 <div class="sc-page">
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <h2 class="scam-result-title">SharpLync Scam Checker (Test Page)</h2>
+    <h2 class="scam-result-title"><span class="gradient">SharpLync</span> Scam Checker</h2>
 
     <form method="POST" action="/scam-checker" enctype="multipart/form-data">
         @csrf        
