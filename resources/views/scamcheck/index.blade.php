@@ -10,12 +10,12 @@
 <div class="sc-page">
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <h2>SharpLync Scam Checker (Test Page)</h2>
+    <h2 class="scam-hero-title">SharpLync Scam Checker (Test Page)</h2>
 
     <form method="POST" action="/scam-checker" enctype="multipart/form-data">
         @csrf
 
-        <p>Paste text OR upload an email (.eml/.msg/.txt):</p>
+        <p class="scam-hero-sub">Paste text OR upload an email (.eml/.msg/.txt):</p>
 
         <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
 
@@ -25,7 +25,8 @@
 
         <br><br>
 
-        <button type="submit" class="sc-btn">Check Message</button>
+        <button type="submit" class="scam-btn">Check Message</button>
+
     </form>
 
     {{-- ============================
