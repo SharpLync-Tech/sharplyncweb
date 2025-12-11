@@ -258,6 +258,23 @@ textarea:focus {
     background: #ffffff33;
 }
 
+/* Hide elements when scanning */
+#form-area.scanning textarea,
+#form-area.scanning input[type="file"],
+#form-area.scanning #check-btn {
+    display: none !important;
+}
+
+/* Clear button uses outline style */
+.scam-btn.outline {
+    background: transparent;
+    border: 2px solid #ffffff66;
+    color: white;
+}
+
+.scam-btn.outline:hover {
+    background: #ffffff22;
+}
 
 
 
