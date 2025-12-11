@@ -130,48 +130,112 @@
                 foreach ($lines as $line) {
                     $trim = trim($line);
 
+                    // Skip empty lines early
+                    if ($trim === '') {
+                        continue;
+                    }
+
+                    // Verdict
                     if (stripos($trim, 'Verdict:') === 0) {
                         $verdict = trim(substr($trim, 8));
+                        $mode = null;
                         continue;
                     }
+
+                    // Risk Score
                     if (stripos($trim, 'Risk Score:') === 0) {
                         $score = trim(substr($trim, 11));
+                        $mode = null;
                         continue;
                     }
+
+                    // Summary
                     if (stripos($trim, 'Summary:') === 0) {
                         $summary = trim(substr($trim, 8));
                         $mode = 'summary';
                         continue;
                     }
+
+                    // Red Flags heading (original format)
                     if (stripos($trim, 'Red Flags:') === 0) {
                         $mode = 'flags';
                         continue;
                     }
+
+                    // Reasons heading (new format we saw)
+                    if (stripos($trim, 'Reasons:') === 0) {
+                        $mode = 'flags'; // treat reasons as red flags
+                        continue;
+                    }
+
+                    // Recommended Action (original format)
                     if (stripos($trim, 'Recommended Action:') === 0) {
                         $recommended = trim(substr($trim, 20));
                         $mode = 'recommended';
                         continue;
                     }
 
-                    if ($mode === 'summary' && $trim !== '') {
+                    // Recommendation (new format we saw)
+                    if (stripos($trim, 'Recommendation:') === 0) {
+                        $recommended = trim(substr($trim, 13));
+                        $mode = 'recommended';
+                        continue;
+                    }
+
+                    // Collect extra summary lines
+                    if ($mode === 'summary') {
                         $summary .= "\n" . $trim;
+                        continue;
                     }
 
-                    if ($mode === 'flags' && strpos($trim, '-') === 0) {
-                        $redFlags[] = substr($trim, 1);
+                    // Collect red flags (either - bullet or numbered list "1. ...")
+                    if ($mode === 'flags') {
+                        if (strpos($trim, '-') === 0) {
+                            $redFlags[] = ltrim(substr($trim, 1));
+                            continue;
+                        }
+
+                        if (preg_match('/^\d+\.\s*(.+)$/', $trim, $m)) {
+                            $redFlags[] = $m[1];
+                            continue;
+                        }
                     }
 
-                    if ($mode === 'recommended' && $trim !== '') {
+                    // Collect additional recommended action lines
+                    if ($mode === 'recommended') {
                         $recommended .= "\n" . $trim;
+                        continue;
                     }
                 }
 
-                // Determine severity styling
-                $scoreNum = (int) filter_var($score, FILTER_SANITIZE_NUMBER_INT);
+                // If summary is empty but we have red flags, use first red flag as a simple summary
+                if ($summary === '' && count($redFlags) > 0) {
+                    $summary = $redFlags[0];
+                }
 
-                $severityClass =
-                    $scoreNum >= 70 ? 'danger' :
-                    ($scoreNum >= 40 ? 'sus' : 'safe');
+                // Determine severity styling
+                $scoreNum = null;
+
+                if ($score !== '') {
+                    $scoreNum = (int) filter_var($score, FILTER_SANITIZE_NUMBER_INT);
+                }
+
+                if ($scoreNum !== null && $scoreNum > 0) {
+                    $severityClass =
+                        $scoreNum >= 70 ? 'danger' :
+                        ($scoreNum >= 40 ? 'sus' : 'safe');
+                } else {
+                    // Fallback: classify by verdict text if no score present
+                    $v = strtolower($verdict);
+
+                    if (str_contains($v, 'phishing') || str_contains($v, 'likely scam') || str_contains($v, 'scam')) {
+                        $severityClass = 'danger';
+                    } elseif (str_contains($v, 'suspicious') || str_contains($v, 'unclear')) {
+                        $severityClass = 'sus';
+                    } else {
+                        $severityClass = 'safe';
+                    }
+                }
 
                 // Custom message ONLY when email is legit
                 $customLegitAction = null;
@@ -183,12 +247,14 @@
                         "This system provides automated analysis and is intended for informational guidance only. No automated tool can guarantee 100% accuracy.\n\n" .
                         "If you ever feel unsure, contact SharpLync and we’ll confirm the email's legitimacy.";
                 }
+
+                $scoreDisplay = $score !== '' ? $score : 'N/A';
             @endphp
 
             <div class="result-box {{ $severityClass }}">
 
                 <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                <p><span class="value">Risk Score:</span> {{ $score }}</p>
+                <p><span class="value">Risk Score:</span> {{ $scoreDisplay }}</p>
 
                 <div class="section-title">Summary</div>
                 <p>{!! nl2br(e($summary)) !!}</p>
