@@ -7,31 +7,27 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
-<div style="max-width:1100px; margin:0 auto; padding-top:40px;">
+<div class="scamcheck-wrapper">
 
-    <h2>SharpLync Scam Checker (Test Page)</h2>
+    <h2 class="scamcheck-title">SharpLync Scam Checker (Test Page)</h2>
 
     <form method="POST" action="/scam-checker" enctype="multipart/form-data">
         @csrf
 
-        <p>Paste text OR upload an email (.eml/.msg/.txt):</p>
+        <p class="scamcheck-label">Paste text OR upload an email (.eml/.msg/.txt):</p>
 
-        <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
+        <textarea name="message" rows="10" class="scamcheck-textarea">
+@if(isset($input)){{ $input }}@endif
+        </textarea>
 
-        <br><br>
+        <input type="file" name="file" class="scamcheck-file">
 
-        <input type="file" name="file">
-
-        <br><br>
-
-        <button type="submit">Check Message</button>
+        <button type="submit" class="scamcheck-btn">Check Message</button>
     </form>
-
-    {{-- REMOVED: RAW OUTPUT DEBUG BLOCK --}}
 
     @if(isset($result))
         <div class="result-container">
-            <h3>Scam Analysis Result</h3>
+            <h3 class="scamcheck-subtitle">Scam Analysis Result</h3>
 
             {{-- Azure error --}}
             @if(is_array($result) && isset($result['error']))
