@@ -60,6 +60,13 @@ textarea:focus {
 }
 
 /* FIXED modern file upload button */
+.sc-page input[type="file"] {
+    color: #FFFFFF !important; /* SharpLync deep navy */
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* FIXED modern file upload button */
 .sc-page input[type="file"]::file-selector-button,
 .sc-page input[type="file"]::-webkit-file-upload-button {
     background: #2CBFAE;
