@@ -10,7 +10,11 @@
 <div class="sc-page">
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <h2 class="scam-result-title"><span class="gradient">SharpLync</span> Scam Checker</h2>
+    <h2 class="threat-title">
+    <span class="shield-icon">🛡️</span>
+    SharpLync ThreatCheck
+</h2>
+
 
     <!-- FORM AREA -->
     @if(!isset($result))
@@ -34,14 +38,13 @@
 
     <!-- SINGLE SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="teal-loader">
-            <svg class="loader-svg" viewBox="0 0 100 100">
-                <circle class="loader-bg" cx="50" cy="50" r="40" />
-                <circle class="loader-spin" cx="50" cy="50" r="40" />
-            </svg>
+        <div class="shield-scan">
+            <div class="shield-outline"></div>
+            <div class="shield-radar"></div>
         </div>
         <p class="scan-text">Scanning for threats…</p>
     </div>
+
 
 
 
