@@ -180,6 +180,85 @@ textarea:focus {
     color: #ff9800;
 }
 
+/* ============================================
+   SHARPLYNC SEGMENT SWEEP SCANNING ANIMATION
+   ============================================ */
+
+.scan-loader {
+    text-align: center;
+    margin-top: 25px;
+    padding: 20px 0;
+}
+
+.scan-text {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.scan-svg {
+    width: 120px;
+    height: 120px;
+}
+
+/* Background ring */
+.ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 12;
+}
+
+/* Sweeping animated arc */
+.ring-sweep {
+    fill: none;
+    stroke: #2CBFAE;
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 40 410; /* segment + gap */
+    transform-origin: 50% 50%;
+    animation: rotateSweep 1.2s linear infinite;
+}
+
+/* Segment sweep rotation */
+@keyframes rotateSweep {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* SharpLync Arrow */
+.arrow {
+    fill: #2CBFAE;
+    opacity: 0.9;
+}
+
+
+/* ============================================
+   Hide form elements during scanning
+   ============================================ */
+
+#form-area.scanning textarea,
+#form-area.scanning input[type="file"],
+#form-area.scanning .scam-btn {
+    display: none !important;
+}
+
+#clear-btn {
+    margin-top: 12px;
+    background: #ffffff22;
+    border: 1px solid #ffffff55;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+#clear-btn:hover {
+    background: #ffffff33;
+}
+
+
 
 
 /* ============================================================
