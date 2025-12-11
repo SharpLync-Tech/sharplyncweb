@@ -110,19 +110,39 @@ textarea:focus {
     margin-bottom: 4px;
 }
 
-/* Pulse warning for dangerous scams */
+/* =============================
+   ANIMATED SEVERITY EFFECTS
+   ============================= */
+
+/* 🔴 Danger — pulsing red glow */
 .result-box.danger {
     animation: dangerPulse 1.6s ease-in-out infinite;
 }
 
 @keyframes dangerPulse {
-    0% {
-        box-shadow: 0 0 0 rgba(230, 57, 53, 0.0);
-    }
-    50% {
-        box-shadow: 0 0 18px rgba(230, 57, 53, 0.45);
-    }
-    100% {
-        box-shadow: 0 0 0 rgba(230, 57, 53, 0.0);
-    }
+    0%   { box-shadow: 0 0 0 rgba(230, 57, 53, 0.0); }
+    50%  { box-shadow: 0 0 18px rgba(230, 57, 53, 0.45); }
+    100% { box-shadow: 0 0 0 rgba(230, 57, 53, 0.0); }
 }
+
+/* 🟧 Suspicious — soft breathing glow */
+.result-box.sus {
+    animation: susGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes susGlow {
+    0%   { box-shadow: 0 0 0 rgba(255, 152, 0, 0.0); }
+    50%  { box-shadow: 0 0 14px rgba(255, 152, 0, 0.35); }
+    100% { box-shadow: 0 0 0 rgba(255, 152, 0, 0.0); }
+}
+
+/* 🟢 Safe — subtle success shimmer */
+.result-box.safe {
+    animation: safeShimmer 2.2s ease-out 1;
+}
+
+@keyframes safeShimmer {
+    0%   { box-shadow: 0 0 0 rgba(44,191,174,0.0); }
+    100% { box-shadow: 0 0 10px rgba(44,191,174,0.25); }
+}
+
