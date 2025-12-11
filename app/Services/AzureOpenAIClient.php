@@ -28,37 +28,39 @@ class AzureOpenAIClient
      */
     public function analyze(string $text): ?array
     {
+        // Clean input (remove HTML, MIME, etc.)
         $cleaned = $this->cleanInput($text);
 
-        // 1st attempt
-        $response = $this->sendToAzure($cleaned);
-        $json = $this->parseAzureJson($response);
+        // Attempt 1
+        $response1 = $this->sendToAzure($cleaned);
+        $decoded1  = $this->parseAzureJson($response1);
 
-        if ($json !== null) {
-            return $json;
+        if ($decoded1 !== null) {
+            return $decoded1;
         }
 
-        // 2nd attempt: more strict reminder
-        $response = $this->sendToAzure("Return ONLY JSON.\n\n" . $cleaned);
-        $json = $this->parseAzureJson($response);
+        // Attempt 2 (reminder to output JSON only)
+        $retryText = "Return ONLY JSON. No markup.\n\n" . $cleaned;
+        $response2 = $this->sendToAzure($retryText);
+        $decoded2  = $this->parseAzureJson($response2);
 
-        if ($json !== null) {
-            return $json;
+        if ($decoded2 !== null) {
+            return $decoded2;
         }
 
-        // FINAL fallback
+        // FINAL HARD FALLBACK
         return [
             'risk_score' => 10,
             'verdict' => 'likely legitimate',
-            'summary' => 'The AI response could not be parsed as JSON, but no major scam indicators were detected.',
+            'summary' => 'No valid JSON returned and email appears low risk.',
             'red_flags' => [],
-            'recommended_action' => 'Verify directly via the official website rather than links in the email.',
+            'recommended_action' => 'Verify directly via the official service website.',
         ];
     }
 
 
     /**
-     * Send request to Azure OpenAI using PROPER GPT-4.1 JSON MODE
+     * Send request to Azure OpenAI
      */
     protected function sendToAzure(string $text): ?array
     {
@@ -74,8 +76,7 @@ class AzureOpenAIClient
                         'api-version' => '2024-10-01-preview'
                     ],
                     'json' => [
-
-                        // ⭐ REQUIRED FOR GPT-4.1 JSON MODE ⭐
+                        // Force JSON output
                         'response_format' => [
                             'type' => 'json_object'
                         ],
@@ -85,26 +86,20 @@ class AzureOpenAIClient
                                 'role' => 'system',
                                 'content' =>
                                     "You are a cybersecurity scam-detection assistant.\n\n" .
-                                    "Return ONLY a valid JSON object — NO markdown, NO commentary, NO extra text.\n\n" .
-                                    "Your EXACT JSON structure must be:\n" .
+                                    "Return ONLY a valid JSON object. NO markdown. NO commentary.\n\n" .
+                                    "JSON MUST be exactly:\n" .
                                     "{\n" .
                                     "  \"risk_score\": <integer>,\n" .
                                     "  \"verdict\": \"likely scam\" | \"suspicious\" | \"unclear\" | \"likely legitimate\",\n" .
                                     "  \"summary\": \"<short explanation>\",\n" .
-                                    "  \"red_flags\": [\"<details>\"],\n" .
+                                    "  \"red_flags\": [\"<item1>\", \"<item2>\"] ,\n" .
                                     "  \"recommended_action\": \"<short guidance>\"\n" .
-                                    "}\n\n" .
-                                    "If scam → risk_score 70–100\n" .
-                                    "If suspicious → 40–60\n" .
-                                    "If unclear → 20–40\n" .
-                                    "If legitimate → 0–20"
+                                    "}\n"
                             ],
-
                             [
                                 'role' => 'user',
                                 'content' =>
-                                    "Analyze the following email/message for scam, phishing, fraud, or impersonation risk.\n" .
-                                    "Return ONLY the JSON object described above.\n\n" .
+                                    "Analyze this email/message and return ONLY the JSON structure.\n\n" .
                                     $text
                             ]
                         ],
@@ -118,9 +113,12 @@ class AzureOpenAIClient
             return json_decode($response->getBody()->getContents(), true);
 
         } catch (\Exception $e) {
+            // Return exception in a structured way
             return [
-                'error' => true,
-                'message' => $e->getMessage(),
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'type' => 'exception'
+                ]
             ];
         }
     }
@@ -131,14 +129,11 @@ class AzureOpenAIClient
      */
     protected function cleanInput(string $raw): string
     {
-        // Remove MIME headers (metadata before first blank line)
         $parts = preg_split("/\R\R/", $raw, 2);
         $body  = $parts[1] ?? $raw;
 
-        // Remove HTML
         $body = strip_tags($body);
 
-        // Remove quoted-printable artifacts
         $body = preg_replace('/=\R/', '', $body);
         $body = preg_replace('/=([0-9A-F]{2})/', '', $body);
 
@@ -147,20 +142,48 @@ class AzureOpenAIClient
 
 
     /**
-     * Extract ONLY the model JSON from Azure response
+     * Diagnostic JSON parser — exposes ALL Azure issues
      */
     protected function parseAzureJson(array $response): ?array
     {
+        // Azure returned an error
+        if (isset($response['error'])) {
+            return [
+                'risk_score' => 0,
+                'verdict' => 'azure_error',
+                'summary' => 'Azure error: ' . json_encode($response['error']),
+                'red_flags' => [],
+                'recommended_action' => 'Check Azure quota, filters, or logs.',
+            ];
+        }
+
+        // No content returned → show raw response
         if (!isset($response['choices'][0]['message']['content'])) {
-            return null;
+            return [
+                'risk_score' => 0,
+                'verdict' => 'no_content',
+                'summary' => 'Azure returned no content: ' . json_encode($response),
+                'red_flags' => [],
+                'recommended_action' => 'Inspect Azure output.',
+            ];
         }
 
         $raw = $response['choices'][0]['message']['content'];
 
+        // Try decode JSON
         $decoded = json_decode($raw, true);
 
-        return json_last_error() === JSON_ERROR_NONE
-            ? $decoded
-            : null;
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $decoded;
+        }
+
+        // Invalid JSON — return raw text for debugging
+        return [
+            'risk_score' => 0,
+            'verdict' => 'invalid_json',
+            'summary' => 'Model returned invalid JSON: ' . $raw,
+            'red_flags' => [],
+            'recommended_action' => 'Adjust prompt or parsing.',
+        ];
     }
 }
