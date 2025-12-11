@@ -30,7 +30,7 @@
         </form>
     </div>
 
-    <!-- SINGLE SCAN LOADER (corrected) -->
+    <!-- SINGLE SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
         <div class="scan-logo">
             <svg viewBox="0 0 200 200" class="scan-svg">
@@ -42,11 +42,10 @@
         <p class="scan-text">Scanning for threats…</p>
     </div>
 
-    
+
     {{-- RESULTS --}}
     @if(isset($result))
     <script>
-        // Reveal clear button AFTER scan
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('clear-btn').style.display = 'inline-block';
         });
@@ -101,10 +100,9 @@
             <div class="section-title">Recommended Action</div>
             <p>{!! nl2br(e($recommended)) !!}</p>
         </div>
-
     </div>
 
-    {{-- AUTO-SCROLL --}}
+    {{-- AUTO SCROLL --}}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const el = document.querySelector('.result-container');
@@ -126,12 +124,30 @@
 
 <!-- PAGE SCRIPTS -->
 <script>
-document.getElementById('check-btn').addEventListener('click', function () {
-    let formArea = document.getElementById('form-area');
-    let loader   = document.getElementById('scan-loader');
+// Intercept form submission
+document.addEventListener("DOMContentLoaded", function () {
 
-    formArea.classList.add("scanning");  // hide elements
-    loader.style.display = "block";      // show loader
+    const form     = document.getElementById("scam-form");
+    const formArea = document.getElementById("form-area");
+    const loader   = document.getElementById("scan-loader");
+
+    form.addEventListener("submit", function (e) {
+
+        e.preventDefault(); // STOP instant submit
+
+        console.log("FORM SUBMISSION INTERCEPTED — starting scan animation");
+
+        // Hide form fields
+        formArea.classList.add("scanning");
+
+        // Show spinning loader
+        loader.style.display = "block";
+
+        // Give animation time to start before page reload
+        setTimeout(() => {
+            form.submit(); // now submit for real
+        }, 300);
+    });
 });
 
 // Clear button
