@@ -89,6 +89,17 @@
     <button type="submit">Check Message</button>
 </form>
 
+{{-- ========================================================= --}}
+{{-- DEBUG BLOCK — Shows raw Azure output (temporary/safe)     --}}
+{{-- ========================================================= --}}
+@if(isset($result))
+    <div class="raw-output" style="margin-top:20px; background:#eef; padding:15px; border:1px solid #ccd;">
+        <h3>Raw Output (Debug)</h3>
+        <pre>{{ print_r($result, true) }}</pre>
+    </div>
+@endif
+{{-- END DEBUG BLOCK --}}
+
 @if(isset($result))
 
     <div class="result-container">
@@ -180,7 +191,7 @@
                 <p><span class="value">Risk Score:</span> {{ $score }}</p>
 
                 <div class="section-title">Summary</div>
-                <p>{{ nl2br(e($summary)) }}</p>
+                <p>{!! nl2br(e($summary)) !!}</p>
 
                 <div class="section-title">Red Flags</div>
                 @if(count($redFlags))
@@ -195,9 +206,7 @@
 
                 <div class="section-title">Recommended Action</div>
 
-                <p>
-                    {{ nl2br(e($customLegitAction ?? $recommended)) }}
-                </p>
+                <p>{!! nl2br(e($customLegitAction ?? $recommended)) !!}</p>
 
             </div>
 
