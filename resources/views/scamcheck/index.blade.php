@@ -13,16 +13,13 @@
     <h2 class="scam-result-title">SharpLync Scam Checker (Test Page)</h2>
 
     <form method="POST" action="/scam-checker" enctype="multipart/form-data">
-        @csrf
-
-        <p class="scam-hero-sub">Paste text OR upload an email (.eml/.msg/.txt):</p>
+        @csrf        
 
         <textarea 
                 name="message" 
                 rows="10" 
                 placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
                 >@if(isset($input)){{ $input }}@endif</textarea>
-
 
         <br><br>
 
