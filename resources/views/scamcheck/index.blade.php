@@ -7,31 +7,59 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
-<div class="scamcheck-wrapper">
+<div class="scam-page">
 
-    <h2 class="scamcheck-title">SharpLync Scam Checker (Test Page)</h2>
+    {{-- ===========================
+         SIMPLE HERO SECTION
+    ============================ --}}
+    <section class="scam-hero">
+        <div class="scam-hero-inner">
+            <h1>SharpLync Scam Checker</h1>
+            <p class="scam-hero-sub">
+                Paste an email or upload a file — we’ll analyse it for signs of phishing, scams, 
+                or suspicious behaviour using advanced AI-driven checks.
+            </p>
+        </div>
+    </section>
 
-    <form method="POST" action="/scam-checker" enctype="multipart/form-data">
-        @csrf
 
-        <p class="scamcheck-label">Paste text OR upload an email (.eml/.msg/.txt):</p>
+    {{-- ===========================
+         FORM SECTION
+    ============================ --}}
+    <section class="scam-section">
+        <div class="scam-section-inner">
 
-        <textarea name="message" rows="10" class="scamcheck-textarea">
+            <form method="POST" action="/scam-checker" enctype="multipart/form-data" class="scam-form">
+                @csrf
+
+                <label class="scam-label">Paste text OR upload an email (.eml/.msg/.txt):</label>
+
+                <textarea name="message" rows="10" class="scam-input">
 @if(isset($input)){{ $input }}@endif
-        </textarea>
+</textarea>
 
-        <input type="file" name="file" class="scamcheck-file">
+                <div class="scam-file-wrap">
+                    <input type="file" name="file">
+                </div>
 
-        <button type="submit" class="scamcheck-btn">Check Message</button>
-    </form>
+                <button type="submit" class="scam-btn-primary">Check Message</button>
+            </form>
 
+        </div>
+    </section>
+
+
+    {{-- ===========================
+         RESULT SECTION
+    ============================ --}}
     @if(isset($result))
-        <div class="result-container">
-            <h3 class="scamcheck-subtitle">Scam Analysis Result</h3>
+    <section class="scam-section">
+        <div class="scam-section-inner">
 
-            {{-- Azure error --}}
+            <h2 class="scam-section-title">Scam Analysis Result</h2>
+
             @if(is_array($result) && isset($result['error']))
-                <div class="result-box danger">
+                <div class="scam-result-card danger">
                     <strong>Azure Error:</strong>
                     <pre>{{ print_r($result, true) }}</pre>
                 </div>
@@ -106,55 +134,57 @@
 
                 {{-- JSON MODE --}}
                 @if($isJson)
-                    <div class="result-box {{ $severityClass }}">
-                        <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                        <p><span class="value">Risk Score:</span> {{ is_numeric($score) ? $score : 'N/A' }}</p>
+                    <div class="scam-result-card {{ $severityClass }}">
+                        <p><strong>Verdict:</strong> {{ $verdict }}</p>
+                        <p><strong>Risk Score:</strong> {{ is_numeric($score) ? $score : 'N/A' }}</p>
 
-                        <div class="section-title">Summary</div>
+                        <h4 class="scam-subtitle">Summary</h4>
                         <p>{!! nl2br(e($summary)) !!}</p>
 
-                        <div class="section-title">Red Flags</div>
+                        <h4 class="scam-subtitle">Red Flags</h4>
                         @if(count($redFlags))
-                            <div class="red-flag-list">
+                            <ul class="scam-flag-list">
                                 @foreach($redFlags as $flag)
-                                    <p>- {{ $flag }}</p>
+                                    <li>{{ $flag }}</li>
                                 @endforeach
-                            </div>
+                            </ul>
                         @else
                             <p>No major red flags detected.</p>
                         @endif
 
-                        <div class="section-title">Recommended Action</div>
+                        <h4 class="scam-subtitle">Recommended Action</h4>
                         <p>{!! nl2br(e($recommended)) !!}</p>
                     </div>
 
-                {{-- LEGACY MODE --}}
+                {{-- LEGACY --}}
                 @else
-                    <div class="result-box {{ $severityClass }}">
-                        <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                        <p><span class="value">Risk Score:</span> {{ $scoreNum ?? 'N/A' }}</p>
+                    <div class="scam-result-card {{ $severityClass }}">
+                        <p><strong>Verdict:</strong> {{ $verdict }}</p>
+                        <p><strong>Risk Score:</strong> {{ $scoreNum ?? 'N/A' }}</p>
 
-                        <div class="section-title">Summary</div>
+                        <h4 class="scam-subtitle">Summary</h4>
                         <p>{!! nl2br(e($summary)) !!}</p>
 
-                        <div class="section-title">Red Flags</div>
+                        <h4 class="scam-subtitle">Red Flags</h4>
                         @if(count($redFlags))
-                            <div class="red-flag-list">
+                            <ul class="scam-flag-list">
                                 @foreach($redFlags as $flag)
-                                    <p>- {{ $flag }}</p>
+                                    <li>{{ $flag }}</li>
                                 @endforeach
-                            </div>
+                            </ul>
                         @else
                             <p>No major red flags detected.</p>
                         @endif
 
-                        <div class="section-title">Recommended Action</div>
+                        <h4 class="scam-subtitle">Recommended Action</h4>
                         <p>{!! nl2br(e($recommended)) !!}</p>
                     </div>
                 @endif
 
             @endif
+
         </div>
+    </section>
     @endif
 
 </div>
