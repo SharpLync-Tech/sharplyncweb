@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\ScamCheck\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\AzureOpenAIClient;
+use App\Http\Controllers\Controller;
+use App\ScamCheck\Services\AzureOpenAIClient;
 
 class ScamCheckerController extends Controller
 {
     public function index()
     {
-        return view('scam-checker');
+        return view('scamcheck.index');
     }
 
     public function analyze(Request $request, AzureOpenAIClient $client)
@@ -55,7 +56,7 @@ class ScamCheckerController extends Controller
         // Run AI analysis
         $result = $client->analyze($text);
 
-        return view('scam-checker', [
+        return view('scamcheck.index', [
             'input'  => $text,
             'result' => $result
         ]);
