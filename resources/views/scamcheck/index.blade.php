@@ -112,7 +112,11 @@
                 {{-- JSON MODE --}}
                 @if($isJson)
                     <div class="result-box {{ $severityClass }}">
-                        <p><span class="value">Verdict:</span> {{ $verdict }}</p>
+                        <p>
+                            <span class="value">Verdict:</span>
+                            <span class="verdict-text">{{ $verdict }}</span>
+                            <span class="verdict-dot {{ $severityClass }}"></span>
+                        </p>
                         <p><span class="value">Risk Score:</span> {{ is_numeric($score) ? $score : 'N/A' }}</p>
 
                         <div class="section-title">Summary</div>
