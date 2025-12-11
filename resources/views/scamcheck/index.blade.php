@@ -17,7 +17,12 @@
 
         <p class="scam-hero-sub">Paste text OR upload an email (.eml/.msg/.txt):</p>
 
-        <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
+        <textarea 
+                name="message" 
+                rows="10" 
+                placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
+                >@if(isset($input)){{ $input }}@endif</textarea>
+
 
         <br><br>
 
