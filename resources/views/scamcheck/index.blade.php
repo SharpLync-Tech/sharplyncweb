@@ -27,13 +27,7 @@
         <button type="submit">Check Message</button>
     </form>
 
-    {{-- OPTIONAL: DEBUG RAW OUTPUT (your original behaviour) --}}
-    @if(isset($result))
-        <div class="raw-output">
-            <h3>Raw Output (Debug)</h3>
-            <pre>{{ print_r($result, true) }}</pre>
-        </div>
-    @endif
+    {{-- REMOVED: RAW OUTPUT DEBUG BLOCK --}}
 
     @if(isset($result))
         <div class="result-container">
@@ -41,7 +35,7 @@
 
             {{-- Azure error --}}
             @if(is_array($result) && isset($result['error']))
-                <div class="raw-output">
+                <div class="result-box danger">
                     <strong>Azure Error:</strong>
                     <pre>{{ print_r($result, true) }}</pre>
                 </div>
@@ -54,7 +48,6 @@
                     $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
 
                     if ($isJson) {
-                        // JSON mode
                         $verdict     = $json['verdict'] ?? '';
                         $score       = $json['risk_score'] ?? 'N/A';
                         $summary     = $json['summary'] ?? '';
@@ -68,14 +61,13 @@
                                 ($scoreNum >= 40 ? 'sus' : 'safe');
                         } else {
                             $v = strtolower($verdict);
-                            $severityClass = str_contains($v, 'scam')
-                                ? 'danger'
-                                : (str_contains($v, 'suspicious') || str_contains($v, 'unclear') ? 'sus' : 'safe');
+                            $severityClass =
+                                str_contains($v, 'scam') ? 'danger' :
+                                (str_contains($v, 'suspicious') || str_contains($v, 'unclear') ? 'sus' : 'safe');
                         }
                     } else {
-                        // Legacy text format parsing (original untouched code)
+                        // Legacy parsing (unchanged)
                         $lines = explode("\n", $result);
-
                         $verdict = '';
                         $score = '';
                         $summary = '';
@@ -96,12 +88,8 @@
 
                             if ($mode === 'summary') { $summary .= "\n".$trim; continue; }
                             if ($mode === 'flags') {
-                                if (strpos($trim, '-') === 0) {
-                                    $redFlags[] = ltrim(substr($trim, 1)); continue;
-                                }
-                                if (preg_match('/^\d+\.\s*(.+)$/', $trim, $m)) {
-                                    $redFlags[] = $m[1]; continue;
-                                }
+                                if (strpos($trim, '-') === 0) { $redFlags[] = ltrim(substr($trim, 1)); continue; }
+                                if (preg_match('/^\d+\.\s*(.+)$/', $trim, $m)) { $redFlags[] = $m[1]; continue; }
                             }
                             if ($mode === 'recommended') { $recommended .= "\n".$trim; continue; }
                         }
@@ -120,11 +108,11 @@
                     }
                 @endphp
 
-                {{-- JSON MODE VIEW --}}
+                {{-- JSON MODE --}}
                 @if($isJson)
                     <div class="result-box {{ $severityClass }}">
                         <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                        <p><span class="value">Risk Score:</span> {{ is_numeric($score)?$score:'N/A' }}</p>
+                        <p><span class="value">Risk Score:</span> {{ is_numeric($score) ? $score : 'N/A' }}</p>
 
                         <div class="section-title">Summary</div>
                         <p>{!! nl2br(e($summary)) !!}</p>
@@ -144,7 +132,7 @@
                         <p>{!! nl2br(e($recommended)) !!}</p>
                     </div>
 
-                {{-- LEGACY VIEW --}}
+                {{-- LEGACY MODE --}}
                 @else
                     <div class="result-box {{ $severityClass }}">
                         <p><span class="value">Verdict:</span> {{ $verdict }}</p>
