@@ -23,7 +23,6 @@ class AzureOpenAIClient
         ]);
     }
 
-
     /**
      * Main analyzer method
      */
@@ -46,7 +45,6 @@ class AzureOpenAIClient
         return $response['choices'][0]['message']['content'];
     }
 
-
     /**
      * Send request to Azure OpenAI
      */
@@ -66,7 +64,7 @@ class AzureOpenAIClient
                     'json' => [
                         'messages' => [
 
-                            // SYSTEM ROLE — tuned with URL analysis
+                            // SYSTEM ROLE — tuned with URL + Microsoft calibration
                             [
                                 'role' => 'system',
                                 'content' =>
@@ -81,31 +79,48 @@ class AzureOpenAIClient
                                     " - <item 2>\n" .
                                     "Recommended Action: <what the user should do>\n\n" .
 
-                                    // URL analysis focus
-                                    "URL Analysis Rules:\n" .
-                                    "- ALWAYS analyze every URL under 'Detected URLs'.\n" .
-                                    "- If a URL domain does NOT match the claimed sender (e.g., Meta but domain is *.pages.dev), treat as a MAJOR red flag.\n" .
-                                    "- Non-official login pages, suspicious hosting (pages.dev, weebly, godaddysites, blogspot, tinyurl, bit.ly, etc.) should raise the risk score.\n" .
-                                    "- Microsoft SafeLinks (safelinks.protection.outlook.com, safelink.emails.azure.net) are NORMAL and NOT a scam indicator by themselves.\n" .
-                                    "- High-risk indicators include:\n" .
-                                    "  * domain mismatch\n" .
-                                    "  * obfuscated URLs\n" .
-                                    "  * links requiring credential login\n" .
-                                    "  * unusual TLDs\n" .
-                                    "  * recently created domains (guess based on appearance)\n\n" .
+                                    "SCORING RANGES:\n" .
+                                    "- 0–20 → clearly legitimate.\n" .
+                                    "- 21–40 → minor concerns but still \"likely legitimate\".\n" .
+                                    "- 41–69 → \"suspicious\" or \"unclear\".\n" .
+                                    "- 70–100 → \"likely scam\" (strong phishing indicators).\n\n" .
 
-                                    "SCORING:\n" .
-                                    "- 0–20 → likely legitimate\n" .
-                                    "- 21–40 → minor concerns but mostly legitimate\n" .
-                                    "- 41–69 → suspicious / unclear\n" .
-                                    "- 70–100 → likely scam\n\n" .
+                                    "URL ANALYSIS RULES:\n" .
+                                    "- ALWAYS review any URLs listed under 'Detected URLs'.\n" .
+                                    "- If a URL domain does NOT match the claimed sender (e.g. email claims to be from Meta but URLs are hosted on *.pages.dev), treat this as a MAJOR red flag and increase the risk score.\n" .
+                                    "- High-risk URL patterns:\n" .
+                                    "  * Non-official domains for big brands (Meta, Microsoft, banks).\n" .
+                                    "  * Random hosting like pages.dev, weebly, godaddysites, blogspot, etc. used for login or appeals.\n" .
+                                    "  * URL parameters that suggest credential capture, payment collection, or account verification on unknown domains.\n\n" .
 
-                                    "Be decisive. If the URLs strongly indicate phishing, score HIGH."
+                                    "MICROSOFT / LARGE PROVIDER CALIBRATION:\n" .
+                                    "- Treat emails that look like standard invoices or notifications from large providers (e.g. Microsoft) as LOW RISK **when**:\n" .
+                                    "  * The majority of URLs are to official domains such as microsoft.com, office.com, outlook.com, windows.com, live.com,\n" .
+                                    "    login.microsoftonline.com, aka.ms, protection.outlook.com, safelinks.protection.outlook.com, safelink.emails.azure.net.\n" .
+                                    "  * The structure, branding and language look like normal system-generated email.\n" .
+                                    "  * There are no clearly unrelated external domains in the URLs.\n" .
+                                    "- In such cases, you should generally use:\n" .
+                                    "  * Verdict: \"likely legitimate\"\n" .
+                                    "  * Risk Score: in the 0–30 range (unless there is a very strong contradiction).\n" .
+                                    "- DO NOT heavily penalise:\n" .
+                                    "  * The presence of a PDF invoice attachment.\n" .
+                                    "  * Future-dated billing periods (common for upcoming or current subscriptions).\n" .
+                                    "  * Microsoft SafeLinks or long tracking URLs when the underlying destination is still a Microsoft domain.\n\n" .
+
+                                    "WHEN TO ESCALATE TO HIGH RISK (70+):\n" .
+                                    "- Strong domain mismatch (e.g., Meta email with pages.dev or random domain for login/appeal).\n" .
+                                    "- Requests to log in, pay, or submit credentials on an unrelated domain.\n" .
+                                    "- Strong urgency, threats, or extortion-style language.\n" .
+                                    "- Obvious spoofing or fake login pages.\n\n" .
+
+                                    "GENERAL RULE:\n" .
+                                    "- Be willing to classify clearly normal-looking transaction emails from Microsoft or other big providers as 'likely legitimate' with a low score.\n" .
+                                    "- Reserve high scores for emails with genuinely dangerous indicators, especially around URLs and sender/domain mismatch.\n"
                             ],
 
                             [
                                 'role' => 'user',
-                                'content' => "Analyze this email or message:\n\n" . $text
+                                'content' => "Analyze this email or message and follow the format exactly:\n\n" . $text
                             ]
                         ],
 
@@ -127,33 +142,25 @@ class AzureOpenAIClient
         }
     }
 
-
-
     /**
      * Clean email AND extract URLs BEFORE stripping HTML
      */
     protected function cleanInputAndExtractUrls(string $raw): string
     {
-        $original = $raw;
-
-        // -----------------------------------
-        // 1. Extract URLs from HTML & text
-        // -----------------------------------
         $urls = [];
 
-        // From href=""
+        // 1) Extract from href=""
         preg_match_all('/href=["\']([^"\']+)["\']/i', $raw, $matches1);
         if (!empty($matches1[1])) {
             $urls = array_merge($urls, $matches1[1]);
         }
 
-        // From raw plain text URLs
+        // 2) Extract from plain text
         preg_match_all('/https?:\/\/[^\s<>"\'()]+/i', $raw, $matches2);
         if (!empty($matches2[0])) {
             $urls = array_merge($urls, $matches2[0]);
         }
 
-        // Unique + clean URLs
         $urls = array_values(array_unique($urls));
 
         $urlList = "";
@@ -165,29 +172,19 @@ class AzureOpenAIClient
             $urlList .= "\n";
         }
 
-        // -----------------------------------
-        // 2. Strip MIME headers (get body)
-        // -----------------------------------
+        // 3) Strip MIME headers
         $parts = preg_split("/\R\R/", $raw, 2);
         $body  = $parts[1] ?? $raw;
 
-        // -----------------------------------
-        // 3. Remove HTML tags AFTER extracting URLs
-        // -----------------------------------
+        // 4) Strip HTML after URL extraction
         $body = strip_tags($body);
 
-        // -----------------------------------
-        // 4. Clean quoted-printable soft breaks
-        // -----------------------------------
+        // 5) Clean quoted-printable artefacts
         $body = preg_replace('/=\R/', '', $body);
         $body = preg_replace('/=([0-9A-F]{2})/', '', $body);
 
-        // Normalize whitespace
         $body = trim($body);
 
-        // -----------------------------------
-        // 5. Append extracted URLs at the end
-        // -----------------------------------
         return $body . "\n\n" . $urlList;
     }
 }
