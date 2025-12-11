@@ -338,10 +338,12 @@ textarea:focus {
 
 /* Shield icon next to title */
 .shield-icon {
-    font-size: 2.2rem;
-    filter: drop-shadow(0 0 6px rgba(44,191,174,0.35));
-    transform: translateY(-2px);
+    width: 32px;
+    height: 32px;
+    margin-right: 6px;
+    filter: drop-shadow(0 0 8px rgba(44,191,174,0.4));
 }
+
 
 
 
