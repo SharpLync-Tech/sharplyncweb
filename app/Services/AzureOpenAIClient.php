@@ -24,47 +24,35 @@ class AzureOpenAIClient
     }
 
     /**
-     * Public method called by controller
+     * Main analyzer method
      */
-    public function analyze(string $text): ?array
+    public function analyze(string $text): ?string
     {
-        
-
-        // Clean input (remove HTML, MIME, etc.)
+        // Clean EML / HTML / MIME noise
         $cleaned = $this->cleanInput($text);
 
-        // Attempt 1
-        $response1 = $this->sendToAzure($cleaned);
-        $decoded1  = $this->parseAzureJson($response1);
+        // Send once — simple, clean, and reliable
+        $response = $this->sendToAzure($cleaned);
 
-        if ($decoded1 !== null) {
-            return $decoded1;
+        // If Azure error → return it directly
+        if (isset($response['error'])) {
+            return "ERROR FROM AZURE:\n" . json_encode($response['error'], JSON_PRETTY_PRINT);
         }
 
-        // Attempt 2 (reminder to output JSON only)
-        $retryText = "Return ONLY JSON. No markup.\n\n" . $cleaned;
-        $response2 = $this->sendToAzure($retryText);
-        $decoded2  = $this->parseAzureJson($response2);
-
-        if ($decoded2 !== null) {
-            return $decoded2;
+        // If no normal response
+        if (!isset($response['choices'][0]['message']['content'])) {
+            return "NO CONTENT RETURNED:\n" . json_encode($response, JSON_PRETTY_PRINT);
         }
 
-        // FINAL HARD FALLBACK
-        return [
-            'risk_score' => 10,
-            'verdict' => 'likely legitimate',
-            'summary' => 'No valid JSON returned and email appears low risk.',
-            'red_flags' => [],
-            'recommended_action' => 'Verify directly via the official service website.',
-        ];
+        // Return model text directly (simple and reliable)
+        return $response['choices'][0]['message']['content'];
     }
 
 
     /**
      * Send request to Azure OpenAI
      */
-    protected function sendToAzure(string $text): ?array
+    protected function sendToAzure(string $text): array
     {
         try {
             $response = $this->client->post(
@@ -78,35 +66,38 @@ class AzureOpenAIClient
                         'api-version' => '2024-10-01-preview'
                     ],
                     'json' => [
-                        'response_format' => [
-                            'type' => 'json_object'
-                        ],
-
                         'messages' => [
+
+                            // SYSTEM ROLE — Scam analysis instructions
                             [
                                 'role' => 'system',
                                 'content' =>
-                                    "You are a cybersecurity scam-detection assistant.\n\n" .
-                                    "Return ONLY a valid JSON object. NO markdown. NO commentary.\n\n" .
-                                    "JSON MUST be exactly:\n" .
-                                    "{\n" .
-                                    "  \"risk_score\": <integer>,\n" .
-                                    "  \"verdict\": \"likely scam\" | \"suspicious\" | \"unclear\" | \"likely legitimate\",\n" .
-                                    "  \"summary\": \"<short explanation>\",\n" .
-                                    "  \"red_flags\": [\"<item1>\", \"<item2>\"] ,\n" .
-                                    "  \"recommended_action\": \"<short guidance>\"\n" .
-                                    "}\n"
+                                    "You are a cybersecurity scam-detection assistant.\n\n".
+                                    "Analyze the message and produce a SIMPLE structured response.\n\n".
+                                    "FORMAT YOUR ANSWER EXACTLY LIKE THIS:\n".
+                                    "Verdict: <likely scam | suspicious | unclear | likely legitimate>\n".
+                                    "Risk Score: <0-100>\n".
+                                    "Summary: <short explanation>\n".
+                                    "Red Flags:\n".
+                                    " - <item 1>\n".
+                                    " - <item 2>\n".
+                                    "Recommended Action: <what the user should do>\n\n".
+                                    "NOTES:\n".
+                                    "- No JSON.\n".
+                                    "- No markdown.\n".
+                                    "- No bullet points except under Red Flags.\n".
+                                    "- Keep it clean and simple.\n"
                             ],
+
+                            // USER ROLE — actual content
                             [
                                 'role' => 'user',
-                                'content' =>
-                                    "Analyze this email/message and return ONLY the JSON structure.\n\n" .
-                                    $text
+                                'content' => "Analyze this email/message:\n\n" . $text
                             ]
                         ],
 
-                        'temperature' => 0.0,
-                        'max_tokens' => 1200
+                        'temperature' => 0.2,
+                        'max_tokens' => 800,
                     ]
                 ]
             );
@@ -117,7 +108,7 @@ class AzureOpenAIClient
             return [
                 'error' => [
                     'message' => $e->getMessage(),
-                    'type' => 'exception'
+                    'type'    => 'exception'
                 ]
             ];
         }
@@ -125,64 +116,22 @@ class AzureOpenAIClient
 
 
     /**
-     * Clean raw email input (.eml, HTML, MIME artifacts)
+     * Clean .eml, HTML, MIME artifacts
      */
     protected function cleanInput(string $raw): string
     {
+        // Remove MIME headers (body begins after first blank line)
         $parts = preg_split("/\R\R/", $raw, 2);
         $body  = $parts[1] ?? $raw;
 
+        // Remove HTML tags
         $body = strip_tags($body);
 
+        // Remove quoted-printable soft line breaks (=)
         $body = preg_replace('/=\R/', '', $body);
         $body = preg_replace('/=([0-9A-F]{2})/', '', $body);
 
+        // Normalize whitespace
         return trim($body);
-    }
-
-
-    /**
-     * Diagnostic JSON parser — exposes ALL Azure issues
-     */
-    protected function parseAzureJson(array $response): ?array
-    {
-        // Azure returned an error
-        if (isset($response['error'])) {
-            return [
-                'risk_score' => 0,
-                'verdict' => 'azure_error',
-                'summary' => 'Azure error: ' . json_encode($response['error']),
-                'red_flags' => [],
-                'recommended_action' => 'Check Azure quota, filters, or logs.',
-            ];
-        }
-
-        // No content returned → show raw response
-        if (!isset($response['choices'][0]['message']['content'])) {
-            return [
-                'risk_score' => 0,
-                'verdict' => 'no_content',
-                'summary' => 'Azure returned no content: ' . json_encode($response),
-                'red_flags' => [],
-                'recommended_action' => 'Inspect Azure output.',
-            ];
-        }
-
-        $raw = $response['choices'][0]['message']['content'];
-
-        // Try decode JSON
-        $decoded = json_decode($raw, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $decoded;
-        }
-
-        return [
-            'risk_score' => 0,
-            'verdict' => 'invalid_json',
-            'summary' => 'Model returned invalid JSON: ' . $raw,
-            'red_flags' => [],
-            'recommended_action' => 'Adjust prompt or parsing.',
-        ];
     }
 }
