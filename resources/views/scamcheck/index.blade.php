@@ -13,6 +13,7 @@
     <h2 class="scam-result-title"><span class="gradient">SharpLync</span> Scam Checker</h2>
 
     <!-- FORM AREA -->
+    @if(!isset($result))
     <div id="form-area">
         <form id="scam-form" method="POST" action="/scam-checker" enctype="multipart/form-data">
             @csrf        
@@ -29,18 +30,19 @@
             <button type="button" id="clear-btn" class="scam-btn outline" style="display:none;" onclick="clearScamForm()">Clear</button>
         </form>
     </div>
+    @endif
 
     <!-- SINGLE SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="scan-logo">
-            <svg viewBox="0 0 200 200" class="scan-svg">
-                <circle class="ring-bg" cx="100" cy="100" r="80" />
-                <circle class="ring-sweep" cx="100" cy="100" r="80" />
-                <polygon class="arrow" points="60,95 140,75 140,145" />
+        <div class="teal-loader">
+            <svg class="loader-svg" viewBox="0 0 100 100">
+                <circle class="loader-bg" cx="50" cy="50" r="40" />
+                <circle class="loader-spin" cx="50" cy="50" r="40" />
             </svg>
         </div>
         <p class="scan-text">Scanning for threats…</p>
     </div>
+
 
 
     {{-- RESULTS --}}
