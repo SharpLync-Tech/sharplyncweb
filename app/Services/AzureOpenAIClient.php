@@ -28,7 +28,7 @@ class AzureOpenAIClient
      */
     public function analyze(string $text): ?array
     {
-        dd("USING NEW CLIENT"); // TEMP DEBUG – MUST FIRE IF NEW FILE IS ACTIVE
+        
 
         // Clean input (remove HTML, MIME, etc.)
         $cleaned = $this->cleanInput($text);
