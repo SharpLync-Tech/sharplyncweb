@@ -7,34 +7,37 @@
 @section('title', 'SharpLync Scam Checker')
 
 @section('content')
-<div class="sc-page">
-<div style="max-width:1100px; margin:0 auto; padding-top:40px;">
+<div class="scam-page">
 
-    <h2 class="scam-hero-title">SharpLync Scam Checker (Test Page)</h2>
+    <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <form method="POST" action="/scam-checker" enctype="multipart/form-data">
-        @csrf
-
+        <h2 class="scam-hero-title">SharpLync Scam Checker (Test Page)</h2>
         <p class="scam-hero-sub">Paste text OR upload an email (.eml/.msg/.txt):</p>
 
-        <textarea name="message" rows="10">@if(isset($input)){{ $input }}@endif</textarea>
+        {{-- ============================
+             FORM
+        ============================ --}}
+        <form method="POST" action="/scam-checker" enctype="multipart/form-data">
+            @csrf
 
-        <br><br>
+            <textarea name="message" rows="10" class="scam-textarea">
+@if(isset($input)){{ $input }}@endif
+            </textarea>
 
-        <input type="file" name="file">
+            <div class="scam-file-wrap">
+                <input type="file" name="file" class="scam-file">
+            </div>
 
-        <br><br>
+            <button type="submit" class="scam-btn">Check Message</button>
+        </form>
 
-        <button type="submit" class="scam-btn">Check Message</button>
+        {{-- ============================
+             RESULTS
+        ============================ --}}
+        @if(isset($result))
+        <div class="result-container" style="margin-top:50px;">
 
-    </form>
-
-    {{-- ============================
-         RESULTS
-    ============================ --}}
-    @if(isset($result))
-        <div class="result-container" style="margin-top:40px;">
-            <h3>Scam Analysis Result</h3>
+            <h3 class="scam-result-title">Scam Analysis Result</h3>
 
             {{-- Azure error --}}
             @if(is_array($result) && isset($result['error']))
@@ -69,7 +72,6 @@
                                 (str_contains($v, 'suspicious') || str_contains($v, 'unclear') ? 'sus' : 'safe');
                         }
                     } else {
-
                         // Legacy parsing (unchanged)
                         $lines = explode("\n", $result);
                         $verdict = '';
@@ -88,7 +90,6 @@
                             if (stripos($trim, 'Summary:') === 0) { $summary = trim(substr($trim, 8)); $mode='summary'; continue; }
                             if (stripos($trim, 'Red Flags:') === 0 || stripos($trim,'Reasons:')===0) { $mode='flags'; continue; }
                             if (stripos($trim, 'Recommended Action:') === 0) { $recommended = trim(substr($trim, 20)); $mode='recommended'; continue; }
-                            if (stripos($trim, 'Recommendation:') === 0) { $recommended = trim(substr($trim, 13)); $mode='recommended'; continue; }
 
                             if ($mode === 'summary') { $summary .= "\n".$trim; continue; }
                             if ($mode === 'flags') {
@@ -162,9 +163,7 @@
             @endif
         </div>
 
-        {{-- ============================
-             AUTO SCROLL TO RESULTS
-        ============================ --}}
+        {{-- AUTO SCROLL --}}
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const el = document.querySelector('.result-container');
@@ -176,7 +175,7 @@
             });
         </script>
 
-    @endif {{-- end result --}}
-</div>
+        @endif {{-- end result --}}
+    </div>
 </div>
 @endsection

@@ -1,217 +1,17 @@
 /* ============================================================
    SharpLync Scam Checker Page Styling
-   Based on Trend Micro design language
-   ============================================================ */
+   Clean version (fixed + stable)
+============================================================ */
 
 .scam-page {
-    --navy: #0A2A4D;
-    --deep-teal: #104976;
-    --teal: #2CBFAE;
-    --bg-light: #F7F9FB;
-    --bg-mid: #E7EFF7;
-    --danger: #C62828;
-    --sus: #ED6C02;
-    --safe: #2E7D32;
-}
-
-/* ---------------------------
-   HERO
----------------------------- */
-.scam-hero {
-    background: linear-gradient(135deg, #0A2A4D 0%, #104976 40%, #2CBFAE 100%);
-    padding: 4.5rem 10% 3.5rem;
-    text-align: center;
-    color: #fff;
-}
-
-.scam-hero-inner h1 {
-    font-size: 2.6rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.scam-hero-sub {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    max-width: 720px;
-    margin: 0.8rem auto 0;
-    color: rgba(255,255,255,0.92);
-}
-
-
-/* ---------------------------
-   FORM SECTION
----------------------------- */
-.scam-section {
-    padding: 3.5rem 10%;
-    background: var(--bg-light);
-}
-
-.scam-section-inner {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Input styles */
-.scam-input {
-    width: 100%;
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 12px rgba(10,42,77,0.08);
-}
-
-.scam-label {
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-    display: block;
-}
-
-.scam-file-wrap {
-    margin: 1rem 0 1.5rem;
-}
-
-/* Button */
-.scam-btn-primary {
-    background: var(--teal);
-    padding: 0.9rem 1.8rem;
-    color: #06202A;
-    border-radius: 999px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 0 18px rgba(44,191,174,0.8);
-    transition: 0.2s ease;
-}
-
-.scam-btn-primary:hover {
-    background: #35E0C2;
-    box-shadow: 0 0 26px rgba(44,191,174,0.9);
-    transform: translateY(-1px);
-}
-
-
-/* ---------------------------
-   RESULT SECTION
----------------------------- */
-.scam-section-title {
-    font-size: 1.8rem;
-    margin-bottom: 1.4rem;
-    font-weight: 700;
-}
-
-.scam-result-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 1.8rem;
-    box-shadow: 0 8px 22px rgba(10,42,77,0.14);
-    border-left: 6px solid var(--safe);
-}
-
-.scam-result-card.danger {
-    border-left-color: var(--danger);
-}
-
-.scam-result-card.sus {
-    border-left-color: var(--sus);
-}
-
-.scam-subtitle {
-    margin-top: 1.4rem;
-    margin-bottom: 0.6rem;
-    font-weight: 600;
-}
-
-.scam-flag-list {
-    padding-left: 1.2rem;
-}
-
-.scam-flag-list li {
-    margin-bottom: 0.4rem;
-    color: #333;
-}
-
-/* Modern button */
-.sc-btn {
-    display: inline-block;
-    padding: 0.75rem 1.4rem;
-    background: #2CBFAE;
-    color: #06202A !important;
-    border: none;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: 0.2s ease;
-    font-family: 'Poppins', sans-serif;
-}
-
-.sc-btn:hover {
-    background: #35e0c2;
-    transform: translateY(-1px);
-    box-shadow: 0 0 12px rgba(44,191,174,0.65);
-}
-
-input[type="file"] {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.85rem;
-}
-
-/* Fix page collapsing under footer */
-.sc-page {
     padding-top: 80px;
     padding-bottom: 120px;
     min-height: 80vh;
 }
 
-/* Beautiful modern button (no Windows 95 crimes) */
-.sc-btn {
-    background: #2CBFAE;
-    color: #06202A;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    font-family: 'Poppins', sans-serif;
-}
-
-.sc-btn:hover {
-    background: #35d8c4;
-    transform: translateY(-1px);
-}
-
-/* Textarea styling (TM style) */
-textarea {
-    border: 1px solid #d8e2ea;
-    border-radius: 10px;
-    padding: 12px;
-    width: 100%;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-}
-
-textarea:focus {
-    border-color: #2CBFAE;
-    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
-}
-
-/* Result card tweaks */
-.result-box {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 28px;
-    border-left-width: 6px;
-}
-
-.result-box.danger { border-left-color: #e60012; }
-.result-box.sus    { border-left-color: #ed6c02; }
-.result-box.safe   { border-left-color: #2CBFAE; }
-
+/* ---------------------------
+   HERO TEXT
+---------------------------- */
 .scam-hero-title {
     color: #ffffff;
     font-size: 2rem;
@@ -219,10 +19,45 @@ textarea:focus {
     text-shadow: 0 2px 6px rgba(0,0,0,0.35);
     margin-bottom: 0.5rem;
 }
+
 .scam-hero-sub {
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.88);
+    margin-bottom: 1.2rem;
 }
 
+/* ---------------------------
+   TEXTAREA
+---------------------------- */
+.scam-textarea {
+    width: 100%;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid #d8e2ea;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(10,42,77,0.12);
+}
+
+.scam-textarea:focus {
+    border-color: #2CBFAE;
+    box-shadow: 0 0 0 3px rgba(44,191,174,0.25);
+    outline: none;
+}
+
+/* ---------------------------
+   FILE INPUT
+---------------------------- */
+.scam-file {
+    display: block;
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 10px;
+}
+
+/* ---------------------------
+   BUTTON
+---------------------------- */
 .scam-btn {
     background: #2CBFAE;
     color: #06202A;
@@ -238,35 +73,45 @@ textarea:focus {
 
 .scam-btn:hover {
     background: #35e0c2;
-    box-shadow: 0 0 22px rgba(44,191,174,0.75);
     transform: translateY(-1px);
+    box-shadow: 0 0 22px rgba(44,191,174,0.75);
 }
 
-input[type="file"] {
-    color: white;
-    font-size: 0.9rem;
+/* ---------------------------
+   RESULTS
+---------------------------- */
+.scam-result-title {
+    color: #0A2A4D;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
 .result-box {
     background: #ffffff;
     border-radius: 16px;
-    padding: 24px;
-    margin-top: 1.5rem;
+    padding: 28px;
     box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+    margin-top: 1.2rem;
+    border-left: 8px solid #2CBFAE;
 }
 
-/* Severity colours */
-.result-box.safe {
-    border-left: 8px solid #2CBFAE; /* Teal — safe */
+/* severity */
+.result-box.safe   { border-left-color: #2CBFAE; }
+.result-box.sus    { border-left-color: #ff9800; }
+.result-box.danger { border-left-color: #e53935; }
+
+.section-title {
+    margin-top: 1.6rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: #0A2A4D;
 }
 
-.result-box.sus {
-    border-left: 8px solid #ff9800; /* Orange — suspicious */
+.red-flag-list {
+    padding-left: 1.2rem;
 }
 
-.result-box.danger {
-    border-left: 8px solid #e53935; /* Red — dangerous */
+.red-flag-list li {
+    margin-bottom: 0.4rem;
 }
-
-
-
