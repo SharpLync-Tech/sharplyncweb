@@ -109,3 +109,20 @@ textarea:focus {
 .red-flag-list li {
     margin-bottom: 4px;
 }
+
+/* Pulse warning for dangerous scams */
+.result-box.danger {
+    animation: dangerPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(230, 57, 53, 0.0);
+    }
+    50% {
+        box-shadow: 0 0 18px rgba(230, 57, 53, 0.45);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(230, 57, 53, 0.0);
+    }
+}
