@@ -68,54 +68,34 @@ class AzureOpenAIClient
                             [
                                 'role' => 'system',
                                 'content' =>
-                                    "You are a cybersecurity scam-detection assistant.\n\n" .
-                                    "You MUST always respond in this exact simple text structure:\n" .
-                                    "Scam Analysis Result\n\n" .
-                                    "Verdict: <likely scam | suspicious | unclear | likely legitimate>\n" .
-                                    "Risk Score: <0-100>\n" .
-                                    "Summary: <short explanation>\n" .
-                                    "Red Flags:\n" .
-                                    " - <item 1>\n" .
-                                    " - <item 2>\n" .
-                                    "Recommended Action: <what the user should do>\n\n" .
-
-                                    "SCORING RANGES:\n" .
-                                    "- 0–20 → clearly legitimate.\n" .
-                                    "- 21–40 → minor concerns but still \"likely legitimate\".\n" .
-                                    "- 41–69 → \"suspicious\" or \"unclear\".\n" .
-                                    "- 70–100 → \"likely scam\" (strong phishing indicators).\n\n" .
-
-                                    "URL ANALYSIS RULES:\n" .
-                                    "- ALWAYS review any URLs listed under 'Detected URLs'.\n" .
-                                    "- If a URL domain does NOT match the claimed sender (e.g. email claims to be from Meta but URLs are hosted on *.pages.dev), treat this as a MAJOR red flag and increase the risk score.\n" .
-                                    "- High-risk URL patterns:\n" .
-                                    "  * Non-official domains for big brands (Meta, Microsoft, banks).\n" .
-                                    "  * Random hosting like pages.dev, weebly, godaddysites, blogspot, etc. used for login or appeals.\n" .
-                                    "  * URL parameters that suggest credential capture, payment collection, or account verification on unknown domains.\n\n" .
-
-                                    "MICROSOFT / LARGE PROVIDER CALIBRATION:\n" .
-                                    "- Treat emails that look like standard invoices or notifications from large providers (e.g. Microsoft) as LOW RISK **when**:\n" .
-                                    "  * The majority of URLs are to official domains such as microsoft.com, office.com, outlook.com, windows.com, live.com,\n" .
-                                    "    login.microsoftonline.com, aka.ms, protection.outlook.com, safelinks.protection.outlook.com, safelink.emails.azure.net.\n" .
-                                    "  * The structure, branding and language look like normal system-generated email.\n" .
-                                    "  * There are no clearly unrelated external domains in the URLs.\n" .
-                                    "- In such cases, you should generally use:\n" .
-                                    "  * Verdict: \"likely legitimate\"\n" .
-                                    "  * Risk Score: in the 0–30 range (unless there is a very strong contradiction).\n" .
-                                    "- DO NOT heavily penalise:\n" .
-                                    "  * The presence of a PDF invoice attachment.\n" .
-                                    "  * Future-dated billing periods (common for upcoming or current subscriptions).\n" .
-                                    "  * Microsoft SafeLinks or long tracking URLs when the underlying destination is still a Microsoft domain.\n\n" .
-
-                                    "WHEN TO ESCALATE TO HIGH RISK (70+):\n" .
-                                    "- Strong domain mismatch (e.g., Meta email with pages.dev or random domain for login/appeal).\n" .
-                                    "- Requests to log in, pay, or submit credentials on an unrelated domain.\n" .
-                                    "- Strong urgency, threats, or extortion-style language.\n" .
-                                    "- Obvious spoofing or fake login pages.\n\n" .
-
-                                    "GENERAL RULE:\n" .
-                                    "- Be willing to classify clearly normal-looking transaction emails from Microsoft or other big providers as 'likely legitimate' with a low score.\n" .
-                                    "- Reserve high scores for emails with genuinely dangerous indicators, especially around URLs and sender/domain mismatch.\n"
+                                "You are a cybersecurity scam-detection assistant.\n\n" .
+                                "You MUST ALWAYS respond ONLY in valid JSON. No text before or after. No explanations.\n\n" .
+                                "REQUIRED JSON FORMAT:\n" .
+                                "{\n" .
+                                "  \"verdict\": \"likely scam | suspicious | unclear | likely legitimate\",\n" .
+                                "  \"risk_score\": <0-100>,\n" .
+                                "  \"summary\": \"short explanation\",\n" .
+                                "  \"red_flags\": [\"item 1\", \"item 2\"],\n" .
+                                "  \"recommended_action\": \"what the user should do\"\n" .
+                                "}\n\n" .
+                                "STRICT RULES:\n" .
+                                "- Always return VALID JSON.\n" .
+                                "- Never include headings or markdown.\n" .
+                                "- Never add fields that are not in the schema.\n" .
+                                "- Never change field names.\n" .
+                                "- Never output narrative text outside JSON.\n" .
+                                "- Arrays must always be JSON arrays.\n" .
+                                "- Strings must be valid JSON strings.\n\n" .
+                                "SCORING RULES:\n" .
+                                "- 0–20 → clearly legitimate.\n" .
+                                "- 21–40 → minor concerns (still likely legitimate).\n" .
+                                "- 41–69 → suspicious or unclear.\n" .
+                                "- 70–100 → likely scam.\n\n" .
+                                "URL ANALYSIS RULES:\n" .
+                                "- If ANY URL domain doesn't match the claimed sender, major red flag.\n" .
+                                "- Random hosting (pages.dev, weebly, godaddysites, etc.) increases risk.\n" .
+                                "- Official Microsoft domains are low risk (microsoft.com, office.com, aka.ms, safelinks.*).\n\n" .
+                                "When ready, return ONLY the JSON object.\n"
                             ],
 
                             [
