@@ -67,6 +67,15 @@
             border: 1px solid #ffecb5;
             border-radius: 6px;
         }
+
+        .friendly-warning {
+            background: #fff4e5;
+            border: 1px solid #ffcc80;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
@@ -90,215 +99,114 @@
 </form>
 
 {{-- ========================================================= --}}
-{{-- DEBUG BLOCK — Shows raw Azure output (temporary/safe)     --}}
+{{-- DEBUG BLOCK — Raw Azure Output --}}
 {{-- ========================================================= --}}
 @if(isset($result))
-    <div class="raw-output" style="margin-top:20px; background:#eef; padding:15px; border:1px solid #ccd;">
+    <div class="raw-output">
         <h3>Raw Output (Debug)</h3>
         <pre>{{ print_r($result, true) }}</pre>
     </div>
 @endif
-{{-- END DEBUG BLOCK --}}
 
 @if(isset($result))
 
     <div class="result-container">
         <h3>Scam Analysis Result</h3>
 
-        {{-- Azure Error --}}
+        {{-- ========================================================= --}}
+        {{-- FRIENDLY RATE LIMIT MESSAGE (429) --}}
+        {{-- ========================================================= --}}
+        @if(
+            is_array($result) 
+            && isset($result['error']['message']) 
+            && str_contains($result['error']['message'], '429')
+        )
+            <div class="friendly-warning">
+                <strong>Too many checks too quickly!</strong><br><br>
+                The Scam Checker is catching its breath — please try again in 10 seconds.
+            </div>
+
+            {{-- STOP early, don't show parsing UI --}}
+            @php return; @endphp
+        @endif
+
+
+        {{-- ========================================================= --}}
+        {{-- ERROR FROM AZURE --}}
+        {{-- ========================================================= --}}
         @if(is_array($result) && isset($result['error']))
             <div class="raw-output">
                 <strong>Azure Error:</strong>
                 <pre>{{ print_r($result, true) }}</pre>
             </div>
 
-        {{-- ========================= --}}
-        {{-- PARSING BLOCK STARTS HERE --}}
-        {{-- ========================= --}}
-        @elseif(is_string($result))
+
+        {{-- ========================================================= --}}
+        {{-- JSON FROM AZURE --}}
+        {{-- ========================================================= --}}
+        @elseif(is_array($result))
 
             @php
-                // Try JSON first
-                $json = json_decode($result, true);
+                $verdict      = $result['verdict'] ?? '';
+                $scoreNum     = $result['risk_score'] ?? null;
+                $summary      = $result['summary'] ?? '';
+                $redFlags     = $result['red_flags'] ?? [];
+                $recommended  = $result['recommended_action'] ?? '';
 
-                $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
-
-                if ($isJson) {
-                    // JSON mode
-                    $verdict     = $json['verdict'] ?? '';
-                    $score       = $json['risk_score'] ?? 'N/A';
-                    $summary     = $json['summary'] ?? '';
-                    $redFlags    = $json['red_flags'] ?? [];
-                    $recommended = $json['recommended_action'] ?? '';
-
-                    // Severity based on JSON
-                    if (is_numeric($score)) {
-                        $scoreNum = (int)$score;
-                        $severityClass =
-                            $scoreNum >= 70 ? 'danger' :
-                            ($scoreNum >= 40 ? 'sus' : 'safe');
-                    } else {
-                        $v = strtolower($verdict);
-                        if (str_contains($v, 'scam')) {
-                            $severityClass = 'danger';
-                        } elseif (str_contains($v, 'suspicious') || str_contains($v, 'unclear')) {
-                            $severityClass = 'sus';
-                        } else {
-                            $severityClass = 'safe';
-                        }
-                    }
+                // Severity class
+                if ($scoreNum !== null) {
+                    $severityClass =
+                        $scoreNum >= 70 ? 'danger' :
+                        ($scoreNum >= 40 ? 'sus' : 'safe');
                 } else {
-
-                    // ==============================
-                    // ORIGINAL LEGACY TEXT PARSER
-                    // (kept EXACTLY as you had it)
-                    // ==============================
-
-                    $lines = explode("\n", $result);
-
-                    $verdict = '';
-                    $score = '';
-                    $summary = '';
-                    $redFlags = [];
-                    $recommended = '';
-                    $mode = null;
-
-                    foreach ($lines as $line) {
-                        $trim = trim($line);
-
-                        if ($trim === '') continue;
-
-                        if (stripos($trim, 'Verdict:') === 0) {
-                            $verdict = trim(substr($trim, 8));
-                            $mode = null; continue;
-                        }
-                        if (stripos($trim, 'Risk Score:') === 0) {
-                            $score = trim(substr($trim, 11));
-                            $mode = null; continue;
-                        }
-                        if (stripos($trim, 'Summary:') === 0) {
-                            $summary = trim(substr($trim, 8));
-                            $mode = 'summary'; continue;
-                        }
-                        if (stripos($trim, 'Red Flags:') === 0) {
-                            $mode = 'flags'; continue;
-                        }
-                        if (stripos($trim, 'Reasons:') === 0) {
-                            $mode = 'flags'; continue;
-                        }
-                        if (stripos($trim, 'Recommended Action:') === 0) {
-                            $recommended = trim(substr($trim, 20));
-                            $mode = 'recommended'; continue;
-                        }
-                        if (stripos($trim, 'Recommendation:') === 0) {
-                            $recommended = trim(substr($trim, 13));
-                            $mode = 'recommended'; continue;
-                        }
-                        if ($mode === 'summary') {
-                            $summary .= "\n" . $trim; continue;
-                        }
-                        if ($mode === 'flags') {
-                            if (strpos($trim, '-') === 0) {
-                                $redFlags[] = ltrim(substr($trim, 1));
-                                continue;
-                            }
-                            if (preg_match('/^\d+\.\s*(.+)$/', $trim, $m)) {
-                                $redFlags[] = $m[1];
-                                continue;
-                            }
-                        }
-                        if ($mode === 'recommended') {
-                            $recommended .= "\n" . $trim;
-                            continue;
-                        }
-                    }
-
-                    if ($summary === '' && count($redFlags) > 0) {
-                        $summary = $redFlags[0];
-                    }
-
-                    $scoreNum = null;
-                    if ($score !== '') {
-                        $scoreNum = (int) filter_var($score, FILTER_SANITIZE_NUMBER_INT);
-                    }
-
-                    if ($scoreNum !== null && $scoreNum > 0) {
-                        $severityClass =
-                            $scoreNum >= 70 ? 'danger' :
-                            ($scoreNum >= 40 ? 'sus' : 'safe');
+                    $txt = strtolower($verdict);
+                    if (str_contains($txt, 'scam') || str_contains($txt, 'phishing')) {
+                        $severityClass = 'danger';
+                    } elseif (str_contains($txt, 'suspicious') || str_contains($txt, 'unclear')) {
+                        $severityClass = 'sus';
                     } else {
-                        $v = strtolower($verdict);
-                        if (str_contains($v, 'phishing') || str_contains($v, 'scam')) {
-                            $severityClass = 'danger';
-                        } elseif (str_contains($v, 'suspicious') || str_contains($v, 'unclear')) {
-                            $severityClass = 'sus';
-                        } else {
-                            $severityClass = 'safe';
-                        }
+                        $severityClass = 'safe';
                     }
+                }
 
-                } // end isJson
+                $scoreDisplay = $scoreNum !== null ? $scoreNum : 'N/A';
             @endphp
 
-            {{-- ============================================================ --}}
-            {{-- JSON MODE OUTPUT (preferred)                                 --}}
-            {{-- ============================================================ --}}
-            @if($isJson)
-                <div class="result-box {{ $severityClass }}">
+            <div class="result-box {{ $severityClass }}">
 
-                    <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                    <p><span class="value">Risk Score:</span> {{ is_numeric($score) ? $score : 'N/A' }}</p>
+                <p><span class="value">Verdict:</span> {{ $verdict }}</p>
+                <p><span class="value">Risk Score:</span> {{ $scoreDisplay }}</p>
 
-                    <div class="section-title">Summary</div>
-                    <p>{!! nl2br(e($summary)) !!}</p>
+                <div class="section-title">Summary</div>
+                <p>{!! nl2br(e($summary)) !!}</p>
 
-                    <div class="section-title">Red Flags</div>
-                    @if(count($redFlags))
-                        <div class="red-flag-list">
-                            @foreach($redFlags as $flag)
-                                <p>- {{ $flag }}</p>
-                            @endforeach
-                        </div>
-                    @else
-                        <p>No major red flags detected.</p>
-                    @endif
+                <div class="section-title">Red Flags</div>
+                @if(count($redFlags))
+                    <div class="red-flag-list">
+                        @foreach($redFlags as $flag)
+                            <p>- {{ $flag }}</p>
+                        @endforeach
+                    </div>
+                @else
+                    <p>No major red flags detected.</p>
+                @endif
 
-                    <div class="section-title">Recommended Action</div>
-                    <p>{!! nl2br(e($recommended)) !!}</p>
+                <div class="section-title">Recommended Action</div>
+                <p>{!! nl2br(e($recommended)) !!}</p>
 
-                </div>
+            </div>
 
-            {{-- ============================================================ --}}
-            {{-- LEGACY MODE OUTPUT (fallback — unchanged from your OG logic) --}}
-            {{-- ============================================================ --}}
-            @else
-                <div class="result-box {{ $severityClass }}">
+        {{-- ========================================================= --}}
+        {{-- UNEXPECTED FORMAT --}}
+        {{-- ========================================================= --}}
+        @else
+            <div class="raw-output">
+                <pre>{{ print_r($result, true) }}</pre>
+            </div>
+        @endif
 
-                    <p><span class="value">Verdict:</span> {{ $verdict }}</p>
-                    <p><span class="value">Risk Score:</span> {{ $scoreNum ?? 'N/A' }}</p>
-
-                    <div class="section-title">Summary</div>
-                    <p>{!! nl2br(e($summary)) !!}</p>
-
-                    <div class="section-title">Red Flags</div>
-                    @if(count($redFlags))
-                        <div class="red-flag-list">
-                            @foreach($redFlags as $flag)
-                                <p>- {{ trim($flag) }}</p>
-                            @endforeach
-                        </div>
-                    @else
-                        <p>No major red flags detected.</p>
-                    @endif
-
-                    <div class="section-title">Recommended Action</div>
-                    <p>{!! nl2br(e($recommended)) !!}</p>
-
-                </div>
-            @endif
-
-        @endif {{-- end parsing block --}}
     </div>
+
 @endif
 
 </body>
