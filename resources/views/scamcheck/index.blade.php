@@ -11,19 +11,11 @@
 <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
     <!-- THREATCHHECK HEADER -->
-    <h2 class="threat-title">
-        <svg class="shield-icon" viewBox="0 0 64 64">
-            <path d="M32 4L8 14v14c0 14.6 10 28.4 24 32c14-3.6 24-17.4 24-32V14L32 4z"
-                fill="url(#shieldGradient)" />
-            <defs>
-                <linearGradient id="shieldGradient" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#4DF3D0"/>
-                    <stop offset="100%" stop-color="#19AFA0"/>
-                </linearGradient>
-            </defs>
-        </svg>
-        SharpLync ThreatCheck
+        <h2 class="threat-title">
+        <img src="/images/security.png" class="shield-icon-img" alt="SharpLync Security Shield">
+        SharpLync <strong>ThreatCheck</strong>
     </h2>
+
 
 
     <!-- FORM AREA (hidden after scan automatically) -->
@@ -51,12 +43,22 @@
 
     <!-- SHIELDSCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="shield-scan">
-            <div class="shield-outline"></div>
-            <div class="shield-radar"></div>
+        <div class="scan-cycle">
+
+            <!-- Email Icon -->
+            <img src="/images/email.png" class="scan-icon scan-email">
+
+            <!-- Shield Icon -->
+            <img src="/images/security.png" class="scan-icon scan-shield">
+
+            <!-- Check Pulse -->
+            <div class="scan-checkmark"></div>
+
         </div>
+
         <p class="scan-text">Scanning for threats…</p>
     </div>
+
 
 
     {{-- RESULTS --}}

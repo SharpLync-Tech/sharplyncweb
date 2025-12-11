@@ -19,16 +19,14 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    cursor: default;
 
-    /* Gradient SharpLync style */
-    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff; /* ← WHITE now */
+    -webkit-text-fill-color: #ffffff;
 
-    text-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    text-shadow: 0 4px 14px rgba(0,0,0,0.3);
     transition: 0.3s ease;
 }
+
 
 .threat-title:hover {
     text-shadow: 0 0 18px rgba(44,191,174,0.55);
@@ -43,7 +41,7 @@
     bottom: -6px;
     width: 0%;
     height: 4px;
-    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+    background: linear-gradient(90deg, #4DF3D0, #19AFA0);
     border-radius: 10px;
     transition: width 0.45s ease;
 }
@@ -52,13 +50,23 @@
     width: 100%;
 }
 
-/* Shield Icon */
-.shield-icon {
-    width: 32px;
-    height: 32px;
-    margin-right: 6px;
-    filter: drop-shadow(0 0 8px rgba(44,191,174,0.45));
+
+.shield-icon-img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(44,191,174,0.45));
 }
+
+.scam-result-title {
+    color: #ffffff !important;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+
 
 
 /* ------------------------------
@@ -219,63 +227,83 @@ textarea:focus {
 }
 
 
-/* ------------------------------
-   SHIELDSCAN LOADER
------------------------------- */
-.scan-loader {
-    text-align: center;
-    margin-top: 25px;
-    padding: 20px 0;
-}
+/* ================================
+   THREATCHECK — EMAIL → SHIELD → CHECK
+================================ */
 
-.scan-text {
-    margin-top: 12px;
-    font-size: 1.1rem;
-    color: #FFFFFF;
-    font-weight: 600;
-}
-
-.shield-scan {
-    width: 120px;
-    height: 140px;
+.scan-cycle {
     position: relative;
+    width: 120px;
+    height: 120px;
     margin: 0 auto;
 }
 
-/* Shield outline */
-.shield-outline {
-    width: 100%;
-    height: 100%;
-    border: 4px solid rgba(44,191,174,0.6);
-    border-radius: 60% 60% 70% 70% / 50% 50% 80% 80%;
-    box-shadow: 0 0 20px rgba(44,191,174,0.3);
-    animation: shieldPulse 2.2s ease-in-out infinite;
-}
-
-@keyframes shieldPulse {
-    0%   { box-shadow: 0 0 0 rgba(44,191,174,0); }
-    50%  { box-shadow: 0 0 22px rgba(44,191,174,0.45); }
-    100% { box-shadow: 0 0 0 rgba(44,191,174,0); }
-}
-
-/* Radar sweep */
-.shield-radar {
+.scan-icon {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: conic-gradient(
-        rgba(44,191,174,0.5),
-        rgba(44,191,174,0) 60%
-    );
-    border-radius: 60% 60% 70% 70%;
-    animation: radarSweep 1.8s linear infinite;
-    mix-blend-mode: lighten;
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-@keyframes radarSweep {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+/* Stage 1: Email */
+.scan-email {
+    animation: emailStage 2.4s infinite;
 }
+
+/* Stage 2: Shield */
+.scan-shield {
+    animation: shieldStage 2.4s infinite;
+}
+
+/* Stage 3: Checkmark Pulse */
+.scan-checkmark {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #2CBFAE;
+    border-left: none;
+    border-top: none;
+    transform: rotate(45deg);
+    top: 40px;
+    left: 40px;
+    opacity: 0;
+    animation: checkmarkStage 2.4s infinite;
+}
+
+
+/* -------------------------------
+   KEYFRAME SEQUENCE
+   ------------------------------- */
+
+/* Email fades in, then out */
+@keyframes emailStage {
+    0%   { opacity: 0;   transform: scale(0.9); }
+    10%  { opacity: 1;   transform: scale(1); }
+    40%  { opacity: 1; }
+    50%  { opacity: 0;   transform: scale(0.9); }
+    100% { opacity: 0; }
+}
+
+/* Shield fades in after email */
+@keyframes shieldStage {
+    0%   { opacity: 0; }
+    40%  { opacity: 0; transform: scale(0.9); }
+    55%  { opacity: 1; transform: scale(1.1); }
+    75%  { opacity: 1; transform: scale(1); }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Checkmark pulses at the end */
+@keyframes checkmarkStage {
+    0%, 60% { opacity: 0; transform: scale(0.2) rotate(45deg); }
+    70%     { opacity: 1; transform: scale(1) rotate(45deg); }
+    85%     { opacity: 1; transform: scale(1.2) rotate(45deg); }
+    100%    { opacity: 0; transform: scale(1) rotate(45deg); }
+}
+
 
 
 /* ------------------------------
