@@ -24,9 +24,12 @@
         <form id="scam-form" method="POST" action="/scam-checker" enctype="multipart/form-data">
             @csrf        
 
-            <textarea name="message" rows="10" placeholder="Paste text OR upload an email (.eml/.msg/.txt):">
-@if(isset($input)){{ $input }}@endif
-            </textarea>
+            <textarea
+                name="message"
+                rows="10"
+                placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
+            >{{ isset($input) ? $input : '' }}</textarea>
+
 
             <br><br>
             <input type="file" name="file">
