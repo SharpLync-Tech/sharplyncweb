@@ -24,18 +24,18 @@
             </h3>
 
             <p>
-                SharpLync ThreatCheck is an <strong>informational analysis tool</strong> designed to help
+                <strong>SharpLync ThreatCheck</strong> is an <strong>informational analysis tool</strong> designed to help
                 identify potential scam indicators in emails, messages, or uploaded files.
             </p>
 
             <p>
-                While advanced analysis techniques are used, <strong>results are not guaranteed to be
-                accurate</strong> and should not be relied upon as the sole basis for decision-making.
+                While advanced analysis techniques are used, <strong>results are not guaranteed to be accurate</strong>
+                and should not be relied upon as the sole basis for decision-making.
             </p>
 
             <p>
-                You remain responsible for verifying the legitimacy of any communication before taking
-                action.
+                You remain responsible for <strong>independently verifying</strong> the legitimacy of any communication
+                before taking action.
             </p>
 
             <div class="section-title">Please do not submit:</div>
@@ -46,8 +46,10 @@
             </ul>
 
             <p style="margin-top:16px;">
-                Submitted content is processed for analysis only and is <strong>not stored long-term</strong>.
+                Submitted content is processed for <strong>analysis purposes only</strong> and is
+                <strong>not stored long-term</strong>.
             </p>
+
 
             <!-- ACKNOWLEDGEMENT -->
             <div style="margin-top:24px;">

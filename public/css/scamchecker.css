@@ -67,10 +67,13 @@
 }
 
 .gate-title {
-    color: #0a0463 !important;
+    color: #FFFFFF !important;
     font-size: 2rem;
+    text-align: center;
     font-weight: 700;
-    margin-bottom: 1rem;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #0A2A4D, #2CBFAE);
+    margin-bottom: 2rem;
     text-shadow: 0 2px 6px rgba(0,0,0,0.35);
 }
 
