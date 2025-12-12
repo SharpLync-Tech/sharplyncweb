@@ -54,5 +54,12 @@ return [
     'tenant_id' => env('MICROSOFT_CUSTOMER_TENANT_ID'),
     'redirect' => env('MICROSOFT_CUSTOMER_REDIRECT_URI', 'https://sharplync.com.au/customer/microsoft/callback'),
     ],
+    
+
+    'azure_vision' => [
+    'endpoint' => env('AZURE_VISION_ENDPOINT'),
+    'key'      => env('AZURE_VISION_KEY'),
+    ],
+
 
 ];
