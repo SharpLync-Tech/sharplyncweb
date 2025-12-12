@@ -69,13 +69,14 @@
 
     {{-- RESULTS --}}
     @if(isset($result))
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('clear-btn').style.display = 'inline-block';
-        });
-    </script>
-
     <div class="result-container" style="margin-top:40px;">
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('clear-btn').style.display = 'inline-block';
+            });
+        </script>
+
+        <div class="result-container" style="margin-top:40px;">
         <h3 class="scam-result-title">Scam Analysis Result</h3>
 
         @php
@@ -142,5 +143,8 @@
 </div>
 @endsection
 @push('scripts')
+<script src="{{ asset('js/scamcheck/scan.js') }}" defer></script>
+<script src="{{ asset('js/scamcheck/dragdrop.js') }}" defer></script>
 <script src="{{ asset('js/scamcheck/index.js') }}" defer></script>
 @endpush
+
