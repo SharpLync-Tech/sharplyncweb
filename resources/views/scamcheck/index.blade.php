@@ -43,27 +43,17 @@
 
     <!-- SCAN LOADER -->
     <div id="scan-loader" class="scan-loader" style="display:none;">
-            <div class="tc-wheel-loader">
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
-                <div class="tc-seg"></div>
+        <div class="scan-center">
+                <div class="tc-wheel">
+
+                    <span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span>
+
+                </div>
+                <p class="scan-text">Scanning for threats…</p>
             </div>
-
-            <p class="scan-text">Scanning for threats…</p>
         </div>
-
-
-
-
 
     {{-- RESULTS --}}
     @if(isset($result))
