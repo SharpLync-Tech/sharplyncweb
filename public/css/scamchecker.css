@@ -39,12 +39,12 @@
     position: absolute;
     left: 0;
     bottom: -6px;
-    width: 0%;
+    width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, #4DF3D0, #19AFA0);
+    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
     border-radius: 10px;
-    transition: width 0.45s ease;
 }
+
 
 .threat-title:hover::after {
     width: 100%;
@@ -52,8 +52,8 @@
 
 
 .shield-icon-img {
-    width: 42px;
-    height: 42px;
+    width: 90px;
+    height: 90px;
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(44,191,174,0.45));
 }
