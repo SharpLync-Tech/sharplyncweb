@@ -88,6 +88,11 @@
     margin: 30px 0 10px;
 }
 
+/* Space between stats footer text and input */
+    .threat-stats + p {
+    margin-bottom: 16px;
+}
+
 .stat-item {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.12);
