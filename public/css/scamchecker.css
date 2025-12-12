@@ -66,6 +66,66 @@
     text-shadow: 0 2px 6px rgba(0,0,0,0.35);
 }
 
+/* ===============================
+   ThreatCheck Live Stats
+=============================== */
+
+.threat-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 30px 0 10px;
+}
+
+.stat-item {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 18px rgba(44,191,174,0.35);
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.4px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+}
+
+/* Verdict colouring */
+.stat-item.safe .stat-number {
+    color: #2CBFAE;
+}
+
+.stat-item.scam .stat-number {
+    color: #e53935;
+}
+
+.stat-item.unknown .stat-number {
+    color: #ff9800;
+}
+
+/* Footnote */
+.stats-footnote {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+}
 
 
 
@@ -424,4 +484,9 @@ textarea:focus {
         margin-right: 6px;
         border-left-width: 6px !important;
     }
+
+    .threat-stats {
+    grid-template-columns: repeat(2, 1fr);
+    }
+
 }
