@@ -141,40 +141,6 @@
     @endif
 </div>
 @endsection
-
-
-<!-- PAGE SCRIPTS -->
-<script>
-// Intercept form submission
-document.addEventListener("DOMContentLoaded", function () {
-
-    const form     = document.getElementById("scam-form");
-    const formArea = document.getElementById("form-area");
-    const loader   = document.getElementById("scan-loader");
-
-    if (form) {
-        form.addEventListener("submit", function (e) {
-
-            e.preventDefault(); // STOP instant submit
-            formArea.classList.add("scanning");
-            loader.style.display = "block";
-
-            setTimeout(() => form.submit(), 250);
-        });
-    }
-});
-
-
-// Clear button
-function clearScamForm() {
-    document.querySelector('textarea[name="message"]').value = "";
-    document.querySelector('input[type="file"]').value = null;
-
-    const resultBox = document.querySelector('.result-container');
-    if (resultBox) resultBox.remove();
-
-    document.getElementById('form-area').classList.remove("scanning");
-    document.getElementById('scan-loader').style.display = "none";
-    document.getElementById('clear-btn').style.display = "none";
-}
-</script>
+@push('scripts')
+<script src="{{ asset('js/scamcheck/index.js') }}" defer></script>
+@endpush

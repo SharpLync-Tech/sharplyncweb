@@ -356,6 +356,45 @@ textarea:focus {
     min-height: 140px;
 }
 
+/* ===============================
+   Drag & Drop Overlay (inactive)
+=============================== */
+#drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 42, 77, 0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+#drop-overlay.active {
+    display: flex;
+}
+
+.drop-box {
+    text-align: center;
+    padding: 40px 50px;
+    border-radius: 18px;
+    border: 2px dashed rgba(44,191,174,0.6);
+    background: rgba(255,255,255,0.05);
+    box-shadow: 0 0 40px rgba(44,191,174,0.35);
+}
+
+.drop-box img {
+    width: 72px;
+    margin-bottom: 16px;
+}
+
+.drop-box p {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+
 
 /* ------------------------------
    MOBILE RESPONSIVE
