@@ -16,6 +16,32 @@
             SharpLync <strong>ThreatCheck</strong>
         </h2>
 
+        <!-- 📊 STATS BAR -->
+        @if(isset($stats))
+        <div class="threat-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ number_format($stats->total_checked ?? 0) }}</span>
+                <span class="stat-label">Total Checked</span>
+            </div>
+            <div class="stat-item safe">
+                <span class="stat-number">{{ number_format($stats->total_safe ?? 0) }}</span>
+                <span class="stat-label">Safe</span>
+            </div>
+            <div class="stat-item scam">
+                <span class="stat-number">{{ number_format($stats->total_scam ?? 0) }}</span>
+                <span class="stat-label">Scam</span>
+            </div>
+            <div class="stat-item unknown">
+                <span class="stat-number">{{ number_format($stats->total_unknown ?? 0) }}</span>
+                <span class="stat-label">Unknown</span>
+            </div>
+        </div>
+
+        <p class="stats-footnote">
+            Since December 2025 · Anonymous scans · No content stored
+        </p>
+        @endif
+
         {{-- FORM --}}
         @if(!isset($result))
         <div id="form-area">

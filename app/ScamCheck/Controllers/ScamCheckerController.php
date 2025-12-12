@@ -5,14 +5,33 @@ namespace App\ScamCheck\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\ScamCheck\Services\AzureOpenAIClient;
+use Illuminate\Support\Facades\DB;
 
 class ScamCheckerController extends Controller
 {
+    /**
+     * Display the ThreatCheck page
+     */
     public function index()
     {
-        return view('scamcheck.index');
+        // 📊 Read stats for display
+        $stats = DB::table('threatcheck_stats')
+            ->selectRaw('
+                COUNT(*) as total_checked,
+                SUM(verdict = "safe") as total_safe,
+                SUM(verdict = "scam") as total_scam,
+                SUM(verdict = "unknown") as total_unknown
+            ')
+            ->first();
+
+        return view('scamcheck.index', [
+            'stats' => $stats,
+        ]);
     }
 
+    /**
+     * Analyze message or file
+     */
     public function analyze(Request $request, AzureOpenAIClient $client)
     {
         // Validate input
@@ -23,7 +42,7 @@ class ScamCheckerController extends Controller
 
         $text = $request->message;
 
-        // If a file is uploaded, extract text
+        // Handle uploaded file
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
@@ -34,12 +53,9 @@ class ScamCheckerController extends Controller
                 $text = file_get_contents($file->getRealPath());
             }
 
-            // Image screenshots (jpg, png)
+            // Image screenshots
             elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-
                 $imageData = base64_encode(file_get_contents($file->getRealPath()));
-
-                // We send an indicator that this is an image to the AI service
                 $text = "IMAGE_BASE64:{$imageData}";
             }
 
@@ -48,17 +64,46 @@ class ScamCheckerController extends Controller
             }
         }
 
-        // Ensure text exists after processing
+        // Ensure text exists
         if (!$text || trim($text) === '') {
             return back()->with('error', 'Please paste a message or upload a file.');
         }
 
-        // Run AI analysis
+        // 🔍 Run AI analysis
         $result = $client->analyze($text);
+
+        // 📊 Determine verdict + log stats
+        $json = json_decode($result, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && isset($json['verdict'])) {
+
+            $verdictRaw = strtolower($json['verdict']);
+
+            $verdictForStats =
+                str_contains($verdictRaw, 'scam') ? 'scam' :
+                (str_contains($verdictRaw, 'suspicious') || str_contains($verdictRaw, 'unclear')
+                    ? 'unknown'
+                    : 'safe');
+
+            DB::table('threatcheck_stats')->insert([
+                'verdict' => $verdictForStats,
+            ]);
+        }
+
+        // 📊 Re-read stats so page updates immediately
+        $stats = DB::table('threatcheck_stats')
+            ->selectRaw('
+                COUNT(*) as total_checked,
+                SUM(verdict = "safe") as total_safe,
+                SUM(verdict = "scam") as total_scam,
+                SUM(verdict = "unknown") as total_unknown
+            ')
+            ->first();
 
         return view('scamcheck.index', [
             'input'  => $text,
-            'result' => $result
+            'result' => $result,
+            'stats'  => $stats,
         ]);
     }
 }
