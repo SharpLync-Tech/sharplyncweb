@@ -57,17 +57,7 @@
             </div>
         </div>
 
-    </div> <!-- /inner wrapper -->
-
-    <!-- DRAG & DROP OVERLAY -->
-    <div id="drop-overlay">
-        <div class="drop-box">
-            <img src="/images/security.png" alt="Security Shield">
-            <p>Drop file to scan</p>
-        </div>
-    </div>
-
-            {{-- RESULTS --}}
+        {{-- RESULTS --}}
         @if(isset($result))
 
         <script>
@@ -128,27 +118,23 @@
             </div>
         </div>
 
-    @endif
+        @endif
 
+    </div> <!-- /1100px wrapper -->
 
-    {{-- AUTO SCROLL --}}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const el = document.querySelector('.result-container');
-            if (el) {
-                setTimeout(() => {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }, 250);
-            }
-        });
-    </script>
+    <!-- DRAG & DROP OVERLAY -->
+    <div id="drop-overlay">
+        <div class="drop-box">
+            <img src="/images/security.png" alt="Security Shield">
+            <p>Drop file to scan</p>
+        </div>
+    </div>
 
-    @endif
 </div>
 @endsection
+
 @push('scripts')
 <script src="{{ asset('js/scamcheck/scan.js') }}" defer></script>
 <script src="{{ asset('js/scamcheck/dragdrop.js') }}" defer></script>
 <script src="{{ asset('js/scamcheck/index.js') }}" defer></script>
 @endpush
-
