@@ -67,65 +67,69 @@
         </div>
     </div>
 
-    {{-- RESULTS --}}
-    @if(isset($result))
-    <div class="result-container" style="margin-top:40px;">
+            {{-- RESULTS --}}
+        @if(isset($result))
+
         <script>
             window.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('clear-btn').style.display = 'inline-block';
+                const btn = document.getElementById('clear-btn');
+                if (btn) btn.style.display = 'inline-block';
             });
         </script>
 
         <div class="result-container" style="margin-top:40px;">
-        <h3 class="scam-result-title">Scam Analysis Result</h3>
+            <h3 class="scam-result-title">Scam Analysis Result</h3>
 
-        @php
-            $json = json_decode($result, true);
-            $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
+            @php
+                $json = json_decode($result, true);
+                $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
 
-            if ($isJson) {
-                $verdict     = ucfirst($json['verdict'] ?? '');
-                $score       = $json['risk_score'] ?? 'N/A';
-                $summary     = $json['summary'] ?? '';
-                $redFlags    = $json['red_flags'] ?? [];
-                $recommended = $json['recommended_action'] ?? '';
+                if ($isJson) {
+                    $verdict     = ucfirst($json['verdict'] ?? '');
+                    $score       = $json['risk_score'] ?? 'N/A';
+                    $summary     = $json['summary'] ?? '';
+                    $redFlags    = $json['red_flags'] ?? [];
+                    $recommended = $json['recommended_action'] ?? '';
 
-                if (is_numeric($score)) {
-                    $severityClass =
-                        $score >= 70 ? 'danger' :
-                        ($score >= 40 ? 'sus' : 'safe');
-                } else {
-                    $v = strtolower($verdict);
-                    $severityClass =
-                        str_contains($v,'scam') ? 'danger' :
-                        (str_contains($v,'suspicious') || str_contains($v,'unclear') ? 'sus' : 'safe');
+                    if (is_numeric($score)) {
+                        $severityClass =
+                            $score >= 70 ? 'danger' :
+                            ($score >= 40 ? 'sus' : 'safe');
+                    } else {
+                        $v = strtolower($verdict);
+                        $severityClass =
+                            str_contains($v,'scam') ? 'danger' :
+                            (str_contains($v,'suspicious') || str_contains($v,'unclear') ? 'sus' : 'safe');
+                    }
                 }
-            }
-        @endphp
+            @endphp
 
-        <div class="result-box {{ $severityClass }}">
-            <p>
-                <span class="value">Verdict:</span>
-                <span class="verdict-text">{{ $verdict }}</span>
-                <span class="verdict-dot {{ $severityClass }}"></span>
-            </p>
+            <div class="result-box {{ $severityClass }}">
+                <p>
+                    <span class="value">Verdict:</span>
+                    <span class="verdict-text">{{ $verdict }}</span>
+                    <span class="verdict-dot {{ $severityClass }}"></span>
+                </p>
 
-            <p><span class="value">Risk Score:</span> {{ $score }}</p>
+                <p><span class="value">Risk Score:</span> {{ $score }}</p>
 
-            <div class="section-title">Summary</div>
-            <p>{!! nl2br(e($summary)) !!}</p>
+                <div class="section-title">Summary</div>
+                <p>{!! nl2br(e($summary)) !!}</p>
 
-            <div class="section-title">Red Flags</div>
-            <ul class="red-flag-list">
-                @foreach($redFlags as $flag)
-                    <li>{{ $flag }}</li>
-                @endforeach
-            </ul>
+                <div class="section-title">Red Flags</div>
+                <ul class="red-flag-list">
+                    @foreach($redFlags as $flag)
+                        <li>{{ $flag }}</li>
+                    @endforeach
+                </ul>
 
-            <div class="section-title">Recommended Action</div>
-            <p>{!! nl2br(e($recommended)) !!}</p>
+                <div class="section-title">Recommended Action</div>
+                <p>{!! nl2br(e($recommended)) !!}</p>
+            </div>
         </div>
-    </div>
+
+    @endif
+
 
     {{-- AUTO SCROLL --}}
     <script>
