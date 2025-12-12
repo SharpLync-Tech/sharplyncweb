@@ -5,6 +5,7 @@ namespace App\ScamCheck\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\ScamCheck\Services\AzureOpenAIClient;
+use App\ScamCheck\Services\AzureVisionOCR;
 use Illuminate\Support\Facades\DB;
 
 class ScamCheckerController extends Controller
@@ -30,49 +31,66 @@ class ScamCheckerController extends Controller
     }
 
     /**
-     * Analyze message or file
+     * Analyze message or uploaded file
      */
-    public function analyze(Request $request, AzureOpenAIClient $client)
-    {
-        // Validate input
+    public function analyze(
+        Request $request,
+        AzureOpenAIClient $client,
+        AzureVisionOCR $ocr
+    ) {
+        // ✅ Validate input
         $request->validate([
             'message' => 'nullable|string',
-            'file' => 'nullable|file|max:4096'
+            'file'    => 'nullable|file|max:4096',
         ]);
 
         $text = $request->message;
 
-        // Handle uploaded file
+        // 📎 Handle uploaded file
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
             $ext  = strtolower($file->getClientOriginalExtension());
 
-            // Text-based files
+            /**
+             * TEXT FILES (.txt, .eml)
+             */
             if (in_array($ext, ['txt', 'eml'])) {
                 $text = file_get_contents($file->getRealPath());
             }
 
-            // Image screenshots
+            /**
+             * IMAGE FILES (OCR)
+             */
             elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-                $imageData = base64_encode(file_get_contents($file->getRealPath()));
-                $text = "IMAGE_BASE64:{$imageData}";
+
+                $ocrText = $ocr->extractText($file->getRealPath());
+
+                if ($ocrText && trim($ocrText) !== '') {
+                    $text = $ocrText;
+                } else {
+                    // Explicit signal to AI that OCR found nothing
+                    $text = 'IMAGE_SUBMITTED_WITH_NO_READABLE_TEXT';
+                }
             }
 
+            /**
+             * Unsupported files
+             */
             else {
                 return back()->with('error', 'Unsupported file type. Allowed: txt, eml, jpg, png.');
             }
         }
 
-        // Ensure text exists
+        // 🚫 Ensure something exists to analyze
         if (!$text || trim($text) === '') {
             return back()->with('error', 'Please paste a message or upload a file.');
         }
 
-        // 🔍 Run AI analysis
+        // 🤖 Run AI analysis
         $result = $client->analyze($text);
 
-        // 📊 Determine verdict + log stats
+        // 📊 Parse verdict + log stats
         $json = json_decode($result, true);
 
         if (json_last_error() === JSON_ERROR_NONE && isset($json['verdict'])) {
@@ -90,7 +108,7 @@ class ScamCheckerController extends Controller
             ]);
         }
 
-        // 📊 Re-read stats so page updates immediately
+        // 📊 Re-read stats for live update
         $stats = DB::table('threatcheck_stats')
             ->selectRaw('
                 COUNT(*) as total_checked,
