@@ -144,6 +144,20 @@
             </div>
         </div>
 
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const result = document.querySelector('.result-container');
+                if (result) {
+                    setTimeout(() => {
+                        result.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }, 300);
+                }
+            });
+        </script>
+
         @endif
 
     </div> <!-- /1100px wrapper -->
