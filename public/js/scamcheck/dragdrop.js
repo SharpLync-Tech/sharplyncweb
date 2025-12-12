@@ -1,39 +1,71 @@
 window.ThreatCheckDragDrop = function () {
-    const overlay = document.getElementById("drop-overlay");
+
+    const overlay   = document.getElementById('drop-overlay');
+    const textarea  = document.querySelector('textarea[name="message"]');
     const fileInput = document.querySelector('input[type="file"]');
 
-    if (!overlay || !fileInput) return;
+    if (!overlay || !textarea || !fileInput) return;
 
-    let dragCounter = 0;
-
-    const showOverlay = () => overlay.classList.add("active");
-    const hideOverlay = () => overlay.classList.remove("active");
-
-    document.addEventListener("dragenter", (e) => {
+    // ----------------------------------
+    // Show overlay when dragging
+    // ----------------------------------
+    document.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        dragCounter++;
-        showOverlay();
+        overlay.classList.add('active');
     });
 
-    document.addEventListener("dragleave", (e) => {
-        e.preventDefault();
-        dragCounter--;
-        if (dragCounter <= 0) hideOverlay();
-    });
-
-    document.addEventListener("dragover", (e) => {
+    document.addEventListener('dragover', (e) => {
         e.preventDefault();
     });
 
-    document.addEventListener("drop", (e) => {
+    document.addEventListener('dragleave', (e) => {
+        if (e.target === document.body) {
+            overlay.classList.remove('active');
+        }
+    });
+
+    // ----------------------------------
+    // Drop handler
+    // ----------------------------------
+    document.addEventListener('drop', (e) => {
         e.preventDefault();
-        dragCounter = 0;
-        hideOverlay();
+        overlay.classList.remove('active');
 
-        if (!e.dataTransfer.files.length) return;
+        const dt = e.dataTransfer;
 
-        console.log("[ThreatCheck] File dropped");
+        // ==============================
+        // 1️⃣ FILE DROP (wins first)
+        // ==============================
+        if (dt.files && dt.files.length > 0) {
+            fileInput.files = dt.files;
+            textarea.value = ''; // clear text if file dropped
 
-        fileInput.files = e.dataTransfer.files;
+            console.log('[ThreatCheck] File dropped:', dt.files[0].name);
+            return;
+        }
+
+        // ==============================
+        // 2️⃣ TEXT DROP (Outlook / Gmail)
+        // ==============================
+        const text =
+            dt.getData('text/plain') ||
+            dt.getData('text/html');
+
+        if (text && text.trim().length > 0) {
+            textarea.value = stripHtml(text);
+            fileInput.value = null; // clear file input
+            textarea.focus();
+
+            console.log('[ThreatCheck] Text dropped');
+        }
     });
 };
+
+// ----------------------------------
+// Helper: strip HTML safely
+// ----------------------------------
+function stripHtml(input) {
+    const div = document.createElement('div');
+    div.innerHTML = input;
+    return div.textContent || div.innerText || '';
+}
