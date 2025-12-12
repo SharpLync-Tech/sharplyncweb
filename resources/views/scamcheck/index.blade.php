@@ -51,7 +51,7 @@
                 <textarea
                     name="message"
                     rows="10"
-                    placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
+                    placeholder="Paste text, upload an email or Drag & Drop:"
                 >{{ $input ?? '' }}</textarea>
 
                 <br><br>
