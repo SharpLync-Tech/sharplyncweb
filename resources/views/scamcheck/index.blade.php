@@ -8,55 +8,64 @@
 
 @section('content')
 <div class="sc-page">
-<div style="max-width:1100px; margin:0 auto; padding-top:40px;">
+    <div style="max-width:1100px; margin:0 auto; padding-top:40px;">
 
-    <!-- THREATCHHECK HEADER -->
+        <!-- HEADER -->
         <h2 class="threat-title">
-        <img src="/images/security.png" class="shield-icon-img" alt="SharpLync Security Shield">
-        SharpLync <strong>ThreatCheck</strong>
-    </h2>
+            <img src="/images/security.png" class="shield-icon-img" alt="SharpLync Security Shield">
+            SharpLync <strong>ThreatCheck</strong>
+        </h2>
 
+        {{-- FORM --}}
+        @if(!isset($result))
+        <div id="form-area">
+            <form id="scam-form" method="POST" action="/scam-checker" enctype="multipart/form-data">
+                @csrf
 
+                <textarea
+                    name="message"
+                    rows="10"
+                    placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
+                >{{ $input ?? '' }}</textarea>
 
-    <!-- FORM AREA (hidden after scan automatically) -->
-    @if(!isset($result))
-    <div id="form-area">
-        <form id="scam-form" method="POST" action="/scam-checker" enctype="multipart/form-data">
-            @csrf        
+                <br><br>
+                <input type="file" name="file">
+                <br><br>
 
-            <textarea
-                name="message"
-                rows="10"
-                placeholder="Paste text OR upload an email (.eml/.msg/.txt):"
-            >{{ isset($input) ? $input : '' }}</textarea>
+                <button type="submit" class="scam-btn" id="check-btn">Check Message</button>
 
+                <button type="button"
+                        id="clear-btn"
+                        class="scam-btn outline"
+                        style="display:none;"
+                        onclick="clearScamForm()">
+                    Clear
+                </button>
+            </form>
+        </div>
+        @endif
 
-            <br><br>
-            <input type="file" name="file">
-            <br><br>
-
-            <button type="submit" class="scam-btn" id="check-btn">Check Message</button>
-
-            <!-- Clear button -->
-            <button type="button" id="clear-btn" class="scam-btn outline" style="display:none;" onclick="clearScamForm()">Clear</button>
-        </form>
-    </div>
-    @endif
-
-
-    <!-- SCAN LOADER -->
-    <div id="scan-loader" class="scan-loader" style="display:none;">
-        <div class="scan-center">
+        <!-- SCAN LOADER -->
+        <div id="scan-loader" class="scan-loader" style="display:none;">
+            <div class="scan-center">
                 <div class="tc-wheel">
-
                     <span></span><span></span><span></span><span></span>
                     <span></span><span></span><span></span><span></span>
                     <span></span><span></span><span></span><span></span>
-
                 </div>
                 <p class="scan-text">Scanning for threats…</p>
             </div>
         </div>
+
+    </div> <!-- /inner wrapper -->
+
+    <!-- DRAG & DROP OVERLAY -->
+    <div id="drop-overlay">
+        <div class="drop-box">
+            <img src="/images/security.png" alt="Security Shield">
+            <p>Drop file to scan</p>
+        </div>
+    </div>
 
     {{-- RESULTS --}}
     @if(isset($result))
@@ -130,8 +139,6 @@
     </script>
 
     @endif
-
-</div>
 </div>
 @endsection
 
