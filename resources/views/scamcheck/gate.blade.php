@@ -19,7 +19,7 @@
         <!-- NOTICE CARD -->
         <div class="result-box safe" style="border-left-width:6px;">
 
-            <h3 class="scam-result-title" style="margin-top:0;">
+            <h3 class="gate-title" style="margin-top:0;">
                 Before you continue
             </h3>
 
