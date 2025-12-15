@@ -56,7 +56,7 @@
                 >{{ $input ?? '' }}</textarea>
 
                 <div id="attached-file" class="attached-file" style="display:none;">
-                    <span class="file-icon">📎</span>
+                    <span class="file-icon">🛡️ File ready for ThreatCheck:</span>
                     <span class="file-name"></span>
                     <button type="button" class="remove-file" title="Remove file">✕</button>
                 </div>
