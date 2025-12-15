@@ -1,10 +1,27 @@
 window.ThreatCheckDragDrop = function () {
 
     const overlay   = document.getElementById('drop-overlay');
-    const textarea  = document.querySelector('textarea[name="message"]');
+    const textarea  = document.getElementById('scam-text');
     const fileInput = document.querySelector('input[type="file"]');
 
     if (!overlay || !textarea || !fileInput) return;
+
+    // ----------------------------------
+    // Helper: show file label in textarea
+    // ----------------------------------
+    function showFileInTextarea(file) {
+        textarea.value = `[Attached file: ${file.name}]`;
+        textarea.focus();
+    }
+
+    // ----------------------------------
+    // Browse file selection
+    // ----------------------------------
+    fileInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            showFileInTextarea(this.files[0]);
+        }
+    });
 
     // ----------------------------------
     // Show overlay when dragging
@@ -34,11 +51,11 @@ window.ThreatCheckDragDrop = function () {
         const dt = e.dataTransfer;
 
         // ==============================
-        // 1️⃣ FILE DROP (wins first)
+        // 1️⃣ FILE DROP (wins)
         // ==============================
         if (dt.files && dt.files.length > 0) {
             fileInput.files = dt.files;
-            textarea.value = ''; // clear text if file dropped
+            showFileInTextarea(dt.files[0]);
 
             console.log('[ThreatCheck] File dropped:', dt.files[0].name);
             return;
@@ -53,7 +70,7 @@ window.ThreatCheckDragDrop = function () {
 
         if (text && text.trim().length > 0) {
             textarea.value = stripHtml(text);
-            fileInput.value = null; // clear file input
+            fileInput.value = null;
             textarea.focus();
 
             console.log('[ThreatCheck] Text dropped');

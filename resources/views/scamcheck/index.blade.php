@@ -49,6 +49,7 @@
                 @csrf
 
                 <textarea
+                    id="scam-text"
                     name="message"
                     rows="10"
                     placeholder="Paste text, upload an email or Drag & Drop:"
