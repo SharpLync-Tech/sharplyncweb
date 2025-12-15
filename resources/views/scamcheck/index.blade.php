@@ -52,7 +52,10 @@
                     id="scam-text"
                     name="message"
                     rows="10"
-                    placeholder="Copy and Paste your email text, or save and upload an email. You can also or Drag & Drop your saved email file:"
+                    placeholder="1. Copy and Paste your email text
+                    2. Save and upload an email 
+                    3. Drag & Drop your saved email file
+                    4. Copy and paste you TXT or WhatsApp message text"
                 >{{ $input ?? '' }}</textarea>
 
                 <div id="attached-file" class="attached-file" style="display:none;">
