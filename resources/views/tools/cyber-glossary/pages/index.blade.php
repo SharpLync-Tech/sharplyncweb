@@ -11,31 +11,29 @@
 
 <div class="glossary-grid">
 
-    {{-- Placeholder cards – real content comes next --}}
-    <div class="glossary-card placeholder">
-        <h3>Ransomware</h3>
-        <p>Plain-English explanation coming soon.</p>
-    </div>
+    @include('tools.cyber-glossary.partials.term-card', [
+        'term' => 'Ransomware',
+        'summary' => 'Malicious software that locks your files and demands payment.',
+        'explanation' => 'Ransomware encrypts your files or systems so you can’t access them unless a ransom is paid.',
+        'analogy' => 'It’s like going away for the weekend and coming home to find the locks changed and a note demanding money for the keys.',
+        'why' => 'Even if you pay, there’s no guarantee you’ll get your data back.'
+    ])
 
-    <div class="glossary-card placeholder">
-        <h3>Malware</h3>
-        <p>Plain-English explanation coming soon.</p>
-    </div>
+    @include('tools.cyber-glossary.partials.term-card', [
+        'term' => 'Malware',
+        'summary' => 'A broad term for software designed to harm or spy on devices.',
+        'explanation' => 'Malware includes viruses, spyware, and other unwanted software that runs without your permission.',
+        'analogy' => 'It’s like someone sneaking into your house and quietly copying your documents.',
+        'why' => 'Malware can steal data long before you realise anything is wrong.'
+    ])
 
-    <div class="glossary-card placeholder">
-        <h3>Phishing</h3>
-        <p>Plain-English explanation coming soon.</p>
-    </div>
-
-    <div class="glossary-card placeholder">
-        <h3>Multi-Factor Authentication (MFA)</h3>
-        <p>Plain-English explanation coming soon.</p>
-    </div>
-
-    <div class="glossary-card placeholder">
-        <h3>Backups</h3>
-        <p>Plain-English explanation coming soon.</p>
-    </div>
+    @include('tools.cyber-glossary.partials.term-card', [
+        'term' => 'Phishing',
+        'summary' => 'Scam messages pretending to be from trusted sources.',
+        'explanation' => 'Phishing attempts trick users into clicking links or sharing information.',
+        'analogy' => 'It’s like someone wearing an AusPost uniform who isn’t actually from AusPost.',
+        'why' => 'Most cyber attacks start with a single convincing email.'
+    ])
 
 </div>
 
@@ -47,3 +45,17 @@
 </div>
 
 @endsection
+
+<script>
+document.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('term-toggle')) return;
+
+    const button = e.target;
+    const details = button.nextElementSibling;
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+
+    button.setAttribute('aria-expanded', !expanded);
+    button.textContent = expanded ? 'Read more' : 'Show less';
+    details.hidden = expanded;
+});
+</script>

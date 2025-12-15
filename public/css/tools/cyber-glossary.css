@@ -96,6 +96,42 @@
     font-style: italic;
 }
 
+/* Expandable glossary behaviour */
+
+.term-summary {
+    margin-bottom: 10px;
+}
+
+.term-toggle {
+    background: none;
+    border: none;
+    color: #2CBFAE; /* SharpLync teal */
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.term-toggle:hover {
+    text-decoration: underline;
+}
+
+.term-details {
+    margin-top: 14px;
+}
+
+.term-details p {
+    margin-bottom: 10px;
+}
+
+.term-analogy,
+.term-why {
+    background: #f5f8fb;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+
 
 /* Footer CTA */
 .glossary-footer-cta {
