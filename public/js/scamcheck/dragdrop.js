@@ -1,86 +1,71 @@
 window.ThreatCheckDragDrop = function () {
 
-    const overlay   = document.getElementById('drop-overlay');
-    const textarea  = document.getElementById('scam-text');
-    const fileInput = document.querySelector('input[type="file"]');
+    const overlay    = document.getElementById('drop-overlay');
+    const textarea   = document.querySelector('textarea[name="message"]');
+    const fileInput  = document.getElementById('file-input');
+    const fileBox    = document.getElementById('attached-file');
+    const fileNameEl = fileBox?.querySelector('.file-name');
+    const removeBtn  = fileBox?.querySelector('.remove-file');
 
-    if (!overlay || !textarea || !fileInput) return;
+    if (!overlay || !textarea || !fileInput || !fileBox) return;
 
-    // ----------------------------------
-    // Helper: show file label in textarea
-    // ----------------------------------
-    function showFileInTextarea(file) {
-        textarea.value = `[Attached file: ${file.name}]`;
-        textarea.focus();
+    function showFile(name) {
+        textarea.value = `[Attached file: ${name}]`;
+        fileNameEl.textContent = name;
+        fileBox.style.display = 'flex';
     }
 
-    // ----------------------------------
-    // Browse file selection
-    // ----------------------------------
-    fileInput.addEventListener('change', function () {
-        if (this.files && this.files[0]) {
-            showFileInTextarea(this.files[0]);
-        }
-    });
+    function clearFile() {
+        fileInput.value = null;
+        textarea.value = '';
+        fileBox.style.display = 'none';
+    }
 
-    // ----------------------------------
-    // Show overlay when dragging
-    // ----------------------------------
-    document.addEventListener('dragenter', (e) => {
+    // Drag overlay
+    document.addEventListener('dragenter', e => {
         e.preventDefault();
         overlay.classList.add('active');
     });
 
-    document.addEventListener('dragover', (e) => {
-        e.preventDefault();
+    document.addEventListener('dragover', e => e.preventDefault());
+
+    document.addEventListener('dragleave', e => {
+        if (e.target === document.body) overlay.classList.remove('active');
     });
 
-    document.addEventListener('dragleave', (e) => {
-        if (e.target === document.body) {
-            overlay.classList.remove('active');
-        }
-    });
-
-    // ----------------------------------
-    // Drop handler
-    // ----------------------------------
-    document.addEventListener('drop', (e) => {
+    document.addEventListener('drop', e => {
         e.preventDefault();
         overlay.classList.remove('active');
 
         const dt = e.dataTransfer;
 
-        // ==============================
-        // 1️⃣ FILE DROP (wins)
-        // ==============================
+        // FILE DROP
         if (dt.files && dt.files.length > 0) {
             fileInput.files = dt.files;
-            showFileInTextarea(dt.files[0]);
-
-            console.log('[ThreatCheck] File dropped:', dt.files[0].name);
+            showFile(dt.files[0].name);
             return;
         }
 
-        // ==============================
-        // 2️⃣ TEXT DROP (Outlook / Gmail)
-        // ==============================
-        const text =
-            dt.getData('text/plain') ||
-            dt.getData('text/html');
-
-        if (text && text.trim().length > 0) {
+        // TEXT DROP
+        const text = dt.getData('text/plain') || dt.getData('text/html');
+        if (text) {
             textarea.value = stripHtml(text);
-            fileInput.value = null;
-            textarea.focus();
-
-            console.log('[ThreatCheck] Text dropped');
+            clearFile();
         }
     });
+
+    // Browse selection
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            showFile(fileInput.files[0].name);
+        }
+    });
+
+    // Remove button
+    removeBtn.addEventListener('click', clearFile);
 };
 
-// ----------------------------------
-// Helper: strip HTML safely
-// ----------------------------------
+// Strip HTML helper
 function stripHtml(input) {
     const div = document.createElement('div');
     div.innerHTML = input;

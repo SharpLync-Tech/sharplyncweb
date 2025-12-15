@@ -55,8 +55,22 @@
                     placeholder="Paste text, upload an email or Drag & Drop:"
                 >{{ $input ?? '' }}</textarea>
 
+                <div id="attached-file" class="attached-file" style="display:none;">
+                    <span class="file-icon">📎</span>
+                    <span class="file-name"></span>
+                    <button type="button" class="remove-file" title="Remove file">✕</button>
+                </div>
+
+
+
+
                 <br><br>
-                <input type="file" name="file">
+                <input type="file" name="file" id="file-input" hidden>
+
+                <button type="button" class="file-browse-btn" onclick="document.getElementById('file-input').click()">
+                    Browse…
+                </button>
+
                 <br><br>
 
                 <button type="submit" class="scam-btn" id="check-btn">Check Message</button>
