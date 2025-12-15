@@ -49,14 +49,14 @@
                 @csrf
 
                 <textarea
-                    id="scam-text"
-                    name="message"
-                    rows="10"
-                    placeholder="1. Copy and Paste your email text
-                2. Save and upload an email
-                3. Drag & Drop your saved email file
-                4. Copy and paste you TXT or WhatsApp message text"
-                >{{ $input ?? '' }}</textarea>
+    id="scam-text"
+    name="message"
+    rows="10"
+    placeholder="1. Copy and Paste your email text
+2. Save and upload an email
+3. Drag & Drop your saved email file
+4. Copy and paste you TXT or WhatsApp message text"
+>{{ $input ?? '' }}</textarea>
 
                 <div id="attached-file" class="attached-file" style="display:none;">
                     <span class="file-icon">🛡️ File ready:</span>
