@@ -46,9 +46,13 @@
         @endfor
 
         <div class="form-actions">
-            <button type="button" id="check-submit" class="btn-primary">
-                See my results
-            </button>
+            <button
+    type="button"
+    id="check-submit"
+    class="btn-primary"
+    form="home-check"
+>
+
         </div>
 
     </form>
