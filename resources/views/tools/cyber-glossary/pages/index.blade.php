@@ -12,12 +12,13 @@
 <div class="glossary-grid">
 
     @include('tools.cyber-glossary.partials.term-card', [
-        'term' => 'Ransomware',
-        'summary' => 'Malicious software that locks your files and demands payment.',
-        'explanation' => 'Ransomware encrypts your files or systems so you can’t access them unless a ransom is paid.',
-        'analogy' => 'It’s like going away for the weekend and coming home to find the locks changed and a note demanding money for the keys.',
-        'why' => 'Even if you pay, there’s no guarantee you’ll get your data back.'
+    'term' => 'Ransomware',
+    'summary' => 'Malicious software that locks your files and demands payment.',
+    'explanation' => 'Ransomware encrypts your files or systems so you can’t access them unless a ransom is paid. Your data is still there, but it’s been locked using encryption that only the attacker controls.',
+    'analogy' => 'It’s like going away for the weekend and coming home to find the locks changed and a note demanding money for the keys. You might get a locksmith to let you back inside — or even break a window — but once you’re in, all the cupboards, drawers, and doors inside are still locked. That’s what ransomware does — your data is still there, but it’s locked and unusable.',
+    'why' => 'Even if you pay, there’s no guarantee you’ll get your data back.'
     ])
+
 
     @include('tools.cyber-glossary.partials.term-card', [
         'term' => 'Malware',
