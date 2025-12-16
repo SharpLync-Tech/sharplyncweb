@@ -15,25 +15,25 @@
     'term' => 'Ransomware',
     'summary' => 'Malicious software that locks your files and demands payment.',
     'explanation' => 'Ransomware encrypts your files or systems so you can’t access them unless a ransom is paid. Your data is still there, but it’s been locked using encryption that only the attacker controls.',
-    'analogy' => 'It’s like going away for the weekend and coming home to find the locks changed and a note demanding money for the keys. You might get a locksmith to let you back inside — or even break a window — but once you’re in, all the cupboards, drawers, and doors inside are still locked. That’s what ransomware does — your data is still there, but it’s locked and unusable.',
+    'analogy' => 'It’s like going away for the weekend and coming home to find the locks changed and a note demanding money for the keys. You might get a locksmith to let you back inside, or even break a window, but once you’re in, all the cupboards, drawers, and doors inside are still locked. That’s what ransomware does, your data is still there, but it’s locked and unusable.',
     'why' => 'Even if you pay, there’s no guarantee you’ll get your data back.'
     ])
 
 
     @include('tools.cyber-glossary.partials.term-card', [
-        'term' => 'Malware',
-        'summary' => 'A broad term for software designed to harm or spy on devices.',
-        'explanation' => 'Malware includes viruses, spyware, and other unwanted software that runs without your permission.',
-        'analogy' => 'It’s like someone sneaking into your house and quietly copying your documents.',
-        'why' => 'Malware can steal data long before you realise anything is wrong.'
+    'term' => 'Malware',
+    'summary' => 'A broad term for software designed to harm, spy on, or interfere with your device.',
+    'explanation' => 'Malware is unwanted software that installs itself without your permission. It can spy on what you do, steal information, slow your device down, or open the door for further attacks.',
+    'analogy' => 'It’s like someone sneaking into your house while you’re not home. They don’t smash anything or make a mess — they quietly copy your documents, watch what you do, and leave doors unlocked so they can come back later.',
+    'why' => 'Because malware often runs silently, it can cause damage or steal information for weeks or months before anyone notices.'
     ])
 
     @include('tools.cyber-glossary.partials.term-card', [
-        'term' => 'Phishing',
-        'summary' => 'Scam messages pretending to be from trusted sources.',
-        'explanation' => 'Phishing attempts trick users into clicking links or sharing information.',
-        'analogy' => 'It’s like someone wearing an AusPost uniform who isn’t actually from AusPost.',
-        'why' => 'Most cyber attacks start with a single convincing email.'
+    'term' => 'Phishing',
+    'summary' => 'Scam messages that pretend to be from people or organisations you trust.',
+    'explanation' => 'Phishing messages are designed to trick you into clicking links, opening attachments, or giving away information like passwords or payment details.',
+    'analogy' => 'It’s like someone wearing an AusPost uniform knocking on your door and saying there’s a problem with a delivery. They ask you to unlock the door, show ID, or sign something — and the moment you do, you’ve let them in.',
+    'why' => 'Phishing works because it relies on trust and urgency. One convincing message is often all it takes to start a larger attack.'
     ])
 
 </div>
