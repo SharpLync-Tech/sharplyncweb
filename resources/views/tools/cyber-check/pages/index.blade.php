@@ -18,7 +18,8 @@
 
     <div class="check-selector">
         <button type="button" class="active">Home / Personal</button>
-        <button type="button" disabled>Small Business <span>(coming next)</span></button>
+        <button type="button" data-check="business">Small Business</button>
+
     </div>
 
     @php
@@ -65,6 +66,91 @@
             ],
         ];
     @endphp
+
+    @php
+    $businessQuestions = [
+        [
+            'question' => 'How do staff sign in to work accounts?',
+            'options' => [
+                ['text' => 'The same password is reused', 'score' => 0],
+                ['text' => 'Different passwords, no extra checks', 'score' => 1],
+                ['text' => 'Password manager and extra sign-in checks', 'score' => 2],
+            ],
+        ],
+        [
+            'question' => 'How are computers and systems kept up to date?',
+            'options' => [
+                ['text' => 'Updates are manual or often missed', 'score' => 0],
+                ['text' => 'Updates happen sometimes', 'score' => 1],
+                ['text' => 'Updates install automatically', 'score' => 2],
+            ],
+        ],
+        [
+            'question' => 'If a staff laptop was lost today, what happens to company data?',
+            'options' => [
+                ['text' => 'Data would be lost or exposed', 'score' => 0],
+                ['text' => 'Some data could be recovered', 'score' => 1],
+                ['text' => 'Everything important is backed up securely', 'score' => 2],
+            ],
+        ],
+        [
+            'question' => 'How confident are staff at spotting fake emails or messages?',
+            'options' => [
+                ['text' => 'Not confident', 'score' => 0],
+                ['text' => 'Some awareness or informal training', 'score' => 1],
+                ['text' => 'Regular training and strong awareness', 'score' => 2],
+            ],
+        ],
+        [
+            'question' => 'Do you know who has access to company systems and data?',
+            'options' => [
+                ['text' => 'Access is unmanaged or unclear', 'score' => 0],
+                ['text' => 'Some access control, not reviewed often', 'score' => 1],
+                ['text' => 'Access is controlled and reviewed regularly', 'score' => 2],
+            ],
+        ],
+    ];
+@endphp
+
+<form id="business-check" class="check-form hidden" novalidate>
+
+    <h2>Small Business Cybersecurity Check</h2>
+    <p class="form-intro">
+        Answer honestly — this helps highlight practical areas to improve.
+    </p>
+
+    @foreach ($businessQuestions as $index => $q)
+        <div class="check-question">
+            <p class="question-title">
+                {{ $index + 1 }}. {{ $q['question'] }}
+            </p>
+
+            @foreach ($q['options'] as $option)
+                <label>
+                    <input
+                        type="radio"
+                        name="bq{{ $index + 1 }}"
+                        data-score="{{ $option['score'] }}"
+                    >
+                    {{ $option['text'] }}
+                </label>
+            @endforeach
+        </div>
+    @endforeach
+
+    <div class="form-actions">
+        <button
+            type="button"
+            id="business-submit"
+            class="btn-primary"
+            form="business-check"
+        >
+            See my results
+        </button>
+    </div>
+
+</form>
+
 
     <form id="home-check" class="check-form" novalidate>
 
