@@ -48,14 +48,29 @@
 
 <script>
 document.addEventListener('click', function (e) {
-    if (!e.target.classList.contains('term-toggle')) return;
+    const button = e.target.closest('.term-toggle');
+    if (!button) return;
 
-    const button = e.target;
-    const details = button.nextElementSibling;
-    const expanded = button.getAttribute('aria-expanded') === 'true';
+    const card = button.closest('.glossary-card');
+    const details = card.querySelector('.term-details');
+    const isOpen = button.getAttribute('aria-expanded') === 'true';
 
-    button.setAttribute('aria-expanded', !expanded);
-    button.textContent = expanded ? 'Read more' : 'Show less';
-    details.hidden = expanded;
+    // Close all cards first
+    document.querySelectorAll('.glossary-card').forEach(c => {
+        c.classList.remove('active');
+        c.querySelector('.term-details').hidden = true;
+        const btn = c.querySelector('.term-toggle');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = 'Read more';
+    });
+
+    // If it was closed, open it
+    if (!isOpen) {
+        card.classList.add('active');
+        details.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        button.textContent = 'Show less';
+    }
 });
 </script>
+

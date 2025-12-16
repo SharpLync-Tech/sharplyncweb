@@ -1,7 +1,7 @@
 /*
 |--------------------------------------------------------------------------
 | SharpLync Cyber Glossary
-| Version: v1.0
+| Version: v1.1
 |--------------------------------------------------------------------------
 | Notes:
 | - Extends sharplync.css (do not redefine brand colours/fonts)
@@ -15,7 +15,6 @@
     margin: 0 auto;
     padding: 40px 20px;
     min-height: auto;
-    
 }
 
 .tool-wrapper.cyber-glossary {
@@ -40,10 +39,11 @@
 /* Grid */
 .glossary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
 }
 
+/* Card accent */
 .glossary-card::before {
     content: "";
     display: block;
@@ -61,16 +61,19 @@
     border-radius: 12px;
     padding: 22px 24px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: 
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        opacity 0.25s ease,
+        grid-column 0.25s ease;
 }
 
-
+/* Card typography */
 .glossary-card h3 {
     color: #0A2A4D;
     font-weight: 600;
     margin-bottom: 6px;
 }
-
 
 .glossary-card p {
     color: #425B76; /* softer navy-grey */
@@ -78,13 +81,23 @@
     margin: 0;
 }
 
-
-.glossary-card:hover {
+/* Hover (inactive cards only) */
+.glossary-card:not(.active):hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
 }
 
+/* Active card behaviour */
+.glossary-card.active {
+    grid-column: span 2;
+    transform: none;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+}
 
+/* De-emphasise inactive cards when one is active */
+.glossary-grid:has(.glossary-card.active) .glossary-card:not(.active) {
+    opacity: 0.7;
+}
 
 /* Placeholder state */
 .glossary-card.placeholder h3 {
@@ -97,7 +110,6 @@
 }
 
 /* Expandable glossary behaviour */
-
 .term-summary {
     margin-bottom: 10px;
 }
@@ -115,14 +127,17 @@
     text-decoration: underline;
 }
 
+/* Expanded content */
 .term-details {
     margin-top: 14px;
+    animation: expandFade 0.25s ease;
 }
 
 .term-details p {
     margin-bottom: 10px;
 }
 
+/* Analogy & Why blocks */
 .term-analogy,
 .term-why {
     background: #f5f8fb;
@@ -131,12 +146,46 @@
     font-size: 0.95rem;
 }
 
-
+/* Expansion animation */
+@keyframes expandFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 /* Footer CTA */
 .glossary-footer-cta {
     color: #FFFFFF;
     margin-top: 50px;
     text-align: center;
-    
 }
+
+/* Mobile behaviour */
+@media (max-width: 768px) {
+
+    .glossary-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    /* Active card should NOT span sideways on mobile */
+    .glossary-card.active {
+        grid-column: auto;
+    }
+
+    /* Reduce fade so content stays readable */
+    .glossary-grid:has(.glossary-card.active) .glossary-card:not(.active) {
+        opacity: 0.85;
+    }
+
+    /* Slightly tighter padding for small screens */
+    .glossary-card {
+        padding: 18px 20px;
+    }
+}
+
