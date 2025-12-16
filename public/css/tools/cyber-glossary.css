@@ -200,4 +200,13 @@
     .glossary-card {
         padding: 18px 20px;
     }
+    
+    /* Keep the accent subtle on mobile */
+    .glossary-card::before {
+        width: 28px;
+    }
+
+    .glossary-card.active::before {
+        width: 150px;
+    }
 }
