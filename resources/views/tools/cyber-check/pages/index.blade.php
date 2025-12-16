@@ -3,7 +3,7 @@
 @section('title', 'Cybersecurity Check')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/cyber-check.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tools/cyber-check.css') }}">
 @endpush
 
 @section('content')
