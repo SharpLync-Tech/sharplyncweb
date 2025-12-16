@@ -21,38 +21,84 @@
         <button type="button" disabled>Small Business <span>(coming next)</span></button>
     </div>
 
+    @php
+        $questions = [
+            [
+                'question' => 'How do you protect your online accounts?',
+                'options' => [
+                    ['text' => 'I reuse the same password', 'score' => 0],
+                    ['text' => 'I use different passwords', 'score' => 1],
+                    ['text' => 'I use a password manager and extra sign-in checks', 'score' => 2],
+                ],
+            ],
+            [
+                'question' => 'Do your devices update automatically?',
+                'options' => [
+                    ['text' => 'I’m not sure', 'score' => 0],
+                    ['text' => 'I update them sometimes', 'score' => 1],
+                    ['text' => 'Updates happen automatically', 'score' => 2],
+                ],
+            ],
+            [
+                'question' => 'If your device was lost today, what would happen to your files?',
+                'options' => [
+                    ['text' => 'I’d lose most of them', 'score' => 0],
+                    ['text' => 'Some are backed up', 'score' => 1],
+                    ['text' => 'Everything important is backed up', 'score' => 2],
+                ],
+            ],
+            [
+                'question' => 'How confident are you at spotting scam messages?',
+                'options' => [
+                    ['text' => 'Not confident', 'score' => 0],
+                    ['text' => 'Somewhat confident', 'score' => 1],
+                    ['text' => 'Very confident and cautious', 'score' => 2],
+                ],
+            ],
+            [
+                'question' => 'Do you use extra sign-in checks for important accounts?',
+                'options' => [
+                    ['text' => 'No', 'score' => 0],
+                    ['text' => 'Some accounts', 'score' => 1],
+                    ['text' => 'All important accounts', 'score' => 2],
+                ],
+            ],
+        ];
+    @endphp
+
     <form id="home-check" class="check-form" novalidate>
 
         <h2>Home Cybersecurity Check</h2>
         <p class="form-intro">Answer honestly — there are no right or wrong answers.</p>
 
-        @for ($i = 1; $i <= 5; $i++)
+        @foreach ($questions as $index => $q)
             <div class="check-question">
                 <p class="question-title">
-                    {{ $i }}.
-                    @switch($i)
-                        @case(1) How do you protect your online accounts? @break
-                        @case(2) Do your devices update automatically? @break
-                        @case(3) If your device was lost today, what would happen to your files? @break
-                        @case(4) How confident are you at spotting scam messages? @break
-                        @case(5) Do you use extra sign-in checks for important accounts? @break
-                    @endswitch
+                    {{ $index + 1 }}. {{ $q['question'] }}
                 </p>
 
-                <label><input type="radio" name="q{{ $i }}" data-score="0"> Option 1</label>
-                <label><input type="radio" name="q{{ $i }}" data-score="1"> Option 2</label>
-                <label><input type="radio" name="q{{ $i }}" data-score="2"> Option 3</label>
+                @foreach ($q['options'] as $option)
+                    <label>
+                        <input
+                            type="radio"
+                            name="q{{ $index + 1 }}"
+                            data-score="{{ $option['score'] }}"
+                        >
+                        {{ $option['text'] }}
+                    </label>
+                @endforeach
             </div>
-        @endfor
+        @endforeach
 
         <div class="form-actions">
             <button
-    type="button"
-    id="check-submit"
-    class="btn-primary"
-    form="home-check"
->
-
+                type="button"
+                id="check-submit"
+                class="btn-primary"
+                form="home-check"
+            >
+                See my results
+            </button>
         </div>
 
     </form>
@@ -63,7 +109,9 @@
         <div class="result-box" id="result-message"></div>
 
         <div class="form-actions">
-            <a href="/about" class="btn-primary">Learn more about SharpLync</a>
+            <a href="/about" class="btn-primary">
+                Learn more about SharpLync
+            </a>
         </div>
     </div>
 
