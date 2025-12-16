@@ -186,18 +186,32 @@
 
 @media (max-width: 768px) {
 
+    /* Give the grid some side breathing room */
     .glossary-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
+        padding-left: 6px;
+        padding-right: 6px;
     }
 
-    /* Full-width still applies naturally */
-    .glossary-card.active {
-        grid-column: auto;
-    }
-
-    /* Tighter padding on small screens */
+    /* Visually narrow the card */
     .glossary-card {
-        padding: 18px 20px;
+        margin: 0 auto;
+        border-radius: 10px;
     }
+
+    /* Focus mode card: keep full width but not edge-to-edge */
+    .glossary-card.active {
+        width: calc(100% - 12px);
+    }
+
+}
+
+/* Keep the accent subtle on mobile */
+    .glossary-card::before {
+        width: 28px;
+    }
+
+    .glossary-card.active::before {
+        width: 190px;
+    }
+
 }
