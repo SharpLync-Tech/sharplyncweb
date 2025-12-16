@@ -19,13 +19,8 @@
 
     <!-- Selector -->
     <div class="check-selector">
-        <button type="button" data-check="home">
-            Home / Personal
-        </button>
-
-        <button type="button" data-check="business">
-            Small Business
-        </button>
+        <button type="button" data-check="home">Home / Personal</button>
+        <button type="button" data-check="business">Small Business</button>
     </div>
 
     @php
@@ -116,13 +111,15 @@
         ];
     @endphp
 
-    <!-- Business Check -->
+    <!-- Business Check (starts hidden) -->
     <form id="business-check" class="check-form hidden" novalidate>
         <h2>Small Business Cybersecurity Check</h2>
+        <p class="form-intro">Answer honestly — this helps highlight practical areas to improve.</p>
 
         @foreach ($businessQuestions as $index => $q)
             <div class="check-question">
                 <p class="question-title">{{ $index + 1 }}. {{ $q['question'] }}</p>
+
                 @foreach ($q['options'] as $option)
                     <label>
                         <input type="radio" name="bq{{ $index + 1 }}" data-score="{{ $option['score'] }}">
@@ -139,13 +136,15 @@
         </div>
     </form>
 
-    <!-- Home Check -->
+    <!-- Home Check (starts hidden) -->
     <form id="home-check" class="check-form hidden" novalidate>
         <h2>Home Cybersecurity Check</h2>
+        <p class="form-intro">Answer honestly — there are no right or wrong answers.</p>
 
         @foreach ($questions as $index => $q)
             <div class="check-question">
                 <p class="question-title">{{ $index + 1 }}. {{ $q['question'] }}</p>
+
                 @foreach ($q['options'] as $option)
                     <label>
                         <input type="radio" name="q{{ $index + 1 }}" data-score="{{ $option['score'] }}">
@@ -162,16 +161,20 @@
         </div>
     </form>
 
-    <!-- Results -->
+    <!-- Results (starts hidden) -->
     <div id="check-results" class="check-form hidden">
         <h2>Your Results</h2>
         <p id="result-summary"></p>
         <div class="result-box" id="result-message"></div>
+
+        <div class="form-actions">
+            <a href="/about" class="btn-primary">Learn more about SharpLync</a>
+        </div>
     </div>
 
 </div>
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/tools/cyber-check.js') }}" defer></script>
+<script src="{{ asset('js/tools/cyber-check.js') }}"></script>
 @endpush

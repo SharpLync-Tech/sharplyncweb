@@ -4,9 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultSummary = document.getElementById('result-summary');
     const resultMessage = document.getElementById('result-message');
 
-    /**
-     * Hide all forms and results, reset selector state
-     */
     function resetView() {
         document.querySelectorAll('.check-form')
             .forEach(el => el.classList.add('hidden'));
@@ -19,9 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .forEach(btn => btn.classList.remove('active'));
     }
 
-    /**
-     * Run a cybersecurity check (Home or Business)
-     */
     function runCheck({ formId, questionPrefix, submitId }) {
 
         const form   = document.getElementById(formId);
@@ -64,12 +58,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     'You’re doing many of the right things already. A quick review could help make sure nothing is being missed.';
             }
 
-            // Show results
-            resultSummary.innerHTML =
-                `<strong>Score:</strong> ${totalScore} / 10`;
-
-            resultMessage.innerHTML =
-                `<strong>${headline}</strong><br>${explanation}`;
+            resultSummary.innerHTML = `<strong>Score:</strong> ${totalScore} / 10`;
+            resultMessage.innerHTML = `<strong>${headline}</strong><br>${explanation}`;
 
             form.classList.add('hidden');
             resultsPanel.classList.remove('hidden');
@@ -77,9 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /**
-     * Initialise checks
-     */
     runCheck({
         formId: 'home-check',
         questionPrefix: 'q',
@@ -92,9 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
         submitId: 'business-submit'
     });
 
-    /**
-     * Selector logic (Home / Business)
-     */
     document.querySelectorAll('.check-selector button').forEach(button => {
         button.addEventListener('click', () => {
 
@@ -116,9 +100,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /**
-     * Initial page state
-     */
     resetView();
-
 });

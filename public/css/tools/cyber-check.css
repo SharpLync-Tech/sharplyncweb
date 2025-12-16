@@ -1,7 +1,7 @@
 /*
 |--------------------------------------------------------------------------
 | SharpLync Cyber Check
-| Version: v1.1
+| Version: v1.2
 |--------------------------------------------------------------------------
 | Tool-specific styles only
 |--------------------------------------------------------------------------
@@ -15,6 +15,16 @@
 
 .tool-header {
     color: #ffffff;
+}
+
+.tool-intro {
+    opacity: 0.9;
+}
+
+/* IMPORTANT: This is what your JS relies on */
+.hidden,
+[hidden] {
+    display: none !important;
 }
 
 /* Selector */
@@ -123,7 +133,6 @@
     color: #2E4057;
     line-height: 1.5;
 }
-
 
 /* Mobile */
 @media (max-width: 768px) {
