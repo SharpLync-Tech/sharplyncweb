@@ -19,20 +19,17 @@
 
     <!-- Selector -->
     <div class="check-selector">
-        <button type="button" class="active" data-check="home">
+        <button type="button" class="active">
             Home / Personal
         </button>
 
-        <button type="button" data-check="business" disabled>
+        <button type="button" disabled>
             Small Business <span>(coming next)</span>
         </button>
     </div>
 
     <!-- Home Assessment -->
     <form id="home-check" class="check-form" novalidate>
-
-
-        @csrf
 
         <h2>Home Cybersecurity Check</h2>
         <p class="form-intro">
@@ -42,10 +39,9 @@
         <!-- Question 1 -->
         <div class="check-question">
             <p class="question-title">1. How do you protect your online accounts?</p>
-            <label><input type="radio" name="q1" data-score="0">I reuse the same password</label>
-            <label><input type="radio" name="q1" data-score="1">I use different passwords</label>
-            <label><input type="radio" name="q1" data-score="2">I use a password manager and extra sign-in checks</label>
-
+            <label><input type="radio" name="q1" data-score="0"> I reuse the same password</label>
+            <label><input type="radio" name="q1" data-score="1"> I use different passwords</label>
+            <label><input type="radio" name="q1" data-score="2"> I use a password manager and extra sign-in checks</label>
         </div>
 
         <!-- Question 2 -->
@@ -95,66 +91,70 @@
 
     </form>
 
-        <div id="check-results" class="check-form hidden">
-            <h2>Your Results</h2>
-            <p id="result-summary"></p>
+    <!-- Results -->
+    <div id="check-results" class="check-form hidden">
+        <h2>Your Results</h2>
+        <p id="result-summary"></p>
 
-            <div class="result-box" id="result-message"></div>
+        <div class="result-box" id="result-message"></div>
 
-            <div class="form-actions">
-                <a href="/about" class="btn-primary">
-                    Learn more about SharpLync
-                </a>
-            </div>
+        <div class="form-actions">
+            <a href="/about" class="btn-primary">
+                Learn more about SharpLync
+            </a>
         </div>
-
+    </div>
 
 </div>
 @endsection
 
+@push('scripts')
 <script>
-document.getElementById('home-check').addEventListener('submit', function (e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
 
-    let totalScore = 0;
-    let totalQuestions = 5;
-
-    for (let i = 1; i <= totalQuestions; i++) {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        if (!selected) {
-            alert('Please answer all questions before seeing your results.');
-            return;
-        }
-        totalScore += parseInt(selected.dataset.score);
-    }
-
-    // Hide form
-    this.classList.add('hidden');
-
-    // Show results
+    const form = document.getElementById('home-check');
     const results = document.getElementById('check-results');
-    const summary = document.getElementById('result-summary');
-    const message = document.getElementById('result-message');
 
-    let headline = '';
-    let explanation = '';
+    if (!form || !results) return;
 
-    if (totalScore <= 4) {
-        headline = 'Your cybersecurity needs attention';
-        explanation = 'There are a few gaps that could put your data at risk. The good news is that most of these are easy to improve with the right setup.';
-    } else if (totalScore <= 7) {
-        headline = 'You’re doing okay, but there’s room to improve';
-        explanation = 'You’ve got some good habits in place, but tightening a few areas would make a big difference.';
-    } else {
-        headline = 'You’re in good shape';
-        explanation = 'You’re doing many of the right things already. A quick review could help make sure nothing is being missed.';
-    }
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    summary.innerHTML = `<strong>Score:</strong> ${totalScore} / 10`;
-    message.innerHTML = `<strong>${headline}</strong><br>${explanation}`;
+        let totalScore = 0;
 
-    results.classList.remove('hidden');
-    results.scrollIntoView({ behavior: 'smooth' });
+        for (let i = 1; i <= 5; i++) {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (!selected) {
+                alert('Please answer all questions before seeing your results.');
+                return;
+            }
+            totalScore += parseInt(selected.dataset.score, 10);
+        }
+
+        let headline, explanation;
+
+        if (totalScore <= 4) {
+            headline = 'Your cybersecurity needs attention';
+            explanation = 'There are a few gaps that could put your data at risk.';
+        } else if (totalScore <= 7) {
+            headline = 'You’re doing okay, but there’s room to improve';
+            explanation = 'You have some good habits in place, but tightening a few areas would help.';
+        } else {
+            headline = 'You’re in good shape';
+            explanation = 'You’re doing many of the right things already.';
+        }
+
+        document.getElementById('result-summary').innerHTML =
+            `<strong>Score:</strong> ${totalScore} / 10`;
+
+        document.getElementById('result-message').innerHTML =
+            `<strong>${headline}</strong><br>${explanation}`;
+
+        form.classList.add('hidden');
+        results.classList.remove('hidden');
+        results.scrollIntoView({ behavior: 'smooth' });
+    });
+
 });
 </script>
-
+@endpush
