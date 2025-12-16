@@ -100,8 +100,8 @@
             <div class="result-box" id="result-message"></div>
 
             <div class="form-actions">
-                <a href="{{ route('contact') }}" class="btn-primary">
-                    Talk to SharpLync
+                <a href="/about" class="btn-primary">
+                    Learn more about SharpLync
                 </a>
             </div>
         </div>
@@ -111,7 +111,7 @@
 @endsection
 
 <script>
-document.querySelector('.check-form').addEventListener('submit', function (e) {
+document.getElementById('home-check').addEventListener('submit', function (e) {
     e.preventDefault();
 
     let totalScore = 0;
