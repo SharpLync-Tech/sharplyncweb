@@ -20,10 +20,17 @@ Route::prefix('tools')->group(function () {
     })->name('tools.cyber-glossary');
 
 
-    Route::get('/cyber-check', function () {
-    return view('tools.cyber-check.pages.index');
+    //  Route::get('/cyber-check', function () {
+    //  return view('tools.cyber-check.pages.index');
+    //  })->name('tools.cyber-check');
+
+    // This allows the page to load (GET) AND the form to submit (POST) to the same URL
+    Route::match(['get', 'post'], '/cyber-check', function () {
+        return view('tools.cyber-check.pages.index');
     })->name('tools.cyber-check');
 
+
+    
 
     /*
     |--------------------------------------------------------------------------
