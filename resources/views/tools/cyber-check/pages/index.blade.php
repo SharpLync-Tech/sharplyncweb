@@ -29,7 +29,9 @@
     </div>
 
     <!-- Home Assessment -->
-    <form id="home-check" class="check-form" method="POST" action="#">
+    <form id="home-check" class="check-form" novalidate>
+
+
         @csrf
 
         <h2>Home Cybersecurity Check</h2>
