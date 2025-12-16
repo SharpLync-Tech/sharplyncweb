@@ -19,6 +19,12 @@ Route::prefix('tools')->group(function () {
         return view('tools.cyber-glossary.pages.index');
     })->name('tools.cyber-glossary');
 
+
+    Route::get('/cyber-check', function () {
+    return view('tools.cyber-check.pages.index');
+    })->name('tools.cyber-check');
+
+
     /*
     |--------------------------------------------------------------------------
     | Cyber Check (scaffold only for now)
