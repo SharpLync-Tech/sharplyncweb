@@ -1,7 +1,7 @@
 /*
 |--------------------------------------------------------------------------
 | SharpLync Cyber Glossary
-| Version: v1.1
+| Version: v1.2
 |--------------------------------------------------------------------------
 | Notes:
 | - Extends sharplync.css (do not redefine brand colours/fonts)
@@ -61,14 +61,12 @@
     border-radius: 12px;
     padding: 22px 24px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transition: 
+    transition:
         transform 0.25s ease,
-        box-shadow 0.25s ease,
-        opacity 0.25s ease,
-        grid-column 0.25s ease;
+        box-shadow 0.25s ease;
 }
 
-/* Card typography */
+/* Typography */
 .glossary-card h3 {
     color: #0A2A4D;
     font-weight: 600;
@@ -81,25 +79,32 @@
     margin: 0;
 }
 
-/* Hover (inactive cards only) */
+/* Hover (only when not in focus mode) */
 .glossary-card:not(.active):hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
 }
 
-/* Active card behaviour */
+/* ===============================
+   Focus Mode (single card view)
+   =============================== */
+
+/* Active card becomes full-width */
 .glossary-card.active {
-    grid-column: span 2;
+    grid-column: 1 / -1;
     transform: none;
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
 }
 
-/* De-emphasise inactive cards when one is active */
+/* Hide all other cards completely */
 .glossary-grid:has(.glossary-card.active) .glossary-card:not(.active) {
-    opacity: 0.7;
+    display: none;
 }
 
-/* Placeholder state */
+/* ===============================
+   Placeholder state
+   =============================== */
+
 .glossary-card.placeholder h3 {
     opacity: 0.9;
 }
@@ -109,7 +114,10 @@
     font-style: italic;
 }
 
-/* Expandable glossary behaviour */
+/* ===============================
+   Expandable glossary behaviour
+   =============================== */
+
 .term-summary {
     margin-bottom: 10px;
 }
@@ -165,7 +173,10 @@
     text-align: center;
 }
 
-/* Mobile behaviour */
+/* ===============================
+   Mobile behaviour
+   =============================== */
+
 @media (max-width: 768px) {
 
     .glossary-grid {
@@ -173,19 +184,13 @@
         gap: 18px;
     }
 
-    /* Active card should NOT span sideways on mobile */
+    /* Full-width still applies naturally */
     .glossary-card.active {
         grid-column: auto;
     }
 
-    /* Reduce fade so content stays readable */
-    .glossary-grid:has(.glossary-card.active) .glossary-card:not(.active) {
-        opacity: 0.85;
-    }
-
-    /* Slightly tighter padding for small screens */
+    /* Tighter padding on small screens */
     .glossary-card {
         padding: 18px 20px;
     }
 }
-
