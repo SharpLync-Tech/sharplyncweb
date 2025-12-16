@@ -52,7 +52,14 @@
     background: #2CBFAE; /* SharpLync teal */
     border-radius: 4px;
     margin-bottom: 10px;
+    transition: width 0.25s ease;
 }
+
+/* Expand accent when card is active */
+.glossary-card.active::before {
+    width: 500px;
+}
+
 
 /* Card */
 .glossary-card {
