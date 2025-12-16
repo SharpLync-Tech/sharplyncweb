@@ -13,6 +13,10 @@
     padding: 40px 20px 80px;
 }
 
+.tool-header {
+    color: #ffffff;
+}
+
 /* Selector */
 .check-selector {
     display: flex;
