@@ -9,18 +9,16 @@
 @section('content')
 <div class="tool-wrapper cyber-check">
 
-    <div class="tool-header">
-        <h1>Cybersecurity Check</h1>
-        <p class="tool-intro">
-            A short, plain-English check to help you understand how you’re tracking.
-        </p>
-    </div>
-
     <div class="check-selector">
-        <button type="button" class="active">Home / Personal</button>
-        <button type="button" data-check="business">Small Business</button>
+        <button type="button" data-check="home">
+            Home / Personal
+        </button>
 
+        <button type="button" data-check="business">
+            Small Business
+        </button>
     </div>
+
 
     @php
         $questions = [
@@ -114,6 +112,7 @@
 
 <form id="business-check" class="check-form hidden" novalidate>
 
+
     <h2>Small Business Cybersecurity Check</h2>
     <p class="form-intro">
         Answer honestly — this helps highlight practical areas to improve.
@@ -152,7 +151,8 @@
 </form>
 
 
-    <form id="home-check" class="check-form" novalidate>
+    <form id="home-check" class="check-form hidden" novalidate>
+
 
         <h2>Home Cybersecurity Check</h2>
         <p class="form-intro">Answer honestly — there are no right or wrong answers.</p>

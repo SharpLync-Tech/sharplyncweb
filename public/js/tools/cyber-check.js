@@ -1,15 +1,30 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const resultsPanel = document.getElementById('check-results');
+    const resultsPanel  = document.getElementById('check-results');
     const resultSummary = document.getElementById('result-summary');
     const resultMessage = document.getElementById('result-message');
+
+    /**
+     * Hide all forms and results, reset selector state
+     */
+    function resetView() {
+        document.querySelectorAll('.check-form')
+            .forEach(el => el.classList.add('hidden'));
+
+        if (resultsPanel) {
+            resultsPanel.classList.add('hidden');
+        }
+
+        document.querySelectorAll('.check-selector button')
+            .forEach(btn => btn.classList.remove('active'));
+    }
 
     /**
      * Run a cybersecurity check (Home or Business)
      */
     function runCheck({ formId, questionPrefix, submitId }) {
 
-        const form = document.getElementById(formId);
+        const form   = document.getElementById(formId);
         const button = document.getElementById(submitId);
 
         if (!form || !button) return;
@@ -49,11 +64,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     'You’re doing many of the right things already. A quick review could help make sure nothing is being missed.';
             }
 
-            // Update results
-            resultSummary.innerHTML = `<strong>Score:</strong> ${totalScore} / 10`;
-            resultMessage.innerHTML = `<strong>${headline}</strong><br>${explanation}`;
+            // Show results
+            resultSummary.innerHTML =
+                `<strong>Score:</strong> ${totalScore} / 10`;
 
-            // Hide active form, show results
+            resultMessage.innerHTML =
+                `<strong>${headline}</strong><br>${explanation}`;
+
             form.classList.add('hidden');
             resultsPanel.classList.remove('hidden');
             resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -61,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Initialise both checks
+     * Initialise checks
      */
     runCheck({
         formId: 'home-check',
@@ -76,33 +93,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
-     * Toggle Home / Business selector
+     * Selector logic (Home / Business)
      */
     document.querySelectorAll('.check-selector button').forEach(button => {
         button.addEventListener('click', () => {
 
             if (button.disabled) return;
 
-            // Toggle active button
-            document.querySelectorAll('.check-selector button')
-                .forEach(b => b.classList.remove('active'));
+            const type = button.dataset.check;
+            if (!type) return;
+
+            resetView();
             button.classList.add('active');
 
-            // Hide all forms + results
-            document.querySelectorAll('.check-form')
-                .forEach(form => form.classList.add('hidden'));
-
-            resultsPanel.classList.add('hidden');
-
-            // Show selected form
-            const type = button.dataset.check;
             if (type === 'home') {
-                document.getElementById('home-check').classList.remove('hidden');
+                document.getElementById('home-check')?.classList.remove('hidden');
             }
+
             if (type === 'business') {
-                document.getElementById('business-check').classList.remove('hidden');
+                document.getElementById('business-check')?.classList.remove('hidden');
             }
         });
     });
+
+    /**
+     * Initial page state
+     */
+    resetView();
 
 });
