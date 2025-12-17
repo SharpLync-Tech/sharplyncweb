@@ -64,8 +64,7 @@
                         <img src="{{ asset('images/partners/trendmicro.png') }}" alt="Trend Micro">
                     </div>
                     <h3>Trend Micro</h3>
-                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s practical cybersecurity support.</p>
-                    <a href="{{ url('/trend-micro') }}" class="v-btn">Explore</a>
+                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s practical cybersecurity support.</p>                    
                 </article>
 
                 <article class="v-card">
