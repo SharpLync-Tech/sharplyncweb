@@ -40,7 +40,7 @@
                     <li><span class="v-dot"></span> Every vendor aligns with SharpLync’s security-first standards</li>
                 </ul>
                 <div class="v-panel-foot">
-                    Good tech, chosen deliberately , not by accident.
+                    Good tech, chosen deliberately, not by accident.
                 </div>
             </div>
 
@@ -65,7 +65,7 @@
                 {{-- Trend Micro --}}
                 <article class="v-card">
                     <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/tball.png') }}" class="v-logo">
+                    <img src="{{ asset('images/partners/trendmicro.png') }}" class="v-logo">
                     <h3>Trend Micro</h3>
                     <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s
                        practical, real-world cybersecurity support.</p>
@@ -77,8 +77,7 @@
                     <div class="v-card-badge">Official Partner</div>
                     <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
                     <h3>Dell Technologies</h3>
-                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
-                    <span class="v-pending-label">Pending Approval</span>
+                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>                    
                 </article>
 
 
@@ -87,8 +86,7 @@
                     <div class="v-card-badge">Official Partner</div>
                     <img src="{{ asset('images/partners/meraki.png') }}" class="v-logo">
                     <h3>Cisco Meraki</h3>
-                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>
-                    <span class="v-pending-label">Pending Approval</span>
+                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>                    
                 </article>
 
 
