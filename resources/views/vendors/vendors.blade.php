@@ -123,9 +123,10 @@
 
 
 
-    {{-- ===========================
+    {{-- 
+        ===========================
          PENDING / IN PROGRESS
-    ============================ --}}
+    ============================
     <section class="v-section v-alt">
         <div class="v-section-inner">
             <h2>Pending Partnerships</h2>
@@ -136,7 +137,7 @@
 
             <div class="v-card-grid">
 
-                {{-- Dell 
+                {{-- Dell  --}}
                 <article class="v-card pending">
                     <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
                     <h3>Dell Technologies</h3>
