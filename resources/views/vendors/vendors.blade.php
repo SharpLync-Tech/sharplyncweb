@@ -102,6 +102,7 @@
                 <article class="v-card">
                     <div class="v-logo-wrap">
                         <img src="{{ asset('images/partners/cisco.png') }}" alt="Cisco">
+                        <img src="{{ asset('images/partners/cisco.svg') }}" alt="Cisco">
                     </div>
                     <h3>Cisco</h3>
                     <p>Networking and security solutions trusted globally, from switching to secure remote access.</p>
