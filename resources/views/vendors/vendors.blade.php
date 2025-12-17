@@ -1,7 +1,6 @@
 {{-- 
     Page: vendors/vendors.blade.php
     Purpose: Central hub listing all SharpLync vendors & partnerships
-    Style: Based on Trend Micro page (clean, premium, gradient hero, card grids)
 --}}
 
 @extends('layouts.base')
@@ -27,7 +26,7 @@
                 <h1>Trusted partnerships that power SharpLync services.</h1>
                 <p class="v-hero-sub">
                     We work closely with world-class technology providers so our customers get reliable,
-                    secure, modern IT solutions , backed by real human support from SharpLync.
+                    secure, modern IT solutions — backed by real human support from SharpLync.
                 </p>
             </div>
 
@@ -36,18 +35,16 @@
                 <ul class="v-panel-list">
                     <li><span class="v-dot"></span> Only trusted, reputable vendors make our partner list</li>
                     <li><span class="v-dot"></span> Official partnerships give us priority support & better pricing</li>
-                    <li><span class="v-dot"></span> We recommend what fits your business, not what’s popular</li>
-                    <li><span class="v-dot"></span> Every vendor aligns with SharpLync’s security-first standards</li>
+                    <li><span class="v-dot"></span> We recommend what fits your business</li>
+                    <li><span class="v-dot"></span> Security-first standards across all platforms</li>
                 </ul>
                 <div class="v-panel-foot">
-                    Good tech, chosen deliberately, not by accident.
+                    Good tech, chosen deliberately — not by accident.
                 </div>
             </div>
 
         </div>
     </section>
-
-
 
     {{-- ===========================
          OFFICIAL PARTNERS
@@ -61,84 +58,67 @@
             </p>
 
             <div class="v-card-grid">
-                
-                {{-- Trend Micro --}}
+
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/trendmicro.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/trendmicro.png') }}" alt="Trend Micro">
+                    </div>
                     <h3>Trend Micro</h3>
-                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s
-                       practical, real-world cybersecurity support.</p>
+                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s practical cybersecurity support.</p>
                     <a href="{{ url('/trend-micro') }}" class="v-btn">Explore</a>
                 </article>
 
-                {{-- Dell --}}
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/dell.png') }}" alt="Dell Technologies">
+                    </div>
                     <h3>Dell Technologies</h3>
-                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>                    
+                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
                 </article>
 
-
-                {{-- Meraki --}}
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/meraki.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/meraki.png') }}" alt="Cisco Meraki">
+                    </div>
                     <h3>Cisco Meraki</h3>
-                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>                    
+                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>
                 </article>
 
-
-                {{-- HP --}}
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/hp.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/hp.png') }}" alt="HP">
+                    </div>
                     <h3>HP</h3>
-                    <p>Reliable business laptops, desktops, and printing solutions backed by HP’s global
-                       reputation for quality.</p>
+                    <p>Reliable business laptops, desktops, and printing solutions backed by HP’s global reputation.</p>
                 </article>
 
-                {{-- Lenovo --}}
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/lenovo.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/lenovo.png') }}" alt="Lenovo">
+                    </div>
                     <h3>Lenovo</h3>
-                    <p>Performance-driven business PCs, workstations, and mobile devices trusted by
-                       professionals worldwide.</p>
+                    <p>Performance-driven business PCs, workstations, and mobile devices trusted worldwide.</p>
                 </article>
 
-                {{-- Cisco --}}
                 <article class="v-card">
-                    <div class="v-card-badge">Official Partner</div>
-                    <img src="{{ asset('images/partners/cisco.png') }}" class="v-logo">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/cisco.png') }}" alt="Cisco">
+                    </div>
                     <h3>Cisco</h3>
-                    <p>Networking and security solutions trusted globally, from switching and routing
-                       to secure remote access.</p>
+                    <p>Networking and security solutions trusted globally, from switching to secure remote access.</p>
                 </article>
 
             </div>
         </div>
     </section>
-
-
-    
-
-            </div>
-        </div>
-    </section>
-
-
 
     {{-- ===========================
-         CTA BAND
+         CTA
     ============================ --}}
     <section class="v-cta">
         <div class="v-cta-inner">
             <h2>Want to know which vendors are right for your business?</h2>
-            <p>
-                We help you choose technology that fits the way you work, not just what’s trending.
-            </p>
+            <p>We help you choose technology that fits how you work — not just what’s trending.</p>
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
             </a>
