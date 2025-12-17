@@ -276,6 +276,12 @@
     box-shadow: 0 0 20px rgba(44,191,174,0.9);
 }
 
+/* CTA spacing fix */
+.v-cta-btn {
+    margin-top: 1.4rem;
+}
+
+
 
 /* ===========================
    MOBILE HERO LAYOUT FIX
@@ -343,7 +349,7 @@
     .v-panel-list li::before {
         content: "✓";
         margin-right: 0.6rem;
-        color: rgba(233, 244, 243, 0.75);
+        color: rgba(44, 191, 174, 0.95);
         font-weight: 600;
     }
 }

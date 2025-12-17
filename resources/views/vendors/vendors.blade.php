@@ -118,7 +118,7 @@
     <section class="v-cta">
         <div class="v-cta-inner">
             <h2>Want to know which vendors are right for your business?</h2>
-            <p>We help you choose technology that fits how you work — not just what’s trending.</p>
+            <p>We help you choose technology that fits how you work, not just what’s trending.</p>
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
             </a>
