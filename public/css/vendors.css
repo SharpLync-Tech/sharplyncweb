@@ -33,9 +33,24 @@
 }
 
 .v-kicker {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(233,244,243,0.85);
+    margin-bottom: 0.9rem;
+    padding-left: 0.8rem;
+    position: relative;
+}
+
+.v-kicker::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    width: 4px;
+    height: 1rem;
+    border-radius: 3px;
+    background: #2CBFAE;
 }
 
 .vendors-hero-text h1 {
