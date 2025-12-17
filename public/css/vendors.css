@@ -277,20 +277,73 @@
 }
 
 
-/* ---------------------------
-   RESPONSIVE
----------------------------- */
-@media (max-width: 1000px) {
+/* ===========================
+   MOBILE HERO LAYOUT FIX
+=========================== */
+@media (max-width: 900px) {
+
+    /* Force hero to stack cleanly */
     .vendors-hero-inner {
         grid-template-columns: 1fr;
+        gap: 2rem;
     }
-    .v-card-grid {
-        grid-template-columns: repeat(2, 1fr);
+
+    /* Reset panel positioning */
+    .vendors-hero-panel {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        position: static;
     }
 }
 
+/* Extra tightening for small phones */
 @media (max-width: 600px) {
-    .v-card-grid {
-        grid-template-columns: 1fr;
+
+    .vendors-hero {
+        padding: 4.5rem 6% 3.5rem;
+    }
+
+    .vendors-hero-panel {
+        padding: 1.6rem 1.5rem;
+        border-radius: 14px;
+    }
+
+    .vendors-hero-text h1 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .v-panel-heading {
+        font-size: 1.05rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    /* ===========================
+   FORCE CLEAN BULLETS ON MOBILE
+=========================== */
+@media (max-width: 700px) {
+
+    /* Kill the dot everywhere, no exceptions */
+    .v-panel-list .v-dot {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Remove any layout reservation */
+    .v-panel-list li {
+        display: block;
+        padding-left: 0 !important;
+    }
+
+    /* Use a single, consistent dash */
+    .v-panel-list li::before {
+        content: "✓";
+        margin-right: 0.6rem;
+        color: rgba(233, 244, 243, 0.75);
+        font-weight: 600;
     }
 }
