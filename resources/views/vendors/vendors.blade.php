@@ -122,38 +122,7 @@
     </section>
 
 
-
-    {{-- 
-        ===========================
-         PENDING / IN PROGRESS
-    ============================
-    <section class="v-section v-alt">
-        <div class="v-section-inner">
-            <h2>Pending Partnerships</h2>
-            <p class="v-section-sub">
-                These vendors are currently in SharpLync’s onboarding and approval pipeline.
-                Once finalised, they’ll move into our Official Partners section.
-            </p>
-
-            <div class="v-card-grid">
-
-                {{-- Dell  --}}
-                <article class="v-card pending">
-                    <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
-                    <h3>Dell Technologies</h3>
-                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
-                    <span class="v-pending-label">Pending Approval</span>
-                </article>
-
-                {{-- Meraki --}}
-                <article class="v-card pending">
-                    <img src="{{ asset('images/partners/meraki.png') }}" class="v-logo">
-                    <h3>Cisco Meraki</h3>
-                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>
-                    <span class="v-pending-label">Pending Approval</span>
-                </article>
-
-                --}}
+    
 
             </div>
         </div>
