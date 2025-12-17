@@ -27,7 +27,7 @@
                 <h1>Trusted partnerships that power SharpLync services.</h1>
                 <p class="v-hero-sub">
                     We work closely with world-class technology providers so our customers get reliable,
-                    secure, modern IT solutions — backed by real human support from SharpLync.
+                    secure, modern IT solutions , backed by real human support from SharpLync.
                 </p>
             </div>
 
@@ -36,11 +36,11 @@
                 <ul class="v-panel-list">
                     <li><span class="v-dot"></span> Only trusted, reputable vendors make our partner list</li>
                     <li><span class="v-dot"></span> Official partnerships give us priority support & better pricing</li>
-                    <li><span class="v-dot"></span> We recommend what fits your business — not what’s popular</li>
+                    <li><span class="v-dot"></span> We recommend what fits your business, not what’s popular</li>
                     <li><span class="v-dot"></span> Every vendor aligns with SharpLync’s security-first standards</li>
                 </ul>
                 <div class="v-panel-foot">
-                    Good tech, chosen deliberately — not by accident.
+                    Good tech, chosen deliberately , not by accident.
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                     <div class="v-card-badge">Official Partner</div>
                     <img src="{{ asset('images/partners/tball.png') }}" class="v-logo">
                     <h3>Trend Micro</h3>
-                    <p>Enterprise-level security and Vision One XDR protection — paired with SharpLync’s
+                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s
                        practical, real-world cybersecurity support.</p>
                     <a href="{{ url('/trend-micro') }}" class="v-btn">Explore</a>
                 </article>
@@ -79,7 +79,7 @@
                     <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
                     <span class="v-pending-label">Pending Approval</span>
                 </article>
-                
+
 
                 {{-- Meraki --}}
                 <article class="v-card pending">
@@ -113,7 +113,7 @@
                     <div class="v-card-badge">Official Partner</div>
                     <img src="{{ asset('images/partners/cisco.png') }}" class="v-logo">
                     <h3>Cisco</h3>
-                    <p>Networking and security solutions trusted globally — from switching and routing
+                    <p>Networking and security solutions trusted globally, from switching and routing
                        to secure remote access.</p>
                 </article>
 
@@ -136,7 +136,7 @@
 
             <div class="v-card-grid">
 
-                {{-- Dell --}}
+                {{-- Dell 
                 <article class="v-card pending">
                     <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
                     <h3>Dell Technologies</h3>
@@ -152,6 +152,8 @@
                     <span class="v-pending-label">Pending Approval</span>
                 </article>
 
+                --}}
+
             </div>
         </div>
     </section>
@@ -165,7 +167,7 @@
         <div class="v-cta-inner">
             <h2>Want to know which vendors are right for your business?</h2>
             <p>
-                We help you choose technology that fits the way you work — not just what’s trending.
+                We help you choose technology that fits the way you work, not just what’s trending.
             </p>
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
