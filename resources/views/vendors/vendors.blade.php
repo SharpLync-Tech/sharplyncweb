@@ -72,6 +72,24 @@
                     <a href="{{ url('/trend-micro') }}" class="v-btn">Explore</a>
                 </article>
 
+                {{-- Dell --}}
+                <article class="v-card pending">
+                    <img src="{{ asset('images/partners/dell.png') }}" class="v-logo">
+                    <h3>Dell Technologies</h3>
+                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
+                    <span class="v-pending-label">Pending Approval</span>
+                </article>
+                
+
+                {{-- Meraki --}}
+                <article class="v-card pending">
+                    <img src="{{ asset('images/partners/meraki.png') }}" class="v-logo">
+                    <h3>Cisco Meraki</h3>
+                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>
+                    <span class="v-pending-label">Pending Approval</span>
+                </article>
+
+
                 {{-- HP --}}
                 <article class="v-card">
                     <div class="v-card-badge">Official Partner</div>
