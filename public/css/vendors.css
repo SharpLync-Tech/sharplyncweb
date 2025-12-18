@@ -178,6 +178,7 @@
 }
 
 .v-card p {
+    margin-top: 0.4rem;
     color: #45576A;
     font-size: 0.95rem;
     margin-bottom: 1.4rem;
@@ -297,7 +298,7 @@
 }
 
 .v-card-featured .v-logo-wrap img {
-    max-height: 200px;
+    max-height: 80px;
 }
 
 /* Featured partner logo sizing */

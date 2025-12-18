@@ -61,7 +61,6 @@
                     <div class="v-logo-wrap v-logo-featured">
                         <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
                     </div>
-                    <h3>Microsoft</h3>
                     <p>
                         Cloud productivity, identity, and infrastructure solutions including
                         Microsoft 365 and Azure, delivered with practical setup, security,
@@ -74,12 +73,12 @@
 
                 @php
                     $partners = [
-                        ['trendmicro.png','Trend Micro','Enterprise-level security and Vision One XDR protection.'],
-                        ['dell.png','Dell Technologies','Business-grade desktops, laptops, servers, and storage.'],
-                        ['meraki.png','Cisco Meraki','Cloud-managed networking, security, SD-WAN, WiFi, cameras.'],
-                        ['hp.png','HP','Reliable business laptops, desktops, and printing solutions.'],
-                        ['lenovo.png','Lenovo','Performance-driven business PCs and workstations.'],
-                        ['cisco.svg','Cisco','Networking and security solutions trusted globally.'],
+                        ['trendmicro.png','Enterprise-level security and Vision One XDR protection.'],
+                        ['dell.png','Business-grade desktops, laptops, servers, and storage.'],
+                        ['meraki.png','Cloud-managed networking, security, SD-WAN, WiFi, cameras.'],
+                        ['hp.png','Reliable business laptops, desktops, and printing solutions.'],
+                        ['lenovo.png','Performance-driven business PCs and workstations.'],
+                        ['cisco.svg','Networking and security solutions trusted globally.'],
                     ];
                 @endphp
 
