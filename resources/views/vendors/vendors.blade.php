@@ -57,7 +57,10 @@
                 direct access to certified solutions, priority support, and better value.
             </p>
 
-            {{-- Featured Microsoft --}}
+            {{-- ===========================
+                 FEATURED MICROSOFT
+                 (Bigger logo, no name)
+            ============================ --}}
             <article class="v-card v-card-featured">
                 <div class="v-logo-wrap v-logo-featured">
                     <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
@@ -68,6 +71,10 @@
                 </p>
             </article>
 
+            {{-- ===========================
+                 OTHER OFFICIAL PARTNERS
+                 (Logos only – NO names shown)
+            ============================ --}}
             <div class="v-card-grid">
 
                 @php
@@ -108,16 +115,14 @@
                 @foreach($partners as $p)
                 <article class="v-card">
                     <div class="v-logo-wrap">
-                        <img 
-                            src="{{ asset('images/partners/'.$p['logo']) }}" 
-                            alt="{{ $p['name'] ?? 'Technology Partner' }}"
+                        <img
+                            src="{{ asset('images/partners/'.$p['logo']) }}"
+                            alt="{{ $p['name'] }}"
                         >
                     </div>
 
-                    {{-- Optional name (kept for future obscure logos) --}}
-                    @if(!empty($p['name']))
-                        <h3>{{ $p['name'] }}</h3>
-                    @endif
+                    {{-- Intentionally no <h3> partner name --}}
+                    {{-- Name retained in data for accessibility & future use --}}
 
                     <p>{{ $p['desc'] }}</p>
                 </article>
