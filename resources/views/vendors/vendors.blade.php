@@ -59,57 +59,62 @@
 
             <div class="v-card-grid">
 
-                <article class="v-card">
-                    <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/trendmicro.png') }}" alt="Trend Micro">
-                    </div>
-                    <h3>Trend Micro</h3>
-                    <p>Enterprise-level security and Vision One XDR protection, paired with SharpLync’s practical cybersecurity support.</p>                    
-                </article>
+                @php
+                    $partners = [
+                        ['trendmicro.png','Trend Micro','Enterprise-level security and Vision One XDR protection.'],
+                        ['dell.png','Dell Technologies','Business-grade desktops, laptops, servers, and storage.'],
+                        ['meraki.png','Cisco Meraki','Cloud-managed networking, security, SD-WAN, WiFi, cameras.'],
+                        ['hp.png','HP','Reliable business laptops, desktops, and printing solutions.'],
+                        ['lenovo.png','Lenovo','Performance-driven business PCs and workstations.'],
+                        ['cisco.svg','Cisco','Networking and security solutions trusted globally.'],
+                    ];
+                @endphp
 
+                @foreach($partners as $p)
                 <article class="v-card">
                     <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/dell.png') }}" alt="Dell Technologies">
+                        <img src="{{ asset('images/partners/'.$p[0]) }}" alt="{{ $p[1] }}">
                     </div>
-                    <h3>Dell Technologies</h3>
-                    <p>Business-grade desktops, laptops, servers, and storage solutions.</p>
+                    <h3>{{ $p[1] }}</h3>
+                    <p>{{ $p[2] }}</p>
                 </article>
-
-                <article class="v-card">
-                    <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/meraki.png') }}" alt="Cisco Meraki">
-                    </div>
-                    <h3>Cisco Meraki</h3>
-                    <p>Cloud-managed networking, security, SD-WAN, WiFi, and cameras.</p>
-                </article>
-
-                <article class="v-card">
-                    <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/hp.png') }}" alt="HP">
-                    </div>
-                    <h3>HP</h3>
-                    <p>Reliable business laptops, desktops, and printing solutions backed by HP’s global reputation.</p>
-                </article>
-
-                <article class="v-card">
-                    <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/lenovo.png') }}" alt="Lenovo">
-                    </div>
-                    <h3>Lenovo</h3>
-                    <p>Performance-driven business PCs, workstations, and mobile devices trusted worldwide.</p>
-                </article>
-
-                <article class="v-card">
-                    <div class="v-logo-wrap">
-                       
-                        <img src="{{ asset('images/partners/cisco.svg') }}" alt="Cisco">
-                    </div>
-                    <h3>Cisco</h3>
-                    <p>Networking and security solutions trusted globally, from switching to secure remote access.</p>
-                </article>
+                @endforeach
 
             </div>
         </div>
+    </section>
+
+    {{-- ===========================
+         EXTENDED VENDOR NETWORK (FULL WIDTH)
+    ============================ --}}
+    <section class="vendor-ticker-band">
+
+        <div class="vendor-ticker-inner">
+            <div class="vendor-ticker-title">Extended Vendor Network</div>
+
+            <div class="vendor-ticker">
+                <div class="vendor-ticker-track">
+                    @php
+                        $vendors = [
+                            'Microsoft','Dell','HPE','Lenovo','HP','Cisco','Cisco Meraki','Aruba',
+                            'Palo Alto Networks','Fortinet','Sophos','Trend Micro','SonicWall',
+                            'Proofpoint','Veeam','VMware','Nutanix','NetApp','Red Hat','APC',
+                            'Eaton','Axis','Zebra','Canon','Epson','Samsung','LG','Logitech',
+                            'Jabra','Poly','EPOS','Ergotron','Kensington','TP-Link','Ubiquiti'
+                        ];
+                    @endphp
+
+                    @foreach(array_merge($vendors, $vendors) as $vendor)
+                        <span>{{ $vendor }}</span>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="vendor-ticker-foot">
+                Vendor availability may vary. SharpLync will always recommend solutions that fit your business needs.
+            </div>
+        </div>
+
     </section>
 
     {{-- ===========================
@@ -119,100 +124,6 @@
         <div class="v-cta-inner">
             <h2>Want to know which vendors are right for your business?</h2>
             <p>We help you choose technology that fits how you work, not just what’s trending.</p>
-            {{-- ===========================
-                EXTENDED VENDOR NETWORK (SCROLLING)
-            =========================== --}}
-            <section class="v-section">               
-
-                    <div class="vendors-hero-panel vendor-ticker-panel">
-                        <div class="v-panel-heading">Extended Vendor Network</div>
-
-                        <div class="vendor-ticker vendor-ticker-compact">
-                            <div class="vendor-ticker-track">
-                                <span>Microsoft</span>
-                                <span>Dell</span>
-                                <span>Trend Micro</span>
-                                <span>Cisco Meraki</span>
-                                <span>Adobe</span>
-                                <span>Lenovo</span>
-                                <span>HP</span>
-                                <span>Cisco</span>                    
-                                <span>Aruba</span>
-                                <span>Palo Alto Networks</span>
-                                <span>Fortinet</span>
-                                <span>Sophos</span>                    
-                                <span>SonicWall</span>
-                                <span>Proofpoint</span>
-                                <span>Veeam</span>
-                                <span>VMware</span>
-                                <span>Nutanix</span>
-                                <span>NetApp</span>
-                                <span>Red Hat</span>
-                                <span>APC</span>
-                                <span>Eaton</span>
-                                <span>Axis</span>
-                                <span>Zebra</span>
-                                <span>Canon</span>
-                                <span>Epson</span>
-                                <span>Samsung</span>
-                                <span>LG</span>
-                                <span>Logitech</span>
-                                <span>Jabra</span>
-                                <span>Poly</span>
-                                <span>EPOS</span>
-                                <span>Ergotron</span>
-                                <span>Kensington</span>
-                                <span>TP-Link</span>
-                                <span>Ubiquiti</span>
-
-                                {{-- duplicate for seamless scroll --}}
-                                <span>Microsoft</span>
-                                <span>Dell</span>
-                                <span>Trend Micro</span>
-                                <span>Cisco Meraki</span>
-                                <span>Adobe</span>
-                                <span>Lenovo</span>
-                                <span>HP</span>
-                                <span>Cisco</span>                    
-                                <span>Aruba</span>
-                                <span>Palo Alto Networks</span>
-                                <span>Fortinet</span>
-                                <span>Sophos</span>                    
-                                <span>SonicWall</span>
-                                <span>Proofpoint</span>
-                                <span>Veeam</span>
-                                <span>VMware</span>
-                                <span>Nutanix</span>
-                                <span>NetApp</span>
-                                <span>Red Hat</span>
-                                <span>APC</span>
-                                <span>Eaton</span>
-                                <span>Axis</span>
-                                <span>Zebra</span>
-                                <span>Canon</span>
-                                <span>Epson</span>
-                                <span>Samsung</span>
-                                <span>LG</span>
-                                <span>Logitech</span>
-                                <span>Jabra</span>
-                                <span>Poly</span>
-                                <span>EPOS</span>
-                                <span>Ergotron</span>
-                                <span>Kensington</span>
-                                <span>TP-Link</span>
-                                <span>Ubiquiti</span>
-                            </div>
-                        </div>
-
-            <div class="v-panel-foot">
-                Vendor availability may vary. SharpLync will always recommend solutions that fit your business needs.
-            </div>
-        </div>
-
-    </div>
-</section>
-
-
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
             </a>
