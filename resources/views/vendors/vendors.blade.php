@@ -58,7 +58,7 @@
             </p>
             {{-- Featured Microsoft Partner --}}
                 <article class="v-card v-card-featured">
-                    <div class="v-logo-wrap">
+                    <div class="v-logo-wrap v-logo-featured">
                         <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
                     </div>
                     <h3>Microsoft</h3>
@@ -68,6 +68,7 @@
                         and ongoing support from SharpLync.
                     </p>
                 </article>
+
 
             <div class="v-card-grid">
 

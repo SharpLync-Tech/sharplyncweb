@@ -300,6 +300,18 @@
     max-height: 60px;
 }
 
+/* Featured partner logo sizing */
+.v-logo-featured {
+    height: 120px;
+    margin-bottom: 1.4rem;
+}
+
+.v-logo-featured img {
+    max-height: 90px;
+    max-width: 220px;
+}
+
+
 .v-card-grid {
     display:grid;
     grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
