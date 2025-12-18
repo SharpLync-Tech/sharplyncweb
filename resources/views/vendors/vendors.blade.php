@@ -106,7 +106,7 @@
 
             <div class="vendor-ticker">
                 <div class="vendor-ticker-track">
-                    @php
+                    
                         @php
                             $vendors = [
                                 // Anchor vendors (credibility first)
