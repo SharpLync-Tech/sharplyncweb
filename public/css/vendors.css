@@ -276,43 +276,57 @@
 }
 
 /* ===========================
-   VENDOR TICKER
+   COMPACT SCROLLING VENDOR PANEL
 =========================== */
-.vendor-ticker {
+.vendor-ticker-panel {
+    margin-top: 3rem;
+    padding-bottom: 1.4rem;
+}
+
+/* Ticker container */
+.vendor-ticker-compact {
     overflow: hidden;
     width: 100%;
-    position: relative;
-    margin-top: 2rem;
+    margin: 0.8rem 0 0.6rem;
 }
 
-.vendor-ticker-track {
+/* Track */
+.vendor-ticker-compact .vendor-ticker-track {
     display: flex;
-    gap: 2.2rem;
+    gap: 1.8rem;
     width: max-content;
-    animation: vendorScroll 40s linear infinite;
+    animation: vendorScroll 45s linear infinite;
 }
 
-.vendor-ticker span {
-    font-size: 0.95rem;
-    color: #42576A;
+/* Vendor text */
+.vendor-ticker-compact span {
+    font-size: 0.9rem;
+    color: #E9F4F3;
     white-space: nowrap;
     position: relative;
+    padding-left: 0.9rem;
 }
 
-/* separator dot */
-.vendor-ticker span::after {
-    content: "•";
-    margin-left: 2.2rem;
-    color: rgba(10,42,77,0.3);
+/* Teal dot (matches panel bullets) */
+.vendor-ticker-compact span::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2CBFAE;
 }
 
-/* pause on hover (desktop only) */
+/* Pause on hover (desktop only) */
 @media (hover: hover) {
-    .vendor-ticker:hover .vendor-ticker-track {
+    .vendor-ticker-compact:hover .vendor-ticker-track {
         animation-play-state: paused;
     }
 }
 
+/* Reuse existing animation */
 @keyframes vendorScroll {
     from {
         transform: translateX(0);
@@ -321,6 +335,7 @@
         transform: translateX(-50%);
     }
 }
+
 
 
 /* ---------------------------

@@ -120,66 +120,99 @@
             <h2>Want to know which vendors are right for your business?</h2>
             <p>We help you choose technology that fits how you work, not just what’s trending.</p>
             {{-- ===========================
-     EXTENDED VENDOR NETWORK
-=========================== --}}
-<section class="v-section v-alt">
-    <div class="v-section-inner">
-        <h2>Extended Vendor Network</h2>
-        <p class="v-section-sub">
-            In addition to our core partners, SharpLync can source and support a wide range of
-            technology vendors through our Ingram Micro distribution network.
-        </p>
+                EXTENDED VENDOR NETWORK (SCROLLING)
+            =========================== --}}
+            <section class="v-section">
+                <div class="v-section-inner">
 
-        <div class="vendor-ticker">
-            <div class="vendor-ticker-track">
-                <span>Adobe</span>
-                <span>APC</span>
-                <span>Aruba</span>
-                <span>ASUS</span>
-                <span>Barracuda</span>
-                <span>Brother</span>
-                <span>Canon</span>
-                <span>Check Point</span>
-                <span>Eaton</span>
-                <span>Extreme Networks</span>
-                <span>Fortinet</span>
-                <span>HPE</span>
-                <span>Logitech</span>
-                <span>Netgear</span>
-                <span>Palo Alto Networks</span>
-                <span>Samsung</span>
-                <span>Sophos</span>
-                <span>Ubiquiti</span>
-                <span>VMware</span>
-                <span>WatchGuard</span>
-                <span>Yealink</span>
+                    <div class="vendors-hero-panel vendor-ticker-panel">
+                        <div class="v-panel-heading">Extended Vendor Network</div>
 
-                {{-- duplicate list for seamless loop --}}
-                <span>Adobe</span>
-                <span>APC</span>
-                <span>Aruba</span>
-                <span>ASUS</span>
-                <span>Barracuda</span>
-                <span>Brother</span>
-                <span>Canon</span>
-                <span>Check Point</span>
-                <span>Eaton</span>
-                <span>Extreme Networks</span>
-                <span>Fortinet</span>
-                <span>HPE</span>
-                <span>Logitech</span>
-                <span>Netgear</span>
-                <span>Palo Alto Networks</span>
-                <span>Samsung</span>
-                <span>Sophos</span>
-                <span>Ubiquiti</span>
-                <span>VMware</span>
-                <span>WatchGuard</span>
-                <span>Yealink</span>
+                        <div class="vendor-ticker vendor-ticker-compact">
+                            <div class="vendor-ticker-track">
+                                <span>Microsoft</span>
+                                <span>Dell</span>
+                                <span>Trend Micro</span>
+                                <span>Cisco Meraki</span>
+                                <span>Adobe</span>
+                                <span>Lenovo</span>
+                                <span>HP</span>
+                                <span>Cisco</span>                    
+                                <span>Aruba</span>
+                                <span>Palo Alto Networks</span>
+                                <span>Fortinet</span>
+                                <span>Sophos</span>                    
+                                <span>SonicWall</span>
+                                <span>Proofpoint</span>
+                                <span>Veeam</span>
+                                <span>VMware</span>
+                                <span>Nutanix</span>
+                                <span>NetApp</span>
+                                <span>Red Hat</span>
+                                <span>APC</span>
+                                <span>Eaton</span>
+                                <span>Axis</span>
+                                <span>Zebra</span>
+                                <span>Canon</span>
+                                <span>Epson</span>
+                                <span>Samsung</span>
+                                <span>LG</span>
+                                <span>Logitech</span>
+                                <span>Jabra</span>
+                                <span>Poly</span>
+                                <span>EPOS</span>
+                                <span>Ergotron</span>
+                                <span>Kensington</span>
+                                <span>TP-Link</span>
+                                <span>Ubiquiti</span>
+
+                                {{-- duplicate for seamless scroll --}}
+                                <span>Microsoft</span>
+                                <span>Dell</span>
+                                <span>Trend Micro</span>
+                                <span>Cisco Meraki</span>
+                                <span>Adobe</span>
+                                <span>Lenovo</span>
+                                <span>HP</span>
+                                <span>Cisco</span>                    
+                                <span>Aruba</span>
+                                <span>Palo Alto Networks</span>
+                                <span>Fortinet</span>
+                                <span>Sophos</span>                    
+                                <span>SonicWall</span>
+                                <span>Proofpoint</span>
+                                <span>Veeam</span>
+                                <span>VMware</span>
+                                <span>Nutanix</span>
+                                <span>NetApp</span>
+                                <span>Red Hat</span>
+                                <span>APC</span>
+                                <span>Eaton</span>
+                                <span>Axis</span>
+                                <span>Zebra</span>
+                                <span>Canon</span>
+                                <span>Epson</span>
+                                <span>Samsung</span>
+                                <span>LG</span>
+                                <span>Logitech</span>
+                                <span>Jabra</span>
+                                <span>Poly</span>
+                                <span>EPOS</span>
+                                <span>Ergotron</span>
+                                <span>Kensington</span>
+                                <span>TP-Link</span>
+                                <span>Ubiquiti</span>
+                            </div>
+                        </div>
+
+            <div class="v-panel-foot">
+                Vendor availability may vary. SharpLync will always recommend solutions that fit your business needs.
             </div>
         </div>
+
     </div>
 </section>
+
 
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
