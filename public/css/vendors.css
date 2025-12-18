@@ -275,6 +275,52 @@
     text-decoration: none;
 }
 
+/* ===========================
+   VENDOR TICKER
+=========================== */
+.vendor-ticker {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    margin-top: 2rem;
+}
+
+.vendor-ticker-track {
+    display: flex;
+    gap: 2.2rem;
+    width: max-content;
+    animation: vendorScroll 40s linear infinite;
+}
+
+.vendor-ticker span {
+    font-size: 0.95rem;
+    color: #42576A;
+    white-space: nowrap;
+    position: relative;
+}
+
+/* separator dot */
+.vendor-ticker span::after {
+    content: "•";
+    margin-left: 2.2rem;
+    color: rgba(10,42,77,0.3);
+}
+
+/* pause on hover (desktop only) */
+@media (hover: hover) {
+    .vendor-ticker:hover .vendor-ticker-track {
+        animation-play-state: paused;
+    }
+}
+
+@keyframes vendorScroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
 
 
 /* ---------------------------

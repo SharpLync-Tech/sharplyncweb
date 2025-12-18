@@ -26,7 +26,7 @@
                 <h1>Trusted partnerships that power SharpLync services.</h1>
                 <p class="v-hero-sub">
                     We work closely with world-class technology providers so our customers get reliable,
-                    secure, modern IT solutions — backed by real human support from SharpLync.
+                    secure, modern IT solutions, backed by real human support from SharpLync.
                 </p>
             </div>
 
@@ -39,7 +39,7 @@
                     <li><span class="v-dot"></span> Security-first standards across all platforms</li>
                 </ul>
                 <div class="v-panel-foot">
-                    Good tech, chosen deliberately — not by accident.
+                    Good tech, chosen deliberately, not by accident.
                 </div>
             </div>
 
@@ -119,6 +119,68 @@
         <div class="v-cta-inner">
             <h2>Want to know which vendors are right for your business?</h2>
             <p>We help you choose technology that fits how you work, not just what’s trending.</p>
+            {{-- ===========================
+     EXTENDED VENDOR NETWORK
+=========================== --}}
+<section class="v-section v-alt">
+    <div class="v-section-inner">
+        <h2>Extended Vendor Network</h2>
+        <p class="v-section-sub">
+            In addition to our core partners, SharpLync can source and support a wide range of
+            technology vendors through our Ingram Micro distribution network.
+        </p>
+
+        <div class="vendor-ticker">
+            <div class="vendor-ticker-track">
+                <span>Adobe</span>
+                <span>APC</span>
+                <span>Aruba</span>
+                <span>ASUS</span>
+                <span>Barracuda</span>
+                <span>Brother</span>
+                <span>Canon</span>
+                <span>Check Point</span>
+                <span>Eaton</span>
+                <span>Extreme Networks</span>
+                <span>Fortinet</span>
+                <span>HPE</span>
+                <span>Logitech</span>
+                <span>Netgear</span>
+                <span>Palo Alto Networks</span>
+                <span>Samsung</span>
+                <span>Sophos</span>
+                <span>Ubiquiti</span>
+                <span>VMware</span>
+                <span>WatchGuard</span>
+                <span>Yealink</span>
+
+                {{-- duplicate list for seamless loop --}}
+                <span>Adobe</span>
+                <span>APC</span>
+                <span>Aruba</span>
+                <span>ASUS</span>
+                <span>Barracuda</span>
+                <span>Brother</span>
+                <span>Canon</span>
+                <span>Check Point</span>
+                <span>Eaton</span>
+                <span>Extreme Networks</span>
+                <span>Fortinet</span>
+                <span>HPE</span>
+                <span>Logitech</span>
+                <span>Netgear</span>
+                <span>Palo Alto Networks</span>
+                <span>Samsung</span>
+                <span>Sophos</span>
+                <span>Ubiquiti</span>
+                <span>VMware</span>
+                <span>WatchGuard</span>
+                <span>Yealink</span>
+            </div>
+        </div>
+    </div>
+</section>
+
             <a href="{{ url('/contact') }}" class="v-btn v-btn-primary v-cta-btn">
                 Chat with SharpLync
             </a>
