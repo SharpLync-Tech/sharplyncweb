@@ -281,6 +281,25 @@
 /* ===========================
    CARDS
 =========================== */
+
+
+/* Featured partner card (Microsoft) */
+.v-card-featured {
+    grid-column: 1 / -1; /* full width */
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f3f7fb 100%
+    );
+    border: 1px solid rgba(10,42,77,0.1);
+}
+
+.v-card-featured .v-logo-wrap img {
+    max-height: 60px;
+}
+
 .v-card-grid {
     display:grid;
     grid-template-columns: repeat(auto-fit,minmax(260px,1fr));

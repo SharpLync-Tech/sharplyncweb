@@ -56,6 +56,18 @@
                 These are the vendors SharpLync is officially partnered with, giving our clients
                 direct access to certified solutions, priority support, and better value.
             </p>
+            {{-- Featured Microsoft Partner --}}
+                <article class="v-card v-card-featured">
+                    <div class="v-logo-wrap">
+                        <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
+                    </div>
+                    <h3>Microsoft</h3>
+                    <p>
+                        Cloud productivity, identity, and infrastructure solutions including
+                        Microsoft 365 and Azure, delivered with practical setup, security,
+                        and ongoing support from SharpLync.
+                    </p>
+                </article>
 
             <div class="v-card-grid">
 
@@ -95,14 +107,58 @@
             <div class="vendor-ticker">
                 <div class="vendor-ticker-track">
                     @php
-                        $vendors = [
-                            'Microsoft','Dell','HPE','Lenovo','HP','Cisco','Cisco Meraki','Aruba',
-                            'Palo Alto Networks','Fortinet','Sophos','Trend Micro','SonicWall',
-                            'Proofpoint','Veeam','VMware','Nutanix','NetApp','Red Hat','APC',
-                            'Eaton','Axis','Zebra','Canon','Epson','Samsung','LG','Logitech',
-                            'Jabra','Poly','EPOS','Ergotron','Kensington','TP-Link','Ubiquiti'
-                        ];
-                    @endphp
+                        @php
+                            $vendors = [
+                                // Anchor vendors (credibility first)
+                                'Microsoft',
+                                'Adobe',
+                                'Dell',
+                                'Trend Micro',
+                                'Cisco Meraki',
+                                'Lenovo',
+                                'HP',
+
+                                // Core infrastructure & networking
+                                'Cisco',
+                                'HPE',
+                                'VMware',
+                                'Veeam',
+                                'Palo Alto Networks',
+                                'Fortinet',
+                                'Sophos',
+                                'SonicWall',
+                                'Proofpoint',
+                                'Aruba',
+
+                                // Data & platform
+                                'Nutanix',
+                                'NetApp',
+                                'Red Hat',
+
+                                // Power, peripherals & devices
+                                'APC',
+                                'Eaton',
+                                'Axis',
+                                'Zebra',
+                                'Canon',
+                                'Epson',
+                                'Samsung',
+                                'LG',
+
+                                // Workplace & accessories
+                                'Logitech',
+                                'Jabra',
+                                'Poly',
+                                'EPOS',
+                                'Ergotron',
+                                'Kensington',
+
+                                // SMB / networking extras
+                                'TP-Link',
+                                'Ubiquiti'
+                            ];
+                        @endphp
+
 
                     @foreach(array_merge($vendors, $vendors) as $vendor)
                         <span>{{ $vendor }}</span>
