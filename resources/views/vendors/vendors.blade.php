@@ -56,39 +56,70 @@
                 These are the vendors SharpLync is officially partnered with, giving our clients
                 direct access to certified solutions, priority support, and better value.
             </p>
-            {{-- Featured Microsoft Partner --}}
-                <article class="v-card v-card-featured">
-                    <div class="v-logo-wrap v-logo-featured">
-                        <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
-                    </div>
-                    <p>
-                        Cloud productivity, identity, and infrastructure solutions including
-                        Microsoft 365 and Azure, delivered with practical setup, security,
-                        and ongoing support from SharpLync.
-                    </p>
-                </article>
 
+            {{-- Featured Microsoft --}}
+            <article class="v-card v-card-featured">
+                <div class="v-logo-wrap v-logo-featured">
+                    <img src="{{ asset('images/partners/microsoft.png') }}" alt="Microsoft">
+                </div>
+                <p>
+                    Cloud productivity, identity, and infrastructure solutions including Microsoft 365 and Azure,
+                    delivered with practical setup, security, and ongoing support from SharpLync.
+                </p>
+            </article>
 
             <div class="v-card-grid">
 
                 @php
                     $partners = [
-                        ['trendmicro.png','Enterprise-level security and Vision One XDR protection.'],
-                        ['dell.png','Business-grade desktops, laptops, servers, and storage.'],
-                        ['meraki.png','Cloud-managed networking, security, SD-WAN, WiFi, cameras.'],
-                        ['hp.png','Reliable business laptops, desktops, and printing solutions.'],
-                        ['lenovo.png','Performance-driven business PCs and workstations.'],
-                        ['cisco.svg','Networking and security solutions trusted globally.'],
+                        [
+                            'logo' => 'trendmicro.png',
+                            'name' => 'Trend Micro',
+                            'desc' => 'Enterprise-level security and Vision One XDR protection.'
+                        ],
+                        [
+                            'logo' => 'dell.png',
+                            'name' => 'Dell Technologies',
+                            'desc' => 'Business-grade desktops, laptops, servers, and storage.'
+                        ],
+                        [
+                            'logo' => 'meraki.png',
+                            'name' => 'Cisco Meraki',
+                            'desc' => 'Cloud-managed networking, security, SD-WAN, WiFi, and cameras.'
+                        ],
+                        [
+                            'logo' => 'hp.png',
+                            'name' => 'HP',
+                            'desc' => 'Reliable business laptops, desktops, and printing solutions.'
+                        ],
+                        [
+                            'logo' => 'lenovo.png',
+                            'name' => 'Lenovo',
+                            'desc' => 'Performance-driven business PCs and workstations.'
+                        ],
+                        [
+                            'logo' => 'cisco.svg',
+                            'name' => 'Cisco',
+                            'desc' => 'Networking and security solutions trusted globally.'
+                        ],
                     ];
                 @endphp
 
                 @foreach($partners as $p)
                 <article class="v-card">
                     <div class="v-logo-wrap">
-                        <img src="{{ asset('images/partners/'.$p[0]) }}" alt="{{ $p[1] }}">
+                        <img 
+                            src="{{ asset('images/partners/'.$p['logo']) }}" 
+                            alt="{{ $p['name'] ?? 'Technology Partner' }}"
+                        >
                     </div>
-                    <h3>{{ $p[1] }}</h3>
-                    <p>{{ $p[2] }}</p>
+
+                    {{-- Optional name (kept for future obscure logos) --}}
+                    @if(!empty($p['name']))
+                        <h3>{{ $p['name'] }}</h3>
+                    @endif
+
+                    <p>{{ $p['desc'] }}</p>
                 </article>
                 @endforeach
 
@@ -97,68 +128,23 @@
     </section>
 
     {{-- ===========================
-         EXTENDED VENDOR NETWORK (FULL WIDTH)
+         EXTENDED VENDOR NETWORK
     ============================ --}}
     <section class="vendor-ticker-band">
-
         <div class="vendor-ticker-inner">
             <div class="vendor-ticker-title">Extended Vendor Network</div>
 
             <div class="vendor-ticker">
                 <div class="vendor-ticker-track">
-                    
-                        @php
-                            $vendors = [
-                                // Anchor vendors (credibility first)
-                                'Microsoft',
-                                'Adobe',
-                                'Dell',
-                                'Trend Micro',
-                                'Cisco Meraki',
-                                'Lenovo',
-                                'HP',
-
-                                // Core infrastructure & networking
-                                'Cisco',
-                                'HPE',
-                                'VMware',
-                                'Veeam',
-                                'Palo Alto Networks',
-                                'Fortinet',
-                                'Sophos',
-                                'SonicWall',
-                                'Proofpoint',
-                                'Aruba',
-
-                                // Data & platform
-                                'Nutanix',
-                                'NetApp',
-                                'Red Hat',
-
-                                // Power, peripherals & devices
-                                'APC',
-                                'Eaton',
-                                'Axis',
-                                'Zebra',
-                                'Canon',
-                                'Epson',
-                                'Samsung',
-                                'LG',
-
-                                // Workplace & accessories
-                                'Logitech',
-                                'Jabra',
-                                'Poly',
-                                'EPOS',
-                                'Ergotron',
-                                'Kensington',
-
-                                // SMB / networking extras
-                                'TP-Link',
-                                'Ubiquiti'
-                            ];
-                        @endphp
-
+                    @php
+                        $vendors = [
+                            'Microsoft','Adobe','Dell','Trend Micro','Cisco Meraki','Lenovo','HP',
+                            'Cisco','HPE','VMware','Veeam','Palo Alto Networks','Fortinet','Sophos',
+                            'SonicWall','Proofpoint','Aruba','Nutanix','NetApp','Red Hat','APC',
+                            'Eaton','Axis','Zebra','Canon','Epson','Samsung','LG','Logitech',
+                            'Jabra','Poly','EPOS','Ergotron','Kensington','TP-Link','Ubiquiti'
+                        ];
+                    @endphp
 
                     @foreach(array_merge($vendors, $vendors) as $vendor)
                         <span>{{ $vendor }}</span>
@@ -170,7 +156,6 @@
                 Vendor availability may vary. SharpLync will always recommend solutions that fit your business needs.
             </div>
         </div>
-
     </section>
 
     {{-- ===========================
