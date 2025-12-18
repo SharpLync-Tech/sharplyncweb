@@ -122,8 +122,7 @@
             {{-- ===========================
                 EXTENDED VENDOR NETWORK (SCROLLING)
             =========================== --}}
-            <section class="v-section">
-                <div class="v-section-inner">
+            <section class="v-section">               
 
                     <div class="vendors-hero-panel vendor-ticker-panel">
                         <div class="v-panel-heading">Extended Vendor Network</div>

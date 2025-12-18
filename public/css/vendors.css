@@ -278,10 +278,53 @@
 /* ===========================
    COMPACT SCROLLING VENDOR PANEL
 =========================== */
-.vendor-ticker-panel {
-    margin-top: 3rem;
-    padding-bottom: 1.4rem;
+
+/* Full-width section override */
+.v-section-full {
+    padding-left: 0;
+    padding-right: 0;
 }
+
+.vendor-ticker-panel {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 2.2rem 4rem 1.8rem;
+
+    background: linear-gradient(
+        135deg,
+        #0A2A4D 0%,
+        #0E3A5F 40%,
+        #0E3A5F 60%,
+        #0A2A4D 100%
+    );
+
+    box-shadow: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.vendor-ticker-compact {
+    margin: 0.7rem 0 0.4rem;
+}
+
+.v-panel-heading {
+    margin-bottom: 0.6rem;
+}
+
+
+.vendor-ticker-compact span {
+    color: rgba(255,255,255,0.92);
+    font-weight: 500;
+}
+
+.vendor-ticker-compact span::before {
+    background: #2CBFAE;
+    box-shadow: 0 0 6px rgba(44,191,174,0.8);
+}
+
+
 
 /* Ticker container */
 .vendor-ticker-compact {
