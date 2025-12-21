@@ -23,11 +23,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SharpLync | IT Support & Cloud Services for Queensland Businesses')</title>
 
-    <!-- Primary SEO -->
-    <meta name="description" content="SharpLync provides expert IT support, cybersecurity, and cloud services for businesses across Queensland. Proudly serving Stanthorpe and the Granite Belt with modern, reliable technology solutions.">
-    <meta name="keywords" content="IT Support Queensland, IT Support Stanthorpe, Managed Services Queensland, Cloud Services QLD, Cybersecurity Granite Belt, Business IT Support, SharpLync">
-    <meta name="robots" content="index, follow">
-    <meta name="facebook-domain-verification" content="nlot90unrp0fw2s4uquw1q8hnxnh7a" />
+        <!-- Primary SEO -->
+        <meta name="description" content="SharpLync provides expert IT support, cybersecurity, and cloud services for businesses across Queensland. Proudly serving Stanthorpe and the Granite Belt with modern, reliable technology solutions.">
+        <meta name="keywords" content="IT Support Queensland, IT Support Stanthorpe, Managed Services Queensland, Cloud Services QLD, Cybersecurity Granite Belt, Business IT Support, SharpLync">
+        <meta name="robots" content="index, follow">
+        <meta name="facebook-domain-verification" content="nlot90unrp0fw2s4uquw1q8hnxnh7a" />
+
+        <!-- ✅ Open Graph / Facebook -->
+        <meta property="og:title" content="SharpLync | IT Support & Cloud Services for Queensland Businesses">
+        <meta property="og:description" content="Your personal tech link, backed by experience.">
+        <meta property="og:image" content="https://sharplync.com.au/images/og-sharplync.png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://sharplync.com.au">
+
 
     <!-- Canonical -->
     <link rel="canonical" href="https://sharplync.com.au/">
