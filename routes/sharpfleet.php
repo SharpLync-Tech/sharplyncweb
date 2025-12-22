@@ -2,12 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\SharpFleet\AuthController;
+use App\Http\Controllers\SharpFleet\TripController;
+use App\Http\Controllers\SharpFleet\FaultController;
+use App\Http\Controllers\SharpFleet\BookingController;
+
+use App\Http\Controllers\SharpFleet\Admin\VehicleController;
+use App\Http\Controllers\SharpFleet\Admin\CustomerController;
+use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
+use App\Http\Controllers\SharpFleet\Admin\ReportController;
+
 /*
 |--------------------------------------------------------------------------
 | SharpFleet Routes
-|--------------------------------------------------------------------------
-| All SharpFleet application routes live here.
-| Controllers and middleware will be added later.
 |--------------------------------------------------------------------------
 */
 
@@ -15,77 +23,77 @@ Route::prefix('app/sharpfleet')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication (local / Entra later)
+    | Authentication
     |--------------------------------------------------------------------------
     */
-    Route::post('/login', 'SharpFleet\AuthController@login');
-    Route::post('/logout', 'SharpFleet\AuthController@logout');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     /*
     |--------------------------------------------------------------------------
     | Driver – Trips
     |--------------------------------------------------------------------------
     */
-    Route::post('/trips/start', 'SharpFleet\TripController@start');
-    Route::post('/trips/end', 'SharpFleet\TripController@end');
-    Route::post('/trips/{trip}/edit', 'SharpFleet\TripController@edit');
+    Route::post('/trips/start', [TripController::class, 'start']);
+    Route::post('/trips/end', [TripController::class, 'end']);
+    Route::post('/trips/{trip}/edit', [TripController::class, 'edit']);
 
     /*
     |--------------------------------------------------------------------------
     | Driver – Faults
     |--------------------------------------------------------------------------
     */
-    Route::post('/faults/from-trip', 'SharpFleet\FaultController@storeFromTrip');
-    Route::post('/faults/standalone', 'SharpFleet\FaultController@storeStandalone');
+    Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);
+    Route::post('/faults/standalone', [FaultController::class, 'storeStandalone']);
 
     /*
     |--------------------------------------------------------------------------
     | Driver – Bookings
     |--------------------------------------------------------------------------
     */
-    Route::get('/bookings/upcoming', 'SharpFleet\BookingController@upcoming');
-    Route::post('/bookings/start-trip', 'SharpFleet\BookingController@startTrip');
+    Route::get('/bookings/upcoming', [BookingController::class, 'upcoming']);
+    Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
 
     /*
     |--------------------------------------------------------------------------
     | Admin – Vehicles
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/vehicles', 'SharpFleet\Admin\VehicleController@index');
-    Route::post('/admin/vehicles', 'SharpFleet\Admin\VehicleController@store');
-    Route::post('/admin/vehicles/{vehicle}/archive', 'SharpFleet\Admin\VehicleController@archive');
+    Route::get('/admin/vehicles', [VehicleController::class, 'index']);
+    Route::post('/admin/vehicles', [VehicleController::class, 'store']);
+    Route::post('/admin/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']);
 
     /*
     |--------------------------------------------------------------------------
     | Admin – Customers
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/customers', 'SharpFleet\Admin\CustomerController@index');
-    Route::post('/admin/customers', 'SharpFleet\Admin\CustomerController@store');
+    Route::get('/admin/customers', [CustomerController::class, 'index']);
+    Route::post('/admin/customers', [CustomerController::class, 'store']);
 
     /*
     |--------------------------------------------------------------------------
     | Admin – Bookings
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/bookings', 'SharpFleet\Admin\BookingController@index');
-    Route::post('/admin/bookings', 'SharpFleet\Admin\BookingController@store');
-    Route::post('/admin/bookings/{booking}/cancel', 'SharpFleet\Admin\BookingController@cancel');
+    Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
+    Route::post('/admin/bookings', [AdminBookingController::class, 'store']);
+    Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
 
     /*
     |--------------------------------------------------------------------------
     | Admin – Faults
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/faults', 'SharpFleet\Admin\FaultController@index');
-    Route::post('/admin/faults/{fault}/status', 'SharpFleet\Admin\FaultController@updateStatus');
+    Route::get('/admin/faults', [AdminFaultController::class, 'index']);
+    Route::post('/admin/faults/{fault}/status', [AdminFaultController::class, 'updateStatus']);
 
     /*
     |--------------------------------------------------------------------------
     | Admin – Reports
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/reports/trips', 'SharpFleet\Admin\ReportController@trips');
-    Route::get('/admin/reports/vehicles', 'SharpFleet\Admin\ReportController@vehicles');
+    Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
+    Route::get('/admin/reports/vehicles', [ReportController::class, 'vehicles']);
 
 });
