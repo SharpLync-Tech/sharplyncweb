@@ -1,4 +1,3 @@
-
 @extends('layouts.testimonials-base') 
 
 @section('title', 'SharpLync | Testimonials')
@@ -15,26 +14,68 @@
             <h1>
                 The Foundation of SharpLync: <span class="gradient">Trusted Expertise</span>
             </h1>
-            <p>Endorsements from industry leaders, colleagues, and partners who vouch for our founder's track record, technical integrity, and commitment to exceptional service.</p>
+            <p>
+                Endorsements from industry leaders, colleagues, and partners who vouch for our founder's
+                track record, technical integrity, and commitment to exceptional service.
+            </p>
         </div>
+
+        {{-- 🔎 DEBUG PANEL — REMOVE AFTER FIX --}}
+        <div style="
+            background:#0A2A4D;
+            color:#ffffff;
+            padding:14px;
+            margin:20px 0;
+            border-radius:8px;
+            font-size:14px;
+        ">
+            <strong>Testimonials Debug</strong><br><br>
+
+            Variable exists:
+            <strong>{{ isset($testimonials) ? 'YES' : 'NO' }}</strong><br>
+
+            Variable type:
+            <strong>
+                {{ isset($testimonials) ? get_class($testimonials) : 'N/A' }}
+            </strong><br>
+
+            Count:
+            <strong>
+                {{ isset($testimonials) ? $testimonials->count() : 'N/A' }}
+            </strong><br>
+
+            @if(isset($testimonials) && $testimonials->count())
+                IDs:
+                <strong>{{ $testimonials->pluck('id')->implode(', ') }}</strong>
+            @endif
+        </div>
+        {{-- 🔎 END DEBUG PANEL --}}
 
         {{-- Grid Container --}}
         <div class="grid-container">
             @forelse($testimonials as $t)
                 @php
                     // Build "who" line - position and company
-                    $who = collect([$t->customer_position, $t->customer_company])->filter()->implode(' — ');
+                    $who = collect([$t->customer_position, $t->customer_company])
+                        ->filter()
+                        ->implode(' — ');
 
                     // Initials from customer name
                     $nameParts = preg_split('/\s+/', trim($t->customer_name));
                     $initials = '';
                     foreach ($nameParts as $p) {
-                        if ($p !== '') { $initials .= mb_substr($p, 0, 1); }
+                        if ($p !== '') {
+                            $initials .= mb_substr($p, 0, 1);
+                        }
                     }
 
                     // Card content
                     $text = strip_tags($t->testimonial_text);
-                    $preview = Str::limit($text, 280, '... <a href="#" class="expand-link" data-open-modal>Read more</a>');
+                    $preview = Str::limit(
+                        $text,
+                        280,
+                        '... <a href="#" class="expand-link" data-open-modal>Read more</a>'
+                    );
                 @endphp
 
                 <article 
@@ -46,7 +87,6 @@
                     <div class="initial-badge">{{ $initials }}</div>
 
                     <blockquote>
-                        {{-- Output the preview text; if full text is short, it will display the whole thing --}}
                         <p class="quote-text">{!! $preview !!}</p>
                     </blockquote>
 
@@ -69,26 +109,21 @@
     <div id="testimonialModal" aria-hidden="true">
         <div class="modal-dialog" role="dialog" aria-modal="true">
 
-            {{-- NEW teal top border --}}
             <div class="modal-top-bar"></div>
 
-            {{-- Close button --}}
             <button type="button" class="modal-close" aria-label="Close testimonial">&times;</button>
 
-            {{-- Modal text --}}
             <p id="modalText" class="modal-text"></p>
             <div class="modal-separator"></div>
             <p id="modalName" class="modal-name"></p>
             <p id="modalRole" class="modal-role"></p>
         </div>
-
     </div>
 </section>
 @endsection
 
 @push('scripts')
 <script>
-// Modal Logic (simplified from your original)
 document.addEventListener('DOMContentLoaded', () => {
 
     const modal = document.getElementById('testimonialModal');
@@ -96,9 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalText = document.getElementById('modalText');
     const modalName = document.getElementById('modalName');
     const modalRole = document.getElementById('modalRole');
-    const modalInitials = document.getElementById('modalInitials'); // NEW
 
-    // Open Modal
     document.querySelectorAll('[data-open-modal]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
@@ -106,22 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = e.target.closest('.testimonial-card');
             if (!card) return;
 
-            // Full text
             modalText.innerHTML = card.dataset.fulltext.replace(/\n/g, '<br>');
-
-            // Name + role
             modalName.textContent = card.dataset.name;
             modalRole.textContent = card.dataset.who;
 
-            
-
-            // Show modal
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
         });
     });
 
-    // Close modal
     function closeModal() {
         modal.classList.remove('open');
         document.body.style.overflow = '';
@@ -139,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Menu toggle logic
     window.toggleMenu = function() {
         const overlay = document.getElementById('overlayMenu');
         overlay.classList.toggle('show');
@@ -147,5 +172,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-
 @endpush
