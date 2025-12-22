@@ -96,4 +96,16 @@ Route::prefix('app/sharpfleet')->group(function () {
     Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
     Route::get('/admin/reports/vehicles', [ReportController::class, 'vehicles']);
 
+
+
+    Route::get('/test/start-trip', function () {
+    return app(\App\Services\SharpFleet\TripService::class)
+        ->startTrip([
+            'vehicle_id' => 1,
+            'trip_mode'  => 'no_client',
+            'start_km'   => 99999,
+        ]);
+});
+
+
 });
