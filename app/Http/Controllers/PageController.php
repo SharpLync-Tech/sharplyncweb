@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Testimonial;
+use App\Models\CMS\Testimonial;
 
 class PageController extends Controller
 {
