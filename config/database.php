@@ -79,10 +79,12 @@ return [
             'strict' => true,
             'engine' => null,
 
-            // 🔒 DO NOT ENABLE SSL HERE
-            // This restores pre-SharpFleet login behaviour
-            'options' => [],
+            // ✅ REQUIRED because MySQL has require_secure_transport=ON
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
+
 
         /*
         |--------------------------------------------------------------------------
