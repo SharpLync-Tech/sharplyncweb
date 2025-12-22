@@ -12,7 +12,6 @@ use App\Http\Controllers\SharpFleet\Admin\CustomerController;
 use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
-use App\Http\Controllers\SharpFleet\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,11 +23,16 @@ Route::prefix('app/sharpfleet')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication
+    | Authentication (Temporary Local Auth)
     |--------------------------------------------------------------------------
     */
+    Route::get('/login', [AuthController::class, 'showLogin']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/debug', function () {
+        return view('sharpfleet.debug');
+    })->middleware('auth');
 
     /*
     |--------------------------------------------------------------------------
@@ -97,25 +101,18 @@ Route::prefix('app/sharpfleet')->group(function () {
     Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
     Route::get('/admin/reports/vehicles', [ReportController::class, 'vehicles']);
 
-
-
+    /*
+    |--------------------------------------------------------------------------
+    | DEV / TEST ROUTE (SAFE)
+    |--------------------------------------------------------------------------
+    */
     Route::get('/test/start-trip', function () {
-    return app(\App\Services\SharpFleet\TripService::class)
-        ->startTrip([
-            'vehicle_id' => 1,
-            'trip_mode'  => 'no_client',
-            'start_km'   => 99999,
-        ]);
-
-    
-
-    Route::get('/sharpfleet/login', [AuthController::class, 'showLogin']);
-    Route::post('/sharpfleet/login', [AuthController::class, 'login']);
-    Route::post('/sharpfleet/logout', [AuthController::class, 'logout']);
-
-    Route::get('/sharpfleet/debug', function () {
-        return view('sharpfleet.debug');
-    })->middleware('auth');
-
+        return app(\App\Services\SharpFleet\TripService::class)
+            ->startTrip([
+                'vehicle_id' => 1,
+                'trip_mode'  => 'no_client',
+                'start_km'   => 99999,
+            ]);
+    });
 
 });
