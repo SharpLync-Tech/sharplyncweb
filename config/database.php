@@ -23,7 +23,6 @@ return [
         // ==========================================================
         'sqlite' => [
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
@@ -34,7 +33,6 @@ return [
         // ==========================================================
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'sharplync_cms'),
@@ -48,9 +46,9 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql')
-                ? array_filter([
+                ? [
                     PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                ])
+                ]
                 : [],
         ],
 
@@ -59,7 +57,6 @@ return [
         // ==========================================================
         'crm' => [
             'driver' => 'mysql',
-            'url' => env('CRM_DB_URL', env('DB_URL')),
             'host' => env('CRM_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('CRM_DB_PORT', env('DB_PORT', '3306')),
             'database' => env('CRM_DB_DATABASE', 'sharplync_crm'),
@@ -73,9 +70,9 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql')
-                ? array_filter([
+                ? [
                     PDO::MYSQL_ATTR_SSL_CA => env('CRM_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
-                ])
+                ]
                 : [],
         ],
 
@@ -84,7 +81,6 @@ return [
         // ==========================================================
         'sharplync_facilities' => [
             'driver' => 'mysql',
-            'url' => env('FACILITIES_DB_URL', env('DB_URL')),
             'host' => env('FACILITIES_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('FACILITIES_DB_PORT', env('DB_PORT', '3306')),
             'database' => env('FACILITIES_DB_DATABASE', 'sharplync_facilities'),
@@ -98,11 +94,12 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql')
-                ? array_filter([
+                ? [
                     PDO::MYSQL_ATTR_SSL_CA => env('FACILITIES_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
-                ])
+                ]
                 : [],
         ],
+
     ],
 
     /*
