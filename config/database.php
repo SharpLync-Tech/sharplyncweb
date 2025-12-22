@@ -98,6 +98,22 @@ return [
             ]) : [],
         ],
 
+
+
+        // ==========================================================
+        // SharpFleet
+        // ==========================================================
+        'sharpfleet' => [
+            'driver' => 'mysql',
+            'host' => env('DB_SHARPFLEET_HOST'),
+            'database' => env('DB_SHARPFLEET_DATABASE'),
+            'username' => env('DB_SHARPFLEET_USERNAME'),
+            'password' => env('DB_SHARPFLEET_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+
+
     ],
 
     /*
