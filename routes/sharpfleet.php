@@ -12,6 +12,7 @@ use App\Http\Controllers\SharpFleet\Admin\CustomerController;
 use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
+use App\Http\Controllers\SharpFleet\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,7 +106,16 @@ Route::prefix('app/sharpfleet')->group(function () {
             'trip_mode'  => 'no_client',
             'start_km'   => 99999,
         ]);
-});
+
+    
+
+    Route::get('/sharpfleet/login', [AuthController::class, 'showLogin']);
+    Route::post('/sharpfleet/login', [AuthController::class, 'login']);
+    Route::post('/sharpfleet/logout', [AuthController::class, 'logout']);
+
+    Route::get('/sharpfleet/debug', function () {
+        return view('sharpfleet.debug');
+    })->middleware('auth');
 
 
 });

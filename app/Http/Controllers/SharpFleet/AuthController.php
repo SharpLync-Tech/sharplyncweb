@@ -3,24 +3,36 @@
 namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
-use App\Services\SharpFleet\AuthService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    protected AuthService $authService;
-
-    public function __construct(AuthService $authService)
+    public function showLogin()
     {
-        $this->authService = $authService;
+        return view('sharpfleet.login');
     }
 
-    public function login()
+    public function login(Request $request)
     {
-        // Will call $this->authService->login()
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect('/app/sharpfleet/debug');
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid credentials',
+        ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        // Will call $this->authService->logout()
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/app/sharpfleet/login');
     }
 }
