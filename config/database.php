@@ -96,21 +96,30 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('FACILITIES_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
             ]) : [],
-        ],
-
-
-
+        ],   
+        
+        
         // ==========================================================
-        // SharpFleet
+        // SharpFleet (Vehicles, Trips, Bookings, Faults, Reports)
         // ==========================================================
         'sharpfleet' => [
             'driver' => 'mysql',
-            'host' => env('DB_SHARPFLEET_HOST'),
-            'database' => env('DB_SHARPFLEET_DATABASE'),
-            'username' => env('DB_SHARPFLEET_USERNAME'),
-            'password' => env('DB_SHARPFLEET_PASSWORD'),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
+            'url' => env('SHARPFLEET_DB_URL', env('DB_URL')),
+            'host' => env('SHARPFLEET_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('SHARPFLEET_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('SHARPFLEET_DB_DATABASE', 'sharplync_sharpfleet'),
+            'username' => env('SHARPFLEET_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('SHARPFLEET_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('SHARPFLEET_DB_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('SHARPFLEET_DB_CHARSET', env('DB_CHARSET', 'utf8mb4')),
+            'collation' => env('SHARPFLEET_DB_COLLATION', env('DB_COLLATION', 'utf8mb4_unicode_ci')),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('SHARPFLEET_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+            ]) : [],
         ],
 
 
