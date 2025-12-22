@@ -4,25 +4,35 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Models\CMS\MenuItem;
+use Illuminate\Support\Facades\Request;
+use App\Models\MenuItem;
 
 class MenuServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function register()
     {
         //
     }
 
-    public function boot(): void
+    public function boot()
     {
-        // Delay view composer registration until view subsystem is ready
+        // 🚧 Skip menu loading for SharpFleet routes
+        if (Request::is('app/sharpfleet*')) {
+            return;
+        }
+
         $this->callAfterResolving('view', function () {
             View::composer('*', function ($view) {
-                $menuItems = MenuItem::where('is_active', 1)
-                    ->orderBy('sort_order')
-                    ->get();
+                try {
+                    $menuItems = MenuItem::where('is_active', 1)
+                        ->orderBy('sort_order')
+                        ->get();
 
-                $view->with('menuItems', $menuItems);
+                    $view->with('menuItems', $menuItems);
+                } catch (\Throwable $e) {
+                    // Fail silently so the site never dies
+                    $view->with('menuItems', collect());
+                }
             });
         });
     }
