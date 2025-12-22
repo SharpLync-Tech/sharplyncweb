@@ -50,6 +50,24 @@
             @endif
         </div>
         {{-- 🔎 END DEBUG PANEL --}}
+            {{-- 🔥 HARD DEBUG — REMOVE AFTER --}}
+            <div style="background:#111; color:#0f0; padding:15px; margin-bottom:25px; font-family:monospace; font-size:13px;">
+                <strong>TESTIMONIALS HARD DEBUG</strong><br><br>
+
+                <strong>Model</strong><br>
+                Class: {{ $debug['model']['model_class'] ?? 'n/a' }}<br>
+                Connection: {{ $debug['model']['connection_name'] ?? 'n/a' }}<br>
+                Table: {{ $debug['model']['table'] ?? 'n/a' }}<br><br>
+
+                <strong>Database</strong><br>
+                Status: {{ $debug['db']['status'] ?? 'n/a' }}<br>
+                Driver: {{ $debug['db']['driver'] ?? 'n/a' }}<br>
+                Database: {{ $debug['db']['database'] ?? 'n/a' }}<br><br>
+
+                <strong>Counts</strong><br>
+                Raw table count: {{ $debug['raw_table_count'] }}<br>
+                Eloquent filtered count: {{ $debug['eloquent_count'] }}<br>
+            </div>
 
         {{-- Grid Container --}}
         <div class="grid-container">
