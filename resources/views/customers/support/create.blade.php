@@ -72,7 +72,7 @@
             <button type="submit" class="support-btn-primary">
                 Submit Support Request
             </button>
-            <a href="{{ route('customer.support.index') }}" class="support-btn-ghost">
+            <a href="{{ route('customer.support.index') }}" class="support-btn-primary">
                 Cancel
             </a>
         </div>

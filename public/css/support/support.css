@@ -386,7 +386,7 @@
     justify-content: center;
     gap: 0.4rem;
     border: 1px solid #d1d9e6;
-    background: #ffffff;
+    background: #0A2A4D !important;
     color: #104976;
     font-size: 0.9rem;
     padding: 0.35rem 0.9rem;
@@ -836,8 +836,8 @@
     justify-content: center;
     gap: 0.4rem;
     border: 1px solid #d1d9e6;
-    background: #ffffff;
-    color: #104976;
+    background: #0A2A4D;
+    color: #FFFFFF;
     font-size: 0.9rem;
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
