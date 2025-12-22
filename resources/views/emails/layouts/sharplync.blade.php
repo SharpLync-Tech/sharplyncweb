@@ -33,9 +33,7 @@
                 <!-- Main Content Area -->
                 <tr>
                     <td style="padding:30px;">
-
-                        @yield('content')
-
+                        {{ $slot }}
                     </td>
                 </tr>
 
