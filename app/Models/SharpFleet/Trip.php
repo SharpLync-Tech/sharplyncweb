@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Trip extends Model
 {
+    protected $connection = 'sharpfleet';
     protected $table = 'trips';
 
     protected $fillable = [
@@ -19,7 +20,7 @@ class Trip extends Model
         'end_km',
         'distance_method',
         'started_at',
-        'ended_at'
+        'ended_at',
     ];
 
     protected $casts = [
