@@ -6,4 +6,6 @@ use App\Http\Controllers\Controller;
 
 class FaultController extends Controller
 {
+    public function storeFromTrip() {}
+    public function storeStandalone() {}
 }

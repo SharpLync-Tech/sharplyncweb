@@ -6,4 +6,7 @@ use App\Http\Controllers\Controller;
 
 class BookingController extends Controller
 {
+    public function upcoming() {}
+    public function startTrip() {}
 }
+

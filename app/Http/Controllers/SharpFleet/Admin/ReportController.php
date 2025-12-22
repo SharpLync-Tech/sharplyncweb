@@ -6,4 +6,6 @@ use App\Http\Controllers\Controller;
 
 class ReportController extends Controller
 {
+    public function trips() {}
+    public function vehicles() {}
 }
