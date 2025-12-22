@@ -18,9 +18,11 @@ return [
     */
     'connections' => [
 
-        // ==========================================================
-        // SQLite (Local Development / Testing)
-        // ==========================================================
+        /*
+        |--------------------------------------------------------------------------
+        | SQLite (Local / Testing)
+        |--------------------------------------------------------------------------
+        */
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
@@ -29,9 +31,12 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
-        // ==========================================================
-        // Default MySQL (SharpLync CMS)
-        // ==========================================================
+        /*
+        |--------------------------------------------------------------------------
+        | SharpLync CMS (DEFAULT)
+        | SSL behaviour unchanged
+        |--------------------------------------------------------------------------
+        */
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
@@ -52,12 +57,15 @@ return [
             ]) : [],
         ],
 
-        // ==========================================================
-        // SharpLync CRM (Customers, Users, Onboarding, etc.)
-        // ==========================================================
+        /*
+        |--------------------------------------------------------------------------
+        | SharpLync CRM (USERS / LOGIN / PORTAL)
+        | IMPORTANT: NO SSL — matches original working behaviour
+        |--------------------------------------------------------------------------
+        */
         'crm' => [
             'driver' => 'mysql',
-            'url' => env('CRM_DB_URL', env('DB_URL')),
+            'url' => env('CRM_DB_URL'),
             'host' => env('CRM_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('CRM_DB_PORT', env('DB_PORT', '3306')),
             'database' => env('CRM_DB_DATABASE', 'sharplync_crm'),
@@ -70,17 +78,21 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('CRM_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
-            ]) : [],
+
+            // 🔒 DO NOT ENABLE SSL HERE
+            // This restores pre-SharpFleet login behaviour
+            'options' => [],
         ],
 
-        // ==========================================================
-        // SharpLync Facilities (Sites, Assets, Maintenance, etc.)
-        // ==========================================================
+        /*
+        |--------------------------------------------------------------------------
+        | SharpLync Facilities
+        | SSL explicitly allowed (unchanged)
+        |--------------------------------------------------------------------------
+        */
         'sharplync_facilities' => [
             'driver' => 'mysql',
-            'url' => env('FACILITIES_DB_URL', env('DB_URL')),
+            'url' => env('FACILITIES_DB_URL'),
             'host' => env('FACILITIES_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('FACILITIES_DB_PORT', env('DB_PORT', '3306')),
             'database' => env('FACILITIES_DB_DATABASE', 'sharplync_facilities'),
@@ -94,20 +106,22 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('FACILITIES_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+                PDO::MYSQL_ATTR_SSL_CA => env('FACILITIES_MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],   
-        
-        
-        // ==========================================================
-        // SharpFleet (Vehicles, Trips, Bookings, Faults, Reports)
-        // ==========================================================
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | SharpFleet (ISOLATED)
+        | SSL optional and isolated
+        |--------------------------------------------------------------------------
+        */
         'sharpfleet' => [
             'driver' => 'mysql',
-            'url' => env('SHARPFLEET_DB_URL', env('DB_URL')),
+            'url' => env('SHARPFLEET_DB_URL'),
             'host' => env('SHARPFLEET_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('SHARPFLEET_DB_PORT', env('DB_PORT', '3306')),
-            'database' => env('SHARPFLEET_DB_DATABASE', 'sharplync_sharpfleet'),
+            'database' => env('SHARPFLEET_DB_DATABASE', 'sharpfleet'),
             'username' => env('SHARPFLEET_DB_USERNAME', env('DB_USERNAME', 'root')),
             'password' => env('SHARPFLEET_DB_PASSWORD', env('DB_PASSWORD', '')),
             'unix_socket' => env('SHARPFLEET_DB_SOCKET', env('DB_SOCKET', '')),
@@ -118,11 +132,9 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('SHARPFLEET_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+                PDO::MYSQL_ATTR_SSL_CA => env('SHARPFLEET_MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
-
     ],
 
     /*
@@ -137,7 +149,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Redis Databases
+    | Redis
     |--------------------------------------------------------------------------
     */
     'redis' => [
