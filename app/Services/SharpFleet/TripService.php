@@ -9,9 +9,6 @@ class TripService
 {
     /**
      * Start a trip for a SharpFleet driver
-     *
-     * @param array $user  SharpFleet session user
-     * @param array $data  Validated trip data
      */
     public function startTrip(array $user, array $data): Trip
     {
@@ -38,9 +35,9 @@ class TripService
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',
 
-            // Date / time fields
+            // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,
-            'start_time' => $now->format('H:i:s'),
+            'start_time' => $now,
         ]);
     }
 
@@ -60,7 +57,7 @@ class TripService
         $trip->update([
             'end_km'   => $data['end_km'],
             'ended_at' => $now,
-            'end_time' => $now->format('H:i:s'),
+            'end_time' => $now,
         ]);
 
         return $trip;
