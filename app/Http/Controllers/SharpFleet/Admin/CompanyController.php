@@ -22,7 +22,6 @@ class CompanyController extends Controller
 
         $organisationId = (int) $user['organisation_id'];
 
-        // ---- Organisation (identity) ----
         $organisation = DB::connection('sharpfleet')
             ->table('organisations')
             ->where('id', $organisationId)
@@ -32,10 +31,8 @@ class CompanyController extends Controller
             abort(404, 'Organisation not found');
         }
 
-        // ---- Settings (via service, never touch JSON directly) ----
         $settingsService = new CompanySettingsService($organisationId);
 
-        // ---- Counts ----
         $driversCount = DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
@@ -48,10 +45,11 @@ class CompanyController extends Controller
             ->count();
 
         return view('sharpfleet.admin.company', [
-            'organisationId'        => $organisationId,
             'companyName'           => $organisation->name,
-            'companyType'           => '—', // Step 3
-            'industry'              => '—', // Step 3
+            'companyType'           => $organisation->company_type
+                                        ? ucfirst(str_replace('_', ' ', $organisation->company_type))
+                                        : '—',
+            'industry'              => $organisation->industry ?: '—',
             'timezone'              => $settingsService->timezone(),
             'driversCount'          => $driversCount,
             'vehiclesCount'         => $vehiclesCount,

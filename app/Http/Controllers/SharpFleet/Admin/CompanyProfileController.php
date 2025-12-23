@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\CompanySettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CompanyProfileController extends Controller
 {
-    /**
-     * Show company profile form
-     */
     public function edit(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
@@ -28,14 +26,14 @@ class CompanyProfileController extends Controller
             abort(404, 'Organisation not found');
         }
 
+        $settingsService = new CompanySettingsService($user['organisation_id']);
+
         return view('sharpfleet.admin.company-profile', [
             'organisation' => $organisation,
+            'timezone'     => $settingsService->timezone(),
         ]);
     }
 
-    /**
-     * Update company profile
-     */
     public function update(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
@@ -48,6 +46,7 @@ class CompanyProfileController extends Controller
             'name'         => 'required|string|max:150',
             'company_type' => 'nullable|in:sole_trader,company',
             'industry'     => 'nullable|string|max:150',
+            'timezone'     => 'required|string|max:100',
         ]);
 
         DB::connection('sharpfleet')
@@ -58,6 +57,18 @@ class CompanyProfileController extends Controller
                 'company_type' => $validated['company_type'] ?? null,
                 'industry'     => $validated['industry'] ?? null,
             ]);
+
+        // Update timezone via settings service
+        $settingsService = new CompanySettingsService($user['organisation_id']);
+        $settings = $settingsService->all();
+        $settings['timezone'] = $validated['timezone'];
+
+        DB::connection('sharpfleet')
+            ->table('company_settings')
+            ->updateOrInsert(
+                ['organisation_id' => $user['organisation_id']],
+                ['settings_json' => json_encode($settings)]
+            );
 
         if ($request->has('save_and_return')) {
             return redirect('/app/sharpfleet/admin/company')
