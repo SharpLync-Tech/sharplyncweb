@@ -39,9 +39,26 @@ class TripService
         ]);
     }
 
-    public function endTrip()
+    /**
+     * End an active trip for a SharpFleet driver
+     *
+     * @param array $user  SharpFleet session user
+     * @param array $data  ['trip_id', 'end_km']
+     */
+    public function endTrip(array $user, array $data): Trip
     {
-        // to be implemented
+        $trip = Trip::where('id', $data['trip_id'])
+            ->where('organisation_id', $user['organisation_id'])
+            ->where('user_id', $user['id'])
+            ->whereNull('ended_at')
+            ->firstOrFail();
+
+        $trip->update([
+            'end_km'    => $data['end_km'],
+            'ended_at'  => Carbon::now(),
+        ]);
+
+        return $trip;
     }
 
     public function editTrip()
