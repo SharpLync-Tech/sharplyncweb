@@ -16,11 +16,17 @@ class Trip extends Model
         'customer_id',
         'customer_name',
         'trip_mode',
+
         'start_km',
         'end_km',
+
         'distance_method',
+
+        // Date / time fields
         'started_at',
         'ended_at',
+        'start_time',
+        'end_time',
     ];
 
     protected $casts = [
