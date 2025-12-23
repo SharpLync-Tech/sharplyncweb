@@ -15,12 +15,7 @@ use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
-
-/*
-|--------------------------------------------------------------------------
-| SharpFleet Routes
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 
 Route::prefix('app/sharpfleet')->group(function () {
 
@@ -49,34 +44,30 @@ Route::prefix('app/sharpfleet')->group(function () {
 
             Route::get('/', fn () => view('sharpfleet.admin.dashboard'));
 
-            // Company
             Route::get('/company', [CompanyController::class, 'index']);
             Route::get('/company/profile', [CompanyProfileController::class, 'edit']);
             Route::post('/company/profile', [CompanyProfileController::class, 'update']);
 
-            // Vehicles
+            Route::get('/safety-checks', [CompanySafetyCheckController::class, 'index']);
+            Route::post('/safety-checks', [CompanySafetyCheckController::class, 'update']);
+
             Route::get('/vehicles', [VehicleController::class, 'index']);
             Route::post('/vehicles', [VehicleController::class, 'store']);
             Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']);
 
-            // Customers
             Route::get('/customers', [CustomerController::class, 'index']);
             Route::post('/customers', [CustomerController::class, 'store']);
 
-            // Bookings
             Route::get('/bookings', [AdminBookingController::class, 'index']);
             Route::post('/bookings', [AdminBookingController::class, 'store']);
             Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
 
-            // Faults
             Route::get('/faults', [AdminFaultController::class, 'index']);
             Route::post('/faults/{fault}/status', [AdminFaultController::class, 'updateStatus']);
 
-            // Reports
             Route::get('/reports/trips', [ReportController::class, 'trips']);
             Route::get('/reports/vehicles', [ReportController::class, 'vehicles']);
 
-            // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
 
