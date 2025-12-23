@@ -129,8 +129,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     | SharpFleet Admin (SAFE – isolated)
     |--------------------------------------------------------------------------
     */
-
-    Route::prefix('app/sharpfleet/admin')->group(function () {
+    Route::prefix('admin')->group(function () {
 
         Route::get('/login', function () {
             return view('sharpfleet.admin.login');
@@ -150,6 +149,7 @@ Route::prefix('app/sharpfleet')->group(function () {
         });
 
     });
+
 
 
 });
