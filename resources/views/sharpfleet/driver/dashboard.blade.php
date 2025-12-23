@@ -58,8 +58,8 @@
                 </label>
 
                 <label style="display:block;margin-bottom:6px;">
-                    <input type="radio" name="trip_mode" value="work" checked>
-                    Work trip
+                    <input type="radio" name="trip_mode" value="client" checked>
+                    Client / business trip
                 </label>
 
                 <label style="display:block;">
@@ -67,6 +67,7 @@
                     No client / internal
                 </label>
             </div>
+
 
             {{-- Start KM --}}
             <div style="margin-bottom:20px;">
