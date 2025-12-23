@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\VehicleService;
+use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
@@ -14,18 +15,35 @@ class VehicleController extends Controller
         $this->vehicleService = $vehicleService;
     }
 
-    public function index()
+    /**
+     * List vehicles for the logged-in organisation (admin only)
+     */
+    public function index(Request $request)
     {
-        // $this->vehicleService->getAvailableVehicles()
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $vehicles = $this->vehicleService->getAvailableVehicles(
+            (int) $fleetUser['organisation_id']
+        );
+
+        return view('sharpfleet.admin.vehicles.index', [
+            'vehicles' => $vehicles,
+        ]);
     }
 
     public function store()
     {
-        // $this->vehicleService->createVehicle()
+        // Not implemented yet
+        abort(501);
     }
 
     public function archive($vehicle)
     {
-        // $this->vehicleService->archiveVehicle()
+        // Not implemented yet
+        abort(501);
     }
 }
