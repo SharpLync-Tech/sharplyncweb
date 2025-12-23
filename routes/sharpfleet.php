@@ -124,4 +124,32 @@ Route::prefix('app/sharpfleet')->group(function () {
             ]);
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | SharpFleet Admin (SAFE – isolated)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('app/sharpfleet/admin')->group(function () {
+
+        Route::get('/login', function () {
+            return view('sharpfleet.admin.login');
+        });
+
+        Route::post('/login', function () {
+            // TEMP: reuse existing auth, no logic yet
+            return redirect('/app/sharpfleet/admin');
+        });
+
+        Route::get('/', function () {
+            return view('sharpfleet.admin.dashboard');
+        });
+
+        Route::get('/register', function () {
+            return view('sharpfleet.admin.register');
+        });
+
+    });
+
+
 });
