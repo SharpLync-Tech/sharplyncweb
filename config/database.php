@@ -62,6 +62,30 @@ return [
         ],
 
         // ==========================================================
+        // SharpFleet Fleet Management
+        // ==========================================================
+        'sharpfleet' => [
+            'driver' => 'mysql',
+            'host' => env('SHARPFLEET_DB_HOST'),
+            'port' => env('SHARPFLEET_DB_PORT', '3306'),
+            'database' => env('SHARPFLEET_DB_DATABASE'),
+            'username' => env('SHARPFLEET_DB_USERNAME'),
+            'password' => env('SHARPFLEET_DB_PASSWORD'),
+            'unix_socket' => '',
+            'charset' => env('SHARPFLEET_DB_CHARSET', 'utf8mb4'),
+            'collation' => env('SHARPFLEET_DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? [
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            ] : [],
+        ],
+
+
+        // ==========================================================
         // SharpLync Facilities
         // ==========================================================
         'sharplync_facilities' => [
