@@ -23,6 +23,28 @@ Route::prefix('app/sharpfleet')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | SharpFleet Home
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+
+        // Already logged into SharpFleet → redirect by role
+        if ($request->session()->has('sharpfleet.user')) {
+            $role = $request->session()->get('sharpfleet.user.role');
+
+            return match ($role) {
+                'admin'  => redirect('/app/sharpfleet/admin'),
+                'driver' => redirect('/app/sharpfleet/driver'),
+                default  => redirect('/app/sharpfleet/login'),
+            };
+        }
+
+        // Not logged in → show SharpFleet home
+        return view('sharpfleet.home');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication
     |--------------------------------------------------------------------------
     */
@@ -73,7 +95,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     Route::middleware(\App\Http\Middleware\SharpFleetDriverAuth::class)
         ->group(function () {
 
-            // Driver dashboard (NEW)
+            // Driver dashboard
             Route::get('/driver', function () {
                 return view('sharpfleet.driver.dashboard');
             });
