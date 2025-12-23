@@ -5,8 +5,7 @@ namespace App\Http\Controllers\SharpFleet;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\TripService;
 use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
-use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\RedirectResponse;
 
 class TripController extends Controller
 {
@@ -17,16 +16,25 @@ class TripController extends Controller
         $this->tripService = $tripService;
     }
 
-    public function start(StartTripRequest $request): JsonResponse
-{
-    $trip = $this->tripService->startTrip($request->validated());
+    /**
+     * Start a trip (Driver UI – session based)
+     */
+    public function start(StartTripRequest $request): RedirectResponse
+    {
+        $user = session('sharpfleet.user');
 
-    return response()->json([
-        'success' => true,
-        'trip_id' => $trip->id,
-    ]);
-}
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
 
+        $this->tripService->startTrip(
+            $user,
+            $request->validated()
+        );
+
+        return redirect('/app/sharpfleet/driver')
+            ->with('success', 'Trip started successfully');
+    }
 
     public function end()
     {

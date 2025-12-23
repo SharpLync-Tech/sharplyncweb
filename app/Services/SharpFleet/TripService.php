@@ -3,26 +3,32 @@
 namespace App\Services\SharpFleet;
 
 use App\Models\SharpFleet\Trip;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class TripService
 {
-    public function startTrip(array $data): Trip
+    /**
+     * Start a trip for a SharpFleet driver
+     *
+     * @param array $user  SharpFleet session user
+     * @param array $data  Validated trip data
+     */
+    public function startTrip(array $user, array $data): Trip
     {
-        $user = Auth::user();
-
-        // Find last completed trip for this vehicle
+        // Find last completed trip for this vehicle (scoped to organisation)
         $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
+            ->where('organisation_id', $user['organisation_id'])
             ->whereNotNull('end_km')
             ->orderByDesc('ended_at')
             ->first();
 
-        $startKm = $lastTrip ? $lastTrip->end_km : $data['start_km'];
+        $startKm = $lastTrip
+            ? $lastTrip->end_km
+            : $data['start_km'];
 
         return Trip::create([
-            'organisation_id' => $user->organisation_id,
-            'user_id'         => $user->id,
+            'organisation_id' => $user['organisation_id'],
+            'user_id'         => $user['id'],
             'vehicle_id'      => $data['vehicle_id'],
             'customer_id'     => $data['customer_id'] ?? null,
             'customer_name'   => $data['customer_name'] ?? null,
@@ -33,6 +39,13 @@ class TripService
         ]);
     }
 
-    public function endTrip() {}
-    public function editTrip() {}
+    public function endTrip()
+    {
+        // to be implemented
+    }
+
+    public function editTrip()
+    {
+        // to be implemented
+    }
 }
