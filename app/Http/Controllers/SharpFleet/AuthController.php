@@ -18,7 +18,9 @@ class AuthController extends Controller
     {
         // Already logged into SharpFleet
         if ($request->session()->has('sharpfleet.user')) {
-            return redirect('/app/sharpfleet/admin');
+            return $this->redirectByRole(
+                $request->session()->get('sharpfleet.user.role')
+            );
         }
 
         // Attempt remember-me login
@@ -27,7 +29,7 @@ class AuthController extends Controller
 
             if ($user) {
                 $this->startSession($request, $user);
-                return redirect('/app/sharpfleet/admin');
+                return $this->redirectByRole($user->role);
             }
         }
 
@@ -79,7 +81,7 @@ class AuthController extends Controller
             );
         }
 
-        return redirect('/app/sharpfleet/admin');
+        return $this->redirectByRole($user->role);
     }
 
     /**
@@ -109,6 +111,15 @@ class AuthController extends Controller
             'role'            => $user->role, // admin | driver
             'logged_in'       => true,
         ]);
+    }
+
+    private function redirectByRole(string $role)
+    {
+        return match ($role) {
+            'admin'  => redirect('/app/sharpfleet/admin'),
+            'driver' => redirect('/app/sharpfleet/driver'),
+            default  => abort(403, 'Unknown SharpFleet role'),
+        };
     }
 
     private function getUserByRememberToken(string $token)
