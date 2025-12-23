@@ -14,6 +14,7 @@ use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultControlle
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyController;
+use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +24,6 @@ use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 
 Route::prefix('app/sharpfleet')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | SharpFleet Home
-    |--------------------------------------------------------------------------
-    */
     Route::get('/', function (\Illuminate\Http\Request $request) {
 
         if ($request->session()->has('sharpfleet.user')) {
@@ -43,28 +39,20 @@ Route::prefix('app/sharpfleet')->group(function () {
         return view('sharpfleet.home');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication
-    |--------------------------------------------------------------------------
-    */
     Route::get('/login', [AuthController::class, 'showLogin']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin Routes (ADMIN ONLY)
-    |--------------------------------------------------------------------------
-    */
     Route::middleware(\App\Http\Middleware\SharpFleetAdminAuth::class)
         ->prefix('admin')
         ->group(function () {
 
             Route::get('/', fn () => view('sharpfleet.admin.dashboard'));
 
-            // Company (NEW)
+            // Company
             Route::get('/company', [CompanyController::class, 'index']);
+            Route::get('/company/profile', [CompanyProfileController::class, 'edit']);
+            Route::post('/company/profile', [CompanyProfileController::class, 'update']);
 
             // Vehicles
             Route::get('/vehicles', [VehicleController::class, 'index']);
@@ -95,34 +83,21 @@ Route::prefix('app/sharpfleet')->group(function () {
             Route::get('/register', fn () => view('sharpfleet.admin.register'));
         });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Driver Routes (DRIVER ONLY)
-    |--------------------------------------------------------------------------
-    */
     Route::middleware(\App\Http\Middleware\SharpFleetDriverAuth::class)
         ->group(function () {
 
             Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));
 
-            // Trips
             Route::post('/trips/start', [TripController::class, 'start']);
             Route::post('/trips/end', [TripController::class, 'end']);
 
-            // Faults
             Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);
             Route::post('/faults/standalone', [FaultController::class, 'storeStandalone']);
 
-            // Bookings
             Route::get('/bookings/upcoming', [BookingController::class, 'upcoming']);
             Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
         });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Debug (ADMIN ONLY)
-    |--------------------------------------------------------------------------
-    */
     Route::get('/debug', fn () => view('sharpfleet.debug'))
         ->middleware(\App\Http\Middleware\SharpFleetAdminAuth::class);
 });
