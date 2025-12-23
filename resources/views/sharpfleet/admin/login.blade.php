@@ -7,7 +7,7 @@
     <h1>SharpFleet Admin</h1>
     <p>Admin login (temporary)</p>
 
-    <form method="POST" action="/app/sharpfleet/admin/login">
+    <form method="POST" action="/app/sharpfleet/login">
         @csrf
 
         <div>
