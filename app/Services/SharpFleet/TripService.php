@@ -15,6 +15,8 @@ class TripService
      */
     public function startTrip(array $user, array $data): Trip
     {
+        $now = Carbon::now();
+
         // Find last completed trip for this vehicle (scoped to organisation)
         $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
             ->where('organisation_id', $user['organisation_id'])
@@ -35,18 +37,20 @@ class TripService
             'trip_mode'       => $data['trip_mode'],
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',
-            'started_at'      => Carbon::now(),
+
+            // Date / time fields
+            'started_at' => $now,
+            'start_time' => $now->format('H:i:s'),
         ]);
     }
 
     /**
-     * End an active trip for a SharpFleet driver
-     *
-     * @param array $user  SharpFleet session user
-     * @param array $data  ['trip_id', 'end_km']
+     * End an active trip
      */
     public function endTrip(array $user, array $data): Trip
     {
+        $now = Carbon::now();
+
         $trip = Trip::where('id', $data['trip_id'])
             ->where('organisation_id', $user['organisation_id'])
             ->where('user_id', $user['id'])
@@ -54,8 +58,9 @@ class TripService
             ->firstOrFail();
 
         $trip->update([
-            'end_km'    => $data['end_km'],
-            'ended_at'  => Carbon::now(),
+            'end_km'   => $data['end_km'],
+            'ended_at' => $now,
+            'end_time' => $now->format('H:i:s'),
         ]);
 
         return $trip;
