@@ -13,6 +13,8 @@ use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingContr
 use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
 
+use App\Http\Middleware\SharpFleetAdminAuth;
+
 /*
 |--------------------------------------------------------------------------
 | SharpFleet Routes
@@ -23,25 +25,21 @@ Route::prefix('app/sharpfleet')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | 🔹 SharpFleet Dashboard (SAFE – NO DB)
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/', function () {
-        return view('sharpfleet.dashboard');
-    })->middleware('auth');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication (Temporary Local Auth)
+    | Authentication (SharpFleet ONLY)
     |--------------------------------------------------------------------------
     */
     Route::get('/login', [AuthController::class, 'showLogin']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Debug (UNPROTECTED for now – SharpFleet only)
+    |--------------------------------------------------------------------------
+    */
     Route::get('/debug', function () {
         return view('sharpfleet.debug');
-    })->middleware('auth');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -70,45 +68,80 @@ Route::prefix('app/sharpfleet')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Admin – Vehicles
+    | 🔐 ADMIN CONTROLLERS (PROTECTED)
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/vehicles', [VehicleController::class, 'index']);
-    Route::post('/admin/vehicles', [VehicleController::class, 'store']);
-    Route::post('/admin/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']);
+    Route::middleware([SharpFleetAdminAuth::class])->group(function () {
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Vehicles
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin/vehicles', [VehicleController::class, 'index']);
+        Route::post('/admin/vehicles', [VehicleController::class, 'store']);
+        Route::post('/admin/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Customers
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin/customers', [CustomerController::class, 'index']);
+        Route::post('/admin/customers', [CustomerController::class, 'store']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Bookings
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
+        Route::post('/admin/bookings', [AdminBookingController::class, 'store']);
+        Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Faults
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin/faults', [AdminFaultController::class, 'index']);
+        Route::post('/admin/faults/{fault}/status', [AdminFaultController::class, 'updateStatus']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Reports
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
+        Route::get('/admin/reports/vehicles', [ReportController::class, 'vehicles']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Admin – Dashboard
+        |----------------------------------------------------------------------
+        */
+        Route::get('/admin', function () {
+            return view('sharpfleet.admin.dashboard');
+        });
+
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | Admin – Customers
+    | Admin Auth Pages (UNPROTECTED)
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/customers', [CustomerController::class, 'index']);
-    Route::post('/admin/customers', [CustomerController::class, 'store']);
+    Route::prefix('admin')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin – Bookings
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
-    Route::post('/admin/bookings', [AdminBookingController::class, 'store']);
-    Route::post('/admin/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
+        Route::get('/login', function () {
+            return view('sharpfleet.admin.login');
+        });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin – Faults
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/admin/faults', [AdminFaultController::class, 'index']);
-    Route::post('/admin/faults/{fault}/status', [AdminFaultController::class, 'updateStatus']);
+        Route::get('/register', function () {
+            return view('sharpfleet.admin.register');
+        });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin – Reports
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
-    Route::get('/admin/reports/vehicles', [ReportController::class, 'vehicles']);
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -123,33 +156,5 @@ Route::prefix('app/sharpfleet')->group(function () {
                 'start_km'   => 99999,
             ]);
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | SharpFleet Admin (SAFE – isolated)
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('admin')->group(function () {
-
-        Route::get('/login', function () {
-            return view('sharpfleet.admin.login');
-        });
-
-        Route::post('/login', function () {
-            // TEMP: reuse existing auth, no logic yet
-            return redirect('/app/sharpfleet/admin');
-        });
-
-        Route::get('/', function () {
-            return view('sharpfleet.admin.dashboard');
-        });
-
-        Route::get('/register', function () {
-            return view('sharpfleet.admin.register');
-        });
-
-    });
-
-
 
 });
