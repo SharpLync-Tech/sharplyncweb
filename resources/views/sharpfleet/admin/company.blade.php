@@ -85,7 +85,7 @@
         <h2 style="margin-bottom:16px;">Actions</h2>
 
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <a href="#"
+            <a href="{{ url('/app/sharpfleet/admin/company/profile') }}"
                style="background:#2CBFAE;color:white;
                       padding:12px 16px;border-radius:6px;
                       text-decoration:none;font-weight:600;">
