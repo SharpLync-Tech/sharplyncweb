@@ -13,6 +13,7 @@ use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingContr
 use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
+use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,9 @@ Route::prefix('app/sharpfleet')->group(function () {
 
             Route::get('/', fn () => view('sharpfleet.admin.dashboard'));
 
+            // Company (NEW)
+            Route::get('/company', [CompanyController::class, 'index']);
+
             // Vehicles
             Route::get('/vehicles', [VehicleController::class, 'index']);
             Route::post('/vehicles', [VehicleController::class, 'store']);
@@ -84,7 +88,7 @@ Route::prefix('app/sharpfleet')->group(function () {
             Route::get('/reports/trips', [ReportController::class, 'trips']);
             Route::get('/reports/vehicles', [ReportController::class, 'vehicles']);
 
-            // Company Settings (NEW)
+            // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
 
