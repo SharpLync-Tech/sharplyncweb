@@ -5,73 +5,43 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
 
 class CompanySettingsController extends Controller
 {
-    /**
-     * Show the company settings form
-     */
-    public function edit(Request $request)
+    protected CompanySettingsService $settingsService;
+
+    public function __construct(CompanySettingsService $settingsService)
     {
-        $user = $request->session()->get('sharpfleet.user');
+        $this->settingsService = $settingsService;
+    }
 
-        if (!$user || $user['role'] !== 'admin') {
-            abort(403, 'Admin access only');
-        }
+    public function edit()
+    {
+        $organisationId = session('sharpfleet.user.organisation_id');
 
-        $settingsService = new CompanySettingsService($user['organisation_id']);
+        $settings = $this->settingsService->getSettings($organisationId);
 
-        return view('sharpfleet.admin.settings', [
-            'settings' => $settingsService->all(),
+        return view('sharpfleet.admin.company-settings', [
+            'settings' => $settings,
         ]);
     }
 
-    /**
-     * Update company settings
-     */
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
-        $user = $request->session()->get('sharpfleet.user');
+        $organisationId = session('sharpfleet.user.organisation_id');
 
-        if (!$user || $user['role'] !== 'admin') {
-            abort(403, 'Admin access only');
+        $this->settingsService->saveSettings(
+            $organisationId,
+            $request->all()
+        );
+
+        // Decide where to go next
+        if ($request->has('save_and_return')) {
+            return redirect('/app/sharpfleet/admin/company')
+                ->with('success', 'Company settings updated.');
         }
 
-        // Load existing settings
-        $settingsService = new CompanySettingsService($user['organisation_id']);
-        $currentSettings = $settingsService->all();
-
-        /*
-         * We MERGE updates into existing JSON
-         * (Option A – safe, future-proof)
-         */
-        $updatedSettings = array_replace_recursive($currentSettings, [
-            'client_presence' => [
-                'enabled'  => $request->boolean('client_presence_enabled'),
-                'required' => $request->boolean('client_presence_required'),
-                'label'    => $request->input('client_presence_label', 'Client'),
-            ],
-
-            'trip' => [
-                'odometer_required'        => $request->boolean('odometer_required'),
-                'odometer_allow_override'  => $request->boolean('odometer_allow_override'),
-            ],
-
-            'safety_check' => [
-                'enabled' => $request->boolean('safety_check_enabled'),
-            ],
-        ]);
-
-        // Persist settings
-        DB::connection('sharpfleet')
-            ->table('company_settings')
-            ->updateOrInsert(
-                ['organisation_id' => $user['organisation_id']],
-                ['settings_json' => json_encode($updatedSettings)]
-            );
-
-        return redirect('/app/sharpfleet/admin/settings')
-            ->with('success', 'Company settings saved successfully');
+        return back()->with('success', 'Company settings updated.');
     }
 }
