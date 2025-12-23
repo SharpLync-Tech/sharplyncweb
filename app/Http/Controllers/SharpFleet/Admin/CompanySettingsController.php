@@ -9,34 +9,43 @@ use Illuminate\Http\RedirectResponse;
 
 class CompanySettingsController extends Controller
 {
-    protected CompanySettingsService $settingsService;
-
-    public function __construct(CompanySettingsService $settingsService)
+    /**
+     * Show company settings
+     */
+    public function edit(Request $request)
     {
-        $this->settingsService = $settingsService;
-    }
+        $user = $request->session()->get('sharpfleet.user');
 
-    public function edit()
-    {
-        $organisationId = session('sharpfleet.user.organisation_id');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
 
-        $settings = $this->settingsService->getSettings($organisationId);
+        $settingsService = new CompanySettingsService(
+            $user['organisation_id']
+        );
 
-        return view('sharpfleet.admin.company-settings', [
-            'settings' => $settings,
+        return view('sharpfleet.admin.settings', [
+            'settings' => $settingsService->all(),
         ]);
     }
 
+    /**
+     * Update company settings
+     */
     public function update(Request $request): RedirectResponse
     {
-        $organisationId = session('sharpfleet.user.organisation_id');
+        $user = $request->session()->get('sharpfleet.user');
 
-        $this->settingsService->saveSettings(
-            $organisationId,
-            $request->all()
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $settingsService = new CompanySettingsService(
+            $user['organisation_id']
         );
 
-        // Decide where to go next
+        $settingsService->saveFromRequest($request);
+
         if ($request->has('save_and_return')) {
             return redirect('/app/sharpfleet/admin/company')
                 ->with('success', 'Company settings updated.');
