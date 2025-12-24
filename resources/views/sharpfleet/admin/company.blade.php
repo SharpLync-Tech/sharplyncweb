@@ -67,10 +67,15 @@
                 Company Settings
             </a>
 
-            {{-- NEW: Safety Checks --}}
             <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}"
                style="background:#e5e7eb;color:#111827;padding:12px 16px;border-radius:6px;text-decoration:none;font-weight:600;">
                 Safety Checks
+            </a>
+
+            {{-- NEW: Vehicles --}}
+            <a href="{{ url('/app/sharpfleet/admin/vehicles') }}"
+               style="background:#e5e7eb;color:#111827;padding:12px 16px;border-radius:6px;text-decoration:none;font-weight:600;">
+                Vehicles
             </a>
         </div>
     </div>
