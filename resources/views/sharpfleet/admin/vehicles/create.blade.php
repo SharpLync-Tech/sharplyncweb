@@ -40,12 +40,17 @@
             @enderror
 
             {{-- Road registered --}}
-            @php $road = old('is_road_registered', 1); @endphp
+            <input type="hidden" name="is_road_registered" value="0">
+
             <label style="display:block;margin:12px 0;font-weight:600;">
-                <input type="checkbox" id="is_road_registered" name="is_road_registered" value="1"
-                    {{ $road ? 'checked' : '' }}>
+                <input type="checkbox"
+                       id="is_road_registered"
+                       name="is_road_registered"
+                       value="1"
+                       {{ old('is_road_registered') == 1 ? 'checked' : '' }}>
                 This asset is road registered
             </label>
+
             <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
                 Road-registered assets require a registration number and will display it to drivers.
             </div>
