@@ -34,6 +34,8 @@ class TripService
             'trip_mode'       => $data['trip_mode'],
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',
+            'client_present'  => $data['client_present'] ?? null,
+            'client_address'  => $data['client_address'] ?? null,
 
             // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,

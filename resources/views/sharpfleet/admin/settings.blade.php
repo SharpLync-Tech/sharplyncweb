@@ -13,6 +13,7 @@
         'require_odometer_start'   => true,
         'allow_odometer_override'  => true,
         'enable_safety_check'      => false,
+        'enable_client_addresses'  => false,
     ], $settings ?? []);
 @endphp
 
@@ -92,6 +93,25 @@
                 <strong>Allow drivers to override the auto-filled odometer</strong>
             </label>
 
+        </div>
+
+        {{-- Client Address Tracking --}}
+        <div style="background:white;padding:20px;border-radius:10px;
+                    box-shadow:0 4px 12px rgba(0,0,0,0.05);
+                    margin-bottom:24px;">
+
+            <h2 style="margin-bottom:8px;">Client Address Tracking</h2>
+
+            <p style="color:#6b7280;margin-bottom:16px;">
+                Enable this if your business needs to record client addresses for billing or job tracking (e.g., tradies).
+                Disabled by default for privacy.
+            </p>
+
+            <label style="display:block;margin-bottom:12px;">
+                <input type="checkbox" name="enable_client_addresses" value="1"
+                       {{ $settings['enable_client_addresses'] ? 'checked' : '' }}>
+                <strong>Allow recording client addresses</strong>
+            </label>
         </div>
 
         {{-- Safety Check --}}

@@ -20,6 +20,8 @@ class StartTripRequest extends FormRequest
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string'],
             'distance_method' => ['nullable', 'string'],
+            'client_present' => ['nullable', 'boolean'],
+            'client_address' => ['nullable', 'string'],
         ];
     }
 }

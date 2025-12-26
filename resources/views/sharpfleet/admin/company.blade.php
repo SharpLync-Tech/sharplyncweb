@@ -72,6 +72,11 @@
                 Safety Checks
             </a>
 
+            <a href="{{ url('/app/sharpfleet/admin/reports/trips') }}"
+               style="background:#e5e7eb;color:#111827;padding:12px 16px;border-radius:6px;text-decoration:none;font-weight:600;">
+                Trip Reports
+            </a>
+
             {{-- NEW: Vehicles --}}
             <a href="{{ url('/app/sharpfleet/admin/vehicles') }}"
                style="background:#e5e7eb;color:#111827;padding:12px 16px;border-radius:6px;text-decoration:none;font-weight:600;">

@@ -5,8 +5,12 @@
 @section('sharpfleet-content')
 @php
     use Illuminate\Support\Facades\DB;
+    use App\Services\SharpFleet\CompanySettingsService;
 
     $user = session('sharpfleet.user');
+
+    $settingsService = new CompanySettingsService($user['organisation_id']);
+    $settings = $settingsService->all();
 
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
@@ -83,6 +87,31 @@
                     No client / internal
                 </label>
             </div>
+
+            {{-- Client presence --}}
+            @if($settings['client_presence']['enabled'] ?? false)
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-weight:600;margin-bottom:6px;">
+                        {{ $settings['client_presence']['label'] ?? 'Client' }} Present? {{ $settings['client_presence']['required'] ? '(Required)' : '' }}
+                    </label>
+                    <select name="client_present" {{ $settings['client_presence']['required'] ? 'required' : '' }} style="width:100%;padding:12px;font-size:16px;">
+                        <option value="">— Select —</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+
+                {{-- Client address --}}
+                @if($settings['client_presence']['enable_addresses'] ?? false)
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">
+                            Client Address (for billing/job tracking)
+                        </label>
+                        <input type="text" name="client_address" placeholder="e.g. 123 Main St, Suburb"
+                               style="width:100%;padding:12px;font-size:16px;">
+                    </div>
+                @endif
+            @endif
 
             {{-- Start KM --}}
             <div style="margin-bottom:20px;">

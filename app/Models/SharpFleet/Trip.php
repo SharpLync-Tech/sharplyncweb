@@ -22,6 +22,9 @@ class Trip extends Model
 
         'distance_method',
 
+        'client_present',
+        'client_address',
+
         // Date / time fields
         'started_at',
         'ended_at',

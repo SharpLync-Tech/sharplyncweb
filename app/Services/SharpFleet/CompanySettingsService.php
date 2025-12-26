@@ -34,6 +34,7 @@ class CompanySettingsService
             'required'                     => false,
             'label'                        => 'Client',
             'require_details_when_present' => false,
+            'enable_addresses'             => false,
         ],
 
         'safety_check' => [
@@ -151,6 +152,11 @@ class CompanySettingsService
         return $this->settings['client_presence']['label'] ?? 'Client';
     }
 
+    public function clientAddressesEnabled(): bool
+    {
+        return (bool) $this->settings['client_presence']['enable_addresses'];
+    }
+
     // ---- Safety check ----
 
     public function safetyCheckEnabled(): bool
@@ -203,6 +209,9 @@ class CompanySettingsService
 
         $settings['client_presence']['label']
             = trim($request->input('client_label', 'Client'));
+
+        $settings['client_presence']['enable_addresses']
+            = $request->boolean('enable_client_addresses');
 
         // ---- Safety check ----
         $settings['safety_check']['enabled']
