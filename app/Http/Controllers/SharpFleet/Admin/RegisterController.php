@@ -63,6 +63,7 @@ class RegisterController extends Controller
                     'account_status'          => 'pending',
                     'activation_token'        => $token,
                     'activation_expires_at'   => Carbon::now()->addHour(),
+                    'is_driver'               => 1, // Sole traders are always drivers
                     'created_at'              => Carbon::now(),
                     'updated_at'              => Carbon::now(),
                 ]);
@@ -168,6 +169,7 @@ class RegisterController extends Controller
                     'organisation_id' => $organisationId,
                     'password_hash' => Hash::make($request->password),
                     'role' => 'admin',
+                    'is_driver' => 1, // Sole trader admin is also a driver
                     'account_status' => 'active',
                     'trial_ends_at' => Carbon::now()->addDays(30),
                     'activated_at' => Carbon::now(),

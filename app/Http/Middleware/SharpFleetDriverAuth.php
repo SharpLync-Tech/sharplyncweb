@@ -26,6 +26,11 @@ class SharpFleetDriverAuth
             return response()->view('sharpfleet.errors.driver-denied', [], 403);
         }
 
+        // Check is_driver flag for granular control
+        if (empty($user['is_driver'])) {
+            return response()->view('sharpfleet.errors.driver-denied', [], 403);
+        }
+
         return $next($request);
     }
 }
