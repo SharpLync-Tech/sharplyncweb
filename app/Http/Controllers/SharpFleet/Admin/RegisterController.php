@@ -154,7 +154,7 @@ class RegisterController extends Controller
                 ->table('organisations')
                 ->insertGetId([
                     'name' => $request->business_type === 'sole_trader' ? $user->first_name . ' ' . $user->last_name : 'Company',
-                    'business_type' => $request->business_type,
+                    'company_type' => $request->business_type, // use company_type as per DB
                     'trial_ends_at' => Carbon::now()->addDays(30),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
