@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\ReportService;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -30,7 +31,7 @@ class ReportController extends Controller
                 'trips.*',
                 'vehicles.name as vehicle_name',
                 'vehicles.registration_number',
-                'users.name as driver_name'
+                DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name")
             )
             ->where('trips.organisation_id', $user['organisation_id'])
             ->when($request->vehicle_id, fn($q) => $q->where('trips.vehicle_id', $request->vehicle_id))
