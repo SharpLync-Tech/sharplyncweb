@@ -10,7 +10,10 @@
         medium businesses. No tracking hardware. No micromanagement.
         Just the tools you need to stay organised, compliant, and in control.
     </p>
-    <a href="/app/sharpfleet/login" class="btn">Get Started</a>
+    <a href="/app/sharpfleet/admin/register" class="btn">Get Started</a>
+    <p style="margin-top: 16px; font-size: 14px; color: #6b7280;">
+        Already have an account? <a href="/app/sharpfleet/login" style="color: var(--primary-color);">Sign in here</a>
+    </p>
 </div>
 
 <section class="mb-4">
@@ -91,6 +94,6 @@
         SharpFleet is designed for real-world operations — tradies, service companies,
         small fleets, and growing teams who want clarity without complexity.
     </p>
-    <a href="/app/sharpfleet/login" class="btn">Start Using SharpFleet</a>
+    <a href="/app/sharpfleet/admin/register" class="btn">Start Your Free Trial</a>
 </div>
 @endsection
