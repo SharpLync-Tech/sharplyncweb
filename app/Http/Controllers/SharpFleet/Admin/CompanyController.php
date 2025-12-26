@@ -36,7 +36,21 @@ class CompanyController extends Controller
         $driversCount = DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
-            ->where('role', 'driver')
+            ->where(function ($q) {
+                $q
+                    ->where(function ($qq) {
+                        $qq
+                            ->where('role', 'driver')
+                            ->where(function ($q2) {
+                                $q2->whereNull('is_driver')->orWhere('is_driver', 1);
+                            });
+                    })
+                    ->orWhere(function ($qq) {
+                        $qq
+                            ->where('role', 'admin')
+                            ->where('is_driver', 1);
+                    });
+            })
             ->count();
 
         $vehiclesCount = DB::connection('sharpfleet')

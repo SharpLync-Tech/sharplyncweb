@@ -31,6 +31,7 @@ class ReportController extends Controller
                 'trips.*',
                 'vehicles.name as vehicle_name',
                 'vehicles.registration_number',
+                'vehicles.tracking_mode',
                 DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name")
             )
             ->where('trips.organisation_id', $user['organisation_id'])
@@ -41,16 +42,18 @@ class ReportController extends Controller
             ->get();
 
         if ($request->export === 'csv') {
-            $headers = ['Vehicle', 'Rego', 'Driver', 'Trip Mode', 'Start KM', 'End KM', 'Client Present', 'Client Address', 'Started At', 'Ended At'];
+            $headers = ['Vehicle', 'Rego', 'Driver', 'Trip Mode', 'Unit', 'Start Reading', 'End Reading', 'Client Present', 'Client Address', 'Started At', 'Ended At'];
             $callback = function() use ($trips, $headers) {
                 $file = fopen('php://output', 'w');
                 fputcsv($file, $headers);
                 foreach ($trips as $trip) {
+                    $unit = ($trip->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km';
                     fputcsv($file, [
                         $trip->vehicle_name,
                         $trip->registration_number,
                         $trip->driver_name,
                         $trip->trip_mode,
+                        $unit,
                         $trip->start_km,
                         $trip->end_km,
                         $trip->client_present ? 'Yes' : 'No',

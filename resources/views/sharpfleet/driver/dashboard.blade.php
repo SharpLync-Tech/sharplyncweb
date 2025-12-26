@@ -32,7 +32,7 @@
     $activeTrip = DB::connection('sharpfleet')
         ->table('trips')
         ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
-        ->select('trips.*', 'vehicles.name as vehicle_name', 'vehicles.registration_number')
+        ->select('trips.*', 'vehicles.name as vehicle_name', 'vehicles.registration_number', 'vehicles.tracking_mode')
         ->where('trips.user_id', $user['id'])
         ->where('trips.organisation_id', $user['organisation_id'])
         ->whereNotNull('trips.started_at')
@@ -61,7 +61,10 @@
                     <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->format('M j, Y g:i A') }}
                 </div>
                 <div class="info-row">
-                    <strong>Starting KM:</strong> {{ number_format($activeTrip->start_km) }}
+                    <strong>
+                        {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours' ? 'Starting Hours:' : 'Starting KM:' }}
+                    </strong>
+                    {{ number_format($activeTrip->start_km) }}
                 </div>
                 @if($activeTrip->trip_mode === 'client')
                     <div class="info-row">
@@ -90,7 +93,12 @@
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
 
                 <div class="form-group">
-                    <label class="form-label">Ending odometer (km)</label>
+                    <label class="form-label">
+                        {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours'
+                            ? 'Ending hour meter (hours)'
+                            : 'Ending odometer (km)'
+                        }}
+                    </label>
                     <input type="number" name="end_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124600">
                 </div>
 

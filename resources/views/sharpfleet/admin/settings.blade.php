@@ -78,13 +78,13 @@
                     <label class="checkbox-label">
                         <input type="checkbox" name="require_odometer_start" value="1"
                                {{ $settings['require_odometer_start'] ? 'checked' : '' }}>
-                        <strong>Require odometer reading when starting a trip</strong>
+                        <strong>Require starting reading when starting a trip (km or hours)</strong>
                     </label>
 
                     <label class="checkbox-label">
                         <input type="checkbox" name="allow_odometer_override" value="1"
                                {{ $settings['allow_odometer_override'] ? 'checked' : '' }}>
-                        <strong>Allow drivers to override the auto-filled odometer</strong>
+                        <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
                     </label>
                 </div>
             </div>

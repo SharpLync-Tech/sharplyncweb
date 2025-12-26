@@ -63,8 +63,9 @@
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Trip Mode</th>
-                                <th>Start KM</th>
-                                <th>End KM</th>
+                                <th>Unit</th>
+                                <th>Start Reading</th>
+                                <th>End Reading</th>
                                 <th>Client Present</th>
                                 <th>Client Address</th>
                                 <th>Started At</th>
@@ -79,6 +80,7 @@
                                     </td>
                                     <td>{{ $t->driver_name }}</td>
                                     <td>{{ ucfirst($t->trip_mode) }}</td>
+                                    <td>{{ ($t->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km' }}</td>
                                     <td>{{ number_format($t->start_km) }}</td>
                                     <td>{{ $t->end_km ? number_format($t->end_km) : '—' }}</td>
                                     <td>{{ $t->client_present ? 'Yes' : 'No' }}</td>
