@@ -234,6 +234,28 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     font-size: 16px;
 }
 
+/* Trip Info */
+.trip-info {
+    margin-bottom: 20px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row strong {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
 /* Forms */
 .form-group {
     margin-bottom: 20px;
