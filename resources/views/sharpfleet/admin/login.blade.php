@@ -3,24 +3,24 @@
 @section('title', 'SharpFleet Admin Login')
 
 @section('content')
-<div style="max-width:420px;margin:60px auto;">
-    <h1>SharpFleet Admin</h1>
-    <p>Admin login (temporary)</p>
-
-    <form method="POST" action="/app/sharpfleet/login">
-        @csrf
-
-        <div>
-            <label>Email</label>
-            <input type="email" name="email" required>
+<div class="auth-container">
+    <div class="auth-card" style="max-width:420px;">
+        <div class="auth-header">
+            <h1 class="auth-title">SharpFleet Admin</h1>
+            <p class="auth-subtitle">Admin login (temporary)</p>
         </div>
-
-        <div style="margin-top:10px;">
-            <label>Password</label>
-            <input type="password" name="password" required>
-        </div>
-
-        <button style="margin-top:20px;">Login</button>
-    </form>
+        <form method="POST" action="/app/sharpfleet/login" class="auth-form">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full mt-2">Login</button>
+        </form>
+    </div>
 </div>
 @endsection

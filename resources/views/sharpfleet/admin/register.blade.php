@@ -49,7 +49,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full">
+            <button type="submit" class="btn btn-primary btn-full mt-2">
                 Send Activation Email
             </button>
         </form>
