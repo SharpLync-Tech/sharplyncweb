@@ -1,50 +1,46 @@
-@extends('layouts.base')
+@extends('layouts.sharpfleet')
 
-@section('title', 'SharpFleet Admin')
+@section('title', 'SharpFleet Admin Dashboard')
 
-@section('content')
-<div style="max-width:900px;margin:60px auto;">
+@section('sharpfleet-content')
+<div class="mb-4">
+    <h1 class="mb-2">SharpFleet Admin Dashboard</h1>
+    <p>Welcome to SharpFleet. You are logged in as admin.</p>
+</div>
 
-    <h1>SharpFleet Admin Dashboard</h1>
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
-    <p>Welcome to SharpFleet. You are logged in as:</p>
+<div class="grid grid-2 mb-4">
+    <div class="stats-card">
+        <div class="stats-number">{{ $vehiclesCount ?? 0 }}</div>
+        <div class="stats-label">Vehicles</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">{{ $driversCount ?? 0 }}</div>
+        <div class="stats-label">Drivers</div>
+    </div>
+</div>
 
-    @php
-        $user = session('sharpfleet.user');
-    @endphp
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Quick Actions</h3>
+    </div>
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="/app/sharpfleet/admin/vehicles" class="btn btn-primary">Manage Vehicles</a>
+        <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-secondary">View Reports</a>
+        <a href="/app/sharpfleet/admin/settings" class="btn btn-secondary">Settings</a>
+        <a href="/app/sharpfleet/admin/company" class="btn btn-secondary">Company Overview</a>
+    </div>
+</div>
 
-    @if ($user)
-        <div style="background:#f4f7fb;padding:20px;border-radius:8px;margin:20px 0;">
-            <p><strong>Name:</strong> {{ $user['name'] ?? '—' }}</p>
-            <p><strong>Email:</strong> {{ $user['email'] ?? '—' }}</p>
-            <p><strong>Role:</strong> {{ ucfirst($user['role'] ?? '—') }}</p>
-            <p><strong>Organisation ID:</strong> {{ $user['organisation_id'] ?? '—' }}</p>
-        </div>
-    @else
-        <p style="color:red;">
-            ⚠️ No SharpFleet session found. You should not be seeing this page.
-        </p>
-    @endif
-
-    <hr>
-
-    <ul>
-        <li>
-            <a href="/app/sharpfleet/admin/register">
-                Register new admin (stub)
-            </a>
-        </li>
-    </ul>
-
-    <hr>
-
+<div class="mt-4">
     <form method="POST" action="/app/sharpfleet/logout">
         @csrf
-        <button type="submit"
-            style="background:#cc2f2f;color:white;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;">
-            Log out of SharpFleet
-        </button>
+        <button type="submit" class="btn btn-danger">Log out of SharpFleet</button>
     </form>
-
 </div>
 @endsection

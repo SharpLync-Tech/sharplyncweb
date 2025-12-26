@@ -1,32 +1,56 @@
 @extends('layouts.base')
 
-{{-- 
-    SharpFleet Layout Wrapper
-    Purpose:
-    - Isolate SharpFleet UI from main CMS
-    - Allow future SharpFleet-specific nav, logo, branding
---}}
+@section('head')
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+@endsection
 
 @section('content')
+    {{-- SharpFleet Header / Navigation --}}
+    <header class="sharpfleet-header">
+        <div class="sharpfleet-container">
+            <nav class="sharpfleet-nav">
+                <a href="/app/sharpfleet" class="sharpfleet-logo">
+                    <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo" onerror="this.style.display='none'">
+                    <span>SharpFleet</span>
+                </a>
 
-    {{-- SharpFleet Header / Nav (minimal for now) --}}
-    <div style="background:#0A2A4D;color:white;padding:14px 20px;">
-        <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-weight:600;">
-                SharpFleet
-            </div>
-
-            <div style="font-size:14px;">
-                @if(session()->has('sharpfleet.user'))
-                    {{ session('sharpfleet.user.name') }}
-                @endif
-            </div>
+                <div class="sharpfleet-nav-links">
+                    @if(session()->has('sharpfleet.user'))
+                        @if(session('sharpfleet.user.role') === 'admin')
+                            <a href="/app/sharpfleet/admin" class="sharpfleet-nav-link">Dashboard</a>
+                            <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-link">Vehicles</a>
+                            <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-link">Reports</a>
+                            <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-link">Settings</a>
+                        @else
+                            <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
+                        @endif
+                        <div class="sharpfleet-user-info">
+                            <div class="sharpfleet-user-avatar">
+                                {{ strtoupper(substr(session('sharpfleet.user.first_name'), 0, 1)) }}
+                            </div>
+                            <span>{{ session('sharpfleet.user.first_name') }}</span>
+                            <a href="/app/sharpfleet/logout" class="sharpfleet-nav-link">Logout</a>
+                        </div>
+                    @else
+                        <a href="/app/sharpfleet/login" class="sharpfleet-nav-link">Login</a>
+                    @endif
+                </div>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    {{-- SharpFleet Page Content --}}
-    <main>
-        @yield('sharpfleet-content')
+    {{-- SharpFleet Main Content --}}
+    <main class="sharpfleet-main">
+        <div class="sharpfleet-container">
+            @yield('sharpfleet-content')
+        </div>
     </main>
 
+    {{-- SharpFleet Footer --}}
+    <footer style="background: var(--secondary-color); color: var(--text-light); padding: 20px 0; text-align: center; margin-top: 40px;">
+        <div class="sharpfleet-container">
+            <p>&copy; 2025 SharpFleet. Modern Fleet Management for the Digital Age.</p>
+        </div>
+    </footer>
 @endsection

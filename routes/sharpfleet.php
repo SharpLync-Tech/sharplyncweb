@@ -23,6 +23,11 @@ use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 |--------------------------------------------------------------------------
 */
 
+// Redirect from /sharpfleet to /app/sharpfleet
+Route::get('/sharpfleet', function () {
+    return redirect('/app/sharpfleet');
+});
+
 Route::prefix('app/sharpfleet')->group(function () {
 
     /*

@@ -29,39 +29,39 @@
         ->keyBy('vehicle_id');
 @endphp
 
-<div style="max-width:720px;margin:40px auto;padding:0 16px;">
+<div class="mb-4">
+    <h1 class="mb-2">Driver Dashboard</h1>
+    <p>Welcome back, {{ $user['first_name'] }}!</p>
+</div>
 
-    <h1 style="margin-bottom:10px;">Driver Dashboard</h1>
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
-    @if (session('success'))
-        <div style="background:#d1fae5;color:#065f46;
-                    padding:12px;border-radius:8px;margin-bottom:20px;">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div style="background:#f8f9fb;padding:16px;border-radius:8px;margin-bottom:24px;">
-        <strong>{{ $user['name'] }}</strong><br>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">User Info</h3>
+    </div>
+    <div class="mb-3">
+        <strong>{{ $user['first_name'] }} {{ $user['last_name'] }}</strong><br>
         {{ $user['email'] }}
     </div>
+</div>
 
-    <div style="background:white;padding:20px;border-radius:10px;
-                box-shadow:0 4px 12px rgba(0,0,0,0.05);">
-
-        <h2 style="margin-bottom:16px;">Start a Trip</h2>
-
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Start a Trip</h3>
+    </div>
+    <div class="card-body">
         <form method="POST" action="/app/sharpfleet/trips/start">
             @csrf
 
             {{-- Vehicle --}}
-            <div style="margin-bottom:16px;">
-                <label style="display:block;font-weight:600;margin-bottom:6px;">
-                    Vehicle
-                </label>
-                <select id="vehicleSelect"
-                        name="vehicle_id"
-                        required
-                        style="width:100%;padding:12px;font-size:16px;">
+            <div class="form-group">
+                <label class="form-label">Vehicle</label>
+                <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
                     @foreach ($vehicles as $vehicle)
                         <option value="{{ $vehicle->id }}"
                                 data-last-km="{{ $lastTrips[$vehicle->id]->end_km ?? '' }}">
@@ -72,29 +72,27 @@
             </div>
 
             {{-- Trip type --}}
-            <div style="margin-bottom:16px;">
-                <label style="display:block;font-weight:600;margin-bottom:6px;">
-                    Trip type
-                </label>
-
-                <label style="display:block;margin-bottom:6px;">
-                    <input type="radio" name="trip_mode" value="client" checked>
-                    Client / business trip
-                </label>
-
-                <label style="display:block;">
-                    <input type="radio" name="trip_mode" value="no_client">
-                    No client / internal
-                </label>
+            <div class="form-group">
+                <label class="form-label">Trip type</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="trip_mode" value="client" checked>
+                        Client / business trip
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="trip_mode" value="no_client">
+                        No client / internal
+                    </label>
+                </div>
             </div>
 
             {{-- Client presence --}}
             @if($settings['client_presence']['enabled'] ?? false)
-                <div style="margin-bottom:16px;">
-                    <label style="display:block;font-weight:600;margin-bottom:6px;">
+                <div class="form-group">
+                    <label class="form-label">
                         {{ $settings['client_presence']['label'] ?? 'Client' }} Present? {{ $settings['client_presence']['required'] ? '(Required)' : '' }}
                     </label>
-                    <select name="client_present" {{ $settings['client_presence']['required'] ? 'required' : '' }} style="width:100%;padding:12px;font-size:16px;">
+                    <select name="client_present" class="form-control" {{ $settings['client_presence']['required'] ? 'required' : '' }}>
                         <option value="">— Select —</option>
                         <option value="1">Yes</option>
                         <option value="0">No</option>
@@ -103,60 +101,30 @@
 
                 {{-- Client address --}}
                 @if($settings['client_presence']['enable_addresses'] ?? false)
-                    <div style="margin-bottom:16px;">
-                        <label style="display:block;font-weight:600;margin-bottom:6px;">
-                            Client Address (for billing/job tracking)
-                        </label>
-                        <input type="text" name="client_address" placeholder="e.g. 123 Main St, Suburb"
-                               style="width:100%;padding:12px;font-size:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Client Address (for billing/job tracking)</label>
+                        <input type="text" name="client_address" class="form-control" placeholder="e.g. 123 Main St, Suburb">
                     </div>
                 @endif
             @endif
 
             {{-- Start KM --}}
-            <div style="margin-bottom:20px;">
-                <label style="display:block;font-weight:600;margin-bottom:6px;">
-                    Starting odometer (km)
-                </label>
-
-                <div id="lastKmHint"
-                     style="font-size:14px;color:#555;margin-bottom:6px;display:none;">
-                </div>
-
-                <input type="number"
-                       id="startKmInput"
-                       name="start_km"
-                       inputmode="numeric"
-                       required
-                       placeholder="e.g. 124500"
-                       style="width:100%;padding:12px;font-size:16px;">
+            <div class="form-group">
+                <label class="form-label">Starting odometer (km)</label>
+                <div id="lastKmHint" class="hint-text" style="display:none;"></div>
+                <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124500">
             </div>
 
-            <button type="submit"
-                    style="width:100%;
-                           background:#2CBFAE;
-                           color:white;
-                           border:none;
-                           padding:14px;
-                           font-size:16px;
-                           font-weight:600;
-                           border-radius:6px;">
-                Start Trip
-            </button>
+            <button type="submit" class="btn btn-primary btn-full">Start Trip</button>
         </form>
     </div>
+</div>
 
-    <div style="margin-top:24px;">
-        <form method="POST" action="/app/sharpfleet/logout">
-            @csrf
-            <button type="submit"
-                    style="background:#d9534f;color:white;
-                           border:none;padding:10px 16px;
-                           border-radius:6px;">
-                Log out
-            </button>
-        </form>
-    </div>
+<div class="mt-4">
+    <form method="POST" action="/app/sharpfleet/logout">
+        @csrf
+        <button type="submit" class="btn btn-danger">Log out</button>
+    </form>
 </div>
 
 {{-- Minimal JS --}}
