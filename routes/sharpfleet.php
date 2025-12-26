@@ -123,9 +123,17 @@ Route::prefix('app/sharpfleet')->group(function () {
                     ->where('organisation_id', $organisationId)
                     ->count();
 
+                $activeTripsCount = DB::connection('sharpfleet')
+                    ->table('trips')
+                    ->where('organisation_id', $organisationId)
+                    ->whereNotNull('started_at')
+                    ->whereNull('ended_at')
+                    ->count();
+
                 return view('sharpfleet.admin.dashboard', [
                     'driversCount' => $driversCount,
                     'vehiclesCount' => $vehiclesCount,
+                    'activeTripsCount' => $activeTripsCount,
                 ]);
             });
 

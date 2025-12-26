@@ -32,6 +32,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Rego</th>
+                                <th>Active Trip</th>
                                 <th>Type</th>
                                 <th>Class</th>
                                 <th>Make/Model</th>
@@ -43,6 +44,13 @@
                                 <tr>
                                     <td class="fw-bold">{{ $v->name }}</td>
                                     <td>{{ $v->registration_number }}</td>
+                                    <td>
+                                        @if(!empty($activeTripVehicleIds[$v->id]))
+                                            <span class="fw-bold">In trip</span>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
                                     <td>{{ ucfirst($v->vehicle_type) }}</td>
                                     <td>{{ $v->vehicle_class ?? '—' }}</td>
                                     <td>{{ trim(($v->make ?? '') . ' ' . ($v->model ?? '')) ?: '—' }}</td>

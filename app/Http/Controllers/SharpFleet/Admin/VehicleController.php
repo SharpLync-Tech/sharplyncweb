@@ -29,12 +29,25 @@ class VehicleController extends Controller
             abort(403, 'No SharpFleet organisation context.');
         }
 
-        $vehicles = $this->vehicleService->getAvailableVehicles(
-            (int) $fleetUser['organisation_id']
-        );
+        $organisationId = (int) $fleetUser['organisation_id'];
+
+        $vehicles = $this->vehicleService->getAvailableVehicles($organisationId);
+
+        $activeTripVehicleIds = DB::connection('sharpfleet')
+            ->table('trips')
+            ->where('organisation_id', $organisationId)
+            ->whereNotNull('started_at')
+            ->whereNull('ended_at')
+            ->distinct()
+            ->pluck('vehicle_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $activeTripVehicleIds = array_fill_keys($activeTripVehicleIds, true);
 
         return view('sharpfleet.admin.vehicles.index', [
             'vehicles' => $vehicles,
+            'activeTripVehicleIds' => $activeTripVehicleIds,
         ]);
     }
 
