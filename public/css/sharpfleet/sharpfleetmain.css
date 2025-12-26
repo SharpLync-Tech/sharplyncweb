@@ -27,11 +27,21 @@
     padding: 0;
 }
 
-body {
+html, body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: var(--text-dark);
     background-color: var(--bg-light);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure no inheritance from parent styles */
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, button, textarea, select {
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
 }
 
 /* Layout */
@@ -420,4 +430,18 @@ body {
     .card {
         padding: 20px;
     }
+}
+
+/* Footer */
+.sharpfleet-footer {
+    background: var(--secondary-color);
+    color: var(--text-light);
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.sharpfleet-footer p {
+    margin: 0;
+    font-size: 14px;
 }
