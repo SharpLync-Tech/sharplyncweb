@@ -21,8 +21,9 @@ class SharpFleetDriverAuth
         }
 
         // Logged in but not a driver
-        if (($user['role'] ?? null) !== 'driver') {
-            abort(403, 'Driver access only.');
+        // Allow driver or admin (for sole traders/admins who drive)
+        if (!in_array($user['role'] ?? null, ['driver', 'admin'])) {
+            return response()->view('sharpfleet.errors.driver-denied', [], 403);
         }
 
         return $next($request);
