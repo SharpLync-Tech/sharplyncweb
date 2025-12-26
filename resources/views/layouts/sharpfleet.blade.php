@@ -10,9 +10,6 @@
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     @stack('styles')
 </head>
 <body>
@@ -21,7 +18,10 @@
         <div class="sharpfleet-container">
             <nav class="sharpfleet-nav">
                 <a href="/app/sharpfleet" class="sharpfleet-logo">
-                    <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo" onerror="this.style.display='none'">
+                    @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
+                    @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
+                        <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
+                    @endif
                     <span>SharpFleet</span>
                 </a>
 
