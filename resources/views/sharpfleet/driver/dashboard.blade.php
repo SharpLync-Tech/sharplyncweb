@@ -120,10 +120,10 @@
     </div>
 </div>
 
-<div class="mt-4">
-    <form method="POST" action="/app/sharpfleet/logout">
+<div class="mt-4 text-center">
+    <form method="POST" action="/app/sharpfleet/logout" class="d-inline">
         @csrf
-        <button type="submit" class="btn btn-danger">Log out</button>
+        <button type="submit" class="btn btn-danger">Log out of SharpFleet</button>
     </form>
 </div>
 

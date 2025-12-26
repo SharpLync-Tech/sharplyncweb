@@ -121,6 +121,36 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     font-weight: 600;
 }
 
+/* Mobile Menu Button */
+.sharpfleet-mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.sharpfleet-mobile-menu-btn span {
+    width: 24px;
+    height: 2px;
+    background: var(--text-light);
+    transition: var(--transition);
+}
+
+.sharpfleet-mobile-menu-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.sharpfleet-mobile-menu-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.sharpfleet-mobile-menu-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
 /* Main Content */
 .sharpfleet-main {
     min-height: calc(100vh - 80px);
@@ -409,12 +439,49 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 
 /* Responsive */
 @media (max-width: 768px) {
+    .sharpfleet-container {
+        padding: 0 16px;
+    }
+
     .sharpfleet-nav-links {
-        display: none; /* Could add mobile menu later */
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--secondary-color);
+        flex-direction: column;
+        gap: 0;
+        padding: 16px 0;
+        box-shadow: var(--shadow);
+    }
+
+    .sharpfleet-nav-links.active {
+        display: flex;
+    }
+
+    .sharpfleet-nav-link {
+        padding: 12px 24px;
+        width: 100%;
+        text-align: left;
+        border-radius: 0;
+    }
+
+    .sharpfleet-user-info {
+        flex-direction: column;
+        gap: 8px;
+        margin: 16px 0 0 0;
+        padding: 16px 24px 0 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        border-left: none;
+    }
+
+    .sharpfleet-mobile-menu-btn {
+        display: flex;
     }
 
     .hero h1 {
-        font-size: 32px;
+        font-size: 28px;
     }
 
     .hero p {
@@ -425,10 +492,58 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     .grid-3,
     .grid-4 {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .card {
-        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-group .btn {
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 4px;
+        font-size: 14px;
+    }
+
+    /* Mobile form improvements */
+    .form-control,
+    .btn {
+        min-height: 44px; /* iOS touch target minimum */
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .radio-group {
+        gap: 12px;
+    }
+
+    .radio-label {
+        padding: 8px 0;
+    }
+
+    /* Better mobile spacing */
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-header {
+        padding: 16px;
     }
 }
 

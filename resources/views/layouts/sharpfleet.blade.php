@@ -32,6 +32,7 @@
                             <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-link">Vehicles</a>
                             <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-link">Reports</a>
                             <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-link">Settings</a>
+                            <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver View</a>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
                         @endif
@@ -46,6 +47,13 @@
                         <a href="/app/sharpfleet/login" class="sharpfleet-nav-link">Login</a>
                     @endif
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="sharpfleet-mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </nav>
         </div>
     </header>
@@ -66,6 +74,23 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        $(document).ready(function() {
+            $('.sharpfleet-mobile-menu-btn').click(function() {
+                $('.sharpfleet-nav-links').toggleClass('active');
+                $(this).toggleClass('active');
+            });
+
+            // Close mobile menu when clicking outside
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.sharpfleet-nav').length) {
+                    $('.sharpfleet-nav-links').removeClass('active');
+                    $('.sharpfleet-mobile-menu-btn').removeClass('active');
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>
