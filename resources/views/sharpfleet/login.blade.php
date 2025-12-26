@@ -3,7 +3,7 @@
 @section('title', 'SharpFleet - Login')
 
 @section('sharpfleet-content')
-<div class="card" style="max-width: 400px; margin: 40px auto;">
+<div class="card max-w-400 mx-auto mt-4">
     <div class="card-header">
         <h2 class="card-title">SharpFleet Login</h2>
     </div>

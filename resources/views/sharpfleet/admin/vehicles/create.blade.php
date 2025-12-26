@@ -4,16 +4,16 @@
 
 @section('sharpfleet-content')
 
-<div style="max-width:800px;margin:40px auto;padding:0 16px;">
+<div class="max-w-800 mx-auto mt-4">
 
-    <h1 style="margin-bottom:8px;">Add Vehicle / Asset</h1>
-    <p style="margin-bottom:24px;color:#6b7280;">
+    <h1 class="mb-1">Add Vehicle / Asset</h1>
+    <p class="mb-3 text-muted">
         Assets are identified by name. If an asset is road registered, its registration number
         will automatically be shown to drivers alongside the asset name.
     </p>
 
     @if ($errors->any())
-        <div style="background:#fee2e2;color:#7f1d1d;padding:12px 16px;border-radius:8px;margin-bottom:24px;">
+        <div class="alert alert-error">
             <strong>Please fix the errors below.</strong>
         </div>
     @endif
@@ -21,12 +21,10 @@
     <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles') }}">
         @csrf
 
-        <div style="background:white;padding:20px;border-radius:10px;
-                    box-shadow:0 4px 12px rgba(0,0,0,0.05);
-                    margin-bottom:24px;">
+        <div class="card">
 
             {{-- Asset name --}}
-            <label style="display:block;font-weight:600;margin-bottom:6px;">
+            <label class="form-label">
                 Asset name / identifier
             </label>
             <input type="text"
@@ -34,14 +32,14 @@
                    value="{{ old('name') }}"
                    required
                    placeholder="e.g. White Camry, Tractor 3, Forklift A"
-                   style="width:100%;padding:10px;margin-bottom:6px;">
+                   class="form-control">
 
-            <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
+            <div class="form-hint">
                 This is how drivers and reports will identify this asset.
             </div>
 
             @error('name')
-                <div style="color:#b91c1c;margin-bottom:12px;">{{ $message }}</div>
+                <div class="text-error mb-2">{{ $message }}</div>
             @enderror
 
             {{-- Road registered --}}
@@ -50,43 +48,43 @@
             {{-- IMPORTANT: always submit a value --}}
             <input type="hidden" name="is_road_registered" value="0">
 
-            <label style="display:block;margin:12px 0;font-weight:600;">
+            <label class="checkbox-label mb-2">
                 <input type="checkbox"
                        id="is_road_registered"
                        name="is_road_registered"
                        value="1"
                        {{ $road == 1 ? 'checked' : '' }}>
-                This asset is road registered
+                <strong>This asset is road registered</strong>
             </label>
 
-            <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
+            <div class="form-hint">
                 Road-registered assets require a registration number and will display it to drivers.
             </div>
 
             {{-- Registration number --}}
             <div id="rego-wrapper">
-                <label style="display:block;font-weight:600;margin-bottom:6px;">
+                <label class="form-label">
                     Registration number
                 </label>
                 <input type="text"
                        name="registration_number"
                        value="{{ old('registration_number') }}"
                        placeholder="e.g. ABC-123"
-                       style="width:100%;padding:10px;margin-bottom:12px;">
+                       class="form-control">
 
                 @error('registration_number')
-                    <div style="color:#b91c1c;margin-bottom:12px;">{{ $message }}</div>
+                    <div class="text-error mb-2">{{ $message }}</div>
                 @enderror
             </div>
 
             {{-- Usage tracking --}}
             @php $tm = old('tracking_mode', 'distance'); @endphp
-            <label style="display:block;font-weight:600;margin:16px 0 6px;">
+                <label class="form-label">
                 Usage tracking
             </label>
 
             <select name="tracking_mode"
-                    style="width:100%;padding:10px;margin-bottom:6px;">
+                    class="form-control">
                 <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
                     Distance (kilometres)
                 </option>
@@ -98,36 +96,36 @@
                 </option>
             </select>
 
-            <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
+            <div class="form-hint">
                 This controls what drivers are required to record when using this asset.
             </div>
 
             {{-- Make / Model --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                 <div class="form-row">
                 <div>
-                    <label style="display:block;font-weight:600;margin-bottom:6px;">Make</label>
+                      <label class="form-label">Make</label>
                     <input type="text"
                            name="make"
                            value="{{ old('make') }}"
-                           style="width:100%;padding:10px;margin-bottom:12px;">
+                          class="form-control">
                 </div>
 
                 <div>
-                    <label style="display:block;font-weight:600;margin-bottom:6px;">Model</label>
+                      <label class="form-label">Model</label>
                     <input type="text"
                            name="model"
                            value="{{ old('model') }}"
-                           style="width:100%;padding:10px;margin-bottom:12px;">
+                          class="form-control">
                 </div>
             </div>
 
             {{-- Vehicle type / classification --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-row">
                 <div>
-                    <label style="display:block;font-weight:600;margin-bottom:6px;">Vehicle type</label>
+                    <label class="form-label">Vehicle type</label>
                     @php $vt = old('vehicle_type', 'sedan'); @endphp
                     <select name="vehicle_type"
-                            style="width:100%;padding:10px;margin-bottom:12px;">
+                        class="form-control">
                         <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
                         <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
                         <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
@@ -138,21 +136,21 @@
                 </div>
 
                 <div>
-                    <label style="display:block;font-weight:600;margin-bottom:6px;">
+                    <label class="form-label">
                         Vehicle classification (optional)
                     </label>
                     <input type="text"
                            name="vehicle_class"
                            value="{{ old('vehicle_class') }}"
-                           style="width:100%;padding:10px;margin-bottom:6px;">
-                    <div style="font-size:12px;color:#6b7280;">
+                           class="form-control">
+                    <div class="form-hint">
                         Examples: Light Vehicle, Heavy Vehicle, Machinery, Asset
                     </div>
                 </div>
             </div>
 
             {{-- Accessibility --}}
-            <label style="display:block;margin:12px 0;">
+            <label class="checkbox-label mb-2">
                 <input type="checkbox"
                        name="wheelchair_accessible"
                        value="1"
@@ -161,25 +159,20 @@
             </label>
 
             {{-- Notes --}}
-            <label style="display:block;font-weight:600;margin-bottom:6px;">Notes (optional)</label>
+            <label class="form-label">Notes (optional)</label>
             <textarea name="notes"
                       rows="3"
-                      style="width:100%;padding:10px;">{{ old('notes') }}</textarea>
+                      class="form-control">{{ old('notes') }}</textarea>
 
         </div>
 
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button type="submit"
-                    style="background:#2CBFAE;color:white;
-                           border:none;padding:12px 20px;
-                           border-radius:6px;font-weight:600;cursor:pointer;">
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
                 Save Asset
             </button>
 
             <a href="{{ url('/app/sharpfleet/admin/vehicles') }}"
-               style="background:#e5e7eb;color:#111827;
-                      padding:12px 20px;border-radius:6px;
-                      text-decoration:none;font-weight:600;">
+               class="btn btn-secondary">
                 Cancel
             </a>
         </div>

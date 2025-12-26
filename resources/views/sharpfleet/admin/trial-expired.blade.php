@@ -10,7 +10,7 @@
             <p class="auth-subtitle">Your 30-day free trial has expired</p>
         </div>
 
-        <div class="trial-expired-content" style="padding: 30px;">
+        <div class="auth-content">
             @if (session('warning'))
                 <div class="alert alert-warning">
                     {{ session('warning') }}
@@ -35,11 +35,11 @@
                 </ul>
             </div>
 
-            <div class="upgrade-options" style="margin-top: 30px;">
+            <div class="upgrade-options mt-4">
                 <h3>Ready to continue?</h3>
                 <p>Choose a plan below to keep using all SharpFleet features:</p>
 
-                <div class="billing-plans" style="margin-top: 20px;">
+                <div class="billing-plans mt-3">
                     <div class="plan-option">
                         <div class="plan-card">
                             <div class="plan-header">
@@ -56,7 +56,7 @@
                                     <li>Email support</li>
                                 </ul>
                             </div>
-                            <button class="btn btn-primary btn-full" style="margin-top: 16px;">
+                            <button class="btn btn-primary btn-full mt-2" type="button">
                                 Upgrade to Starter
                             </button>
                         </div>
@@ -78,7 +78,7 @@
                                     <li>Priority support</li>
                                 </ul>
                             </div>
-                            <button class="btn btn-primary btn-full" style="margin-top: 16px;">
+                            <button class="btn btn-primary btn-full mt-2" type="button">
                                 Upgrade to Professional
                             </button>
                         </div>
@@ -100,7 +100,7 @@
                                     <li>Dedicated support</li>
                                 </ul>
                             </div>
-                            <button class="btn btn-primary btn-full" style="margin-top: 16px;">
+                            <button class="btn btn-primary btn-full mt-2" type="button">
                                 Upgrade to Enterprise
                             </button>
                         </div>
@@ -108,11 +108,11 @@
                 </div>
             </div>
 
-            <div class="trial-actions" style="margin-top: 30px; text-align: center;">
+            <div class="btn-group justify-center mt-4">
                 <a href="/app/sharpfleet/admin/reports" class="btn btn-secondary">
                     View Trip Reports
                 </a>
-                <form method="POST" action="/app/sharpfleet/admin/logout" style="display: inline; margin-left: 10px;">
+                <form method="POST" action="/app/sharpfleet/admin/logout">
                     @csrf
                     <button type="submit" class="btn btn-danger">
                         Logout

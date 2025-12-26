@@ -4,11 +4,11 @@
 
 @section('sharpfleet-content')
 
-<div class="sharpfleet-container" style="max-width:700px;margin:40px auto;">
+<div class="max-w-700 mx-auto mt-4">
 
     <h1 class="mb-1">Company Profile</h1>
 
-    <p class="mb-3" style="color:#6b7280;">
+    <p class="mb-3 text-muted">
         Define who your organisation is.
     </p>
 

@@ -1,16 +1,22 @@
-<!DOCTYPE html>
-<html>
-<body>
-    <h2>SharpFleet Debug</h2>
+@extends('layouts.sharpfleet')
 
-    <pre>
-User:
+@section('title', 'SharpFleet Debug')
+
+@section('sharpfleet-content')
+<div class="max-w-800 mx-auto mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">SharpFleet Debug</h2>
+        </div>
+
+        <p class="text-muted mb-3">Developer utility page.</p>
+
+        <pre class="mb-3 pre-wrap">User:
 {{ print_r(auth()->user(), true) }}
-    </pre>
+        </pre>
 
-    <form id="startTrip">
-        <button type="button" onclick="startTrip()">Start Trip</button>
-    </form>
+        <button type="button" class="btn btn-primary" onclick="startTrip()">Start Trip</button>
+    </div>
 
     <script>
         function startTrip() {
@@ -31,5 +37,5 @@ User:
             .catch(err => alert(err));
         }
     </script>
-</body>
-</html>
+</div>
+@endsection

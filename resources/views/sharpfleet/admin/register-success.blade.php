@@ -35,42 +35,4 @@
     </div>
 </div>
 
-<style>
-.success-message {
-    text-align: center;
-    padding: 20px 0;
-}
-
-.success-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-.success-message h3 {
-    color: #2CBFAE;
-    margin-bottom: 15px;
-}
-
-.success-message p {
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
-.info-box {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    text-align: left;
-}
-
-.info-box ul {
-    margin: 10px 0 0 20px;
-}
-
-.info-box li {
-    margin-bottom: 5px;
-}
-</style>
 @endsection

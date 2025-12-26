@@ -1,12 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.sharpfleet')
 
 @section('title', 'Access Denied')
 
-@section('content')
-<div class="container py-5 text-center">
-    <h1 class="display-4 text-danger">Access Denied</h1>
-    <p class="lead">You do not have permission to access this page.</p>
-    <p>If you believe this is an error, please contact your administrator.</p>
-    <a href="/app/sharpfleet" class="btn btn-primary mt-3">Return to Dashboard</a>
+@section('sharpfleet-content')
+<div class="auth-container">
+    <div class="auth-card max-w-700">
+        <div class="auth-header">
+            <h1 class="auth-title">Access Denied</h1>
+            <p class="auth-subtitle">You do not have permission to access this page.</p>
+        </div>
+
+        <div class="auth-content text-center">
+            <p class="text-muted mb-3">If you believe this is an error, please contact your administrator.</p>
+            <a href="/app/sharpfleet" class="btn btn-primary">Return to Dashboard</a>
+        </div>
+    </div>
 </div>
 @endsection

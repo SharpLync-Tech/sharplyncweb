@@ -11,7 +11,7 @@
         Just the tools you need to stay organised, compliant, and in control.
     </p>
     <a href="/app/sharpfleet/admin/register" class="btn">Get Started</a>
-    <p class="mt-2" style="font-size: 14px; color: #6b7280;">
+    <p class="mt-2 small text-muted">
         Already have an account? <a href="/app/sharpfleet/login" class="text-primary">Sign in here</a>
     </p>
 </div>
@@ -19,7 +19,7 @@
 <section class="mb-4">
     <div class="text-center mb-4">
         <h2 class="card-title">Everything You Need — Nothing You Don’t</h2>
-        <p class="mb-0" style="max-width:700px;margin:0 auto;color:#6b7280;">
+        <p class="mb-0 max-w-700 mx-auto text-muted">
             SharpFleet focuses on the day-to-day realities of running vehicles and drivers,
             without forcing expensive hardware or rigid workflows on your business.
         </p>

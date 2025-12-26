@@ -1,10 +1,10 @@
-@extends('layouts.base')
+@extends('layouts.sharpfleet')
 
 @section('title', 'SharpFleet Admin Login')
 
-@section('content')
+@section('sharpfleet-content')
 <div class="auth-container">
-    <div class="auth-card" style="max-width:420px;">
+    <div class="auth-card max-w-420">
         <div class="auth-header">
             <h1 class="auth-title">SharpFleet Admin</h1>
             <p class="auth-subtitle">Admin login (temporary)</p>

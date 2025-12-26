@@ -1,80 +1,74 @@
-@extends('layouts.test-layout')
+@extends('layouts.sharpfleet')
 
 @section('title', 'SharpFleet - Advanced Fleet Management')
 
-@section('content')
-<link rel="stylesheet" href="{{ asset('css/sharpfleet-test.css') }}">
+@section('sharpfleet-content')
 
 <div class="hero">
-    <div class="hero-content">
-        <h1>Revolutionize Your Fleet Management</h1>
-        <p>Streamline operations, enhance safety, and boost efficiency with SharpFleet's comprehensive fleet management solution.</p>
-        <a href="/app/sharpfleet/test-home" class="btn-primary">Get Started</a>
+    <h1>Revolutionize Your Fleet Management</h1>
+    <p>Streamline operations, enhance safety, and boost efficiency with SharpFleet’s fleet management tools.</p>
+    <a href="/app/sharpfleet" class="btn">Get Started</a>
+</div>
+
+<section class="mb-4">
+    <div class="text-center mb-4">
+        <h2 class="card-title">Powerful Features for Modern Fleet Operations</h2>
+        <p class="mb-0 max-w-700 mx-auto text-muted">
+            Built for teams who want clarity without complexity.
+        </p>
+    </div>
+
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-header"><h3>📍 Real-Time Tracking</h3></div>
+            <p>Monitor vehicle locations, routes, and performance in real-time and optimize productivity.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>👥 Driver Management</h3></div>
+            <p>Manage driver schedules, track hours, and improve compliance with clear workflows.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>🔧 Maintenance & Safety</h3></div>
+            <p>Track servicing and safety tasks to reduce downtime and support due diligence.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>📊 Analytics</h3></div>
+            <p>Get reporting insights to make better operational decisions.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>⛽ Fuel Management</h3></div>
+            <p>Track fuel-related records to help identify cost-saving opportunities.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>📱 Mobile Access</h3></div>
+            <p>Use SharpFleet on phones, tablets, and desktops — no installs.</p>
+        </div>
+    </div>
+</section>
+
+<div class="grid grid-4 mb-4">
+    <div class="stats-card">
+        <div class="stats-number">500+</div>
+        <div class="stats-label">Active Fleets</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">10K+</div>
+        <div class="stats-label">Vehicles Tracked</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">95%</div>
+        <div class="stats-label">Uptime Target</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">24/7</div>
+        <div class="stats-label">Support</div>
     </div>
 </div>
 
-<div class="features">
-    <h2>Powerful Features for Modern Fleet Operations</h2>
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-icon">📍</div>
-            <h3>Real-Time Tracking</h3>
-            <p>Monitor vehicle locations, routes, and performance in real-time. Get instant alerts for maintenance needs and optimize your fleet's productivity.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">👥</div>
-            <h3>Driver Management</h3>
-            <p>Manage driver schedules, track hours, and ensure compliance with regulations. Improve safety with driver behavior monitoring and training tools.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🔧</div>
-            <h3>Maintenance & Safety</h3>
-            <p>Schedule preventive maintenance, track vehicle health, and conduct safety inspections. Reduce downtime and extend vehicle lifespan.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Advanced Analytics</h3>
-            <p>Gain insights into fleet performance with comprehensive reporting and analytics. Make data-driven decisions to optimize costs and efficiency.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">⛽</div>
-            <h3>Fuel Management</h3>
-            <p>Track fuel consumption, monitor efficiency, and identify cost-saving opportunities. Reduce fuel expenses and environmental impact.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>Mobile Access</h3>
-            <p>Access fleet data on-the-go with our mobile app. Drivers and managers can stay connected and productive from anywhere.</p>
-        </div>
-    </div>
+<div class="hero">
+    <h2>Ready to Transform Your Fleet?</h2>
+    <p>Join organisations using SharpFleet to streamline their operations.</p>
+    <a href="/app/sharpfleet/admin/register" class="btn">Start Your Free Trial</a>
 </div>
 
-<div class="stats-section">
-    <div class="stats-grid">
-        <div class="stat-item">
-            <h3>500+</h3>
-            <p>Active Fleets</p>
-        </div>
-        <div class="stat-item">
-            <h3>10K+</h3>
-            <p>Vehicles Tracked</p>
-        </div>
-        <div class="stat-item">
-            <h3>95%</h3>
-            <p>Uptime Guarantee</p>
-        </div>
-        <div class="stat-item">
-            <h3>24/7</h3>
-            <p>Support Available</p>
-        </div>
-    </div>
-</div>
-
-<div class="cta">
-    <div class="cta-content">
-        <h2>Ready to Transform Your Fleet?</h2>
-        <p>Join thousands of organizations already using SharpFleet to streamline their operations.</p>
-        <a href="/app/sharpfleet/test-home" class="btn-primary">Start Your Free Trial</a>
-    </div>
-</div>
 @endsection

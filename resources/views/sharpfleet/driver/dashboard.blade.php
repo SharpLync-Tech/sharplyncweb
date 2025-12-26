@@ -94,7 +94,7 @@
                     <input type="number" name="end_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124600">
                 </div>
 
-                <button type="submit" class="btn btn-success btn-full">End Trip</button>
+                <button type="submit" class="btn btn-primary btn-full">End Trip</button>
             </form>
         </div>
     </div>
@@ -161,7 +161,7 @@
                 {{-- Start KM --}}
                 <div class="form-group">
                     <label class="form-label">Starting odometer (km)</label>
-                    <div id="lastKmHint" class="hint-text" style="display:none;"></div>
+                    <div id="lastKmHint" class="hint-text d-none"></div>
                     <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124500">
                 </div>
 
@@ -183,10 +183,10 @@
             if (lastKm) {
                 startKmInput.value = lastKm;
                 lastKmHint.textContent = `Last recorded odometer: ${Number(lastKm).toLocaleString()} km`;
-                lastKmHint.style.display = 'block';
+                lastKmHint.classList.remove('d-none');
             } else {
                 startKmInput.value = '';
-                lastKmHint.style.display = 'none';
+                lastKmHint.classList.add('d-none');
             }
         }
 
