@@ -1,61 +1,96 @@
 @extends('layouts.sharpfleet')
 
-@section('title', 'SharpFleet - Advanced Fleet Management')
+@section('title', 'SharpFleet – Simple Fleet Management for Real Businesses')
 
 @section('sharpfleet-content')
 <div class="hero">
-    <h1>Revolutionize Your Fleet Management</h1>
-    <p>Streamline operations, enhance safety, and boost efficiency with SharpFleet's comprehensive fleet management solution.</p>
+    <h1>Fleet Management, Without the Headaches</h1>
+    <p>
+        SharpFleet is a simple, flexible fleet management platform built for small and
+        medium businesses. No tracking hardware. No micromanagement.
+        Just the tools you need to stay organised, compliant, and in control.
+    </p>
     <a href="/app/sharpfleet/login" class="btn">Get Started</a>
 </div>
 
 <section class="mb-4">
     <div class="text-center mb-4">
-        <h2 class="card-title">Powerful Features for Modern Fleet Operations</h2>
+        <h2 class="card-title">Everything You Need — Nothing You Don’t</h2>
+        <p style="max-width:700px;margin:0 auto;color:#6b7280;">
+            SharpFleet focuses on the day-to-day realities of running vehicles and drivers,
+            without forcing expensive hardware or rigid workflows on your business.
+        </p>
     </div>
+
     <div class="grid grid-3">
         <div class="card">
             <div class="card-header">
-                <h3>📍 Real-Time Tracking</h3>
+                <h3>🚗 Trip & Logbook Tracking</h3>
             </div>
-            <p>Monitor vehicle locations, routes, and performance in real-time. Get instant alerts for maintenance needs and optimize your fleet's productivity.</p>
+            <p>
+                Record trips, purposes, and distances in a way that suits your business.
+                Perfect for compliance, tax, and internal reporting — without GPS surveillance.
+            </p>
         </div>
+
         <div class="card">
             <div class="card-header">
                 <h3>👥 Driver Management</h3>
             </div>
-            <p>Manage driver schedules, track hours, and ensure compliance with regulations. Improve safety with driver behavior monitoring and training tools.</p>
+            <p>
+                Add drivers, assign vehicles, and control what information is required.
+                Your business sets the rules — SharpFleet simply keeps it organised.
+            </p>
         </div>
+
         <div class="card">
             <div class="card-header">
-                <h3>🔧 Maintenance & Safety</h3>
+                <h3>🛠 Vehicle Records</h3>
             </div>
-            <p>Schedule preventive maintenance, track vehicle health, and conduct safety inspections. Reduce downtime and extend vehicle lifespan.</p>
+            <p>
+                Track registrations, servicing, maintenance notes, and key dates.
+                Get reminders before things expire — not after you get fined.
+            </p>
         </div>
+
         <div class="card">
             <div class="card-header">
-                <h3>📊 Advanced Analytics</h3>
+                <h3>🦺 Safety Checks</h3>
             </div>
-            <p>Gain insights into fleet performance with comprehensive reporting and analytics. Make data-driven decisions to optimize costs and efficiency.</p>
+            <p>
+                Create and record vehicle safety checks that match your operations.
+                Simple checklists that help protect drivers and demonstrate due diligence.
+            </p>
         </div>
+
         <div class="card">
             <div class="card-header">
-                <h3>⛽ Fuel Management</h3>
+                <h3>🏢 Client & Job Linking</h3>
             </div>
-            <p>Track fuel consumption, monitor efficiency, and identify cost-saving opportunities. Reduce fuel expenses and environmental impact.</p>
+            <p>
+                Optionally tie trips to clients or jobs — ideal for sole traders,
+                contractors, and service businesses needing cleaner records.
+            </p>
         </div>
+
         <div class="card">
             <div class="card-header">
-                <h3>📱 Mobile Access</h3>
+                <h3>📱 Works Anywhere</h3>
             </div>
-            <p>Access fleet data on-the-go with our mobile app. Drivers and managers can stay connected and productive from anywhere.</p>
+            <p>
+                SharpFleet works on phones, tablets, and desktops.
+                No special devices. No installs. Just log in and get on with work.
+            </p>
         </div>
     </div>
 </section>
 
 <div class="hero">
-    <h2>Ready to Transform Your Fleet?</h2>
-    <p>Join thousands of organizations already using SharpFleet to streamline their operations.</p>
-    <a href="/app/sharpfleet/login" class="btn">Start Your Free Trial</a>
+    <h2>Built for Businesses Like Yours</h2>
+    <p>
+        SharpFleet is designed for real-world operations — tradies, service companies,
+        small fleets, and growing teams who want clarity without complexity.
+    </p>
+    <a href="/app/sharpfleet/login" class="btn">Start Using SharpFleet</a>
 </div>
 @endsection
