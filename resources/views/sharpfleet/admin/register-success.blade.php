@@ -1,0 +1,76 @@
+@extends('layouts.sharpfleet')
+
+@section('title', 'Check Your Email - SharpFleet')
+
+@section('sharpfleet-content')
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Check Your Email</h1>
+            <p class="auth-subtitle">We've sent you an activation link</p>
+        </div>
+
+        <div class="auth-content">
+            <div class="success-message">
+                <div class="success-icon">📧</div>
+                <h3>Registration Successful!</h3>
+                <p>We've sent an activation email to your email address. Please check your inbox and click the activation link to complete your registration.</p>
+
+                <div class="info-box">
+                    <p><strong>Didn't receive the email?</strong></p>
+                    <ul>
+                        <li>Check your spam/junk folder</li>
+                        <li>The email may take a few minutes to arrive</li>
+                        <li>Make sure you entered the correct email address</li>
+                    </ul>
+                </div>
+
+                <p>The activation link will expire in 24 hours for security reasons.</p>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <p><a href="/app/sharpfleet/admin/register">← Back to Registration</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-message {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.success-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.success-message h3 {
+    color: #2CBFAE;
+    margin-bottom: 15px;
+}
+
+.success-message p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.info-box ul {
+    margin: 10px 0 0 20px;
+}
+
+.info-box li {
+    margin-bottom: 5px;
+}
+</style>
+@endsection

@@ -75,6 +75,9 @@ Route::prefix('app/sharpfleet')->group(function () {
     // Registration (public - no auth required)
     Route::get('/admin/register', [RegisterController::class, 'showRegistrationForm']);
     Route::post('/admin/register', [RegisterController::class, 'register']);
+    Route::get('/register/success', [RegisterController::class, 'showSuccess']);
+    Route::get('/activate/{token}', [RegisterController::class, 'activate']);
+    Route::post('/activate/complete', [RegisterController::class, 'completeRegistration']);
 
     /*
     |--------------------------------------------------------------------------
