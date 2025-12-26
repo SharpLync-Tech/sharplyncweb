@@ -12,7 +12,7 @@ use Illuminate\Validation\Rules\Password;
 use Carbon\Carbon;
 
 class RegisterController extends Controller
-{
+
     /**
      * Simple file logger to /home/site/wwwroot/sharpfleet-registration.log
      */
