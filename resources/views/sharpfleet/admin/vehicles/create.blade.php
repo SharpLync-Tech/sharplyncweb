@@ -84,6 +84,7 @@
             </label>
 
             <select name="tracking_mode"
+                    id="tracking_mode"
                     class="form-control">
                 <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
                     Distance (kilometres)
@@ -99,6 +100,24 @@
             <div class="form-hint">
                 This controls what drivers are required to record when using this asset.
             </div>
+
+            {{-- Starting reading (optional; km or hours depending on tracking mode) --}}
+            <label id="starting_reading_label" class="form-label mt-2">Starting odometer (km) (optional)</label>
+            <input type="number"
+                   name="starting_km"
+                   value="{{ old('starting_km') }}"
+                   id="starting_km"
+                   class="form-control"
+                   inputmode="numeric"
+                   min="0"
+                   placeholder="e.g. 124500">
+            <div class="form-hint">
+                If set, this will be used to prefill the first trip's starting reading for this vehicle.
+            </div>
+
+            @error('starting_km')
+                <div class="text-error mb-2">{{ $message }}</div>
+            @enderror
 
             {{-- Make / Model --}}
                  <div class="form-row">
@@ -191,6 +210,29 @@
 
     toggleRego();
     roadCheckbox.addEventListener('change', toggleRego);
+
+    // Tracking mode toggles the label between KM and hours
+    const trackingMode = document.getElementById('tracking_mode');
+    const startingLabel = document.getElementById('starting_reading_label');
+    const startingInput = document.getElementById('starting_km');
+
+    function updateStartingReadingLabel() {
+        if (!trackingMode || !startingLabel || !startingInput) return;
+
+        if (trackingMode.value === 'hours') {
+            startingLabel.textContent = 'Starting hour meter (hours) (optional)';
+            startingInput.placeholder = 'e.g. 1250';
+        } else if (trackingMode.value === 'none') {
+            startingLabel.textContent = 'Starting reading (optional)';
+            startingInput.placeholder = '';
+        } else {
+            startingLabel.textContent = 'Starting odometer (km) (optional)';
+            startingInput.placeholder = 'e.g. 124500';
+        }
+    }
+
+    trackingMode.addEventListener('change', updateStartingReadingLabel);
+    updateStartingReadingLabel();
 </script>
 
 @endsection

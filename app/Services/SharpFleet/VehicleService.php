@@ -3,6 +3,7 @@
 namespace App\Services\SharpFleet;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class VehicleService
 {
@@ -36,18 +37,23 @@ class VehicleService
      */
     public function createVehicle(int $organisationId, array $data): int
     {
+        $hasStartingKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km');
+
         return (int) DB::connection('sharpfleet')
             ->table('vehicles')
             ->insertGetId([
                 'organisation_id'      => $organisationId,
                 'name'                 => $data['name'],
+                'is_road_registered'    => (int) ($data['is_road_registered'] ?? 1),
                 'registration_number'  => $data['registration_number'],
+                'tracking_mode'         => $data['tracking_mode'] ?? 'distance',
                 'make'                 => $data['make'] ?? null,
                 'model'                => $data['model'] ?? null,
                 'vehicle_type'         => $data['vehicle_type'],
                 'vehicle_class'        => $data['vehicle_class'] ?? null,
                 'wheelchair_accessible'=> !empty($data['wheelchair_accessible']) ? 1 : 0,
                 'notes'                => $data['notes'] ?? null,
+                'starting_km'           => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
                 'is_active'            => 1,
             ]);
     }
@@ -57,6 +63,8 @@ class VehicleService
      */
     public function updateVehicle(int $organisationId, int $vehicleId, array $data): void
     {
+        $hasStartingKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km');
+
         DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
@@ -69,6 +77,7 @@ class VehicleService
                 'vehicle_class'         => $data['vehicle_class'] ?? null,
                 'wheelchair_accessible' => !empty($data['wheelchair_accessible']) ? 1 : 0,
                 'notes'                 => $data['notes'] ?? null,
+                'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
             ]);
     }
 

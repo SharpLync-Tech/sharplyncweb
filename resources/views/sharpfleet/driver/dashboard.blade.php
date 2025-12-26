@@ -114,7 +114,8 @@
                     <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
                         @foreach ($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}"
-                                    data-last-km="{{ $lastTrips[$vehicle->id]->end_km ?? '' }}">
+                                    data-tracking-mode="{{ $vehicle->tracking_mode ?? 'distance' }}"
+                                    data-last-km="{{ $lastTrips[$vehicle->id]->end_km ?? (property_exists($vehicle, 'starting_km') ? ($vehicle->starting_km ?? '') : '') }}">
                                 {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                             </option>
                         @endforeach
@@ -160,7 +161,7 @@
 
                 {{-- Start KM --}}
                 <div class="form-group">
-                    <label class="form-label">Starting odometer (km)</label>
+                    <label id="startReadingLabel" class="form-label">Starting odometer (km)</label>
                     <div id="lastKmHint" class="hint-text d-none"></div>
                     <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124500">
                 </div>
@@ -175,14 +176,28 @@
         const vehicleSelect = document.getElementById('vehicleSelect');
         const startKmInput  = document.getElementById('startKmInput');
         const lastKmHint    = document.getElementById('lastKmHint');
+        const startReadingLabel = document.getElementById('startReadingLabel');
 
         function updateStartKm() {
             const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
             const lastKm   = selected.dataset.lastKm;
+            const mode     = selected.dataset.trackingMode || 'distance';
+
+            if (startReadingLabel) {
+                if (mode === 'hours') {
+                    startReadingLabel.textContent = 'Starting hour meter (hours)';
+                    startKmInput.placeholder = 'e.g. 1250';
+                } else {
+                    startReadingLabel.textContent = 'Starting odometer (km)';
+                    startKmInput.placeholder = 'e.g. 124500';
+                }
+            }
 
             if (lastKm) {
                 startKmInput.value = lastKm;
-                lastKmHint.textContent = `Last recorded odometer: ${Number(lastKm).toLocaleString()} km`;
+                lastKmHint.textContent = (mode === 'hours')
+                    ? `Last recorded hour meter: ${Number(lastKm).toLocaleString()} hours`
+                    : `Last recorded odometer: ${Number(lastKm).toLocaleString()} km`;
                 lastKmHint.classList.remove('d-none');
             } else {
                 startKmInput.value = '';

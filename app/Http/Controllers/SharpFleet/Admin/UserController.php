@@ -54,10 +54,12 @@ class UserController extends Controller
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $request->validate([
-            'is_driver' => ['nullable', 'in:1'],
+            'is_driver' => ['required', 'in:0,1'],
         ]);
 
-        $isDriver = $request->boolean('is_driver') ? 1 : 0;
+        // The form submits a hidden 0 plus a checkbox 1 when checked.
+        // Read the resulting scalar value deterministically.
+        $isDriver = ((int) $request->input('is_driver', 0) === 1) ? 1 : 0;
 
         $updated = DB::connection('sharpfleet')
             ->table('users')

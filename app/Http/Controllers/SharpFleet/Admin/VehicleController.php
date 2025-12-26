@@ -7,6 +7,7 @@ use App\Services\SharpFleet\VehicleService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class VehicleController extends Controller
 {
@@ -92,7 +93,23 @@ class VehicleController extends Controller
 
             'wheelchair_accessible' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
+
+            // Optional starting odometer for first trip autofill
+            'starting_km' => ['nullable', 'integer', 'min:0'],
         ]);
+
+        // If the DB schema doesn't have the column yet, block only when the user tried to set it.
+        if (
+            array_key_exists('starting_km', $validated) &&
+            $validated['starting_km'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km')
+        ) {
+            return back()
+                ->withErrors([
+                    'starting_km' => "Starting reading can't be saved yet because the database is missing column vehicles.starting_km. Run: ALTER TABLE vehicles ADD COLUMN starting_km INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
 
         /*
          |----------------------------------------------------------
@@ -195,7 +212,22 @@ class VehicleController extends Controller
             'vehicle_class' => ['nullable', 'string', 'max:100'],
             'wheelchair_accessible' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
+
+            // Optional starting odometer for first trip autofill
+            'starting_km' => ['nullable', 'integer', 'min:0'],
         ]);
+
+        if (
+            array_key_exists('starting_km', $validated) &&
+            $validated['starting_km'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km')
+        ) {
+            return back()
+                ->withErrors([
+                    'starting_km' => "Starting reading can't be saved yet because the database is missing column vehicles.starting_km. Run: ALTER TABLE vehicles ADD COLUMN starting_km INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
 
         $validated['wheelchair_accessible'] =
             (int) ($validated['wheelchair_accessible'] ?? 0);
