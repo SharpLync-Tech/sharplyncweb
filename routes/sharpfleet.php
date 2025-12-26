@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\SharpFleet\AuthController;
 use App\Http\Controllers\SharpFleet\TripController;
@@ -77,7 +79,31 @@ Route::prefix('app/sharpfleet')->group(function () {
         ->prefix('admin')
         ->group(function () {
 
-            Route::get('/', fn () => view('sharpfleet.admin.dashboard'));
+            Route::get('/', function (Request $request) {
+                $user = $request->session()->get('sharpfleet.user');
+
+                if (!$user || $user['role'] !== 'admin') {
+                    abort(403, 'Admin access only');
+                }
+
+                $organisationId = (int) $user['organisation_id'];
+
+                $driversCount = DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('organisation_id', $organisationId)
+                    ->where('role', 'driver')
+                    ->count();
+
+                $vehiclesCount = DB::connection('sharpfleet')
+                    ->table('vehicles')
+                    ->where('organisation_id', $organisationId)
+                    ->count();
+
+                return view('sharpfleet.admin.dashboard', [
+                    'driversCount' => $driversCount,
+                    'vehiclesCount' => $vehiclesCount,
+                ]);
+            });
 
             // Company
             Route::get('/company', [CompanyController::class, 'index']);

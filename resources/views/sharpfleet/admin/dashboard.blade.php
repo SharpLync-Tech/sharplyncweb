@@ -16,12 +16,12 @@
 
 <div class="grid grid-2 mb-4">
     <div class="stats-card">
-        <div class="stats-number">{{ $vehiclesCount ?? 0 }}</div>
-        <div class="stats-label">Vehicles</div>
+        <div class="stats-number">{{ $driversCount }}</div>
+        <div class="stats-label">Drivers</div>
     </div>
     <div class="stats-card">
-        <div class="stats-number">{{ $driversCount ?? 0 }}</div>
-        <div class="stats-label">Drivers</div>
+        <div class="stats-number">{{ $vehiclesCount }}</div>
+        <div class="stats-label">Vehicles</div>
     </div>
 </div>
 

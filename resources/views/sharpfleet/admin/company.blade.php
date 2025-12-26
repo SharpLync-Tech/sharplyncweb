@@ -37,13 +37,13 @@
     </div>
 
     <div class="grid grid-2 mb-4">
-        <div class="stat-card">
-            <h3 class="stat-title">Drivers</h3>
-            <div class="stat-value">{{ $driversCount }}</div>
+        <div class="stats-card">
+            <h3 class="stats-label">Drivers</h3>
+            <div class="stats-number">{{ $driversCount }}</div>
         </div>
-        <div class="stat-card">
-            <h3 class="stat-title">Vehicles</h3>
-            <div class="stat-value">{{ $vehiclesCount }}</div>
+        <div class="stats-card">
+            <h3 class="stats-label">Vehicles</h3>
+            <div class="stats-number">{{ $vehiclesCount }}</div>
         </div>
     </div>
 
