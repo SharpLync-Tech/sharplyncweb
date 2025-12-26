@@ -31,7 +31,7 @@
 
 <div class="mb-4">
     <h1 class="mb-2">Driver Dashboard</h1>
-    <p>Welcome back, {{ $user['first_name'] }}!</p>
+    <p>Welcome back, {{ $user['name'] }}!</p>
 </div>
 
 @if (session('success'))
@@ -45,7 +45,7 @@
         <h3 class="card-title">User Info</h3>
     </div>
     <div class="mb-3">
-        <strong>{{ $user['first_name'] }} {{ $user['last_name'] }}</strong><br>
+        <strong>{{ $user['name'] }}</strong><br>
         {{ $user['email'] }}
     </div>
 </div>
