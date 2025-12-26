@@ -33,21 +33,41 @@ class VehicleController extends Controller
 
         $vehicles = $this->vehicleService->getAvailableVehicles($organisationId);
 
-        $activeTripVehicleIds = DB::connection('sharpfleet')
+        $activeTrips = DB::connection('sharpfleet')
             ->table('trips')
-            ->where('organisation_id', $organisationId)
-            ->whereNotNull('started_at')
-            ->whereNull('ended_at')
-            ->distinct()
-            ->pluck('vehicle_id')
-            ->map(fn ($id) => (int) $id)
-            ->all();
+            ->join('users', 'trips.user_id', '=', 'users.id')
+            ->where('trips.organisation_id', $organisationId)
+            ->whereNotNull('trips.started_at')
+            ->whereNull('trips.ended_at')
+            ->orderByDesc('trips.started_at')
+            ->select(
+                'trips.vehicle_id',
+                'trips.started_at',
+                DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name")
+            )
+            ->get();
 
-        $activeTripVehicleIds = array_fill_keys($activeTripVehicleIds, true);
+        $activeTripVehicleIds = [];
+        $activeTripsByVehicle = [];
+
+        foreach ($activeTrips as $t) {
+            $vehicleId = (int) $t->vehicle_id;
+
+            // Keep the latest active trip per vehicle (the query is already ordered by started_at DESC)
+            if (!isset($activeTripsByVehicle[$vehicleId])) {
+                $activeTripsByVehicle[$vehicleId] = [
+                    'driver_name' => trim((string) $t->driver_name) ?: '—',
+                    'started_at'  => $t->started_at,
+                ];
+            }
+
+            $activeTripVehicleIds[$vehicleId] = true;
+        }
 
         return view('sharpfleet.admin.vehicles.index', [
             'vehicles' => $vehicles,
             'activeTripVehicleIds' => $activeTripVehicleIds,
+            'activeTripsByVehicle' => $activeTripsByVehicle,
         ]);
     }
 

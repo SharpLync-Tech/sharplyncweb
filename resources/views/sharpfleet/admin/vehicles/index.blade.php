@@ -46,7 +46,10 @@
                                     <td>{{ $v->registration_number }}</td>
                                     <td>
                                         @if(!empty($activeTripVehicleIds[$v->id]))
-                                            <span class="fw-bold">In trip</span>
+                                            <div class="fw-bold">In trip</div>
+                                            <div class="text-muted">
+                                                {{ $activeTripsByVehicle[$v->id]['driver_name'] ?? '—' }}
+                                            </div>
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
