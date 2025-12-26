@@ -208,3 +208,4 @@ class RegisterController extends Controller
             return back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
         }
     }
+}
