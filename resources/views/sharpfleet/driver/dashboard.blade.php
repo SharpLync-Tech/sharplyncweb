@@ -33,7 +33,7 @@
         ->table('trips')
         ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
         ->select('trips.*', 'vehicles.name as vehicle_name', 'vehicles.registration_number')
-        ->where('trips.driver_id', $user['id'])
+        ->where('trips.user_id', $user['id'])
         ->where('trips.organisation_id', $user['organisation_id'])
         ->whereNotNull('trips.started_at')
         ->whereNull('trips.ended_at')
