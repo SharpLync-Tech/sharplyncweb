@@ -74,8 +74,7 @@ class RegisterController extends Controller
                     'name' => trim($request->first_name . ' ' . $request->last_name),
                     'role' => 'admin',
                     'logged_in' => true,
-                ],
-                'sharpfleet.trial_started' => Carbon::now()->toDateTimeString(),
+                ]
             ]);
 
             return redirect('/app/sharpfleet/admin')

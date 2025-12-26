@@ -21,18 +21,36 @@ class SharpFleetTrialCheck
 
         if ($trialEndsAt && Carbon::now()->isAfter($trialEndsAt)) {
             // Trial has expired - restrict functionality
-            // For now, we'll allow all functionality but show a warning
-            // In production, this would restrict access
-
             $currentRoute = $request->route();
 
             if ($currentRoute) {
                 $routeName = $currentRoute->getName();
                 $uri = $request->getRequestUri();
 
-                // For demo purposes, just add a warning but allow access
-                // In production, restrict routes here
-                $request->merge(['trial_expired' => true]);
+                // Allow login, logout, and reports
+                $allowedRoutes = [
+                    'sharpfleet.admin.login',
+                    'sharpfleet.admin.logout',
+                    'sharpfleet.admin.reports.index',
+                    'sharpfleet.admin.reports.vehicles',
+                    'sharpfleet.admin.reports.trips',
+                ];
+
+                $allowedUris = [
+                    '/app/sharpfleet/admin/login',
+                    '/app/sharpfleet/admin/logout',
+                    '/app/sharpfleet/admin/reports',
+                ];
+
+                // Check if current route/URI is allowed
+                if (!in_array($routeName, $allowedRoutes) &&
+                    !str_contains($uri, '/reports') &&
+                    !str_contains($uri, '/logout')) {
+
+                    // Redirect to trial expired page
+                    return redirect('/app/sharpfleet/admin/trial-expired')
+                        ->with('warning', 'Your trial has expired. Please upgrade to continue using SharpFleet.');
+                }
             }
         }
 
@@ -41,8 +59,33 @@ class SharpFleetTrialCheck
 
     private function getUserTrialEndDate(array $user): ?Carbon
     {
-        // For demo purposes, trial never expires
-        // In production, this would check database columns
-        return Carbon::now()->addDays(30);
+        try {
+            // Check user table for trial_ends_at
+            $userRecord = \DB::connection('sharpfleet')
+                ->table('users')
+                ->where('id', $user['id'])
+                ->first();
+
+            if ($userRecord && $userRecord->trial_ends_at) {
+                return Carbon::parse($userRecord->trial_ends_at);
+            }
+
+            // Fallback to organisation trial end date
+            $orgRecord = \DB::connection('sharpfleet')
+                ->table('organisations')
+                ->where('id', $user['organisation_id'])
+                ->first();
+
+            if ($orgRecord && $orgRecord->trial_ends_at) {
+                return Carbon::parse($orgRecord->trial_ends_at);
+            }
+
+            // If no trial data found, assume trial has expired (for existing users)
+            return Carbon::now()->subDay();
+
+        } catch (\Exception $e) {
+            // If database query fails, allow access (fail open)
+            return Carbon::now()->addDays(30);
+        }
     }
 }

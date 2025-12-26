@@ -6,7 +6,7 @@
 <div class="hero">
     <h1>Fleet Management, Without the Headaches</h1>
     <p>
-        SharpFleet is a simple, flexible fleet management platform built for small and
+        SharpFleet is a simple, flexible fleet management platform built for the sole trader, small and
         medium businesses. No tracking hardware. No micromanagement.
         Just the tools you need to stay organised, compliant, and in control.
     </p>
