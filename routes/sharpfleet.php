@@ -18,6 +18,7 @@ use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
+use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +76,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     | Admin Routes (ADMIN ONLY)
     |--------------------------------------------------------------------------
     */
-    Route::middleware(\App\Http\Middleware\SharpFleetAdminAuth::class)
+    Route::middleware([\App\Http\Middleware\SharpFleetAdminAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class])
         ->prefix('admin')
         ->group(function () {
 
@@ -143,7 +144,14 @@ Route::prefix('app/sharpfleet')->group(function () {
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
 
-            Route::get('/register', fn () => view('sharpfleet.admin.register'));
+            // Registration
+            Route::get('/register', [RegisterController::class, 'showRegistrationForm']);
+            Route::post('/register', [RegisterController::class, 'register']);
+
+            // Trial expired page (no middleware needed)
+            Route::get('/trial-expired', function () {
+                return view('sharpfleet.admin.trial-expired');
+            })->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
         });
 
     /*
@@ -151,7 +159,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     | Driver Routes (DRIVER ONLY)
     |--------------------------------------------------------------------------
     */
-    Route::middleware(\App\Http\Middleware\SharpFleetDriverAuth::class)
+    Route::middleware([\App\Http\Middleware\SharpFleetDriverAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class])
         ->group(function () {
 
             Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));
