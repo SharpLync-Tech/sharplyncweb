@@ -72,6 +72,10 @@ Route::prefix('app/sharpfleet')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // Registration (public - no auth required)
+    Route::get('/admin/register', [RegisterController::class, 'showRegistrationForm']);
+    Route::post('/admin/register', [RegisterController::class, 'register']);
+
     /*
     |--------------------------------------------------------------------------
     | Admin Routes (ADMIN ONLY)
@@ -144,10 +148,6 @@ Route::prefix('app/sharpfleet')->group(function () {
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
-
-            // Registration
-            Route::get('/register', [RegisterController::class, 'showRegistrationForm']);
-            Route::post('/register', [RegisterController::class, 'register']);
 
             // Trial expired page (no middleware needed)
             Route::get('/trial-expired', function () {
