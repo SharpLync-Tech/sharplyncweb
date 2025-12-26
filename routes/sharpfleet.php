@@ -69,6 +69,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     */
     Route::get('/login', [AuthController::class, 'showLogin']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/logout', [AuthController::class, 'logout']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     /*
