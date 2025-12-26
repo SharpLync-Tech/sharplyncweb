@@ -3,179 +3,59 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\SharpFleet\VehicleService;
-use Illuminate\Http\Request;
+use App\Http\Requests\SharpFleet\Admin\Vehicles\StoreVehicleRequest;
+use App\Models\SharpFleet\Vehicle;
 
 class VehicleController extends Controller
 {
-    protected VehicleService $vehicleService;
-
-    public function __construct(VehicleService $vehicleService)
+    public function index()
     {
-        $this->vehicleService = $vehicleService;
+        $orgId = session('sharpfleet.user.organisation_id');
+
+        $vehicles = Vehicle::query()
+            ->where('organisation_id', $orgId)
+            ->orderBy('is_active', 'desc')
+            ->orderBy('name')
+            ->get();
+
+        return view('sharpfleet.admin.vehicles.index', compact('vehicles'));
     }
 
-    /**
-     * List vehicles for the logged-in organisation (admin only)
-     */
-    public function index(Request $request)
+    public function store(StoreVehicleRequest $request)
     {
-        $fleetUser = $request->session()->get('sharpfleet.user');
+        $data = $request->validated();
 
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
+        // Attach org
+        $data['organisation_id'] = session('sharpfleet.user.organisation_id');
+
+        // Normalise booleans
+        $data['is_road_registered'] = (int) $data['is_road_registered'];
+        $data['wheelchair_accessible'] = (int) ($data['wheelchair_accessible'] ?? 0);
+
+        // If not road registered, ensure rego is NULL
+        if ($data['is_road_registered'] === 0) {
+            $data['registration_number'] = null;
         }
 
-        $vehicles = $this->vehicleService->getAvailableVehicles(
-            (int) $fleetUser['organisation_id']
-        );
-
-        return view('sharpfleet.admin.vehicles.index', [
-            'vehicles' => $vehicles,
-        ]);
-    }
-
-    /**
-     * Show create form
-     */
-    public function create(Request $request)
-    {
-        $fleetUser = $request->session()->get('sharpfleet.user');
-
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
-
-        return view('sharpfleet.admin.vehicles.create');
-    }
-
-    /**
-     * Store new vehicle
-     */
-    public function store(Request $request)
-    {
-        $fleetUser = $request->session()->get('sharpfleet.user');
-
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
-
-        $organisationId = (int) $fleetUser['organisation_id'];
-
-        $validated = $request->validate([
-            'name'                => 'required|string|max:150',
-            'registration_number' => 'required|string|max:20',
-            'make'                => 'nullable|string|max:100',
-            'model'               => 'nullable|string|max:100',
-            'vehicle_type'        => 'required|in:sedan,hatch,suv,van,bus,other',
-            'vehicle_class'       => 'nullable|string|max:100',
-            'wheelchair_accessible'=> 'nullable|boolean',
-            'notes'               => 'nullable|string',
-        ]);
-
-        // Enforce unique rego per org (matches DB unique key)
-        $exists = \Illuminate\Support\Facades\DB::connection('sharpfleet')
-            ->table('vehicles')
-            ->where('organisation_id', $organisationId)
-            ->where('registration_number', $validated['registration_number'])
-            ->exists();
-
-        if ($exists) {
-            return back()
-                ->withErrors(['registration_number' => 'Registration number already exists for this organisation.'])
-                ->withInput();
-        }
-
-        $this->vehicleService->createVehicle($organisationId, $validated);
+        Vehicle::create($data);
 
         return redirect('/app/sharpfleet/admin/vehicles')
-            ->with('success', 'Vehicle added.');
+            ->with('success', 'Asset added successfully.');
     }
 
-    /**
-     * Show edit form (rego locked)
-     */
-    public function edit(Request $request, $vehicle)
+    public function archive($vehicle)
     {
-        $fleetUser = $request->session()->get('sharpfleet.user');
+        $orgId = session('sharpfleet.user.organisation_id');
 
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
+        $v = Vehicle::query()
+            ->where('organisation_id', $orgId)
+            ->where('id', $vehicle)
+            ->firstOrFail();
 
-        $organisationId = (int) $fleetUser['organisation_id'];
-        $vehicleId = (int) $vehicle;
-
-        $record = $this->vehicleService->getVehicleForOrganisation($organisationId, $vehicleId);
-
-        if (!$record) {
-            abort(404, 'Vehicle not found.');
-        }
-
-        return view('sharpfleet.admin.vehicles.edit', [
-            'vehicle' => $record,
-        ]);
-    }
-
-    /**
-     * Update vehicle (rego locked)
-     */
-    public function update(Request $request, $vehicle)
-    {
-        $fleetUser = $request->session()->get('sharpfleet.user');
-
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
-
-        $organisationId = (int) $fleetUser['organisation_id'];
-        $vehicleId = (int) $vehicle;
-
-        $record = $this->vehicleService->getVehicleForOrganisation($organisationId, $vehicleId);
-
-        if (!$record) {
-            abort(404, 'Vehicle not found.');
-        }
-
-        $validated = $request->validate([
-            'name'                 => 'required|string|max:150',
-            'make'                 => 'nullable|string|max:100',
-            'model'                => 'nullable|string|max:100',
-            'vehicle_type'         => 'required|in:sedan,hatch,suv,van,bus,other',
-            'vehicle_class'        => 'nullable|string|max:100',
-            'wheelchair_accessible'=> 'nullable|boolean',
-            'notes'                => 'nullable|string',
-        ]);
-
-        $this->vehicleService->updateVehicle($organisationId, $vehicleId, $validated);
+        $v->is_active = 0;
+        $v->save();
 
         return redirect('/app/sharpfleet/admin/vehicles')
-            ->with('success', 'Vehicle updated.');
-    }
-
-    /**
-     * Archive vehicle (soft archive)
-     */
-    public function archive(Request $request, $vehicle)
-    {
-        $fleetUser = $request->session()->get('sharpfleet.user');
-
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
-
-        $organisationId = (int) $fleetUser['organisation_id'];
-        $vehicleId = (int) $vehicle;
-
-        $record = $this->vehicleService->getVehicleForOrganisation($organisationId, $vehicleId);
-
-        if (!$record) {
-            abort(404, 'Vehicle not found.');
-        }
-
-        $this->vehicleService->archiveVehicle($organisationId, $vehicleId);
-
-        return redirect('/app/sharpfleet/admin/vehicles')
-            ->with('success', 'Vehicle archived.');
+            ->with('success', 'Asset archived.');
     }
 }

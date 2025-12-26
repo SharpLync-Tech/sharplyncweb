@@ -29,17 +29,25 @@
             <label style="display:block;font-weight:600;margin-bottom:6px;">
                 Asset name / identifier
             </label>
-            <input type="text" name="name" value="{{ old('name') }}" required
+            <input type="text"
+                   name="name"
+                   value="{{ old('name') }}"
+                   required
                    placeholder="e.g. White Camry, Tractor 3, Forklift A"
                    style="width:100%;padding:10px;margin-bottom:6px;">
+
             <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
                 This is how drivers and reports will identify this asset.
             </div>
+
             @error('name')
                 <div style="color:#b91c1c;margin-bottom:12px;">{{ $message }}</div>
             @enderror
 
             {{-- Road registered --}}
+            @php $road = old('is_road_registered', 1); @endphp
+
+            {{-- IMPORTANT: always submit a value --}}
             <input type="hidden" name="is_road_registered" value="0">
 
             <label style="display:block;margin:12px 0;font-weight:600;">
@@ -47,7 +55,7 @@
                        id="is_road_registered"
                        name="is_road_registered"
                        value="1"
-                       {{ old('is_road_registered') == 1 ? 'checked' : '' }}>
+                       {{ $road == 1 ? 'checked' : '' }}>
                 This asset is road registered
             </label>
 
@@ -60,10 +68,12 @@
                 <label style="display:block;font-weight:600;margin-bottom:6px;">
                     Registration number
                 </label>
-                <input type="text" name="registration_number"
+                <input type="text"
+                       name="registration_number"
                        value="{{ old('registration_number') }}"
                        placeholder="e.g. ABC-123"
                        style="width:100%;padding:10px;margin-bottom:12px;">
+
                 @error('registration_number')
                     <div style="color:#b91c1c;margin-bottom:12px;">{{ $message }}</div>
                 @enderror
@@ -74,6 +84,7 @@
             <label style="display:block;font-weight:600;margin:16px 0 6px;">
                 Usage tracking
             </label>
+
             <select name="tracking_mode"
                     style="width:100%;padding:10px;margin-bottom:6px;">
                 <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
@@ -86,6 +97,7 @@
                     No usage tracking
                 </option>
             </select>
+
             <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">
                 This controls what drivers are required to record when using this asset.
             </div>
@@ -94,13 +106,17 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div>
                     <label style="display:block;font-weight:600;margin-bottom:6px;">Make</label>
-                    <input type="text" name="make" value="{{ old('make') }}"
+                    <input type="text"
+                           name="make"
+                           value="{{ old('make') }}"
                            style="width:100%;padding:10px;margin-bottom:12px;">
                 </div>
 
                 <div>
                     <label style="display:block;font-weight:600;margin-bottom:6px;">Model</label>
-                    <input type="text" name="model" value="{{ old('model') }}"
+                    <input type="text"
+                           name="model"
+                           value="{{ old('model') }}"
                            style="width:100%;padding:10px;margin-bottom:12px;">
                 </div>
             </div>
@@ -109,9 +125,9 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div>
                     <label style="display:block;font-weight:600;margin-bottom:6px;">Vehicle type</label>
+                    @php $vt = old('vehicle_type', 'sedan'); @endphp
                     <select name="vehicle_type"
                             style="width:100%;padding:10px;margin-bottom:12px;">
-                        @php $vt = old('vehicle_type', 'sedan'); @endphp
                         <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
                         <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
                         <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
@@ -125,7 +141,9 @@
                     <label style="display:block;font-weight:600;margin-bottom:6px;">
                         Vehicle classification (optional)
                     </label>
-                    <input type="text" name="vehicle_class" value="{{ old('vehicle_class') }}"
+                    <input type="text"
+                           name="vehicle_class"
+                           value="{{ old('vehicle_class') }}"
                            style="width:100%;padding:10px;margin-bottom:6px;">
                     <div style="font-size:12px;color:#6b7280;">
                         Examples: Light Vehicle, Heavy Vehicle, Machinery, Asset
@@ -135,14 +153,17 @@
 
             {{-- Accessibility --}}
             <label style="display:block;margin:12px 0;">
-                <input type="checkbox" name="wheelchair_accessible" value="1"
-                    {{ old('wheelchair_accessible') ? 'checked' : '' }}>
+                <input type="checkbox"
+                       name="wheelchair_accessible"
+                       value="1"
+                       {{ old('wheelchair_accessible') ? 'checked' : '' }}>
                 <strong>Wheelchair accessible</strong>
             </label>
 
             {{-- Notes --}}
             <label style="display:block;font-weight:600;margin-bottom:6px;">Notes (optional)</label>
-            <textarea name="notes" rows="3"
+            <textarea name="notes"
+                      rows="3"
                       style="width:100%;padding:10px;">{{ old('notes') }}</textarea>
 
         </div>
