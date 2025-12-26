@@ -195,8 +195,11 @@ class RegisterController extends Controller
                     'id' => $user->id,
                     'organisation_id' => $organisationId,
                     'email' => $user->email,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
                     'name' => trim($user->first_name . ' ' . $user->last_name),
                     'role' => 'admin',
+                    'is_driver' => 1,
                     'logged_in' => true,
                 ]
             ]);

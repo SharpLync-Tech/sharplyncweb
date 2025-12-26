@@ -54,6 +54,7 @@
         <div class="card-body">
             <div class="btn-group">
                 <a href="{{ url('/app/sharpfleet/admin/company/profile') }}" class="btn btn-primary">Edit Company Details</a>
+                <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Users / Drivers</a>
                 <a href="{{ url('/app/sharpfleet/admin/settings') }}" class="btn btn-secondary">Company Settings</a>
                 <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}" class="btn btn-secondary">Safety Checks</a>
                 <a href="{{ url('/app/sharpfleet/admin/reports/trips') }}" class="btn btn-secondary">Trip Reports</a>

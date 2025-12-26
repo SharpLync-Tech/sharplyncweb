@@ -16,7 +16,7 @@ class SharpFleetAdminAuth
 
         // Not logged into SharpFleet at all
         if (!$fleetUser || empty($fleetUser['logged_in'])) {
-            return redirect('/app/sharpfleet/admin/login');
+            return redirect('/app/sharpfleet/login');
         }
 
         // Logged in, but not an admin

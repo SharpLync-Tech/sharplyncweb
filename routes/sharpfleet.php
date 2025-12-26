@@ -19,6 +19,7 @@ use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
+use App\Http\Controllers\SharpFleet\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -151,6 +152,11 @@ Route::prefix('app/sharpfleet')->group(function () {
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
+
+            // Users (driver access)
+            Route::get('/users', [UserController::class, 'index']);
+            Route::get('/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
+            Route::post('/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');
 
             // Trial expired page (no middleware needed)
             Route::get('/trial-expired', function () {

@@ -107,9 +107,11 @@ class AuthController extends Controller
             'id'              => $user->id,
             'organisation_id' => $user->organisation_id,
             'email'           => $user->email,
+            'first_name'      => $user->first_name ?? '',
+            'last_name'       => $user->last_name ?? '',
             'name'            => trim($user->first_name . ' ' . $user->last_name),
             'role'            => $user->role, // admin | driver
-            'is_driver'       => $user->is_driver ?? 0,
+            'is_driver'       => (int) ($user->is_driver ?? 0),
             'logged_in'       => true,
         ]);
     }
