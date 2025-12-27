@@ -68,11 +68,19 @@
     </main>
 
     {{-- SharpFleet Footer --}}
-    <footer class="sharpfleet-footer">
-        <div class="sharpfleet-container">
-            <p>&copy; 2025 SharpFleet. Fleet Management powered by SharpLync.</p>
-        </div>
-    </footer>
+<footer class="sharpfleet-footer">
+    <div class="sharpfleet-container">
+        <p>
+            &copy; {{ date('Y') }} SharpFleet. Fleet Management powered by
+            <a href="https://sharplync.com.au"
+               target="_blank"
+               rel="noopener">
+                SharpLync
+            </a>.
+        </p>
+    </div>
+</footer>
+
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
