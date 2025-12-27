@@ -131,6 +131,8 @@
                 {{-- Vehicle --}}
                 <div class="form-group">
                     <label class="form-label">Vehicle</label>
+                    <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. black toyota / camry / ABC123)">
+                    <div id="vehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
                     <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
                         @foreach ($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}"
@@ -215,6 +217,8 @@
     {{-- Minimal JS for start trip form --}}
     <script>
         const vehicleSelect = document.getElementById('vehicleSelect');
+        const vehicleSearchInput = document.getElementById('vehicleSearchInput');
+        const vehicleSearchHint = document.getElementById('vehicleSearchHint');
         const startKmInput  = document.getElementById('startKmInput');
         const lastKmHint    = document.getElementById('lastKmHint');
         const startReadingLabel = document.getElementById('startReadingLabel');
@@ -224,6 +228,58 @@
         const customerNameInput = document.getElementById('customerNameInput');
 
         const tripModeRadios = document.querySelectorAll('input[name="trip_mode"]');
+
+        const allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
+            value: opt.value,
+            text: opt.text,
+            trackingMode: opt.dataset.trackingMode || 'distance',
+            lastKm: opt.dataset.lastKm || ''
+        }));
+
+        function rebuildVehicleOptions(filtered) {
+            const currentValue = vehicleSelect.value;
+            vehicleSelect.innerHTML = '';
+
+            filtered.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.value;
+                opt.textContent = v.text;
+                opt.dataset.trackingMode = v.trackingMode;
+                opt.dataset.lastKm = v.lastKm;
+                vehicleSelect.appendChild(opt);
+            });
+
+            if (filtered.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'No vehicles match your search';
+                vehicleSelect.appendChild(opt);
+                vehicleSelect.value = '';
+                return;
+            }
+
+            const stillExists = filtered.some(v => v.value === currentValue);
+            if (stillExists) {
+                vehicleSelect.value = currentValue;
+            } else {
+                vehicleSelect.value = filtered[0].value;
+            }
+
+            updateStartKm();
+        }
+
+        function filterVehicles() {
+            const q = (vehicleSearchInput?.value || '').trim().toLowerCase();
+            const filtered = q
+                ? allVehicleOptions.filter(v => v.text.toLowerCase().includes(q))
+                : allVehicleOptions;
+
+            if (vehicleSearchHint) {
+                vehicleSearchHint.textContent = `Showing ${filtered.length} of ${allVehicleOptions.length} vehicles`;
+            }
+
+            rebuildVehicleOptions(filtered);
+        }
 
         function updateStartKm() {
             const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
@@ -253,6 +309,9 @@
         }
 
         vehicleSelect.addEventListener('change', updateStartKm);
+        if (vehicleSearchInput) {
+            vehicleSearchInput.addEventListener('input', filterVehicles);
+        }
 
         function updateCustomerVisibility() {
             if (!customerBlock) return;
