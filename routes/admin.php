@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ComponentController;
 use App\Http\Controllers\Admin\Support\SupportTicketController;
 use App\Http\Controllers\Admin\Support\AdminTicketController;
 use App\Http\Controllers\Admin\PortalController;
+use App\Http\Controllers\Admin\SharpFleet\PlatformController as SharpFleetPlatformController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,25 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     // Admin landing / product selector
     Route::get('/', fn () => redirect()->route('admin.portal'));
     Route::get('/portal', [PortalController::class, 'index'])->name('admin.portal');
-    Route::get('/sharpfleet', [PortalController::class, 'sharpfleet'])->name('admin.sharpfleet');
+    // Legacy: tenant SharpFleet admin (customer portal) SSO handoff
+    Route::get('/sharpfleet/product', [PortalController::class, 'sharpfleet'])->name('admin.sharpfleet.product');
+
+    // SharpFleet platform admin (internal)
+    Route::prefix('sharpfleet')->group(function () {
+        Route::get('/', [SharpFleetPlatformController::class, 'index'])->name('admin.sharpfleet.platform');
+        Route::get('/organisations/{organisationId}', [SharpFleetPlatformController::class, 'organisation'])
+            ->whereNumber('organisationId')
+            ->name('admin.sharpfleet.organisations.show');
+        Route::get('/organisations/{organisationId}/users', [SharpFleetPlatformController::class, 'organisationUsers'])
+            ->whereNumber('organisationId')
+            ->name('admin.sharpfleet.organisations.users');
+        Route::get('/organisations/{organisationId}/vehicles', [SharpFleetPlatformController::class, 'organisationVehicles'])
+            ->whereNumber('organisationId')
+            ->name('admin.sharpfleet.organisations.vehicles');
+        Route::get('/vehicles/{vehicleId}', [SharpFleetPlatformController::class, 'vehicle'])
+            ->whereNumber('vehicleId')
+            ->name('admin.sharpfleet.vehicles.show');
+    });
 
     /** Dashboard + Settings */
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

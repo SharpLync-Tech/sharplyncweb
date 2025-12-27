@@ -119,16 +119,10 @@
                     </a>
 
                     <div class="sl-section-title">SharpFleet Admin</div>
-                    <a href="{{ route('admin.sharpfleet') }}" class="nav-link" target="_blank" rel="noopener">
-                        SharpFleet Admin Portal
+                    <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet*') ? 'active' : '' }}">
+                        SharpFleet Platform Admin
                     </a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/vehicles']) }}" class="nav-link" target="_blank" rel="noopener">Vehicles</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/bookings']) }}" class="nav-link" target="_blank" rel="noopener">Bookings</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/faults']) }}" class="nav-link" target="_blank" rel="noopener">Faults</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/reports/trips']) }}" class="nav-link" target="_blank" rel="noopener">Reports (Trips)</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/reports/vehicles']) }}" class="nav-link" target="_blank" rel="noopener">Reports (Vehicles)</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/users']) }}" class="nav-link" target="_blank" rel="noopener">Users</a>
-                    <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/settings']) }}" class="nav-link" target="_blank" rel="noopener">Settings</a>
+                    <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet') ? 'active' : '' }}">Subscribers</a>
 
                     <div class="sl-section-title">System</div>
                     <a href="{{ route('admin.pulse.index') }}" class="nav-link {{ request()->is('admin/pulse*') ? 'active' : '' }}">
@@ -187,14 +181,8 @@
                 <a href="{{ route('admin.cms.about.timeline.index') }}" class="nav-link {{ request()->is('admin/cms/about/timeline*') ? 'active' : '' }}">About Timeline</a>
 
                 <div class="sl-section-title">SharpFleet Admin</div>
-                <a href="{{ route('admin.sharpfleet') }}" class="nav-link" target="_blank" rel="noopener">SharpFleet Admin Portal</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/vehicles']) }}" class="nav-link" target="_blank" rel="noopener">Vehicles</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/bookings']) }}" class="nav-link" target="_blank" rel="noopener">Bookings</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/faults']) }}" class="nav-link" target="_blank" rel="noopener">Faults</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/reports/trips']) }}" class="nav-link" target="_blank" rel="noopener">Reports (Trips)</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/reports/vehicles']) }}" class="nav-link" target="_blank" rel="noopener">Reports (Vehicles)</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/users']) }}" class="nav-link" target="_blank" rel="noopener">Users</a>
-                <a href="{{ route('admin.sharpfleet', ['to' => '/app/sharpfleet/admin/settings']) }}" class="nav-link" target="_blank" rel="noopener">Settings</a>
+                <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet*') ? 'active' : '' }}">SharpFleet Platform Admin</a>
+                <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet') ? 'active' : '' }}">Subscribers</a>
 
                 <div class="sl-section-title">System</div>
                 <a href="{{ route('admin.pulse.index') }}" class="nav-link {{ request()->is('admin/pulse*') ? 'active' : '' }}">Pulse Feed</a>

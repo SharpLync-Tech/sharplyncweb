@@ -29,16 +29,14 @@
             <div class="card sl-card h-100">
                 <div class="card-body p-4">
                     <div class="text-uppercase small text-muted" style="letter-spacing: 0.12em;">SharpFleet</div>
-                    <div class="h4 mt-2 mb-2 fw-semibold">SharpFleet Admin Portal</div>
+                    <div class="h4 mt-2 mb-2 fw-semibold">SharpFleet Platform Admin</div>
                     <div class="text-muted" style="line-height: 1.6;">
-                        Vehicles, bookings, faults, reports, users and company settings.
+                        Subscribers (organisations), users, vehicles, and subscription/billing details.
                     </div>
                     <div class="mt-3">
-                        <a class="btn btn-accent" href="{{ route('admin.sharpfleet') }}">Open SharpFleet Admin</a>
+                        <a class="btn btn-accent" href="{{ route('admin.sharpfleet.platform') }}">Open SharpFleet Platform Admin</a>
                     </div>
-                    <div class="mt-2 text-muted small">
-                        Uses single sign-on from your Microsoft admin session.
-                    </div>
+                    <div class="mt-2 text-muted small">Uses your Microsoft admin session.</div>
                 </div>
             </div>
         </div>
