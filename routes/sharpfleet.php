@@ -201,6 +201,7 @@ Route::prefix('app/sharpfleet')->group(function () {
             // Trips
             Route::post('/trips/start', [TripController::class, 'start']);
             Route::post('/trips/end', [TripController::class, 'end']);
+            Route::post('/trips/offline-sync', [TripController::class, 'offlineSync']);
 
             // Faults
             Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);

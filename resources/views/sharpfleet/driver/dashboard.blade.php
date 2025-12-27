@@ -52,6 +52,8 @@
         ->first();
 @endphp
 
+<div id="offlineTripAlert" class="alert alert-info" style="display:none;"></div>
+
 @if (session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -60,7 +62,7 @@
 
 @if($activeTrip)
     {{-- Active Trip Card --}}
-    <div class="card">
+    <div class="card" id="serverActiveTripCard">
         <div class="card-header">
             <h3 class="card-title">Trip in Progress</h3>
         </div>
@@ -100,7 +102,7 @@
                 @endif
             </div>
 
-            <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4">
+            <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4" id="endTripForm">
                 @csrf
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
 
@@ -120,12 +122,12 @@
     </div>
 @else
     {{-- Start Trip Card --}}
-    <div class="card">
+    <div class="card" id="startTripCard">
         <div class="card-header">
             <h3 class="card-title">Start a Trip</h3>
         </div>
         <div class="card-body">
-            <form method="POST" action="/app/sharpfleet/trips/start">
+            <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm">
                 @csrf
 
                 {{-- Vehicle --}}
@@ -216,8 +218,150 @@
         </div>
     </div>
 
+    {{-- Offline active trip (shown via JS when a trip was started offline) --}}
+    <div class="card" id="offlineActiveTripCard" style="display:none;">
+        <div class="card-header">
+            <h3 class="card-title">Trip in Progress (Offline)</h3>
+        </div>
+        <div class="card-body">
+            <div class="trip-info">
+                <div class="info-row"><strong>Vehicle:</strong> <span id="offlineTripVehicle">—</span></div>
+                <div class="info-row"><strong>Started:</strong> <span id="offlineTripStarted">—</span></div>
+                <div class="info-row"><strong>Starting reading:</strong> <span id="offlineTripStartKm">—</span></div>
+            </div>
+
+            <form id="offlineEndTripForm" class="mt-4">
+                <div class="form-group">
+                    <label class="form-label">Ending reading</label>
+                    <input type="number" id="offlineEndKm" class="form-control" inputmode="numeric" required min="0" placeholder="e.g. 124600">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">End Trip (Offline)</button>
+            </form>
+        </div>
+    </div>
+
     {{-- Minimal JS for start trip form --}}
     <script>
+        const offlineTripAlert = document.getElementById('offlineTripAlert');
+
+        function showOfflineMessage(msg) {
+            if (!offlineTripAlert) return;
+            offlineTripAlert.textContent = msg;
+            offlineTripAlert.style.display = '';
+        }
+
+        function getCsrfToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        }
+
+        function getLocalJson(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function setLocalJson(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        const OFFLINE_ACTIVE_KEY = 'sharpfleet_offline_active_trip_v1';
+        const OFFLINE_COMPLETED_KEY = 'sharpfleet_offline_completed_trips_v1';
+
+        function getOfflineActiveTrip() {
+            return getLocalJson(OFFLINE_ACTIVE_KEY, null);
+        }
+
+        function setOfflineActiveTrip(trip) {
+            if (trip === null) {
+                localStorage.removeItem(OFFLINE_ACTIVE_KEY);
+                return;
+            }
+            setLocalJson(OFFLINE_ACTIVE_KEY, trip);
+        }
+
+        function getOfflineCompletedTrips() {
+            return getLocalJson(OFFLINE_COMPLETED_KEY, []);
+        }
+
+        function setOfflineCompletedTrips(trips) {
+            setLocalJson(OFFLINE_COMPLETED_KEY, trips);
+        }
+
+        function renderOfflineActiveTrip() {
+            const card = document.getElementById('offlineActiveTripCard');
+            const startCard = document.getElementById('startTripCard');
+            if (!card) return;
+
+            const t = getOfflineActiveTrip();
+            if (!t) {
+                card.style.display = 'none';
+                if (startCard) startCard.style.display = '';
+                return;
+            }
+
+            card.style.display = '';
+            if (startCard) startCard.style.display = 'none';
+
+            const v = document.getElementById('offlineTripVehicle');
+            const s = document.getElementById('offlineTripStarted');
+            const skm = document.getElementById('offlineTripStartKm');
+
+            if (v) v.textContent = t.vehicle_text || '—';
+            if (s) {
+                try { s.textContent = new Date(t.started_at).toLocaleString(); } catch (e) { s.textContent = t.started_at; }
+            }
+            if (skm) skm.textContent = String(t.start_km ?? '—');
+        }
+
+        async function syncOfflineTripsIfPossible() {
+            if (!navigator.onLine) return;
+            const completed = getOfflineCompletedTrips();
+            if (!Array.isArray(completed) || completed.length === 0) return;
+
+            try {
+                const res = await fetch('/app/sharpfleet/trips/offline-sync', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                    },
+                    body: JSON.stringify({ trips: completed }),
+                });
+
+                if (!res.ok) {
+                    // Show the first validation message if possible.
+                    let msg = 'Could not sync offline trips yet.';
+                    try {
+                        const data = await res.json();
+                        if (data && data.message) msg = data.message;
+                        if (data && data.errors) {
+                            const keys = Object.keys(data.errors);
+                            if (keys.length && Array.isArray(data.errors[keys[0]]) && data.errors[keys[0]][0]) {
+                                msg = data.errors[keys[0]][0];
+                            }
+                        }
+                    } catch (e) {}
+                    showOfflineMessage(msg);
+                    return;
+                }
+
+                const data = await res.json();
+                // Clear local completed trips on success.
+                setOfflineCompletedTrips([]);
+                showOfflineMessage(`Offline trips synced (${(data.synced || []).length} sent).`);
+                // Refresh to show latest state.
+                setTimeout(() => window.location.reload(), 800);
+            } catch (e) {
+                // ignore network errors
+            }
+        }
+
         const vehicleSelect = document.getElementById('vehicleSelect');
         const vehicleSearchInput = document.getElementById('vehicleSearchInput');
         const vehicleSearchHint = document.getElementById('vehicleSearchHint');
@@ -341,6 +485,114 @@
         // Initial load
         updateStartKm();
         updateCustomerVisibility();
+
+        // Offline trip capture (start/end + readings)
+        const startTripForm = document.getElementById('startTripForm');
+        const offlineEndTripForm = document.getElementById('offlineEndTripForm');
+        const offlineEndKm = document.getElementById('offlineEndKm');
+
+        function buildOfflineStartPayload(form) {
+            const fd = new FormData(form);
+            const payload = Object.fromEntries(fd.entries());
+            // Keep only what we need to create a trip later.
+            return {
+                vehicle_id: Number(payload.vehicle_id),
+                trip_mode: String(payload.trip_mode || 'no_client'),
+                start_km: Number(payload.start_km),
+                customer_id: payload.customer_id ? Number(payload.customer_id) : null,
+                customer_name: payload.customer_name ? String(payload.customer_name) : null,
+                client_present: payload.client_present !== undefined && payload.client_present !== '' ? payload.client_present : null,
+                client_address: payload.client_address ? String(payload.client_address) : null,
+            };
+        }
+
+        if (startTripForm) {
+            startTripForm.addEventListener('submit', (e) => {
+                if (navigator.onLine) return; // let server handle it
+
+                e.preventDefault();
+
+                if (getOfflineActiveTrip()) {
+                    showOfflineMessage('A trip is already in progress offline. End it before starting another.');
+                    return;
+                }
+
+                const payload = buildOfflineStartPayload(startTripForm);
+                if (!payload.vehicle_id || Number.isNaN(payload.vehicle_id)) {
+                    showOfflineMessage('Select a vehicle before starting.');
+                    return;
+                }
+                if (Number.isNaN(payload.start_km)) {
+                    showOfflineMessage('Enter a valid starting reading.');
+                    return;
+                }
+
+                const selectedOpt = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
+                const vehicleText = selectedOpt ? selectedOpt.textContent : '';
+
+                setOfflineActiveTrip({
+                    ...payload,
+                    started_at: new Date().toISOString(),
+                    vehicle_text: vehicleText,
+                });
+
+                showOfflineMessage('No signal: trip started offline. End it to sync later.');
+                renderOfflineActiveTrip();
+            });
+        }
+
+        if (offlineEndTripForm && offlineEndKm) {
+            offlineEndTripForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const active = getOfflineActiveTrip();
+                if (!active) {
+                    showOfflineMessage('No offline trip found.');
+                    renderOfflineActiveTrip();
+                    return;
+                }
+
+                const endKmVal = Number(offlineEndKm.value);
+                if (Number.isNaN(endKmVal)) {
+                    showOfflineMessage('Enter a valid ending reading.');
+                    return;
+                }
+                if (endKmVal < Number(active.start_km)) {
+                    showOfflineMessage('Ending reading must be the same as or greater than the starting reading.');
+                    return;
+                }
+
+                const completedTrip = {
+                    vehicle_id: active.vehicle_id,
+                    trip_mode: active.trip_mode,
+                    start_km: active.start_km,
+                    end_km: endKmVal,
+                    started_at: active.started_at,
+                    ended_at: new Date().toISOString(),
+                    customer_id: active.customer_id,
+                    customer_name: active.customer_name,
+                    client_present: active.client_present,
+                    client_address: active.client_address,
+                };
+
+                const completed = getOfflineCompletedTrips();
+                completed.push(completedTrip);
+                setOfflineCompletedTrips(completed);
+                setOfflineActiveTrip(null);
+
+                showOfflineMessage('Trip ended offline. Will sync when signal returns.');
+                renderOfflineActiveTrip();
+                await syncOfflineTripsIfPossible();
+            });
+        }
+
+        window.addEventListener('online', () => {
+            showOfflineMessage('Back online. Syncing offline trips...');
+            syncOfflineTripsIfPossible();
+        });
+
+        // Initial render/sync
+        renderOfflineActiveTrip();
+        syncOfflineTripsIfPossible();
     </script>
 @endif
 @endsection

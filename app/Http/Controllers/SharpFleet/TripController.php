@@ -7,6 +7,7 @@ use App\Services\SharpFleet\TripService;
 use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class TripController extends Controller
 {
@@ -60,6 +61,36 @@ class TripController extends Controller
 
         return redirect('/app/sharpfleet/driver')
             ->with('success', 'Trip ended successfully');
+    }
+
+    /**
+     * Sync one or more completed offline trips (Driver UI – session based)
+     */
+    public function offlineSync(Request $request): JsonResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
+
+        $validated = $request->validate([
+            'trips' => ['required', 'array', 'min:1'],
+            'trips.*.vehicle_id' => ['required', 'integer'],
+            'trips.*.trip_mode' => ['required', 'string'],
+            'trips.*.start_km' => ['required', 'integer', 'min:0'],
+            'trips.*.end_km' => ['required', 'integer', 'min:0'],
+            'trips.*.started_at' => ['required', 'date'],
+            'trips.*.ended_at' => ['required', 'date'],
+            'trips.*.customer_id' => ['nullable', 'integer'],
+            'trips.*.customer_name' => ['nullable', 'string', 'max:150'],
+            'trips.*.client_present' => ['nullable'],
+            'trips.*.client_address' => ['nullable', 'string'],
+        ]);
+
+        $result = $this->tripService->syncOfflineTrips($user, $validated['trips']);
+
+        return response()->json($result);
     }
 
     public function edit($trip)
