@@ -4,6 +4,7 @@ namespace App\Services\SharpFleet;
 
 use App\Models\SharpFleet\Trip;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class TripService
 {
@@ -56,8 +57,17 @@ class TripService
             ->whereNull('ended_at')
             ->firstOrFail();
 
+        $endKm = (int) $data['end_km'];
+        $startKm = $trip->start_km !== null ? (int) $trip->start_km : null;
+
+        if ($startKm !== null && $endKm < $startKm) {
+            throw ValidationException::withMessages([
+                'end_km' => 'Ending reading must be the same as or greater than the starting reading.',
+            ]);
+        }
+
         $trip->update([
-            'end_km'   => $data['end_km'],
+            'end_km'   => $endKm,
             'ended_at' => $now,
             'end_time' => $now,
         ]);

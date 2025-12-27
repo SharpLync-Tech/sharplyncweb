@@ -99,7 +99,7 @@
                             : 'Ending odometer (km)'
                         }}
                     </label>
-                    <input type="number" name="end_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124600">
+                    <input type="number" name="end_km" class="form-control" inputmode="numeric" required min="{{ (int) $activeTrip->start_km }}" placeholder="e.g. 124600">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-full">End Trip</button>

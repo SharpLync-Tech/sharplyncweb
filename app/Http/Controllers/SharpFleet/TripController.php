@@ -44,7 +44,7 @@ class TripController extends Controller
     {
         $request->validate([
             'trip_id' => ['required', 'integer'],
-            'end_km'  => ['required', 'integer'],
+            'end_km'  => ['required', 'integer', 'min:0'],
         ]);
 
         $user = session('sharpfleet.user');
