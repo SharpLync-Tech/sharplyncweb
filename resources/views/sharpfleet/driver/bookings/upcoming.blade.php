@@ -63,16 +63,33 @@
 
                     <div class="grid grid-2">
                         <div class="form-group">
-                            <label class="form-label">Start (date & time)</label>
-                            <input type="datetime-local" name="planned_start" class="form-control" required value="{{ old('planned_start') }}">
-                            @error('planned_start')
+                            <label class="form-label">Start date</label>
+                            <input type="date" name="planned_start_date" class="form-control" required value="{{ old('planned_start_date') }}">
+                            @error('planned_start_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label class="form-label">End (date & time)</label>
-                            <input type="datetime-local" name="planned_end" class="form-control" required value="{{ old('planned_end') }}">
-                            @error('planned_end')
+                            <label class="form-label">Start time</label>
+                            <input type="time" name="planned_start_time" class="form-control" required value="{{ old('planned_start_time') }}">
+                            @error('planned_start_time')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">End date</label>
+                            <input type="date" name="planned_end_date" class="form-control" required value="{{ old('planned_end_date') }}">
+                            @error('planned_end_date')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End time</label>
+                            <input type="time" name="planned_end_time" class="form-control" required value="{{ old('planned_end_time') }}">
+                            @error('planned_end_time')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>

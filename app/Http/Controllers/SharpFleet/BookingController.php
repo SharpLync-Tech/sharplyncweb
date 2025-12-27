@@ -65,18 +65,23 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'vehicle_id' => ['required', 'integer'],
-            'planned_start' => ['required', 'date'],
-            'planned_end' => ['required', 'date'],
+            'planned_start_date' => ['required', 'date'],
+            'planned_start_time' => ['required', 'date_format:H:i'],
+            'planned_end_date' => ['required', 'date'],
+            'planned_end_time' => ['required', 'date_format:H:i'],
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string', 'max:150'],
             'notes' => ['nullable', 'string'],
         ]);
 
+        $plannedStart = $validated['planned_start_date'] . ' ' . $validated['planned_start_time'] . ':00';
+        $plannedEnd = $validated['planned_end_date'] . ' ' . $validated['planned_end_time'] . ':00';
+
         $this->bookingService->createBooking((int) $user['organisation_id'], [
             'user_id' => (int) $user['id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
-            'planned_start' => $validated['planned_start'],
-            'planned_end' => $validated['planned_end'],
+            'planned_start' => $plannedStart,
+            'planned_end' => $plannedEnd,
             'customer_id' => $validated['customer_id'] ?? null,
             'customer_name' => $validated['customer_name'] ?? null,
             'notes' => $validated['notes'] ?? null,
