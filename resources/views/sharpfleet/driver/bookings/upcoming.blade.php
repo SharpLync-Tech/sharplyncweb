@@ -53,8 +53,26 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Start time</label>
-                            <input type="time" name="planned_start_time" class="form-control" required value="{{ old('planned_start_time') }}">
-                            @error('planned_start_time')
+                            <div class="grid grid-2">
+                                <select name="planned_start_hour" class="form-control" required>
+                                    <option value="">HH</option>
+                                    @for($h = 0; $h <= 23; $h++)
+                                        @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $hh }}" {{ old('planned_start_hour') === $hh ? 'selected' : '' }}>{{ $hh }}</option>
+                                    @endfor
+                                </select>
+                                <select name="planned_start_minute" class="form-control" required>
+                                    <option value="">MM</option>
+                                    @for($m = 0; $m <= 59; $m++)
+                                        @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $mm }}" {{ old('planned_start_minute') === $mm ? 'selected' : '' }}>{{ $mm }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            @error('planned_start_hour')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                            @error('planned_start_minute')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
@@ -70,8 +88,26 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">End time</label>
-                            <input type="time" name="planned_end_time" class="form-control" required value="{{ old('planned_end_time') }}">
-                            @error('planned_end_time')
+                            <div class="grid grid-2">
+                                <select name="planned_end_hour" class="form-control" required>
+                                    <option value="">HH</option>
+                                    @for($h = 0; $h <= 23; $h++)
+                                        @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $hh }}" {{ old('planned_end_hour') === $hh ? 'selected' : '' }}>{{ $hh }}</option>
+                                    @endfor
+                                </select>
+                                <select name="planned_end_minute" class="form-control" required>
+                                    <option value="">MM</option>
+                                    @for($m = 0; $m <= 59; $m++)
+                                        @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $mm }}" {{ old('planned_end_minute') === $mm ? 'selected' : '' }}>{{ $mm }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            @error('planned_end_hour')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                            @error('planned_end_minute')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
@@ -121,9 +157,11 @@
 
                 <script>
                     const startDate = document.querySelector('input[name="planned_start_date"]');
-                    const startTime = document.querySelector('input[name="planned_start_time"]');
+                    const startHour = document.querySelector('select[name="planned_start_hour"]');
+                    const startMinute = document.querySelector('select[name="planned_start_minute"]');
                     const endDate = document.querySelector('input[name="planned_end_date"]');
-                    const endTime = document.querySelector('input[name="planned_end_time"]');
+                    const endHour = document.querySelector('select[name="planned_end_hour"]');
+                    const endMinute = document.querySelector('select[name="planned_end_minute"]');
 
                     const bookingVehicleSelect = document.getElementById('bookingVehicleSelect');
                     const bookingVehicleStatus = document.getElementById('bookingVehicleStatus');
@@ -152,9 +190,9 @@
                     }
 
                     async function loadAvailableVehicles() {
-                        if (!bookingVehicleSelect || !startDate || !startTime || !endDate || !endTime) return;
+                        if (!bookingVehicleSelect || !startDate || !startHour || !startMinute || !endDate || !endHour || !endMinute) return;
 
-                        if (!startDate.value || !startTime.value || !endDate.value || !endTime.value) {
+                        if (!startDate.value || !startHour.value || !startMinute.value || !endDate.value || !endHour.value || !endMinute.value) {
                             bookingVehicleSelect.disabled = true;
                             setVehicleSelectOptions([]);
                             if (bookingVehicleStatus) {
@@ -171,13 +209,20 @@
 
                         const params = new URLSearchParams({
                             planned_start_date: startDate.value,
-                            planned_start_time: startTime.value,
+                            planned_start_hour: startHour.value,
+                            planned_start_minute: startMinute.value,
                             planned_end_date: endDate.value,
-                            planned_end_time: endTime.value,
+                            planned_end_hour: endHour.value,
+                            planned_end_minute: endMinute.value,
                         });
 
                         try {
-                            const res = await fetch(`{{ url('/app/sharpfleet/bookings/available-vehicles') }}?${params.toString()}`);
+                            const res = await fetch(`/app/sharpfleet/bookings/available-vehicles?${params.toString()}`,
+                                {
+                                    credentials: 'same-origin',
+                                    headers: { 'Accept': 'application/json' },
+                                }
+                            );
                             if (!res.ok) {
                                 bookingVehicleSelect.disabled = true;
                                 setVehicleSelectOptions([]);
@@ -207,7 +252,7 @@
                         }
                     }
 
-                    [startDate, startTime, endDate, endTime].forEach(el => {
+                    [startDate, startHour, startMinute, endDate, endHour, endMinute].forEach(el => {
                         if (el) el.addEventListener('change', loadAvailableVehicles);
                     });
 
