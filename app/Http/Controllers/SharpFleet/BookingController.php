@@ -4,6 +4,9 @@ namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BookingController extends Controller
 {
@@ -14,13 +17,90 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function upcoming()
+    public function upcoming(Request $request)
     {
-        // $this->bookingService->getUpcomingBookings()
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user) {
+            abort(403, 'Login required');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        $vehicles = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $customersTableExists = Schema::connection('sharpfleet')->hasTable('customers');
+        $customers = collect();
+        if ($customersTableExists) {
+            $customers = DB::connection('sharpfleet')
+                ->table('customers')
+                ->where('organisation_id', $organisationId)
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->limit(500)
+                ->get();
+        }
+
+        $result = $this->bookingService->getUpcomingBookings($organisationId);
+
+        return view('sharpfleet.driver.bookings.upcoming', [
+            'bookingsTableExists' => $result['tableExists'],
+            'bookings' => $result['bookings'],
+            'vehicles' => $vehicles,
+            'customersTableExists' => $customersTableExists,
+            'customers' => $customers,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user) {
+            abort(403, 'Login required');
+        }
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer'],
+            'planned_start' => ['required', 'date'],
+            'planned_end' => ['required', 'date'],
+            'customer_id' => ['nullable', 'integer'],
+            'customer_name' => ['nullable', 'string', 'max:150'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $this->bookingService->createBooking((int) $user['organisation_id'], [
+            'user_id' => (int) $user['id'],
+            'vehicle_id' => (int) $validated['vehicle_id'],
+            'planned_start' => $validated['planned_start'],
+            'planned_end' => $validated['planned_end'],
+            'customer_id' => $validated['customer_id'] ?? null,
+            'customer_name' => $validated['customer_name'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking created.');
+    }
+
+    public function cancel(Request $request, $booking)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user) {
+            abort(403, 'Login required');
+        }
+
+        $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, false);
+
+        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking cancelled.');
     }
 
     public function startTrip()
     {
-        // $this->bookingService->startTripFromBooking()
+        // Intentionally not implemented yet.
+        // Drivers start trips from the Driver Dashboard; booking enforcement happens server-side.
+        abort(404);
     }
 }

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BookingController extends Controller
 {
@@ -14,18 +17,99 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        // $this->bookingService->getUpcomingBookings()
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        $vehicles = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $drivers = DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId)
+            ->where(function ($q) {
+                $q
+                    ->where(function ($qq) {
+                        $qq
+                            ->where('role', 'driver')
+                            ->where(function ($q2) {
+                                $q2->whereNull('is_driver')->orWhere('is_driver', 1);
+                            });
+                    })
+                    ->orWhere(function ($qq) {
+                        $qq
+                            ->where('role', 'admin')
+                            ->where('is_driver', 1);
+                    });
+            })
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get();
+
+        $customersTableExists = Schema::connection('sharpfleet')->hasTable('customers');
+        $customers = collect();
+        if ($customersTableExists) {
+            $customers = DB::connection('sharpfleet')
+                ->table('customers')
+                ->where('organisation_id', $organisationId)
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->limit(500)
+                ->get();
+        }
+
+        $result = $this->bookingService->getUpcomingBookings($organisationId);
+
+        return view('sharpfleet.admin.bookings.index', [
+            'bookingsTableExists' => $result['tableExists'],
+            'bookings' => $result['bookings'],
+            'vehicles' => $vehicles,
+            'drivers' => $drivers,
+            'customersTableExists' => $customersTableExists,
+            'customers' => $customers,
+        ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        // $this->bookingService->createBooking()
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer'],
+            'vehicle_id' => ['required', 'integer'],
+            'planned_start' => ['required', 'date'],
+            'planned_end' => ['required', 'date'],
+            'customer_id' => ['nullable', 'integer'],
+            'customer_name' => ['nullable', 'string', 'max:150'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $this->bookingService->createBooking((int) $user['organisation_id'], $validated);
+
+        return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking created.');
     }
 
-    public function cancel($booking)
+    public function cancel(Request $request, $booking)
     {
-        // Booking cancellation logic later
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, true);
+
+        return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking cancelled.');
     }
 }

@@ -205,7 +205,9 @@ Route::prefix('app/sharpfleet')->group(function () {
             Route::post('/faults/standalone', [FaultController::class, 'storeStandalone']);
 
             // Bookings
-            Route::get('/bookings/upcoming', [BookingController::class, 'upcoming']);
+            Route::get('/bookings', [BookingController::class, 'upcoming']);
+            Route::post('/bookings', [BookingController::class, 'store']);
+            Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
             Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
         });
 

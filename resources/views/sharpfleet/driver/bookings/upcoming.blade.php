@@ -1,0 +1,240 @@
+@extends('layouts.sharpfleet')
+
+@section('title', 'Bookings')
+
+@section('sharpfleet-content')
+
+@php
+    $user = session('sharpfleet.user');
+@endphp
+
+<div class="container">
+    <div class="page-header">
+        <div class="flex-between">
+            <div>
+                <h1 class="page-title">Bookings</h1>
+                <p class="page-description">Book a vehicle for a specific time window. Only the driver who booked it can start a trip during that window.</p>
+            </div>
+        </div>
+    </div>
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            Please fix the highlighted fields and try again.
+        </div>
+    @endif
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Create Booking</h2>
+            <p class="card-subtitle">Date and time are required. Customer/client is optional.</p>
+        </div>
+        <div class="card-body">
+            @if(!$bookingsTableExists)
+                <p class="text-muted fst-italic">Bookings are unavailable until the database table is created.</p>
+            @else
+                <form method="POST" action="{{ url('/app/sharpfleet/bookings') }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label">Vehicle</label>
+                        @if($vehicles->count() > 10)
+                            <input type="text" id="bookingVehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. toyota / camry / ABC123)">
+                            <div id="bookingVehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
+                        @endif
+                        <select id="bookingVehicleSelect" name="vehicle_id" class="form-control" required>
+                            <option value="">— Select vehicle —</option>
+                            @foreach($vehicles as $v)
+                                <option value="{{ $v->id }}" {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
+                                    {{ $v->name }} ({{ $v->registration_number }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('vehicle_id')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Start (date & time)</label>
+                            <input type="datetime-local" name="planned_start" class="form-control" required value="{{ old('planned_start') }}">
+                            @error('planned_start')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End (date & time)</label>
+                            <input type="datetime-local" name="planned_end" class="form-control" required value="{{ old('planned_end') }}">
+                            @error('planned_end')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Customer / Client (optional)</label>
+                        @if($customersTableExists && $customers->count() > 0)
+                            <select id="bookingCustomerSelect" name="customer_id" class="form-control">
+                                <option value="">— Select from list —</option>
+                                @foreach($customers as $c)
+                                    <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
+                                        {{ $c->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
+                        @endif
+
+                        <input id="bookingCustomerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name" value="{{ old('customer_name') }}">
+                        @error('customer_name')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Notes (optional)</label>
+                        <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes for admin/driver">{{ old('notes') }}</textarea>
+                        @error('notes')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">Create Booking</button>
+                </form>
+
+                <script>
+                    const bookingVehicleSelect = document.getElementById('bookingVehicleSelect');
+                    const bookingVehicleSearchInput = document.getElementById('bookingVehicleSearchInput');
+                    const bookingVehicleSearchHint = document.getElementById('bookingVehicleSearchHint');
+
+                    if (bookingVehicleSelect && bookingVehicleSearchInput) {
+                        const allBookingVehicleOptions = Array.from(bookingVehicleSelect.options)
+                            .filter(o => o.value !== '')
+                            .map(opt => ({ value: opt.value, text: opt.text }));
+
+                        function rebuildBookingVehicles(filtered) {
+                            const currentValue = bookingVehicleSelect.value;
+                            bookingVehicleSelect.innerHTML = '';
+
+                            const placeholder = document.createElement('option');
+                            placeholder.value = '';
+                            placeholder.textContent = filtered.length ? '— Select vehicle —' : 'No vehicles match your search';
+                            bookingVehicleSelect.appendChild(placeholder);
+
+                            filtered.forEach(v => {
+                                const opt = document.createElement('option');
+                                opt.value = v.value;
+                                opt.textContent = v.text;
+                                bookingVehicleSelect.appendChild(opt);
+                            });
+
+                            if (filtered.some(v => v.value === currentValue)) {
+                                bookingVehicleSelect.value = currentValue;
+                            } else {
+                                bookingVehicleSelect.value = '';
+                            }
+                        }
+
+                        function filterBookingVehicles() {
+                            const q = bookingVehicleSearchInput.value.trim().toLowerCase();
+                            const filtered = q
+                                ? allBookingVehicleOptions.filter(v => v.text.toLowerCase().includes(q))
+                                : allBookingVehicleOptions;
+
+                            if (bookingVehicleSearchHint) {
+                                bookingVehicleSearchHint.textContent = `Showing ${filtered.length} of ${allBookingVehicleOptions.length} vehicles`;
+                            }
+
+                            rebuildBookingVehicles(filtered);
+                        }
+
+                        bookingVehicleSearchInput.addEventListener('input', filterBookingVehicles);
+                    }
+
+                    const bookingCustomerSelect = document.getElementById('bookingCustomerSelect');
+                    const bookingCustomerNameInput = document.getElementById('bookingCustomerNameInput');
+
+                    if (bookingCustomerSelect && bookingCustomerNameInput) {
+                        bookingCustomerSelect.addEventListener('change', () => {
+                            if (bookingCustomerSelect.value) {
+                                bookingCustomerNameInput.value = '';
+                            }
+                        });
+
+                        bookingCustomerNameInput.addEventListener('input', () => {
+                            if (bookingCustomerNameInput.value.trim()) {
+                                bookingCustomerSelect.value = '';
+                            }
+                        });
+                    }
+                </script>
+            @endif
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Upcoming Bookings</h2>
+        </div>
+        <div class="card-body">
+            @if(!$bookingsTableExists)
+                <p class="text-muted fst-italic">Bookings are unavailable until the database table is created.</p>
+            @elseif($bookings->count() === 0)
+                <p class="text-muted fst-italic">No upcoming bookings.</p>
+            @else
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Driver</th>
+                                <th>Customer</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bookings as $b)
+                                @php($isMine = $user && (int)$user['id'] === (int)$b->user_id)
+                                <tr>
+                                    <td class="fw-bold">
+                                        {{ $b->vehicle_name ?: '—' }}
+                                        @if($b->registration_number)
+                                            <br><small class="text-muted">{{ $b->registration_number }}</small>
+                                        @endif
+                                    </td>
+                                    <td>{{ $b->driver_name }}</td>
+                                    <td>{{ $b->customer_name_display ?: '—' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ ucfirst($b->status) }}</td>
+                                    <td>
+                                        @if($isMine)
+                                            <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . $b->id . '/cancel') }}">
+                                                @csrf
+                                                <button type="submit" class="btn btn-secondary">Cancel</button>
+                                            </form>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+@endsection

@@ -9,10 +9,12 @@ use Illuminate\Validation\ValidationException;
 class TripService
 {
     protected CustomerService $customerService;
+    protected BookingService $bookingService;
 
-    public function __construct(CustomerService $customerService)
+    public function __construct(CustomerService $customerService, BookingService $bookingService)
     {
         $this->customerService = $customerService;
+        $this->bookingService = $bookingService;
     }
 
     /**
@@ -23,6 +25,13 @@ class TripService
         $now = Carbon::now();
 
         $organisationId = (int) $user['organisation_id'];
+
+        $this->bookingService->assertVehicleCanStartTrip(
+            $organisationId,
+            (int) $data['vehicle_id'],
+            (int) $user['id'],
+            $now
+        );
 
         $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
             ? (int) $data['customer_id']
