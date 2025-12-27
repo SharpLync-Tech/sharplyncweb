@@ -7,7 +7,7 @@
 <div class="hero">
     <h1>Revolutionize Your Fleet Management</h1>
     <p>Streamline operations, enhance safety, and boost efficiency with SharpFleet’s fleet management tools.</p>
-    <a href="/app/sharpfleet" class="btn">Get Started</a>
+    <a href="/app/sharpfleet/login" class="btn">Get Started</a>
 </div>
 
 <section class="mb-4">

@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SharpFleet - Advanced Fleet Management')</title>
 
-    <link rel="manifest" href="/app/sharpfleet/manifest.webmanifest">
+    <link rel="manifest" href="/app/sharpfleet.webmanifest">
 
     <meta name="theme-color" content="#ffffff">
     <meta name="mobile-web-app-capable" content="yes">
@@ -29,7 +29,7 @@
     <header class="sharpfleet-header">
         <div class="sharpfleet-container">
             <nav class="sharpfleet-nav">
-                <a href="/app/sharpfleet" class="sharpfleet-logo">
+                <a href="/app/sharpfleet/login" class="sharpfleet-logo">
                     @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
                     @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
                         <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
@@ -143,7 +143,7 @@
                 }
 
                 try {
-                    await navigator.serviceWorker.register('/app/sharpfleet/sw.js', { scope: '/app/sharpfleet/' });
+                    await navigator.serviceWorker.register('/app/sharpfleet-sw.js', { scope: '/app/sharpfleet/' });
                 } catch (e) {
                     // fail silently
                 }

@@ -34,7 +34,7 @@ use App\Services\SharpFleet\VehicleReminderService;
 
 // Redirect from /sharpfleet to /app/sharpfleet
 Route::get('/sharpfleet', function () {
-    return response('', 302)->header('Location', '/app/sharpfleet');
+    return response('', 302)->header('Location', '/app/sharpfleet/login');
 });
 
 Route::prefix('app/sharpfleet')->group(function () {

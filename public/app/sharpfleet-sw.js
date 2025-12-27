@@ -9,9 +9,9 @@ const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 
 const STATIC_ASSETS = [
-  '/app/sharpfleet/offline.html',
+  '/app/sharpfleet-offline.html',
   '/css/sharpfleet/sharpfleetmain.css',
-  '/app/sharpfleet/manifest.webmanifest',
+  '/app/sharpfleet.webmanifest',
   // App icons (re-use existing site icons)
   '/apple-touch-icon.png',
   '/android-chrome-192.png',
@@ -68,7 +68,7 @@ function isStaticAsset(url) {
   return url.pathname.startsWith('/css/')
     || url.pathname.startsWith('/js/')
     || url.pathname.startsWith('/images/')
-    || url.pathname === '/app/sharpfleet/manifest.webmanifest'
+    || url.pathname === '/app/sharpfleet.webmanifest'
     || url.pathname === '/apple-touch-icon.png'
     || url.pathname === '/android-chrome-192.png'
     || url.pathname === '/android-chrome-512.png'
@@ -113,7 +113,7 @@ self.addEventListener('fetch', (event) => {
       } catch (e) {
         const cached = await caches.match(req);
         if (cached) return cached;
-        return caches.match('/app/sharpfleet/offline.html');
+        return caches.match('/app/sharpfleet-offline.html');
       }
     })());
     return;
