@@ -161,6 +161,7 @@ Route::prefix('app/sharpfleet')->group(function () {
             // Bookings
             Route::get('/bookings', [AdminBookingController::class, 'index']);
             Route::post('/bookings', [AdminBookingController::class, 'store']);
+            Route::post('/bookings/{booking}/change-vehicle', [AdminBookingController::class, 'changeVehicle']);
             Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
             Route::get('/bookings/available-vehicles', [AdminBookingController::class, 'availableVehicles']);
 

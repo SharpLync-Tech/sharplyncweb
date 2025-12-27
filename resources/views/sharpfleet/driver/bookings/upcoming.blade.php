@@ -189,6 +189,27 @@
                         }
                     }
 
+                    async function getResponseErrorMessage(res) {
+                        try {
+                            const data = await res.json();
+                            if (data && typeof data.message === 'string' && data.message.trim()) {
+                                return data.message;
+                            }
+                            if (data && data.errors && typeof data.errors === 'object') {
+                                const keys = Object.keys(data.errors);
+                                for (const k of keys) {
+                                    const arr = data.errors[k];
+                                    if (Array.isArray(arr) && arr.length && typeof arr[0] === 'string') {
+                                        return arr[0];
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            // ignore JSON parse failures
+                        }
+                        return null;
+                    }
+
                     async function loadAvailableVehicles() {
                         if (!bookingVehicleSelect || !startDate || !startHour || !startMinute || !endDate || !endHour || !endMinute) return;
 
@@ -224,10 +245,11 @@
                                 }
                             );
                             if (!res.ok) {
+                                const msg = await getResponseErrorMessage(res);
                                 bookingVehicleSelect.disabled = true;
                                 setVehicleSelectOptions([]);
                                 if (bookingVehicleStatus) {
-                                    bookingVehicleStatus.textContent = 'Could not load vehicles for that time window.';
+                                    bookingVehicleStatus.textContent = msg || 'Could not load vehicles for that time window.';
                                 }
                                 updateCreateButtonState();
                                 return;

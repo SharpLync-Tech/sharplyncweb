@@ -201,6 +201,27 @@
                         }
                     }
 
+                    async function getAdminResponseErrorMessage(res) {
+                        try {
+                            const data = await res.json();
+                            if (data && typeof data.message === 'string' && data.message.trim()) {
+                                return data.message;
+                            }
+                            if (data && data.errors && typeof data.errors === 'object') {
+                                const keys = Object.keys(data.errors);
+                                for (const k of keys) {
+                                    const arr = data.errors[k];
+                                    if (Array.isArray(arr) && arr.length && typeof arr[0] === 'string') {
+                                        return arr[0];
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            // ignore JSON parse failures
+                        }
+                        return null;
+                    }
+
                     async function loadAdminAvailableVehicles() {
                         if (!adminVehicleSelect || !adminStartDate || !adminStartHour || !adminStartMinute || !adminEndDate || !adminEndHour || !adminEndMinute) return;
 
@@ -236,10 +257,11 @@
                                 }
                             );
                             if (!res.ok) {
+                                const msg = await getAdminResponseErrorMessage(res);
                                 adminVehicleSelect.disabled = true;
                                 setAdminVehicleOptions([]);
                                 if (adminVehicleStatus) {
-                                    adminVehicleStatus.textContent = 'Could not load vehicles for that time window.';
+                                    adminVehicleStatus.textContent = msg || 'Could not load vehicles for that time window.';
                                 }
                                 updateAdminCreateButtonState();
                                 return;
@@ -335,6 +357,21 @@
                                     <td>{{ \Carbon\Carbon::parse($b->planned_end)->format('d/m/Y H:i') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
+                                        <form method="POST" action="{{ url('/app/sharpfleet/admin/bookings/' . $b->id . '/change-vehicle') }}" class="mb-2">
+                                            @csrf
+                                            <div class="form-group" style="margin-bottom: 8px;">
+                                                <select name="new_vehicle_id" class="form-control" required>
+                                                    <option value="">— Change vehicle —</option>
+                                                    @foreach($vehicles as $v)
+                                                        <option value="{{ $v->id }}" {{ (int)$b->vehicle_id === (int)$v->id ? 'selected' : '' }}>
+                                                            {{ $v->name }} ({{ $v->registration_number }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Update</button>
+                                        </form>
+
                                         <form method="POST" action="{{ url('/app/sharpfleet/admin/bookings/' . $b->id . '/cancel') }}">
                                             @csrf
                                             <button type="submit" class="btn btn-secondary">Cancel</button>

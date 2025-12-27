@@ -132,6 +132,26 @@ class BookingController extends Controller
         return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking cancelled.');
     }
 
+    public function changeVehicle(Request $request, $booking)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $validated = $request->validate([
+            'new_vehicle_id' => ['required', 'integer'],
+        ]);
+
+        $this->bookingService->changeBookingVehicle(
+            (int) $user['organisation_id'],
+            (int) $booking,
+            (int) $validated['new_vehicle_id']
+        );
+
+        return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking vehicle updated.');
+    }
+
     public function availableVehicles(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');

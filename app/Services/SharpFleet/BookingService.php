@@ -9,6 +9,88 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    public function changeBookingVehicle(int $organisationId, int $bookingId, int $newVehicleId): void
+    {
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            throw ValidationException::withMessages([
+                'bookings' => 'Bookings are unavailable until the database table is created.',
+            ]);
+        }
+
+        if ($newVehicleId <= 0) {
+            throw ValidationException::withMessages([
+                'new_vehicle_id' => 'Vehicle is required.',
+            ]);
+        }
+
+        $booking = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $bookingId)
+            ->first();
+
+        if (!$booking) {
+            throw ValidationException::withMessages([
+                'booking' => 'Booking not found.',
+            ]);
+        }
+
+        if ((string) $booking->status !== 'planned') {
+            throw ValidationException::withMessages([
+                'booking' => 'Only planned bookings can be updated.',
+            ]);
+        }
+
+        // Only allow changing vehicles on upcoming/active bookings.
+        if (Carbon::parse($booking->planned_end)->lessThan(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking' => 'This booking has already ended and cannot be updated.',
+            ]);
+        }
+
+        $vehicleExists = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $newVehicleId)
+            ->where('is_active', 1)
+            ->exists();
+
+        if (!$vehicleExists) {
+            throw ValidationException::withMessages([
+                'new_vehicle_id' => 'Selected vehicle is invalid or inactive.',
+            ]);
+        }
+
+        $plannedStart = Carbon::parse($booking->planned_start);
+        $plannedEnd = Carbon::parse($booking->planned_end);
+
+        // Prevent overlapping planned bookings for the new vehicle (excluding this booking).
+        $overlapExists = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $newVehicleId)
+            ->where('status', 'planned')
+            ->where('id', '!=', (int) $booking->id)
+            ->where('planned_start', '<', $plannedEnd->toDateTimeString())
+            ->where('planned_end', '>', $plannedStart->toDateTimeString())
+            ->exists();
+
+        if ($overlapExists) {
+            throw ValidationException::withMessages([
+                'new_vehicle_id' => 'This vehicle is already booked for the selected time window.',
+            ]);
+        }
+
+        DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $bookingId)
+            ->update([
+                'vehicle_id' => $newVehicleId,
+                'updated_at' => now(),
+            ]);
+    }
+
     public function createBooking(int $organisationId, array $data): int
     {
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
@@ -23,10 +105,10 @@ class BookingService
         $plannedStart = Carbon::parse((string) ($data['planned_start'] ?? ''));
         $plannedEnd = Carbon::parse((string) ($data['planned_end'] ?? ''));
 
-        // Disallow bookings starting in the past (prevents accidental past-date selection).
+        // Disallow bookings starting in the past (date + time must be in the future).
         if ($plannedStart->lessThan(Carbon::now())) {
             throw ValidationException::withMessages([
-                'planned_start_date' => 'Booking start must be today or a future date.',
+                'planned_start_date' => 'Booking start must be in the future.',
             ]);
         }
 
@@ -167,7 +249,7 @@ class BookingService
     {
         if ($plannedStart->lessThan(Carbon::now())) {
             throw ValidationException::withMessages([
-                'planned_start_date' => 'Booking start must be today or a future date.',
+                'planned_start_date' => 'Booking start must be in the future.',
             ]);
         }
 
