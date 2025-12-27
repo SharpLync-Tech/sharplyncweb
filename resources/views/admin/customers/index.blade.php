@@ -12,7 +12,7 @@
 
       <form method="GET" action="{{ route('admin.customers.index') }}" class="d-flex gap-2 align-items-center">
         <div class="input-group">
-          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <span class="input-group-text bg-white">Search</span>
           <input type="text" name="q" value="{{ $q }}" class="form-control"
                  placeholder="Search company, contact, email, phone" aria-label="Search customers">
         </div>
@@ -65,7 +65,6 @@
               @empty
                 <tr>
                   <td colspan="6" class="text-center py-5 text-muted">
-                    <i class="bi bi-inbox d-block mb-2" style="font-size: 28px;"></i>
                     No customers found.
                   </td>
                 </tr>

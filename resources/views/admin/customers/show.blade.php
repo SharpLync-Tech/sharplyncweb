@@ -12,10 +12,10 @@
       </div>
       <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-outline-secondary" href="{{ route('admin.customers.index') }}">
-          <i class="bi bi-arrow-left me-1"></i> Back
+          Back
         </a>
         <a class="btn btn-primary" href="{{ route('admin.customers.edit', $customer->id) }}">
-          <i class="bi bi-pencil-square me-1"></i> Edit
+          Edit
         </a>
       </div>
     </div>
@@ -83,7 +83,7 @@
               <a class="btn btn-outline-primary" href="#" aria-disabled="true">Invoices</a>
               <a class="btn btn-outline-primary" href="#" aria-disabled="true">Notes</a>
               <a href="{{ url('/admin/support/sms') }}?phone={{ $customer->phone }}&customer_id={{ $customer->id }}" class="btn btn-primary">
-                <i class="bi bi-phone me-1"></i> Send SMS
+                Send SMS
               </a>
             </div>
           </div>

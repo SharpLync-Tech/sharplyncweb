@@ -12,10 +12,10 @@
         </div>
         <div class="d-flex gap-2">
             <a class="btn btn-primary btn-sm" href="{{ route('admin.customers.index') }}">
-                <i class="bi bi-people me-1"></i> Customers
+                Customers
             </a>
             <a class="btn btn-accent btn-sm" href="{{ route('admin.support.tickets.index') }}">
-                <i class="bi bi-life-preserver me-1"></i> Tickets
+                Tickets
             </a>
         </div>
     </div>
@@ -45,22 +45,22 @@
                     <div class="row g-2">
                         <div class="col-12 col-md-6">
                             <a class="btn btn-outline-primary w-100 text-start" href="{{ route('admin.customers.index') }}">
-                                <i class="bi bi-people me-2"></i> Browse customers
+                                Browse customers
                             </a>
                         </div>
                         <div class="col-12 col-md-6">
                             <a class="btn btn-outline-primary w-100 text-start" href="{{ route('admin.devices.index') }}">
-                                <i class="bi bi-pc-display me-2"></i> View all devices
+                                View all devices
                             </a>
                         </div>
                         <div class="col-12 col-md-6">
                             <a class="btn btn-outline-primary w-100 text-start" href="{{ route('admin.support.sms.index') }}">
-                                <i class="bi bi-phone me-2"></i> Send verification SMS
+                                Send verification SMS
                             </a>
                         </div>
                         <div class="col-12 col-md-6">
                             <a class="btn btn-outline-primary w-100 text-start" href="{{ route('admin.pulse.index') }}">
-                                <i class="bi bi-broadcast me-2"></i> Manage pulse feed
+                                Manage pulse feed
                             </a>
                         </div>
                     </div>
@@ -75,11 +75,11 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled mb-0" style="display:grid; gap: 10px;">
-                        <li class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Customer records and device audit history</span></li>
-                        <li class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Support tickets and internal notes</span></li>
-                        <li class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>CMS pages, menus, services, SEO, and blog</span></li>
-                        <li class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>SMS verification, general SMS, and logs</span></li>
-                        <li class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Pulse feed and component library</span></li>
+                        <li><span>Customer records and device audit history</span></li>
+                        <li><span>Support tickets and internal notes</span></li>
+                        <li><span>CMS pages, menus, services, SEO, and blog</span></li>
+                        <li><span>SMS verification, general SMS, and logs</span></li>
+                        <li><span>Pulse feed and component library</span></li>
                     </ul>
                 </div>
             </div>

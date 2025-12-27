@@ -1,0 +1,144 @@
+/*
+  SharpLync Admin Portal — Legacy Class Compatibility
+  Purpose: keep older admin Blade pages looking consistent after Bootstrap layout upgrade.
+  Scope: Admin portal only (loaded by admin layout).
+*/
+
+/* Common legacy wrappers */
+.admin-top-bar{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.admin-top-bar h2{
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-card{
+  background: #fff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 14px;
+  box-shadow: var(--sl-shadow-sm);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.actions{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Badges used in older pages */
+.badge-on{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(44,191,174,.15);
+  color: #0b4a43;
+}
+
+.badge-off{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #edf1f6;
+  color: #6b7a90;
+}
+
+.sms-badge-success{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(25, 135, 84, 0.15);
+  color: #0f5132;
+}
+
+.sms-badge-failure{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(220, 53, 69, 0.15);
+  color: #842029;
+}
+
+/* Extra buttons used in legacy pages */
+.btn-ghost{
+  background: transparent;
+  border: 1px solid var(--bs-border-color);
+  color: var(--sl-navy);
+}
+
+.btn-ghost:hover{
+  background: rgba(10,42,77,0.06);
+  border-color: rgba(10,42,77,0.18);
+}
+
+/* Simple modal compatibility (used in testimonials) */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(6,34,60,.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-overlay.active{
+  display: flex;
+}
+
+.modal{
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--sl-shadow-md);
+  width: 520px;
+  max-width: 92vw;
+  padding: 22px 22px 18px;
+  position: relative;
+}
+
+.modal h2{
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: var(--sl-navy);
+}
+
+.modal p{
+  margin: 8px 0 16px;
+  color: #2d394a;
+}
+
+.modal-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-close{
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 22px;
+  color: var(--sl-navy);
+  cursor: pointer;
+}
+
+.modal-close:hover{
+  color: var(--bs-danger);
+}
