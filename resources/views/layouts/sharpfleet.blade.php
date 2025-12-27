@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SharpFleet - Advanced Fleet Management')</title>
 
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="/app/sharpfleet/manifest.webmanifest">
 
     <!-- SharpFleet CSS -->
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
@@ -105,13 +105,38 @@
     </script>
 
     <script>
-        // Minimal PWA support for offline Driver Dashboard.
+        // SharpFleet-only PWA support (scope limited to /app/sharpfleet/).
         (function() {
             if (!('serviceWorker' in navigator)) return;
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').catch(function() {
+
+            function isRootScoped(reg) {
+                try {
+                    const scope = (reg && reg.scope) ? reg.scope : '';
+                    const scriptURL = (reg && reg.active && reg.active.scriptURL) ? reg.active.scriptURL : '';
+                    return scope === (location.origin + '/') && scriptURL.endsWith('/sw.js');
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            window.addEventListener('load', async function() {
+                try {
+                    // If an earlier root-scoped SW was installed, remove it so SharpLync isn't affected.
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of regs) {
+                        if (isRootScoped(reg)) {
+                            await reg.unregister();
+                        }
+                    }
+                } catch (e) {
+                    // ignore
+                }
+
+                try {
+                    await navigator.serviceWorker.register('/app/sharpfleet/sw.js', { scope: '/app/sharpfleet/' });
+                } catch (e) {
                     // fail silently
-                });
+                }
             });
         })();
     </script>

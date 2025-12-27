@@ -1,0 +1,10 @@
+{
+  "name": "SharpFleet",
+  "short_name": "SharpFleet",
+  "start_url": "/app/sharpfleet/driver",
+  "scope": "/app/sharpfleet/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}
