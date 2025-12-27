@@ -23,6 +23,13 @@ class BookingService
         $plannedStart = Carbon::parse((string) ($data['planned_start'] ?? ''));
         $plannedEnd = Carbon::parse((string) ($data['planned_end'] ?? ''));
 
+        // Disallow bookings starting in the past (prevents accidental past-date selection).
+        if ($plannedStart->lessThan(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'planned_start_date' => 'Booking start must be today or a future date.',
+            ]);
+        }
+
         if ($userId <= 0) {
             throw ValidationException::withMessages(['user_id' => 'Driver is required.']);
         }
@@ -158,6 +165,12 @@ class BookingService
 
     public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd)
     {
+        if ($plannedStart->lessThan(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'planned_start_date' => 'Booking start must be today or a future date.',
+            ]);
+        }
+
         if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
             throw ValidationException::withMessages([
                 'planned_end' => 'End time must be after start time.',

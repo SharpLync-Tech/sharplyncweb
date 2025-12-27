@@ -90,9 +90,9 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'vehicle_id' => ['required', 'integer'],
-            'planned_start_date' => ['required', 'date'],
+            'planned_start_date' => ['required', 'date', 'after_or_equal:today'],
             'planned_start_time' => ['required', 'date_format:H:i'],
-            'planned_end_date' => ['required', 'date'],
+            'planned_end_date' => ['required', 'date', 'after_or_equal:planned_start_date'],
             'planned_end_time' => ['required', 'date_format:H:i'],
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string', 'max:150'],

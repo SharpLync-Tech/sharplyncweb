@@ -6,6 +6,7 @@
 
 @php
     $user = session('sharpfleet.user');
+    $today = \Carbon\Carbon::now()->format('Y-m-d');
 @endphp
 
 <div class="container">
@@ -45,7 +46,7 @@
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">Start date</label>
-                            <input type="date" name="planned_start_date" class="form-control" required value="{{ old('planned_start_date') }}">
+                            <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" value="{{ old('planned_start_date') }}">
                             @error('planned_start_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
@@ -62,7 +63,7 @@
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">End date</label>
-                            <input type="date" name="planned_end_date" class="form-control" required value="{{ old('planned_end_date') }}">
+                            <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" value="{{ old('planned_end_date') }}">
                             @error('planned_end_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
