@@ -17,6 +17,25 @@ class TripService
         $this->bookingService = $bookingService;
     }
 
+    private function normalizeTripMode(int $organisationId, ?string $tripMode): string
+    {
+        $raw = strtolower(trim((string) ($tripMode ?? '')));
+
+        // Backwards compatible values from earlier UI.
+        if ($raw === '' || $raw === 'client' || $raw === 'no_client' || $raw === 'internal') {
+            $raw = 'business';
+        }
+
+        $settings = new CompanySettingsService($organisationId);
+        $allowPrivate = $settings->allowPrivateTrips();
+
+        if ($raw === 'private') {
+            return $allowPrivate ? 'private' : 'business';
+        }
+
+        return $raw === 'business' ? 'business' : 'business';
+    }
+
     /**
      * Start a trip for a SharpFleet driver
      */
@@ -26,6 +45,8 @@ class TripService
 
         $organisationId = (int) $user['organisation_id'];
 
+        $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
+
         $this->bookingService->assertVehicleCanStartTrip(
             $organisationId,
             (int) $data['vehicle_id'],
@@ -33,31 +54,41 @@ class TripService
             $now
         );
 
-        $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
-            ? (int) $data['customer_id']
-            : null;
+        $customerId = null;
+        $customerName = null;
+        $clientPresent = null;
+        $clientAddress = null;
 
-        $customerName = isset($data['customer_name'])
-            ? trim((string) $data['customer_name'])
-            : '';
+        if ($tripMode !== 'private') {
+            $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
+                ? (int) $data['customer_id']
+                : null;
 
-        if ($customerName === '') {
-            $customerName = null;
-        }
+            $customerName = isset($data['customer_name'])
+                ? trim((string) $data['customer_name'])
+                : '';
 
-        // If the driver selected from the admin list, store the canonical name.
-        // If not found (or table not present), do not block trip start.
-        if ($customerId) {
-            $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-            if ($resolved) {
-                $customerName = $resolved;
-            } else {
-                $customerId = null;
+            if ($customerName === '') {
+                $customerName = null;
             }
-        }
 
-        if ($customerName !== null && mb_strlen($customerName) > 150) {
-            $customerName = mb_substr($customerName, 0, 150);
+            // If the driver selected from the admin list, store the canonical name.
+            // If not found (or table not present), do not block trip start.
+            if ($customerId) {
+                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+                if ($resolved) {
+                    $customerName = $resolved;
+                } else {
+                    $customerId = null;
+                }
+            }
+
+            if ($customerName !== null && mb_strlen($customerName) > 150) {
+                $customerName = mb_substr($customerName, 0, 150);
+            }
+
+            $clientPresent = $data['client_present'] ?? null;
+            $clientAddress = $data['client_address'] ?? null;
         }
 
         $startKm = (int) $data['start_km'];
@@ -81,11 +112,11 @@ class TripService
             'vehicle_id'      => $data['vehicle_id'],
             'customer_id'     => $customerId,
             'customer_name'   => $customerName,
-            'trip_mode'       => $data['trip_mode'],
+            'trip_mode'       => $tripMode,
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',
-            'client_present'  => $data['client_present'] ?? null,
-            'client_address'  => $data['client_address'] ?? null,
+            'client_present'  => $clientPresent,
+            'client_address'  => $clientAddress,
 
             // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,
@@ -112,7 +143,7 @@ class TripService
 
         foreach ($trips as $t) {
             $vehicleId = (int) ($t['vehicle_id'] ?? 0);
-            $tripMode = (string) ($t['trip_mode'] ?? 'business');
+            $tripMode = $this->normalizeTripMode($organisationId, isset($t['trip_mode']) ? (string) $t['trip_mode'] : null);
             $startKm = (int) ($t['start_km'] ?? 0);
             $endKm = (int) ($t['end_km'] ?? 0);
 
@@ -157,24 +188,34 @@ class TripService
                 ]);
             }
 
-            $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
-                ? (int) $t['customer_id']
-                : null;
+            $customerId = null;
+            $customerName = null;
+            $clientPresent = null;
+            $clientAddress = null;
 
-            $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
-            if ($customerName === '') {
-                $customerName = null;
-            }
-            if ($customerId) {
-                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-                if ($resolved) {
-                    $customerName = $resolved;
-                } else {
-                    $customerId = null;
+            if ($tripMode !== 'private') {
+                $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
+                    ? (int) $t['customer_id']
+                    : null;
+
+                $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
+                if ($customerName === '') {
+                    $customerName = null;
                 }
-            }
-            if ($customerName !== null && mb_strlen($customerName) > 150) {
-                $customerName = mb_substr($customerName, 0, 150);
+                if ($customerId) {
+                    $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+                    if ($resolved) {
+                        $customerName = $resolved;
+                    } else {
+                        $customerId = null;
+                    }
+                }
+                if ($customerName !== null && mb_strlen($customerName) > 150) {
+                    $customerName = mb_substr($customerName, 0, 150);
+                }
+
+                $clientPresent = $t['client_present'] ?? null;
+                $clientAddress = $t['client_address'] ?? null;
             }
 
             $trip = Trip::create([
@@ -187,8 +228,8 @@ class TripService
                 'start_km' => $startKm,
                 'end_km' => $endKm,
                 'distance_method' => 'odometer',
-                'client_present' => $t['client_present'] ?? null,
-                'client_address' => $t['client_address'] ?? null,
+                'client_present' => $clientPresent,
+                'client_address' => $clientAddress,
                 'started_at' => $startedAt,
                 'ended_at' => $endedAt,
                 'start_time' => $startedAt,

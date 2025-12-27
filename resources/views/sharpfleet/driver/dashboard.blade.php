@@ -176,26 +176,28 @@
                     @endif
                 </div>
 
-                {{-- Client presence --}}
+                {{-- Client presence (Business trips only) --}}
                 @if($settings['client_presence']['enabled'] ?? false)
-                    <div class="form-group">
-                        <label class="form-label">
-                            {{ $settings['client_presence']['label'] ?? 'Client' }} Present? {{ $settings['client_presence']['required'] ? '(Required)' : '' }}
-                        </label>
-                        <select name="client_present" class="form-control" {{ $settings['client_presence']['required'] ? 'required' : '' }}>
-                            <option value="">— Select —</option>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-
-                    {{-- Client address --}}
-                    @if($settings['client_presence']['enable_addresses'] ?? false)
+                    <div id="clientPresenceBlock">
                         <div class="form-group">
-                            <label class="form-label">Client Address (for billing/job tracking)</label>
-                            <input type="text" name="client_address" class="form-control" placeholder="e.g. 123 Main St, Suburb">
+                            <label class="form-label">
+                                {{ $settings['client_presence']['label'] ?? 'Client' }} Present? {{ $settings['client_presence']['required'] ? '(Required)' : '' }}
+                            </label>
+                            <select name="client_present" class="form-control" {{ $settings['client_presence']['required'] ? 'required' : '' }}>
+                                <option value="">— Select —</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
                         </div>
-                    @endif
+
+                        {{-- Client address --}}
+                        @if($settings['client_presence']['enable_addresses'] ?? false)
+                            <div class="form-group">
+                                <label class="form-label">Client Address (for billing/job tracking)</label>
+                                <input type="text" name="client_address" class="form-control" placeholder="e.g. 123 Main St, Suburb">
+                            </div>
+                        @endif
+                    </div>
                 @endif
 
                 {{-- Customer / Client (optional; never blocks trip start) --}}
@@ -383,6 +385,7 @@
         const startReadingLabel = document.getElementById('startReadingLabel');
 
         const customerBlock = document.getElementById('customerBlock');
+        const clientPresenceBlock = document.getElementById('clientPresenceBlock');
         const customerSelect = document.getElementById('customerSelect');
         const customerNameInput = document.getElementById('customerNameInput');
 
@@ -473,14 +476,17 @@
             vehicleSearchInput.addEventListener('input', filterVehicles);
         }
 
-        function updateCustomerVisibility() {
-            if (!customerBlock) return;
-
+        function updateBusinessOnlyBlocksVisibility() {
             const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
             const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
             const isBusinessTrip = mode !== 'private';
 
-            customerBlock.style.display = isBusinessTrip ? '' : 'none';
+            if (customerBlock) {
+                customerBlock.style.display = isBusinessTrip ? '' : 'none';
+            }
+            if (clientPresenceBlock) {
+                clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+            }
         }
 
         if (customerSelect && customerNameInput) {
@@ -497,11 +503,11 @@
             });
         }
 
-        tripModeRadios.forEach(r => r.addEventListener('change', updateCustomerVisibility));
+        tripModeRadios.forEach(r => r.addEventListener('change', updateBusinessOnlyBlocksVisibility));
 
         // Initial load
         updateStartKm();
-        updateCustomerVisibility();
+        updateBusinessOnlyBlocksVisibility();
 
         // Offline trip capture (start/end + readings)
         const startTripForm = document.getElementById('startTripForm');
