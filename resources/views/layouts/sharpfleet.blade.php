@@ -8,6 +8,16 @@
 
     <link rel="manifest" href="/app/sharpfleet/manifest.webmanifest">
 
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SharpFleet">
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512.png">
+
     <!-- SharpFleet CSS -->
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

@@ -4,7 +4,7 @@
  * - Does not cache POST/PUT/etc
  */
 
-const CACHE_VERSION = 'sharpfleet-v2';
+const CACHE_VERSION = 'sharpfleet-v3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 
@@ -12,13 +12,41 @@ const STATIC_ASSETS = [
   '/app/sharpfleet/offline.html',
   '/css/sharpfleet/sharpfleetmain.css',
   '/app/sharpfleet/manifest.webmanifest',
+  // App icons (re-use existing site icons)
+  '/apple-touch-icon.png',
+  '/android-chrome-192.png',
+  '/android-chrome-512.png',
+];
+
+const PRECACHE_PAGES = [
+  // Driver dashboard (cached while authenticated so it loads offline after first visit)
+  '/app/sharpfleet/driver',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+    (async () => {
+      const staticCache = await caches.open(STATIC_CACHE);
+      await staticCache.addAll(STATIC_ASSETS);
+
+      // Best-effort: cache the driver dashboard shell.
+      // This may fail if the user is not logged in yet; that's OK.
+      const pageCache = await caches.open(PAGE_CACHE);
+      await Promise.all(
+        PRECACHE_PAGES.map(async (path) => {
+          try {
+            const res = await fetch(path, { credentials: 'same-origin' });
+            if (res && res.ok) {
+              await pageCache.put(path, res.clone());
+            }
+          } catch (e) {
+            // ignore
+          }
+        })
+      );
+
+      await self.skipWaiting();
+    })()
   );
 });
 
@@ -40,7 +68,11 @@ function isStaticAsset(url) {
   return url.pathname.startsWith('/css/')
     || url.pathname.startsWith('/js/')
     || url.pathname.startsWith('/images/')
-    || url.pathname === '/app/sharpfleet/manifest.webmanifest';
+    || url.pathname === '/app/sharpfleet/manifest.webmanifest'
+    || url.pathname === '/apple-touch-icon.png'
+    || url.pathname === '/android-chrome-192.png'
+    || url.pathname === '/android-chrome-512.png'
+    || url.pathname === '/favicon.ico';
 }
 
 self.addEventListener('fetch', (event) => {
@@ -56,8 +88,10 @@ self.addEventListener('fetch', (event) => {
       caches.match(req).then((cached) => {
         if (cached) return cached;
         return fetch(req).then((res) => {
-          const copy = res.clone();
-          caches.open(STATIC_CACHE).then((cache) => cache.put(req, copy));
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(req, copy));
+          }
           return res;
         });
       })
@@ -70,9 +104,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith((async () => {
       try {
         const res = await fetch(req);
-        const copy = res.clone();
-        const cache = await caches.open(PAGE_CACHE);
-        cache.put(req, copy);
+        if (res && res.ok) {
+          const copy = res.clone();
+          const cache = await caches.open(PAGE_CACHE);
+          cache.put(req, copy);
+        }
         return res;
       } catch (e) {
         const cached = await caches.match(req);

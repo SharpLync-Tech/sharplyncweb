@@ -1,10 +1,30 @@
 {
   "name": "SharpFleet",
   "short_name": "SharpFleet",
+  "description": "SharpFleet driver trips and bookings.",
   "start_url": "/app/sharpfleet/driver",
   "scope": "/app/sharpfleet/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
-  "icons": []
+  "icons": [
+    {
+      "src": "/android-chrome-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
