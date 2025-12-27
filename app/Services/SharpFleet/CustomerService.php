@@ -38,6 +38,29 @@ class CustomerService
     {
         $name = trim($name);
 
+        // If it already exists (even inactive), reuse it.
+        $existing = DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $organisationId)
+            ->where('name', $name)
+            ->select('id', 'is_active')
+            ->first();
+
+        if ($existing) {
+            if ((int) $existing->is_active !== 1) {
+                DB::connection('sharpfleet')
+                    ->table('customers')
+                    ->where('organisation_id', $organisationId)
+                    ->where('id', (int) $existing->id)
+                    ->update([
+                        'is_active'  => 1,
+                        'updated_at' => now(),
+                    ]);
+            }
+
+            return (int) $existing->id;
+        }
+
         return (int) DB::connection('sharpfleet')
             ->table('customers')
             ->insertGetId([
@@ -84,7 +107,6 @@ class CustomerService
         $existing = DB::connection('sharpfleet')
             ->table('customers')
             ->where('organisation_id', $organisationId)
-            ->where('is_active', 1)
             ->pluck('name')
             ->map(fn ($n) => mb_strtolower(trim((string) $n)))
             ->filter()

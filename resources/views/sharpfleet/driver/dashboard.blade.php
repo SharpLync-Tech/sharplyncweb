@@ -98,27 +98,6 @@
                         <strong>Trip Type:</strong> Internal
                     </div>
                 @endif
-
-                {{-- Customer / Client (optional; never blocks trip start) --}}
-                @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
-                    <div id="customerBlock" class="form-group">
-                        <label class="form-label">Customer / Client (optional)</label>
-
-                        @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
-                            <select id="customerSelect" name="customer_id" class="form-control">
-                                <option value="">— Select from list —</option>
-                                @foreach($customers as $c)
-                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
-                        @endif
-
-                        @if($settings['customer']['allow_manual'] ?? true)
-                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name (e.g. Jannie B / Job 12345)">
-                        @endif
-                    </div>
-                @endif
             </div>
 
             <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4">
@@ -198,6 +177,27 @@
                             <input type="text" name="client_address" class="form-control" placeholder="e.g. 123 Main St, Suburb">
                         </div>
                     @endif
+                @endif
+
+                {{-- Customer / Client (optional; never blocks trip start) --}}
+                @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
+                    <div id="customerBlock" class="form-group">
+                        <label class="form-label">Customer / Client (optional)</label>
+
+                        @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
+                            <select id="customerSelect" name="customer_id" class="form-control">
+                                <option value="">— Select from list —</option>
+                                @foreach($customers as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
+                        @endif
+
+                        @if($settings['customer']['allow_manual'] ?? true)
+                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name (e.g. Jannie B / Job 12345)">
+                        @endif
+                    </div>
                 @endif
 
                 {{-- Start KM --}}

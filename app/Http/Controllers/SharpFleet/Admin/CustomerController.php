@@ -72,6 +72,6 @@ class CustomerController extends Controller
 
         $this->customerService->createCustomer($organisationId, $validated['name']);
 
-        return back()->with('success', 'Customer added.');
+        return back()->with('success', 'Customer saved.');
     }
 }
