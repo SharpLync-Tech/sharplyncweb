@@ -131,8 +131,10 @@
                 {{-- Vehicle --}}
                 <div class="form-group">
                     <label class="form-label">Vehicle</label>
-                    <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. black toyota / camry / ABC123)">
-                    <div id="vehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
+                    @if($vehicles->count() > 10)
+                        <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. black toyota / camry / ABC123)">
+                        <div id="vehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
+                    @endif
                     <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
                         @foreach ($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}"
