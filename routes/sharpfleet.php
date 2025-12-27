@@ -32,9 +32,10 @@ use App\Services\SharpFleet\VehicleReminderService;
 |--------------------------------------------------------------------------
 */
 
-// Redirect from /sharpfleet to /app/sharpfleet
+// Public SharpFleet landing page.
+// Note: /app/sharpfleet/ may be blocked by nginx (403). Serve the home view directly here.
 Route::get('/sharpfleet', function () {
-    return response('', 302)->header('Location', '/app/sharpfleet/');
+    return view('sharpfleet.home');
 });
 
 Route::prefix('app/sharpfleet')->group(function () {
