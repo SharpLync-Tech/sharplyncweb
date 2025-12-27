@@ -53,9 +53,9 @@ Route::prefix('app/sharpfleet')->group(function () {
             $role = $request->session()->get('sharpfleet.user.role');
 
             return match ($role) {
-                'admin'  => redirect('/app/sharpfleet/admin'),
-                'driver' => redirect('/app/sharpfleet/driver'),
-                default  => redirect('/app/sharpfleet/login'),
+                'admin'  => response('', 302)->header('Location', '/app/sharpfleet/admin'),
+                'driver' => response('', 302)->header('Location', '/app/sharpfleet/driver'),
+                default  => response('', 302)->header('Location', '/app/sharpfleet/login'),
             };
         }
 
