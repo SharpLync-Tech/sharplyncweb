@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\PulseFeedController;
 use App\Http\Controllers\Admin\ComponentController;
 use App\Http\Controllers\Admin\Support\SupportTicketController;
 use App\Http\Controllers\Admin\Support\AdminTicketController;
+use App\Http\Controllers\Admin\PortalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,11 @@ Route::get('/admin/logout', [MicrosoftController::class, 'logout'])->name('logou
 |--------------------------------------------------------------------------
 */
 Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
+
+    // Admin landing / product selector
+    Route::get('/', fn () => redirect()->route('admin.portal'));
+    Route::get('/portal', [PortalController::class, 'index'])->name('admin.portal');
+    Route::get('/sharpfleet', [PortalController::class, 'sharpfleet'])->name('admin.sharpfleet');
 
     /** Dashboard + Settings */
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

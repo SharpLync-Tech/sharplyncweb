@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\SharpFleet\AuthController;
+use App\Http\Controllers\SharpFleet\SsoController;
 use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
 use App\Http\Controllers\SharpFleet\BookingController;
@@ -33,6 +34,9 @@ Route::get('/sharpfleet', function () {
 });
 
 Route::prefix('app/sharpfleet')->group(function () {
+
+    // Admin portal SSO handoff (from /admin)
+    Route::get('/sso', [SsoController::class, 'login']);
 
     /*
     |--------------------------------------------------------------------------

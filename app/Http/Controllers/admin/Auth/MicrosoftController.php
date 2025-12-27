@@ -81,7 +81,7 @@ class MicrosoftController extends Controller
         $request->session()->regenerate();
 
         Session::put('admin_user', $userinfo);
-        return redirect('/admin/dashboard');
+        return redirect('/admin/portal');
     }
 
     public function logout()
