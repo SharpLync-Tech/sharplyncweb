@@ -16,6 +16,10 @@
         </div>
     </div>
 
+    <div class="alert alert-info">
+        Bookings require an internet connection to check availability and prevent double-booking.
+    </div>
+
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}

@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SharpFleet - Advanced Fleet Management')</title>
 
+    <link rel="manifest" href="/manifest.webmanifest">
+
     <!-- SharpFleet CSS -->
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -100,6 +102,18 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        // Minimal PWA support for offline Driver Dashboard.
+        (function() {
+            if (!('serviceWorker' in navigator)) return;
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(function() {
+                    // fail silently
+                });
+            });
+        })();
     </script>
     @stack('scripts')
 </body>
