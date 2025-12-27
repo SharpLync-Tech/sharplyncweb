@@ -53,21 +53,6 @@
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Vehicle</label>
-                        <select name="vehicle_id" class="form-control" required>
-                            <option value="">— Select vehicle —</option>
-                            @foreach($vehicles as $v)
-                                <option value="{{ $v->id }}" {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
-                                    {{ $v->name }} ({{ $v->registration_number }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('vehicle_id')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">Start date</label>
@@ -103,6 +88,17 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Vehicle (available only)</label>
+                        <div id="adminBookingVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
+                        <select id="adminBookingVehicleSelect" name="vehicle_id" class="form-control" required disabled>
+                            <option value="">— Select vehicle —</option>
+                        </select>
+                        @error('vehicle_id')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Customer / Client (optional)</label>
                         @if($customersTableExists && $customers->count() > 0)
                             <select id="adminBookingCustomerSelect" name="customer_id" class="form-control">
@@ -130,10 +126,105 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Create Booking</button>
+                    <button id="adminCreateBookingBtn" type="submit" class="btn btn-primary" disabled>Create Booking</button>
                 </form>
 
                 <script>
+                    const adminStartDate = document.querySelector('input[name="planned_start_date"]');
+                    const adminStartTime = document.querySelector('input[name="planned_start_time"]');
+                    const adminEndDate = document.querySelector('input[name="planned_end_date"]');
+                    const adminEndTime = document.querySelector('input[name="planned_end_time"]');
+
+                    const adminVehicleSelect = document.getElementById('adminBookingVehicleSelect');
+                    const adminVehicleStatus = document.getElementById('adminBookingVehicleStatus');
+                    const adminCreateBookingBtn = document.getElementById('adminCreateBookingBtn');
+
+                    function setAdminVehicleOptions(vehicles) {
+                        adminVehicleSelect.innerHTML = '';
+                        const placeholder = document.createElement('option');
+                        placeholder.value = '';
+                        placeholder.textContent = vehicles.length ? '— Select vehicle —' : 'No vehicles available for this time window';
+                        adminVehicleSelect.appendChild(placeholder);
+
+                        vehicles.forEach(v => {
+                            const opt = document.createElement('option');
+                            opt.value = v.id;
+                            opt.textContent = `${v.name} (${v.registration_number})`;
+                            adminVehicleSelect.appendChild(opt);
+                        });
+                    }
+
+                    function updateAdminCreateButtonState() {
+                        const hasVehicle = adminVehicleSelect && adminVehicleSelect.value;
+                        if (adminCreateBookingBtn) {
+                            adminCreateBookingBtn.disabled = !hasVehicle;
+                        }
+                    }
+
+                    async function loadAdminAvailableVehicles() {
+                        if (!adminVehicleSelect || !adminStartDate || !adminStartTime || !adminEndDate || !adminEndTime) return;
+
+                        if (!adminStartDate.value || !adminStartTime.value || !adminEndDate.value || !adminEndTime.value) {
+                            adminVehicleSelect.disabled = true;
+                            setAdminVehicleOptions([]);
+                            if (adminVehicleStatus) {
+                                adminVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
+                            }
+                            updateAdminCreateButtonState();
+                            return;
+                        }
+
+                        adminVehicleSelect.disabled = true;
+                        if (adminVehicleStatus) {
+                            adminVehicleStatus.textContent = 'Loading available vehicles...';
+                        }
+
+                        const params = new URLSearchParams({
+                            planned_start_date: adminStartDate.value,
+                            planned_start_time: adminStartTime.value,
+                            planned_end_date: adminEndDate.value,
+                            planned_end_time: adminEndTime.value,
+                        });
+
+                        try {
+                            const res = await fetch(`{{ url('/app/sharpfleet/admin/bookings/available-vehicles') }}?${params.toString()}`);
+                            if (!res.ok) {
+                                adminVehicleSelect.disabled = true;
+                                setAdminVehicleOptions([]);
+                                if (adminVehicleStatus) {
+                                    adminVehicleStatus.textContent = 'Could not load vehicles for that time window.';
+                                }
+                                updateAdminCreateButtonState();
+                                return;
+                            }
+                            const data = await res.json();
+                            const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+                            setAdminVehicleOptions(vehicles);
+                            adminVehicleSelect.disabled = false;
+                            if (adminVehicleStatus) {
+                                adminVehicleStatus.textContent = vehicles.length
+                                    ? `Available vehicles: ${vehicles.length}`
+                                    : 'No vehicles available for this time window.';
+                            }
+                            updateAdminCreateButtonState();
+                        } catch (e) {
+                            adminVehicleSelect.disabled = true;
+                            setAdminVehicleOptions([]);
+                            if (adminVehicleStatus) {
+                                adminVehicleStatus.textContent = 'Could not load vehicles (network error).';
+                            }
+                            updateAdminCreateButtonState();
+                        }
+                    }
+
+                    [adminStartDate, adminStartTime, adminEndDate, adminEndTime].forEach(el => {
+                        if (el) el.addEventListener('change', loadAdminAvailableVehicles);
+                    });
+
+                    if (adminVehicleSelect) {
+                        adminVehicleSelect.addEventListener('change', updateAdminCreateButtonState);
+                    }
+
                     const adminBookingCustomerSelect = document.getElementById('adminBookingCustomerSelect');
                     const adminBookingCustomerNameInput = document.getElementById('adminBookingCustomerNameInput');
 
@@ -150,6 +241,10 @@
                             }
                         });
                     }
+
+                    // Initial state
+                    loadAdminAvailableVehicles();
+                    updateAdminCreateButtonState();
                 </script>
             @endif
         </div>

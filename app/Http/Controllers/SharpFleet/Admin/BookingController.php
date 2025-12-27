@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -124,5 +125,29 @@ class BookingController extends Controller
         $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, true);
 
         return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking cancelled.');
+    }
+
+    public function availableVehicles(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user || $user['role'] !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $validated = $request->validate([
+            'planned_start_date' => ['required', 'date'],
+            'planned_start_time' => ['required', 'date_format:H:i'],
+            'planned_end_date' => ['required', 'date'],
+            'planned_end_time' => ['required', 'date_format:H:i'],
+        ]);
+
+        $plannedStart = Carbon::parse($validated['planned_start_date'] . ' ' . $validated['planned_start_time'] . ':00');
+        $plannedEnd = Carbon::parse($validated['planned_end_date'] . ' ' . $validated['planned_end_time'] . ':00');
+
+        $vehicles = $this->bookingService->getAvailableVehicles((int) $user['organisation_id'], $plannedStart, $plannedEnd);
+
+        return response()->json([
+            'vehicles' => $vehicles,
+        ]);
     }
 }

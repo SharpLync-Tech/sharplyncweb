@@ -156,6 +156,39 @@ class BookingService
             ]);
     }
 
+    public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd)
+    {
+        if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
+            throw ValidationException::withMessages([
+                'planned_end' => 'End time must be after start time.',
+            ]);
+        }
+
+        $vehiclesQuery = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('vehicles.id', 'vehicles.name', 'vehicles.registration_number')
+            ->where('vehicles.organisation_id', $organisationId)
+            ->where('vehicles.is_active', 1)
+            ->orderBy('vehicles.name');
+
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            return $vehiclesQuery->get();
+        }
+
+        // Vehicle is unavailable if any planned booking overlaps the requested window.
+        $vehiclesQuery->whereNotExists(function ($sub) use ($organisationId, $plannedStart, $plannedEnd) {
+            $sub->select(DB::raw(1))
+                ->from('bookings')
+                ->whereColumn('bookings.vehicle_id', 'vehicles.id')
+                ->where('bookings.organisation_id', $organisationId)
+                ->where('bookings.status', 'planned')
+                ->where('bookings.planned_start', '<', $plannedEnd->toDateTimeString())
+                ->where('bookings.planned_end', '>', $plannedStart->toDateTimeString());
+        });
+
+        return $vehiclesQuery->get();
+    }
+
     /**
      * Blocks starting a trip if someone else has an active booking for this vehicle right now.
      */

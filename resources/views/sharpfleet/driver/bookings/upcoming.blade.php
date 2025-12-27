@@ -42,25 +42,6 @@
                 <form method="POST" action="{{ url('/app/sharpfleet/bookings') }}">
                     @csrf
 
-                    <div class="form-group">
-                        <label class="form-label">Vehicle</label>
-                        @if($vehicles->count() > 10)
-                            <input type="text" id="bookingVehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. toyota / camry / ABC123)">
-                            <div id="bookingVehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
-                        @endif
-                        <select id="bookingVehicleSelect" name="vehicle_id" class="form-control" required>
-                            <option value="">— Select vehicle —</option>
-                            @foreach($vehicles as $v)
-                                <option value="{{ $v->id }}" {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
-                                    {{ $v->name }} ({{ $v->registration_number }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('vehicle_id')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">Start date</label>
@@ -96,6 +77,17 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Vehicle (available only)</label>
+                        <div id="bookingVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
+                        <select id="bookingVehicleSelect" name="vehicle_id" class="form-control" required disabled>
+                            <option value="">— Select vehicle —</option>
+                        </select>
+                        @error('vehicle_id')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Customer / Client (optional)</label>
                         @if($customersTableExists && $customers->count() > 0)
                             <select id="bookingCustomerSelect" name="customer_id" class="form-control">
@@ -123,56 +115,103 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">Create Booking</button>
+                    <button id="createBookingBtn" type="submit" class="btn btn-primary btn-full" disabled>Create Booking</button>
                 </form>
 
                 <script>
+                    const startDate = document.querySelector('input[name="planned_start_date"]');
+                    const startTime = document.querySelector('input[name="planned_start_time"]');
+                    const endDate = document.querySelector('input[name="planned_end_date"]');
+                    const endTime = document.querySelector('input[name="planned_end_time"]');
+
                     const bookingVehicleSelect = document.getElementById('bookingVehicleSelect');
-                    const bookingVehicleSearchInput = document.getElementById('bookingVehicleSearchInput');
-                    const bookingVehicleSearchHint = document.getElementById('bookingVehicleSearchHint');
+                    const bookingVehicleStatus = document.getElementById('bookingVehicleStatus');
+                    const createBookingBtn = document.getElementById('createBookingBtn');
 
-                    if (bookingVehicleSelect && bookingVehicleSearchInput) {
-                        const allBookingVehicleOptions = Array.from(bookingVehicleSelect.options)
-                            .filter(o => o.value !== '')
-                            .map(opt => ({ value: opt.value, text: opt.text }));
+                    function setVehicleSelectOptions(vehicles) {
+                        bookingVehicleSelect.innerHTML = '';
+                        const placeholder = document.createElement('option');
+                        placeholder.value = '';
+                        placeholder.textContent = vehicles.length ? '— Select vehicle —' : 'No vehicles available for this time window';
+                        bookingVehicleSelect.appendChild(placeholder);
 
-                        function rebuildBookingVehicles(filtered) {
-                            const currentValue = bookingVehicleSelect.value;
-                            bookingVehicleSelect.innerHTML = '';
+                        vehicles.forEach(v => {
+                            const opt = document.createElement('option');
+                            opt.value = v.id;
+                            opt.textContent = `${v.name} (${v.registration_number})`;
+                            bookingVehicleSelect.appendChild(opt);
+                        });
+                    }
 
-                            const placeholder = document.createElement('option');
-                            placeholder.value = '';
-                            placeholder.textContent = filtered.length ? '— Select vehicle —' : 'No vehicles match your search';
-                            bookingVehicleSelect.appendChild(placeholder);
+                    function updateCreateButtonState() {
+                        const hasVehicle = bookingVehicleSelect && bookingVehicleSelect.value;
+                        if (createBookingBtn) {
+                            createBookingBtn.disabled = !hasVehicle;
+                        }
+                    }
 
-                            filtered.forEach(v => {
-                                const opt = document.createElement('option');
-                                opt.value = v.value;
-                                opt.textContent = v.text;
-                                bookingVehicleSelect.appendChild(opt);
-                            });
+                    async function loadAvailableVehicles() {
+                        if (!bookingVehicleSelect || !startDate || !startTime || !endDate || !endTime) return;
 
-                            if (filtered.some(v => v.value === currentValue)) {
-                                bookingVehicleSelect.value = currentValue;
-                            } else {
-                                bookingVehicleSelect.value = '';
+                        if (!startDate.value || !startTime.value || !endDate.value || !endTime.value) {
+                            bookingVehicleSelect.disabled = true;
+                            setVehicleSelectOptions([]);
+                            if (bookingVehicleStatus) {
+                                bookingVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
                             }
+                            updateCreateButtonState();
+                            return;
                         }
 
-                        function filterBookingVehicles() {
-                            const q = bookingVehicleSearchInput.value.trim().toLowerCase();
-                            const filtered = q
-                                ? allBookingVehicleOptions.filter(v => v.text.toLowerCase().includes(q))
-                                : allBookingVehicleOptions;
-
-                            if (bookingVehicleSearchHint) {
-                                bookingVehicleSearchHint.textContent = `Showing ${filtered.length} of ${allBookingVehicleOptions.length} vehicles`;
-                            }
-
-                            rebuildBookingVehicles(filtered);
+                        bookingVehicleSelect.disabled = true;
+                        if (bookingVehicleStatus) {
+                            bookingVehicleStatus.textContent = 'Loading available vehicles...';
                         }
 
-                        bookingVehicleSearchInput.addEventListener('input', filterBookingVehicles);
+                        const params = new URLSearchParams({
+                            planned_start_date: startDate.value,
+                            planned_start_time: startTime.value,
+                            planned_end_date: endDate.value,
+                            planned_end_time: endTime.value,
+                        });
+
+                        try {
+                            const res = await fetch(`{{ url('/app/sharpfleet/bookings/available-vehicles') }}?${params.toString()}`);
+                            if (!res.ok) {
+                                bookingVehicleSelect.disabled = true;
+                                setVehicleSelectOptions([]);
+                                if (bookingVehicleStatus) {
+                                    bookingVehicleStatus.textContent = 'Could not load vehicles for that time window.';
+                                }
+                                updateCreateButtonState();
+                                return;
+                            }
+                            const data = await res.json();
+                            const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+                            setVehicleSelectOptions(vehicles);
+                            bookingVehicleSelect.disabled = false;
+                            if (bookingVehicleStatus) {
+                                bookingVehicleStatus.textContent = vehicles.length
+                                    ? `Available vehicles: ${vehicles.length}`
+                                    : 'No vehicles available for this time window.';
+                            }
+                            updateCreateButtonState();
+                        } catch (e) {
+                            bookingVehicleSelect.disabled = true;
+                            setVehicleSelectOptions([]);
+                            if (bookingVehicleStatus) {
+                                bookingVehicleStatus.textContent = 'Could not load vehicles (network error).';
+                            }
+                            updateCreateButtonState();
+                        }
+                    }
+
+                    [startDate, startTime, endDate, endTime].forEach(el => {
+                        if (el) el.addEventListener('change', loadAvailableVehicles);
+                    });
+
+                    if (bookingVehicleSelect) {
+                        bookingVehicleSelect.addEventListener('change', updateCreateButtonState);
                     }
 
                     const bookingCustomerSelect = document.getElementById('bookingCustomerSelect');
@@ -191,6 +230,10 @@
                             }
                         });
                     }
+
+                    // Initial state
+                    loadAvailableVehicles();
+                    updateCreateButtonState();
                 </script>
             @endif
         </div>
