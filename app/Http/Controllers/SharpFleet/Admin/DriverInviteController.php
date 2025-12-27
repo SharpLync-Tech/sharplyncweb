@@ -91,8 +91,10 @@ class DriverInviteController extends Controller
         DB::connection('sharpfleet')
             ->table('users')
             ->insert([
-                'first_name' => null,
-                'last_name' => null,
+                // Some deployments enforce NOT NULL on these columns.
+                // Drivers will set their real names when accepting the invite.
+                'first_name' => '',
+                'last_name' => '',
                 'email' => $email,
                 'organisation_id' => $organisationId,
                 'role' => 'driver',
