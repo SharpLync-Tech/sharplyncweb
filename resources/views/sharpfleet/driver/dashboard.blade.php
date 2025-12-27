@@ -13,7 +13,7 @@
     $settingsService = new CompanySettingsService($user['organisation_id']);
     $settings = $settingsService->all();
 
-    $allowPrivateTrips = (bool) ($settings['trip']['allow_private_trips'] ?? false);
+    $allowPrivateTrips = $settingsService->allowPrivateTrips();
 
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')

@@ -144,7 +144,10 @@ class CompanySettingsService
 
     public function allowPrivateTrips(): bool
     {
-        return (bool) $this->settings['trip']['allow_private_trips'];
+        return (bool) filter_var(
+            $this->settings['trip']['allow_private_trips'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
     }
 
     // ---- Vehicles ----
