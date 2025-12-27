@@ -9,8 +9,16 @@
     # 🔒 SECURITY ENHANCEMENTS
     # =========================================
 
-    # --- Force HTTPS (Prevents cloning via HTTP redirects) ---
+    # --- Force HTTPS (proxy-aware) ---
+    # If running behind a reverse proxy (e.g., Azure/App Service), HTTPS may be terminated upstream.
+    # Respect X-Forwarded-Proto so we don't incorrectly redirect and leak internal ports like :8080.
+
+    # Strip internal port (common behind reverse proxies)
+    RewriteCond %{HTTP_HOST} ^(.+):8080$
+    RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
     RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # --- Prevent Hotlinking of Images (Stops other sites using your logo or assets) ---
