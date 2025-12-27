@@ -5,15 +5,26 @@
 @section('sharpfleet-content')
 
 @php
-    // Safety defaults (in case keys don’t exist yet)
-    $settings = array_merge([
-        'enable_client_presence'   => false,
-        'require_client_presence'  => false,
-        'client_label'             => 'Client',
-        'require_odometer_start'   => true,
-        'allow_odometer_override'  => true,
-        'enable_safety_check'      => false,
-        'enable_client_addresses'  => false,
+    // Safety defaults (nested shape – matches CompanySettingsService::all())
+    $settings = array_replace_recursive([
+        'trip' => [
+            'odometer_required'       => true,
+            'odometer_allow_override' => true,
+        ],
+        'client_presence' => [
+            'enabled'         => false,
+            'required'        => false,
+            'label'           => 'Client',
+            'enable_addresses'=> false,
+        ],
+        'customer' => [
+            'enabled'      => false,
+            'allow_select' => true,
+            'allow_manual' => true,
+        ],
+        'safety_check' => [
+            'enabled' => false,
+        ],
     ], $settings ?? []);
 @endphp
 
@@ -50,20 +61,48 @@
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="enable_client_presence" value="1"
-                               {{ $settings['enable_client_presence'] ? 'checked' : '' }}>
+                               {{ $settings['client_presence']['enabled'] ? 'checked' : '' }}>
                         <strong>Enable passenger/client presence tracking</strong>
                     </label>
 
                     <label class="checkbox-label">
                         <input type="checkbox" name="require_client_presence" value="1"
-                               {{ $settings['require_client_presence'] ? 'checked' : '' }}>
+                               {{ $settings['client_presence']['required'] ? 'checked' : '' }}>
                         <strong>Block trip start unless passenger/client presence is recorded</strong>
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Label shown to drivers</label>
-                    <input type="text" name="client_label" value="{{ $settings['client_label'] }}" class="form-control">
+                    <input type="text" name="client_label" value="{{ $settings['client_presence']['label'] }}" class="form-control">
+                </div>
+
+                <div class="mt-4">
+                    <h3 class="card-title">Customer / Client</h3>
+                    <p class="text-muted mb-3">
+                        Optional customer capture. Drivers can select a customer from your list or type a new name.
+                        This will never block a trip from starting.
+                    </p>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_customer_capture" value="1"
+                                   {{ $settings['customer']['enabled'] ? 'checked' : '' }}>
+                            <strong>Enable customer selection/entry on client trips</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_customer_select" value="1"
+                                   {{ $settings['customer']['allow_select'] ? 'checked' : '' }}>
+                            <strong>Allow selecting from admin customer list</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_customer_manual" value="1"
+                                   {{ $settings['customer']['allow_manual'] ? 'checked' : '' }}>
+                            <strong>Allow manual customer name entry (not in list)</strong>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -77,13 +116,13 @@
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="require_odometer_start" value="1"
-                               {{ $settings['require_odometer_start'] ? 'checked' : '' }}>
+                               {{ $settings['trip']['odometer_required'] ? 'checked' : '' }}>
                         <strong>Require starting reading when starting a trip (km or hours)</strong>
                     </label>
 
                     <label class="checkbox-label">
                         <input type="checkbox" name="allow_odometer_override" value="1"
-                               {{ $settings['allow_odometer_override'] ? 'checked' : '' }}>
+                               {{ $settings['trip']['odometer_allow_override'] ? 'checked' : '' }}>
                         <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
                     </label>
                 </div>
@@ -103,7 +142,7 @@
 
                 <label class="checkbox-label">
                     <input type="checkbox" name="enable_client_addresses" value="1"
-                           {{ $settings['enable_client_addresses'] ? 'checked' : '' }}>
+                           {{ $settings['client_presence']['enable_addresses'] ? 'checked' : '' }}>
                     <strong>Allow recording client addresses</strong>
                 </label>
             </div>
@@ -117,7 +156,7 @@
             <div class="card-body">
                 <label class="checkbox-label">
                     <input type="checkbox" name="enable_safety_check" value="1"
-                           {{ $settings['enable_safety_check'] ? 'checked' : '' }}>
+                           {{ $settings['safety_check']['enabled'] ? 'checked' : '' }}>
                     <strong>Enable safety check before trips</strong>
                 </label>
 

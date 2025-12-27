@@ -8,6 +8,13 @@ use Illuminate\Validation\ValidationException;
 
 class TripService
 {
+    protected CustomerService $customerService;
+
+    public function __construct(CustomerService $customerService)
+    {
+        $this->customerService = $customerService;
+    }
+
     /**
      * Start a trip for a SharpFleet driver
      */
@@ -15,9 +22,38 @@ class TripService
     {
         $now = Carbon::now();
 
+        $organisationId = (int) $user['organisation_id'];
+
+        $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
+            ? (int) $data['customer_id']
+            : null;
+
+        $customerName = isset($data['customer_name'])
+            ? trim((string) $data['customer_name'])
+            : '';
+
+        if ($customerName === '') {
+            $customerName = null;
+        }
+
+        // If the driver selected from the admin list, store the canonical name.
+        // If not found (or table not present), do not block trip start.
+        if ($customerId) {
+            $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+            if ($resolved) {
+                $customerName = $resolved;
+            } else {
+                $customerId = null;
+            }
+        }
+
+        if ($customerName !== null && mb_strlen($customerName) > 150) {
+            $customerName = mb_substr($customerName, 0, 150);
+        }
+
         // Find last completed trip for this vehicle (scoped to organisation)
         $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
-            ->where('organisation_id', $user['organisation_id'])
+            ->where('organisation_id', $organisationId)
             ->whereNotNull('end_km')
             ->orderByDesc('ended_at')
             ->first();
@@ -27,11 +63,11 @@ class TripService
             : $data['start_km'];
 
         return Trip::create([
-            'organisation_id' => $user['organisation_id'],
+            'organisation_id' => $organisationId,
             'user_id'         => $user['id'],
             'vehicle_id'      => $data['vehicle_id'],
-            'customer_id'     => $data['customer_id'] ?? null,
-            'customer_name'   => $data['customer_name'] ?? null,
+            'customer_id'     => $customerId,
+            'customer_name'   => $customerName,
             'trip_mode'       => $data['trip_mode'],
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',

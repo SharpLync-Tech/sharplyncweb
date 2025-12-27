@@ -5,6 +5,7 @@
 @section('sharpfleet-content')
 @php
     use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Schema;
     use App\Services\SharpFleet\CompanySettingsService;
 
     $user = session('sharpfleet.user');
@@ -18,6 +19,17 @@
         ->where('is_active', 1)
         ->orderBy('name')
         ->get();
+
+    $customers = collect();
+    if (($settings['customer']['enabled'] ?? false) && Schema::connection('sharpfleet')->hasTable('customers')) {
+        $customers = DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $user['organisation_id'])
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->limit(500)
+            ->get();
+    }
 
     $lastTrips = DB::connection('sharpfleet')
         ->table('trips')
@@ -84,6 +96,27 @@
                 @else
                     <div class="info-row">
                         <strong>Trip Type:</strong> Internal
+                    </div>
+                @endif
+
+                {{-- Customer / Client (optional; never blocks trip start) --}}
+                @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
+                    <div id="customerBlock" class="form-group">
+                        <label class="form-label">Customer / Client (optional)</label>
+
+                        @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
+                            <select id="customerSelect" name="customer_id" class="form-control">
+                                <option value="">— Select from list —</option>
+                                @foreach($customers as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
+                        @endif
+
+                        @if($settings['customer']['allow_manual'] ?? true)
+                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name (e.g. Jannie B / Job 12345)">
+                        @endif
                     </div>
                 @endif
             </div>
@@ -186,6 +219,12 @@
         const lastKmHint    = document.getElementById('lastKmHint');
         const startReadingLabel = document.getElementById('startReadingLabel');
 
+        const customerBlock = document.getElementById('customerBlock');
+        const customerSelect = document.getElementById('customerSelect');
+        const customerNameInput = document.getElementById('customerNameInput');
+
+        const tripModeRadios = document.querySelectorAll('input[name="trip_mode"]');
+
         function updateStartKm() {
             const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
             const lastKm   = selected.dataset.lastKm;
@@ -215,8 +254,32 @@
 
         vehicleSelect.addEventListener('change', updateStartKm);
 
+        function updateCustomerVisibility() {
+            if (!customerBlock) return;
+            const selected = document.querySelector('input[name="trip_mode"]:checked');
+            const isClientTrip = selected && selected.value === 'client';
+            customerBlock.style.display = isClientTrip ? '' : 'none';
+        }
+
+        if (customerSelect && customerNameInput) {
+            customerSelect.addEventListener('change', () => {
+                if (customerSelect.value) {
+                    customerNameInput.value = '';
+                }
+            });
+
+            customerNameInput.addEventListener('input', () => {
+                if (customerNameInput.value.trim()) {
+                    customerSelect.value = '';
+                }
+            });
+        }
+
+        tripModeRadios.forEach(r => r.addEventListener('change', updateCustomerVisibility));
+
         // Initial load
         updateStartKm();
+        updateCustomerVisibility();
     </script>
 @endif
 @endsection

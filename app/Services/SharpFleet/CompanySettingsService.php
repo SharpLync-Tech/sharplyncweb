@@ -37,6 +37,13 @@ class CompanySettingsService
             'enable_addresses'             => false,
         ],
 
+        // Customer / client capture (never blocks trip start)
+        'customer' => [
+            'enabled'       => false,
+            'allow_select'  => true,
+            'allow_manual'  => true,
+        ],
+
         'safety_check' => [
             'enabled'  => false,
             'required' => false,
@@ -212,6 +219,16 @@ class CompanySettingsService
 
         $settings['client_presence']['enable_addresses']
             = $request->boolean('enable_client_addresses');
+
+        // ---- Customer capture (optional; never blocks trip start) ----
+        $settings['customer']['enabled']
+            = $request->boolean('enable_customer_capture');
+
+        $settings['customer']['allow_select']
+            = $request->boolean('allow_customer_select', true);
+
+        $settings['customer']['allow_manual']
+            = $request->boolean('allow_customer_manual', true);
 
         // ---- Safety check ----
         $settings['safety_check']['enabled']

@@ -18,7 +18,7 @@ class StartTripRequest extends FormRequest
             'trip_mode'  => ['required', 'string'],
             'start_km'   => ['required', 'integer'],
             'customer_id' => ['nullable', 'integer'],
-            'customer_name' => ['nullable', 'string'],
+            'customer_name' => ['nullable', 'string', 'max:150'],
             'distance_method' => ['nullable', 'string'],
             'client_present' => ['nullable', 'boolean'],
             'client_address' => ['nullable', 'string'],
