@@ -20,6 +20,11 @@ class CompanySettingsService
         'date_format' => 'd/m/Y',
         'time_format' => 'H:i',
 
+        'vehicles' => [
+            'registration_tracking_enabled' => false,
+            'servicing_tracking_enabled'    => false,
+        ],
+
         'trip' => [
             'odometer_required'                => true,
             'odometer_autofill_from_last_trip' => true,
@@ -142,6 +147,18 @@ class CompanySettingsService
         return (bool) $this->settings['trip']['allow_private_trips'];
     }
 
+    // ---- Vehicles ----
+
+    public function vehicleRegistrationTrackingEnabled(): bool
+    {
+        return (bool) ($this->settings['vehicles']['registration_tracking_enabled'] ?? false);
+    }
+
+    public function vehicleServicingTrackingEnabled(): bool
+    {
+        return (bool) ($this->settings['vehicles']['servicing_tracking_enabled'] ?? false);
+    }
+
     // ---- Client presence ----
 
     public function clientPresenceEnabled(): bool
@@ -233,6 +250,13 @@ class CompanySettingsService
         // ---- Safety check ----
         $settings['safety_check']['enabled']
             = $request->boolean('enable_safety_check');
+
+        // ---- Vehicles ----
+        $settings['vehicles']['registration_tracking_enabled']
+            = $request->boolean('enable_vehicle_registration_tracking');
+
+        $settings['vehicles']['servicing_tracking_enabled']
+            = $request->boolean('enable_vehicle_servicing_tracking');
 
         // Persist to DB
         DB::connection('sharpfleet')

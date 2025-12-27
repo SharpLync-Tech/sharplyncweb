@@ -25,6 +25,11 @@
         'safety_check' => [
             'enabled' => false,
         ],
+
+        'vehicles' => [
+            'registration_tracking_enabled' => false,
+            'servicing_tracking_enabled'    => false,
+        ],
     ], $settings ?? []);
 @endphp
 
@@ -124,6 +129,32 @@
                         <input type="checkbox" name="allow_odometer_override" value="1"
                                {{ $settings['trip']['odometer_allow_override'] ? 'checked' : '' }}>
                         <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{-- Vehicle Tracking --}}
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Vehicle Tracking</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    These settings control which extra admin-managed details can be captured per vehicle.
+                </p>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enable_vehicle_registration_tracking" value="1"
+                               {{ $settings['vehicles']['registration_tracking_enabled'] ? 'checked' : '' }}>
+                        <strong>Enable Vehicle Registration Tracking</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enable_vehicle_servicing_tracking" value="1"
+                               {{ $settings['vehicles']['servicing_tracking_enabled'] ? 'checked' : '' }}>
+                        <strong>Enable Vehicle Servicing Tracking</strong>
                     </label>
                 </div>
             </div>

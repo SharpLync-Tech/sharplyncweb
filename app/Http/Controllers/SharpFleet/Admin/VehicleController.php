@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\VehicleService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -82,7 +83,14 @@ class VehicleController extends Controller
             abort(403, 'No SharpFleet organisation context.');
         }
 
-        return view('sharpfleet.admin.vehicles.create');
+        $organisationId = (int) $fleetUser['organisation_id'];
+
+        $settingsService = new CompanySettingsService($organisationId);
+
+        return view('sharpfleet.admin.vehicles.create', [
+            'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
+            'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+        ]);
     }
 
     /**
@@ -98,6 +106,10 @@ class VehicleController extends Controller
 
         $organisationId = (int) $fleetUser['organisation_id'];
 
+        $settingsService = new CompanySettingsService($organisationId);
+        $regoTrackingEnabled = $settingsService->vehicleRegistrationTrackingEnabled();
+        $serviceTrackingEnabled = $settingsService->vehicleServicingTrackingEnabled();
+
         /*
          |----------------------------------------------------------
          | VALIDATION
@@ -106,14 +118,14 @@ class VehicleController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
 
-            // Hidden input + checkbox ensures this always exists
-            'is_road_registered' => ['required', 'boolean'],
+            // Registration tracking (optional, company-controlled)
+            'is_road_registered' => [Rule::requiredIf(fn () => $regoTrackingEnabled), 'boolean'],
 
             'registration_number' => [
                 'nullable',
                 'string',
                 'max:20',
-                Rule::requiredIf(fn () => $request->input('is_road_registered') == 1),
+                Rule::requiredIf(fn () => $regoTrackingEnabled && $request->input('is_road_registered') == 1),
             ],
 
             'tracking_mode' => ['required', Rule::in(['distance', 'hours', 'none'])],
@@ -129,6 +141,11 @@ class VehicleController extends Controller
 
             // Optional starting odometer for first trip autofill
             'starting_km' => ['nullable', 'integer', 'min:0'],
+
+            // Admin-managed registration + servicing details (stored on vehicles table)
+            'registration_expiry' => ['nullable', 'date'],
+            'service_due_date' => ['nullable', 'date'],
+            'service_due_km' => ['nullable', 'integer', 'min:0'],
         ]);
 
         // If the DB schema doesn't have the column yet, block only when the user tried to set it.
@@ -150,12 +167,24 @@ class VehicleController extends Controller
          |----------------------------------------------------------
          */
         $validated['organisation_id'] = $organisationId;
-        $validated['is_road_registered'] = (int) $validated['is_road_registered'];
+        $validated['is_road_registered'] = (int) ($validated['is_road_registered'] ?? 0);
         $validated['wheelchair_accessible'] = (int) ($validated['wheelchair_accessible'] ?? 0);
 
         // If NOT road registered, force rego to NULL
         if ($validated['is_road_registered'] === 0) {
             $validated['registration_number'] = null;
+        }
+
+        // If registration tracking is disabled at company level, force registration fields off.
+        if (!$regoTrackingEnabled) {
+            $validated['is_road_registered'] = 0;
+            $validated['registration_number'] = null;
+            $validated['registration_expiry'] = null;
+        }
+
+        if (!$serviceTrackingEnabled) {
+            $validated['service_due_date'] = null;
+            $validated['service_due_km'] = null;
         }
 
         /*
@@ -164,6 +193,7 @@ class VehicleController extends Controller
          |----------------------------------------------------------
          */
         if (
+            $regoTrackingEnabled &&
             $validated['is_road_registered'] === 1 &&
             DB::connection('sharpfleet')
                 ->table('vehicles')
@@ -211,8 +241,12 @@ class VehicleController extends Controller
             abort(404, 'Vehicle not found.');
         }
 
+        $settingsService = new CompanySettingsService($organisationId);
+
         return view('sharpfleet.admin.vehicles.edit', [
             'vehicle' => $record,
+            'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
+            'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
         ]);
     }
 
@@ -237,6 +271,10 @@ class VehicleController extends Controller
             abort(404, 'Vehicle not found.');
         }
 
+        $settingsService = new CompanySettingsService($organisationId);
+        $regoTrackingEnabled = $settingsService->vehicleRegistrationTrackingEnabled();
+        $serviceTrackingEnabled = $settingsService->vehicleServicingTrackingEnabled();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'make' => ['nullable', 'string', 'max:100'],
@@ -248,6 +286,11 @@ class VehicleController extends Controller
 
             // Optional starting odometer for first trip autofill
             'starting_km' => ['nullable', 'integer', 'min:0'],
+
+            // Admin-managed registration + servicing details (stored on vehicles table)
+            'registration_expiry' => ['nullable', 'date'],
+            'service_due_date' => ['nullable', 'date'],
+            'service_due_km' => ['nullable', 'integer', 'min:0'],
         ]);
 
         if (
@@ -264,6 +307,15 @@ class VehicleController extends Controller
 
         $validated['wheelchair_accessible'] =
             (int) ($validated['wheelchair_accessible'] ?? 0);
+
+        if (!$regoTrackingEnabled) {
+            $validated['registration_expiry'] = null;
+        }
+
+        if (!$serviceTrackingEnabled) {
+            $validated['service_due_date'] = null;
+            $validated['service_due_km'] = null;
+        }
 
         $this->vehicleService->updateVehicle(
             $organisationId,

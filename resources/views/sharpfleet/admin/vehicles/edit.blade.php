@@ -4,6 +4,11 @@
 
 @section('sharpfleet-content')
 
+@php
+    $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
+    $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
+@endphp
+
 <div class="max-w-800 mx-auto mt-4">
 
     <h1 class="mb-1">Edit Vehicle</h1>
@@ -33,6 +38,26 @@
             <div class="form-hint">
                 If the rego is wrong, archive this vehicle and add it again with the correct rego.
             </div>
+
+            @if($vehicleRegistrationTrackingEnabled)
+                <div class="form-row mt-2">
+                    <div>
+                        <label class="form-label">Registration expiry date (optional)</label>
+                        <input type="date"
+                               name="registration_expiry"
+                               value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
+                               class="form-control">
+                        @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div>
+                        <label class="form-label">&nbsp;</label>
+                        <div class="form-hint">
+                            Tip: use the vehicle Notes field for reminders.
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- Starting reading (optional; km or hours depending on tracking mode) --}}
             <label id="starting_reading_label" class="form-label mt-2">Starting odometer (km) (optional)</label>
@@ -98,6 +123,36 @@
             <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
             @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
 
+            @if($vehicleServicingTrackingEnabled)
+                <hr class="my-3">
+                <h3 class="mb-2">Servicing Details</h3>
+                <p class="text-muted mb-3">
+                    These fields are admin-managed and can be updated any time.
+                </p>
+
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Next service due date (optional)</label>
+                        <input type="date"
+                               name="service_due_date"
+                               value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
+                               class="form-control">
+                        @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div>
+                        <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
+                        <input type="number"
+                               name="service_due_km"
+                               value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
+                               class="form-control"
+                               inputmode="numeric"
+                               min="0">
+                        @error('service_due_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+            @endif
+
         </div>
 
         <div class="btn-group">
@@ -120,6 +175,7 @@
         const trackingMode = @json($vehicle->tracking_mode ?? 'distance');
         const startingLabel = document.getElementById('starting_reading_label');
         const startingInput = document.getElementById('starting_km');
+        const serviceDueKmLabel = document.getElementById('service_due_km_label');
 
         if (!startingLabel || !startingInput) return;
 
@@ -132,6 +188,16 @@
         } else {
             startingLabel.textContent = 'Starting odometer (km) (optional)';
             startingInput.placeholder = 'e.g. 124500';
+        }
+
+        if (serviceDueKmLabel) {
+            if (trackingMode === 'hours') {
+                serviceDueKmLabel.textContent = 'Next service due reading (hours) (optional)';
+            } else if (trackingMode === 'none') {
+                serviceDueKmLabel.textContent = 'Next service due reading (optional)';
+            } else {
+                serviceDueKmLabel.textContent = 'Next service due reading (km) (optional)';
+            }
         }
     })();
 </script>

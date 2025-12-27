@@ -4,6 +4,11 @@
 
 @section('sharpfleet-content')
 
+@php
+    $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
+    $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
+@endphp
+
 <div class="max-w-800 mx-auto mt-4">
 
     <h1 class="mb-1">Add Vehicle / Asset</h1>
@@ -42,40 +47,59 @@
                 <div class="text-error mb-2">{{ $message }}</div>
             @enderror
 
-            {{-- Road registered --}}
-            @php $road = old('is_road_registered', 1); @endphp
+            {{-- Registration Tracking (Company Setting) --}}
+            @if($vehicleRegistrationTrackingEnabled)
+                @php $road = old('is_road_registered', 1); @endphp
 
-            {{-- IMPORTANT: always submit a value --}}
-            <input type="hidden" name="is_road_registered" value="0">
+                {{-- IMPORTANT: always submit a value --}}
+                <input type="hidden" name="is_road_registered" value="0">
 
-            <label class="checkbox-label mb-2">
-                <input type="checkbox"
-                       id="is_road_registered"
-                       name="is_road_registered"
-                       value="1"
-                       {{ $road == 1 ? 'checked' : '' }}>
-                <strong>This asset is road registered</strong>
-            </label>
-
-            <div class="form-hint">
-                Road-registered assets require a registration number and will display it to drivers.
-            </div>
-
-            {{-- Registration number --}}
-            <div id="rego-wrapper">
-                <label class="form-label">
-                    Registration number
+                <label class="checkbox-label mb-2">
+                    <input type="checkbox"
+                           id="is_road_registered"
+                           name="is_road_registered"
+                           value="1"
+                           {{ $road == 1 ? 'checked' : '' }}>
+                    <strong>This asset is road registered</strong>
                 </label>
-                <input type="text"
-                       name="registration_number"
-                       value="{{ old('registration_number') }}"
-                       placeholder="e.g. ABC-123"
-                       class="form-control">
 
-                @error('registration_number')
-                    <div class="text-error mb-2">{{ $message }}</div>
-                @enderror
-            </div>
+                <div class="form-hint">
+                    Road-registered assets require a registration number and will display it to drivers.
+                </div>
+
+                {{-- Registration number --}}
+                <div id="rego-wrapper">
+                    <label class="form-label">
+                        Registration number
+                    </label>
+                    <input type="text"
+                           name="registration_number"
+                           value="{{ old('registration_number') }}"
+                           placeholder="e.g. ABC-123"
+                           class="form-control">
+
+                    @error('registration_number')
+                        <div class="text-error mb-2">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Registration expiry date (optional)</label>
+                        <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
+                        @error('registration_expiry')
+                            <div class="text-error mb-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="form-label">&nbsp;</label>
+                        <div class="form-hint">
+                            Tip: use the vehicle Notes field for reminders.
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- Usage tracking --}}
             @php $tm = old('tracking_mode', 'distance'); @endphp
@@ -183,6 +207,33 @@
                       rows="3"
                       class="form-control">{{ old('notes') }}</textarea>
 
+            {{-- Servicing Tracking (Company Setting) --}}
+            @if($vehicleServicingTrackingEnabled)
+                <hr class="my-3">
+                <h3 class="mb-2">Servicing Details</h3>
+                <p class="text-muted mb-3">
+                    These fields are admin-managed.
+                </p>
+
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Next service due date (optional)</label>
+                        <input type="date" name="service_due_date" value="{{ old('service_due_date') }}" class="form-control">
+                        @error('service_due_date')
+                            <div class="text-error mb-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
+                        <input type="number" name="service_due_km" value="{{ old('service_due_km') }}" class="form-control" inputmode="numeric" min="0" placeholder="e.g. 150000">
+                        @error('service_due_km')
+                            <div class="text-error mb-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            @endif
+
         </div>
 
         <div class="btn-group">
@@ -205,11 +256,14 @@
     const regoWrapper  = document.getElementById('rego-wrapper');
 
     function toggleRego() {
+        if (!roadCheckbox || !regoWrapper) return;
         regoWrapper.style.display = roadCheckbox.checked ? 'block' : 'none';
     }
 
     toggleRego();
-    roadCheckbox.addEventListener('change', toggleRego);
+    if (roadCheckbox) {
+        roadCheckbox.addEventListener('change', toggleRego);
+    }
 
     // Tracking mode toggles the label between KM and hours
     const trackingMode = document.getElementById('tracking_mode');
@@ -233,6 +287,24 @@
 
     trackingMode.addEventListener('change', updateStartingReadingLabel);
     updateStartingReadingLabel();
+
+    // Service due reading label matches tracking mode
+    const serviceDueKmLabel = document.getElementById('service_due_km_label');
+    function updateServiceDueKmLabel() {
+        if (!trackingMode || !serviceDueKmLabel) return;
+
+        if (trackingMode.value === 'hours') {
+            serviceDueKmLabel.textContent = 'Next service due reading (hours) (optional)';
+        } else if (trackingMode.value === 'none') {
+            serviceDueKmLabel.textContent = 'Next service due reading (optional)';
+        } else {
+            serviceDueKmLabel.textContent = 'Next service due reading (km) (optional)';
+        }
+    }
+    if (trackingMode) {
+        trackingMode.addEventListener('change', updateServiceDueKmLabel);
+    }
+    updateServiceDueKmLabel();
 </script>
 
 @endsection
