@@ -15,7 +15,7 @@ class UserController extends Controller
 
         $users = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver')
+            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at')
             ->where('organisation_id', $organisationId)
             ->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
             ->orderBy('first_name')

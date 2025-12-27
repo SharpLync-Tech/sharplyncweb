@@ -21,6 +21,8 @@ use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
+use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
+use App\Http\Controllers\SharpFleet\DriverInviteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +85,10 @@ Route::prefix('app/sharpfleet')->group(function () {
     Route::get('/register/success', [RegisterController::class, 'showSuccess']);
     Route::get('/activate/{token}', [RegisterController::class, 'activate']);
     Route::post('/activate/complete', [RegisterController::class, 'completeRegistration']);
+
+    // Driver invites (public acceptance)
+    Route::get('/invite/{token}', [DriverInviteController::class, 'showAcceptForm']);
+    Route::post('/invite/complete', [DriverInviteController::class, 'complete']);
 
     /*
     |--------------------------------------------------------------------------
@@ -183,6 +189,9 @@ Route::prefix('app/sharpfleet')->group(function () {
 
             // Users (driver access)
             Route::get('/users', [UserController::class, 'index']);
+            Route::get('/users/invite', [AdminDriverInviteController::class, 'create']);
+            Route::post('/users/invite', [AdminDriverInviteController::class, 'store']);
+            Route::post('/users/{userId}/resend-invite', [AdminDriverInviteController::class, 'resend'])->whereNumber('userId');
             Route::get('/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
             Route::post('/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');
 
