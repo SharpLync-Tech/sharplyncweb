@@ -70,7 +70,7 @@
     {{-- SharpFleet Footer --}}
     <footer class="sharpfleet-footer">
         <div class="sharpfleet-container">
-            <p>&copy; 2025 SharpFleet. Modern Fleet Management for the Digital Age.</p>
+            <p>&copy; 2025 SharpFleet. Fleet Management powered by SharpLync.</p>
         </div>
     </footer>
 
