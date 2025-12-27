@@ -66,11 +66,11 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'planned_start_date' => ['required', 'date'],
-            'planned_start_hour' => ['required', 'integer', 'min:0', 'max:23'],
-            'planned_start_minute' => ['required', 'integer', 'min:0', 'max:59'],
+            'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'planned_end_date' => ['required', 'date'],
-            'planned_end_hour' => ['required', 'integer', 'min:0', 'max:23'],
-            'planned_end_minute' => ['required', 'integer', 'min:0', 'max:59'],
+            'planned_end_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_end_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
         ]);
 
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
@@ -96,11 +96,11 @@ class BookingController extends Controller
         $validated = $request->validate([
             'vehicle_id' => ['required', 'integer'],
             'planned_start_date' => ['required', 'date', 'after_or_equal:today'],
-            'planned_start_hour' => ['required', 'integer', 'min:0', 'max:23'],
-            'planned_start_minute' => ['required', 'integer', 'min:0', 'max:59'],
+            'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'planned_end_date' => ['required', 'date', 'after_or_equal:planned_start_date'],
-            'planned_end_hour' => ['required', 'integer', 'min:0', 'max:23'],
-            'planned_end_minute' => ['required', 'integer', 'min:0', 'max:59'],
+            'planned_end_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_end_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string', 'max:150'],
             'notes' => ['nullable', 'string'],
