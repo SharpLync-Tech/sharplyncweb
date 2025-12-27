@@ -31,7 +31,7 @@ class CompanySettingsService
             'odometer_allow_override'          => true,
             'trip_type_enabled'                => true,
             'trip_type_required'               => true,
-            'allow_private_trips'               => true,
+            'allow_private_trips'               => false,
         ],
 
         'client_presence' => [
@@ -223,6 +223,9 @@ class CompanySettingsService
 
         $settings['trip']['odometer_allow_override']
             = $request->boolean('allow_odometer_override');
+
+        $settings['trip']['allow_private_trips']
+            = $request->boolean('allow_private_trips');
 
         // ---- Client presence ----
         $settings['client_presence']['enabled']

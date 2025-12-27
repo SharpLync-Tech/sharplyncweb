@@ -10,6 +10,7 @@
         'trip' => [
             'odometer_required'       => true,
             'odometer_allow_override' => true,
+            'allow_private_trips'     => false,
         ],
         'client_presence' => [
             'enabled'         => false,
@@ -129,6 +130,12 @@
                         <input type="checkbox" name="allow_odometer_override" value="1"
                                {{ $settings['trip']['odometer_allow_override'] ? 'checked' : '' }}>
                         <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="allow_private_trips" value="1"
+                               {{ ($settings['trip']['allow_private_trips'] ?? false) ? 'checked' : '' }}>
+                        <strong>Do you allow your drivers to use the vehicle for private use</strong>
                     </label>
                 </div>
             </div>

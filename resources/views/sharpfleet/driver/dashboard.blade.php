@@ -13,6 +13,8 @@
     $settingsService = new CompanySettingsService($user['organisation_id']);
     $settings = $settingsService->all();
 
+    $allowPrivateTrips = (bool) ($settings['trip']['allow_private_trips'] ?? false);
+
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
         ->where('organisation_id', $user['organisation_id'])
@@ -84,25 +86,27 @@
                     </strong>
                     {{ number_format($activeTrip->start_km) }}
                 </div>
-                @if($activeTrip->trip_mode === 'client')
+                @php
+                    // Backwards compatible: legacy values ('client' / 'no_client') are treated as Business.
+                    $tripMode = (string) ($activeTrip->trip_mode ?? 'business');
+                    $tripTypeLabel = $tripMode === 'private' ? 'Private' : 'Business';
+                    $isBusinessTrip = $tripMode !== 'private';
+                @endphp
+
+                <div class="info-row">
+                    <strong>Trip Type:</strong> {{ $tripTypeLabel }}
+                </div>
+
+                @if($isBusinessTrip && ($settings['client_presence']['enabled'] ?? false))
                     <div class="info-row">
-                        <strong>Trip Type:</strong> Client / Business
+                        <strong>{{ $settings['client_presence']['label'] ?? 'Client' }} Present:</strong>
+                        {{ $activeTrip->client_present ? 'Yes' : 'No' }}
                     </div>
-                    @if($settings['client_presence']['enabled'] ?? false)
+                    @if(($settings['client_presence']['enable_addresses'] ?? false) && $activeTrip->client_address)
                         <div class="info-row">
-                            <strong>{{ $settings['client_presence']['label'] ?? 'Client' }} Present:</strong>
-                            {{ $activeTrip->client_present ? 'Yes' : 'No' }}
+                            <strong>Client Address:</strong> {{ $activeTrip->client_address }}
                         </div>
-                        @if($settings['client_presence']['enable_addresses'] ?? false && $activeTrip->client_address)
-                            <div class="info-row">
-                                <strong>Client Address:</strong> {{ $activeTrip->client_address }}
-                            </div>
-                        @endif
                     @endif
-                @else
-                    <div class="info-row">
-                        <strong>Trip Type:</strong> Internal
-                    </div>
                 @endif
             </div>
 
@@ -152,19 +156,24 @@
                     </select>
                 </div>
 
-                {{-- Trip type --}}
+                {{-- Trip Type (Business / Private) --}}
                 <div class="form-group">
-                    <label class="form-label">Trip type</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="trip_mode" value="client" checked>
-                            Client / business trip
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="trip_mode" value="no_client">
-                            No client / internal
-                        </label>
-                    </div>
+                    <label class="form-label">Trip Type</label>
+                    @if($allowPrivateTrips)
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="trip_mode" value="business" checked>
+                                Business
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="trip_mode" value="private">
+                                Private
+                            </label>
+                        </div>
+                    @else
+                        <div class="hint-text">Business</div>
+                        <input type="hidden" name="trip_mode" value="business">
+                    @endif
                 </div>
 
                 {{-- Client presence --}}
@@ -377,7 +386,8 @@
         const customerSelect = document.getElementById('customerSelect');
         const customerNameInput = document.getElementById('customerNameInput');
 
-        const tripModeRadios = document.querySelectorAll('input[name="trip_mode"]');
+        const tripModeRadios = document.querySelectorAll('input[name="trip_mode"][type="radio"]');
+        const tripModeHidden = document.querySelector('input[name="trip_mode"][type="hidden"]');
 
         const allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
             value: opt.value,
@@ -465,9 +475,12 @@
 
         function updateCustomerVisibility() {
             if (!customerBlock) return;
-            const selected = document.querySelector('input[name="trip_mode"]:checked');
-            const isClientTrip = selected && selected.value === 'client';
-            customerBlock.style.display = isClientTrip ? '' : 'none';
+
+            const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
+            const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
+            const isBusinessTrip = mode !== 'private';
+
+            customerBlock.style.display = isBusinessTrip ? '' : 'none';
         }
 
         if (customerSelect && customerNameInput) {
@@ -498,10 +511,12 @@
         function buildOfflineStartPayload(form) {
             const fd = new FormData(form);
             const payload = Object.fromEntries(fd.entries());
+
+            const mode = payload.trip_mode ? String(payload.trip_mode) : 'business';
             // Keep only what we need to create a trip later.
             return {
                 vehicle_id: Number(payload.vehicle_id),
-                trip_mode: String(payload.trip_mode || 'no_client'),
+                trip_mode: mode,
                 start_km: Number(payload.start_km),
                 customer_id: payload.customer_id ? Number(payload.customer_id) : null,
                 customer_name: payload.customer_name ? String(payload.customer_name) : null,

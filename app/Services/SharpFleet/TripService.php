@@ -112,7 +112,7 @@ class TripService
 
         foreach ($trips as $t) {
             $vehicleId = (int) ($t['vehicle_id'] ?? 0);
-            $tripMode = (string) ($t['trip_mode'] ?? 'no_client');
+            $tripMode = (string) ($t['trip_mode'] ?? 'business');
             $startKm = (int) ($t['start_km'] ?? 0);
             $endKm = (int) ($t['end_km'] ?? 0);
 

@@ -28,7 +28,7 @@
                 },
                 body: JSON.stringify({
                     vehicle_id: 1,
-                    trip_mode: 'no_client',
+                    trip_mode: 'business',
                     start_km: 111111
                 })
             })
