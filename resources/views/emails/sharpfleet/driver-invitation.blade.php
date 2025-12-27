@@ -1,11 +1,11 @@
 <x-email-layout :title="'SharpFleet Invitation'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
-        You\'re invited to SharpFleet
+        You're invited to SharpFleet
     </h1>
 
     <p style="margin:0 0 20px 0; font-size:15px; color:#104976; line-height:1.6;">
-        You\'ve been invited to join
+        You've been invited to join
         <strong>{{ $organisationName ?? 'an organisation' }}</strong>
         as a driver in <strong>SharpFleet</strong>.
     </p>

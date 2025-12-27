@@ -23,6 +23,8 @@ use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
 use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
+use App\Services\SharpFleet\CompanySettingsService;
+use App\Services\SharpFleet\VehicleReminderService;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,10 +142,43 @@ Route::prefix('app/sharpfleet')->group(function () {
                     ->whereNull('ended_at')
                     ->count();
 
+                // Vehicle reminders (dashboard message only; no email scheduling required)
+                $settings = new CompanySettingsService($organisationId);
+                $regoEnabled = $settings->vehicleRegistrationTrackingEnabled();
+                $serviceEnabled = $settings->vehicleServicingTrackingEnabled();
+
+                $vehicleReminders = [
+                    'enabled' => ($regoEnabled || $serviceEnabled),
+                    'rego_enabled' => $regoEnabled,
+                    'service_enabled' => $serviceEnabled,
+                    'rego_overdue' => 0,
+                    'rego_due_soon' => 0,
+                    'service_date_overdue' => 0,
+                    'service_date_due_soon' => 0,
+                    'service_reading_overdue' => 0,
+                    'service_reading_due_soon' => 0,
+                ];
+
+                if ($regoEnabled || $serviceEnabled) {
+                    $digest = (new VehicleReminderService())->buildDigest($organisationId);
+
+                    if ($regoEnabled) {
+                        $vehicleReminders['rego_overdue'] = count($digest['registration']['overdue'] ?? []);
+                        $vehicleReminders['rego_due_soon'] = count($digest['registration']['due_soon'] ?? []);
+                    }
+                    if ($serviceEnabled) {
+                        $vehicleReminders['service_date_overdue'] = count($digest['serviceDate']['overdue'] ?? []);
+                        $vehicleReminders['service_date_due_soon'] = count($digest['serviceDate']['due_soon'] ?? []);
+                        $vehicleReminders['service_reading_overdue'] = count($digest['serviceReading']['overdue'] ?? []);
+                        $vehicleReminders['service_reading_due_soon'] = count($digest['serviceReading']['due_soon'] ?? []);
+                    }
+                }
+
                 return view('sharpfleet.admin.dashboard', [
                     'driversCount' => $driversCount,
                     'vehiclesCount' => $vehiclesCount,
                     'activeTripsCount' => $activeTripsCount,
+                    'vehicleReminders' => $vehicleReminders,
                 ]);
             });
 
