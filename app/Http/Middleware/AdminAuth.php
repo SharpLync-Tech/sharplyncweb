@@ -28,9 +28,12 @@ class AdminAuth
         }
 
         // Ensure email domain restriction
-        if (!isset($user['userPrincipalName']) ||
-            !str_ends_with($user['userPrincipalName'], '@sharplync.com.au')) {
+        $upn = strtolower((string)($user['userPrincipalName'] ?? ''));
+
+        if ($upn === '' || !str_ends_with($upn, '@sharplync.com.au')) {
             Session::forget('admin_user');
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
             return response('Unauthorized – Invalid domain.', 403);
         }
 

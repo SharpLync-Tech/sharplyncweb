@@ -3,67 +3,81 @@
 @section('title', 'Customers')
 
 @section('content')
-  {{-- Header + search --}}
-  <div class="admin-top-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-    <h2>Customers</h2>
-    <form method="GET" action="{{ route('admin.customers.index') }}" style="display:flex;gap:8px;align-items:center;">
-      <input type="text" name="q" value="{{ $q }}" placeholder="Search company, contact, email, phone"
-             style="padding:10px 12px;border:1px solid #d6dee6;border-radius:8px;min-width:280px;">
-      <button class="btn btn-primary" type="submit">Search</button>
-      @if($q !== '')
-        <a class="btn btn-accent" href="{{ route('admin.customers.index') }}">Reset</a>
-      @endif
-    </form>
-  </div>
+  <div class="container-fluid">
+    <div class="sl-page-header d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <h2 class="fw-semibold">Customers</h2>
+        <div class="sl-subtitle small">Search and manage customer profiles.</div>
+      </div>
 
-  {{-- Flash status --}}
-  @if(session('status'))
-    <div class="admin-card" style="border-left:4px solid #2CBFAE;">
-      {{ session('status') }}
-    </div>
-  @endif
+      <form method="GET" action="{{ route('admin.customers.index') }}" class="d-flex gap-2 align-items-center">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ $q }}" class="form-control"
+                 placeholder="Search company, contact, email, phone" aria-label="Search customers">
+        </div>
 
-  {{-- Table --}}
-  <div class="admin-card">
-    <div class="table-responsive">
-      <table class="table" style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="text-align:left;border-bottom:1px solid #e7edf3;">
-            <th style="padding:10px;">Company</th>
-            <th style="padding:10px;">Contact</th>
-            <th style="padding:10px;">Email</th>
-            <th style="padding:10px;">Phone</th>
-            <th style="padding:10px;">Status</th>
-            <th style="padding:10px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($customers as $c)
-            <tr style="border-bottom:1px solid #f0f3f6;">
-              <td style="padding:10px;">{{ $c->company_name ?? '—' }}</td>
-              <td style="padding:10px;">{{ $c->contact_name ?? '—' }}</td>
-              <td style="padding:10px;">{{ $c->email ?? '—' }}</td>
-              <td style="padding:10px;">{{ $c->phone ?? '—' }}</td>
-              <td style="padding:10px;">
-                <span style="padding:4px 8px;border-radius:999px;background:#F0F6FA;border:1px solid #D7E6F2;">
-                  {{ $c->status ?? 'active' }}
-                </span>
-              </td>
-              <td style="padding:10px;">
-                <a class="btn btn-primary" href="{{ route('admin.customers.show', $c->id) }}">View Profile</a>
-              </td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="6" style="padding:14px;">No customers found.</td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
+        <button class="btn btn-primary" type="submit">Search</button>
+        @if($q !== '')
+          <a class="btn btn-outline-secondary" href="{{ route('admin.customers.index') }}">Reset</a>
+        @endif
+      </form>
     </div>
 
-    <div style="margin-top:14px;">
-      {{ $customers->links() }}
+    @if(session('status'))
+      <div class="alert alert-success sl-card" role="alert">
+        {{ session('status') }}
+      </div>
+    @endif
+
+    <div class="card sl-card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($customers as $c)
+                <tr>
+                  <td class="fw-semibold">{{ $c->company_name ?? '—' }}</td>
+                  <td>{{ $c->contact_name ?? '—' }}</td>
+                  <td>{{ $c->email ?? '—' }}</td>
+                  <td>{{ $c->phone ?? '—' }}</td>
+                  <td>
+                    <span class="badge text-bg-light border">
+                      {{ $c->status ?? 'active' }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <a class="btn btn-primary btn-sm" href="{{ route('admin.customers.show', $c->id) }}">
+                      View
+                    </a>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox d-block mb-2" style="font-size: 28px;"></i>
+                    No customers found.
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-footer bg-white border-0 d-flex justify-content-end">
+        {{ $customers->links() }}
+      </div>
     </div>
   </div>
 @endsection

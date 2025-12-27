@@ -10,18 +10,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class MicrosoftController extends Controller
 {
     public function redirectToMicrosoft()
     {
+        $state = Str::random(64);
+        Session::put('admin_oauth_state', $state);
+
         $params = [
             'client_id' => env('MICROSOFT_CLIENT_ID'),
             'response_type' => 'code',
             'redirect_uri' => env('MICROSOFT_REDIRECT_URI'),
             'response_mode' => 'query',
             'scope' => 'openid profile email User.Read',
-            'state' => csrf_token(),
+            'state' => $state,
         ];
 
         $authorizeUrl = "https://login.microsoftonline.com/" .
@@ -35,6 +39,14 @@ class MicrosoftController extends Controller
     {
         if ($request->has('error')) {
             return redirect('/')->with('error', $request->get('error_description'));
+        }
+
+        $expectedState = (string) Session::get('admin_oauth_state', '');
+        $providedState = (string) $request->get('state', '');
+        Session::forget('admin_oauth_state');
+
+        if ($expectedState === '' || $providedState === '' || !hash_equals($expectedState, $providedState)) {
+            return response('Authentication failed (invalid state).', 419);
         }
 
         $response = Http::asForm()->post(
@@ -58,10 +70,15 @@ class MicrosoftController extends Controller
             ->get('https://graph.microsoft.com/v1.0/me')
             ->json();
 
+        $upn = strtolower((string)($userinfo['userPrincipalName'] ?? ''));
+
         // Only allow SharpLync users
-        if (!str_ends_with($userinfo['userPrincipalName'], '@sharplync.com.au')) {
+        if ($upn === '' || !str_ends_with($upn, '@sharplync.com.au')) {
             return response('Unauthorized: not a SharpLync account', 403);
         }
+
+        // Prevent session fixation
+        $request->session()->regenerate();
 
         Session::put('admin_user', $userinfo);
         return redirect('/admin/dashboard');
@@ -70,6 +87,10 @@ class MicrosoftController extends Controller
     public function logout()
     {
         Session::forget('admin_user');
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
         return redirect('/');
     }
 }
