@@ -13,7 +13,7 @@
 <section class="mb-4">
     <div class="text-center mb-4">
         <h2 class="card-title">Powerful Features for Modern Fleet Operations</h2>
-        <p class="mb-0 max-w-700 mx-auto text-muted">
+        <p class="mb-0 max-w-700 mx-auto text-white">
             Built for teams who want clarity without complexity.
         </p>
     </div>

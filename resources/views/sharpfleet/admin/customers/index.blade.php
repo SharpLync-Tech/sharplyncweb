@@ -29,14 +29,14 @@
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">Add Customer</h2>
-            <p class="card-subtitle">Any format is fine (e.g., “Jannie B”, “J Brits”, “Job 12345”).</p>
+            <p class="card-subtitle">Any format is fine (Enter a customer name, job number, or reference that makes sense to you).</p>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ url('/app/sharpfleet/admin/customers') }}">
                 @csrf
                 <div class="form-group">
                     <label class="form-label">Customer name / reference</label>
-                    <input type="text" name="name" class="form-control" maxlength="150" placeholder="e.g. Jannie B / Job 12345" {{ !$customersTableExists ? 'disabled' : '' }}>
+                    <input type="text" name="name" class="form-control" maxlength="150" placeholder="Customer name, job number, or reference" {{ !$customersTableExists ? 'disabled' : '' }}>
                     @error('name')
                         <div class="text-danger small">{{ $message }}</div>
                     @enderror
