@@ -110,7 +110,11 @@
                                         <small class="text-muted">{{ $t->registration_number }}</small>
                                     </td>
                                     <td>{{ $t->driver_name }}</td>
-                                    <td>{{ ucfirst($t->trip_mode) }}</td>
+                                    @php
+                                        $rawMode = strtolower((string) ($t->trip_mode ?? ''));
+                                        $modeLabel = $rawMode === 'private' ? 'Private' : 'Business';
+                                    @endphp
+                                    <td>{{ $modeLabel }}</td>
                                     <td>{{ $t->customer_name_display ?: '—' }}</td>
                                     <td>{{ ($t->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km' }}</td>
                                     <td>{{ number_format($t->start_km) }}</td>

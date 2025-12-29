@@ -4,12 +4,16 @@ namespace App\Services\SharpFleet;
 
 use App\Models\SharpFleet\Trip;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class TripService
 {
     protected CustomerService $customerService;
     protected BookingService $bookingService;
+
+    /** @var array<int, string>|null */
+    private static ?array $tripModeAllowedValues = null;
 
     public function __construct(CustomerService $customerService, BookingService $bookingService)
     {
@@ -34,6 +38,89 @@ class TripService
         }
 
         return $raw === 'business' ? 'business' : 'business';
+    }
+
+    /**
+     * Resolve the trip_mode value to store in the DB, supporting legacy schemas.
+     *
+     * Some tenants have trip_mode as an ENUM without 'business' (e.g. client/no_client/internal/private).
+     */
+    private function tripModeForStorage(string $canonicalTripMode, array $data): string
+    {
+        $canonical = strtolower(trim($canonicalTripMode));
+        if ($canonical === 'private') {
+            return $this->preferredAllowedTripMode(['private']);
+        }
+
+        // Canonical business trip.
+        $allowed = $this->getTripModeAllowedValues();
+        if (is_array($allowed) && in_array('business', $allowed, true)) {
+            return 'business';
+        }
+
+        // Legacy schemas: prefer client/no_client/internal.
+        $clientPresent = $data['client_present'] ?? null;
+        if ($clientPresent === 1 || $clientPresent === '1' || $clientPresent === true) {
+            return $this->preferredAllowedTripMode(['client', 'business', 'internal', 'no_client']);
+        }
+        if ($clientPresent === 0 || $clientPresent === '0' || $clientPresent === false) {
+            return $this->preferredAllowedTripMode(['no_client', 'business', 'internal', 'client']);
+        }
+
+        return $this->preferredAllowedTripMode(['business', 'internal', 'no_client', 'client']);
+    }
+
+    /** @return array<int, string>|null */
+    private function getTripModeAllowedValues(): ?array
+    {
+        if (self::$tripModeAllowedValues !== null) {
+            return self::$tripModeAllowedValues;
+        }
+
+        try {
+            $row = DB::connection('sharpfleet')->selectOne("SHOW COLUMNS FROM trips WHERE Field = 'trip_mode'");
+            if (!$row || !isset($row->Type) || !is_string($row->Type)) {
+                return self::$tripModeAllowedValues = null;
+            }
+
+            $type = strtolower($row->Type);
+            if (!str_starts_with($type, 'enum(')) {
+                return self::$tripModeAllowedValues = null;
+            }
+
+            // enum('a','b','c') -> ['a','b','c']
+            if (!preg_match_all("/'([^']*)'/", $row->Type, $m)) {
+                return self::$tripModeAllowedValues = null;
+            }
+
+            $vals = array_values(array_filter(array_map('strval', $m[1]), fn ($v) => $v !== ''));
+            return self::$tripModeAllowedValues = $vals;
+        } catch (\Throwable $e) {
+            return self::$tripModeAllowedValues = null;
+        }
+    }
+
+    /**
+     * Pick the first preferred value that exists in the column's enum; if we can't detect enum values,
+     * just return the first preferred.
+     *
+     * @param array<int, string> $preferred
+     */
+    private function preferredAllowedTripMode(array $preferred): string
+    {
+        $allowed = $this->getTripModeAllowedValues();
+        if (!is_array($allowed)) {
+            return (string) ($preferred[0] ?? 'business');
+        }
+
+        foreach ($preferred as $candidate) {
+            if (in_array($candidate, $allowed, true)) {
+                return $candidate;
+            }
+        }
+
+        // Fall back to the first allowed enum value if nothing matched.
+        return (string) ($allowed[0] ?? (string) ($preferred[0] ?? 'business'));
     }
 
     /**
@@ -106,13 +193,15 @@ class TripService
             ]);
         }
 
+        $tripModeToStore = $this->tripModeForStorage($tripMode, $data);
+
         return Trip::create([
             'organisation_id' => $organisationId,
             'user_id'         => $user['id'],
             'vehicle_id'      => $data['vehicle_id'],
             'customer_id'     => $customerId,
             'customer_name'   => $customerName,
-            'trip_mode'       => $tripMode,
+            'trip_mode'       => $tripModeToStore,
             'start_km'        => $startKm,
             'distance_method' => $data['distance_method'] ?? 'odometer',
             'client_present'  => $clientPresent,
@@ -218,13 +307,17 @@ class TripService
                 $clientAddress = $t['client_address'] ?? null;
             }
 
+            $tripModeToStore = $this->tripModeForStorage($tripMode, [
+                'client_present' => $clientPresent,
+            ]);
+
             $trip = Trip::create([
                 'organisation_id' => $organisationId,
                 'user_id' => $userId,
                 'vehicle_id' => $vehicleId,
                 'customer_id' => $customerId,
                 'customer_name' => $customerName,
-                'trip_mode' => $tripMode,
+                'trip_mode' => $tripModeToStore,
                 'start_km' => $startKm,
                 'end_km' => $endKm,
                 'distance_method' => 'odometer',
