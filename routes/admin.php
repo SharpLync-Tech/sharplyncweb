@@ -45,9 +45,27 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
         Route::get('/organisations/{organisationId}', [SharpFleetPlatformController::class, 'organisation'])
             ->whereNumber('organisationId')
             ->name('admin.sharpfleet.organisations.show');
+
+        Route::get('/organisations/{organisationId}/edit', [SharpFleetPlatformController::class, 'editOrganisation'])
+            ->whereNumber('organisationId')
+            ->name('admin.sharpfleet.organisations.edit');
+        Route::patch('/organisations/{organisationId}', [SharpFleetPlatformController::class, 'updateOrganisation'])
+            ->whereNumber('organisationId')
+            ->name('admin.sharpfleet.organisations.update');
+
         Route::get('/organisations/{organisationId}/users', [SharpFleetPlatformController::class, 'organisationUsers'])
             ->whereNumber('organisationId')
             ->name('admin.sharpfleet.organisations.users');
+
+        Route::get('/organisations/{organisationId}/users/{userId}/edit', [SharpFleetPlatformController::class, 'editOrganisationUser'])
+            ->whereNumber('organisationId')
+            ->whereNumber('userId')
+            ->name('admin.sharpfleet.organisations.users.edit');
+        Route::patch('/organisations/{organisationId}/users/{userId}', [SharpFleetPlatformController::class, 'updateOrganisationUser'])
+            ->whereNumber('organisationId')
+            ->whereNumber('userId')
+            ->name('admin.sharpfleet.organisations.users.update');
+
         Route::get('/organisations/{organisationId}/vehicles', [SharpFleetPlatformController::class, 'organisationVehicles'])
             ->whereNumber('organisationId')
             ->name('admin.sharpfleet.organisations.vehicles');

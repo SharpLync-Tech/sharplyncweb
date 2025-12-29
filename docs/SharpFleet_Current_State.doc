@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SharpFleet – Current State</title>
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+    h1 { font-size: 22pt; }
+    h2 { font-size: 16pt; margin-top: 18pt; }
+    h3 { font-size: 13pt; margin-top: 12pt; }
+    p, li { line-height: 1.35; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #bbb; padding: 6px 8px; vertical-align: top; }
+    th { background: #eee; }
+    code { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+    .muted { color: #555; }
+  </style>
+</head>
+<body>
+
+<h1>SharpFleet – Current State</h1>
+<p class="muted">
+  Generated: 2025-12-29<br />
+  Repo: SharpLync (Laravel / PHP / Blade)<br />
+  Scope: Customer SharpFleet portal (<code>/app/sharpfleet</code>) + internal platform admin (<code>/admin/sharpfleet</code>)
+</p>
+
+<h2>1. Executive Summary</h2>
+<ul>
+  <li>SharpFleet is implemented as a Laravel module with its own session namespace (<code>sharpfleet.user</code>) and role model (<code>admin</code> vs <code>driver</code> plus <code>is_driver</code> flag).</li>
+  <li>Core functionality is implemented for trips (start/end + offline sync), vehicles CRUD, bookings (optional table), customers (optional table), company settings, users/invites, and trip reports (CSV export).</li>
+  <li>Several features are present but not implemented: faults (driver + admin), vehicle reports, and “start trip from booking”.</li>
+  <li>A PWA-style offline experience exists for the driver dashboard (service worker + offline trip capture), with a “best effort” sync endpoint.</li>
+  <li>Trial gating is enforced via middleware (<code>SharpFleetTrialCheck</code>) and now delegates all allow/deny decisions to a central service (<code>App\Services\SharpFleet\EntitlementService</code>).</li>
+</ul>
+
+<h2>2. Architecture & Key Concepts</h2>
+
+<h3>2.1 Routing</h3>
+<ul>
+  <li>Customer portal routes: <code>routes/sharpfleet.php</code></li>
+  <li>Internal platform admin routes: <code>routes/admin.php</code> (under <code>/admin/sharpfleet</code>)</li>
+</ul>
+
+<h3>2.2 Authentication & Session Model</h3>
+<ul>
+  <li>SharpFleet login state is stored in <code>session('sharpfleet.user')</code> (id, organisation_id, email, role, is_driver, logged_in, etc.).</li>
+  <li>Remember-me is implemented with a cookie (<code>sharpfleet_remember</code>) and a server-side token stored in <code>users.remember_token</code> (hashed/checked with sha256).</li>
+  <li>SSO exists at <code>/app/sharpfleet/sso</code>, using HMAC SHA-256 signed query parameters, timestamp window checks, and nonce replay protection (nonce stored in session).</li>
+</ul>
+
+<h3>2.3 Authorization</h3>
+<ul>
+  <li>Admin access middleware: <code>App\Http\Middleware\SharpFleetAdminAuth</code>.</li>
+  <li>Driver access middleware: <code>App\Http\Middleware\SharpFleetDriverAuth</code> (allows role driver, or admin with <code>is_driver</code>).</li>
+  <li>Trial gating middleware: <code>App\Http\Middleware\SharpFleetTrialCheck</code> (delegates decisions to <code>App\Services\SharpFleet\EntitlementService</code>).</li>
+</ul>
+
+<h3>2.4 Data Access & Schema Dependencies</h3>
+<ul>
+  <li>SharpFleet uses <code>DB::connection('sharpfleet')</code> heavily, including directly in Blade templates for some pages.</li>
+  <li>Feature availability sometimes depends on tables/columns existing. Notably:
+    <ul>
+      <li><code>customers</code> table: enables customer capture/listing/import.</li>
+      <li><code>bookings</code> table: enables bookings and booking overlap enforcement.</li>
+      <li><code>vehicles.starting_km</code>, <code>vehicles.registration_expiry</code>, <code>vehicles.service_due_date</code>, <code>vehicles.service_due_km</code> columns: enable additional vehicle tracking fields.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>2.5 Company Settings / Feature Flags</h3>
+<p>
+  Company settings are stored in <code>company_settings.settings_json</code> and accessed via
+  <code>App\Services\SharpFleet\CompanySettingsService</code>. Key toggles include:
+</p>
+<ul>
+  <li>Trip rules: odometer required, allow private trips, etc.</li>
+  <li>Client presence: enabled/required, label, address capture enabled.</li>
+  <li>Customer capture: enabled, allow select/manual.</li>
+  <li>Safety checks: enabled, required, checklist items.</li>
+  <li>Vehicle tracking: registration tracking, servicing tracking.</li>
+</ul>
+
+<h3>2.6 PWA / Offline Driver Trips</h3>
+<ul>
+  <li>Service worker: <code>public/app/sharpfleet-sw.js</code> (scoped to <code>/app/sharpfleet/</code>).</li>
+  <li>Manifest: <code>public/app/sharpfleet.webmanifest</code> (start_url points at <code>/app/sharpfleet/driver</code>).</li>
+  <li>Offline fallback: <code>public/app/sharpfleet-offline.html</code>.</li>
+  <li>Driver dashboard supports offline trip capture using <code>localStorage</code> and syncs to <code>POST /app/sharpfleet/trips/offline-sync</code> when online.</li>
+</ul>
+
+<h2>3. Page-by-Page Inventory (Customer SharpFleet Portal)</h2>
+
+<h3>3.1 Public / Entry</h3>
+<table>
+  <tr>
+    <th>URL</th>
+    <th>View</th>
+    <th>Auth</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>GET /sharpfleet</code></td>
+    <td><code>resources/views/sharpfleet/home.blade.php</code></td>
+    <td>Public</td>
+    <td>Marketing/landing entrypoint to SharpFleet.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet</code></td>
+    <td>Redirect/entry logic</td>
+    <td>Public</td>
+    <td>Redirects based on <code>session('sharpfleet.user')</code> role to admin/driver, else to login.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/test-home</code></td>
+    <td><code>resources/views/sharpfleet/test-home.blade.php</code></td>
+    <td>Public</td>
+    <td>Additional test/marketing page.</td>
+  </tr>
+</table>
+
+<h3>3.2 Login / Logout / SSO</h3>
+<table>
+  <tr>
+    <th>URL</th>
+    <th>Controller</th>
+    <th>View</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/login</code></td>
+    <td><code>App\Http\Controllers\SharpFleet\AuthController@showLogin</code></td>
+    <td><code>resources/views/sharpfleet/login.blade.php</code></td>
+    <td>Also checks remember-me cookie and auto-logs in if valid.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/login</code></td>
+    <td><code>AuthController@login</code></td>
+    <td>—</td>
+    <td>Validates credentials against <code>users.password_hash</code>.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/logout</code></td>
+    <td><code>AuthController@logout</code></td>
+    <td>—</td>
+    <td>Clears SharpFleet session + remember cookie.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/sso</code></td>
+    <td><code>App\Http\Controllers\SharpFleet\SsoController@login</code></td>
+    <td>—</td>
+    <td>HMAC-signed SSO. Restricts return URL to <code>/app/sharpfleet/admin...</code>. Logs in existing admins only.</td>
+  </tr>
+</table>
+
+<p class="muted">
+  Note: A template exists at <code>resources/views/sharpfleet/admin/login.blade.php</code>, but the primary customer login view used by the controller is <code>resources/views/sharpfleet/login.blade.php</code>.
+</p>
+
+<h3>3.3 Registration / Activation (Admin user)</h3>
+<table>
+  <tr>
+    <th>URL</th>
+    <th>Controller</th>
+    <th>View</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/register</code></td>
+    <td><code>App\Http\Controllers\SharpFleet\Admin\RegisterController@show</code></td>
+    <td><code>resources/views/sharpfleet/admin/register.blade.php</code></td>
+    <td>Registration form for a new SharpFleet organisation + admin.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/admin/register</code></td>
+    <td><code>RegisterController@register</code></td>
+    <td>—</td>
+    <td>Sends activation email; logs to <code>sharpfleet-registration.log</code>.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/register/success</code></td>
+    <td>—</td>
+    <td><code>resources/views/sharpfleet/admin/register-success.blade.php</code></td>
+    <td>Success message after registration request.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/activate/{token}</code></td>
+    <td><code>RegisterController@showActivateForm</code></td>
+    <td><code>resources/views/sharpfleet/admin/activate-account.blade.php</code></td>
+    <td>Token must be valid + unexpired.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/activate/complete</code></td>
+    <td><code>RegisterController@completeActivation</code></td>
+    <td>—</td>
+    <td>Creates organisation, activates user, sends emails, logs in.</td>
+  </tr>
+</table>
+
+<h3>3.4 Driver Invite Acceptance (Public)</h3>
+<table>
+  <tr>
+    <th>URL</th>
+    <th>Controller</th>
+    <th>View</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/invite/{token}</code></td>
+    <td><code>App\Http\Controllers\SharpFleet\DriverInviteController@showAcceptForm</code></td>
+    <td><code>resources/views/sharpfleet/admin/activate-driver.blade.php</code></td>
+    <td>Validates pending driver with token + expiry; shows set-password form.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/invite/complete</code></td>
+    <td><code>DriverInviteController@complete</code></td>
+    <td>—</td>
+    <td>Sets driver details + password, activates user, logs in as driver.</td>
+  </tr>
+</table>
+
+<h3>3.5 Admin Portal Pages (<code>/app/sharpfleet/admin</code>)</h3>
+<p>
+  These routes require SharpFleet admin authentication and (generally) trial to be active.
+  Primary middleware: <code>SharpFleetAdminAuth</code> and <code>SharpFleetTrialCheck</code>.
+</p>
+
+<table>
+  <tr>
+    <th>URL</th>
+    <th>View</th>
+    <th>Controller / Backing logic</th>
+    <th>Key behaviors</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin</code></td>
+    <td><code>resources/views/sharpfleet/admin/dashboard.blade.php</code></td>
+    <td>Inline route closure in <code>routes/sharpfleet.php</code></td>
+    <td>Counts drivers/vehicles/active trips, shows vehicle reminder digest, includes logout form.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/company</code></td>
+    <td><code>resources/views/sharpfleet/admin/company.blade.php</code></td>
+    <td><code>SharpFleet\Admin\CompanyController@index</code></td>
+    <td>Organisation overview + usage counts; surfaces settings state.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/company/profile</code></td>
+    <td><code>resources/views/sharpfleet/admin/company-profile.blade.php</code></td>
+    <td><code>CompanyProfileController@edit/@update</code></td>
+    <td>Edit org profile; timezone stored in company settings.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/settings</code></td>
+    <td><code>resources/views/sharpfleet/admin/settings.blade.php</code></td>
+    <td><code>CompanySettingsController@index/@update</code></td>
+    <td>Toggles feature flags (client presence, customers, private trips, rego/service tracking, etc.).</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/safety-checks</code></td>
+    <td><code>resources/views/sharpfleet/admin/safety-checks.blade.php</code></td>
+    <td><code>CompanySafetyCheckController@index/@update</code></td>
+    <td>Defines checklist items stored in settings JSON.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/vehicles</code></td>
+    <td><code>resources/views/sharpfleet/admin/vehicles/index.blade.php</code></td>
+    <td><code>VehicleController@index</code></td>
+    <td>Vehicle list + active trip indicator; archive supported.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/vehicles/create</code></td>
+    <td><code>resources/views/sharpfleet/admin/vehicles/create.blade.php</code></td>
+    <td><code>VehicleController@create/@store</code></td>
+    <td>Fields depend on optional DB columns (registration/service/starting_km).</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/vehicles/{id}/edit</code></td>
+    <td><code>resources/views/sharpfleet/admin/vehicles/edit.blade.php</code></td>
+    <td><code>VehicleController@edit/@update</code></td>
+    <td>Rego is intentionally not updated in service layer.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/customers</code></td>
+    <td><code>resources/views/sharpfleet/admin/customers/index.blade.php</code></td>
+    <td><code>CustomerController@index/@store</code></td>
+    <td>Supports add and CSV import; blocked if customers table missing (with SQL guidance).</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/bookings</code></td>
+    <td><code>resources/views/sharpfleet/admin/bookings/index.blade.php</code></td>
+    <td><code>SharpFleet\Admin\BookingController</code></td>
+    <td>Creates bookings, changes vehicle, cancels booking; availability endpoint used by JS.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/users</code></td>
+    <td><code>resources/views/sharpfleet/admin/users/index.blade.php</code></td>
+    <td><code>UserController@index</code></td>
+    <td>Manage users; toggle driver access via <code>is_driver</code>.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/users/invite</code></td>
+    <td><code>resources/views/sharpfleet/admin/users/invite.blade.php</code></td>
+    <td><code>DriverInviteController@create/@store</code></td>
+    <td>Creates pending driver user + activation token + email.</td>
+  </tr>
+  <tr>
+    <td><code>GET/POST /app/sharpfleet/admin/users/{id}/edit</code></td>
+    <td><code>resources/views/sharpfleet/admin/users/edit.blade.php</code></td>
+    <td><code>UserController@edit/@update</code></td>
+    <td>Editing self updates SharpFleet session fields.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/reports/trips</code></td>
+    <td><code>resources/views/sharpfleet/admin/reports/trips.blade.php</code></td>
+    <td><code>ReportController@trips</code></td>
+    <td>Trip report with filters + totals; CSV export supported.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/reports/vehicles</code></td>
+    <td>—</td>
+    <td><code>ReportController@vehicles</code></td>
+    <td><strong>Not implemented</strong> (stub).</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/trial-expired</code></td>
+    <td><code>resources/views/sharpfleet/admin/trial-expired.blade.php</code></td>
+    <td>Route closure</td>
+    <td>Explains restrictions; contains hard-coded upgrade plan cards (no backing integration).</td>
+  </tr>
+</table>
+
+<h3>3.6 Driver Portal Pages (<code>/app/sharpfleet/driver</code>)</h3>
+<p>
+  These routes require driver auth and trial check.
+  Primary middleware: <code>SharpFleetDriverAuth</code> and <code>SharpFleetTrialCheck</code>.
+</p>
+
+<table>
+  <tr>
+    <th>URL</th>
+    <th>View</th>
+    <th>Controller / Backing logic</th>
+    <th>Key behaviors</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/driver</code></td>
+    <td><code>resources/views/sharpfleet/driver/dashboard.blade.php</code></td>
+    <td>View performs multiple DB queries directly; submits to TripController endpoints</td>
+    <td>
+      Start/end trips, optional customer/client presence capture, vehicle search UI for large fleets,
+      offline trip capture + later sync.
+    </td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/trips/start</code></td>
+    <td>—</td>
+    <td><code>App\Http\Controllers\SharpFleet\TripController@start</code> → <code>TripService@startTrip</code></td>
+    <td>
+      Enforces odometer rules + “booking lock” (blocks if another driver has active booking now).
+      Does <em>not</em> require that the driver has a booking; it only prevents conflicts.
+    </td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/trips/end</code></td>
+    <td>—</td>
+    <td><code>TripController@end</code> → <code>TripService@endTrip</code></td>
+    <td>Only ends driver’s own active trip.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/trips/offline-sync</code></td>
+    <td>—</td>
+    <td><code>TripController@offlineSync</code> → <code>TripService@syncOfflineTrips</code></td>
+    <td>Best-effort sync; de-dupes by started_at; re-checks booking lock at trip started time.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/bookings</code></td>
+    <td><code>resources/views/sharpfleet/driver/bookings/upcoming.blade.php</code></td>
+    <td><code>App\Http\Controllers\SharpFleet\BookingController@upcoming</code></td>
+    <td>Upcoming planned bookings; vehicle availability lookup endpoint used.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/bookings</code></td>
+    <td>—</td>
+    <td><code>BookingController@store</code> → <code>BookingService@createBooking</code></td>
+    <td>Creates driver booking (bookings table required). Bookings must start in the future.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/bookings/{booking}/cancel</code></td>
+    <td>—</td>
+    <td><code>BookingController@cancel</code> → <code>BookingService@cancelBooking</code></td>
+    <td>Driver can only cancel own bookings.</td>
+  </tr>
+  <tr>
+    <td><code>POST /app/sharpfleet/bookings/start-trip</code></td>
+    <td>—</td>
+    <td><code>BookingController@startTrip</code></td>
+    <td><strong>Not implemented</strong> (aborts 404).</td>
+  </tr>
+</table>
+
+<h3>3.7 Debug / Errors</h3>
+<table>
+  <tr>
+    <th>URL / Page</th>
+    <th>View</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/debug</code></td>
+    <td><code>resources/views/sharpfleet/debug.blade.php</code></td>
+    <td>Admin-auth only debug information page.</td>
+  </tr>
+  <tr>
+    <td>Driver denied</td>
+    <td><code>resources/views/sharpfleet/errors/driver-denied.blade.php</code></td>
+    <td>Shown when user is not permitted as driver (<code>is_driver</code> not set).</td>
+  </tr>
+</table>
+
+<h2>4. Internal Platform Admin (SharpLync Admin)</h2>
+<p>
+  Internal staff pages live under <code>/admin/sharpfleet</code> and are protected by the main admin auth middleware.
+  Routes: <code>routes/admin.php</code> using <code>App\Http\Controllers\Admin\SharpFleet\PlatformController</code>.
+</p>
+
+<table>
+  <tr>
+    <th>URL</th>
+    <th>View</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td><code>GET /admin/sharpfleet</code></td>
+    <td><code>resources/views/admin/sharpfleet/index.blade.php</code></td>
+    <td>Organisation list/search; shows counts.</td>
+  </tr>
+  <tr>
+    <td><code>GET /admin/sharpfleet/organisations/{organisationId}</code></td>
+    <td><code>resources/views/admin/sharpfleet/organisations/show.blade.php</code></td>
+    <td>Organisation detail with conditional billing columns if present.</td>
+  </tr>
+  <tr>
+    <td><code>GET /admin/sharpfleet/organisations/{organisationId}/users</code></td>
+    <td><code>resources/views/admin/sharpfleet/organisations/users.blade.php</code></td>
+    <td>List organisation users.</td>
+  </tr>
+  <tr>
+    <td><code>GET /admin/sharpfleet/organisations/{organisationId}/vehicles</code></td>
+    <td><code>resources/views/admin/sharpfleet/organisations/vehicles.blade.php</code></td>
+    <td>List organisation vehicles.</td>
+  </tr>
+  <tr>
+    <td><code>GET /admin/sharpfleet/vehicles/{vehicleId}</code></td>
+    <td><code>resources/views/admin/sharpfleet/vehicles/show.blade.php</code></td>
+    <td>Vehicle detail with dynamic columns.</td>
+  </tr>
+</table>
+
+<h2>5. Implemented vs Not Implemented</h2>
+
+<h3>Implemented</h3>
+<ul>
+  <li>Trips: start/end + offline sync (<code>TripController</code> + <code>TripService</code>).</li>
+  <li>Vehicles: admin CRUD + archive (<code>SharpFleet\Admin\VehicleController</code> + <code>VehicleService</code>).</li>
+  <li>Bookings: create/cancel + overlap logic + availability (<code>BookingController</code> + <code>BookingService</code>), gated by <code>bookings</code> table existence.</li>
+  <li>Customers: add + CSV import (<code>CustomerController</code> + <code>CustomerService</code>), gated by <code>customers</code> table existence.</li>
+  <li>Driver invites: admin invite + public acceptance (<code>SharpFleet\Admin\DriverInviteController</code> and <code>SharpFleet\DriverInviteController</code>).</li>
+  <li>Reports: trips report + CSV export (<code>ReportController@trips</code>).</li>
+</ul>
+
+<h3>Not Implemented / Stubbed</h3>
+<ul>
+  <li>Fault capture endpoints (driver): <code>App\Http\Controllers\SharpFleet\FaultController</code> methods are stubbed.</li>
+  <li>Fault admin pages: <code>App\Http\Controllers\SharpFleet\Admin\FaultController</code> is stubbed.</li>
+  <li>Vehicle report: <code>SharpFleet\Admin\ReportController@vehicles</code> is stubbed.</li>
+  <li>Start trip from booking: route exists, but <code>App\Http\Controllers\SharpFleet\BookingController@startTrip</code> aborts 404.</li>
+</ul>
+
+<h2>6. Known Inconsistencies / Risks (Current State)</h2>
+<ul>
+  <li><strong>Trial allow/deny rules are centralized:</strong> the allow/deny decision is now centralized in <code>EntitlementService</code> and consumed by <code>SharpFleetTrialCheck</code>; existing SharpFleet routes are still mostly unnamed so request matching remains URI-based (reports/logout).</li>
+  <li><strong>Trial expired page contains incorrect links:</strong> the CTA links to <code>/app/sharpfleet/admin/reports</code> and posts to <code>/app/sharpfleet/admin/logout</code>, which do not match the defined routes (<code>/app/sharpfleet/admin/reports/trips</code> and <code>/app/sharpfleet/logout</code>).</li>
+  <li><strong>Settings accessor typo:</strong> <code>CompanySettingsService::odometerAutofillEnabled()</code> reads a misspelled key (<code>odometer_autofillill_from_last_trip</code>), effectively making the accessor fall back to default behavior.</li>
+  <li><strong>Booking enforcement for trips is “conflict only”:</strong> <code>TripService</code> blocks starting a trip only if another driver has an overlapping active booking; it does not require that the current driver has a booking.</li>
+  <li><strong>Offline sync constraints:</strong> offline trips de-dupe on exact <code>started_at</code>; booking lock is re-evaluated at the offline trip’s start time (best-effort), and schema/table absence disables some enforcement.</li>
+</ul>
+
+<h2>7. Appendix – View Inventory</h2>
+<p class="muted">Customer portal views (<code>resources/views/sharpfleet/**</code>):</p>
+<ul>
+  <li><code>sharpfleet/home.blade.php</code></li>
+  <li><code>sharpfleet/test-home.blade.php</code></li>
+  <li><code>sharpfleet/login.blade.php</code></li>
+  <li><code>sharpfleet/debug.blade.php</code></li>
+  <li><code>sharpfleet/errors/driver-denied.blade.php</code></li>
+  <li><code>sharpfleet/driver/dashboard.blade.php</code></li>
+  <li><code>sharpfleet/driver/bookings/upcoming.blade.php</code></li>
+  <li><code>sharpfleet/admin/dashboard.blade.php</code></li>
+  <li><code>sharpfleet/admin/settings.blade.php</code></li>
+  <li><code>sharpfleet/admin/safety-checks.blade.php</code></li>
+  <li><code>sharpfleet/admin/company.blade.php</code></li>
+  <li><code>sharpfleet/admin/company-profile.blade.php</code></li>
+  <li><code>sharpfleet/admin/vehicles/index.blade.php</code></li>
+  <li><code>sharpfleet/admin/vehicles/create.blade.php</code></li>
+  <li><code>sharpfleet/admin/vehicles/edit.blade.php</code></li>
+  <li><code>sharpfleet/admin/customers/index.blade.php</code></li>
+  <li><code>sharpfleet/admin/bookings/index.blade.php</code></li>
+  <li><code>sharpfleet/admin/reports/trips.blade.php</code></li>
+  <li><code>sharpfleet/admin/users/index.blade.php</code></li>
+  <li><code>sharpfleet/admin/users/invite.blade.php</code></li>
+  <li><code>sharpfleet/admin/users/edit.blade.php</code></li>
+  <li><code>sharpfleet/admin/register.blade.php</code></li>
+  <li><code>sharpfleet/admin/register-success.blade.php</code></li>
+  <li><code>sharpfleet/admin/activate-account.blade.php</code></li>
+  <li><code>sharpfleet/admin/activate-driver.blade.php</code></li>
+  <li><code>sharpfleet/admin/trial-expired.blade.php</code></li>
+  <li><code>sharpfleet/admin/login.blade.php</code> (present; usage unclear/possibly legacy)</li>
+</ul>
+
+<p class="muted">Internal platform admin views (<code>resources/views/admin/sharpfleet/**</code>):</p>
+<ul>
+  <li><code>admin/sharpfleet/index.blade.php</code></li>
+  <li><code>admin/sharpfleet/organisations/show.blade.php</code></li>
+  <li><code>admin/sharpfleet/organisations/users.blade.php</code></li>
+  <li><code>admin/sharpfleet/organisations/vehicles.blade.php</code></li>
+  <li><code>admin/sharpfleet/vehicles/show.blade.php</code></li>
+</ul>
+
+</body>
+</html>
