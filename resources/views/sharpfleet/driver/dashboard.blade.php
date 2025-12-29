@@ -38,8 +38,11 @@
         ->select('vehicle_id', 'end_km')
         ->where('organisation_id', $user['organisation_id'])
         ->whereNotNull('ended_at')
+        ->whereNotNull('end_km')
         ->orderByDesc('ended_at')
         ->get()
+        // Keep the most recent ended trip per vehicle.
+        ->unique('vehicle_id')
         ->keyBy('vehicle_id');
 
     // Check for active trip
