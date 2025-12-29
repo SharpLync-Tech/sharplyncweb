@@ -101,7 +101,20 @@
                                     <div class="text-muted small">{{ $log->actor_email ?? '—' }}</div>
                                 </td>
                                 <td>
-                                    <div class="fw-semibold">{{ $log->action ?? '—' }}</div>
+                                    @php($actionRaw = (string)($log->action ?? ''))
+                                    @php($actionMap = [
+                                        'sharpfleet.organisation.update' => 'Platform Admin Updated Subscriber',
+                                        'sharpfleet.organisation.edit.view' => 'Platform Admin Viewed Subscriber Edit',
+                                        'sharpfleet.organisation.view' => 'Platform Admin Viewed Subscriber',
+                                        'sharpfleet.organisation.user.update' => 'Platform Admin Updated User Trial',
+                                        'sharpfleet.organisation.user.edit.view' => 'Platform Admin Viewed User Edit',
+                                    ])
+                                    <div class="fw-semibold">{{ $actionMap[$actionRaw] ?? ($log->action ?? '—') }}</div>
+                                    @php($ctxJson = (string)($log->context_json ?? ''))
+                                    @php($ctxArr = $ctxJson !== '' ? (json_decode($ctxJson, true) ?? []) : [])
+                                    @if(!empty($ctxArr['summary']))
+                                        <div class="text-muted small">{{ $ctxArr['summary'] }}</div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="text-muted small">{{ strtoupper($log->method ?? '') }} {{ $log->path ?? '' }}</div>
