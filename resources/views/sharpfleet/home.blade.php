@@ -17,7 +17,7 @@
     </p>
 </div>
 
-<section class="mb-4">
+<section class="mb-4 hero-features">
     <div class="text-center mb-4">
         <h2 class="card-title">Everything You Need — Nothing You Don’t</h2>
         <p class="mb-0 max-w-700 mx-auto text-muted">
@@ -25,6 +25,7 @@
             without forcing expensive hardware or rigid workflows on your business.
         </p>
     </div>
+
 
     <div class="grid grid-3">
         <div class="card">

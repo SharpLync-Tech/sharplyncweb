@@ -66,6 +66,12 @@
     </div>
 @endif
 
+@if ($errors && $errors->any())
+    <div class="alert alert-error">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 @if($activeTrip)
     {{-- Active Trip Card --}}
     <div class="card" id="serverActiveTripCard">

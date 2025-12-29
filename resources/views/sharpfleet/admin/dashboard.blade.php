@@ -3,9 +3,9 @@
 @section('title', 'SharpFleet Admin Dashboard')
 
 @section('sharpfleet-content')
-<div class="mb-4">
-    <h1 class="mb-2">SharpFleet Admin Dashboard</h1>
-    <p>Welcome to SharpFleet. You are logged in as admin.</p>
+<div class="hero">
+    <h1>SharpFleet,<br><span class="highlight">Admin Dashboard</span></h1>
+    <p>
 </div>
 
 @if (session('success'))
