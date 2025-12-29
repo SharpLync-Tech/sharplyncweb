@@ -8,8 +8,10 @@
         <div>
             <h2 class="fw-semibold">{{ $organisation->name ?? 'Organisation' }}</h2>
             <div class="sl-subtitle small">SharpFleet subscriber (organisation) details.</div>
+            <div class="text-muted small">All times shown in AEST (Brisbane time).</div>
         </div>
         <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="{{ route('admin.sharpfleet.organisations.edit', $organisation->id) }}">Edit subscriber</a>
             <a class="btn btn-outline-secondary" href="{{ route('admin.sharpfleet.platform') }}">Back to subscribers</a>
         </div>
     </div>
@@ -38,11 +40,15 @@
                             <div class="text-muted small">Trial ends</div>
                             <div class="fw-semibold">
                                 @if(!empty($organisation->trial_ends_at))
-                                    {{ \Carbon\Carbon::parse($organisation->trial_ends_at)->format('d M Y, H:i') }}
+                                    {{ \Carbon\Carbon::parse($organisation->trial_ends_at, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y, H:i') }}
                                 @else
                                     —
                                 @endif
                             </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-muted small">Subscriber timezone</div>
+                            <div class="fw-semibold">{{ $timezone ?? 'Australia/Brisbane' }}</div>
                         </div>
                     </div>
                 </div>
@@ -64,13 +70,45 @@
                                 <tbody>
                                     @foreach($billingKeys as $key)
                                         <tr>
-                                            <td class="text-muted" style="width: 220px;">{{ $key }}</td>
+                                            @php
+                                                $label = match((string) $key) {
+                                                    'trial_ends_at' => 'Trial Ends',
+                                                    'subscription_ends_at' => 'Subscription Ends',
+                                                    'subscription_status' => 'Subscription Status',
+                                                    'subscription_id' => 'Subscription ID',
+                                                    'billing_email' => 'Billing Email',
+                                                    'billing_status' => 'Billing Status',
+                                                    'stripe_customer_id' => 'Stripe Customer ID',
+                                                    'stripe_subscription_id' => 'Stripe Subscription ID',
+                                                    'stripe_price_id' => 'Stripe Price ID',
+                                                    'created_at' => 'Created',
+                                                    'updated_at' => 'Updated',
+                                                    default => ucwords(str_replace('_', ' ', (string) $key)),
+                                                };
+                                            @endphp
+                                            <td class="text-muted" style="width: 220px;">{{ $label }}</td>
                                             <td>
                                                 @php $val = $organisation->{$key} ?? null; @endphp
                                                 @if(is_null($val) || $val === '')
                                                     —
                                                 @else
-                                                    {{ is_scalar($val) ? $val : json_encode($val) }}
+                                                    @php
+                                                        $stringVal = is_scalar($val) ? (string) $val : null;
+                                                        $isDateLike = is_string($stringVal) && (str_ends_with((string) $key, '_at') || str_contains((string) $key, 'date'));
+                                                    @endphp
+                                                    @if($isDateLike)
+                                                        @php
+                                                            $formatted = null;
+                                                            try {
+                                                                $formatted = \Carbon\Carbon::parse($stringVal, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y, H:i');
+                                                            } catch (\Throwable $e) {
+                                                                $formatted = null;
+                                                            }
+                                                        @endphp
+                                                        {{ $formatted ?? $stringVal }}
+                                                    @else
+                                                        {{ is_scalar($val) ? $val : json_encode($val) }}
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>

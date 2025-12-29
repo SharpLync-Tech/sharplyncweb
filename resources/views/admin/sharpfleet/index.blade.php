@@ -46,7 +46,7 @@
                                 <td>{{ $org->industry ?? '—' }}</td>
                                 <td>
                                     @if(!empty($org->trial_ends_at))
-                                        {{ \Carbon\Carbon::parse($org->trial_ends_at)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($org->trial_ends_at, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y') }}
                                     @else
                                         —
                                     @endif
@@ -55,6 +55,7 @@
                                 <td class="text-end">{{ (int)($org->vehicles_count ?? 0) }}</td>
                                 <td class="text-end">
                                     <a class="btn btn-primary btn-sm" href="{{ route('admin.sharpfleet.organisations.show', $org->id) }}">Manage</a>
+                                    <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.sharpfleet.organisations.edit', $org->id) }}">Edit</a>
                                 </td>
                             </tr>
                         @empty

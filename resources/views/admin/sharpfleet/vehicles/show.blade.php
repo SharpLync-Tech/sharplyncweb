@@ -27,6 +27,7 @@
     <div class="card sl-card">
         <div class="card-header py-3">
             <div class="fw-semibold">Vehicle record</div>
+            <div class="text-muted small">All times shown in AEST (Brisbane time).</div>
         </div>
         <div class="card-body">
             @if(empty($columns))
@@ -43,13 +44,40 @@
                         <tbody>
                             @foreach($columns as $col)
                                 <tr>
-                                    <td class="text-muted" style="width: 220px;">{{ $col }}</td>
+                                    @php
+                                        $label = match((string) $col) {
+                                            'id' => 'ID',
+                                            'organisation_id' => 'Organisation ID',
+                                            'registration_number' => 'Registration',
+                                            'is_active' => 'Active',
+                                            'created_at' => 'Created',
+                                            'updated_at' => 'Updated',
+                                            default => ucwords(str_replace('_', ' ', (string) $col)),
+                                        };
+                                    @endphp
+                                    <td class="text-muted" style="width: 220px;">{{ $label }}</td>
                                     <td>
                                         @php $val = $vehicle->{$col} ?? null; @endphp
                                         @if(is_null($val) || $val === '')
                                             —
                                         @else
-                                            {{ is_scalar($val) ? $val : json_encode($val) }}
+                                            @php
+                                                $stringVal = is_scalar($val) ? (string) $val : null;
+                                                $isDateLike = is_string($stringVal) && (str_ends_with((string) $col, '_at') || str_contains((string) $col, 'date'));
+                                            @endphp
+                                            @if($isDateLike)
+                                                @php
+                                                    $formatted = null;
+                                                    try {
+                                                        $formatted = \Carbon\Carbon::parse($stringVal, 'UTC')->timezone('Australia/Brisbane')->format('d M Y, H:i');
+                                                    } catch (\Throwable $e) {
+                                                        $formatted = null;
+                                                    }
+                                                @endphp
+                                                {{ $formatted ?? $stringVal }}
+                                            @else
+                                                {{ is_scalar($val) ? $val : json_encode($val) }}
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>

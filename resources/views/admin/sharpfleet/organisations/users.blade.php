@@ -25,6 +25,7 @@
                             <th>Role</th>
                             <th class="text-end">Driver</th>
                             <th>Trial ends</th>
+                            <th class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,15 +37,18 @@
                                 <td class="text-end">{{ (int)($u->is_driver ?? 0) === 1 ? 'Yes' : 'No' }}</td>
                                 <td>
                                     @if(!empty($u->trial_ends_at))
-                                        {{ \Carbon\Carbon::parse($u->trial_ends_at)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($u->trial_ends_at, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y') }}
                                     @else
                                         —
                                     @endif
                                 </td>
+                                <td class="text-end">
+                                    <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.sharpfleet.organisations.users.edit', [$organisation->id, $u->id]) }}">Edit</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">No users found.</td>
+                                <td colspan="6" class="text-center py-5 text-muted">No users found.</td>
                             </tr>
                         @endforelse
                     </tbody>
