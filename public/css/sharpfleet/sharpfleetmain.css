@@ -2,23 +2,21 @@
 
 /* Variables */
 
-.hero {
-    background: rgba(10, 42, 77, 0.55);
-    color: var(--text-light);
-    padding: 80px 0;
-    text-align: center;
-    border-radius: var(--border-radius-lg);
-    margin: 0 auto 40px auto;
-    max-width: 960px;
-    border: 1px solid rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-lg);
-}
-
-.hero .text-muted {
-    color: var(--text-light);
-}
+:root {
+    --primary-color: #2CBFAE;
+    --primary-hover: #25a99a;
+    --secondary-color: #0A2A4D;
+    --secondary-hover: #1a3a5d;
+    --accent-color: #FF6B6B;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #6b7280;
+    --bg-light: #F7F9FB;
+    --bg-white: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow: 0 0 20px rgba(10, 42, 77, 0.10);
+    --shadow-lg: 0 0 28px rgba(10, 42, 77, 0.16);
+    --border-radius: 8px;
     --border-radius-lg: 12px;
     --transition: all 0.3s ease;
 }
@@ -489,7 +487,6 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 
-.text-white { color: var(--text-light); }
 .text-muted { color: var(--text-muted); }
 .text-primary { color: var(--primary-color); }
 .text-error { color: #991b1b; }
@@ -598,12 +595,12 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 .page-title {
     font-size: 32px;
     font-weight: 700;
-    color: var(--text-light);
+    color: var(--secondary-color);
     margin-bottom: 6px;
 }
 
 .page-description {
-    color: var(--text-light);
+    color: var(--text-muted);
     margin: 0;
 }
 

@@ -25,6 +25,14 @@
   Scope: Customer SharpFleet portal (<code>/app/sharpfleet</code>) + internal platform admin (<code>/admin/sharpfleet</code>)
 </p>
 
+<h2>0. Updates (Dec 29, 2025)</h2>
+<ul>
+  <li><strong>PWA freshness improvements:</strong> added server-side <code>no-store</code> headers for SharpFleet HTML GET responses via <code>App\Http\Middleware\SharpFleetNoStore</code> (applied to the <code>routes/sharpfleet.php</code> group) and improved the service worker update flow to auto-refresh when a new worker takes control (online only).</li>
+  <li><strong>Driver dashboard live “Last KM” refresh:</strong> added <code>GET /app/sharpfleet/trips/last-reading</code> (driver-authenticated) returning the latest ended-trip reading for a selected vehicle; the dashboard now refreshes this value on vehicle change and when the PWA/tab returns to the foreground.</li>
+  <li><strong>Admin dashboard cleanup:</strong> removed the “Quick Actions” block and duplicate logout button from the admin dashboard; moved the missing destinations (Customers, Company) into the top navigation (admin view) to keep the UI consistent.</li>
+  <li><strong>SharpFleet UI text color:</strong> standardized page headers (title/description) to render white on the gradient background and added a <code>text-white</code> utility for the few marketing sections that should always be white; updated SharpFleet landing/test pages accordingly.</li>
+</ul>
+
 <h2>1. Executive Summary</h2>
 <ul>
   <li>SharpFleet is implemented as a Laravel module with its own session namespace (<code>sharpfleet.user</code>) and role model (<code>admin</code> vs <code>driver</code> plus <code>is_driver</code> flag).</li>
@@ -87,6 +95,7 @@
   <li>Manifest: <code>public/app/sharpfleet.webmanifest</code> (start_url points at <code>/app/sharpfleet/driver</code>).</li>
   <li>Offline fallback: <code>public/app/sharpfleet-offline.html</code>.</li>
   <li>Driver dashboard supports offline trip capture using <code>localStorage</code> and syncs to <code>POST /app/sharpfleet/trips/offline-sync</code> when online.</li>
+  <li>To avoid stale authenticated pages in PWA/app shells, SharpFleet sets explicit <code>Cache-Control: no-store</code> headers for SharpFleet HTML GET responses via <code>App\Http\Middleware\SharpFleetNoStore</code>.</li>
 </ul>
 
 <h2>3. Page-by-Page Inventory (Customer SharpFleet Portal)</h2>
@@ -236,7 +245,7 @@
     <td><code>GET /app/sharpfleet/admin</code></td>
     <td><code>resources/views/sharpfleet/admin/dashboard.blade.php</code></td>
     <td>Inline route closure in <code>routes/sharpfleet.php</code></td>
-    <td>Counts drivers/vehicles/active trips, shows vehicle reminder digest, includes logout form.</td>
+    <td>Counts drivers/vehicles/active trips, shows vehicle reminder digest. Navigation actions are provided via the top nav (no duplicate “quick actions” panel).</td>
   </tr>
   <tr>
     <td><code>GET /app/sharpfleet/admin/company</code></td>
@@ -349,7 +358,7 @@
     <td>View performs multiple DB queries directly; submits to TripController endpoints</td>
     <td>
       Start/end trips, optional customer/client presence capture, vehicle search UI for large fleets,
-      offline trip capture + later sync.
+      offline trip capture + later sync. Includes a lightweight refresh to pull the latest “last reading” for the selected vehicle in PWA scenarios.
     </td>
   </tr>
   <tr>
@@ -372,6 +381,12 @@
     <td>—</td>
     <td><code>TripController@offlineSync</code> → <code>TripService@syncOfflineTrips</code></td>
     <td>Best-effort sync; de-dupes by started_at; re-checks booking lock at trip started time.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/trips/last-reading</code></td>
+    <td>—</td>
+    <td><code>App\Http\Controllers\SharpFleet\TripController@lastReading</code></td>
+    <td>Returns latest ended-trip reading for a vehicle as JSON (used by the driver dashboard to stay fresh without a full reload).</td>
   </tr>
   <tr>
     <td><code>GET /app/sharpfleet/bookings</code></td>
