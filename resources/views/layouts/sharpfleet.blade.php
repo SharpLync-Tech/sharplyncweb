@@ -121,6 +121,17 @@
         (function() {
             if (!('serviceWorker' in navigator)) return;
 
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', function () {
+                if (refreshing) return;
+                refreshing = true;
+
+                // Only hard reload when online (offline should keep the cached shell).
+                if (navigator.onLine) {
+                    window.location.reload();
+                }
+            });
+
             function isRootScoped(reg) {
                 try {
                     const scope = (reg && reg.scope) ? reg.scope : '';
@@ -145,7 +156,29 @@
                 }
 
                 try {
-                    await navigator.serviceWorker.register('/app/sharpfleet-sw.js', { scope: '/app/sharpfleet/' });
+                    const reg = await navigator.serviceWorker.register('/app/sharpfleet-sw.js', { scope: '/app/sharpfleet/' });
+
+                    // Proactively check for updates when the app is opened.
+                    try { await reg.update(); } catch (e) { /* ignore */ }
+
+                    // If a new SW is installed, reload once it's controlling the page.
+                    reg.addEventListener('updatefound', function () {
+                        const newWorker = reg.installing;
+                        if (!newWorker) return;
+
+                        newWorker.addEventListener('statechange', function () {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller && navigator.onLine) {
+                                window.location.reload();
+                            }
+                        });
+                    });
+
+                    // Re-check for updates when the app tab becomes visible.
+                    document.addEventListener('visibilitychange', function () {
+                        if (document.visibilityState === 'visible' && navigator.onLine) {
+                            try { reg.update(); } catch (e) { /* ignore */ }
+                        }
+                    });
                 } catch (e) {
                     // fail silently
                 }

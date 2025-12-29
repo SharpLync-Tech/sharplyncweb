@@ -38,7 +38,9 @@ Route::get('/sharpfleet', function () {
     return view('sharpfleet.home');
 });
 
-Route::prefix('app/sharpfleet')->group(function () {
+Route::prefix('app/sharpfleet')
+    ->middleware([\App\Http\Middleware\SharpFleetNoStore::class])
+    ->group(function () {
 
     // Admin portal SSO handoff (from /admin)
     Route::get('/sso', [SsoController::class, 'login']);
@@ -251,6 +253,7 @@ Route::prefix('app/sharpfleet')->group(function () {
             Route::post('/trips/start', [TripController::class, 'start']);
             Route::post('/trips/end', [TripController::class, 'end']);
             Route::post('/trips/offline-sync', [TripController::class, 'offlineSync']);
+            Route::get('/trips/last-reading', [TripController::class, 'lastReading']);
 
             // Faults
             Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);

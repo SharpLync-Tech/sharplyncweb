@@ -8,6 +8,7 @@ use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class TripController extends Controller
 {
@@ -91,6 +92,63 @@ class TripController extends Controller
         $result = $this->tripService->syncOfflineTrips($user, $validated['trips']);
 
         return response()->json($result);
+    }
+
+    /**
+     * Fetch the latest ended-trip reading for a vehicle (Driver UI – session based).
+     * Used to keep the PWA dashboard fresh without requiring a full page reload.
+     */
+    public function lastReading(Request $request): JsonResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer'],
+        ]);
+
+        $vehicleId = (int) $validated['vehicle_id'];
+        $organisationId = (int) $user['organisation_id'];
+
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'tracking_mode', 'starting_km')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $vehicleId)
+            ->first();
+
+        if (!$vehicle) {
+            return response()->json([
+                'message' => 'Vehicle not found',
+            ], 404);
+        }
+
+        $lastTrip = DB::connection('sharpfleet')
+            ->table('trips')
+            ->select('end_km', 'ended_at')
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $vehicleId)
+            ->whereNotNull('ended_at')
+            ->whereNotNull('end_km')
+            ->orderByDesc('ended_at')
+            ->first();
+
+        $fallbackStart = property_exists($vehicle, 'starting_km') ? ($vehicle->starting_km ?? null) : null;
+        $lastKm = $lastTrip ? ($lastTrip->end_km ?? null) : $fallbackStart;
+
+        return response()
+            ->json([
+                'vehicle_id' => $vehicleId,
+                'tracking_mode' => $vehicle->tracking_mode ?? 'distance',
+                'last_km' => $lastKm,
+                'ended_at' => $lastTrip ? ($lastTrip->ended_at ?? null) : null,
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function edit($trip)

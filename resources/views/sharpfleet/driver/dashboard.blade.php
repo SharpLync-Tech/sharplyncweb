@@ -393,6 +393,8 @@
         const lastKmHint    = document.getElementById('lastKmHint');
         const startReadingLabel = document.getElementById('startReadingLabel');
 
+        let lastAutoFilledReading = null;
+
         const customerBlock = document.getElementById('customerBlock');
         const clientPresenceBlock = document.getElementById('clientPresenceBlock');
         const customerSelect = document.getElementById('customerSelect');
@@ -468,22 +470,83 @@
                 }
             }
 
+            const currentVal = (startKmInput.value || '').trim();
+            const canAutofill = currentVal === '' || (lastAutoFilledReading !== null && currentVal === String(lastAutoFilledReading));
+
             if (lastKm) {
-                startKmInput.value = lastKm;
+                if (canAutofill) {
+                    startKmInput.value = lastKm;
+                    lastAutoFilledReading = lastKm;
+                }
                 lastKmHint.textContent = (mode === 'hours')
                     ? `Last recorded hour meter: ${Number(lastKm).toLocaleString()} hours`
                     : `Last recorded odometer: ${Number(lastKm).toLocaleString()} km`;
                 lastKmHint.classList.remove('d-none');
             } else {
-                startKmInput.value = '';
+                if (canAutofill) {
+                    startKmInput.value = '';
+                    lastAutoFilledReading = null;
+                }
                 lastKmHint.classList.add('d-none');
             }
         }
 
-        vehicleSelect.addEventListener('change', updateStartKm);
+        async function refreshSelectedVehicleLastKm() {
+            if (!navigator.onLine) return;
+            if (!vehicleSelect || !vehicleSelect.value) return;
+
+            const vehicleId = vehicleSelect.value;
+
+            try {
+                const res = await fetch(`/app/sharpfleet/trips/last-reading?vehicle_id=${encodeURIComponent(vehicleId)}` , {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store',
+                });
+
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data || String(data.vehicle_id) !== String(vehicleId)) return;
+
+                const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
+                if (selected) {
+                    const newLastKm = (data.last_km === null || data.last_km === undefined) ? '' : String(data.last_km);
+                    selected.dataset.lastKm = newLastKm;
+                    if (data.tracking_mode) {
+                        selected.dataset.trackingMode = String(data.tracking_mode);
+                    }
+                }
+
+                // Keep the backing list in sync so search rebuilds don't revert to old values.
+                const item = allVehicleOptions.find(v => String(v.value) === String(vehicleId));
+                if (item) {
+                    item.lastKm = (data.last_km === null || data.last_km === undefined) ? '' : String(data.last_km);
+                    if (data.tracking_mode) item.trackingMode = String(data.tracking_mode);
+                }
+
+                updateStartKm();
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        vehicleSelect.addEventListener('change', () => {
+            updateStartKm();
+            refreshSelectedVehicleLastKm();
+        });
         if (vehicleSearchInput) {
             vehicleSearchInput.addEventListener('input', filterVehicles);
         }
+
+        // When the PWA is brought back to the foreground, refresh the selected vehicle's last KM.
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                refreshSelectedVehicleLastKm();
+            }
+        });
+        window.addEventListener('focus', () => {
+            refreshSelectedVehicleLastKm();
+        });
 
         function updateBusinessOnlyBlocksVisibility() {
             const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
@@ -516,6 +579,7 @@
 
         // Initial load
         updateStartKm();
+        refreshSelectedVehicleLastKm();
         updateBusinessOnlyBlocksVisibility();
 
         // Offline trip capture (start/end + readings)
