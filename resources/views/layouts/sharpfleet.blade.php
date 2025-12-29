@@ -18,10 +18,10 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512.png">
 
-    <!-- SharpFleet CSS -->
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
+    <!-- SharpFleet CSS -->    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleetmain.css') }}">
     @stack('styles')
 </head>
 <body>
