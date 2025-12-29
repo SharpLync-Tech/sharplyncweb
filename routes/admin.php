@@ -42,6 +42,7 @@ Route::middleware(['web', 'admin.auth'])->prefix('admin')->group(function () {
     // SharpFleet platform admin (internal)
     Route::prefix('sharpfleet')->group(function () {
         Route::get('/', [SharpFleetPlatformController::class, 'index'])->name('admin.sharpfleet.platform');
+        Route::get('/audit-logs', [SharpFleetPlatformController::class, 'auditLogs'])->name('admin.sharpfleet.audit.index');
         Route::get('/organisations/{organisationId}', [SharpFleetPlatformController::class, 'organisation'])
             ->whereNumber('organisationId')
             ->name('admin.sharpfleet.organisations.show');

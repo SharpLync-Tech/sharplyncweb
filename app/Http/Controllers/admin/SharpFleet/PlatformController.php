@@ -3,18 +3,30 @@
 namespace App\Http\Controllers\Admin\SharpFleet;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\AuditLogService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Carbon\Carbon;
 
 class PlatformController extends Controller
 {
     private const DISPLAY_TIMEZONE = 'Australia/Brisbane';
 
+    private AuditLogService $audit;
+
+    public function __construct(AuditLogService $audit)
+    {
+        $this->audit = $audit;
+    }
+
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
+
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.platform.index', null, null, [
+            'q' => $q,
+        ]);
 
         $orgQuery = DB::connection('sharpfleet')
             ->table('organisations')
@@ -54,6 +66,10 @@ class PlatformController extends Controller
             ->where('id', $organisationId)
             ->first();
 
+        $this->audit->logPlatformAdmin(request(), 'sharpfleet.organisation.view', $organisationId, null, [
+            'found' => (bool) $organisation,
+        ]);
+
         if (!$organisation) {
             abort(404, 'Organisation not found');
         }
@@ -87,6 +103,10 @@ class PlatformController extends Controller
             ->table('organisations')
             ->where('id', $organisationId)
             ->first();
+
+        $this->audit->logPlatformAdmin(request(), 'sharpfleet.organisation.edit.view', $organisationId, null, [
+            'found' => (bool) $organisation,
+        ]);
 
         if (!$organisation) {
             abort(404, 'Organisation not found');
@@ -178,12 +198,27 @@ class PlatformController extends Controller
                 ]);
         }
 
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.organisation.update', $organisationId, null, [
+            'updated' => [
+                'name' => $validated['name'],
+                'industry' => $validated['industry'] ?? null,
+                'company_type' => $validated['company_type'] ?? null,
+            ],
+            'trial' => [
+                'previous_trial_ends_at_utc' => $organisation->trial_ends_at ?? null,
+                'set_trial_ends_at_utc' => $setTrialEndsUtc?->toDateTimeString(),
+                'extend_trial_days' => (int) ($validated['extend_trial_days'] ?? 0),
+            ],
+        ]);
+
         return redirect()->route('admin.sharpfleet.organisations.show', $organisationId)
             ->with('success', 'Subscriber updated.');
     }
 
     public function organisationUsers(Request $request, int $organisationId)
     {
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.organisation.users.view', $organisationId);
+
         $organisation = DB::connection('sharpfleet')
             ->table('organisations')
             ->where('id', $organisationId)
@@ -221,6 +256,8 @@ class PlatformController extends Controller
 
     public function editOrganisationUser(int $organisationId, int $userId)
     {
+        $this->audit->logPlatformAdmin(request(), 'sharpfleet.organisation.user.edit.view', $organisationId, $userId);
+
         $organisation = DB::connection('sharpfleet')
             ->table('organisations')
             ->where('id', $organisationId)
@@ -321,12 +358,22 @@ class PlatformController extends Controller
                 ]);
         }
 
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.organisation.user.update', $organisationId, $userId, [
+            'trial' => [
+                'previous_trial_ends_at_utc' => $user->trial_ends_at ?? null,
+                'set_trial_ends_at_utc' => $setTrialEndsUtc?->toDateTimeString(),
+                'extend_trial_days' => (int) ($validated['extend_trial_days'] ?? 0),
+            ],
+        ]);
+
         return redirect()->route('admin.sharpfleet.organisations.users', $organisationId)
             ->with('success', 'User updated.');
     }
 
     public function organisationVehicles(Request $request, int $organisationId)
     {
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.organisation.vehicles.view', $organisationId);
+
         $organisation = DB::connection('sharpfleet')
             ->table('organisations')
             ->where('id', $organisationId)
@@ -350,7 +397,7 @@ class PlatformController extends Controller
         ]);
     }
 
-    public function vehicle(int $vehicleId)
+    public function vehicle(Request $request, int $vehicleId)
     {
         $vehicle = DB::connection('sharpfleet')
             ->table('vehicles')
@@ -360,6 +407,14 @@ class PlatformController extends Controller
         if (!$vehicle) {
             abort(404, 'Vehicle not found');
         }
+
+        $this->audit->logPlatformAdmin(
+            $request,
+            'sharpfleet.vehicle.view',
+            !empty($vehicle->organisation_id) ? (int) $vehicle->organisation_id : null,
+            null,
+            ['vehicle_id' => $vehicleId]
+        );
 
         $organisation = null;
         if (!empty($vehicle->organisation_id)) {
@@ -381,6 +436,82 @@ class PlatformController extends Controller
             'organisation' => $organisation,
             'columns' => $columns,
         ]);
+    }
+
+    public function auditLogs(Request $request)
+    {
+        $this->audit->logPlatformAdmin($request, 'sharpfleet.audit_logs.index');
+
+        if (!Schema::connection('sharpfleet')->hasTable('sharpfleet_audit_logs')) {
+            return view('admin.sharpfleet.audit-logs.index', [
+                'logs' => collect(),
+                'filters' => $this->auditLogFilters($request),
+                'tableMissing' => true,
+                'displayTimezone' => self::DISPLAY_TIMEZONE,
+            ]);
+        }
+
+        $filters = $this->auditLogFilters($request);
+
+        $query = DB::connection('sharpfleet')->table('sharpfleet_audit_logs');
+
+        if (!empty($filters['organisation_id'])) {
+            $query->where('organisation_id', (int) $filters['organisation_id']);
+        }
+
+        if (!empty($filters['actor_type'])) {
+            $query->where('actor_type', $filters['actor_type']);
+        }
+
+        if (!empty($filters['actor_email'])) {
+            $query->where('actor_email', 'like', '%' . $filters['actor_email'] . '%');
+        }
+
+        if (!empty($filters['action'])) {
+            $query->where('action', 'like', '%' . $filters['action'] . '%');
+        }
+
+        if (!empty($filters['date_from'])) {
+            $query->where('created_at', '>=', $filters['date_from'] . ' 00:00:00');
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->where('created_at', '<=', $filters['date_to'] . ' 23:59:59');
+        }
+
+        if (!empty($filters['q'])) {
+            $q = $filters['q'];
+            $query->where(function ($sub) use ($q) {
+                $sub
+                    ->where('action', 'like', '%' . $q . '%')
+                    ->orWhere('actor_email', 'like', '%' . $q . '%')
+                    ->orWhere('actor_name', 'like', '%' . $q . '%')
+                    ->orWhere('path', 'like', '%' . $q . '%')
+                    ->orWhere('context_json', 'like', '%' . $q . '%');
+            });
+        }
+
+        $logs = $query->orderByDesc('id')->paginate(50)->withQueryString();
+
+        return view('admin.sharpfleet.audit-logs.index', [
+            'logs' => $logs,
+            'filters' => $filters,
+            'tableMissing' => false,
+            'displayTimezone' => self::DISPLAY_TIMEZONE,
+        ]);
+    }
+
+    private function auditLogFilters(Request $request): array
+    {
+        return [
+            'organisation_id' => trim((string) $request->query('organisation_id', '')),
+            'actor_type' => trim((string) $request->query('actor_type', '')),
+            'actor_email' => trim((string) $request->query('actor_email', '')),
+            'action' => trim((string) $request->query('action', '')),
+            'date_from' => trim((string) $request->query('date_from', '')),
+            'date_to' => trim((string) $request->query('date_to', '')),
+            'q' => trim((string) $request->query('q', '')),
+        ];
     }
 
     private function billingKeysForOrganisations(): array

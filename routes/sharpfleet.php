@@ -98,7 +98,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     | Admin Routes (ADMIN ONLY)
     |--------------------------------------------------------------------------
     */
-    Route::middleware([\App\Http\Middleware\SharpFleetAdminAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class])
+    Route::middleware([\App\Http\Middleware\SharpFleetAdminAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class, \App\Http\Middleware\SharpFleetAuditLog::class])
         ->prefix('admin')
         ->group(function () {
 
@@ -242,7 +242,7 @@ Route::prefix('app/sharpfleet')->group(function () {
     | Driver Routes (DRIVER ONLY)
     |--------------------------------------------------------------------------
     */
-    Route::middleware([\App\Http\Middleware\SharpFleetDriverAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class])
+    Route::middleware([\App\Http\Middleware\SharpFleetDriverAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class, \App\Http\Middleware\SharpFleetAuditLog::class])
         ->group(function () {
 
             Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));

@@ -123,6 +123,7 @@
                         SharpFleet Platform Admin
                     </a>
                     <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet') ? 'active' : '' }}">Subscribers</a>
+                    <a href="{{ route('admin.sharpfleet.audit.index') }}" class="nav-link {{ request()->is('admin/sharpfleet/audit-logs*') ? 'active' : '' }}">Audit Logs</a>
 
                     <div class="sl-section-title">System</div>
                     <a href="{{ route('admin.pulse.index') }}" class="nav-link {{ request()->is('admin/pulse*') ? 'active' : '' }}">
@@ -183,6 +184,7 @@
                 <div class="sl-section-title">SharpFleet Admin</div>
                 <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet*') ? 'active' : '' }}">SharpFleet Platform Admin</a>
                 <a href="{{ route('admin.sharpfleet.platform') }}" class="nav-link {{ request()->is('admin/sharpfleet') ? 'active' : '' }}">Subscribers</a>
+                <a href="{{ route('admin.sharpfleet.audit.index') }}" class="nav-link {{ request()->is('admin/sharpfleet/audit-logs*') ? 'active' : '' }}">Audit Logs</a>
 
                 <div class="sl-section-title">System</div>
                 <a href="{{ route('admin.pulse.index') }}" class="nav-link {{ request()->is('admin/pulse*') ? 'active' : '' }}">Pulse Feed</a>
