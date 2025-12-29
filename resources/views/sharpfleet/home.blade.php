@@ -3,8 +3,8 @@
 @section('title', 'SharpFleet – Simple Fleet Management for Real Businesses')
 
 @section('sharpfleet-content')
-<div class="hero">
-    <h1>Fleet Management, Without the Headaches</h1>
+<div class="hero">    
+    <h1>Fleet Management,<br><span class="highlight">Without the Headaches</span></h1>
     <p>
         SharpFleet is a simple, flexible fleet management platform built for the sole trader, small and
         medium businesses. No tracking hardware. No micromanagement.
