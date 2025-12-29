@@ -4,7 +4,7 @@
  * - Does not cache POST/PUT/etc
  */
 
-const CACHE_VERSION = 'sharpfleet-v3';
+const CACHE_VERSION = 'sharpfleet-v4';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 
@@ -35,7 +35,7 @@ self.addEventListener('install', (event) => {
       await Promise.all(
         PRECACHE_PAGES.map(async (path) => {
           try {
-            const res = await fetch(path, { credentials: 'same-origin' });
+            const res = await fetch(path, { credentials: 'same-origin', cache: 'no-store' });
             if (res && res.ok) {
               await pageCache.put(path, res.clone());
             }
@@ -103,7 +103,8 @@ self.addEventListener('fetch', (event) => {
   if (isNavigationRequest(req)) {
     event.respondWith((async () => {
       try {
-        const res = await fetch(req);
+        // Avoid serving stale authenticated pages from the HTTP cache.
+        const res = await fetch(req, { cache: 'no-store' });
         if (res && res.ok) {
           const copy = res.clone();
           const cache = await caches.open(PAGE_CACHE);
