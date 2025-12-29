@@ -20,7 +20,7 @@
 
     {{-- HEADING --}}
     <div class="hero-text">
-        <h1>Your Business,<br><span class="highlight">Secure & Connected.</span></h1>
+        <h1>Your Business,<br><span class="highlight">Secure & Connected</span></h1>
     </div>
 
     {{-- SERVICE GRID --}}
