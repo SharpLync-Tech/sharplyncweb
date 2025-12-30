@@ -198,8 +198,19 @@
                     <strong>Enable safety check before trips</strong>
                 </label>
 
-                <p class="text-muted ms-4 fst-italic">
-                    No safety checklist has been configured yet.
+                @php
+                    $safetyItems = $settings['safety_check']['items'] ?? [];
+                    $safetyCount = is_array($safetyItems) ? count($safetyItems) : 0;
+                @endphp
+
+                <p class="text-muted ms-4">
+                    @if($safetyCount > 0)
+                        Checklist items configured: <strong>{{ $safetyCount }}</strong>.
+                        <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Edit checklist</a>
+                    @else
+                        No safety checklist has been configured yet.
+                        <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Configure checklist</a>
+                    @endif
                 </p>
             </div>
         </div>

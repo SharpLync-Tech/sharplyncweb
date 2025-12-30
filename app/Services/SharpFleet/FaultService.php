@@ -147,16 +147,17 @@ class FaultService
         $occurredAt = $this->normalizeOccurredAt($data['occurred_at'] ?? null);
 
         $insert = [
-                'organisation_id' => $organisationId,
-                'vehicle_id' => $vehicleId,
-                'user_id' => $userId,
-                'trip_id' => $tripId,
-                'severity' => $severity,
-                'title' => $title,
-                'description' => $description,
-                'occurred_at' => $occurredAt,
-                'status' => 'open',
-                'created_at' => Carbon::now()->toDateTimeString(),
+            'organisation_id' => $organisationId,
+            'vehicle_id' => $vehicleId,
+            'user_id' => $userId,
+            'trip_id' => $tripId,
+            'severity' => $severity,
+            'title' => $title,
+            'description' => $description,
+            'occurred_at' => $occurredAt,
+            'status' => 'open',
+            'created_at' => Carbon::now()->toDateTimeString(),
+        ];
 
         if ($this->faultsHasReportTypeColumn()) {
             $insert['report_type'] = $reportType;
@@ -229,16 +230,17 @@ class FaultService
         $occurredAt = $this->normalizeOccurredAt($data['occurred_at'] ?? null);
 
         $insert = [
-                'organisation_id' => $organisationId,
-                'vehicle_id' => $vehicleId,
-                'user_id' => $userId,
-                'trip_id' => null,
-                'severity' => $severity,
-                'title' => $title,
-                'description' => $description,
-                'occurred_at' => $occurredAt,
-                'status' => 'open',
-                'created_at' => Carbon::now()->toDateTimeString(),
+            'organisation_id' => $organisationId,
+            'vehicle_id' => $vehicleId,
+            'user_id' => $userId,
+            'trip_id' => null,
+            'severity' => $severity,
+            'title' => $title,
+            'description' => $description,
+            'occurred_at' => $occurredAt,
+            'status' => 'open',
+            'created_at' => Carbon::now()->toDateTimeString(),
+        ];
 
         if ($this->faultsHasReportTypeColumn()) {
             $insert['report_type'] = $reportType;

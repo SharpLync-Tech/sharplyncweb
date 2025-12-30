@@ -56,6 +56,11 @@ class StartTripRequest extends FormRequest
         $clientPresenceEnabled = (bool) ($settings['client_presence']['enabled'] ?? false);
         $clientPresenceRequired = (bool) ($settings['client_presence']['required'] ?? false);
 
+        $safetyCheckEnabled = $settingsService ? $settingsService->safetyCheckEnabled() : false;
+        $safetyItems = $settingsService ? $settingsService->safetyCheckItems() : [];
+        $hasSafetyItems = is_array($safetyItems) && count($safetyItems) > 0;
+        $safetyCheckRule = ($safetyCheckEnabled && $hasSafetyItems) ? ['accepted'] : ['nullable'];
+
         $startKmRule = $odometerRequired
             ? ['required', 'integer', 'min:0']
             : ['nullable', 'integer', 'min:0'];
@@ -72,6 +77,7 @@ class StartTripRequest extends FormRequest
             'vehicle_id' => ['required', 'integer'],
             'trip_mode'  => ['required', 'string'],
             'start_km'   => $startKmRule,
+            'safety_check_confirmed' => $safetyCheckRule,
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string', 'max:150'],
             'distance_method' => ['nullable', 'string'],

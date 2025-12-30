@@ -21,6 +21,9 @@
     $odometerRequired = $settingsService->odometerRequired();
     $odometerAllowOverride = $settingsService->odometerAllowOverride();
 
+    $safetyCheckEnabled = $settingsService->safetyCheckEnabled();
+    $safetyCheckItems = $settingsService->safetyCheckItems();
+
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
         ->where('organisation_id', $user['organisation_id'])
@@ -243,6 +246,39 @@
                         <input type="hidden" name="trip_mode" value="business">
                     @endif
                 </div>
+
+                {{-- Pre-Drive Safety Check --}}
+                @if($safetyCheckEnabled)
+                    @php
+                        $safetyCount = is_array($safetyCheckItems) ? count($safetyCheckItems) : 0;
+                    @endphp
+
+                    <div class="form-group" id="preDriveSafetyCheckBlock">
+                        <label class="form-label">Pre-Drive Safety Check</label>
+
+                        @if($safetyCount > 0)
+                            <div class="hint-text" style="margin-bottom: 6px;">
+                                Complete the checks below before starting your trip.
+                            </div>
+
+                            <ul class="text-muted" style="margin-left: 18px;">
+                                @foreach($safetyCheckItems as $item)
+                                    <li>{{ $item['label'] ?? '' }}</li>
+                                @endforeach
+                            </ul>
+
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="safety_check_confirmed" value="1" required>
+                                <strong>I have completed the safety check</strong>
+                            </label>
+                        @else
+                            <div class="alert alert-info">
+                                Safety checks are enabled, but no checklist items are configured yet.
+                                Please ask an admin to configure the checklist.
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 {{-- Client presence (Business trips only) --}}
                 @if($settings['client_presence']['enabled'] ?? false)
