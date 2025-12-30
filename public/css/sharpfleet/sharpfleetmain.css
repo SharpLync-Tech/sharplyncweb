@@ -976,6 +976,86 @@ details.card[open] .incident-toggle-hint-closed {
     padding: 30px;
 }
 
+/* SharpFleet login – match SharpLync login card style */
+.sharpfleet-login .auth-card {
+    background: rgba(10, 42, 77, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--text-light);
+}
+
+.sharpfleet-login .auth-header {
+    background: transparent;
+    padding: 32px 30px 12px;
+}
+
+.sharpfleet-login .auth-icon {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.sharpfleet-login .auth-icon img {
+    width: 80px;
+    height: auto;
+    filter: drop-shadow(0 0 4px rgba(44, 191, 174, 0.3));
+}
+
+.sharpfleet-login .auth-title {
+    color: var(--text-light);
+    margin-bottom: 0;
+}
+
+.sharpfleet-login .auth-form {
+    padding: 22px 30px 28px;
+}
+
+.sharpfleet-login .form-label {
+    color: var(--text-light);
+}
+
+.sharpfleet-login .form-control {
+    color: var(--text-light);
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.sharpfleet-login .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.sharpfleet-login .remember-row {
+    margin-top: -6px;
+    margin-bottom: 18px;
+}
+
+.sharpfleet-login .checkbox-label input[type="checkbox"] {
+    accent-color: var(--primary-color);
+}
+
+.sharpfleet-login .btn.btn-primary {
+    padding: 14px 16px;
+    border-radius: 10px;
+}
+
+.sharpfleet-login .auth-footer {
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sharpfleet-login .auth-footer a {
+    color: var(--primary-color);
+}
+
+.sharpfleet-login .alert.alert-error {
+    background: rgba(255, 227, 227, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--secondary-color);
+}
+
 .form-section {
     margin-bottom: 30px;
 }
