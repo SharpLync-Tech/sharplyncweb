@@ -20,6 +20,8 @@ class StartTripRequest extends FormRequest
         $settingsService = $organisationId > 0 ? new CompanySettingsService($organisationId) : null;
         $settings = $settingsService ? $settingsService->all() : [];
 
+        $manualTimesRequired = $settingsService ? $settingsService->requireManualStartEndTimes() : false;
+
         $tripMode = strtolower(trim((string) $this->input('trip_mode', 'business')));
         $customerEnabled = (bool) ($settings['customer']['enabled'] ?? false);
         $clientPresenceEnabled = (bool) ($settings['client_presence']['enabled'] ?? false);
@@ -31,12 +33,16 @@ class StartTripRequest extends FormRequest
         $clientPresent = $clientPresenceEnabled ? $this->input('client_present') : null;
         $clientAddress = ($clientPresenceEnabled && $clientAddressesEnabled) ? $this->input('client_address') : null;
 
+        $startedAt = $manualTimesRequired ? $this->input('started_at') : null;
+
         $this->merge([
             // Ensure optional select placeholders don't fail validation.
             'customer_id' => $customerId === '' ? null : $customerId,
             'customer_name' => $customerName === '' ? null : $customerName,
             'client_present' => $clientPresent === '' ? null : $clientPresent,
             'client_address' => $clientAddress === '' ? null : $clientAddress,
+
+            'started_at' => $startedAt === '' ? null : $startedAt,
 
             // Normalise legacy trip modes to 'business' so conditional rules work.
             'trip_mode' => in_array($tripMode, ['client', 'no_client', 'internal'], true) ? 'business' : $this->input('trip_mode'),
@@ -52,6 +58,7 @@ class StartTripRequest extends FormRequest
         $settings = $settingsService ? $settingsService->all() : [];
 
         $odometerRequired = $settingsService ? $settingsService->odometerRequired() : true;
+        $manualTimesRequired = $settingsService ? $settingsService->requireManualStartEndTimes() : false;
 
         $clientPresenceEnabled = (bool) ($settings['client_presence']['enabled'] ?? false);
         $clientPresenceRequired = (bool) ($settings['client_presence']['required'] ?? false);
@@ -77,6 +84,7 @@ class StartTripRequest extends FormRequest
             'vehicle_id' => ['required', 'integer'],
             'trip_mode'  => ['required', 'string'],
             'start_km'   => $startKmRule,
+            'started_at' => $manualTimesRequired ? ['required', 'date'] : ['nullable', 'date'],
             'safety_check_confirmed' => $safetyCheckRule,
             'customer_id' => ['nullable', 'integer'],
             'customer_name' => ['nullable', 'string', 'max:150'],

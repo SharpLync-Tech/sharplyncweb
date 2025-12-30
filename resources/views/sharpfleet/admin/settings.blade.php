@@ -11,6 +11,7 @@
             'odometer_required'       => true,
             'odometer_allow_override' => true,
             'allow_private_trips'     => false,
+            'require_manual_start_end_times' => false,
         ],
         'client_presence' => [
             'enabled'         => false,
@@ -136,6 +137,12 @@
                         <input type="checkbox" name="allow_private_trips" value="1"
                                {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                         <strong>Allow your drivers to use the vehicle for private use</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="require_manual_start_end_times" value="1"
+                               {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                        <strong>Require drivers to enter a start time and end time for each trip</strong>
                     </label>
                 </div>
             </div>

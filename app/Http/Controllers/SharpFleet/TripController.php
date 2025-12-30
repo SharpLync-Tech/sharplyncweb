@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\TripService;
+use App\Services\SharpFleet\CompanySettingsService;
 use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -44,20 +45,24 @@ class TripController extends Controller
      */
     public function end(Request $request): RedirectResponse
     {
-        $request->validate([
-            'trip_id' => ['required', 'integer'],
-            'end_km'  => ['required', 'integer', 'min:0'],
-        ]);
-
         $user = session('sharpfleet.user');
 
         if (!$user) {
             abort(401, 'Not authenticated');
         }
 
+        $settings = new CompanySettingsService((int) $user['organisation_id']);
+        $manualTimesRequired = $settings->requireManualStartEndTimes();
+
+        $request->validate([
+            'trip_id' => ['required', 'integer'],
+            'end_km'  => ['required', 'integer', 'min:0'],
+            'ended_at' => $manualTimesRequired ? ['required', 'date'] : ['nullable', 'date'],
+        ]);
+
         $this->tripService->endTrip(
             $user,
-            $request->only(['trip_id', 'end_km'])
+            $request->only(['trip_id', 'end_km', 'ended_at'])
         );
 
         return redirect('/app/sharpfleet/driver')

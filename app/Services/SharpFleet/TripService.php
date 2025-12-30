@@ -21,6 +21,36 @@ class TripService
         $this->bookingService = $bookingService;
     }
 
+    private function parseDriverLocalDateTime(?string $raw, string $companyTimezone): ?Carbon
+    {
+        $value = trim((string) ($raw ?? ''));
+        if ($value === '') {
+            return null;
+        }
+
+        $appTz = (string) (config('app.timezone') ?: 'UTC');
+
+        try {
+            $dt = Carbon::createFromFormat('Y-m-d\\TH:i', $value, $companyTimezone);
+            return $dt ? $dt->setTimezone($appTz) : null;
+        } catch (\Throwable $e) {
+            // fall through
+        }
+
+        try {
+            $dt = Carbon::createFromFormat('Y-m-d\\TH:i:s', $value, $companyTimezone);
+            return $dt ? $dt->setTimezone($appTz) : null;
+        } catch (\Throwable $e) {
+            // fall through
+        }
+
+        try {
+            return Carbon::parse($value, $companyTimezone)->setTimezone($appTz);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     private function normalizeTripMode(int $organisationId, ?string $tripMode): string
     {
         $raw = strtolower(trim((string) ($tripMode ?? '')));
@@ -128,11 +158,17 @@ class TripService
      */
     public function startTrip(array $user, array $data): Trip
     {
-        $now = Carbon::now();
-
         $organisationId = (int) $user['organisation_id'];
 
         $settings = new CompanySettingsService($organisationId);
+
+        $now = Carbon::now();
+        if ($settings->requireManualStartEndTimes()) {
+            $manualStartedAt = $this->parseDriverLocalDateTime($data['started_at'] ?? null, $settings->timezone());
+            if ($manualStartedAt) {
+                $now = $manualStartedAt;
+            }
+        }
 
         $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
 
@@ -414,6 +450,14 @@ class TripService
             ->whereNull('ended_at')
             ->firstOrFail();
 
+        $settings = new CompanySettingsService((int) $user['organisation_id']);
+        if ($settings->requireManualStartEndTimes()) {
+            $manualEndedAt = $this->parseDriverLocalDateTime($data['ended_at'] ?? null, $settings->timezone());
+            if ($manualEndedAt) {
+                $now = $manualEndedAt;
+            }
+        }
+
         $endKm = (int) $data['end_km'];
         $startKm = $trip->start_km !== null ? (int) $trip->start_km : null;
 
@@ -421,6 +465,15 @@ class TripService
             throw ValidationException::withMessages([
                 'end_km' => 'Ending reading must be the same as or greater than the starting reading.',
             ]);
+        }
+
+        if ($trip->started_at) {
+            $startedAt = Carbon::parse((string) $trip->started_at);
+            if ($now->lessThanOrEqualTo($startedAt)) {
+                throw ValidationException::withMessages([
+                    'ended_at' => 'End time must be after start time.',
+                ]);
+            }
         }
 
         $trip->update([

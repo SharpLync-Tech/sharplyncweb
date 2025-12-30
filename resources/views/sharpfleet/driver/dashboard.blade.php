@@ -21,6 +21,8 @@
     $odometerRequired = $settingsService->odometerRequired();
     $odometerAllowOverride = $settingsService->odometerAllowOverride();
 
+    $manualTripTimesRequired = $settingsService->requireManualStartEndTimes();
+
     $safetyCheckEnabled = $settingsService->safetyCheckEnabled();
     $safetyCheckItems = $settingsService->safetyCheckItems();
 
@@ -132,6 +134,14 @@
                 @csrf
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
 
+                @if($manualTripTimesRequired)
+                    <div class="form-group">
+                        <label class="form-label">End time</label>
+                        <input type="datetime-local" name="ended_at" class="form-control" required>
+                        <div class="hint-text">Enter the local time for this trip.</div>
+                    </div>
+                @endif
+
                 <div class="form-group">
                     <label class="form-label">
                         {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours'
@@ -208,6 +218,14 @@
         <div class="card-body">
             <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm">
                 @csrf
+
+                @if($manualTripTimesRequired)
+                    <div class="form-group">
+                        <label class="form-label">Start time</label>
+                        <input type="datetime-local" name="started_at" class="form-control" required>
+                        <div class="hint-text">Enter the local time for this trip.</div>
+                    </div>
+                @endif
 
                 {{-- Vehicle --}}
                 <div class="form-group">
@@ -411,6 +429,13 @@
             </div>
 
             <form id="offlineEndTripForm" class="mt-4">
+                @if($manualTripTimesRequired)
+                    <div class="form-group">
+                        <label class="form-label">End time</label>
+                        <input type="datetime-local" id="offlineEndedAt" class="form-control" required>
+                        <div class="hint-text">Enter the local time for this trip.</div>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label class="form-label">Ending reading</label>
                     <input type="number" id="offlineEndKm" class="form-control" inputmode="numeric" required min="0" placeholder="e.g. 124600">
@@ -423,6 +448,7 @@
     {{-- Minimal JS for start trip form --}}
     <script>
         const COMPANY_TIMEZONE = @json($companyTimezone ?? 'UTC');
+        const MANUAL_TRIP_TIMES_REQUIRED = @json((bool) $manualTripTimesRequired);
 
         const offlineTripAlert = document.getElementById('offlineTripAlert');
 
@@ -748,6 +774,7 @@
         const startTripForm = document.getElementById('startTripForm');
         const offlineEndTripForm = document.getElementById('offlineEndTripForm');
         const offlineEndKm = document.getElementById('offlineEndKm');
+        const offlineEndedAt = document.getElementById('offlineEndedAt');
 
         function buildOfflineStartPayload(form) {
             const fd = new FormData(form);
@@ -759,6 +786,7 @@
                 vehicle_id: Number(payload.vehicle_id),
                 trip_mode: mode,
                 start_km: Number(payload.start_km),
+                started_at: payload.started_at ? String(payload.started_at) : null,
                 customer_id: payload.customer_id ? Number(payload.customer_id) : null,
                 customer_name: payload.customer_name ? String(payload.customer_name) : null,
                 client_present: payload.client_present !== undefined && payload.client_present !== '' ? payload.client_present : null,
@@ -786,13 +814,17 @@
                     showOfflineMessage('Enter a valid starting reading.');
                     return;
                 }
+                if (MANUAL_TRIP_TIMES_REQUIRED && (!payload.started_at || String(payload.started_at).trim() === '')) {
+                    showOfflineMessage('Enter a start time before starting.');
+                    return;
+                }
 
                 const selectedOpt = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
                 const vehicleText = selectedOpt ? selectedOpt.textContent : '';
 
                 setOfflineActiveTrip({
                     ...payload,
-                    started_at: new Date().toISOString(),
+                    started_at: MANUAL_TRIP_TIMES_REQUIRED ? new Date(String(payload.started_at)).toISOString() : new Date().toISOString(),
                     vehicle_text: vehicleText,
                 });
 
@@ -811,6 +843,22 @@
                     return;
                 }
 
+                const endedAtVal = MANUAL_TRIP_TIMES_REQUIRED && offlineEndedAt ? String(offlineEndedAt.value || '').trim() : '';
+                if (MANUAL_TRIP_TIMES_REQUIRED && endedAtVal === '') {
+                    showOfflineMessage('Enter an end time before ending.');
+                    return;
+                }
+
+                let endedAtIso = '';
+                if (MANUAL_TRIP_TIMES_REQUIRED) {
+                    try {
+                        endedAtIso = new Date(endedAtVal).toISOString();
+                    } catch (e) {
+                        showOfflineMessage('Enter a valid end time.');
+                        return;
+                    }
+                }
+
                 const endKmVal = Number(offlineEndKm.value);
                 if (Number.isNaN(endKmVal)) {
                     showOfflineMessage('Enter a valid ending reading.');
@@ -827,7 +875,7 @@
                     start_km: active.start_km,
                     end_km: endKmVal,
                     started_at: active.started_at,
-                    ended_at: new Date().toISOString(),
+                    ended_at: MANUAL_TRIP_TIMES_REQUIRED ? endedAtIso : new Date().toISOString(),
                     customer_id: active.customer_id,
                     customer_name: active.customer_name,
                     client_present: active.client_present,

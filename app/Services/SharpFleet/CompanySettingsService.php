@@ -32,6 +32,7 @@ class CompanySettingsService
             'trip_type_enabled'                => true,
             'trip_type_required'               => true,
             'allow_private_trips'               => false,
+            'require_manual_start_end_times'   => false,
         ],
 
         'client_presence' => [
@@ -151,6 +152,14 @@ class CompanySettingsService
         );
     }
 
+    public function requireManualStartEndTimes(): bool
+    {
+        return (bool) filter_var(
+            $this->settings['trip']['require_manual_start_end_times'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+    }
+
     // ---- Vehicles ----
 
     public function vehicleRegistrationTrackingEnabled(): bool
@@ -235,6 +244,9 @@ class CompanySettingsService
 
         $settings['trip']['allow_private_trips']
             = $request->boolean('allow_private_trips');
+
+        $settings['trip']['require_manual_start_end_times']
+            = $request->boolean('require_manual_start_end_times');
 
         // ---- Client presence ----
         $settings['client_presence']['enabled']
