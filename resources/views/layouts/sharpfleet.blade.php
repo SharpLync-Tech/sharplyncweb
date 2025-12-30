@@ -35,8 +35,7 @@
                     @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
                     @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
                         <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
-                    @endif
-                    <span>SharpFleet</span>
+                    @endif                    
                 </a>
 
                 <div class="sharpfleet-nav-links">
