@@ -88,12 +88,12 @@
 <footer class="sharpfleet-footer">
     <div class="sharpfleet-container">
         <p>
-            &copy; {{ date('Y') }} SharpFleet. Fleet Management powered by
+            &copy; {{ date('Y') }} <h1>SharpFleet. Fleet Management powered by <br><span class="highlight">
             <a href="https://sharplync.com.au"
                target="_blank"
                rel="noopener">                
-                <span class="highlight">SharpLync</span>
-            </a>.
+                SharpLync!</span></h1>                
+            </a>
         </p>
     </div>
 </footer>
