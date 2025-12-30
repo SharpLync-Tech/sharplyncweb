@@ -9,6 +9,41 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    private function nowUtc(): Carbon
+    {
+        return Carbon::now('UTC');
+    }
+
+    private function parseCompanyLocalToUtc(int $organisationId, string $raw): Carbon
+    {
+        $raw = trim($raw);
+        if ($raw === '') {
+            throw ValidationException::withMessages([
+                'planned_start' => 'Planned start is required.',
+            ]);
+        }
+
+        $tz = (new CompanySettingsService($organisationId))->timezone();
+
+        // Controllers produce: YYYY-MM-DD HH:MM:SS (no timezone). Treat as company-local.
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $raw) === 1) {
+            try {
+                return Carbon::createFromFormat('Y-m-d H:i:s', $raw, $tz)->utc();
+            } catch (\Throwable $e) {
+                // fall through
+            }
+        }
+
+        // Fallback: parse as company-local (handles e.g. ISO strings too).
+        try {
+            return Carbon::parse($raw, $tz)->utc();
+        } catch (\Throwable $e) {
+            throw ValidationException::withMessages([
+                'planned_start' => 'Invalid planned date/time.',
+            ]);
+        }
+    }
+
     public function changeBookingVehicle(int $organisationId, int $bookingId, int $newVehicleId): void
     {
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
@@ -42,7 +77,7 @@ class BookingService
         }
 
         // Only allow changing vehicles on upcoming/active bookings.
-        if (Carbon::parse($booking->planned_end)->lessThan(Carbon::now())) {
+        if (Carbon::parse($booking->planned_end)->utc()->lessThan($this->nowUtc())) {
             throw ValidationException::withMessages([
                 'booking' => 'This booking has already ended and cannot be updated.',
             ]);
@@ -61,8 +96,8 @@ class BookingService
             ]);
         }
 
-        $plannedStart = Carbon::parse($booking->planned_start);
-        $plannedEnd = Carbon::parse($booking->planned_end);
+        $plannedStart = Carbon::parse($booking->planned_start)->utc();
+        $plannedEnd = Carbon::parse($booking->planned_end)->utc();
 
         // Prevent overlapping planned bookings for the new vehicle (excluding this booking).
         $overlapExists = DB::connection('sharpfleet')
@@ -102,11 +137,11 @@ class BookingService
         $userId = (int) ($data['user_id'] ?? 0);
         $vehicleId = (int) ($data['vehicle_id'] ?? 0);
 
-        $plannedStart = Carbon::parse((string) ($data['planned_start'] ?? ''));
-        $plannedEnd = Carbon::parse((string) ($data['planned_end'] ?? ''));
+        $plannedStart = $this->parseCompanyLocalToUtc($organisationId, (string) ($data['planned_start'] ?? ''));
+        $plannedEnd = $this->parseCompanyLocalToUtc($organisationId, (string) ($data['planned_end'] ?? ''));
 
         // Disallow bookings starting in the past (date + time must be in the future).
-        if ($plannedStart->lessThan(Carbon::now())) {
+        if ($plannedStart->lessThan($this->nowUtc())) {
             throw ValidationException::withMessages([
                 'planned_start_date' => 'Booking start must be in the future.',
             ]);
@@ -192,7 +227,7 @@ class BookingService
 
         $query->where('bookings.organisation_id', $organisationId)
             ->where('bookings.status', 'planned')
-            ->where('bookings.planned_end', '>=', Carbon::now()->toDateTimeString())
+            ->where('bookings.planned_end', '>=', $this->nowUtc()->toDateTimeString())
             ->orderBy('bookings.planned_start');
 
         $bookings = $query->select(
@@ -247,13 +282,16 @@ class BookingService
 
     public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd)
     {
-        if ($plannedStart->lessThan(Carbon::now())) {
+        $plannedStartUtc = $plannedStart->copy()->utc();
+        $plannedEndUtc = $plannedEnd->copy()->utc();
+
+        if ($plannedStartUtc->lessThan($this->nowUtc())) {
             throw ValidationException::withMessages([
                 'planned_start_date' => 'Booking start must be in the future.',
             ]);
         }
 
-        if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
+        if ($plannedEndUtc->lessThanOrEqualTo($plannedStartUtc)) {
             throw ValidationException::withMessages([
                 'planned_end' => 'End time must be after start time.',
             ]);
@@ -271,14 +309,14 @@ class BookingService
         }
 
         // Vehicle is unavailable if any planned booking overlaps the requested window.
-        $vehiclesQuery->whereNotExists(function ($sub) use ($organisationId, $plannedStart, $plannedEnd) {
+        $vehiclesQuery->whereNotExists(function ($sub) use ($organisationId, $plannedStartUtc, $plannedEndUtc) {
             $sub->select(DB::raw(1))
                 ->from('bookings')
                 ->whereColumn('bookings.vehicle_id', 'vehicles.id')
                 ->where('bookings.organisation_id', $organisationId)
                 ->where('bookings.status', 'planned')
-                ->where('bookings.planned_start', '<', $plannedEnd->toDateTimeString())
-                ->where('bookings.planned_end', '>', $plannedStart->toDateTimeString());
+            ->where('bookings.planned_start', '<', $plannedEndUtc->toDateTimeString())
+            ->where('bookings.planned_end', '>', $plannedStartUtc->toDateTimeString());
         });
 
         return $vehiclesQuery->get();
@@ -293,15 +331,15 @@ class BookingService
             return;
         }
 
-        $now = $now ?: Carbon::now();
+        $nowUtc = ($now ?: $this->nowUtc())->copy()->utc();
 
         $blocking = DB::connection('sharpfleet')
             ->table('bookings')
             ->where('organisation_id', $organisationId)
             ->where('vehicle_id', $vehicleId)
             ->where('status', 'planned')
-            ->where('planned_start', '<=', $now->toDateTimeString())
-            ->where('planned_end', '>=', $now->toDateTimeString())
+            ->where('planned_start', '<=', $nowUtc->toDateTimeString())
+            ->where('planned_end', '>=', $nowUtc->toDateTimeString())
             ->where('user_id', '!=', $userId)
             ->first();
 

@@ -3,19 +3,37 @@
 @section('title', 'SharpFleet – Simple Fleet Management for Real Businesses')
 
 @section('sharpfleet-content')
-<div class="hero">    
-    <h1>Fleet Management,<br><span class="highlight">Without the Headaches</span></h1>
-    <p>
-        SharpFleet is fleet management without the nonsense.
-        Built for sole traders and small to medium businesses.
-        No tracking hardware. No micromanagement.
-        Just the tools you need to stay organised, compliant, and in control.
-    </p>
-    <a href="/app/sharpfleet/admin/register" class="btn">Get Started</a>
-    <p class="mt-2 small text-white">
-        Already have an account? <a href="/app/sharpfleet/login" class="text-primary">Sign in here</a>
-    </p>
-</div>
+    <div class="hero">
+        <h1>
+            Fleet Management,<br>
+            <span class="highlight">Without the Headaches</span>
+        </h1>
+
+        <p class="hero-intro">
+            Logbooks for kilometres and engine hours.<br>
+            No GPS. No hardware. No micromanagement.
+        </p>
+
+        <div class="hero-bam">
+            <p>Work vehicles? <strong>Yep — we’ve got you.</strong></p>
+            <p>Plant and equipment? <strong>Yep — we’ve got you.</strong></p>
+            <p>Client visits or job runs? <strong>Yep — we’ve got you.</strong></p>
+        </div>
+
+        <p class="hero-price">
+            From <strong>$3.50</strong> per month.
+        </p>
+
+        <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
+            Get Started
+        </a>
+
+        <p class="mt-2 small text-white">
+            Already have an account?
+            <a href="/app/sharpfleet/login" class="text-primary">Sign in here</a>
+        </p>
+    </div>
+
 
 <section class="mb-4 hero-features">
     <div class="text-center mb-4">

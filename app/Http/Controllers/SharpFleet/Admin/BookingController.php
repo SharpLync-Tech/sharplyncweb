@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
+use App\Services\SharpFleet\CompanySettingsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -90,7 +91,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'user_id' => ['required', 'integer'],
             'vehicle_id' => ['required', 'integer'],
-            'planned_start_date' => ['required', 'date', 'after_or_equal:today'],
+            'planned_start_date' => ['required', 'date'],
             'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'planned_end_date' => ['required', 'date', 'after_or_equal:planned_start_date'],
@@ -171,8 +172,9 @@ class BookingController extends Controller
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
         $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);
 
-        $plannedStart = Carbon::parse($validated['planned_start_date'] . ' ' . $startTime . ':00');
-        $plannedEnd = Carbon::parse($validated['planned_end_date'] . ' ' . $endTime . ':00');
+        $tz = (new CompanySettingsService((int) $user['organisation_id']))->timezone();
+        $plannedStart = Carbon::createFromFormat('Y-m-d H:i:s', $validated['planned_start_date'] . ' ' . $startTime . ':00', $tz);
+        $plannedEnd = Carbon::createFromFormat('Y-m-d H:i:s', $validated['planned_end_date'] . ' ' . $endTime . ':00', $tz);
 
         $vehicles = $this->bookingService->getAvailableVehicles((int) $user['organisation_id'], $plannedStart, $plannedEnd);
 
