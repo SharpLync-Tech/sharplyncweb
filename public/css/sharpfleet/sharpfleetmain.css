@@ -276,6 +276,29 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     font-size: 16px;
 }
 
+/* Collapsible cards (used to hide optional sections on mobile, e.g., incident reporting) */
+details.card > summary.card-header {
+    cursor: pointer;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+details.card > summary.card-header::-webkit-details-marker {
+    display: none;
+}
+
+details.card[open] > summary.card-header {
+    margin-bottom: 24px;
+}
+
+details.card:not([open]) .incident-toggle-hint-open {
+    display: none;
+}
+
+details.card[open] .incident-toggle-hint-closed {
+    display: none;
+}
+
 /* Trip Info */
 .trip-info {
     margin-bottom: 20px;

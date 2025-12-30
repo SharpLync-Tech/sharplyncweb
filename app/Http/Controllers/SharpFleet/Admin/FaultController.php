@@ -29,6 +29,7 @@ class FaultController extends Controller
 
         $settings = new CompanySettingsService($organisationId);
         $faultsEnabled = $settings->faultsEnabled();
+        $companyTimezone = $settings->timezone();
 
         $faults = collect();
         if ($faultsEnabled) {
@@ -38,6 +39,7 @@ class FaultController extends Controller
         return view('sharpfleet.admin.faults.index', [
             'faultsEnabled' => $faultsEnabled,
             'faults' => $faults,
+            'companyTimezone' => $companyTimezone,
         ]);
     }
 

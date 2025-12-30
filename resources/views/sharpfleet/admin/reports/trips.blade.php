@@ -4,6 +4,14 @@
 
 @section('sharpfleet-content')
 
+@php
+    use App\Services\SharpFleet\CompanySettingsService;
+
+    $user = session('sharpfleet.user');
+    $settingsService = new CompanySettingsService((int) $user['organisation_id']);
+    $companyTimezone = $settingsService->timezone();
+@endphp
+
 <div class="container">
     <div class="page-header">
         <div class="flex-between">
@@ -121,7 +129,7 @@
                                     <td>{{ $t->end_km ? number_format($t->end_km) : '—' }}</td>
                                     <td>{{ $t->client_present ? 'Yes' : 'No' }}</td>
                                     <td>{{ $t->client_address ?: '—' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($t->started_at)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($t->started_at)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -4,7 +4,14 @@
 
 @section('sharpfleet-content')
 
-@php($today = \Carbon\Carbon::now()->format('Y-m-d'))
+@php
+    use App\Services\SharpFleet\CompanySettingsService;
+
+    $user = session('sharpfleet.user');
+    $settingsService = new CompanySettingsService((int) $user['organisation_id']);
+    $companyTimezone = $settingsService->timezone();
+    $today = \Carbon\Carbon::now($companyTimezone)->format('Y-m-d');
+@endphp
 
 <div class="container">
     <div class="page-header">
@@ -357,8 +364,8 @@
                                     </td>
                                     <td>{{ $b->driver_name }}</td>
                                     <td>{{ $b->customer_name_display ?: '—' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->format('d/m/Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
                                         <form method="POST" action="{{ url('/app/sharpfleet/admin/bookings/' . $b->id . '/change-vehicle') }}" class="mb-2">

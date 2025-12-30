@@ -20,10 +20,17 @@
 
 <h1>SharpFleet – Current State</h1>
 <p class="muted">
-  Generated: 2025-12-29<br />
+  Generated: 2025-12-30<br />
   Repo: SharpLync (Laravel / PHP / Blade)<br />
   Scope: Customer SharpFleet portal (<code>/app/sharpfleet</code>) + internal platform admin (<code>/admin/sharpfleet</code>)
 </p>
+
+<h2>0. Updates (Dec 30, 2025)</h2>
+<ul>
+  <li><strong>Incident / fault reporting (opt-in):</strong> implemented driver incident submission (during-trip and standalone) and an admin faults review page with status updates. Feature remains gated behind company settings (<code>faults.enabled</code>) and requires the tenant <code>faults</code> table to be created manually via the provided SQL script.</li>
+  <li><strong>Driver UI simplification:</strong> “Report an Incident” sections are now hidden by default and expand when the driver taps the header (“Tap to open”).</li>
+  <li><strong>Subscriber timezone display:</strong> key SharpFleet date/time displays (trips, bookings, faults) now render in the company’s configured timezone from settings.</li>
+</ul>
 
 <h2>0. Updates (Dec 29, 2025)</h2>
 <ul>
@@ -37,7 +44,7 @@
 <ul>
   <li>SharpFleet is implemented as a Laravel module with its own session namespace (<code>sharpfleet.user</code>) and role model (<code>admin</code> vs <code>driver</code> plus <code>is_driver</code> flag).</li>
   <li>Core functionality is implemented for trips (start/end + offline sync), vehicles CRUD, bookings (optional table), customers (optional table), company settings, users/invites, and trip reports (CSV export).</li>
-  <li>Several features are present but not implemented: faults (driver + admin), vehicle reports, and “start trip from booking”.</li>
+  <li>Fault / incident reporting is implemented as an opt-in company setting and requires manual tenant DB setup (no migrations).</li>
   <li>A PWA-style offline experience exists for the driver dashboard (service worker + offline trip capture), with a “best effort” sync endpoint.</li>
   <li>Trial gating is enforced via middleware (<code>SharpFleetTrialCheck</code>) and now delegates all allow/deny decisions to a central service (<code>App\Services\SharpFleet\EntitlementService</code>).</li>
 </ul>
@@ -482,12 +489,11 @@
   <li>Customers: add + CSV import (<code>CustomerController</code> + <code>CustomerService</code>), gated by <code>customers</code> table existence.</li>
   <li>Driver invites: admin invite + public acceptance (<code>SharpFleet\Admin\DriverInviteController</code> and <code>SharpFleet\DriverInviteController</code>).</li>
   <li>Reports: trips report + CSV export (<code>ReportController@trips</code>).</li>
+  <li>Faults / incidents: driver submission + admin review/status updates (<code>FaultController</code>, <code>SharpFleet\Admin\FaultController</code>, <code>FaultService</code>), gated by company setting + tenant table existence.</li>
 </ul>
 
 <h3>Not Implemented / Stubbed</h3>
 <ul>
-  <li>Fault capture endpoints (driver): <code>App\Http\Controllers\SharpFleet\FaultController</code> methods are stubbed.</li>
-  <li>Fault admin pages: <code>App\Http\Controllers\SharpFleet\Admin\FaultController</code> is stubbed.</li>
   <li>Vehicle report: <code>SharpFleet\Admin\ReportController@vehicles</code> is stubbed.</li>
   <li>Start trip from booking: route exists, but <code>App\Http\Controllers\SharpFleet\BookingController@startTrip</code> aborts 404.</li>
 </ul>

@@ -64,8 +64,8 @@
                                     @endphp
                                     <tr>
                                         <td>
-                                            <div class="fw-bold">{{ \Carbon\Carbon::parse($f->created_at)->format('M j, Y') }}</div>
-                                            <div class="text-muted">{{ \Carbon\Carbon::parse($f->created_at)->format('g:i A') }}</div>
+                                            <div class="fw-bold">{{ \Carbon\Carbon::parse($f->created_at)->timezone($companyTimezone ?? 'UTC')->format('M j, Y') }}</div>
+                                            <div class="text-muted">{{ \Carbon\Carbon::parse($f->created_at)->timezone($companyTimezone ?? 'UTC')->format('g:i A') }}</div>
                                         </td>
                                         <td>{{ $vehicleLabel }}</td>
                                         <td>{{ $driverName }}</td>

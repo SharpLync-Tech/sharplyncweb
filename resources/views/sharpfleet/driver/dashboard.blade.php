@@ -16,6 +16,7 @@
     $allowPrivateTrips = $settingsService->allowPrivateTrips();
     $faultsEnabled = $settingsService->faultsEnabled();
     $allowFaultsDuringTrip = $settingsService->allowFaultsDuringTrip();
+    $companyTimezone = $settingsService->timezone();
 
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
@@ -89,7 +90,7 @@
                     <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
                 </div>
                 <div class="info-row">
-                    <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->format('M j, Y g:i A') }}
+                    <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->timezone($companyTimezone)->format('M j, Y g:i A') }}
                 </div>
                 <div class="info-row">
                     <strong>
@@ -141,10 +142,14 @@
     </div>
 
     @if($faultsEnabled)
-        <div class="card" id="reportFaultFromTripCard">
-            <div class="card-header">
-                <h3 class="card-title">Report an Incident</h3>
-            </div>
+        <details class="card" id="reportFaultFromTripCard">
+            <summary class="card-header">
+                <div class="flex-between">
+                    <h3 class="card-title mb-0">Report an Incident</h3>
+                    <span class="hint-text incident-toggle-hint-closed">Tap to open</span>
+                    <span class="hint-text incident-toggle-hint-open">Tap to close</span>
+                </div>
+            </summary>
             <div class="card-body">
                 @if(!$allowFaultsDuringTrip)
                     <div class="alert alert-info">
@@ -178,7 +183,7 @@
                     </form>
                 @endif
             </div>
-        </div>
+        </details>
     @endif
 @else
     {{-- Start Trip Card --}}
@@ -286,10 +291,14 @@
     </div>
 
     @if($faultsEnabled)
-        <div class="card" id="reportFaultStandaloneCard">
-            <div class="card-header">
-                <h3 class="card-title">Report an Incident</h3>
-            </div>
+        <details class="card" id="reportFaultStandaloneCard">
+            <summary class="card-header">
+                <div class="flex-between">
+                    <h3 class="card-title mb-0">Report an Incident</h3>
+                    <span class="hint-text incident-toggle-hint-closed">Tap to open</span>
+                    <span class="hint-text incident-toggle-hint-open">Tap to close</span>
+                </div>
+            </summary>
             <div class="card-body">
                 <form method="POST" action="/app/sharpfleet/faults/standalone">
                     @csrf
@@ -325,7 +334,7 @@
                     <button type="submit" class="btn btn-secondary btn-full">Submit Incident</button>
                 </form>
             </div>
-        </div>
+        </details>
     @endif
 
     {{-- Offline active trip (shown via JS when a trip was started offline) --}}
@@ -352,6 +361,8 @@
 
     {{-- Minimal JS for start trip form --}}
     <script>
+        const COMPANY_TIMEZONE = @json($companyTimezone ?? 'UTC');
+
         const offlineTripAlert = document.getElementById('offlineTripAlert');
 
         function showOfflineMessage(msg) {
@@ -422,7 +433,11 @@
 
             if (v) v.textContent = t.vehicle_text || '—';
             if (s) {
-                try { s.textContent = new Date(t.started_at).toLocaleString(); } catch (e) { s.textContent = t.started_at; }
+                try {
+                    s.textContent = new Date(t.started_at).toLocaleString(undefined, { timeZone: COMPANY_TIMEZONE });
+                } catch (e) {
+                    try { s.textContent = new Date(t.started_at).toLocaleString(); } catch (e2) { s.textContent = t.started_at; }
+                }
             }
             if (skm) skm.textContent = String(t.start_km ?? '—');
         }
