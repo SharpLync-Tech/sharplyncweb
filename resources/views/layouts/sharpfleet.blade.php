@@ -31,7 +31,7 @@
     <header class="sharpfleet-header">
         <div class="sharpfleet-container">
             <nav class="sharpfleet-nav">
-                <a href="/app/sharpfleet/login" class="sharpfleet-logo">
+                <a href="/app/sharpfleet" class="sharpfleet-logo">
                     @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
                     @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
                         <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
