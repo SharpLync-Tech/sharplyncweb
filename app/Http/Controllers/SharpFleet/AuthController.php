@@ -89,7 +89,9 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->session()->forget('sharpfleet');
+        // SharpFleet auth is stored under the 'sharpfleet.user' session key.
+        // Only clear SharpFleet session data (do not invalidate the entire Laravel session).
+        $request->session()->forget('sharpfleet.user');
         Cookie::queue(Cookie::forget('sharpfleet_remember'));
 
         return redirect('/app/sharpfleet');
