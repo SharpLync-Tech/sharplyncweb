@@ -17,7 +17,7 @@
         <div class="hero-bam">
             <p>Work vehicles? <strong class="text-primary">Yep — we’ve got you.</strong></p>
             <p>Plant and equipment? <strong class="text-primary">Yep — we’ve got you.</strong></p>
-            <p>Client visits or job runs? <strong class="text-primary">Yep — we’ve got you.</strong></p>
+            <p>Client visits or job runs? <strong class="text-primary">Yep — we’ve got you too.</strong></p>
         </div>
 
         <p class="hero-price">

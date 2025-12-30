@@ -61,6 +61,33 @@ class CompanySettingsService
             'allow_during_trip'         => true,
             'require_end_of_trip_check' => false,
         ],
+
+        // Reporting preferences (used by SharpFleet admin reports)
+        // These defaults preserve current behaviour unless a subscriber overrides them in settings_json.
+        'reporting' => [
+            // Whether trips with trip_mode='private' should be included in reports.
+            'include_private_trips' => true,
+
+            // If false, the reporting page will show applied settings but will not allow changing filters.
+            'allow_overrides' => true,
+
+            // Granular overrides (only used when allow_overrides=true)
+            'allow_date_override' => true,
+            'allow_vehicle_override' => true,
+            'allow_customer_override' => true,
+
+            // Default date range rule used when overrides are not provided/allowed.
+            // Supported: month_to_date, last_30_days
+            'default_date_range' => 'month_to_date',
+
+            // Optional guardrail for manual date ranges when overrides are allowed.
+            // Null means no maximum.
+            'max_date_range_days' => null,
+
+            // Optional locked defaults when overrides are disabled.
+            'default_vehicle_id' => null,
+            'default_customer_id' => null,
+        ],
     ];
 
     /**

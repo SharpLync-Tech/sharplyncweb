@@ -5,11 +5,11 @@
 @section('sharpfleet-content')
 
 @php
-    use App\Services\SharpFleet\CompanySettingsService;
-
-    $user = session('sharpfleet.user');
-    $settingsService = new CompanySettingsService((int) $user['organisation_id']);
-    $companyTimezone = $settingsService->timezone();
+    $companyTimezone = $companyTimezone ?? config('app.timezone');
+    $uiVehicleId = $ui['vehicle_id'] ?? request('vehicle_id');
+    $uiStartDate = $ui['start_date'] ?? request('start_date');
+    $uiEndDate = $ui['end_date'] ?? request('end_date');
+    $uiCustomerId = $ui['customer_id'] ?? request('customer_id');
 @endphp
 
 <div class="container">
@@ -22,10 +22,10 @@
             <div class="btn-group">
                 <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}" class="d-inline">
                     <input type="hidden" name="export" value="csv">
-                    <input type="hidden" name="vehicle_id" value="{{ request('vehicle_id') }}">
-                    <input type="hidden" name="start_date" value="{{ request('start_date') }}">
-                    <input type="hidden" name="end_date" value="{{ request('end_date') }}">
-                    <input type="hidden" name="customer_id" value="{{ request('customer_id') }}">
+                    <input type="hidden" name="vehicle_id" value="{{ $uiVehicleId }}">
+                    <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
+                    <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
+                    <input type="hidden" name="customer_id" value="{{ $uiCustomerId }}">
                     <button type="submit" class="btn btn-primary">Export CSV</button>
                 </form>
             </div>
@@ -33,51 +33,75 @@
     </div>
 
     {{-- Filters --}}
-    <div class="card">
+    <div class="card mb-3">
         <div class="card-body">
             <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
+                <div class="alert alert-info mb-3">
+                    <strong>Applied settings</strong><br>
+                    Reporting period: {{ $applied['date_range_label'] ?? '—' }}<br>
+                    Private trips included: {{ ($applied['include_private_trips'] ?? false) ? 'Yes' : 'No' }}<br>
+                    Vehicle filter: {{ $applied['vehicle_label'] ?? 'All vehicles' }}<br>
+                    Customer linking: {{ ($applied['customer_linking_enabled'] ?? false) ? 'Enabled' : 'Disabled' }}<br>
+                    Customer filter: {{ $applied['customer_label'] ?? 'All customers' }}
+                    @if(!empty($applied['override_note']))
+                        <br>{{ $applied['override_note'] }}
+                    @endif
+                </div>
+
                 <div class="grid grid-3">
                     <div class="form-group">
                         <label class="form-label">Vehicle</label>
-                        <select name="vehicle_id" class="form-control">
+                        <select name="vehicle_id" class="form-control" {{ !($ui['allow_vehicle_override'] ?? true) ? 'disabled' : '' }}>
                             <option value="">All Vehicles</option>
-                            @foreach($vehicles as $v)
-                                <option value="{{ $v->id }}" {{ request('vehicle_id') == $v->id ? 'selected' : '' }}>
-                                    {{ $v->name }} ({{ $v->registration_number }})
+                            @foreach($vehicles as $vehicle)
+                                <option value="{{ $vehicle->id }}" {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}>
+                                    {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                                 </option>
                             @endforeach
                         </select>
+                        @if(!($ui['allow_vehicle_override'] ?? true))
+                            <div class="text-muted mt-1">Vehicle selection is locked by company settings.</div>
+                        @endif
                     </div>
+
                     <div class="form-group">
                         <label class="form-label">Start Date</label>
-                        <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
+                        <input type="date" name="start_date" value="{{ $uiStartDate }}" class="form-control" {{ !($ui['allow_date_override'] ?? true) ? 'disabled' : '' }}>
+                        @if(!($ui['allow_date_override'] ?? true))
+                            <div class="text-muted mt-1">Date range is locked by company settings.</div>
+                        @endif
                     </div>
+
                     <div class="form-group">
                         <label class="form-label">End Date</label>
-                        <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
+                        <input type="date" name="end_date" value="{{ $uiEndDate }}" class="form-control" {{ !($ui['allow_date_override'] ?? true) ? 'disabled' : '' }}>
                     </div>
                 </div>
 
-                <div class="grid grid-3 mt-3">
-                    <div class="form-group">
-                        <label class="form-label">Customer</label>
-                        @if(!empty($hasCustomersTable) && $hasCustomersTable)
-                            <select name="customer_id" class="form-control">
+                @if(($ui['show_customer_filter'] ?? false) && ($hasCustomersTable ?? false))
+                    <div class="grid grid-3 mt-3">
+                        <div class="form-group">
+                            <label class="form-label">Customer</label>
+                            <select name="customer_id" class="form-control" {{ !($ui['allow_customer_override'] ?? true) ? 'disabled' : '' }}>
                                 <option value="">All Customers</option>
-                                @foreach($customers as $c)
-                                    <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
-                                        {{ $c->name }}
+                                @foreach($customers as $customer)
+                                    <option value="{{ $customer->id }}" {{ (string)$uiCustomerId === (string)$customer->id ? 'selected' : '' }}>
+                                        {{ $customer->name }}
                                     </option>
                                 @endforeach
                             </select>
-                        @else
-                            <select class="form-control" disabled>
-                                <option>Customers table not available</option>
-                            </select>
-                        @endif
+                            @if(!($ui['allow_customer_override'] ?? true))
+                                <div class="text-muted mt-1">Customer selection is locked by company settings.</div>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
+
                 <button type="submit" class="btn btn-secondary mt-3">Filter</button>
+
+                <div class="mt-2 text-muted">
+                    Times shown in {{ $companyTimezone }}
+                </div>
             </form>
         </div>
     </div>
