@@ -32,9 +32,9 @@
         <div class="sharpfleet-container">
             <nav class="sharpfleet-nav">
                 <a href="/sharpfleet" class="sharpfleet-logo">
-                    @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
+                    @php($sharpfleetLogoPath = public_path('images/sharpfleet/sflogo.png'))
                     @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
-                        <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
+                        <img src="{{ asset('images/sharpfleet/sflogo.png') }}" alt="SharpFleet Logo">
                     @endif
                     <span>SharpFleet</span>
                 </a>
