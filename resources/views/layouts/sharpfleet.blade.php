@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SharpFleet - Advanced Fleet Management')</title>
@@ -91,8 +91,8 @@
             &copy; {{ date('Y') }} SharpFleet. Fleet Management powered by
             <a href="https://sharplync.com.au"
                target="_blank"
-               rel="noopener">
-                SharpLync
+               rel="noopener">                
+                <span class="highlight">SharpLync</span>
             </a>.
         </p>
     </div>

@@ -4,7 +4,7 @@
  * - Does not cache POST/PUT/etc
  */
 
-const CACHE_VERSION = 'sharpfleet-v4';
+const CACHE_VERSION = 'sharpfleet-v5';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 
@@ -101,6 +101,22 @@ self.addEventListener('fetch', (event) => {
 
   // Network-first for page navigations; fallback to cached page, then offline.html
   if (isNavigationRequest(req)) {
+    // Logout must never fall back to cached authenticated pages.
+    // Always hit the network, and clear cached pages so the UI can't appear "stuck" after logout.
+    if (url.pathname === '/app/sharpfleet/logout') {
+      event.respondWith((async () => {
+        try {
+          const res = await fetch(req, { cache: 'no-store', credentials: 'same-origin' });
+          try { await caches.delete(PAGE_CACHE); } catch (e) { /* ignore */ }
+          return res;
+        } catch (e) {
+          try { await caches.delete(PAGE_CACHE); } catch (e2) { /* ignore */ }
+          return caches.match('/app/sharpfleet-offline.html');
+        }
+      })());
+      return;
+    }
+
     event.respondWith((async () => {
       try {
         // Avoid serving stale authenticated pages from the HTTP cache.
