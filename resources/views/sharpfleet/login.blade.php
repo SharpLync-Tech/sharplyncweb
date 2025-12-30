@@ -15,6 +15,12 @@
         <form method="POST" action="/app/sharpfleet/login" class="auth-form">
             @csrf
 
+            @if (session('status'))
+                <div class="alert alert-success mb-3">
+                    {{ session('status') }}
+                </div>
+            @endif
+
             @if($errors->any())
                 <div class="alert alert-error mb-3">
                     {{ $errors->first() }}
@@ -29,6 +35,10 @@
             <div class="form-group">
                 <label class="form-label" for="password">Password</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-group" style="margin-top: -8px; margin-bottom: 12px;">
+                <a href="/app/sharpfleet/password/forgot" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">Forgot password?</a>
             </div>
 
             <div class="form-group remember-row">

@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\SharpFleet\AuthController;
+use App\Http\Controllers\SharpFleet\Auth\ForgotPasswordController as SharpFleetForgotPasswordController;
+use App\Http\Controllers\SharpFleet\Auth\ResetPasswordController as SharpFleetResetPasswordController;
 use App\Http\Controllers\SharpFleet\SsoController;
 use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
@@ -83,6 +85,12 @@ Route::prefix('app/sharpfleet')
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/logout', [AuthController::class, 'logout']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Password reset (public)
+    Route::get('/password/forgot', [SharpFleetForgotPasswordController::class, 'showLinkRequestForm']);
+    Route::post('/password/email', [SharpFleetForgotPasswordController::class, 'sendResetLinkEmail']);
+    Route::get('/password/reset/{token}', [SharpFleetResetPasswordController::class, 'showResetForm']);
+    Route::post('/password/reset', [SharpFleetResetPasswordController::class, 'reset']);
 
     // Registration (public - no auth required)
     Route::get('/admin/register', [RegisterController::class, 'showRegistrationForm']);
