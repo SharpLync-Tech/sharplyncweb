@@ -94,7 +94,8 @@ class AuthController extends Controller
         $request->session()->forget('sharpfleet.user');
         Cookie::queue(Cookie::forget('sharpfleet_remember'));
 
-        return redirect('/app/sharpfleet');
+        // Redirect to the public SharpFleet landing page on the canonical host (no :8080).
+        return redirect()->away('https://' . $request->getHost() . '/sharpfleet');
     }
 
     // ======================================================
