@@ -204,6 +204,39 @@
             </div>
         </div>
 
+        {{-- Fault / Incident Reporting --}}
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Incident / Fault Reporting</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    Enable this if drivers need to report incidents or faults against a vehicle.
+                    When enabled, drivers will see a “Report Incident” option in their portal.
+                </p>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enable_fault_reporting" value="1"
+                               {{ ($settings['faults']['enabled'] ?? false) ? 'checked' : '' }}>
+                        <strong>Enable incident/fault reporting</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="allow_fault_during_trip" value="1"
+                               {{ ($settings['faults']['allow_during_trip'] ?? true) ? 'checked' : '' }}>
+                        <strong>Allow drivers to report incidents during a trip</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="require_end_of_trip_fault_check" value="1"
+                               {{ ($settings['faults']['require_end_of_trip_check'] ?? false) ? 'checked' : '' }}>
+                        <strong>Require a quick incident check when ending a trip (coming soon)</strong>
+                    </label>
+                </div>
+            </div>
+        </div>
+
         {{-- Actions --}}
         <div class="btn-group">
             <button type="submit" name="save" value="1" class="btn btn-primary">Save settings</button>

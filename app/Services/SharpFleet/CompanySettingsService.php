@@ -56,6 +56,7 @@ class CompanySettingsService
         ],
 
         'faults' => [
+            'enabled'                  => false,
             'allow_during_trip'         => true,
             'require_end_of_trip_check' => false,
         ],
@@ -208,6 +209,11 @@ class CompanySettingsService
         return (bool) $this->settings['faults']['allow_during_trip'];
     }
 
+    public function faultsEnabled(): bool
+    {
+        return (bool) ($this->settings['faults']['enabled'] ?? false);
+    }
+
     public function requireEndOfTripFaultCheck(): bool
     {
         return (bool) $this->settings['faults']['require_end_of_trip_check'];
@@ -256,6 +262,16 @@ class CompanySettingsService
         // ---- Safety check ----
         $settings['safety_check']['enabled']
             = $request->boolean('enable_safety_check');
+
+        // ---- Fault / incident reporting ----
+        $settings['faults']['enabled']
+            = $request->boolean('enable_fault_reporting');
+
+        $settings['faults']['allow_during_trip']
+            = $request->boolean('allow_fault_during_trip', true);
+
+        $settings['faults']['require_end_of_trip_check']
+            = $request->boolean('require_end_of_trip_fault_check');
 
         // ---- Vehicles ----
         $settings['vehicles']['registration_tracking_enabled']

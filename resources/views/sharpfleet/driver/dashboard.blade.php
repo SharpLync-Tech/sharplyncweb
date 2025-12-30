@@ -14,6 +14,8 @@
     $settings = $settingsService->all();
 
     $allowPrivateTrips = $settingsService->allowPrivateTrips();
+    $faultsEnabled = $settingsService->faultsEnabled();
+    $allowFaultsDuringTrip = $settingsService->allowFaultsDuringTrip();
 
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
@@ -137,6 +139,47 @@
             </form>
         </div>
     </div>
+
+    @if($faultsEnabled)
+        <div class="card" id="reportFaultFromTripCard">
+            <div class="card-header">
+                <h3 class="card-title">Report an Incident</h3>
+            </div>
+            <div class="card-body">
+                @if(!$allowFaultsDuringTrip)
+                    <div class="alert alert-info">
+                        Incident reporting is enabled, but reporting during an active trip is disabled.
+                    </div>
+                @else
+                    <form method="POST" action="/app/sharpfleet/faults/from-trip">
+                        @csrf
+                        <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
+
+                        <div class="form-group">
+                            <label class="form-label">Severity</label>
+                            <select name="severity" class="form-control" required>
+                                <option value="minor">Minor</option>
+                                <option value="major">Major</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Title (optional)</label>
+                            <input type="text" name="title" class="form-control" maxlength="150" placeholder="e.g. Tyre puncture / Warning light">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="4" required placeholder="Describe what happened and any immediate action taken."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-full">Submit Incident</button>
+                    </form>
+                @endif
+            </div>
+        </div>
+    @endif
 @else
     {{-- Start Trip Card --}}
     <div class="card" id="startTripCard">
@@ -241,6 +284,49 @@
             </form>
         </div>
     </div>
+
+    @if($faultsEnabled)
+        <div class="card" id="reportFaultStandaloneCard">
+            <div class="card-header">
+                <h3 class="card-title">Report an Incident</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/app/sharpfleet/faults/standalone">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label">Vehicle</label>
+                        <select name="vehicle_id" class="form-control" required>
+                            @foreach ($vehicles as $vehicle)
+                                <option value="{{ $vehicle->id }}">{{ $vehicle->name }} ({{ $vehicle->registration_number }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Severity</label>
+                        <select name="severity" class="form-control" required>
+                            <option value="minor">Minor</option>
+                            <option value="major">Major</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Title (optional)</label>
+                        <input type="text" name="title" class="form-control" maxlength="150" placeholder="e.g. Service due / Panel damage">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="4" required placeholder="Describe the fault/incident."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-full">Submit Incident</button>
+                </form>
+            </div>
+        </div>
+    @endif
 
     {{-- Offline active trip (shown via JS when a trip was started offline) --}}
     <div class="card" id="offlineActiveTripCard" style="display:none;">
