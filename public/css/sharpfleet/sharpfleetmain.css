@@ -42,11 +42,11 @@ html, body {
 
 /* Page headers sit on the global gradient */
 .page-title {
-    color: var(--text-light);
+    color: #FFFFFF !important;
 }
 
 .page-description {
-    color: rgba(255, 255, 255, 0.85);
+    color: #FFFFFF !important;
 }
 
 /* Ensure no inheritance from parent styles */
@@ -649,12 +649,12 @@ details.card[open] .incident-toggle-hint-closed {
 .page-title {
     font-size: 32px;
     font-weight: 700;
-    color: var(--secondary-color);
+    color: #FFFFFF !important;
     margin-bottom: 6px;
 }
 
 .page-description {
-    color: var(--text-muted);
+    color: #FFFFFF !important;
     margin: 0;
 }
 
@@ -862,6 +862,7 @@ details.card[open] .incident-toggle-hint-closed {
 
     .page-title {
         font-size: 24px;
+        color: #FFFFFF !important;
     }
 
     .form-group {
