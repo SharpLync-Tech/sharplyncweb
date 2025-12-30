@@ -374,6 +374,19 @@ details.card[open] .incident-toggle-hint-closed {
     background: var(--bg-white);
 }
 
+/* iOS/Safari: datetime-local inputs can render wider than their container */
+.sharpfleet-trip-datetime {
+    max-width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 430px) {
+    .sharpfleet-trip-datetime {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);

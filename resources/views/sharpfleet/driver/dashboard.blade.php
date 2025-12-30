@@ -137,7 +137,7 @@
                 @if($manualTripTimesRequired)
                     <div class="form-group">
                         <label class="form-label">End time</label>
-                        <input type="datetime-local" name="ended_at" class="form-control" required>
+                        <input type="datetime-local" name="ended_at" class="form-control sharpfleet-trip-datetime" required>
                         <div class="hint-text">Enter the local time for this trip.</div>
                     </div>
                 @endif
@@ -240,7 +240,7 @@
                 @if($manualTripTimesRequired)
                     <div class="form-group">
                         <label class="form-label">Start time</label>
-                        <input type="datetime-local" name="started_at" class="form-control" required>
+                        <input type="datetime-local" name="started_at" class="form-control sharpfleet-trip-datetime" required>
                         <div class="hint-text">Enter the local time for this trip.</div>
                     </div>
                 @endif
@@ -291,8 +291,12 @@
 
                 {{-- Customer / Client (optional; never blocks trip start) --}}
                 @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
+                    @php
+                        $partyLabel = trim((string) $settingsService->clientLabel());
+                        $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
+                    @endphp
                     <div id="customerBlock" class="form-group">
-                        <label class="form-label">Customer / Client (optional)</label>
+                        <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
 
                         @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
                             <select id="customerSelect" name="customer_id" class="form-control">
@@ -301,11 +305,11 @@
                                     <option value="{{ $c->id }}">{{ $c->name }}</option>
                                 @endforeach
                             </select>
-                            <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
+                            <div class="hint-text">If the {{ $partyLabelLower }} isn’t in the list, type a name below.</div>
                         @endif
 
                         @if($settings['customer']['allow_manual'] ?? true)
-                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name (e.g. Jannie B / Job 12345)">
+                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)">
                         @endif
                     </div>
                 @endif
@@ -432,7 +436,7 @@
                 @if($manualTripTimesRequired)
                     <div class="form-group">
                         <label class="form-label">End time</label>
-                        <input type="datetime-local" id="offlineEndedAt" class="form-control" required>
+                        <input type="datetime-local" id="offlineEndedAt" class="form-control sharpfleet-trip-datetime" required>
                         <div class="hint-text">Enter the local time for this trip.</div>
                     </div>
                 @endif
