@@ -200,7 +200,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 }
 
 .hero h1 .highlight {
-  color: #2CBFAE;
+    color: var(--primary-color);
   position: relative;
   display: inline-block;
 }
@@ -210,7 +210,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
   position: absolute;
   bottom: -6px; left: 0;
   height: 3px; width: 0;
-  background-color: #2CBFAE;
+    background-color: var(--primary-color);
   animation: underline 1.5s ease-out 1s forwards;
 }
 @keyframes underline { to { width: 100%; } }
@@ -222,6 +222,37 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Home hero spacing tweaks */
+.hero p.hero-intro {
+    margin-bottom: 20px;
+}
+
+.hero .hero-bam {
+    margin: 0 auto 24px auto;
+    max-width: 600px;
+}
+
+.hero .hero-bam p {
+    margin-bottom: 10px;
+    max-width: none;
+}
+
+.hero .hero-bam p:last-child {
+    margin-bottom: 0;
+}
+
+.hero p.hero-price {
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+.hero p.small {
+    font-size: 12px;
+    margin-bottom: 0;
+    max-width: none;
+    opacity: 0.85;
 }
 
 .hero .btn {
