@@ -934,6 +934,30 @@ details.card[open] .incident-toggle-hint-closed {
     font-size: 14px;
 }
 
+/* Footer SharpLync highlight */
+.sharpfleet-footer .highlight {
+    color: #2CBFAE;
+    position: relative;
+    display: inline-block;
+}
+
+/* Underline animation */
+.sharpfleet-footer .highlight::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 0;
+    background-color: #2CBFAE;
+    animation: underline 1.2s ease-out 0.5s forwards;
+}
+@keyframes underline {
+    to {
+        width: 100%;
+    }
+}
+
 /* Registration/Auth Styles */
 .auth-container {
     display: flex;
