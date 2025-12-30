@@ -62,8 +62,8 @@
 
 <div id="offlineTripAlert" class="alert alert-info" style="display:none;"></div>
 
-<div class="alert alert-info">
-    Trips (start/end + readings) can be captured offline once this Driver Dashboard has been opened online at least once.
+<div class="hint-text" style="margin-bottom: 12px;">
+    Offline mode: Trips (start/end + readings) can be captured offline once this Driver Dashboard has been opened online at least once.
 </div>
 
 @if (session('success'))
