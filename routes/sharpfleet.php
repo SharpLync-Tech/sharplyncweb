@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\SharpFleet\AuthController;
 use App\Http\Controllers\SharpFleet\Auth\ForgotPasswordController as SharpFleetForgotPasswordController;
 use App\Http\Controllers\SharpFleet\Auth\ResetPasswordController as SharpFleetResetPasswordController;
+use App\Http\Controllers\SharpFleet\HelpController;
 use App\Http\Controllers\SharpFleet\SsoController;
 use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
@@ -229,6 +230,9 @@ Route::prefix('app/sharpfleet')
             Route::get('/reports/trips', [ReportController::class, 'trips']);
             Route::get('/reports/vehicles', [ReportController::class, 'vehicles']);
 
+            // Help
+            Route::get('/help', [HelpController::class, 'admin']);
+
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
@@ -256,6 +260,9 @@ Route::prefix('app/sharpfleet')
         ->group(function () {
 
             Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));
+
+            // Help
+            Route::get('/driver/help', [HelpController::class, 'driver']);
 
             // Trips
             Route::post('/trips/start', [TripController::class, 'start']);
