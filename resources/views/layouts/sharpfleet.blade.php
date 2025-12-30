@@ -49,10 +49,12 @@
                             <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-link">Reports</a>
                             <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-link">Settings</a>
                             <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-link">Company</a>
+                            <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver View</a>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
                             <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link">Bookings</a>
+                            <a href="/app/sharpfleet/driver/help" class="sharpfleet-nav-link">Help</a>
                         @endif
                         <div class="sharpfleet-user-info">
                             <div class="sharpfleet-user-avatar">
