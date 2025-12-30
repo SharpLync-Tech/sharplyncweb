@@ -92,7 +92,7 @@ class AuthController extends Controller
         $request->session()->forget('sharpfleet');
         Cookie::queue(Cookie::forget('sharpfleet_remember'));
 
-        return redirect('/app/sharpfleet/login');
+        return redirect('/app/sharpfleet');
     }
 
     // ======================================================
