@@ -26,6 +26,7 @@ class FaultController extends Controller
 
         $validated = $request->validate([
             'trip_id' => ['required', 'integer'],
+            'report_type' => ['required', 'string', 'in:issue,accident'],
             'severity' => ['required', 'string', 'in:minor,major,critical'],
             'title' => ['nullable', 'string', 'max:150'],
             'description' => ['required', 'string', 'max:5000'],
@@ -34,7 +35,7 @@ class FaultController extends Controller
 
         $this->faultService->createFaultFromTrip($user, $validated);
 
-        return back()->with('success', 'Incident reported successfully.');
+        return back()->with('success', 'Vehicle issue/accident reported successfully.');
     }
 
     public function storeStandalone(Request $request): RedirectResponse
@@ -47,6 +48,7 @@ class FaultController extends Controller
 
         $validated = $request->validate([
             'vehicle_id' => ['required', 'integer'],
+            'report_type' => ['required', 'string', 'in:issue,accident'],
             'severity' => ['required', 'string', 'in:minor,major,critical'],
             'title' => ['nullable', 'string', 'max:150'],
             'description' => ['required', 'string', 'max:5000'],
@@ -55,6 +57,6 @@ class FaultController extends Controller
 
         $this->faultService->createFaultStandalone($user, $validated);
 
-        return back()->with('success', 'Incident reported successfully.');
+        return back()->with('success', 'Vehicle issue/accident reported successfully.');
     }
 }

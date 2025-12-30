@@ -204,34 +204,34 @@
             </div>
         </div>
 
-        {{-- Fault / Incident Reporting --}}
+        {{-- Vehicle Issue / Accident Reporting --}}
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Incident / Fault Reporting</h2>
+                <h2 class="card-title">Vehicle Issue / Accident Reporting</h2>
             </div>
             <div class="card-body">
                 <p class="text-muted mb-3">
-                    Enable this if drivers need to report incidents or faults against a vehicle.
-                    When enabled, drivers will see a “Report Incident” option in their portal.
+                    Enable this if drivers need to report vehicle issues or accidents against a vehicle.
+                    When enabled, drivers will see a “Report a Vehicle Issue / Accident” option in their portal.
                 </p>
 
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="enable_fault_reporting" value="1"
                                {{ ($settings['faults']['enabled'] ?? false) ? 'checked' : '' }}>
-                        <strong>Enable incident/fault reporting</strong>
+                           <strong>Enable vehicle issue/accident reporting</strong>
                     </label>
 
                     <label class="checkbox-label">
                         <input type="checkbox" name="allow_fault_during_trip" value="1"
                                {{ ($settings['faults']['allow_during_trip'] ?? true) ? 'checked' : '' }}>
-                        <strong>Allow drivers to report incidents during a trip</strong>
+                           <strong>Allow drivers to report issues/accidents during a trip</strong>
                     </label>
 
                     <label class="checkbox-label">
                         <input type="checkbox" name="require_end_of_trip_fault_check" value="1"
                                {{ ($settings['faults']['require_end_of_trip_check'] ?? false) ? 'checked' : '' }}>
-                        <strong>Require a quick incident check when ending a trip (coming soon)</strong>
+                        <strong>Require a quick issue/accident check when ending a trip (coming soon)</strong>
                     </label>
                 </div>
             </div>

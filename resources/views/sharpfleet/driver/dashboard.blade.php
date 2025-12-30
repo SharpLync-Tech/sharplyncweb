@@ -148,7 +148,7 @@
         <details class="card" id="reportFaultFromTripCard">
             <summary class="card-header">
                 <div class="flex-between">
-                    <h3 class="card-title mb-0">Report an Incident</h3>
+                    <h3 class="card-title mb-0">Report a Vehicle Issue / Accident</h3>
                     <span class="hint-text incident-toggle-hint-closed">Tap to open</span>
                     <span class="hint-text incident-toggle-hint-open">Tap to close</span>
                 </div>
@@ -156,12 +156,20 @@
             <div class="card-body">
                 @if(!$allowFaultsDuringTrip)
                     <div class="alert alert-info">
-                        Incident reporting is enabled, but reporting during an active trip is disabled.
+                        Vehicle issue/accident reporting is enabled, but reporting during an active trip is disabled.
                     </div>
                 @else
                     <form method="POST" action="/app/sharpfleet/faults/from-trip">
                         @csrf
                         <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
+
+                        <div class="form-group">
+                            <label class="form-label">Type</label>
+                            <select name="report_type" class="form-control" required>
+                                <option value="issue">Vehicle Issue</option>
+                                <option value="accident">Vehicle Accident</option>
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Severity</label>
@@ -182,7 +190,7 @@
                             <textarea name="description" class="form-control" rows="4" required placeholder="Describe what happened and any immediate action taken."></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-secondary btn-full">Submit Incident</button>
+                        <button type="submit" class="btn btn-secondary btn-full">Submit Report</button>
                     </form>
                 @endif
             </div>
@@ -303,7 +311,7 @@
         <details class="card" id="reportFaultStandaloneCard">
             <summary class="card-header">
                 <div class="flex-between">
-                    <h3 class="card-title mb-0">Report an Incident</h3>
+                    <h3 class="card-title mb-0">Report a Vehicle Issue / Accident</h3>
                     <span class="hint-text incident-toggle-hint-closed">Tap to open</span>
                     <span class="hint-text incident-toggle-hint-open">Tap to close</span>
                 </div>
@@ -318,6 +326,14 @@
                             @foreach ($vehicles as $vehicle)
                                 <option value="{{ $vehicle->id }}">{{ $vehicle->name }} ({{ $vehicle->registration_number }})</option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select name="report_type" class="form-control" required>
+                            <option value="issue">Vehicle Issue</option>
+                            <option value="accident">Vehicle Accident</option>
                         </select>
                     </div>
 
@@ -340,7 +356,7 @@
                         <textarea name="description" class="form-control" rows="4" required placeholder="Describe the fault/incident."></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-secondary btn-full">Submit Incident</button>
+                    <button type="submit" class="btn btn-secondary btn-full">Submit Report</button>
                 </form>
             </div>
         </details>

@@ -11,13 +11,19 @@ use Illuminate\Validation\ValidationException;
 class FaultService
 {
     private const ALLOWED_SEVERITIES = ['minor', 'major', 'critical'];
-    private const ALLOWED_STATUSES = ['open', 'in_review', 'resolved', 'dismissed'];
+    private const ALLOWED_STATUSES = ['open', 'in_review', 'resolved', 'dismissed', 'archived'];
+    private const ALLOWED_TYPES = ['issue', 'accident'];
 
     private function assertFaultsTableExists(): void
     {
         if (!Schema::connection('sharpfleet')->hasTable('faults')) {
-            abort(503, 'Fault reporting is enabled, but the faults table is missing. Please run the tenant SQL script in phpMyAdmin.');
+            abort(503, 'Vehicle issue/accident reporting is enabled, but the faults table is missing. Please run the tenant SQL script in phpMyAdmin.');
         }
+    }
+
+    private function faultsHasReportTypeColumn(): bool
+    {
+        return Schema::connection('sharpfleet')->hasColumn('faults', 'report_type');
     }
 
     private function normalizeSeverity(?string $severity): string
@@ -39,6 +45,17 @@ class FaultService
             ]);
         }
         return $val;
+    }
+
+    private function normalizeReportType(?string $type): string
+    {
+        $val = strtolower(trim((string) ($type ?? '')));
+        if (in_array($val, self::ALLOWED_TYPES, true)) {
+            return $val;
+        }
+
+        // Backwards-compatible default.
+        return 'issue';
     }
 
     private function normalizeOccurredAt(mixed $occurredAt): ?string
@@ -93,7 +110,7 @@ class FaultService
 
         $settings = new CompanySettingsService($organisationId);
         if (!$settings->faultsEnabled()) {
-            abort(403, 'Incident reporting is not enabled for this company.');
+            abort(403, 'Vehicle issue/accident reporting is not enabled for this company.');
         }
 
         $this->assertFaultsTableExists();
@@ -109,12 +126,13 @@ class FaultService
 
         $isTripActive = $trip['ended_at'] === null;
         if ($isTripActive && !$settings->allowFaultsDuringTrip()) {
-            abort(403, 'Incident reporting is not allowed during a trip.');
+            abort(403, 'Vehicle issue/accident reporting is not allowed during a trip.');
         }
 
         $vehicleId = (int) $trip['vehicle_id'];
 
         $severity = $this->normalizeSeverity(isset($data['severity']) ? (string) $data['severity'] : null);
+        $reportType = $this->normalizeReportType(isset($data['report_type']) ? (string) $data['report_type'] : null);
         $title = isset($data['title']) ? trim((string) $data['title']) : '';
         if ($title === '') {
             $title = null;
@@ -128,9 +146,7 @@ class FaultService
 
         $occurredAt = $this->normalizeOccurredAt($data['occurred_at'] ?? null);
 
-        $id = DB::connection('sharpfleet')
-            ->table('faults')
-            ->insertGetId([
+        $insert = [
                 'organisation_id' => $organisationId,
                 'vehicle_id' => $vehicleId,
                 'user_id' => $userId,
@@ -141,7 +157,18 @@ class FaultService
                 'occurred_at' => $occurredAt,
                 'status' => 'open',
                 'created_at' => Carbon::now()->toDateTimeString(),
-            ]);
+
+        if ($this->faultsHasReportTypeColumn()) {
+            $insert['report_type'] = $reportType;
+        }
+
+        try {
+            $id = DB::connection('sharpfleet')
+                ->table('faults')
+                ->insertGetId($insert);
+        } catch (\Illuminate\Database\QueryException $e) {
+            abort(503, 'Vehicle issue/accident reporting is enabled, but the tenant database schema is not up to date. Please run the latest tenant SQL update script in phpMyAdmin.');
+        }
 
         return (int) $id;
     }
@@ -162,7 +189,7 @@ class FaultService
 
         $settings = new CompanySettingsService($organisationId);
         if (!$settings->faultsEnabled()) {
-            abort(403, 'Incident reporting is not enabled for this company.');
+            abort(403, 'Vehicle issue/accident reporting is not enabled for this company.');
         }
 
         $this->assertFaultsTableExists();
@@ -187,6 +214,7 @@ class FaultService
         }
 
         $severity = $this->normalizeSeverity(isset($data['severity']) ? (string) $data['severity'] : null);
+        $reportType = $this->normalizeReportType(isset($data['report_type']) ? (string) $data['report_type'] : null);
         $title = isset($data['title']) ? trim((string) $data['title']) : '';
         if ($title === '') {
             $title = null;
@@ -200,9 +228,7 @@ class FaultService
 
         $occurredAt = $this->normalizeOccurredAt($data['occurred_at'] ?? null);
 
-        $id = DB::connection('sharpfleet')
-            ->table('faults')
-            ->insertGetId([
+        $insert = [
                 'organisation_id' => $organisationId,
                 'vehicle_id' => $vehicleId,
                 'user_id' => $userId,
@@ -213,7 +239,18 @@ class FaultService
                 'occurred_at' => $occurredAt,
                 'status' => 'open',
                 'created_at' => Carbon::now()->toDateTimeString(),
-            ]);
+
+        if ($this->faultsHasReportTypeColumn()) {
+            $insert['report_type'] = $reportType;
+        }
+
+        try {
+            $id = DB::connection('sharpfleet')
+                ->table('faults')
+                ->insertGetId($insert);
+        } catch (\Illuminate\Database\QueryException $e) {
+            abort(503, 'Vehicle issue/accident reporting is enabled, but the tenant database schema is not up to date. Please run the latest tenant SQL update script in phpMyAdmin.');
+        }
 
         return (int) $id;
     }
@@ -246,14 +283,18 @@ class FaultService
 
         $status = $this->normalizeStatus($status);
 
-        $updated = DB::connection('sharpfleet')
-            ->table('faults')
-            ->where('organisation_id', $organisationId)
-            ->where('id', $faultId)
-            ->update([
-                'status' => $status,
-                'updated_at' => Carbon::now()->toDateTimeString(),
-            ]);
+        try {
+            $updated = DB::connection('sharpfleet')
+                ->table('faults')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $faultId)
+                ->update([
+                    'status' => $status,
+                    'updated_at' => Carbon::now()->toDateTimeString(),
+                ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            abort(503, 'The tenant database schema is not up to date for this status. Please run the latest tenant SQL update script in phpMyAdmin.');
+        }
 
         if ($updated <= 0) {
             abort(404, 'Fault not found.');

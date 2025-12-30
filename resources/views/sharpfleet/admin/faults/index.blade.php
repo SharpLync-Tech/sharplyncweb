@@ -1,14 +1,14 @@
 @extends('layouts.sharpfleet')
 
-@section('title', 'Faults')
+@section('title', 'Vehicle Issues / Accidents')
 
 @section('sharpfleet-content')
 
 <div class="container">
     <div class="page-header">
         <div>
-            <h1 class="page-title">Faults</h1>
-            <p class="page-description">Review incidents reported by drivers.</p>
+            <h1 class="page-title">Vehicle Issues / Accidents</h1>
+            <p class="page-description">Review vehicle issues/accidents reported by drivers.</p>
         </div>
     </div>
 
@@ -20,14 +20,14 @@
 
     @if(!$faultsEnabled)
         <div class="alert alert-info">
-            Incident / fault reporting is currently disabled for this company.
+            Vehicle issue/accident reporting is currently disabled for this company.
             Enable it in <a href="{{ url('/app/sharpfleet/admin/settings') }}">Settings</a>.
         </div>
     @else
         <div class="card">
             <div class="card-body">
                 @if(($faults ?? collect())->count() === 0)
-                    <p class="text-muted fst-italic">No faults found.</p>
+                    <p class="text-muted fst-italic">No reports found.</p>
                 @else
                     <div class="table-responsive">
                         <table class="table">
@@ -36,6 +36,7 @@
                                     <th>Created</th>
                                     <th>Vehicle</th>
                                     <th>Driver</th>
+                                    <th>Type</th>
                                     <th>Severity</th>
                                     <th>Status</th>
                                     <th>Summary</th>
@@ -69,6 +70,13 @@
                                         </td>
                                         <td>{{ $vehicleLabel }}</td>
                                         <td>{{ $driverName }}</td>
+                                        <td>
+                                            @php
+                                                $rt = strtolower((string) ($f->report_type ?? ''));
+                                                $rtLabel = $rt === 'accident' ? 'Vehicle Accident' : 'Vehicle Issue';
+                                            @endphp
+                                            {{ $rtLabel }}
+                                        </td>
                                         <td class="fw-bold">{{ ucfirst($f->severity ?? 'minor') }}</td>
                                         <td>{{ str_replace('_', ' ', ucfirst($f->status ?? 'open')) }}</td>
                                         <td>
@@ -81,7 +89,7 @@
                                             <form method="POST" action="{{ url('/app/sharpfleet/admin/faults/'.$f->id.'/status') }}" class="d-flex" style="gap: 8px; align-items: center;">
                                                 @csrf
                                                 <select name="status" class="form-control" style="max-width: 160px;">
-                                                    @foreach(['open' => 'Open', 'in_review' => 'In review', 'resolved' => 'Resolved', 'dismissed' => 'Dismissed'] as $key => $label)
+                                                    @foreach(['open' => 'Open', 'in_review' => 'In review', 'resolved' => 'Resolved', 'dismissed' => 'Dismissed', 'archived' => 'Archived'] as $key => $label)
                                                         <option value="{{ $key }}" {{ ($f->status ?? 'open') === $key ? 'selected' : '' }}>{{ $label }}</option>
                                                     @endforeach
                                                 </select>

@@ -55,11 +55,11 @@ class FaultController extends Controller
 
         $settings = new CompanySettingsService($organisationId);
         if (!$settings->faultsEnabled()) {
-            abort(403, 'Incident reporting is not enabled for this company.');
+            abort(403, 'Vehicle issue/accident reporting is not enabled for this company.');
         }
 
         $validated = $request->validate([
-            'status' => ['required', 'string', 'in:open,in_review,resolved,dismissed'],
+            'status' => ['required', 'string', 'in:open,in_review,resolved,dismissed,archived'],
         ]);
 
         $this->faultService->updateFaultStatus(
