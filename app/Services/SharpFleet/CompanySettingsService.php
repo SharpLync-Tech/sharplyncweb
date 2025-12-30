@@ -125,7 +125,7 @@ class CompanySettingsService
 
     public function odometerAutofillEnabled(): bool
     {
-        return (bool) $this->settings['trip']['odometer_autofillill_from_last_trip'] ?? true;
+        return (bool) ($this->settings['trip']['odometer_autofill_from_last_trip'] ?? true);
     }
 
     public function odometerAllowOverride(): bool

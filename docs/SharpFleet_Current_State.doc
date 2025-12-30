@@ -30,6 +30,7 @@
   <li><strong>Incident / fault reporting (opt-in):</strong> implemented driver incident submission (during-trip and standalone) and an admin faults review page with status updates. Feature remains gated behind company settings (<code>faults.enabled</code>) and requires the tenant <code>faults</code> table to be created manually via the provided SQL script.</li>
   <li><strong>Driver UI simplification:</strong> “Report an Incident” sections are now hidden by default and expand when the driver taps the header (“Tap to open”).</li>
   <li><strong>Subscriber timezone display:</strong> key SharpFleet date/time displays (trips, bookings, faults) now render in the company’s configured timezone from settings.</li>
+  <li><strong>Settings enforcement (trip start):</strong> trip start now enforces company settings server-side for odometer rules and client presence. If odometer override is disabled, drivers cannot submit a different start reading than the last recorded reading; if odometer is not required, an empty start reading will auto-fill from the last known reading (and will still block if no baseline exists). If client presence is enabled and marked “required”, a business trip cannot start without a Yes/No selection. Disabled capture fields are ignored server-side.</li>
 </ul>
 
 <h2>0. Updates (Dec 29, 2025)</h2>

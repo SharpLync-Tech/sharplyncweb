@@ -132,6 +132,8 @@ class TripService
 
         $organisationId = (int) $user['organisation_id'];
 
+        $settings = new CompanySettingsService($organisationId);
+
         $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
 
         $this->bookingService->assertVehicleCanStartTrip(
@@ -145,6 +147,11 @@ class TripService
         $customerName = null;
         $clientPresent = null;
         $clientAddress = null;
+
+        $customerCaptureEnabled = (bool) (($settings->all()['customer']['enabled'] ?? false));
+        $clientPresenceEnabled = $settings->clientPresenceEnabled();
+        $clientPresenceRequired = $settings->clientPresenceRequired();
+        $clientAddressesEnabled = $settings->clientAddressesEnabled();
 
         if ($tripMode !== 'private') {
             $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
@@ -174,11 +181,29 @@ class TripService
                 $customerName = mb_substr($customerName, 0, 150);
             }
 
-            $clientPresent = $data['client_present'] ?? null;
-            $clientAddress = $data['client_address'] ?? null;
+            if (!$customerCaptureEnabled) {
+                $customerId = null;
+                $customerName = null;
+            }
+
+            if ($clientPresenceEnabled) {
+                $clientPresent = $data['client_present'] ?? null;
+
+                if ($clientPresenceRequired && ($clientPresent === null || $clientPresent === '')) {
+                    throw ValidationException::withMessages([
+                        'client_present' => 'Client presence is required to start a business trip.',
+                    ]);
+                }
+
+                $clientAddress = $clientAddressesEnabled ? ($data['client_address'] ?? null) : null;
+            } else {
+                $clientPresent = null;
+                $clientAddress = null;
+            }
         }
 
-        $startKm = (int) $data['start_km'];
+        $startKmRaw = $data['start_km'] ?? null;
+        $startKm = $startKmRaw === null || $startKmRaw === '' ? null : (int) $startKmRaw;
 
         // If there is a previous reading, do not allow starting below it.
         $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
@@ -187,7 +212,45 @@ class TripService
             ->orderByDesc('ended_at')
             ->first();
 
-        if ($lastTrip && $lastTrip->end_km !== null && $startKm < (int) $lastTrip->end_km) {
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('starting_km')
+            ->where('organisation_id', $organisationId)
+            ->where('id', (int) $data['vehicle_id'])
+            ->first();
+
+        $baselineReading = null;
+        if ($lastTrip && $lastTrip->end_km !== null) {
+            $baselineReading = (int) $lastTrip->end_km;
+        } elseif ($vehicle && property_exists($vehicle, 'starting_km') && $vehicle->starting_km !== null) {
+            $baselineReading = (int) $vehicle->starting_km;
+        }
+
+        // If odometer is not required, allow empty start_km but autofill from baseline when possible.
+        if ($startKm === null) {
+            if ($settings->odometerRequired()) {
+                throw ValidationException::withMessages([
+                    'start_km' => 'Starting reading is required.',
+                ]);
+            }
+
+            if ($settings->odometerAutofillEnabled() && $baselineReading !== null) {
+                $startKm = $baselineReading;
+            } else {
+                throw ValidationException::withMessages([
+                    'start_km' => 'Starting reading is required for this vehicle because no previous reading is available.',
+                ]);
+            }
+        }
+
+        // If override is disabled and we know the baseline, enforce equality.
+        if (!$settings->odometerAllowOverride() && $baselineReading !== null && $startKm !== $baselineReading) {
+            throw ValidationException::withMessages([
+                'start_km' => 'Starting reading cannot be changed. It must match the last recorded reading.',
+            ]);
+        }
+
+        if ($baselineReading !== null && $startKm < (int) $baselineReading) {
             throw ValidationException::withMessages([
                 'start_km' => 'Starting reading must be the same as or greater than the last recorded reading.',
             ]);

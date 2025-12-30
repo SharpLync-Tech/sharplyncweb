@@ -18,6 +18,9 @@
     $allowFaultsDuringTrip = $settingsService->allowFaultsDuringTrip();
     $companyTimezone = $settingsService->timezone();
 
+    $odometerRequired = $settingsService->odometerRequired();
+    $odometerAllowOverride = $settingsService->odometerAllowOverride();
+
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
         ->where('organisation_id', $user['organisation_id'])
@@ -282,7 +285,13 @@
                 <div class="form-group">
                     <label id="startReadingLabel" class="form-label">Starting odometer (km)</label>
                     <div id="lastKmHint" class="hint-text d-none"></div>
-                    <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric" required placeholder="e.g. 124500">
+                    <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric"
+                           {{ $odometerRequired ? 'required' : '' }}
+                           {{ $odometerAllowOverride ? '' : 'readonly' }}
+                           placeholder="e.g. 124500">
+                    @if(!$odometerRequired)
+                        <div class="hint-text">If left blank, the last recorded reading will be used.</div>
+                    @endif
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-full">Start Trip</button>
