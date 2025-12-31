@@ -207,6 +207,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     padding: 8px 16px;
     border-radius: var(--border-radius);
     transition: var(--transition);
+    white-space: nowrap;
 }
 
 .sharpfleet-nav-link:hover {
@@ -955,7 +956,7 @@ details.card[open] .incident-toggle-hint-closed {
     .sharpfleet-nav-dropdown-menu {
         display: block;
         position: static;
-        min-width: 0;
+        top: 100%;
         padding: 0;
         background: transparent;
         border: none;

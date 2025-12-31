@@ -34,7 +34,7 @@
                 <a href="/sharpfleet" class="sharpfleet-logo">
                     @php($sharpfleetLogoPath = public_path('images/sharpfleet/logo.png'))
                     @if (is_string($sharpfleetLogoPath) && file_exists($sharpfleetLogoPath))
-                        <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo">
+                        <img src="{{ asset('images/sharpfleet/logo.png') }}?v={{ @filemtime($sharpfleetLogoPath) ?: time() }}" alt="SharpFleet Logo">
                     @endif                    
                 </a>
 
@@ -84,7 +84,7 @@
                                 </div>
 
                                 <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
-                                <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver View</a>
+                                <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver</a>
                             </div>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
