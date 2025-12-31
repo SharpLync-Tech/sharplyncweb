@@ -10,7 +10,7 @@
     $drivers = $drivers ?? collect();
 @endphp
 
-<div class="max-w-800 mx-auto mt-4">
+<div class="container mt-4">
     <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id) }}">
         @csrf
 
@@ -31,10 +31,10 @@
             </div>
         @endif
 
-        <div class="grid grid-2 mb-3">
+        <div class="grid grid-2 gap-4 mb-3">
             <div>
                 {{-- Vehicle Info --}}
-                <div class="card mb-3">
+                <div class="card mb-2">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle info</h3>
 
@@ -71,7 +71,7 @@
                 </div>
 
                 {{-- Vehicle Details --}}
-                <div class="card mb-3">
+                <div class="card mb-2">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
 
@@ -128,7 +128,7 @@
 
                 {{-- Registration --}}
                 @if($vehicleRegistrationTrackingEnabled)
-                    <div class="card mb-3">
+                    <div class="card mb-2">
                         <div class="card-body">
                             <h3 class="section-title">Registration</h3>
                             <div class="form-row">
@@ -154,7 +154,7 @@
 
                 {{-- Servicing --}}
                 @if($vehicleServicingTrackingEnabled)
-                    <div class="card mb-3">
+                    <div class="card mb-2">
                         <div class="card-body">
                             <h3 class="section-title">Servicing</h3>
                             <div class="form-row">
@@ -185,7 +185,7 @@
 
             <div>
                 {{-- Permanent Allocation --}}
-                <div class="card mb-3">
+                <div class="card mb-2">
                     <div class="card-body">
                         <h3 class="section-title">Permanent allocation</h3>
                         <p class="text-muted mb-3">
