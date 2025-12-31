@@ -31,6 +31,7 @@
             'children' => [
                 ['id' => 'admin-vehicles-add', 'title' => 'Add a vehicle'],
                 ['id' => 'admin-vehicles-edit', 'title' => 'Edit vehicle details'],
+                ['id' => 'admin-vehicles-out-of-service', 'title' => 'Mark a vehicle out of service'],
                 ['id' => 'admin-vehicles-archive', 'title' => 'Archive a vehicle'],
                 ['id' => 'admin-vehicles-compliance', 'title' => 'Compliance (rego & servicing)'],
             ],
@@ -40,7 +41,7 @@
             'title' => 'Drivers (add, invite, permissions)',
             'children' => [
                 ['id' => 'admin-drivers-invite', 'title' => 'Invite a driver'],
-                ['id' => 'admin-drivers-admin-as-driver', 'title' => 'Admin using Driver View'],
+                ['id' => 'admin-drivers-admin-as-driver', 'title' => 'Admin using Driver (Driver View)'],
                 ['id' => 'admin-drivers-what-they-can-do', 'title' => 'What drivers can change'],
             ],
         ],
@@ -103,19 +104,20 @@
         <li><strong>Add your vehicles:</strong> Add at least one vehicle before inviting drivers.</li>
         <li><strong>Choose your trip rules:</strong> Decide what drivers must enter when starting/ending trips (examples: odometer reading, safety checks, manual start/end time).</li>
         <li><strong>Invite drivers:</strong> Send invites so drivers can log in and start trips.</li>
-        <li><strong>Run a test trip:</strong> Use “Driver View” to confirm your rules make sense in real use.</li>
+        <li><strong>Run a test trip:</strong> Use <strong>Driver</strong> (Driver View) to confirm your rules make sense in real use.</li>
     </ul>
 </section>
 
 <section id="admin-getting-started-where-to-find-things" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Where to find things</h3>
     <ul>
-        <li><strong>Vehicles:</strong> Add/edit vehicles and archive old ones.</li>
-        <li><strong>Users:</strong> Invite drivers and manage who can access SharpFleet.</li>
-        <li><strong>Settings:</strong> Control what drivers must record (rules).</li>
-        <li><strong>Reports:</strong> View trips and export CSV.</li>
-        <li><strong>Faults:</strong> Review incidents/faults reported by drivers (if enabled for your company).</li>
+        <li><strong>Fleet:</strong> Dashboard, Vehicles, and Bookings.</li>
+        <li><strong>Operations:</strong> Faults, Reminders, and Safety Checks.</li>
+        <li><strong>Customers:</strong> Your customer list (if enabled).</li>
+        <li><strong>Reports:</strong> Trip Reports and exports.</li>
+        <li><strong>Company:</strong> Company Overview, Edit Company Details, Users/Drivers, and Company Settings.</li>
     </ul>
+    <p class="text-muted">Tip: Some “Company actions” that used to appear on the Company page are now available from the <strong>Company</strong> dropdown in the top navigation.</p>
 </section>
 
 <section id="admin-company-settings" data-sf-help-section class="sf-help__section">
@@ -188,6 +190,19 @@
     <p class="text-muted">Tip: Keep vehicle names consistent so reports are easy to read.</p>
 </section>
 
+<section id="admin-vehicles-out-of-service" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Mark a vehicle out of service</h3>
+    <p>Use this when a vehicle is temporarily unavailable (for example: service, repair, accident, or inspection).</p>
+    <ol>
+        <li>Go to <strong>Vehicles</strong>.</li>
+        <li>Open the vehicle and select <strong>Edit</strong>.</li>
+        <li>In <strong>Service Status</strong>, tick <strong>Mark vehicle as out of service</strong>.</li>
+        <li>Select a <strong>Reason</strong> and add a short <strong>Note</strong> (example: location or workshop).</li>
+        <li>Save.</li>
+    </ol>
+    <p class="text-muted">Out-of-service vehicles cannot be booked by drivers and cannot be used to start a trip.</p>
+</section>
+
 <section id="admin-vehicles-archive" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Archive a vehicle</h3>
     <p>Archiving hides a vehicle from day-to-day use, without deleting history.</p>
@@ -196,6 +211,7 @@
         <li>Open the vehicle and select <strong>Archive</strong>.</li>
         <li>The vehicle will no longer be selectable for new trips.</li>
     </ol>
+    <p class="text-muted">Tip: If a vehicle is only temporarily unavailable, use <strong>Out of service</strong> instead of archiving.</p>
 </section>
 
 <section id="admin-vehicles-compliance" data-sf-help-section class="sf-help__section">
@@ -225,8 +241,8 @@
 </section>
 
 <section id="admin-drivers-admin-as-driver" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Admin using Driver View</h3>
-    <p>Admins can switch to <strong>Driver View</strong> to see the driver dashboard. This is useful for testing your settings.</p>
+    <h3 class="sf-help__sectionTitle">Admin using Driver (Driver View)</h3>
+    <p>Admins can switch to <strong>Driver</strong> (Driver View) to see the driver dashboard. This is useful for testing your settings.</p>
     <ul>
         <li>Use it to confirm required fields (like safety checks or client presence) are practical.</li>
         <li>Use it to understand what drivers will see on mobile.</li>

@@ -107,6 +107,7 @@
     <ol>
         <li>Open the <strong>Driver Dashboard</strong>.</li>
         <li>Select the <strong>Vehicle</strong> you are using.</li>
+        <li class="text-muted">If you can’t find a vehicle in the list, it may be out of service or archived. Contact your admin.</li>
         <li>If your company requires it, select a <strong>Start time</strong> (manual time entry).</li>
         <li>Select the <strong>Trip type</strong> (business or private) if you see the option.</li>
         <li>If shown, answer the <strong>client/customer</strong> questions (example: “Was a customer present?”).</li>
@@ -259,6 +260,9 @@
 
     <h3 class="sf-help__sectionTitle">“Why can’t I start a trip?”</h3>
     <p>One of the required fields is missing (for example: safety checklist, client presence, start reading, or start time). Scroll up and look for a message, then complete the missing field.</p>
+
+    <h3 class="sf-help__sectionTitle">“Why can’t I find my vehicle in the list?”</h3>
+    <p>Your admin may have marked the vehicle <strong>out of service</strong> (service/repair/inspection), or it may be archived. If you’re not sure, contact your admin and confirm which vehicle you should use.</p>
 
     <h3 class="sf-help__sectionTitle">“Why is the start reading locked?”</h3>
     <p>Your company may have turned off overrides. If the reading looks wrong, contact your admin instead of guessing.</p>
