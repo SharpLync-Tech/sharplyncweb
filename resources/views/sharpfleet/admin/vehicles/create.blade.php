@@ -207,6 +207,51 @@
                       rows="3"
                       class="form-control">{{ old('notes') }}</textarea>
 
+            <hr class="my-3">
+            <h3 class="mb-2">Service Status</h3>
+            <p class="text-muted mb-2">
+                If a vehicle is out of service, drivers cannot book it or use it for trips.
+            </p>
+
+            @php
+                $isInService = old('is_in_service', 1);
+                $reason = old('out_of_service_reason', '');
+                $note = old('out_of_service_note', '');
+            @endphp
+
+            <input type="hidden" name="is_in_service" value="1">
+            <label class="checkbox-label mb-2">
+                <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
+                <strong>Mark vehicle as out of service</strong>
+            </label>
+            @error('is_in_service')
+                <div class="text-error mb-2">{{ $message }}</div>
+            @enderror
+
+            <div class="form-row">
+                <div>
+                    <label class="form-label">Reason</label>
+                    <select name="out_of_service_reason" class="form-control">
+                        <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
+                        <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
+                        <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
+                        <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
+                        <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
+                        <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                    @error('out_of_service_reason')
+                        <div class="text-error mb-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div>
+                    <label class="form-label">Location / note (optional)</label>
+                    <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
+                    @error('out_of_service_note')
+                        <div class="text-error mb-2">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
             {{-- Servicing Tracking (Company Setting) --}}
             @if($vehicleServicingTrackingEnabled)
                 <hr class="my-3">

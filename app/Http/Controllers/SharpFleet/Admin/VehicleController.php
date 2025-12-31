@@ -146,7 +146,33 @@ class VehicleController extends Controller
             'registration_expiry' => ['nullable', 'date'],
             'service_due_date' => ['nullable', 'date'],
             'service_due_km' => ['nullable', 'integer', 'min:0'],
+
+            // Service status (optional; requires DB columns)
+            'is_in_service' => ['nullable', 'boolean'],
+            'out_of_service_reason' => ['nullable', 'string', 'max:50'],
+            'out_of_service_note' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $wantsServiceStatus = array_key_exists('is_in_service', $validated) && ((int) ($validated['is_in_service'] ?? 1) === 0);
+        if ($wantsServiceStatus) {
+            $allowedReasons = ['Service', 'Repair', 'Accident', 'Inspection', 'Other'];
+            $reason = trim((string) ($validated['out_of_service_reason'] ?? ''));
+            if ($reason === '' || !in_array($reason, $allowedReasons, true)) {
+                return back()
+                    ->withErrors([
+                        'out_of_service_reason' => 'Reason is required (Service, Repair, Accident, Inspection, Other).',
+                    ])
+                    ->withInput();
+            }
+
+            if (!Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
+                return back()
+                    ->withErrors([
+                        'is_in_service' => "Out-of-service status can't be saved yet because the database is missing column vehicles.is_in_service. Run SQL: ALTER TABLE vehicles ADD COLUMN is_in_service TINYINT(1) NOT NULL DEFAULT 1;",
+                    ])
+                    ->withInput();
+            }
+        }
 
         // If the DB schema doesn't have the column yet, block only when the user tried to set it.
         if (
@@ -291,7 +317,40 @@ class VehicleController extends Controller
             'registration_expiry' => ['nullable', 'date'],
             'service_due_date' => ['nullable', 'date'],
             'service_due_km' => ['nullable', 'integer', 'min:0'],
+
+            // Service status (optional; requires DB columns)
+            'is_in_service' => ['nullable', 'boolean'],
+            'out_of_service_reason' => ['nullable', 'string', 'max:50'],
+            'out_of_service_note' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $wantsServiceStatus = array_key_exists('is_in_service', $validated) && ((int) ($validated['is_in_service'] ?? 1) === 0);
+        if ($wantsServiceStatus) {
+            $allowedReasons = ['Service', 'Repair', 'Accident', 'Inspection', 'Other'];
+            $reason = trim((string) ($validated['out_of_service_reason'] ?? ''));
+            if ($reason === '' || !in_array($reason, $allowedReasons, true)) {
+                return back()
+                    ->withErrors([
+                        'out_of_service_reason' => 'Reason is required (Service, Repair, Accident, Inspection, Other).',
+                    ])
+                    ->withInput();
+            }
+
+            if (!Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
+                return back()
+                    ->withErrors([
+                        'is_in_service' => "Out-of-service status can't be saved yet because the database is missing column vehicles.is_in_service. Run SQL: ALTER TABLE vehicles ADD COLUMN is_in_service TINYINT(1) NOT NULL DEFAULT 1;",
+                    ])
+                    ->withInput();
+            }
+        }
+
+        // If they are putting the vehicle back in service, we still require the DB column to exist.
+        if (array_key_exists('is_in_service', $validated) && ((int) ($validated['is_in_service'] ?? 1) === 1)) {
+            if (!Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
+                unset($validated['is_in_service'], $validated['out_of_service_reason'], $validated['out_of_service_note']);
+            }
+        }
 
         if (
             array_key_exists('starting_km', $validated) &&

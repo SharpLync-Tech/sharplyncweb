@@ -32,6 +32,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Rego</th>
+                                <th>Status</th>
                                 <th>Active Trip</th>
                                 <th>Type</th>
                                 <th>Class</th>
@@ -44,6 +45,25 @@
                                 <tr>
                                     <td class="fw-bold">{{ $v->name }}</td>
                                     <td>{{ $v->registration_number }}</td>
+                                    <td>
+                                        @php
+                                            $isInService = isset($v->is_in_service) ? (int) $v->is_in_service : 1;
+                                            $reason = $v->out_of_service_reason ?? null;
+                                            $note = $v->out_of_service_note ?? null;
+                                        @endphp
+
+                                        @if($isInService === 0)
+                                            <div class="fw-bold text-error">Out of service</div>
+                                            <div class="text-muted">
+                                                {{ $reason ?: '—' }}
+                                            </div>
+                                            @if($note)
+                                                <div class="text-muted">{{ $note }}</div>
+                                            @endif
+                                        @else
+                                            <span class="text-muted">In service</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if(!empty($activeTripVehicleIds[$v->id]))
                                             <div class="fw-bold">In trip</div>

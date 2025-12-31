@@ -42,6 +42,21 @@ class VehicleService
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
 
+        $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
+        $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
+        $hasOutOfServiceNote = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_note');
+        $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
+
+        $isInService = isset($data['is_in_service']) ? (int) ($data['is_in_service'] ? 1 : 0) : 1;
+        $outOfServiceReason = isset($data['out_of_service_reason']) ? trim((string) $data['out_of_service_reason']) : null;
+        $outOfServiceNote = isset($data['out_of_service_note']) ? trim((string) $data['out_of_service_note']) : null;
+        if ($outOfServiceReason === '') {
+            $outOfServiceReason = null;
+        }
+        if ($outOfServiceNote === '') {
+            $outOfServiceNote = null;
+        }
+
         return (int) DB::connection('sharpfleet')
             ->table('vehicles')
             ->insertGetId([
@@ -60,6 +75,10 @@ class VehicleService
                 'service_due_km'        => $hasServiceDueKm ? ($data['service_due_km'] ?? null) : null,
                 'notes'                => $data['notes'] ?? null,
                 'starting_km'           => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
+                'is_in_service'         => $hasIsInService ? $isInService : null,
+                'out_of_service_reason' => ($hasOutOfServiceReason && $hasIsInService && $isInService === 0) ? $outOfServiceReason : null,
+                'out_of_service_note'   => ($hasOutOfServiceNote && $hasIsInService && $isInService === 0) ? $outOfServiceNote : null,
+                'out_of_service_at'     => ($hasOutOfServiceAt && $hasIsInService && $isInService === 0) ? now() : null,
                 'is_active'            => 1,
             ]);
     }
@@ -73,6 +92,11 @@ class VehicleService
         $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
+
+        $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
+        $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
+        $hasOutOfServiceNote = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_note');
+        $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
 
         $update = [
             'name'                  => $data['name'],
@@ -95,6 +119,42 @@ class VehicleService
 
         if ($hasServiceDueKm && array_key_exists('service_due_km', $data)) {
             $update['service_due_km'] = $data['service_due_km'] ?? null;
+        }
+
+        if ($hasIsInService && array_key_exists('is_in_service', $data)) {
+            $isInService = (int) ($data['is_in_service'] ? 1 : 0);
+            $update['is_in_service'] = $isInService;
+
+            if ($isInService === 1) {
+                if ($hasOutOfServiceReason) {
+                    $update['out_of_service_reason'] = null;
+                }
+                if ($hasOutOfServiceNote) {
+                    $update['out_of_service_note'] = null;
+                }
+                if ($hasOutOfServiceAt) {
+                    $update['out_of_service_at'] = null;
+                }
+            } else {
+                $reason = isset($data['out_of_service_reason']) ? trim((string) $data['out_of_service_reason']) : null;
+                $note = isset($data['out_of_service_note']) ? trim((string) $data['out_of_service_note']) : null;
+                if ($reason === '') {
+                    $reason = null;
+                }
+                if ($note === '') {
+                    $note = null;
+                }
+
+                if ($hasOutOfServiceReason) {
+                    $update['out_of_service_reason'] = $reason;
+                }
+                if ($hasOutOfServiceNote) {
+                    $update['out_of_service_note'] = $note;
+                }
+                if ($hasOutOfServiceAt) {
+                    $update['out_of_service_at'] = now();
+                }
+            }
         }
 
         DB::connection('sharpfleet')

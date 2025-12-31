@@ -32,6 +32,10 @@ class BookingController extends Controller
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
+            ->when(
+                Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service'),
+                fn ($q) => $q->where('is_in_service', 1)
+            )
             ->orderBy('name')
             ->get();
 

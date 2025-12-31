@@ -9,6 +9,49 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    private function vehicleOutOfServiceMessage(?object $vehicle): string
+    {
+        $reason = $vehicle && property_exists($vehicle, 'out_of_service_reason') ? trim((string) ($vehicle->out_of_service_reason ?? '')) : '';
+        $note = $vehicle && property_exists($vehicle, 'out_of_service_note') ? trim((string) ($vehicle->out_of_service_note ?? '')) : '';
+
+        $msg = 'This vehicle is currently out of service.';
+        if ($reason !== '') {
+            $msg .= ' Reason: ' . $reason . '.';
+        }
+        if ($note !== '') {
+            $msg .= ' Note: ' . $note . '.';
+        }
+
+        return $msg;
+    }
+
+    private function assertVehicleInService(int $organisationId, int $vehicleId): void
+    {
+        if (!Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
+            return; // feature not installed yet
+        }
+
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'is_in_service', 'out_of_service_reason', 'out_of_service_note')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $vehicleId)
+            ->first();
+
+        if (!$vehicle) {
+            throw ValidationException::withMessages([
+                'vehicle_id' => 'Selected vehicle is invalid.',
+            ]);
+        }
+
+        $isInService = property_exists($vehicle, 'is_in_service') ? (int) ($vehicle->is_in_service ?? 1) : 1;
+        if ($isInService === 0) {
+            throw ValidationException::withMessages([
+                'vehicle_id' => $this->vehicleOutOfServiceMessage($vehicle),
+            ]);
+        }
+    }
+
     private function nowUtc(): Carbon
     {
         return Carbon::now('UTC');
@@ -57,6 +100,9 @@ class BookingService
                 'new_vehicle_id' => 'Vehicle is required.',
             ]);
         }
+
+        // If the out-of-service feature exists, block changing to an out-of-service vehicle.
+        $this->assertVehicleInService($organisationId, $newVehicleId);
 
         $booking = DB::connection('sharpfleet')
             ->table('bookings')
@@ -153,6 +199,9 @@ class BookingService
         if ($vehicleId <= 0) {
             throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
         }
+
+        // If the out-of-service feature exists, block bookings for out-of-service vehicles.
+        $this->assertVehicleInService($organisationId, $vehicleId);
         if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
             throw ValidationException::withMessages(['planned_end' => 'End time must be after start time.']);
         }
@@ -304,6 +353,10 @@ class BookingService
             ->where('vehicles.is_active', 1)
             ->orderBy('vehicles.name');
 
+        if (Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
+            $vehiclesQuery->where('vehicles.is_in_service', 1);
+        }
+
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             return $vehiclesQuery->get();
         }
@@ -327,6 +380,9 @@ class BookingService
      */
     public function assertVehicleCanStartTrip(int $organisationId, int $vehicleId, int $userId, ?Carbon $now = null): void
     {
+        // Out-of-service vehicles can never be used for trips.
+        $this->assertVehicleInService($organisationId, $vehicleId);
+
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             return;
         }
