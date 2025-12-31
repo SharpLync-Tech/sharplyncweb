@@ -16,8 +16,8 @@
 
         <div class="flex-between" style="margin-bottom: 10px;">
             <div>
-                <h1 class="mb-1">Edit Vehicle</h1>
-                <p class="text-muted mb-0">Registration number is locked to prevent accidental changes.</p>
+                <h1 class="mb-1 text-white">Edit Vehicle</h1>
+                <p class="text-white-50 mb-0">Registration number is locked to prevent accidental changes.</p>
             </div>
             <div class="btn-group">
                 <button type="submit" class="btn btn-primary">Save</button>
@@ -31,23 +31,24 @@
             </div>
         @endif
 
-        {{-- Vehicle Details --}}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3 class="section-title">Vehicle details</h3>
-                <div class="form-group">
-                    <label class="form-label">Vehicle name</label>
-                    <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
-                    @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Registration number (locked)</label>
-                    <input type="text" value="{{ $vehicle->registration_number }}" disabled class="form-control">
-                    <div class="form-hint">
-                        If the rego is incorrect, archive this vehicle and add it again.
+        <div class="grid grid-2 mb-3">
+            {{-- Vehicle Details --}}
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="section-title">Vehicle details</h3>
+                    <div class="form-group">
+                        <label class="form-label">Vehicle name</label>
+                        <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
+                        @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Registration number (locked)</label>
+                        <input type="text" value="{{ $vehicle->registration_number }}" disabled class="form-control">
+                        <div class="form-hint">
+                            If the rego is incorrect, archive this vehicle and add it again.
+                        </div>
+                    </div>
 
                 @if($vehicleRegistrationTrackingEnabled)
                     <div class="form-row">
@@ -152,99 +153,102 @@
                     </label>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Notes (optional)</label>
-                    <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
-                    @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- Permanent Allocation --}}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3 class="section-title">Permanent allocation</h3>
-                <p class="text-muted mb-3">
-                    Permanently assigned vehicles cannot be booked and can only be used by the assigned driver.
-                </p>
-
-                @php
-                    $currentAssignmentType = property_exists($vehicle, 'assignment_type') ? strtolower((string) ($vehicle->assignment_type ?? 'none')) : 'none';
-                    $currentAssignedDriverId = property_exists($vehicle, 'assigned_driver_id') ? ($vehicle->assigned_driver_id ?? null) : null;
-
-                    $permanentEnabled = (int) old('permanent_assignment', $currentAssignmentType === 'permanent' ? 1 : 0) === 1;
-                    $selectedDriverId = old('assigned_driver_id', $currentAssignedDriverId ?? '');
-                @endphp
-
-                <input type="hidden" name="permanent_assignment" value="0">
-                <label class="checkbox-label mb-2">
-                    <input type="checkbox" name="permanent_assignment" value="1" {{ $permanentEnabled ? 'checked' : '' }}>
-                    <strong>Enable permanent allocation</strong>
-                </label>
-                @error('permanent_assignment') <div class="text-error mb-2">{{ $message }}</div> @enderror
-
-                <div class="form-group">
-                    <label class="form-label">Assigned driver</label>
-                    <select name="assigned_driver_id" class="form-control" {{ $permanentEnabled ? '' : 'disabled' }}>
-                        <option value="">Select a driver</option>
-                        @foreach($drivers as $d)
-                            @php
-                                $driverName = trim((string) ($d->first_name ?? '') . ' ' . (string) ($d->last_name ?? ''));
-                                if ($driverName === '') {
-                                    $driverName = 'User #' . (int) ($d->id ?? 0);
-                                }
-                            @endphp
-                            <option value="{{ (int) $d->id }}" {{ (string) $selectedDriverId === (string) $d->id ? 'selected' : '' }}>
-                                {{ $driverName }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @if(!$permanentEnabled)
-                        <div class="form-hint">Enable permanent allocation to choose a driver.</div>
-                    @endif
-                    @error('assigned_driver_id') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- Service Status --}}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3 class="section-title">Service status</h3>
-                <p class="text-muted mb-3">
-                    If a vehicle is out of service, drivers cannot book it or use it for trips.
-                </p>
-
-                @php
-                    $isInService = old('is_in_service', isset($vehicle->is_in_service) ? (int) $vehicle->is_in_service : 1);
-                    $reason = old('out_of_service_reason', $vehicle->out_of_service_reason ?? '');
-                    $note = old('out_of_service_note', $vehicle->out_of_service_note ?? '');
-                @endphp
-
-                <input type="hidden" name="is_in_service" value="1">
-                <label class="checkbox-label mb-2">
-                    <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
-                    <strong>Mark vehicle as out of service</strong>
-                </label>
-                @error('is_in_service') <div class="text-error mb-2">{{ $message }}</div> @enderror
-
-                <div class="form-row">
-                    <div>
-                        <label class="form-label">Reason</label>
-                        <select name="out_of_service_reason" class="form-control">
-                            <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
-                            <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
-                            <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
-                            <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
-                            <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
-                            <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
-                        </select>
-                        @error('out_of_service_reason') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                    <div class="form-group">
+                        <label class="form-label">Notes (optional)</label>
+                        <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
+                        @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
                     </div>
-                    <div>
-                        <label class="form-label">Location / note (optional)</label>
-                        <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
-                        @error('out_of_service_note') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                </div>
+            </div>
+
+            <div>
+                {{-- Permanent Allocation --}}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h3 class="section-title">Permanent allocation</h3>
+                        <p class="text-muted mb-3">
+                            Permanently assigned vehicles cannot be booked and can only be used by the assigned driver.
+                        </p>
+
+                        @php
+                            $currentAssignmentType = property_exists($vehicle, 'assignment_type') ? strtolower((string) ($vehicle->assignment_type ?? 'none')) : 'none';
+                            $currentAssignedDriverId = property_exists($vehicle, 'assigned_driver_id') ? ($vehicle->assigned_driver_id ?? null) : null;
+
+                            $permanentEnabled = (int) old('permanent_assignment', $currentAssignmentType === 'permanent' ? 1 : 0) === 1;
+                            $selectedDriverId = old('assigned_driver_id', $currentAssignedDriverId ?? '');
+                        @endphp
+
+                        <input type="hidden" name="permanent_assignment" value="0">
+                        <label class="checkbox-label mb-2">
+                            <input type="checkbox" name="permanent_assignment" value="1" {{ $permanentEnabled ? 'checked' : '' }}>
+                            <strong>Enable permanent allocation</strong>
+                        </label>
+                        @error('permanent_assignment') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+                        <div class="form-group">
+                            <label class="form-label">Assigned driver</label>
+                            <select name="assigned_driver_id" class="form-control" {{ $permanentEnabled ? '' : 'disabled' }}>
+                                <option value="">Select a driver</option>
+                                @foreach($drivers as $d)
+                                    @php
+                                        $driverName = trim((string) ($d->first_name ?? '') . ' ' . (string) ($d->last_name ?? ''));
+                                        if ($driverName === '') {
+                                            $driverName = 'User #' . (int) ($d->id ?? 0);
+                                        }
+                                    @endphp
+                                    <option value="{{ (int) $d->id }}" {{ (string) $selectedDriverId === (string) $d->id ? 'selected' : '' }}>
+                                        {{ $driverName }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if(!$permanentEnabled)
+                                <div class="form-hint">Enable permanent allocation to choose a driver.</div>
+                            @endif
+                            @error('assigned_driver_id') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Service Status --}}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">Service status</h3>
+                        <p class="text-muted mb-3">
+                            If a vehicle is out of service, drivers cannot book it or use it for trips.
+                        </p>
+
+                        @php
+                            $isInService = old('is_in_service', isset($vehicle->is_in_service) ? (int) $vehicle->is_in_service : 1);
+                            $reason = old('out_of_service_reason', $vehicle->out_of_service_reason ?? '');
+                            $note = old('out_of_service_note', $vehicle->out_of_service_note ?? '');
+                        @endphp
+
+                        <input type="hidden" name="is_in_service" value="1">
+                        <label class="checkbox-label mb-2">
+                            <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
+                            <strong>Mark vehicle as out of service</strong>
+                        </label>
+                        @error('is_in_service') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Reason</label>
+                                <select name="out_of_service_reason" class="form-control">
+                                    <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
+                                    <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
+                                    <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
+                                    <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
+                                    <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
+                                    <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
+                                </select>
+                                @error('out_of_service_reason') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                            <div>
+                                <label class="form-label">Location / note (optional)</label>
+                                <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
+                                @error('out_of_service_note') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
