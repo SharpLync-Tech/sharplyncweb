@@ -4,277 +4,275 @@
     // Driver Help: define the Table of Contents structure in one place.
     // Each entry maps to a <section id="..." data-sf-help-section> below.
     $helpTitle = 'Driver Help';
-    $helpIntro = 'Quick instructions for starting and ending trips, including offline use.';
+    $helpIntro = 'Get started fast, then use the reference when you get stuck.';
 
     $helpSections = [
         [
-            'id' => 'driver-login',
-            'title' => 'Logging in',
+            'id' => 'driver-getting-started',
+            'title' => 'Getting Started',
             'children' => [
-                ['id' => 'driver-login-first-time', 'title' => 'First time setup'],
-                ['id' => 'driver-login-forgot', 'title' => 'Forgot your password'],
+                ['id' => 'driver-gs-login', 'title' => 'Logging in'],
+                ['id' => 'driver-gs-start', 'title' => 'Starting a trip'],
+                ['id' => 'driver-gs-end', 'title' => 'Ending a trip'],
+                ['id' => 'driver-gs-required', 'title' => 'What you may be asked to enter'],
+                ['id' => 'driver-gs-offline', 'title' => 'Offline basics'],
             ],
         ],
         [
-            'id' => 'driver-start-trip',
-            'title' => 'Starting a trip',
+            'id' => 'driver-reference',
+            'title' => 'Reference',
             'children' => [
-                ['id' => 'driver-start-trip-steps', 'title' => 'Step-by-step'],
-                ['id' => 'driver-start-trip-required-fields', 'title' => 'Fields that may be required'],
+                ['id' => 'driver-ref-trip-rules', 'title' => 'Trip rules in plain English'],
+                ['id' => 'driver-ref-offline', 'title' => 'Offline trips & syncing'],
+                ['id' => 'driver-ref-safety', 'title' => 'Safety checks'],
+                ['id' => 'driver-ref-bookings', 'title' => 'Bookings (if enabled)'],
+                ['id' => 'driver-ref-what-you-can-change', 'title' => 'What drivers can and can’t change'],
             ],
-        ],
-        [
-            'id' => 'driver-end-trip',
-            'title' => 'Ending a trip',
-            'children' => [
-                ['id' => 'driver-end-trip-steps', 'title' => 'Step-by-step'],
-                ['id' => 'driver-end-trip-common-issues', 'title' => 'Common issues'],
-            ],
-        ],
-        [
-            'id' => 'driver-corrections',
-            'title' => 'Correcting mistakes',
-            'children' => [
-                ['id' => 'driver-corrections-readings', 'title' => 'Wrong reading entered'],
-                ['id' => 'driver-corrections-times', 'title' => 'Wrong time entered'],
-                ['id' => 'driver-corrections-missing-end', 'title' => 'Forgot to end a trip'],
-            ],
-        ],
-        [
-            'id' => 'driver-client-job',
-            'title' => 'Client/job entry',
-            'children' => [
-                ['id' => 'driver-client-job-labels', 'title' => 'Customer vs client wording'],
-                ['id' => 'driver-client-job-customer', 'title' => 'Selecting or typing a customer'],
-                ['id' => 'driver-client-job-presence', 'title' => 'Client presence question'],
-            ],
-        ],
-        [
-            'id' => 'driver-offline',
-            'title' => 'Offline / PWA usage',
-            'children' => [
-                ['id' => 'driver-offline-install', 'title' => 'Install the app (optional)'],
-                ['id' => 'driver-offline-capture', 'title' => 'Capturing trips offline'],
-                ['id' => 'driver-offline-sync', 'title' => 'Syncing when back online'],
-            ],
-        ],
-        [
-            'id' => 'driver-what-you-can-change',
-            'title' => 'What drivers can and cannot change',
         ],
         [
             'id' => 'driver-faq',
-            'title' => 'Common driver questions',
+            'title' => 'Common questions',
         ],
     ];
 @endphp
 
 @section('help-sections')
 
-<section id="driver-login" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Logging in</h2>
-    <p class="text-muted">You can use SharpFleet in a browser on your phone, or install it like an app (optional).</p>
+<section id="driver-getting-started" data-sf-help-section class="sf-help__section">
+    <div class="sf-help__kicker sf-help__muted">Primary</div>
+    <h2 class="sf-help__sectionTitle">Getting Started</h2>
+    <p class="sf-help__lead">You don’t need to learn everything. Start a trip, end a trip, and you’re good. If something is required, SharpFleet will tell you.</p>
+
+    <div class="sf-help__callout sf-help__callout--recommended">
+        <div class="sf-help__calloutTitle">Recommended</div>
+        <div>When in doubt: fill in the missing field message, then try again.</div>
+    </div>
 </section>
 
-<section id="driver-login-first-time" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">First time setup</h3>
-    <ol>
-        <li>Open the invite email from your company.</li>
-        <li>Tap the link and set your password.</li>
-        <li>Log in using your email and password.</li>
-        <li>Bookmark the page or add it to your home screen (see Offline/PWA section).</li>
-    </ol>
+<section id="driver-gs-login" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Logging in</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">First time</div>
+            <span class="sf-help__badge">1 minute</span>
+        </div>
+        <ol class="mb-0">
+            <li>Open the invite email from your company.</li>
+            <li>Tap the link and set your password.</li>
+            <li>Log in with your email and password.</li>
+        </ol>
+        <div class="sf-help__callout" style="margin-top: 12px;">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>Bookmark the page or add it to your home screen for quick access.</div>
+        </div>
+    </div>
+
+    <details class="sf-help__details">
+        <summary>Forgot your password?</summary>
+        <ol class="mb-0" style="margin-top: 10px;">
+            <li>On the login screen, tap <strong>Forgot password</strong>.</li>
+            <li>Enter your email address.</li>
+            <li>Follow the reset link in your email.</li>
+        </ol>
+        <div class="text-muted" style="margin-top: 8px;">If the email doesn’t arrive, check Junk/Spam.</div>
+    </details>
 </section>
 
-<section id="driver-login-forgot" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Forgot your password</h3>
-    <ol>
-        <li>On the login screen, tap <strong>Forgot password</strong>.</li>
-        <li>Enter your email address.</li>
-        <li>Check your email and follow the reset link.</li>
-        <li>Set a new password and log in.</li>
-    </ol>
-    <p class="text-muted">If you don’t receive the email within a few minutes, check Junk/Spam and confirm you typed the correct email address.</p>
+<section id="driver-gs-start" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Starting a trip</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Step-by-step</div>
+            <span class="sf-help__badge">Driver Dashboard</span>
+        </div>
+        <ol class="mb-0">
+            <li>Open the <strong>Driver Dashboard</strong>.</li>
+            <li>Select the <strong>Vehicle</strong> you are using.</li>
+            <li>If you see it, choose the trip type (business/private).</li>
+            <li>Fill in any required fields (examples: safety checks, customer, start time, start reading).</li>
+            <li>Tap <strong>Start Trip</strong>.</li>
+        </ol>
+        <div class="sf-help__callout sf-help__callout--important">
+            <div class="sf-help__calloutTitle">Important</div>
+            <div>If you can’t find a vehicle in the list, it may be out of service or archived. Contact your admin.</div>
+        </div>
+    </div>
 </section>
 
-<section id="driver-start-trip" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Starting a trip</h2>
-    <p class="text-muted">What you must fill in can change depending on your company’s rules. If something is required, SharpFleet will block the trip until it’s completed.</p>
+<section id="driver-gs-end" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Ending a trip</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Step-by-step</div>
+            <span class="sf-help__badge">Keep it accurate</span>
+        </div>
+        <ol class="mb-0">
+            <li>Open the Driver Dashboard.</li>
+            <li>Find the active trip.</li>
+            <li>Enter any required end details (end time, end reading).</li>
+            <li>Tap <strong>End Trip</strong>.</li>
+        </ol>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>End the trip as soon as practical. It keeps availability and reports accurate.</div>
+        </div>
+    </div>
+
+    <details class="sf-help__details">
+        <summary>If you can’t end a trip</summary>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li>Check if an end reading or end time is required.</li>
+            <li>If you’re offline, it may sync later when you’re back online.</li>
+            <li>Refresh once you have signal again.</li>
+        </ul>
+    </details>
 </section>
 
-<section id="driver-start-trip-steps" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step-by-step</h3>
-    <ol>
-        <li>Open the <strong>Driver Dashboard</strong>.</li>
-        <li>Select the <strong>Vehicle</strong> you are using.</li>
-        <li class="text-muted">If you can’t find a vehicle in the list, it may be out of service or archived. Contact your admin.</li>
-        <li>If your company requires it, select a <strong>Start time</strong> (manual time entry).</li>
-        <li>Select the <strong>Trip type</strong> (business or private) if you see the option.</li>
-        <li>If shown, answer the <strong>client/customer</strong> questions (example: “Was a customer present?”).</li>
-        <li>Enter the <strong>starting reading</strong> (kilometres or hours) if required.</li>
-        <li>Tap <strong>Start Trip</strong>.</li>
-    </ol>
+<section id="driver-gs-required" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">What you may be asked to enter</h3>
+    <div class="sf-help__twoCol">
+        <div class="sf-help__card">
+            <div class="fw-bold mb-1">Common required items</div>
+            <ul class="mb-0">
+                <li>Safety checks</li>
+                <li>Customer / client questions</li>
+                <li>Start reading (km/hours)</li>
+                <li>Manual start/end times</li>
+            </ul>
+        </div>
+        <div class="sf-help__card">
+            <div class="fw-bold mb-1">Why it changes</div>
+            <div class="text-muted">Your company decides what is required. If a field is required, SharpFleet will block the trip until it’s completed.</div>
+        </div>
+    </div>
 </section>
 
-<section id="driver-start-trip-required-fields" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Fields that may be required</h3>
-    <ul>
-        <li><strong>Safety checklist:</strong> you may need to tick off a short checklist before starting.</li>
-        <li><strong>Client presence:</strong> you may need to answer Yes/No before a business trip can start.</li>
-        <li><strong>Customer name:</strong> you may need to select a customer or type a name (depending on your company’s setup).</li>
-        <li><strong>Starting reading:</strong> you may need to enter a start reading. In some companies, you may not be allowed to change the suggested reading.</li>
-        <li><strong>Manual start time:</strong> some companies require you to enter the start time (and end time) yourself.</li>
-    </ul>
+<section id="driver-gs-offline" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Offline basics</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Yes, it can still work</div>
+            <span class="sf-help__badge">Limited features</span>
+        </div>
+        <ul class="mb-0">
+            <li>If you’re offline, you may see an offline message.</li>
+            <li>You can still capture trips with limited features.</li>
+            <li>When you’re back online, keep the page open briefly so it can sync.</li>
+        </ul>
+    </div>
 </section>
 
-<section id="driver-end-trip" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Ending a trip</h2>
-    <p class="text-muted">End the trip as soon as practical. This keeps vehicle availability and reports accurate.</p>
+<section id="driver-reference" data-sf-help-section class="sf-help__section">
+    <div class="sf-help__kicker sf-help__muted">Secondary</div>
+    <h2 class="sf-help__sectionTitle">Reference</h2>
+    <p class="sf-help__lead">Short answers in plain English.</p>
 </section>
 
-<section id="driver-end-trip-steps" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step-by-step</h3>
-    <ol>
-        <li>Open the driver dashboard.</li>
-        <li>Find the active trip.</li>
-        <li>If your company requires it, select an <strong>End time</strong> (manual time entry).</li>
-        <li>Enter the <strong>ending reading</strong> (kilometres or hours) if required.</li>
-        <li>Tap <strong>End Trip</strong>.</li>
-    </ol>
+<section id="driver-ref-trip-rules" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Trip rules in plain English</h3>
+    <details class="sf-help__details">
+        <summary>Why do I see extra fields sometimes?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Your company turns rules on/off. Different companies ask for different details.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Manual times:</strong> you may need to enter a start/end time.</li>
+            <li><strong>Readings:</strong> you may need to enter km/hours.</li>
+            <li><strong>Locked readings:</strong> you may not be allowed to change a suggested reading.</li>
+        </ul>
+    </details>
 </section>
 
-<section id="driver-end-trip-common-issues" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Common issues</h3>
-    <ul>
-        <li><strong>“I can’t end the trip”:</strong> check if the end reading or end time is required.</li>
-        <li><strong>“The reading looks wrong”:</strong> some companies lock readings to prevent mistakes. If it looks wrong, contact your admin.</li>
-        <li><strong>“I ended the trip but it still shows active”:</strong> refresh the page. If you’re offline, it may sync later.</li>
-    </ul>
+<section id="driver-ref-offline" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Offline trips & syncing</h3>
+    <details class="sf-help__details">
+        <summary>What should I do when I’m back online?</summary>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li>Keep the page open for a moment.</li>
+            <li>Refresh once if something doesn’t appear.</li>
+        </ul>
+        <div class="sf-help__callout" style="margin-top: 12px;">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>If you see missing or duplicate trips after being offline, tell your admin the date/time and vehicle used.</div>
+        </div>
+    </details>
 </section>
 
-<section id="driver-corrections" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Correcting mistakes</h2>
-    <p class="text-muted">What you can correct depends on your company settings. If you can’t change something, contact your admin.</p>
+<section id="driver-ref-safety" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Safety checks</h3>
+    <details class="sf-help__details">
+        <summary>Why do I have to do a checklist?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Your company may require a quick safety check before starting a trip.</div>
+        <div style="margin-top: 10px;">If it’s required, you can’t start until it’s completed.</div>
+    </details>
 </section>
 
-<section id="driver-corrections-readings" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Wrong reading entered</h3>
-    <ul>
-        <li>If you notice before submitting, correct it and continue.</li>
-        <li>If the field is locked, you may not be allowed to override it. Contact your admin.</li>
-        <li>If you already submitted the wrong reading, tell your admin as soon as possible so they can advise the next step.</li>
-    </ul>
+<section id="driver-ref-bookings" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Bookings (if enabled)</h3>
+    <details class="sf-help__details">
+        <summary>What are bookings?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Some companies use bookings to reserve vehicles for certain times.</div>
+        <div style="margin-top: 10px;">If a vehicle is booked or unavailable, you may be blocked from using it.</div>
+    </details>
 </section>
 
-<section id="driver-corrections-times" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Wrong time entered</h3>
-    <p>If your company uses manual time entry, choose the correct start/end time before submitting.</p>
-    <p class="text-muted">If you already submitted incorrect times and you can’t edit them, contact your admin.</p>
-</section>
-
-<section id="driver-corrections-missing-end" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Forgot to end a trip</h3>
-    <ol>
-        <li>Open SharpFleet as soon as you can.</li>
-        <li>End the trip and enter the correct ending details.</li>
-        <li>If your company requires manual end time, select the actual end time.</li>
-    </ol>
-</section>
-
-<section id="driver-client-job" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Client/job entry</h2>
-    <p class="text-muted">Some companies capture customer/client details for business trips. If you do not see these fields, your company may have them turned off.</p>
-</section>
-
-<section id="driver-client-job-labels" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Customer vs client wording</h3>
-    <p>The wording can be different depending on your company. For example, you may see “Client”, “Customer”, or “Passenger”.</p>
-</section>
-
-<section id="driver-client-job-customer" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Selecting or typing a customer</h3>
-    <ul>
-        <li>If you see a dropdown list, you can select an existing customer.</li>
-        <li>If you see a text box, you can type a customer name (if your company allows it).</li>
-        <li>If you don’t see customer fields at all, your company may have customer capture turned off.</li>
-    </ul>
-</section>
-
-<section id="driver-client-job-presence" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Client presence question</h3>
-    <p>Some companies require a Yes/No answer for whether a client/customer was present.</p>
-    <p class="text-muted">If it’s required, you can’t start the trip until you choose an answer.</p>
-</section>
-
-<section id="driver-offline" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Offline / PWA usage</h2>
-    <p class="text-muted">SharpFleet can keep working with limited features when your phone has no signal. When you’re back online, it will try to sync.</p>
-</section>
-
-<section id="driver-offline-install" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Install the app (optional)</h3>
-    <ul>
-        <li>On iPhone: open SharpFleet in Safari, tap <strong>Share</strong>, then tap <strong>Add to Home Screen</strong>.</li>
-        <li>On Android (Chrome): open the menu and tap <strong>Add to Home screen</strong> (or <strong>Install app</strong>).</li>
-    </ul>
-</section>
-
-<section id="driver-offline-capture" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Capturing trips offline</h3>
-    <ul>
-        <li>If you’re offline, SharpFleet may show an “offline” message.</li>
-        <li>Enter trip details as normal. Some actions may be limited until you’re back online.</li>
-        <li>If your company requires manual start/end times, you may need to enter times while offline too.</li>
-    </ul>
-</section>
-
-<section id="driver-offline-sync" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Syncing when back online</h3>
-    <ul>
-        <li>When your phone is online again, keep the page open for a moment.</li>
-        <li>SharpFleet will try to sync offline trips automatically.</li>
-        <li>If something doesn’t appear, refresh the page once you’re online.</li>
-    </ul>
-    <p class="text-muted">Tip: If you see duplicate trips or missing trips after being offline, report it to your admin with the date/time and vehicle used.</p>
-</section>
-
-<section id="driver-what-you-can-change" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">What drivers can and cannot change</h2>
-    <p>Drivers can usually:</p>
-    <ul>
-        <li>Select a vehicle.</li>
-        <li>Start and end trips.</li>
-        <li>Enter the fields your company has enabled (customer/client details, presence, readings, times).</li>
-    </ul>
-
-    <p>Drivers usually cannot:</p>
-    <ul>
-        <li>Change company rules or settings.</li>
-        <li>Add/edit vehicles or users.</li>
-        <li>Override locked readings (if your company has disabled overrides).</li>
-    </ul>
+<section id="driver-ref-what-you-can-change" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">What drivers can and can’t change</h3>
+    <div class="sf-help__twoCol">
+        <div class="sf-help__card">
+            <div class="fw-bold mb-1">You can usually</div>
+            <ul class="mb-0">
+                <li>Select a vehicle</li>
+                <li>Start and end trips</li>
+                <li>Enter the fields your company has enabled</li>
+            </ul>
+        </div>
+        <div class="sf-help__card">
+            <div class="fw-bold mb-1">You usually can’t</div>
+            <ul class="mb-0">
+                <li>Change company rules or settings</li>
+                <li>Add/edit vehicles or users</li>
+                <li>Override locked readings</li>
+            </ul>
+        </div>
+    </div>
 </section>
 
 <section id="driver-faq" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Common driver questions</h2>
+    <h2 class="sf-help__sectionTitle">Common questions</h2>
 
-    <h3 class="sf-help__sectionTitle">“Why can’t I start a trip?”</h3>
-    <p>One of the required fields is missing (for example: safety checklist, client presence, start reading, or start time). Scroll up and look for a message, then complete the missing field.</p>
+    <details class="sf-help__details">
+        <summary>Why can’t I start a trip?</summary>
+        <div class="text-muted" style="margin-top: 8px;">A required field is missing.</div>
+        <div style="margin-top: 10px;">Scroll up, find the message, fill in the missing field, then try again.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Why can’t I find my vehicle in the list?”</h3>
-    <p>Your admin may have marked the vehicle <strong>out of service</strong> (service/repair/inspection), or it may be archived. If you’re not sure, contact your admin and confirm which vehicle you should use.</p>
+    <details class="sf-help__details">
+        <summary>Why can’t I find my vehicle in the list?</summary>
+        <div class="text-muted" style="margin-top: 8px;">It may be out of service or archived.</div>
+        <div style="margin-top: 10px;">Contact your admin to confirm which vehicle you should use.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Why is the start reading locked?”</h3>
-    <p>Your company may have turned off overrides. If the reading looks wrong, contact your admin instead of guessing.</p>
+    <details class="sf-help__details">
+        <summary>Why is the start reading locked?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Your company may have turned off overrides.</div>
+        <div style="margin-top: 10px;">If the reading looks wrong, contact your admin instead of guessing.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Do I need GPS for this?”</h3>
-    <p>No. SharpFleet does not assume GPS tracking. Trips are based on what you enter and your company’s rules.</p>
+    <details class="sf-help__details">
+        <summary>Do I need GPS for this?</summary>
+        <div class="text-muted" style="margin-top: 8px;">No — SharpFleet does not assume GPS.</div>
+        <div style="margin-top: 10px;">Trips are based on what you enter and your company’s rules.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Why don’t I see customer fields?”</h3>
-    <p>Your company may have customer capture turned off for drivers, or it may only show for certain trip types.</p>
+    <details class="sf-help__details">
+        <summary>Why don’t I see customer fields?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Your company may have customer capture turned off, or it may only show for certain trip types.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“What if I’m offline?”</h3>
-    <p>You can still capture trips with limited features. When you’re back online, keep the page open briefly so it can sync.</p>
+    <details class="sf-help__details">
+        <summary>What if I’m offline?</summary>
+        <div class="text-muted" style="margin-top: 8px;">You can still capture trips with limited features.</div>
+        <div style="margin-top: 10px;">When you’re back online, keep the page open briefly so it can sync.</div>
+    </details>
 </section>
 
 @endsection

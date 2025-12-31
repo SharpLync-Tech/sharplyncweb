@@ -4,82 +4,38 @@
     // Admin Help: define the Table of Contents structure in one place.
     // Each entry maps to a <section id="..." data-sf-help-section> below.
     $helpTitle = 'Admin Help';
-    $helpIntro = 'Short, practical guides for setting up your company and supporting drivers.';
+    $helpIntro = 'A quick setup guide first, then a reference you can search.';
 
     $helpSections = [
         [
-            'id' => 'admin-getting-started',
-            'title' => 'Getting started',
+            'id' => 'admin-setup',
+            'title' => 'Setup Guide',
             'children' => [
-                ['id' => 'admin-getting-started-first-login', 'title' => 'First login checklist'],
-                ['id' => 'admin-getting-started-where-to-find-things', 'title' => 'Where to find things'],
+                ['id' => 'admin-setup-checklist', 'title' => 'First-time checklist'],
+                ['id' => 'admin-setup-step-company', 'title' => 'Step 1 — Company profile'],
+                ['id' => 'admin-setup-step-timezone', 'title' => 'Step 2 — Timezone'],
+                ['id' => 'admin-setup-step-vehicles', 'title' => 'Step 3 — Vehicles'],
+                ['id' => 'admin-setup-step-trip-rules', 'title' => 'Step 4 — Trip rules'],
+                ['id' => 'admin-setup-step-safety', 'title' => 'Step 5 — Safety checks (optional)'],
+                ['id' => 'admin-setup-step-invite', 'title' => 'Step 6 — Invite drivers'],
+                ['id' => 'admin-setup-step-test-trip', 'title' => 'Step 7 — Run a test trip'],
             ],
         ],
         [
-            'id' => 'admin-company-settings',
-            'title' => 'Company settings & rules',
+            'id' => 'admin-reference',
+            'title' => 'Reference',
             'children' => [
-                ['id' => 'admin-company-settings-trip-rules', 'title' => 'Trip rules'],
-                ['id' => 'admin-company-settings-client-customer', 'title' => 'Client/customer capture'],
-                ['id' => 'admin-company-settings-safety', 'title' => 'Safety checklist'],
-                ['id' => 'admin-company-settings-timezone', 'title' => 'Timezone'],
-            ],
-        ],
-        [
-            'id' => 'admin-vehicles',
-            'title' => 'Vehicles (add, edit, compliance)',
-            'children' => [
-                ['id' => 'admin-vehicles-add', 'title' => 'Add a vehicle'],
-                ['id' => 'admin-vehicles-edit', 'title' => 'Edit vehicle details'],
-                ['id' => 'admin-vehicles-out-of-service', 'title' => 'Mark a vehicle out of service'],
-                ['id' => 'admin-vehicles-archive', 'title' => 'Archive a vehicle'],
-                ['id' => 'admin-vehicles-compliance', 'title' => 'Compliance (rego & servicing)'],
-            ],
-        ],
-        [
-            'id' => 'admin-drivers',
-            'title' => 'Drivers (add, invite, permissions)',
-            'children' => [
-                ['id' => 'admin-drivers-invite', 'title' => 'Invite a driver'],
-                ['id' => 'admin-drivers-admin-as-driver', 'title' => 'Admin using Driver (Driver View)'],
-                ['id' => 'admin-drivers-what-they-can-do', 'title' => 'What drivers can change'],
-            ],
-        ],
-        [
-            'id' => 'admin-trips',
-            'title' => 'Trips & logbooks',
-            'children' => [
-                ['id' => 'admin-trips-how-trips-work', 'title' => 'How trips are recorded'],
-                ['id' => 'admin-trips-common-issues', 'title' => 'Common trip issues'],
-            ],
-        ],
-        [
-            'id' => 'admin-reports',
-            'title' => 'Reports & exports',
-            'children' => [
-                ['id' => 'admin-reports-trips', 'title' => 'Trip reports'],
-                ['id' => 'admin-reports-csv', 'title' => 'CSV export'],
-                ['id' => 'admin-reports-settings-driven', 'title' => 'Reports controlled by company settings'],
-            ],
-        ],
-        [
-            'id' => 'admin-trial',
-            'title' => 'Trial vs paid behaviour',
-            'children' => [
-                ['id' => 'admin-trial-what-changes', 'title' => 'What changes when a trial expires'],
-            ],
-        ],
-        [
-            'id' => 'admin-faults',
-            'title' => 'Incidents / faults',
-            'children' => [
-                ['id' => 'admin-faults-enabled', 'title' => 'Turning it on'],
-                ['id' => 'admin-faults-review', 'title' => 'Reviewing and archiving'],
+                ['id' => 'admin-ref-company-settings', 'title' => 'Company settings & rules'],
+                ['id' => 'admin-ref-trip-rules', 'title' => 'Trip rules'],
+                ['id' => 'admin-ref-client-customer', 'title' => 'Client / customer capture'],
+                ['id' => 'admin-ref-safety', 'title' => 'Safety checks'],
+                ['id' => 'admin-ref-vehicles', 'title' => 'Vehicles & maintenance'],
+                ['id' => 'admin-ref-reports', 'title' => 'Reports & exports'],
             ],
         ],
         [
             'id' => 'admin-faq',
-            'title' => 'Common admin questions',
+            'title' => 'Common questions',
         ],
     ];
 @endphp
@@ -91,287 +47,310 @@
   Use simple steps, plain language, and call out what is controlled by company settings.
 --}}
 
-<section id="admin-getting-started" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Getting started</h2>
-    <p class="text-muted">Use this checklist to get set up quickly. Most driver behaviour is controlled by your Company Settings.</p>
+<section id="admin-setup" data-sf-help-section class="sf-help__section">
+    <div class="sf-help__kicker sf-help__muted">Primary</div>
+    <h2 class="sf-help__sectionTitle">Setup Guide</h2>
+    <p class="sf-help__lead">Follow this once when you’re setting up a new company. Keep it simple. You can refine rules later.</p>
+
+    <div class="sf-help__callout sf-help__callout--recommended">
+        <div class="sf-help__calloutTitle">Recommended</div>
+        <div>Do the setup in this order. It prevents driver confusion and reduces “can’t start trip” issues.</div>
+    </div>
 </section>
 
-<section id="admin-getting-started-first-login" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">First login checklist</h3>
-    <ul>
-        <li><strong>Check your company profile:</strong> Go to <em>Company</em> and confirm your details are correct.</li>
-        <li><strong>Set your timezone:</strong> This controls how times show on trips, bookings, faults, and reports.</li>
-        <li><strong>Add your vehicles:</strong> Add at least one vehicle before inviting drivers.</li>
-        <li><strong>Choose your trip rules:</strong> Decide what drivers must enter when starting/ending trips (examples: odometer reading, safety checks, manual start/end time).</li>
-        <li><strong>Invite drivers:</strong> Send invites so drivers can log in and start trips.</li>
-        <li><strong>Run a test trip:</strong> Use <strong>Driver</strong> (Driver View) to confirm your rules make sense in real use.</li>
-    </ul>
+<section id="admin-setup-checklist" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">First-time checklist</h3>
+
+    <div class="sf-help__twoCol">
+        <div class="sf-help__card">
+            <div class="sf-help__cardHeader">
+                <div class="fw-bold">Your setup path</div>
+                <span class="sf-help__badge">~10–20 minutes</span>
+            </div>
+            <ol class="mb-0">
+                <li>Company profile</li>
+                <li>Timezone</li>
+                <li>Vehicles</li>
+                <li>Trip rules</li>
+                <li>Safety checks (optional)</li>
+                <li>Invite drivers</li>
+                <li>Run a test trip</li>
+            </ol>
+        </div>
+
+        <div class="sf-help__card">
+            <div class="sf-help__cardHeader">
+                <div class="fw-bold">Where to find things</div>
+                <span class="sf-help__badge">Top navigation</span>
+            </div>
+            <ul class="mb-0">
+                <li><strong>Fleet:</strong> Dashboard, Vehicles, Bookings</li>
+                <li><strong>Operations:</strong> Faults, Reminders, Safety Checks</li>
+                <li><strong>Reports:</strong> Trip Reports</li>
+                <li><strong>Company:</strong> Company Overview, Edit Company Details, Users/Drivers, Company Settings</li>
+            </ul>
+            <div class="text-muted" style="margin-top: 8px;">Some company actions that used to show on the Company page are now in the <strong>Company</strong> dropdown.</div>
+        </div>
+    </div>
 </section>
 
-<section id="admin-getting-started-where-to-find-things" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Where to find things</h3>
-    <ul>
-        <li><strong>Fleet:</strong> Dashboard, Vehicles, and Bookings.</li>
-        <li><strong>Operations:</strong> Faults, Reminders, and Safety Checks.</li>
-        <li><strong>Customers:</strong> Your customer list (if enabled).</li>
-        <li><strong>Reports:</strong> Trip Reports and exports.</li>
-        <li><strong>Company:</strong> Company Overview, Edit Company Details, Users/Drivers, and Company Settings.</li>
-    </ul>
-    <p class="text-muted">Tip: Some “Company actions” that used to appear on the Company page are now available from the <strong>Company</strong> dropdown in the top navigation.</p>
+<section id="admin-setup-step-company" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 1 — Company profile</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Check your details</div>
+            <span class="sf-help__badge">Company</span>
+        </div>
+        <p class="mb-2">Confirm your company name and basic details. This keeps reports and exports consistent.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/company">Open Company Overview</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/company/profile">Edit Company Details</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Why it matters</div>
+            <div>These details appear on reports and help drivers know they’re in the right place.</div>
+        </div>
+    </div>
 </section>
 
-<section id="admin-company-settings" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Company settings & rules</h2>
-    <p class="text-muted">These settings decide what drivers see and what they must enter. If a field is hidden or locked for drivers, it is usually because of a company setting.</p>
+<section id="admin-setup-step-timezone" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 2 — Timezone</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Set your timezone</div>
+            <span class="sf-help__badge">Company Settings</span>
+        </div>
+        <p class="mb-2">Timezone controls how times display on trips, bookings, faults, and reports.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+        </div>
+        <div class="sf-help__callout sf-help__callout--important">
+            <div class="sf-help__calloutTitle">Important</div>
+            <div>Set timezone before drivers start logging trips. Changing it later can make times look confusing.</div>
+        </div>
+    </div>
 </section>
 
-<section id="admin-company-settings-trip-rules" data-sf-help-section class="sf-help__section">
+<section id="admin-setup-step-vehicles" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 3 — Vehicles</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Add your vehicles</div>
+            <span class="sf-help__badge">Vehicles</span>
+        </div>
+        <p class="mb-2">Add at least one vehicle before inviting drivers. Use clear names (example: “Hilux 1”).</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>If a vehicle is temporarily unavailable, mark it <strong>out of service</strong> instead of archiving it.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-trip-rules" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 4 — Trip rules</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Choose what drivers must enter</div>
+            <span class="sf-help__badge">Company Settings</span>
+        </div>
+        <p class="mb-2">Trip rules decide what shows on the driver screen. If something is required, drivers can’t start a trip until it’s filled in.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+        </div>
+        <div class="sf-help__callout sf-help__callout--recommended">
+            <div class="sf-help__calloutTitle">Recommended</div>
+            <div>Start with the minimum required fields. You can tighten rules later once everyone is comfortable.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-safety" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 5 — Safety checks (optional)</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Set up a quick checklist</div>
+            <span class="sf-help__badge">Safety Checks</span>
+        </div>
+        <p class="mb-2">If you enable safety checks, drivers will be prompted to complete them before starting a trip.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/safety-checks">Open Safety Checks</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>Keep it short. Drivers are more likely to complete a checklist that takes under a minute.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-invite" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 6 — Invite drivers</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Invite your team</div>
+            <span class="sf-help__badge">Users/Drivers</span>
+        </div>
+        <p class="mb-2">Send an invite so drivers can set a password and start using SharpFleet.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/users">Open Users</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/users/invite">Invite a driver</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>If someone can’t find the invite, ask them to check Junk/Spam, then resend from Users.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-test-trip" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 7 — Run a test trip</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Test the driver experience</div>
+            <span class="sf-help__badge">Driver</span>
+        </div>
+        <p class="mb-2">Use <strong>Driver</strong> (Driver View) to confirm your rules make sense in real use.</p>
+        <div class="sf-help__callout sf-help__callout--important">
+            <div class="sf-help__calloutTitle">Important</div>
+            <div>If drivers get blocked from starting trips, it’s usually a required field in Company Settings.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-reference" data-sf-help-section class="sf-help__section">
+    <div class="sf-help__kicker sf-help__muted">Secondary</div>
+    <h2 class="sf-help__sectionTitle">Reference</h2>
+    <p class="sf-help__lead">Short answers to common questions. Use the search box to jump straight to what you need.</p>
+
+    <div class="sf-help__callout">
+        <div class="sf-help__calloutTitle">Tip</div>
+        <div>If a driver says “I can’t start a trip”, it’s almost always a required field in Company Settings.</div>
+    </div>
+</section>
+
+<section id="admin-ref-company-settings" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Company settings & rules</h3>
+    <details class="sf-help__details">
+        <summary>What do company settings control?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Company settings decide what drivers see, what is required, and what is locked.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Required fields:</strong> if required, drivers cannot start/end a trip until it’s filled in.</li>
+            <li><strong>Locked fields:</strong> if overrides are off, drivers can’t “fix” readings by guessing.</li>
+            <li><strong>Optional features:</strong> safety checks and client/customer capture can be enabled per company.</li>
+        </ul>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+        </div>
+    </details>
+</section>
+
+<section id="admin-ref-trip-rules" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Trip rules</h3>
-    <p><strong>Trip rules</strong> control what a driver must enter when starting and ending a trip.</p>
-    <ul>
-        <li><strong>Odometer / start reading required:</strong> If enabled, drivers must enter a starting reading (or SharpFleet may fill the last known reading depending on your setup).</li>
-        <li><strong>Odometer override allowed:</strong> If disabled, drivers cannot change the starting reading away from the last known reading.</li>
-        <li><strong>Private trips allowed:</strong> If enabled, drivers can mark a trip as private. If disabled, all trips are treated as business.</li>
-        <li><strong>Require manual start/end times:</strong> If enabled, drivers must enter the start time (and end time) for each trip. This is useful when trips are logged after the fact.</li>
-    </ul>
-    <p class="text-muted">Tip: Choose the simplest rules your business needs. More required fields usually means more “forgot to enter it” mistakes.</p>
+    <details class="sf-help__details">
+        <summary>What are “trip rules” in plain English?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Trip rules decide what a driver must enter when starting and ending a trip.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Start reading required:</strong> driver must enter a starting odometer/hours reading.</li>
+            <li><strong>Overrides allowed:</strong> if off, drivers can’t change the suggested reading.</li>
+            <li><strong>Private trips:</strong> lets drivers mark trips as private (if your company allows it).</li>
+            <li><strong>Manual times:</strong> lets you require start/end times to be entered (useful for backdated trips).</li>
+        </ul>
+    </details>
 </section>
 
-<section id="admin-company-settings-client-customer" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Client/customer capture</h3>
-    <p>SharpFleet can capture “client/customer” details on business trips, depending on your settings.</p>
-    <ul>
-        <li><strong>Client presence:</strong> You can ask drivers “Was a client present?” and (optionally) make it required before starting a business trip.</li>
-        <li><strong>Client label:</strong> You can rename the word drivers see (example: “Customer”, “Client”, “Passenger”).</li>
-        <li><strong>Customer selection / entry:</strong> You can let drivers choose from your customer list and/or type a name manually.</li>
-    </ul>
-    <p class="text-muted">Important: If you make a field required, drivers will be blocked from starting a trip until it’s completed.</p>
+<section id="admin-ref-client-customer" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Client / customer capture</h3>
+    <details class="sf-help__details">
+        <summary>How do customer fields work?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Customer capture can show on business trips depending on your setup.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Client presence question:</strong> you can ask “Was a customer present?” and optionally make it required.</li>
+            <li><strong>Customer name:</strong> drivers may select a customer or type one (depending on your rules).</li>
+            <li><strong>Label:</strong> you can rename the wording drivers see (Customer/Client/Passenger).</li>
+        </ul>
+        <div class="sf-help__callout sf-help__callout--important">
+            <div class="sf-help__calloutTitle">Important</div>
+            <div>If you make it required, drivers will be blocked until they answer it.</div>
+        </div>
+    </details>
 </section>
 
-<section id="admin-company-settings-safety" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Safety checklist</h3>
-    <p>If enabled, drivers will be asked to complete a short checklist before starting a trip.</p>
-    <ul>
-        <li>Go to <strong>Safety Checks</strong> to define the checklist items.</li>
-        <li>Turn the feature on in <strong>Settings</strong> (and make it required if your process needs it).</li>
-        <li>Keep the list short. Drivers are more likely to complete a checklist that takes under a minute.</li>
-    </ul>
+<section id="admin-ref-safety" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Safety checks</h3>
+    <details class="sf-help__details">
+        <summary>When should we use safety checks?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Use safety checks when you want a quick, consistent pre-start check.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li>Keep the checklist short.</li>
+            <li>Only make it required if your process needs it.</li>
+        </ul>
+        <div class="sf-help__actions">
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/safety-checks">Open Safety Checks</a>
+        </div>
+    </details>
 </section>
 
-<section id="admin-company-settings-timezone" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Timezone</h3>
-    <p>Timezone affects how dates and times are displayed to you and your drivers.</p>
-    <ul>
-        <li>Trip start/end times display in your company timezone.</li>
-        <li>Bookings and conflicts are checked using the same timezone rules.</li>
-        <li>Reports show timestamps in the company timezone.</li>
-    </ul>
+<section id="admin-ref-vehicles" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Vehicles & maintenance</h3>
+    <details class="sf-help__details">
+        <summary>How do we manage vehicles day-to-day?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Vehicles can be active, out of service (temporary), or archived (no longer used).</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Out of service:</strong> blocks bookings and trip starts. Use for service/repair/inspection.</li>
+            <li><strong>Archive:</strong> hides the vehicle from day-to-day use, but keeps history.</li>
+            <li><strong>Reminders:</strong> rego and service reminders depend on your Company Settings.</li>
+        </ul>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
+        </div>
+    </details>
 </section>
 
-<section id="admin-vehicles" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Vehicles (add, edit, compliance)</h2>
-    <p class="text-muted">Vehicles are the core of SharpFleet. Add them first, then invite drivers.</p>
-</section>
-
-<section id="admin-vehicles-add" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Add a vehicle</h3>
-    <ol>
-        <li>Go to <strong>Vehicles</strong>.</li>
-        <li>Select <strong>Add vehicle</strong>.</li>
-        <li>Enter a clear name (example: “Hilux 1”) and the registration number.</li>
-        <li>Select the tracking mode used by your business (distance or hours) if available.</li>
-        <li>Save.</li>
-    </ol>
-</section>
-
-<section id="admin-vehicles-edit" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Edit vehicle details</h3>
-    <p>Use <strong>Edit</strong> to update names, registration numbers, and any compliance dates/readings you track.</p>
-    <p class="text-muted">Tip: Keep vehicle names consistent so reports are easy to read.</p>
-</section>
-
-<section id="admin-vehicles-out-of-service" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Mark a vehicle out of service</h3>
-    <p>Use this when a vehicle is temporarily unavailable (for example: service, repair, accident, or inspection).</p>
-    <ol>
-        <li>Go to <strong>Vehicles</strong>.</li>
-        <li>Open the vehicle and select <strong>Edit</strong>.</li>
-        <li>In <strong>Service Status</strong>, tick <strong>Mark vehicle as out of service</strong>.</li>
-        <li>Select a <strong>Reason</strong> and add a short <strong>Note</strong> (example: location or workshop).</li>
-        <li>Save.</li>
-    </ol>
-    <p class="text-muted">Out-of-service vehicles cannot be booked by drivers and cannot be used to start a trip.</p>
-</section>
-
-<section id="admin-vehicles-archive" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Archive a vehicle</h3>
-    <p>Archiving hides a vehicle from day-to-day use, without deleting history.</p>
-    <ol>
-        <li>Go to <strong>Vehicles</strong>.</li>
-        <li>Open the vehicle and select <strong>Archive</strong>.</li>
-        <li>The vehicle will no longer be selectable for new trips.</li>
-    </ol>
-    <p class="text-muted">Tip: If a vehicle is only temporarily unavailable, use <strong>Out of service</strong> instead of archiving.</p>
-</section>
-
-<section id="admin-vehicles-compliance" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Compliance (rego & servicing)</h3>
-    <p>SharpFleet can track compliance items if you enable them in settings.</p>
-    <ul>
-        <li><strong>Registration tracking:</strong> record rego expiry dates.</li>
-        <li><strong>Servicing tracking:</strong> record service due dates and/or service due readings.</li>
-    </ul>
-    <p class="text-muted">If you do not see these fields, they may be turned off in your Company Settings.</p>
-</section>
-
-<section id="admin-drivers" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Drivers (add, invite, permissions)</h2>
-    <p class="text-muted">Drivers use SharpFleet to start and end trips. You control what they can edit through your settings.</p>
-</section>
-
-<section id="admin-drivers-invite" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Invite a driver</h3>
-    <ol>
-        <li>Go to <strong>Users</strong>.</li>
-        <li>Select <strong>Invite</strong>.</li>
-        <li>Enter the driver’s name and email address.</li>
-        <li>Send the invite. The driver will receive an email with a link to set their password.</li>
-    </ol>
-    <p class="text-muted">If the driver can’t find the email, ask them to check Junk/Spam, then resend the invite from the Users page.</p>
-</section>
-
-<section id="admin-drivers-admin-as-driver" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Admin using Driver (Driver View)</h3>
-    <p>Admins can switch to <strong>Driver</strong> (Driver View) to see the driver dashboard. This is useful for testing your settings.</p>
-    <ul>
-        <li>Use it to confirm required fields (like safety checks or client presence) are practical.</li>
-        <li>Use it to understand what drivers will see on mobile.</li>
-    </ul>
-</section>
-
-<section id="admin-drivers-what-they-can-do" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">What drivers can change</h3>
-    <p>Drivers can usually:</p>
-    <ul>
-        <li>Select a vehicle.</li>
-        <li>Start and end trips.</li>
-        <li>Enter trip details that you have enabled (examples: customer name, client presence, odometer readings).</li>
-    </ul>
-    <p>Drivers usually cannot:</p>
-    <ul>
-        <li>Change company rules.</li>
-        <li>Add or edit vehicles (unless you specifically give them admin access).</li>
-        <li>Change certain readings if you have disabled overrides (example: odometer override disabled).</li>
-    </ul>
-</section>
-
-<section id="admin-trips" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Trips & logbooks</h2>
-    <p class="text-muted">Trips are recorded when drivers start and end a trip. The exact fields depend on your company settings.</p>
-</section>
-
-<section id="admin-trips-how-trips-work" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">How trips are recorded</h3>
-    <ul>
-        <li><strong>Start:</strong> the driver selects a vehicle and enters any required start details.</li>
-        <li><strong>End:</strong> the driver ends the trip and enters any required end details.</li>
-        <li><strong>Private vs business:</strong> if enabled, the driver can choose private. If disabled, trips are treated as business.</li>
-        <li><strong>Distance vs hours:</strong> some vehicles track kilometres, others track hours. Reports calculate totals based on the vehicle’s tracking mode.</li>
-    </ul>
-    <p class="text-muted">Important: SharpFleet does not assume GPS tracking. Trips are based on what the driver enters and what your rules require.</p>
-</section>
-
-<section id="admin-trips-common-issues" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Common trip issues</h3>
-    <ul>
-        <li><strong>Driver can’t start a trip:</strong> check which fields are required in Settings (odometer required, client presence required, safety checklist required, manual times required).</li>
-        <li><strong>Driver entered the wrong reading:</strong> if overrides are disabled, the system may block changes. Decide whether you want overrides enabled.</li>
-        <li><strong>Missing end trip:</strong> ask the driver to end the trip as soon as possible. Reports will show incomplete trips until ended.</li>
-    </ul>
-</section>
-
-<section id="admin-reports" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Reports & exports</h2>
-    <p class="text-muted">Reports are designed for exporting and payroll/logbook workflows. What filters are available can be controlled by company settings.</p>
-</section>
-
-<section id="admin-reports-trips" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Trip reports</h3>
-    <ol>
-        <li>Go to <strong>Reports</strong>.</li>
-        <li>Review the <strong>Applied settings</strong> box at the top. This tells you what rules are currently applied (date range, private trips, and whether filters are locked).</li>
-        <li>If filters are available, select a vehicle, date range, and/or customer.</li>
-        <li>Select <strong>Filter</strong> to refresh the results.</li>
-    </ol>
-</section>
-
-<section id="admin-reports-csv" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">CSV export</h3>
-    <p>Use <strong>Export CSV</strong> to download the same results you’re viewing.</p>
-    <ul>
-        <li>The export includes key trip details and timestamps.</li>
-        <li>If filters are locked by company settings, the export will follow those locked rules.</li>
-    </ul>
-</section>
-
-<section id="admin-reports-settings-driven" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Reports controlled by company settings</h3>
-    <p>Some companies want reports to always follow set rules (for example, fixed date ranges or always excluding private trips).</p>
-    <p>If a filter looks disabled, that is expected behaviour: it means your company settings have locked that filter.</p>
-</section>
-
-<section id="admin-trial" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Trial vs paid behaviour</h2>
-    <p class="text-muted">SharpFleet can restrict actions when a trial expires. This is designed to prevent changes, while still allowing access to existing information.</p>
-</section>
-
-<section id="admin-trial-what-changes" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">What changes when a trial expires</h3>
-    <ul>
-        <li>You may be able to <strong>view</strong> information (like reports) but be blocked from <strong>changing</strong> setup (like adding vehicles or inviting drivers).</li>
-        <li>Drivers may be blocked from starting new trips, depending on your company’s access rules.</li>
-        <li>If something is locked, SharpFleet will show a “trial expired” message and provide the allowed next steps.</li>
-    </ul>
-    <p class="text-muted">If your team needs to keep using SharpFleet, speak to your account owner or manager about the next step for your company.</p>
-</section>
-
-<section id="admin-faults" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Incidents / faults</h2>
-    <p class="text-muted">Drivers can report incidents/faults if your company has enabled the feature.</p>
-</section>
-
-<section id="admin-faults-enabled" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Turning it on</h3>
-    <ul>
-        <li>If you can’t see the Faults page, the feature may be turned off for your company.</li>
-        <li>Once enabled, drivers can submit faults during a trip or from their dashboard (depending on your setup).</li>
-    </ul>
-</section>
-
-<section id="admin-faults-review" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Reviewing and archiving</h3>
-    <ul>
-        <li>Go to <strong>Faults</strong> to see new items.</li>
-        <li>Update the status as you review and action items.</li>
-        <li>Use <strong>Archive</strong> to move completed items out of the main working list while keeping a record.</li>
-        <li>Faults can be categorised (example: “Vehicle Issue” vs “Vehicle Accident”) to help with reporting and follow-up.</li>
-    </ul>
+<section id="admin-ref-reports" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Reports & exports</h3>
+    <details class="sf-help__details">
+        <summary>How do trip reports work?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Reports are designed for exporting and logbook workflows. Some filters may be locked by your company settings.</div>
+        <ol class="mb-0" style="margin-top: 10px;">
+            <li>Open Trip Reports.</li>
+            <li>Check the <strong>Applied settings</strong> area at the top.</li>
+            <li>Adjust filters if available, then refresh results.</li>
+            <li>Use Export CSV to download the same results you’re viewing.</li>
+        </ol>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/reports/trips">Open Trip Reports</a>
+        </div>
+    </details>
 </section>
 
 <section id="admin-faq" data-sf-help-section class="sf-help__section">
-    <h2 class="sf-help__sectionTitle">Common admin questions</h2>
+    <h2 class="sf-help__sectionTitle">Common questions</h2>
 
-    <h3 class="sf-help__sectionTitle">“Why are some fields missing on the driver screen?”</h3>
-    <p>Because your company settings control what drivers see. Check <strong>Settings</strong> for trip rules, client presence, and safety checks.</p>
+    <details class="sf-help__details">
+        <summary>Why are some fields missing on the driver screen?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Because your company settings control what drivers see.</div>
+        <div style="margin-top: 10px;">Check <strong>Company Settings</strong> for trip rules, client presence, and safety checks.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Why can’t a driver change a reading?”</h3>
-    <p>If you disabled overrides, SharpFleet will block changes to keep readings consistent. If you want drivers to correct mistakes, enable overrides.</p>
+    <details class="sf-help__details">
+        <summary>Why can’t a driver change a reading?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Your company may have disabled overrides.</div>
+        <div style="margin-top: 10px;">If you want drivers to correct mistakes, enable overrides in Company Settings.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Why are filters disabled on Reports?”</h3>
-    <p>Your reporting settings may lock filters (for example, fixed date range or locked vehicle/customer). The “Applied settings” box explains what’s locked.</p>
+    <details class="sf-help__details">
+        <summary>Why are filters disabled on reports?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Some companies lock report filters for consistency.</div>
+        <div style="margin-top: 10px;">The <strong>Applied settings</strong> box explains what is locked.</div>
+    </details>
 
-    <h3 class="sf-help__sectionTitle">“Do we need GPS tracking for trips?”</h3>
-    <p>No. SharpFleet does not assume GPS. Trips are logged based on what the driver enters and what your company rules require.</p>
+    <details class="sf-help__details">
+        <summary>Do we need GPS tracking for trips?</summary>
+        <div class="text-muted" style="margin-top: 8px;">No — SharpFleet does not assume GPS.</div>
+        <div style="margin-top: 10px;">Trips are based on what the driver enters and what your company rules require.</div>
+    </details>
 </section>
 
 @endsection

@@ -106,6 +106,135 @@
         padding: 18px;
     }
 
+    .sf-help__prose {
+        max-width: 880px;
+        margin: 0 auto;
+    }
+
+    .sf-help__lead {
+        margin-top: 6px;
+        margin-bottom: 14px;
+        color: var(--text-muted);
+        line-height: 1.55;
+    }
+
+    .sf-help__card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 14px;
+        padding: 14px;
+        margin-top: 12px;
+    }
+
+    .sf-help__cardHeader {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .sf-help__badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 0.9rem;
+        color: inherit;
+        white-space: nowrap;
+    }
+
+    .sf-help__badge--teal {
+        border-color: rgba(0, 0, 0, 0.0);
+        background: rgba(0, 0, 0, 0.0);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .sf-help__muted {
+        color: var(--text-muted);
+    }
+
+    .sf-help__callout {
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-top: 12px;
+        border-left: 4px solid var(--primary-color);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sf-help__calloutTitle {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .sf-help__callout--important {
+        border-left-color: var(--accent-color);
+    }
+
+    .sf-help__callout--recommended {
+        border-left-color: var(--primary-color);
+    }
+
+    .sf-help__callout p:last-child,
+    .sf-help__callout ul:last-child,
+    .sf-help__callout ol:last-child {
+        margin-bottom: 0;
+    }
+
+    .sf-help__twoCol {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    @media (min-width: 720px) {
+        .sf-help__twoCol {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .sf-help details.sf-help__details {
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 12px 14px;
+        margin-top: 12px;
+    }
+
+    .sf-help details.sf-help__details > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-weight: 700;
+    }
+
+    .sf-help details.sf-help__details > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .sf-help details.sf-help__details > summary::after {
+        content: '▾';
+        opacity: 0.85;
+    }
+
+    .sf-help details.sf-help__details[open] > summary::after {
+        content: '▴';
+    }
+
+    .sf-help__actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
     .sf-help__section {
         scroll-margin-top: 96px;
         padding-top: 4px;
@@ -241,7 +370,9 @@
                     <div class="text-muted">Try a different word, or clear the search box.</div>
                 </div>
 
-                @yield('help-sections')
+                <div class="sf-help__prose">
+                    @yield('help-sections')
+                </div>
             </div>
         </section>
     </div>
