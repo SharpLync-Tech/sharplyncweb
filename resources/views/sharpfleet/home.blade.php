@@ -18,14 +18,45 @@
             No GPS. No hardware. No micromanagement.
         </p>
 
+        {{-- =========================
+             RUNNING VEHICLE BANNER
+        ========================== --}}
+        <section class="fleet-banner">
+            <p class="fleet-banner-label">
+                Works with cars, utes, trucks, plant, and more
+            </p>
+
+            <div class="fleet-banner-track">
+                <div class="fleet-banner-row">
+                    {{-- First set --}}
+                    @for ($i = 1; $i <= 9; $i++)
+                        <img
+                            src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
+                            alt="SharpFleet supported vehicle {{ $i }}"
+                            loading="lazy"
+                        >
+                    @endfor
+
+                    {{-- Duplicate set for seamless loop --}}
+                    @for ($i = 1; $i <= 9; $i++)
+                        <img
+                            src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
+                            alt=""
+                            aria-hidden="true"
+                        >
+                    @endfor
+                </div>
+            </div>
+        </section>
+
         <div class="hero-bam">
-            <p>Work vehicles? <strong class="text-primary">Yep — we’ve got you.</strong></p>
-            <p>Plant and equipment? <strong class="text-primary">Yep — we’ve got you.</strong></p>
-            <p>Client visits or job runs? <strong class="text-primary">Yep — we’ve got you too.</strong></p>
+            <p>Work vehicles? <strong class="text-primary">Covered.</strong></p>
+            <p>Plant and equipment? <strong class="text-primary">Covered.</strong></p>
+            <p>Client visits or job runs? <strong class="text-primary">Covered.</strong></p>
         </div>
 
         <p class="hero-price">
-            From <strong>$3.50</strong> per month.
+            From <strong>$3.50</strong> per vehicle, per month.
         </p>
 
         <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
@@ -37,37 +68,6 @@
             <a href="/app/sharpfleet/login" class="text-primary">Sign in here</a>
         </p>
     </div>
-
-    {{-- =========================
-         RUNNING VEHICLE BANNER
-    ========================== --}}
-    <section class="fleet-banner">
-        <p class="fleet-banner-label">
-            Works with cars, utes, trucks, plant, and more
-        </p>
-
-        <div class="fleet-banner-track">
-            <div class="fleet-banner-row">
-                {{-- First set --}}
-                @for ($i = 1; $i <= 9; $i++)
-                    <img
-                        src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
-                        alt="SharpFleet supported vehicle {{ $i }}"
-                        loading="lazy"
-                    >
-                @endfor
-
-                {{-- Duplicate set for seamless loop --}}
-                @for ($i = 1; $i <= 9; $i++)
-                    <img
-                        src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
-                        alt=""
-                        aria-hidden="true"
-                    >
-                @endfor
-            </div>
-        </div>
-    </section>
 
     {{-- =========================
          FEATURES
