@@ -40,6 +40,53 @@ html, body {
     padding: 0;
 }
 
+ .fleet-banner {
+            margin: 40px auto 20px;
+            max-width: 1100px;
+            text-align: center;
+        }
+
+    .fleet-banner-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 14px;
+        }
+
+    .fleet-banner-track {
+            overflow: hidden;
+            position: relative;
+        }
+
+    .fleet-banner-row {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+            width: max-content;
+            animation: fleet-scroll 40s linear infinite;
+        }
+
+    .fleet-banner-row img {
+            height: 42px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+    @keyframes fleet-scroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+    /* Pause on hover (desktop only) */
+        @media (hover: hover) {
+            .fleet-banner-track:hover .fleet-banner-row {
+                animation-play-state: paused;
+            }
+        }
+
 /* Page headers sit on the global gradient */
 .page-title {
     color: #FFFFFF !important;
