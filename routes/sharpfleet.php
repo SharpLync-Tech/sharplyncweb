@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 use App\Http\Controllers\SharpFleet\AuthController;
 use App\Http\Controllers\SharpFleet\Auth\ForgotPasswordController as SharpFleetForgotPasswordController;
@@ -148,6 +149,17 @@ Route::prefix('app/sharpfleet')
                     ->where('organisation_id', $organisationId)
                     ->count();
 
+                $hasOutOfServiceSupport = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
+                $outOfServiceVehiclesCount = 0;
+                if ($hasOutOfServiceSupport) {
+                    $outOfServiceVehiclesCount = (int) DB::connection('sharpfleet')
+                        ->table('vehicles')
+                        ->where('organisation_id', $organisationId)
+                        ->where('is_active', 1)
+                        ->where('is_in_service', 0)
+                        ->count();
+                }
+
                 $activeTripsCount = DB::connection('sharpfleet')
                     ->table('trips')
                     ->where('organisation_id', $organisationId)
@@ -202,6 +214,8 @@ Route::prefix('app/sharpfleet')
                     'vehiclesCount' => $vehiclesCount,
                     'activeTripsCount' => $activeTripsCount,
                     'vehicleReminders' => $vehicleReminders,
+                    'hasOutOfServiceSupport' => $hasOutOfServiceSupport,
+                    'outOfServiceVehiclesCount' => $outOfServiceVehiclesCount,
                 ]);
             });
 
