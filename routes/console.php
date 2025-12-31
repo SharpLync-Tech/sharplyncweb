@@ -11,5 +11,5 @@ Artisan::command('inspire', function () {
 app()->booted(function () {
     app(Schedule::class)
         ->command('sharpfleet:ping')
-        ->everyFiveMinutes();
+        ->hourly();
 });
