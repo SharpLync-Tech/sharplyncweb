@@ -31,147 +31,45 @@
             </div>
         @endif
 
-        <div class="grid grid-2 gap-4 mb-3">
-            <div>
-                {{-- Top row: key info side-by-side on desktop --}}
-                <div class="grid grid-2 gap-4 mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="section-title">Vehicle info</h3>
+        <div class="grid gap-4 mb-3">
+            {{-- Row 1: Vehicle info | Vehicle details --}}
+            <div class="grid grid-2 gap-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">Vehicle info</h3>
 
-                            <div class="form-group">
-                                <label class="form-label">Vehicle name</label>
-                                <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
-                                @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Vehicle name</label>
+                            <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
+                            @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Registration number (locked)</label>
-                                <input type="text" value="{{ $vehicle->registration_number }}" disabled class="form-control">
-                                <div class="form-hint">
-                                    If the rego is incorrect, archive this vehicle and add it again.
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label id="starting_reading_label" class="form-label">Starting odometer (km) (optional)</label>
-                                <input type="number"
-                                       name="starting_km"
-                                       value="{{ old('starting_km', $vehicle->starting_km ?? '') }}"
-                                       id="starting_km"
-                                       class="form-control"
-                                       inputmode="numeric"
-                                       min="0"
-                                       placeholder="e.g. 124500">
-                                <div class="form-hint">
-                                    If set, this will be used to prefill the first trip's starting reading for this vehicle.
-                                </div>
-                                @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                        <div class="form-group">
+                            <label class="form-label">Registration number (locked)</label>
+                            <input type="text" value="{{ $vehicle->registration_number }}" disabled class="form-control">
+                            <div class="form-hint">
+                                If the rego is incorrect, archive this vehicle and add it again.
                             </div>
                         </div>
-                    </div>
 
-                    @if($vehicleRegistrationTrackingEnabled)
-                        <div class="card">
-                            <div class="card-body">
-                                <h3 class="section-title">Registration</h3>
-                                <div class="form-row">
-                                    <div>
-                                        <label class="form-label">Registration expiry date (optional)</label>
-                                        <input type="date"
-                                               name="registration_expiry"
-                                               value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
-                                               class="form-control">
-                                        @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                    </div>
-
-                                    <div>
-                                        <label class="form-label">&nbsp;</label>
-                                        <div class="form-hint">
-                                            Tip: use Notes for reminder details.
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-group">
+                            <label id="starting_reading_label" class="form-label">Starting odometer (km) (optional)</label>
+                            <input type="number"
+                                   name="starting_km"
+                                   value="{{ old('starting_km', $vehicle->starting_km ?? '') }}"
+                                   id="starting_km"
+                                   class="form-control"
+                                   inputmode="numeric"
+                                   min="0"
+                                   placeholder="e.g. 124500">
+                            <div class="form-hint">
+                                If set, this will be used to prefill the first trip's starting reading for this vehicle.
                             </div>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Second row: operational cards side-by-side --}}
-                <div class="grid grid-2 gap-4 mb-2">
-                    @if($vehicleServicingTrackingEnabled)
-                        <div class="card">
-                            <div class="card-body">
-                                <h3 class="section-title">Servicing</h3>
-                                <div class="form-row">
-                                    <div>
-                                        <label class="form-label">Next service due date (optional)</label>
-                                        <input type="date"
-                                               name="service_due_date"
-                                               value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
-                                               class="form-control">
-                                        @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                    </div>
-
-                                    <div>
-                                        <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
-                                        <input type="number"
-                                               name="service_due_km"
-                                               value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
-                                               class="form-control"
-                                               inputmode="numeric"
-                                               min="0">
-                                        @error('service_due_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="section-title">Service status</h3>
-                            <p class="text-muted mb-3">
-                                If a vehicle is out of service, drivers cannot book it or use it for trips.
-                            </p>
-
-                            @php
-                                $isInService = old('is_in_service', isset($vehicle->is_in_service) ? (int) $vehicle->is_in_service : 1);
-                                $reason = old('out_of_service_reason', $vehicle->out_of_service_reason ?? '');
-                                $note = old('out_of_service_note', $vehicle->out_of_service_note ?? '');
-                            @endphp
-
-                            <input type="hidden" name="is_in_service" value="1">
-                            <label class="checkbox-label mb-2">
-                                <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
-                                <strong>Mark vehicle as out of service</strong>
-                            </label>
-                            @error('is_in_service') <div class="text-error mb-2">{{ $message }}</div> @enderror
-
-                            <div class="form-row">
-                                <div>
-                                    <label class="form-label">Reason</label>
-                                    <select name="out_of_service_reason" class="form-control">
-                                        <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
-                                        <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
-                                        <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
-                                        <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
-                                        <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
-                                        <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
-                                    </select>
-                                    @error('out_of_service_reason') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
-                                <div>
-                                    <label class="form-label">Location / note (optional)</label>
-                                    <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
-                                    @error('out_of_service_note') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
+                            @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
                         </div>
                     </div>
                 </div>
 
-                {{-- Full-width details --}}
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
@@ -228,8 +126,107 @@
                 </div>
             </div>
 
-            <div>
-                {{-- Sidebar: Permanent Allocation --}}
+            {{-- Row 2: Registration | Servicing --}}
+            <div class="grid grid-2 gap-4">
+                @if($vehicleRegistrationTrackingEnabled)
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="section-title">Registration</h3>
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">Registration expiry date (optional)</label>
+                                    <input type="date"
+                                           name="registration_expiry"
+                                           value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
+                                           class="form-control">
+                                    @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div>
+                                    <label class="form-label">&nbsp;</label>
+                                    <div class="form-hint">
+                                        Tip: use Notes for reminder details.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if($vehicleServicingTrackingEnabled)
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="section-title">Servicing</h3>
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">Next service due date (optional)</label>
+                                    <input type="date"
+                                           name="service_due_date"
+                                           value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
+                                           class="form-control">
+                                    @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div>
+                                    <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
+                                    <input type="number"
+                                           name="service_due_km"
+                                           value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
+                                           class="form-control"
+                                           inputmode="numeric"
+                                           min="0">
+                                    @error('service_due_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Row 3: Service status | Permanent allocation --}}
+            <div class="grid grid-2 gap-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="section-title">Service status</h3>
+                        <p class="text-muted mb-3">
+                            If a vehicle is out of service, drivers cannot book it or use it for trips.
+                        </p>
+
+                        @php
+                            $isInService = old('is_in_service', isset($vehicle->is_in_service) ? (int) $vehicle->is_in_service : 1);
+                            $reason = old('out_of_service_reason', $vehicle->out_of_service_reason ?? '');
+                            $note = old('out_of_service_note', $vehicle->out_of_service_note ?? '');
+                        @endphp
+
+                        <input type="hidden" name="is_in_service" value="1">
+                        <label class="checkbox-label mb-2">
+                            <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
+                            <strong>Mark vehicle as out of service</strong>
+                        </label>
+                        @error('is_in_service') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Reason</label>
+                                <select name="out_of_service_reason" class="form-control">
+                                    <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
+                                    <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
+                                    <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
+                                    <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
+                                    <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
+                                    <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
+                                </select>
+                                @error('out_of_service_reason') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                            <div>
+                                <label class="form-label">Location / note (optional)</label>
+                                <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
+                                @error('out_of_service_note') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Permanent allocation</h3>
