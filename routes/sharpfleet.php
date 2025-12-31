@@ -25,6 +25,7 @@ use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
 use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
+use App\Http\Controllers\SharpFleet\Admin\ReminderController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\VehicleReminderService;
@@ -172,7 +173,18 @@ Route::prefix('app/sharpfleet')
                 ];
 
                 if ($regoEnabled || $serviceEnabled) {
-                    $digest = (new VehicleReminderService())->buildDigest($organisationId);
+                    $all = $settings->all();
+                    $registrationDays = (int) ($all['vehicles']['reminders']['registration_days'] ?? 30);
+                    $serviceDays = (int) ($all['vehicles']['reminders']['service_days'] ?? 30);
+                    $serviceReadingThreshold = (int) ($all['vehicles']['reminders']['service_reading_threshold'] ?? 500);
+
+                    $digest = (new VehicleReminderService())->buildDigest(
+                        organisationId: $organisationId,
+                        registrationDays: $registrationDays,
+                        serviceDays: $serviceDays,
+                        serviceReadingThreshold: $serviceReadingThreshold,
+                        timezone: $settings->timezone()
+                    );
 
                     if ($regoEnabled) {
                         $vehicleReminders['rego_overdue'] = count($digest['registration']['overdue'] ?? []);
@@ -229,6 +241,9 @@ Route::prefix('app/sharpfleet')
             // Reports
             Route::get('/reports/trips', [ReportController::class, 'trips']);
             Route::get('/reports/vehicles', [ReportController::class, 'vehicles']);
+
+            // Reminders
+            Route::get('/reminders', [ReminderController::class, 'index']);
 
             // Help
             Route::get('/help', [HelpController::class, 'admin']);

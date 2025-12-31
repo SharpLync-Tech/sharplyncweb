@@ -47,6 +47,7 @@
                             <a href="/app/sharpfleet/admin/bookings" class="sharpfleet-nav-link">Bookings</a>
                             <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-link">Faults</a>
                             <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-link">Reports</a>
+                            <a href="/app/sharpfleet/admin/reminders" class="sharpfleet-nav-link">Reminders</a>
                             <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-link">Settings</a>
                             <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-link">Company</a>
                             <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
