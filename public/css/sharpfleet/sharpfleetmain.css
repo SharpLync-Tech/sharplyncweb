@@ -140,6 +140,64 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     display: flex;
     align-items: center;
     gap: 24px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* Grouped admin nav dropdowns */
+.sharpfleet-nav-primary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sharpfleet-nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sharpfleet-nav-dropdown-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    line-height: inherit;
+}
+
+.sharpfleet-nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 220px;
+    padding: 8px 0;
+    background: var(--secondary-color);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    z-index: 1100;
+}
+
+.sharpfleet-nav-dropdown:hover .sharpfleet-nav-dropdown-menu,
+.sharpfleet-nav-dropdown:focus-within .sharpfleet-nav-dropdown-menu {
+    display: block;
+}
+
+.sharpfleet-nav-dropdown-item {
+    display: block;
+    padding: 10px 16px;
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sharpfleet-nav-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
 }
 
 .sharpfleet-nav-link {
@@ -879,6 +937,35 @@ details.card[open] .incident-toggle-hint-closed {
         width: 100%;
         text-align: left;
         border-radius: 0;
+    }
+
+    .sharpfleet-nav-primary {
+        width: 100%;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sharpfleet-nav-dropdown {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* In the mobile hamburger, show dropdown sections expanded */
+    .sharpfleet-nav-dropdown-menu {
+        display: block;
+        position: static;
+        min-width: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .sharpfleet-nav-dropdown-item {
+        padding: 12px 24px;
+        width: 100%;
     }
 
     .sharpfleet-user-info {
