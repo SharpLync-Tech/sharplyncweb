@@ -78,14 +78,7 @@ html, body {
             to {
                 transform: translateX(-50%);
             }
-        }
-
-    /* Pause on hover (desktop only) */
-        @media (hover: hover) {
-            .fleet-banner-track:hover .fleet-banner-row {
-                animation-play-state: paused;
-            }
-        }
+        }    
 
 /* Page headers sit on the global gradient */
 .page-title {
@@ -345,7 +338,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 .card-title {
     font-size: 24px;
     font-weight: 700;
-    color: var(--secondary-color);
+    color: #FFFFFF !important;
     margin-bottom: 8px;
 }
 

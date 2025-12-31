@@ -41,17 +41,51 @@
                 <div class="sharpfleet-nav-links">
                     @if(session()->has('sharpfleet.user'))
                         @if(session('sharpfleet.user.role') === 'admin')
-                            <a href="/app/sharpfleet/admin" class="sharpfleet-nav-link">Dashboard</a>
-                            <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-link">Vehicles</a>
-                            <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-link">Customers</a>
-                            <a href="/app/sharpfleet/admin/bookings" class="sharpfleet-nav-link">Bookings</a>
-                            <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-link">Faults</a>
-                            <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-link">Reports</a>
-                            <a href="/app/sharpfleet/admin/reminders" class="sharpfleet-nav-link">Reminders</a>
-                            <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-link">Settings</a>
-                            <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-link">Company</a>
-                            <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
-                            <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver View</a>
+                            <div class="sharpfleet-nav-primary">
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Fleet</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin" class="sharpfleet-nav-dropdown-item">Dashboard</a>
+                                        <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-dropdown-item">Vehicles</a>
+                                        <a href="/app/sharpfleet/admin/bookings" class="sharpfleet-nav-dropdown-item">Bookings</a>
+                                    </div>
+                                </div>
+
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Operations</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-dropdown-item">Faults</a>
+                                        <a href="/app/sharpfleet/admin/reminders" class="sharpfleet-nav-dropdown-item">Reminders</a>
+                                        <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
+                                    </div>
+                                </div>
+
+                                <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-link">Customers</a>
+
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Reports</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
+                                    </div>
+                                </div>
+
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Company</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
+                                        <a href="/app/sharpfleet/admin/company/profile" class="sharpfleet-nav-dropdown-item">Edit Company Details</a>
+                                        <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
+                                        <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
+                                        <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
+                                        <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
+                                        <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-dropdown-item">Vehicles</a>
+                                        <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">Customers</a>
+                                    </div>
+                                </div>
+
+                                <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
+                                <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver View</a>
+                            </div>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
                             <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link">Bookings</a>
