@@ -20,10 +20,20 @@
 
 <h1>SharpFleet – Current State</h1>
 <p class="muted">
-  Generated: 2025-12-30<br />
+  Generated: 2025-12-31<br />
   Repo: SharpLync (Laravel / PHP / Blade)<br />
   Scope: Customer SharpFleet portal (<code>/app/sharpfleet</code>) + internal platform admin (<code>/admin/sharpfleet</code>)
 </p>
+
+<h2>0. Updates (Dec 31, 2025)</h2>
+<ul>
+  <li><strong>Admin top navigation regrouping:</strong> reorganized the SharpFleet admin top navigation into grouped dropdowns (Fleet / Operations / Reports / Company) to prevent overflow. The Company “Actions” links previously shown on <code>/app/sharpfleet/admin/company</code> were moved into the top nav Company dropdown. <em>Driver view remains unchanged</em> (drivers continue to only see Dashboard/Bookings/Help via the hamburger menu).</li>
+  <li><strong>Dropdown UX + branding reliability:</strong> improved hover reliability for dropdown menus (no “gap” when moving from top item to dropdown items), prevented wrapping for key nav labels, and added cache-busting for the logo asset to avoid stale-cached logos after deploys.</li>
+  <li><strong>Vehicles “Out of Service” (schema-optional):</strong> added support to mark vehicles out of service with a reason and note. When the DB supports it, the feature uses <code>vehicles.is_in_service</code> plus <code>vehicles.out_of_service_reason</code>, <code>vehicles.out_of_service_note</code>, <code>vehicles.out_of_service_at</code>. Out-of-service vehicles cannot be booked and cannot be used to start trips; server-side enforcement is applied and vehicle selection lists are filtered accordingly.</li>
+  <li><strong>Admin dashboard improvements:</strong> added a “Vehicles Out of Service” statistic (when schema supports it) and refactored vehicle reminders into a clearer card-based block.</li>
+  <li><strong>Help center refactor:</strong> refactored SharpFleet help pages into a modern “Setup Guide + Reference” model for admins and “Getting Started + Reference” for drivers, using lightweight collapsible sections (<code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>) and scoped help styling only (no routing/business logic changes).</li>
+  <li><strong>Public home page adjustments:</strong> moved the running vehicle banner higher in the hero, updated pricing copy (“per vehicle, per month”), updated the hero reassurance lines to “Covered.”, and tuned mobile banner performance (faster animation + improved label spacing/wrapping on small screens).</li>
+</ul>
 
 <h2>0. Updates (Dec 30, 2025)</h2>
 <ul>
@@ -88,6 +98,7 @@
       <li><code>customers</code> table: enables customer capture/listing/import.</li>
       <li><code>bookings</code> table: enables bookings and booking overlap enforcement.</li>
       <li><code>vehicles.starting_km</code>, <code>vehicles.registration_expiry</code>, <code>vehicles.service_due_date</code>, <code>vehicles.service_due_km</code> columns: enable additional vehicle tracking fields.</li>
+      <li><code>vehicles.is_in_service</code>, <code>vehicles.out_of_service_reason</code>, <code>vehicles.out_of_service_note</code>, <code>vehicles.out_of_service_at</code> columns: enable “Out of Service” status + enforcement (booking/trip blocking) and related UI.</li>
     </ul>
   </li>
 </ul>
@@ -261,13 +272,13 @@
     <td><code>GET /app/sharpfleet/admin</code></td>
     <td><code>resources/views/sharpfleet/admin/dashboard.blade.php</code></td>
     <td>Inline route closure in <code>routes/sharpfleet.php</code></td>
-    <td>Counts drivers/vehicles/active trips, shows vehicle reminder digest. Navigation actions are provided via the top nav (no duplicate “quick actions” panel).</td>
+    <td>Counts drivers/vehicles/active trips; shows vehicle reminder digest as a card; includes an out-of-service vehicle count when schema supports it. Navigation actions are provided via the top nav (no duplicate “quick actions” panel).</td>
   </tr>
   <tr>
     <td><code>GET /app/sharpfleet/admin/company</code></td>
     <td><code>resources/views/sharpfleet/admin/company.blade.php</code></td>
     <td><code>SharpFleet\Admin\CompanyController@index</code></td>
-    <td>Organisation overview + usage counts; surfaces settings state.</td>
+    <td>Organisation overview + usage counts; surfaces settings state. Company “Actions” links are provided via the admin top nav (Company dropdown) to avoid duplicated UI.</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/company/profile</code></td>
@@ -291,19 +302,19 @@
     <td><code>GET /app/sharpfleet/admin/vehicles</code></td>
     <td><code>resources/views/sharpfleet/admin/vehicles/index.blade.php</code></td>
     <td><code>VehicleController@index</code></td>
-    <td>Vehicle list + active trip indicator; archive supported.</td>
+    <td>Vehicle list + active trip indicator; archive supported. When enabled by schema, shows in/out-of-service status.</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/vehicles/create</code></td>
     <td><code>resources/views/sharpfleet/admin/vehicles/create.blade.php</code></td>
     <td><code>VehicleController@create/@store</code></td>
-    <td>Fields depend on optional DB columns (registration/service/starting_km).</td>
+    <td>Fields depend on optional DB columns (registration/service/starting_km). When enabled by schema, includes “Out of Service” status fields (reason + note).</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/vehicles/{id}/edit</code></td>
     <td><code>resources/views/sharpfleet/admin/vehicles/edit.blade.php</code></td>
     <td><code>VehicleController@edit/@update</code></td>
-    <td>Rego is intentionally not updated in service layer.</td>
+    <td>Rego is intentionally not updated in service layer. When enabled by schema, supports setting vehicle in/out of service (reason + note) and clears out-of-service fields when returned to service.</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/customers</code></td>
