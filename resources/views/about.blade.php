@@ -65,6 +65,8 @@
 
               <p>I believe in Straightforward Support, support that is reliable, approachable, and genuinely invested in helping people make the most of their technology. It’s not just about systems; it’s about people.</p>
           </div>
+
+      <button id="toggleStory" class="toggle-btn">Continue My Story...</button>
           <hr class="story-divider">
           <div class="story-signature">
               <div class="sig-name">Jannie Brits</div>
@@ -82,8 +84,6 @@
           <div class="story-testimonial-link">
               <a href="/testimonials">Read what others say</a>
           </div>
-
-          <button id="toggleStory" class="toggle-btn">Continue My Story...</button>
       </div>
   </div>      
   </section>
