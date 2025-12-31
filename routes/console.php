@@ -12,4 +12,8 @@ app()->booted(function () {
     app(Schedule::class)
         ->command('sharpfleet:ping')
         ->hourly();
+
+    app(Schedule::class)
+        ->command('sharpfleet:send-reminders')
+        ->daily();
 });

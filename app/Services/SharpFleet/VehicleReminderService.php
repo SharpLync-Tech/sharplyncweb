@@ -4,12 +4,20 @@ namespace App\Services\SharpFleet;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class VehicleReminderService
 {
-    public function buildDigest(int $organisationId, int $registrationDays = 30, int $serviceDays = 30, int $serviceReadingThreshold = 500): array
+    public function buildDigest(
+        int $organisationId,
+        int $registrationDays = 30,
+        int $serviceDays = 30,
+        int $serviceReadingThreshold = 500,
+        ?string $timezone = null
+    ): array
     {
-        $today = Carbon::today();
+        $tz = $timezone ?: config('app.timezone');
+        $today = Carbon::now($tz)->startOfDay();
         $regCutoff = $today->copy()->addDays($registrationDays);
         $serviceDateCutoff = $today->copy()->addDays($serviceDays);
 
@@ -19,20 +27,39 @@ class VehicleReminderService
             ->where('id', $organisationId)
             ->first();
 
+        $hasStartingKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km');
+        $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
+        $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
+        $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
+
+        $vehicleSelect = [
+            'id',
+            'name',
+            'tracking_mode',
+            'is_active',
+            'is_road_registered',
+            'registration_number',
+        ];
+
+        if ($hasStartingKm) {
+            $vehicleSelect[] = 'starting_km';
+        }
+
+        if ($hasRegistrationExpiry) {
+            $vehicleSelect[] = 'registration_expiry';
+        }
+
+        if ($hasServiceDueDate) {
+            $vehicleSelect[] = 'service_due_date';
+        }
+
+        if ($hasServiceDueKm) {
+            $vehicleSelect[] = 'service_due_km';
+        }
+
         $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
-            ->select(
-                'id',
-                'name',
-                'tracking_mode',
-                'is_active',
-                'is_road_registered',
-                'registration_number',
-                'starting_km',
-                'registration_expiry',
-                'service_due_date',
-                'service_due_km'
-            )
+            ->select($vehicleSelect)
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
             ->get();
@@ -74,8 +101,8 @@ class VehicleReminderService
 
         foreach ($vehicles as $v) {
             // Registration expiry reminders
-            if ((int) ($v->is_road_registered ?? 0) === 1 && !empty($v->registration_expiry)) {
-                $expiry = Carbon::parse((string) $v->registration_expiry)->startOfDay();
+            if ($hasRegistrationExpiry && (int) ($v->is_road_registered ?? 0) === 1 && !empty($v->registration_expiry)) {
+                $expiry = Carbon::parse((string) $v->registration_expiry, $tz)->startOfDay();
 
                 if ($expiry->lessThan($today)) {
                     $registration['overdue'][] = [
@@ -97,8 +124,8 @@ class VehicleReminderService
             }
 
             // Service due by date reminders
-            if (!empty($v->service_due_date)) {
-                $due = Carbon::parse((string) $v->service_due_date)->startOfDay();
+            if ($hasServiceDueDate && !empty($v->service_due_date)) {
+                $due = Carbon::parse((string) $v->service_due_date, $tz)->startOfDay();
 
                 if ($due->lessThan($today)) {
                     $serviceDate['overdue'][] = [
@@ -118,13 +145,13 @@ class VehicleReminderService
             }
 
             // Service due by reading reminders (km/hours reading stored in trips.end_km)
-            if (!empty($v->service_due_km)) {
+            if ($hasServiceDueKm && !empty($v->service_due_km)) {
                 $last = $lastTrips[$v->id] ?? null;
                 $lastReading = null;
 
                 if ($last && $last->end_km !== null) {
                     $lastReading = (int) $last->end_km;
-                } elseif ($v->starting_km !== null) {
+                } elseif ($hasStartingKm && $v->starting_km !== null) {
                     $lastReading = (int) $v->starting_km;
                 }
 

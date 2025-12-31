@@ -23,6 +23,18 @@ class CompanySettingsService
         'vehicles' => [
             'registration_tracking_enabled' => false,
             'servicing_tracking_enabled'    => false,
+
+            // Reminder thresholds (used by sharpfleet:send-reminders)
+            'reminders' => [
+                // How many days ahead to treat rego as "due soon"
+                'registration_days' => 30,
+
+                // How many days ahead to treat service-by-date as "due soon"
+                'service_days' => 30,
+
+                // How close (km/hours) to the due reading to treat as "due soon"
+                'service_reading_threshold' => 500,
+            ],
         ],
 
         'trip' => [
