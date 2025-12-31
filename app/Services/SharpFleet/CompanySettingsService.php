@@ -23,18 +23,15 @@ class CompanySettingsService
         'vehicles' => [
             'registration_tracking_enabled' => false,
             'servicing_tracking_enabled'    => false,
+        ],
 
-            // Reminder thresholds (used by sharpfleet:send-reminders)
-            'reminders' => [
-                // How many days ahead to treat rego as "due soon"
-                'registration_days' => 30,
-
-                // How many days ahead to treat service-by-date as "due soon"
-                'service_days' => 30,
-
-                // How close (km/hours) to the due reading to treat as "due soon"
-                'service_reading_threshold' => 500,
-            ],
+        // Vehicle reminder thresholds (company-level)
+        // Stored under settings_json so subscriber admins can control reminder windows.
+        // Backward compatible: older installs may still have these under vehicles.reminders.
+        'reminders' => [
+            'registration_days' => 30,
+            'service_days' => 30,
+            'service_reading_threshold' => 500,
         ],
 
         'trip' => [
@@ -211,6 +208,35 @@ class CompanySettingsService
         return (bool) ($this->settings['vehicles']['servicing_tracking_enabled'] ?? false);
     }
 
+    // ---- Reminder thresholds (company-level) ----
+
+    public function reminderRegistrationDays(): int
+    {
+        $value = $this->settings['reminders']['registration_days']
+            ?? $this->settings['vehicles']['reminders']['registration_days']
+            ?? 30;
+
+        return max(1, (int) $value);
+    }
+
+    public function reminderServiceDays(): int
+    {
+        $value = $this->settings['reminders']['service_days']
+            ?? $this->settings['vehicles']['reminders']['service_days']
+            ?? 30;
+
+        return max(1, (int) $value);
+    }
+
+    public function reminderServiceReadingThreshold(): int
+    {
+        $value = $this->settings['reminders']['service_reading_threshold']
+            ?? $this->settings['vehicles']['reminders']['service_reading_threshold']
+            ?? 500;
+
+        return max(0, (int) $value);
+    }
+
     // ---- Client presence ----
 
     public function clientPresenceEnabled(): bool
@@ -331,6 +357,15 @@ class CompanySettingsService
         $settings['vehicles']['servicing_tracking_enabled']
             = $request->boolean('enable_vehicle_servicing_tracking');
 
+        // ---- Reminder thresholds (company-level) ----
+        $registrationDays = (int) $request->input('reminder_registration_days', $this->reminderRegistrationDays());
+        $serviceDays = (int) $request->input('reminder_service_days', $this->reminderServiceDays());
+        $serviceReadingThreshold = (int) $request->input('reminder_service_reading_threshold', $this->reminderServiceReadingThreshold());
+
+        $settings['reminders']['registration_days'] = max(1, $registrationDays);
+        $settings['reminders']['service_days'] = max(1, $serviceDays);
+        $settings['reminders']['service_reading_threshold'] = max(0, $serviceReadingThreshold);
+
         // Persist to DB
         DB::connection('sharpfleet')
             ->table('company_settings')
@@ -351,6 +386,24 @@ class CompanySettingsService
      */
     public function all(): array
     {
-        return $this->settings;
+        // Normalise reminder settings for UI:
+        // if only the legacy vehicles.reminders exists, surface it under reminders.*
+        $settings = $this->settings;
+
+        if (!isset($settings['reminders']) || !is_array($settings['reminders'])) {
+            $settings['reminders'] = [];
+        }
+
+        if (!array_key_exists('registration_days', $settings['reminders'])) {
+            $settings['reminders']['registration_days'] = $settings['vehicles']['reminders']['registration_days'] ?? 30;
+        }
+        if (!array_key_exists('service_days', $settings['reminders'])) {
+            $settings['reminders']['service_days'] = $settings['vehicles']['reminders']['service_days'] ?? 30;
+        }
+        if (!array_key_exists('service_reading_threshold', $settings['reminders'])) {
+            $settings['reminders']['service_reading_threshold'] = $settings['vehicles']['reminders']['service_reading_threshold'] ?? 500;
+        }
+
+        return $settings;
     }
 }

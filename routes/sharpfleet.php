@@ -173,10 +173,9 @@ Route::prefix('app/sharpfleet')
                 ];
 
                 if ($regoEnabled || $serviceEnabled) {
-                    $all = $settings->all();
-                    $registrationDays = (int) ($all['vehicles']['reminders']['registration_days'] ?? 30);
-                    $serviceDays = (int) ($all['vehicles']['reminders']['service_days'] ?? 30);
-                    $serviceReadingThreshold = (int) ($all['vehicles']['reminders']['service_reading_threshold'] ?? 500);
+                    $registrationDays = $settings->reminderRegistrationDays();
+                    $serviceDays = $settings->reminderServiceDays();
+                    $serviceReadingThreshold = $settings->reminderServiceReadingThreshold();
 
                     $digest = (new VehicleReminderService())->buildDigest(
                         organisationId: $organisationId,

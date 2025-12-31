@@ -69,10 +69,9 @@ class SharpFleetSendReminders extends Command
                 continue;
             }
 
-            $defaults = $settings->all();
-            $registrationDays = (int) ($defaults['vehicles']['reminders']['registration_days'] ?? 30);
-            $serviceDays = (int) ($defaults['vehicles']['reminders']['service_days'] ?? 30);
-            $serviceReadingThreshold = (int) ($defaults['vehicles']['reminders']['service_reading_threshold'] ?? 500);
+            $registrationDays = $settings->reminderRegistrationDays();
+            $serviceDays = $settings->reminderServiceDays();
+            $serviceReadingThreshold = $settings->reminderServiceReadingThreshold();
 
             if ($this->option('registration-days') !== null) {
                 $registrationDays = (int) $this->option('registration-days');

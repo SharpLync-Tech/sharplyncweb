@@ -32,10 +32,9 @@ class ReminderController extends Controller
         $regoEnabled = $settingsService->vehicleRegistrationTrackingEnabled();
         $serviceEnabled = $settingsService->vehicleServicingTrackingEnabled();
 
-        $allSettings = $settingsService->all();
-        $registrationDays = (int) ($allSettings['vehicles']['reminders']['registration_days'] ?? 30);
-        $serviceDays = (int) ($allSettings['vehicles']['reminders']['service_days'] ?? 30);
-        $serviceReadingThreshold = (int) ($allSettings['vehicles']['reminders']['service_reading_threshold'] ?? 500);
+        $registrationDays = $settingsService->reminderRegistrationDays();
+        $serviceDays = $settingsService->reminderServiceDays();
+        $serviceReadingThreshold = $settingsService->reminderServiceReadingThreshold();
 
         $recipient = $this->resolveSubscriberAdminEmail($organisationId);
 
