@@ -66,6 +66,12 @@ html, body {
             animation: fleet-scroll 55s linear infinite;
         }
 
+@media (max-width: 768px) {
+    .fleet-banner-row {
+        animation-duration: 25s; /* faster on mobile */
+    }
+}
+
     .fleet-banner-row img {
             height: 100px;
             display: block;
