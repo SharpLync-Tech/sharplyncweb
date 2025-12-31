@@ -59,15 +59,16 @@ html, body {
 
     .fleet-banner-row {
             display: flex;
+            align-items: flex-end;
             gap: 36px;
             align-items: center;
             width: max-content;
-            animation: fleet-scroll 40s linear infinite;
+            animation: fleet-scroll 55s linear infinite;
         }
 
     .fleet-banner-row img {
             height: 100px;
-            opacity: 0.95;
+            display: block;
             flex-shrink: 0;
         }
 
