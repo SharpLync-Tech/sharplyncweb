@@ -10,22 +10,18 @@
     $drivers = $drivers ?? collect();
 @endphp
 
-<div class="container">
+<div class="max-w-800 mx-auto mt-4">
     <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id) }}">
         @csrf
 
-        <div class="page-header">
-            <div class="flex-between">
-                <div>
-                    <h1 class="page-title">Edit Vehicle</h1>
-                    <p class="page-description">
-                        Registration number is locked to prevent accidental changes.
-                    </p>
-                </div>
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a href="{{ url('/app/sharpfleet/admin/vehicles') }}" class="btn btn-secondary">Cancel</a>
-                </div>
+        <div class="flex-between" style="margin-bottom: 10px;">
+            <div>
+                <h1 class="mb-1">Edit Vehicle</h1>
+                <p class="text-muted mb-0">Registration number is locked to prevent accidental changes.</p>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url('/app/sharpfleet/admin/vehicles') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </div>
 
@@ -37,10 +33,8 @@
 
         {{-- Vehicle Details --}}
         <div class="card mb-3">
-            <div class="card-header">
-                <h2 class="card-title">Vehicle Details</h2>
-            </div>
             <div class="card-body">
+                <h3 class="section-title">Vehicle details</h3>
                 <div class="form-group">
                     <label class="form-label">Vehicle name</label>
                     <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
@@ -112,27 +106,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="checkbox-label mb-2">
-                        <input type="checkbox" name="wheelchair_accessible" value="1" {{ old('wheelchair_accessible', (int)$vehicle->wheelchair_accessible) ? 'checked' : '' }}>
-                        <strong>Wheelchair accessible</strong>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Notes (optional)</label>
-                    <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
-                    @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- Usage & Readings --}}
-        <div class="card mb-3">
-            <div class="card-header">
-                <h2 class="card-title">Usage & Readings</h2>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
                     <label id="starting_reading_label" class="form-label">Starting odometer (km) (optional)</label>
                     <input type="number"
                            name="starting_km"
@@ -171,15 +144,26 @@
                         </div>
                     </div>
                 @endif
+
+                <div class="form-group">
+                    <label class="checkbox-label mb-2">
+                        <input type="checkbox" name="wheelchair_accessible" value="1" {{ old('wheelchair_accessible', (int)$vehicle->wheelchair_accessible) ? 'checked' : '' }}>
+                        <strong>Wheelchair accessible</strong>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes (optional)</label>
+                    <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
+                    @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
+                </div>
             </div>
         </div>
 
         {{-- Permanent Allocation --}}
         <div class="card mb-3">
-            <div class="card-header">
-                <h2 class="card-title">Permanent Allocation</h2>
-            </div>
             <div class="card-body">
+                <h3 class="section-title">Permanent allocation</h3>
                 <p class="text-muted mb-3">
                     Permanently assigned vehicles cannot be booked and can only be used by the assigned driver.
                 </p>
@@ -215,7 +199,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <div class="form-hint">Enable permanent allocation to choose a driver.</div>
+                    @if(!$permanentEnabled)
+                        <div class="form-hint">Enable permanent allocation to choose a driver.</div>
+                    @endif
                     @error('assigned_driver_id') <div class="text-error mb-2">{{ $message }}</div> @enderror
                 </div>
             </div>
@@ -223,10 +209,8 @@
 
         {{-- Service Status --}}
         <div class="card mb-3">
-            <div class="card-header">
-                <h2 class="card-title">Service Status</h2>
-            </div>
             <div class="card-body">
+                <h3 class="section-title">Service status</h3>
                 <p class="text-muted mb-3">
                     If a vehicle is out of service, drivers cannot book it or use it for trips.
                 </p>
@@ -267,7 +251,7 @@
         </div>
 
         <div class="btn-group mb-4">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary">Save</button>
             <a href="{{ url('/app/sharpfleet/admin/vehicles') }}" class="btn btn-secondary">Cancel</a>
         </div>
 
