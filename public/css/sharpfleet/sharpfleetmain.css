@@ -66,8 +66,8 @@ html, body {
         }
 
     .fleet-banner-row img {
-            height: 42px;
-            opacity: 0.8;
+            height: 100px;
+            opacity: 0.95;
             flex-shrink: 0;
         }
 
