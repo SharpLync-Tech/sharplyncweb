@@ -269,10 +269,33 @@ class VehicleController extends Controller
 
         $settingsService = new CompanySettingsService($organisationId);
 
+        $drivers = DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId)
+            ->where(function ($q) {
+                $q
+                    ->where(function ($qq) {
+                        $qq
+                            ->where('role', 'driver')
+                            ->where(function ($q2) {
+                                $q2->whereNull('is_driver')->orWhere('is_driver', 1);
+                            });
+                    })
+                    ->orWhere(function ($qq) {
+                        $qq
+                            ->where('role', 'admin')
+                            ->where('is_driver', 1);
+                    });
+            })
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get();
+
         return view('sharpfleet.admin.vehicles.edit', [
             'vehicle' => $record,
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+            'drivers' => $drivers,
         ]);
     }
 
@@ -322,7 +345,75 @@ class VehicleController extends Controller
             'is_in_service' => ['nullable', 'boolean'],
             'out_of_service_reason' => ['nullable', 'string', 'max:50'],
             'out_of_service_note' => ['nullable', 'string', 'max:255'],
+
+            // Permanent assignment (optional; requires DB columns)
+            'permanent_assignment' => ['nullable', 'boolean'],
+            'assigned_driver_id' => ['nullable', 'integer'],
         ]);
+
+        $wantsPermanentAssignment = (int) ($validated['permanent_assignment'] ?? 0) === 1;
+        $vehiclesHaveAssignment = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+            && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
+
+        if ($wantsPermanentAssignment && !$vehiclesHaveAssignment) {
+            return back()
+                ->withErrors([
+                    'permanent_assignment' => "Permanent assignment can't be saved yet because the database is missing vehicles.assignment_type and/or vehicles.assigned_driver_id. Run SQL (phpMyAdmin): ALTER TABLE vehicles ADD COLUMN assignment_type VARCHAR(20) NOT NULL DEFAULT 'none', ADD COLUMN assigned_driver_id INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
+        if ($wantsPermanentAssignment) {
+            $assignedDriverId = (int) ($validated['assigned_driver_id'] ?? 0);
+            if ($assignedDriverId <= 0) {
+                return back()
+                    ->withErrors([
+                        'assigned_driver_id' => 'Driver is required when permanent assignment is enabled.',
+                    ])
+                    ->withInput();
+            }
+
+            $isValidDriver = DB::connection('sharpfleet')
+                ->table('users')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $assignedDriverId)
+                ->where(function ($q) {
+                    $q
+                        ->where(function ($qq) {
+                            $qq
+                                ->where('role', 'driver')
+                                ->where(function ($q2) {
+                                    $q2->whereNull('is_driver')->orWhere('is_driver', 1);
+                                });
+                        })
+                        ->orWhere(function ($qq) {
+                            $qq
+                                ->where('role', 'admin')
+                                ->where('is_driver', 1);
+                        });
+                })
+                ->exists();
+
+            if (!$isValidDriver) {
+                return back()
+                    ->withErrors([
+                        'assigned_driver_id' => 'Selected driver is invalid.',
+                    ])
+                    ->withInput();
+            }
+
+            // Normalize for storage.
+            $validated['assignment_type'] = 'permanent';
+            $validated['assigned_driver_id'] = $assignedDriverId;
+        } else {
+            // Clearing assignment
+            if ($vehiclesHaveAssignment) {
+                $validated['assignment_type'] = 'none';
+                $validated['assigned_driver_id'] = null;
+            }
+        }
+
+        unset($validated['permanent_assignment']);
 
         $wantsServiceStatus = array_key_exists('is_in_service', $validated) && ((int) ($validated['is_in_service'] ?? 1) === 0);
         if ($wantsServiceStatus) {

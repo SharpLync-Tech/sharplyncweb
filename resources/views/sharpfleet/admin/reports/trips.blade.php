@@ -139,6 +139,9 @@
                                 <tr>
                                     <td class="fw-bold">
                                         {{ $t->vehicle_name }}<br>
+                                        @if(strtolower((string) ($t->vehicle_assignment_type ?? '')) === 'permanent')
+                                            <small class="text-muted">Assigned Vehicle</small><br>
+                                        @endif
                                         <small class="text-muted">{{ $t->registration_number }}</small>
                                     </td>
                                     <td>{{ $t->driver_name }}</td>

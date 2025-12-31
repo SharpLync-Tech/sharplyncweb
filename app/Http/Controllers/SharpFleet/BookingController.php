@@ -33,6 +33,13 @@ class BookingController extends Controller
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
             ->when(
+                Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type'),
+                fn ($q) => $q->where(function ($qq) {
+                    $qq->whereNull('assignment_type')
+                        ->orWhere('assignment_type', 'none');
+                })
+            )
+            ->when(
                 Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service'),
                 fn ($q) => $q->where('is_in_service', 1)
             )

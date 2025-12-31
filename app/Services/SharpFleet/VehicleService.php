@@ -98,6 +98,9 @@ class VehicleService
         $hasOutOfServiceNote = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_note');
         $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
 
+        $hasAssignmentType = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type');
+        $hasAssignedDriverId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
+
         $update = [
             'name'                  => $data['name'],
             'make'                  => $data['make'] ?? null,
@@ -108,6 +111,16 @@ class VehicleService
             'notes'                 => $data['notes'] ?? null,
             'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
         ];
+
+        if ($hasAssignmentType && array_key_exists('assignment_type', $data)) {
+            $raw = strtolower(trim((string) ($data['assignment_type'] ?? 'none')));
+            $update['assignment_type'] = $raw === 'permanent' ? 'permanent' : 'none';
+        }
+
+        if ($hasAssignedDriverId && array_key_exists('assigned_driver_id', $data)) {
+            $id = $data['assigned_driver_id'] ?? null;
+            $update['assigned_driver_id'] = ($id === null || $id === '') ? null : (int) $id;
+        }
 
         if ($hasRegistrationExpiry && array_key_exists('registration_expiry', $data)) {
             $update['registration_expiry'] = $data['registration_expiry'] ?? null;

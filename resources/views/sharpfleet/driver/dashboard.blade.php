@@ -31,6 +31,19 @@
         ->where('organisation_id', $user['organisation_id'])
         ->where('is_active', 1)
         ->when(
+            Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+                && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id'),
+            fn ($q) => $q->where(function ($qq) use ($user) {
+                $qq->whereNull('assignment_type')
+                    ->orWhere('assignment_type', 'none')
+                    ->orWhere(function ($qq2) use ($user) {
+                        $qq2
+                            ->where('assignment_type', 'permanent')
+                            ->where('assigned_driver_id', (int) $user['id']);
+                    });
+            })
+        )
+        ->when(
             Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service'),
             fn ($q) => $q->where('is_in_service', 1)
         )

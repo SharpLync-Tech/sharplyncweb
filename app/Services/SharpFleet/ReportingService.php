@@ -136,6 +136,9 @@ class ReportingService
             'vehicles.name as vehicle_name',
             'vehicles.registration_number',
             'vehicles.tracking_mode',
+            Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+                ? 'vehicles.assignment_type as vehicle_assignment_type'
+                : DB::raw("NULL as vehicle_assignment_type"),
             DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name"),
             $customerLinkingEnabled
                 ? DB::raw('COALESCE(customers.name, trips.customer_name) as customer_name_display')

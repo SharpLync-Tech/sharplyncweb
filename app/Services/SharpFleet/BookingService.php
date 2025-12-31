@@ -9,6 +9,36 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    private function vehiclesHavePermanentAssignmentSupport(): bool
+    {
+        return Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+            && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
+    }
+
+    private function vehicleAssignmentType(?object $vehicle): string
+    {
+        if (!$vehicle || !property_exists($vehicle, 'assignment_type')) {
+            return 'none';
+        }
+
+        $raw = strtolower(trim((string) ($vehicle->assignment_type ?? 'none')));
+        return $raw === 'permanent' ? 'permanent' : 'none';
+    }
+
+    private function vehicleAssignedDriverId(?object $vehicle): ?int
+    {
+        if (!$vehicle || !property_exists($vehicle, 'assigned_driver_id')) {
+            return null;
+        }
+
+        $id = $vehicle->assigned_driver_id ?? null;
+        if ($id === null || $id === '') {
+            return null;
+        }
+
+        return (int) $id;
+    }
+
     private function vehicleOutOfServiceMessage(?object $vehicle): string
     {
         $reason = $vehicle && property_exists($vehicle, 'out_of_service_reason') ? trim((string) ($vehicle->out_of_service_reason ?? '')) : '';
@@ -49,6 +79,71 @@ class BookingService
             throw ValidationException::withMessages([
                 'vehicle_id' => $this->vehicleOutOfServiceMessage($vehicle),
             ]);
+        }
+    }
+
+    /**
+     * Enforce permanent vehicle assignment rules for trip start.
+     *
+     * - Assigned driver can use vehicle without a booking.
+     * - Any other driver gets a 403.
+     * - If assigned driver is inactive/missing, block trips until admin updates assignment.
+     */
+    public function assertVehicleAssignmentAllowsTrip(int $organisationId, int $vehicleId, int $userId): void
+    {
+        if (!$this->vehiclesHavePermanentAssignmentSupport()) {
+            return;
+        }
+
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'assignment_type', 'assigned_driver_id')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $vehicleId)
+            ->first();
+
+        if (!$vehicle) {
+            throw ValidationException::withMessages([
+                'vehicle_id' => 'Selected vehicle is invalid.',
+            ]);
+        }
+
+        if ($this->vehicleAssignmentType($vehicle) !== 'permanent') {
+            return;
+        }
+
+        $assignedDriverId = $this->vehicleAssignedDriverId($vehicle);
+        if (!$assignedDriverId || $assignedDriverId <= 0) {
+            abort(403, 'This vehicle is permanently assigned and cannot be used until an administrator updates the assignment.');
+        }
+
+        // If the assigned driver is missing/inactive, block trips until an admin updates assignment.
+        $assignedDriver = null;
+        if (Schema::connection('sharpfleet')->hasTable('users')) {
+            $driverQuery = DB::connection('sharpfleet')
+                ->table('users')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $assignedDriverId);
+
+            if (Schema::connection('sharpfleet')->hasColumn('users', 'is_active')) {
+                $driverQuery->select('id', 'is_active');
+            } else {
+                $driverQuery->select('id');
+            }
+
+            $assignedDriver = $driverQuery->first();
+        }
+
+        if (!$assignedDriver) {
+            abort(403, 'This vehicle is permanently assigned and cannot be used until an administrator updates the assignment.');
+        }
+
+        if (property_exists($assignedDriver, 'is_active') && (int) ($assignedDriver->is_active ?? 1) === 0) {
+            abort(403, 'This vehicle is assigned to an inactive driver. Please contact an administrator.');
+        }
+
+        if ((int) $assignedDriverId !== (int) $userId) {
+            abort(403, 'This vehicle is permanently assigned to another driver.');
         }
     }
 
@@ -103,6 +198,20 @@ class BookingService
 
         // If the out-of-service feature exists, block changing to an out-of-service vehicle.
         $this->assertVehicleInService($organisationId, $newVehicleId);
+
+        // Permanently assigned vehicles can never be booked.
+        if ($this->vehiclesHavePermanentAssignmentSupport()) {
+            $assignment = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('assignment_type')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $newVehicleId)
+                ->first();
+
+            if ($assignment && $this->vehicleAssignmentType($assignment) === 'permanent') {
+                abort(403, 'This vehicle is permanently assigned and cannot be booked.');
+            }
+        }
 
         $booking = DB::connection('sharpfleet')
             ->table('bookings')
@@ -202,6 +311,21 @@ class BookingService
 
         // If the out-of-service feature exists, block bookings for out-of-service vehicles.
         $this->assertVehicleInService($organisationId, $vehicleId);
+
+        // Permanently assigned vehicles can never be booked.
+        if ($this->vehiclesHavePermanentAssignmentSupport()) {
+            $assignment = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('assignment_type')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $vehicleId)
+                ->first();
+
+            if ($assignment && $this->vehicleAssignmentType($assignment) === 'permanent') {
+                abort(403, 'This vehicle is permanently assigned and cannot be booked.');
+            }
+        }
+
         if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
             throw ValidationException::withMessages(['planned_end' => 'End time must be after start time.']);
         }
@@ -357,6 +481,14 @@ class BookingService
             $vehiclesQuery->where('vehicles.is_in_service', 1);
         }
 
+        // Permanently assigned vehicles cannot be booked.
+        if ($this->vehiclesHavePermanentAssignmentSupport()) {
+            $vehiclesQuery->where(function ($q) {
+                $q->whereNull('vehicles.assignment_type')
+                    ->orWhere('vehicles.assignment_type', 'none');
+            });
+        }
+
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             return $vehiclesQuery->get();
         }
@@ -382,6 +514,9 @@ class BookingService
     {
         // Out-of-service vehicles can never be used for trips.
         $this->assertVehicleInService($organisationId, $vehicleId);
+
+        // Permanent assignment rules.
+        $this->assertVehicleAssignmentAllowsTrip($organisationId, $vehicleId, $userId);
 
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             return;

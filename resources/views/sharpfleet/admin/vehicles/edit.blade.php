@@ -7,6 +7,7 @@
 @php
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
+    $drivers = $drivers ?? collect();
 @endphp
 
 <div class="max-w-800 mx-auto mt-4">
@@ -124,6 +125,46 @@
             @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
 
             <hr class="my-3">
+            <h3 class="mb-2">Permanent Allocation</h3>
+            <p class="text-muted mb-2">
+                Permanently assigned vehicles cannot be booked and can only be used by the assigned driver.
+            </p>
+
+            @php
+                $currentAssignmentType = property_exists($vehicle, 'assignment_type') ? strtolower((string) ($vehicle->assignment_type ?? 'none')) : 'none';
+                $currentAssignedDriverId = property_exists($vehicle, 'assigned_driver_id') ? ($vehicle->assigned_driver_id ?? null) : null;
+
+                $permanentEnabled = (int) old('permanent_assignment', $currentAssignmentType === 'permanent' ? 1 : 0) === 1;
+                $selectedDriverId = old('assigned_driver_id', $currentAssignedDriverId ?? '');
+            @endphp
+
+            <input type="hidden" name="permanent_assignment" value="0">
+            <label class="checkbox-label mb-2">
+                <input type="checkbox" name="permanent_assignment" value="1" {{ $permanentEnabled ? 'checked' : '' }}>
+                <strong>Enable permanent allocation</strong>
+            </label>
+            @error('permanent_assignment') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+            <div class="form-group">
+                <label class="form-label">Assigned driver</label>
+                <select name="assigned_driver_id" class="form-control" {{ $permanentEnabled ? '' : 'disabled' }}>
+                    <option value="">Select a driver</option>
+                    @foreach($drivers as $d)
+                        @php
+                            $driverName = trim((string) ($d->first_name ?? '') . ' ' . (string) ($d->last_name ?? ''));
+                            if ($driverName === '') {
+                                $driverName = 'User #' . (int) ($d->id ?? 0);
+                            }
+                        @endphp
+                        <option value="{{ (int) $d->id }}" {{ (string) $selectedDriverId === (string) $d->id ? 'selected' : '' }}>
+                            {{ $driverName }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('assigned_driver_id') <div class="text-error mb-2">{{ $message }}</div> @enderror
+            </div>
+
+            <hr class="my-3">
             <h3 class="mb-2">Service Status</h3>
             <p class="text-muted mb-2">
                 If a vehicle is out of service, drivers cannot book it or use it for trips.
@@ -238,6 +279,22 @@
                 serviceDueKmLabel.textContent = 'Next service due reading (km) (optional)';
             }
         }
+    })();
+
+    (function () {
+        const toggle = document.querySelector('input[name="permanent_assignment"][type="checkbox"]');
+        const select = document.querySelector('select[name="assigned_driver_id"]');
+        if (!toggle || !select) return;
+
+        function sync() {
+            select.disabled = !toggle.checked;
+            if (!toggle.checked) {
+                select.value = '';
+            }
+        }
+
+        toggle.addEventListener('change', sync);
+        sync();
     })();
 </script>
 

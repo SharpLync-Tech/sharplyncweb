@@ -172,6 +172,13 @@ class TripService
 
         $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
 
+        // Permanent vehicle assignment rules (booking is not required for the assigned driver).
+        $this->bookingService->assertVehicleAssignmentAllowsTrip(
+            $organisationId,
+            (int) $data['vehicle_id'],
+            (int) $user['id']
+        );
+
         $this->bookingService->assertVehicleCanStartTrip(
             $organisationId,
             (int) $data['vehicle_id'],
