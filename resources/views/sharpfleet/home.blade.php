@@ -75,7 +75,7 @@
     <section class="mb-4 hero-features">
         <div class="text-center mb-4">
             <h2 class="card-title">Everything You Need — Nothing You Don’t</h2>
-            <p class="mb-0 max-w-700 mx-auto text-white">
+            <p class="mb-0 max-w-700 mx-auto text-white" style="color: #ffffff;">
                 SharpFleet focuses on the day-to-day realities of running vehicles and drivers,
                 without forcing expensive hardware or rigid workflows on your business.
             </p>
@@ -156,11 +156,6 @@
         <a href="/app/sharpfleet/admin/register" class="btn">
             Start Your Free Trial
         </a>
-    </div>
-
-    {{-- =========================
-         BANNER STYLES (SCOPED)
-    ========================== --}}
-  
+    </div>  
 
 @endsection
