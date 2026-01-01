@@ -20,7 +20,14 @@
 
     @if ($errors->any())
         <div class="alert alert-error">
-            <strong>Please fix the errors below.</strong>
+            <div>
+                <strong>Please fix the errors below.</strong>
+                <ul class="mb-0" style="margin-top: 8px; padding-left: 18px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
     @endif
 
