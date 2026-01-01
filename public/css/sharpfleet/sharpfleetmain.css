@@ -967,6 +967,10 @@ details.card[open] .incident-toggle-hint-closed {
         gap: 0;
         padding: 16px 0;
         box-shadow: var(--shadow);
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        z-index: 1200;
     }
 
     .sharpfleet-nav-links.active {
@@ -990,6 +994,10 @@ details.card[open] .incident-toggle-hint-closed {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .sharpfleet-nav-dropdown::after {
+        display: none;
     }
 
     /* In the mobile hamburger, show dropdown sections expanded */
