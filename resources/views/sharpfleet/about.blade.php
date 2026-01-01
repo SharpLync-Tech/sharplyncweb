@@ -18,15 +18,32 @@
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
         ">
-            <h1 style="
-                color:#0f172a;
-                font-weight:600;
-                line-height:1.1;
-                margin-bottom:12px;
-            ">
-                How SharpFleet<br>
-                Started
 
+            <h1 style="
+                font-weight: 700;
+                line-height: 1.05;
+                margin: 0 0 12px 0;
+                letter-spacing: -0.5px;
+            ">
+                <span style="
+                    display:inline-block;
+                    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    -webkit-text-fill-color: transparent;
+                ">How SharpFleet</span>
+                <br>
+                <span style="
+                    display:inline-block;
+                    background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    -webkit-text-fill-color: transparent;
+                ">Started</span>
+
+                <!-- Gradient underline (inline element, not CSS ::after) -->
                 <span style="
                     display:block;
                     width:120px;
