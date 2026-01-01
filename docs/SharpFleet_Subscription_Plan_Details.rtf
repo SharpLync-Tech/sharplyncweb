@@ -120,7 +120,7 @@ Note: Because there is no concept of \"paid-through\" date right now, cancelling
 \pard\sa120 File: app/Http/Controllers/SharpFleet/Admin/AccountController.php\par
 \pard\sa120 Methods:\par
 \pard\sa80\li360\tx360\bullet\tab show(): Loads organisation settings, counts vehicles, reads entitlements, calculates monthly estimate, renders the account view.\par
-\pard\sa80\li360\tx360\bullet\tab subscribe(): Sets subscription_status=active and subscription_started_at, clears trial_cancel_requested_at, then redirects back to account with success message.\par
+\pard\sa80\li360\tx360\bullet\tab subscribe(): Pre-Stripe safety step: does not activate a subscription locally (no DB writes). Redirects back to the account page with an info message: "Subscription checkout will be handled via Stripe. Integration in progress."\par
 \pard\sa80\li360\tx360\bullet\tab cancelTrial(): Sets trial_cancel_requested_at then redirects to trial-expired with a warning.\par
 \pard\sa80\li360\tx360\bullet\tab cancelSubscription(): Sets subscription_status=cancelled and subscription_cancel_requested_at then redirects to trial-expired with a warning.\par
 \pard\sa120 Pricing helper:\par
@@ -175,7 +175,7 @@ This approach preserves existing behaviour for tenants that do not use these new
 This would enable grace periods (keep access until ends_at), accurate renewal/cancellation, and cleaner reporting.\par
 
 \pard\sa240\b\fs28 9) Operational Notes / Limitations\b0\fs24\par
-\pard\sa80\li360\tx360\bullet\tab Subscription is currently a manual toggle via the UI buttons. No payments are collected.\par
+\pard\sa80\li360\tx360\bullet\tab Subscription checkout is not yet integrated. Clicking Subscribe does not activate locally; it shows an info message and returns to the account page.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel trial/subscription currently switches the account to read-only immediately (reports-only).\par
 \pard\sa80\li360\tx360\bullet\tab The ?>20 vehicles? rule displays a contact note but still computes an estimate number.\par
 \pard\sa80\li360\tx360\bullet\tab Vehicle count used for pricing is active vehicles only (is_active = 1).\par
@@ -185,7 +185,7 @@ This would enable grace periods (keep access until ends_at), accurate renewal/ca
 \pard\sa80\li360\tx360\bullet\tab Trial with 10 days remaining: yellow banner shown.\par
 \pard\sa80\li360\tx360\bullet\tab Trial with 3 days remaining: orange banner shown.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel Trial: trial-expired page shown, only reports accessible, account page still accessible.\par
-\pard\sa80\li360\tx360\bullet\tab Subscribe: account shows subscribed state, dashboard banner hidden, full access restored.\par
+\pard\sa80\li360\tx360\bullet\tab Subscribe: redirected back to account with info message; no subscription activation occurs locally.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel Subscription: trial-expired page shown, only reports accessible, account page still accessible.\par
 
 \pard\sa200 End of document.\par

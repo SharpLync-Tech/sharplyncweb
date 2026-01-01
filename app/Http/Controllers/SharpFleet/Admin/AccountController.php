@@ -57,8 +57,68 @@ class AccountController extends Controller
 
     public function subscribe(Request $request): RedirectResponse
     {
-        return redirect('/app/sharpfleet/admin/account')
-            ->with('info', 'Subscription checkout will be handled via Stripe. Integration in progress.');
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+
+        $activeVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        if ($activeVehiclesCount < 1) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'You must have at least one active vehicle to subscribe.');
+        }
+
+        $stripeSecret = (string) env('STRIPE_SECRET_TEST');
+        $stripePriceId = (string) env('STRIPE_PRICE_TEST');
+
+        if ($stripeSecret === '' || $stripePriceId === '') {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Stripe is not configured.');
+        }
+
+        $baseUrl = $request->getSchemeAndHttpHost();
+        $successUrl = $baseUrl . '/app/sharpfleet/admin/account?checkout=success';
+        $cancelUrl = $baseUrl . '/app/sharpfleet/admin/account?checkout=cancelled';
+
+        $client = \Symfony\Component\HttpClient\HttpClient::create();
+        $response = $client->request('POST', 'https://api.stripe.com/v1/checkout/sessions', [
+            'auth_bearer' => $stripeSecret,
+            'body' => [
+                'mode' => 'subscription',
+                'success_url' => $successUrl,
+                'cancel_url' => $cancelUrl,
+                'line_items' => [
+                    [
+                        'price' => $stripePriceId,
+                        'quantity' => $activeVehiclesCount,
+                    ],
+                ],
+            ],
+        ]);
+
+        $status = $response->getStatusCode();
+        if ($status < 200 || $status >= 300) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Unable to start Stripe Checkout.');
+        }
+
+        $data = $response->toArray(false);
+        $checkoutUrl = is_array($data) ? ($data['url'] ?? null) : null;
+
+        if (!is_string($checkoutUrl) || $checkoutUrl === '') {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Unable to start Stripe Checkout.');
+        }
+
+        return redirect()->away($checkoutUrl);
     }
 
     public function cancelTrial(Request $request): RedirectResponse
