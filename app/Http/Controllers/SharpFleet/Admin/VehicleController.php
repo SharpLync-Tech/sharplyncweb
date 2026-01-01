@@ -19,6 +19,7 @@ class VehicleController extends Controller
     protected StripeSubscriptionSyncService $stripeSubscriptionSync;
 
     private const PENDING_CREATE_SESSION_KEY = 'sharpfleet.pending_vehicle_create';
+    private const PENDING_ARCHIVE_SESSION_KEY = 'sharpfleet.pending_vehicle_archive';
 
     public function __construct(VehicleService $vehicleService, StripeSubscriptionSyncService $stripeSubscriptionSync)
     {
@@ -38,6 +39,9 @@ class VehicleController extends Controller
         }
 
         $organisationId = (int) $fleetUser['organisation_id'];
+
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
 
         $vehicles = $this->vehicleService->getAvailableVehicles($organisationId);
 
@@ -76,7 +80,166 @@ class VehicleController extends Controller
             'vehicles' => $vehicles,
             'activeTripVehicleIds' => $activeTripVehicleIds,
             'activeTripsByVehicle' => $activeTripsByVehicle,
+            'isSubscribed' => $isSubscribed,
         ]);
+    }
+
+    /**
+     * Confirmation step (subscribed orgs only) for archiving a vehicle.
+     */
+    public function confirmArchive(Request $request, $vehicle)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
+
+        if (!$isSubscribed) {
+            $request->session()->forget(self::PENDING_ARCHIVE_SESSION_KEY);
+            return redirect('/app/sharpfleet/admin/vehicles');
+        }
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        $isActive = (int) ($record->is_active ?? 0) === 1;
+        if (!$isActive) {
+            return redirect('/app/sharpfleet/admin/vehicles')
+                ->with('error', 'Vehicle is already archived.');
+        }
+
+        $request->session()->put(self::PENDING_ARCHIVE_SESSION_KEY, [
+            'organisation_id' => $organisationId,
+            'vehicle_id' => $vehicleId,
+            'vehicle_name' => (string) ($record->name ?? ''),
+        ]);
+
+        $currentVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        $newVehiclesCount = max(0, $currentVehiclesCount - 1);
+
+        $currentPricing = $this->calculateMonthlyPrice($currentVehiclesCount);
+        $newPricing = $this->calculateMonthlyPrice($newVehiclesCount);
+
+        return view('sharpfleet.admin.vehicles.confirm-archive', [
+            'vehicleId' => $vehicleId,
+            'vehicleName' => (string) ($record->name ?? ''),
+            'currentVehiclesCount' => $currentVehiclesCount,
+            'newVehiclesCount' => $newVehiclesCount,
+            'currentMonthlyPrice' => $currentPricing['monthlyPrice'],
+            'currentMonthlyPriceBreakdown' => $currentPricing['breakdown'],
+            'newMonthlyPrice' => $newPricing['monthlyPrice'],
+            'newMonthlyPriceBreakdown' => $newPricing['breakdown'],
+            'requiresContactForPricing' => $newPricing['requiresContact'],
+        ]);
+    }
+
+    /**
+     * Finalize archive after acknowledgement (subscribed orgs only).
+     */
+    public function confirmArchiveStore(Request $request, $vehicle)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
+
+        if (!$isSubscribed) {
+            $request->session()->forget(self::PENDING_ARCHIVE_SESSION_KEY);
+            return redirect('/app/sharpfleet/admin/vehicles');
+        }
+
+        $pending = $request->session()->get(self::PENDING_ARCHIVE_SESSION_KEY);
+        $pendingOrgId = (int) ($pending['organisation_id'] ?? 0);
+        $pendingVehicleId = (int) ($pending['vehicle_id'] ?? 0);
+
+        if ($pendingOrgId !== $organisationId || $pendingVehicleId !== $vehicleId) {
+            return redirect('/app/sharpfleet/admin/vehicles');
+        }
+
+        $request->validate([
+            'ack_subscription_price_decrease' => ['required', 'accepted'],
+        ]);
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        $isActive = (int) ($record->is_active ?? 0) === 1;
+        if (!$isActive) {
+            $request->session()->forget(self::PENDING_ARCHIVE_SESSION_KEY);
+            return redirect('/app/sharpfleet/admin/vehicles')
+                ->with('warning', 'Vehicle was already archived.');
+        }
+
+        $currentVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        $newVehiclesCount = max(0, $currentVehiclesCount - 1);
+
+        if ($newVehiclesCount < 1) {
+            return redirect('/app/sharpfleet/admin/vehicles/' . $vehicleId . '/archive/confirm')
+                ->with('error', 'You cannot archive your last active vehicle while your subscription is active. Cancel your subscription first.');
+        }
+
+        try {
+            // Update Stripe FIRST so we don\'t archive the vehicle if billing couldn\'t be updated.
+            $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $newVehiclesCount);
+
+            $this->vehicleService->archiveVehicle($organisationId, $vehicleId);
+        } catch (\Throwable $e) {
+            Log::error('SharpFleet: failed syncing Stripe quantity before vehicle archive', [
+                'organisation_id' => $organisationId,
+                'vehicle_id' => $vehicleId,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return redirect('/app/sharpfleet/admin/vehicles/' . $vehicleId . '/archive/confirm')
+                ->with('error', 'Unable to archive vehicle because billing could not be updated. Please try again or contact support.');
+        } finally {
+            $request->session()->forget(self::PENDING_ARCHIVE_SESSION_KEY);
+        }
+
+        return redirect('/app/sharpfleet/admin/vehicles')
+            ->with('success', 'Vehicle archived. Subscription updated for your next invoice.');
+    }
+
+    /**
+     * Cancel archive confirmation.
+     */
+    public function cancelArchive(Request $request, $vehicle)
+    {
+        $request->session()->forget(self::PENDING_ARCHIVE_SESSION_KEY);
+
+        return redirect('/app/sharpfleet/admin/vehicles');
     }
 
     /**
@@ -660,6 +823,17 @@ class VehicleController extends Controller
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
+        }
+
+        $entitlements = new EntitlementService($fleetUser);
+        if ($entitlements->isSubscriptionActive()) {
+            $request->session()->put(self::PENDING_ARCHIVE_SESSION_KEY, [
+                'organisation_id' => $organisationId,
+                'vehicle_id' => $vehicleId,
+                'vehicle_name' => (string) ($record->name ?? ''),
+            ]);
+
+            return redirect('/app/sharpfleet/admin/vehicles/' . $vehicleId . '/archive/confirm');
         }
 
         $this->vehicleService->archiveVehicle(

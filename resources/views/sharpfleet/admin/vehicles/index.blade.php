@@ -21,6 +21,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="alert alert-error">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-body">
             @if($vehicles->count() === 0)
@@ -80,11 +86,15 @@
                                     <td>
                                         <div class="btn-group-sm">
                                             <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/edit') }}" class="btn btn-secondary btn-sm">Edit</a>
-                                            <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive') }}"
-                                                  onsubmit="return confirm('Archive this vehicle? Drivers will no longer be able to select it.');" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm">Archive</button>
-                                            </form>
+                                            @if(!empty($isSubscribed))
+                                                <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive/confirm') }}" class="btn btn-danger btn-sm">Archive</a>
+                                            @else
+                                                <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive') }}"
+                                                      onsubmit="return confirm('Archive this vehicle? Drivers will no longer be able to select it.');" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger btn-sm">Archive</button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
