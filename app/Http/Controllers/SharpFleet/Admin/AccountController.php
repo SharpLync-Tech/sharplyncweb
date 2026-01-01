@@ -139,6 +139,48 @@ class AccountController extends Controller
             ->with('warning', 'Trial cancelled. Your account is now read-only (reports only).');
     }
 
+    public function cancelSubscription(Request $request): RedirectResponse
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+
+        $org = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->first();
+
+        if (!$org) {
+            abort(404, 'Organisation not found');
+        }
+
+        $settings = [];
+        if (!empty($org->settings)) {
+            $decoded = json_decode((string) $org->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
+            }
+        }
+
+        $settings['subscription_status'] = 'cancelled';
+        $settings['subscription_cancel_requested_at'] = Carbon::now()->toIso8601String();
+
+        DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->update([
+                'settings' => json_encode($settings),
+                'updated_at' => now(),
+            ]);
+
+        return redirect('/app/sharpfleet/admin/trial-expired')
+            ->with('warning', 'Subscription cancelled. Your account is now read-only (reports only).');
+    }
+
     private function calculateMonthlyPrice(int $vehiclesCount): array
     {
         $vehiclesCount = max(0, $vehiclesCount);

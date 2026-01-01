@@ -27,6 +27,11 @@
                     <div class="fw-bold">Subscription active</div>
                     <div class="text-muted small">Billing is calculated per active vehicle.</div>
                 </div>
+
+                <form method="POST" action="/app/sharpfleet/admin/account/cancel-subscription">
+                    @csrf
+                    <button class="btn btn-danger" type="submit">Cancel Subscription</button>
+                </form>
             </div>
 
             <div class="grid grid-2 mt-3">
@@ -47,6 +52,10 @@
                         Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.
                     </div>
                 @endif
+
+                <div class="mt-2">
+                    Cancelling your subscription switches your account to read-only access (reports only). You will have access to your data for one year, after that the account will be archived.
+                </div>
             </div>
         @else
             <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">

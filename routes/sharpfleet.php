@@ -298,6 +298,8 @@ Route::prefix('app/sharpfleet')
                 ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
             Route::post('/account/cancel-trial', [AccountController::class, 'cancelTrial'])
                 ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
+            Route::post('/account/cancel-subscription', [AccountController::class, 'cancelSubscription'])
+                ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
 
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
