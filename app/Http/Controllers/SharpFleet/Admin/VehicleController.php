@@ -15,6 +15,8 @@ class VehicleController extends Controller
 {
     protected VehicleService $vehicleService;
 
+    private const PENDING_CREATE_SESSION_KEY = 'sharpfleet.pending_vehicle_create';
+
     public function __construct(VehicleService $vehicleService)
     {
         $this->vehicleService = $vehicleService;
@@ -88,8 +90,40 @@ class VehicleController extends Controller
 
         $settingsService = new CompanySettingsService($organisationId);
 
+        return view('sharpfleet.admin.vehicles.create', [
+            'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
+            'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+        ]);
+    }
+
+    /**
+     * Confirmation step (subscribed orgs only) for adding a vehicle.
+     */
+    public function confirmCreate(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+
         $entitlements = new EntitlementService($fleetUser);
         $isSubscribed = $entitlements->isSubscriptionActive();
+
+        if (!$isSubscribed) {
+            $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
+            return redirect('/app/sharpfleet/admin/vehicles/create');
+        }
+
+        $pending = $request->session()->get(self::PENDING_CREATE_SESSION_KEY);
+        $pendingOrgId = (int) ($pending['organisation_id'] ?? 0);
+        $pendingPayload = is_array($pending['payload'] ?? null) ? $pending['payload'] : null;
+
+        if ($pendingOrgId !== $organisationId || !$pendingPayload) {
+            return redirect('/app/sharpfleet/admin/vehicles/create');
+        }
 
         $currentVehiclesCount = (int) DB::connection('sharpfleet')
             ->table('vehicles')
@@ -97,20 +131,89 @@ class VehicleController extends Controller
             ->where('is_active', 1)
             ->count();
 
-        $currentPricing = $this->calculateMonthlyPrice($currentVehiclesCount);
-        $newPricing = $this->calculateMonthlyPrice($currentVehiclesCount + 1);
+        $newVehiclesCount = $currentVehiclesCount + 1;
+        $newPricing = $this->calculateMonthlyPrice($newVehiclesCount);
 
-        return view('sharpfleet.admin.vehicles.create', [
-            'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
-            'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
-            'isSubscribed' => $isSubscribed,
+        return view('sharpfleet.admin.vehicles.confirm-create', [
+            'pendingVehicleName' => (string) ($pendingPayload['name'] ?? ''),
             'currentVehiclesCount' => $currentVehiclesCount,
-            'currentMonthlyPrice' => $currentPricing['monthlyPrice'],
-            'newVehiclesCount' => ($currentVehiclesCount + 1),
+            'newVehiclesCount' => $newVehiclesCount,
             'newMonthlyPrice' => $newPricing['monthlyPrice'],
             'newMonthlyPriceBreakdown' => $newPricing['breakdown'],
             'requiresContactForPricing' => $newPricing['requiresContact'],
         ]);
+    }
+
+    /**
+     * Finalize creation after acknowledgement (subscribed orgs only).
+     */
+    public function confirmStore(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
+
+        if (!$isSubscribed) {
+            $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
+            return redirect('/app/sharpfleet/admin/vehicles/create');
+        }
+
+        $pending = $request->session()->get(self::PENDING_CREATE_SESSION_KEY);
+        $pendingOrgId = (int) ($pending['organisation_id'] ?? 0);
+        $payload = is_array($pending['payload'] ?? null) ? $pending['payload'] : null;
+
+        if ($pendingOrgId !== $organisationId || !$payload) {
+            return redirect('/app/sharpfleet/admin/vehicles/create');
+        }
+
+        $request->validate([
+            'ack_subscription_price_increase' => ['required', 'accepted'],
+        ]);
+
+        // Re-check uniqueness for rego (if present) to prevent race conditions.
+        $rego = trim((string) ($payload['registration_number'] ?? ''));
+        $isRoadRegistered = (int) ($payload['is_road_registered'] ?? 0) === 1;
+        if ($isRoadRegistered && $rego !== '') {
+            $exists = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->where('organisation_id', $organisationId)
+                ->where('registration_number', $rego)
+                ->exists();
+
+            if ($exists) {
+                $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
+                return redirect('/app/sharpfleet/admin/vehicles/create')
+                    ->withErrors(['registration_number' => 'Registration number already exists for this organisation.'])
+                    ->withInput($payload);
+            }
+        }
+
+        $this->vehicleService->createVehicle($organisationId, $payload);
+        $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
+
+        return redirect('/app/sharpfleet/admin/vehicles')
+            ->with('success', 'Asset added successfully.');
+    }
+
+    /**
+     * Cancel confirmation and return to the create form with inputs restored.
+     */
+    public function cancelCreate(Request $request)
+    {
+        $pending = $request->session()->get(self::PENDING_CREATE_SESSION_KEY);
+        $payload = is_array($pending['payload'] ?? null) ? $pending['payload'] : [];
+
+        $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
+
+        return redirect('/app/sharpfleet/admin/vehicles/create')
+            ->withInput($payload);
     }
 
     /**
@@ -140,9 +243,6 @@ class VehicleController extends Controller
          */
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
-
-            // Subscription acknowledgement (required when subscribed)
-            'ack_subscription_price_increase' => [Rule::requiredIf(fn () => $isSubscribed), 'accepted'],
 
             // Registration tracking (optional, company-controlled)
             'is_road_registered' => [Rule::requiredIf(fn () => $regoTrackingEnabled), 'boolean'],
@@ -222,6 +322,9 @@ class VehicleController extends Controller
         $validated['is_road_registered'] = (int) ($validated['is_road_registered'] ?? 0);
         $validated['wheelchair_accessible'] = (int) ($validated['wheelchair_accessible'] ?? 0);
 
+        // Always discard any ack field submitted from the form; acknowledgement happens on the confirmation page.
+        unset($validated['ack_subscription_price_increase']);
+
         // If NOT road registered, force rego to NULL
         if ($validated['is_road_registered'] === 0) {
             $validated['registration_number'] = null;
@@ -263,7 +366,21 @@ class VehicleController extends Controller
 
         /*
          |----------------------------------------------------------
-         | CREATE VEHICLE
+         | CONFIRMATION STEP (SUBSCRIBED)
+         |----------------------------------------------------------
+         */
+        if ($isSubscribed) {
+            $request->session()->put(self::PENDING_CREATE_SESSION_KEY, [
+                'organisation_id' => $organisationId,
+                'payload' => $validated,
+            ]);
+
+            return redirect('/app/sharpfleet/admin/vehicles/create/confirm');
+        }
+
+        /*
+         |----------------------------------------------------------
+         | CREATE VEHICLE (NON-SUBSCRIBED)
          |----------------------------------------------------------
          */
         $this->vehicleService->createVehicle($organisationId, $validated);

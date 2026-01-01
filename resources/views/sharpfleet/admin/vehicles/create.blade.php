@@ -7,7 +7,6 @@
 @php
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
-    $isSubscribed = (bool) ($isSubscribed ?? false);
 @endphp
 
 <div class="max-w-800 mx-auto mt-4">
@@ -27,14 +26,6 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-
-                @if ($errors->has('ack_subscription_price_increase'))
-                    <div class="mt-2">
-                        <a href="#subscription_ack_notice" class="btn btn-secondary" style="padding: 8px 12px;">
-                            Go to subscription acknowledgement
-                        </a>
-                    </div>
-                @endif
             </div>
         </div>
     @endif
@@ -297,32 +288,6 @@
 
         </div>
 
-        @if($isSubscribed)
-            <div class="alert alert-info" id="subscription_ack_notice" style="align-items:flex-start;">
-                <div>
-                    <div class="fw-bold mb-1">Subscription cost confirmation</div>
-                    <div class="small">
-                        Adding this vehicle will increase your estimated monthly cost to
-                        <strong>${{ number_format((float) ($newMonthlyPrice ?? 0), 2) }}</strong>
-                        ({{ $newMonthlyPriceBreakdown ?? '' }}).
-                        This increase will be added to your next monthly bill regardless of the time of the month you add the vehicle.
-                        @if(($requiresContactForPricing ?? false))
-                            <div class="mt-1">Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.</div>
-                        @endif
-                    </div>
-
-                    <label class="d-flex align-items-center gap-2 mt-2" style="cursor:pointer;">
-                        <input type="checkbox" name="ack_subscription_price_increase" id="ack_subscription_price_increase" value="1" required {{ old('ack_subscription_price_increase') ? 'checked' : '' }}>
-                        <span class="small fw-bold">I acknowledge the increase in monthly cost.</span>
-                    </label>
-
-                    @error('ack_subscription_price_increase')
-                        <div class="text-error mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-        @endif
-
         <div class="btn-group">
             <button type="submit" class="btn btn-primary" id="save_asset_btn">
                 Save Asset
@@ -393,26 +358,6 @@
     }
     updateServiceDueKmLabel();
 
-    // Subscription acknowledgement gate (server-enforced too)
-    const ack = document.getElementById('ack_subscription_price_increase');
-    const saveBtn = document.getElementById('save_asset_btn');
-    if (ack && saveBtn) {
-        function updateSaveEnabled() {
-            saveBtn.disabled = !ack.checked;
-        }
-        ack.addEventListener('change', updateSaveEnabled);
-        updateSaveEnabled();
-    }
-
-    // If the server says the subscription acknowledgement is missing, scroll it into view.
-    @if ($errors->has('ack_subscription_price_increase'))
-        (function() {
-            const notice = document.getElementById('subscription_ack_notice');
-            if (notice && typeof notice.scrollIntoView === 'function') {
-                notice.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        })();
-    @endif
 </script>
 
 @endsection
