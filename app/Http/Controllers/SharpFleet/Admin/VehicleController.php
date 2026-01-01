@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Services\SharpFleet\EntitlementService;
 use App\Services\SharpFleet\VehicleService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -87,9 +88,28 @@ class VehicleController extends Controller
 
         $settingsService = new CompanySettingsService($organisationId);
 
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
+
+        $currentVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        $currentPricing = $this->calculateMonthlyPrice($currentVehiclesCount);
+        $newPricing = $this->calculateMonthlyPrice($currentVehiclesCount + 1);
+
         return view('sharpfleet.admin.vehicles.create', [
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+            'isSubscribed' => $isSubscribed,
+            'currentVehiclesCount' => $currentVehiclesCount,
+            'currentMonthlyPrice' => $currentPricing['monthlyPrice'],
+            'newVehiclesCount' => ($currentVehiclesCount + 1),
+            'newMonthlyPrice' => $newPricing['monthlyPrice'],
+            'newMonthlyPriceBreakdown' => $newPricing['breakdown'],
+            'requiresContactForPricing' => $newPricing['requiresContact'],
         ]);
     }
 
@@ -106,6 +126,9 @@ class VehicleController extends Controller
 
         $organisationId = (int) $fleetUser['organisation_id'];
 
+        $entitlements = new EntitlementService($fleetUser);
+        $isSubscribed = $entitlements->isSubscriptionActive();
+
         $settingsService = new CompanySettingsService($organisationId);
         $regoTrackingEnabled = $settingsService->vehicleRegistrationTrackingEnabled();
         $serviceTrackingEnabled = $settingsService->vehicleServicingTrackingEnabled();
@@ -117,6 +140,9 @@ class VehicleController extends Controller
          */
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
+
+            // Subscription acknowledgement (required when subscribed)
+            'ack_subscription_price_increase' => [Rule::requiredIf(fn () => $isSubscribed), 'accepted'],
 
             // Registration tracking (optional, company-controlled)
             'is_road_registered' => [Rule::requiredIf(fn () => $regoTrackingEnabled), 'boolean'],
@@ -505,5 +531,33 @@ class VehicleController extends Controller
 
         return redirect('/app/sharpfleet/admin/vehicles')
             ->with('success', 'Vehicle archived.');
+    }
+
+    private function calculateMonthlyPrice(int $vehiclesCount): array
+    {
+        $vehiclesCount = max(0, $vehiclesCount);
+
+        $tier1Vehicles = min($vehiclesCount, 10);
+        $tier2Vehicles = max(0, $vehiclesCount - 10);
+
+        $tier1Price = 3.50;
+        $tier2Price = 2.50;
+
+        $monthlyPrice = ($tier1Vehicles * $tier1Price) + ($tier2Vehicles * $tier2Price);
+        $requiresContact = $vehiclesCount > 20;
+
+        $breakdown = sprintf(
+            '%d × $%.2f + %d × $%.2f',
+            $tier1Vehicles,
+            $tier1Price,
+            $tier2Vehicles,
+            $tier2Price
+        );
+
+        return [
+            'monthlyPrice' => $monthlyPrice,
+            'breakdown' => $breakdown,
+            'requiresContact' => $requiresContact,
+        ];
     }
 }

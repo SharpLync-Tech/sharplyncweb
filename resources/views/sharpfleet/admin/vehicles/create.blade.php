@@ -7,6 +7,7 @@
 @php
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
+    $isSubscribed = (bool) ($isSubscribed ?? false);
 @endphp
 
 <div class="max-w-800 mx-auto mt-4">
@@ -281,8 +282,34 @@
 
         </div>
 
+        @if($isSubscribed)
+            <div class="alert alert-info" style="align-items:flex-start;">
+                <div>
+                    <div class="fw-bold mb-1">Subscription cost confirmation</div>
+                    <div class="small">
+                        Adding this vehicle will increase your estimated monthly cost to
+                        <strong>${{ number_format((float) ($newMonthlyPrice ?? 0), 2) }}</strong>
+                        ({{ $newMonthlyPriceBreakdown ?? '' }}).
+                        This increase will be added to your next monthly bill regardless of the time of the month you add the vehicle.
+                        @if(($requiresContactForPricing ?? false))
+                            <div class="mt-1">Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.</div>
+                        @endif
+                    </div>
+
+                    <label class="d-flex align-items-center gap-2 mt-2" style="cursor:pointer;">
+                        <input type="checkbox" name="ack_subscription_price_increase" id="ack_subscription_price_increase" value="1" {{ old('ack_subscription_price_increase') ? 'checked' : '' }}>
+                        <span class="small">I acknowledge the increase in monthly cost.</span>
+                    </label>
+
+                    @error('ack_subscription_price_increase')
+                        <div class="text-error mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        @endif
+
         <div class="btn-group">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="save_asset_btn">
                 Save Asset
             </button>
 
@@ -350,6 +377,17 @@
         trackingMode.addEventListener('change', updateServiceDueKmLabel);
     }
     updateServiceDueKmLabel();
+
+    // Subscription acknowledgement gate (server-enforced too)
+    const ack = document.getElementById('ack_subscription_price_increase');
+    const saveBtn = document.getElementById('save_asset_btn');
+    if (ack && saveBtn) {
+        function updateSaveEnabled() {
+            saveBtn.disabled = !ack.checked;
+        }
+        ack.addEventListener('change', updateSaveEnabled);
+        updateSaveEnabled();
+    }
 </script>
 
 @endsection
