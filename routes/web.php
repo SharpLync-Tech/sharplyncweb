@@ -19,6 +19,7 @@
         // Policy Pages         
         Route::get('/policies/hub', fn() => view('policies.hub'))->name('policies.hub');  
         Route::get('/policies/terms', fn() => view('policies.terms'));
+        Route::get('/policies/sharpfleet-terms', fn() => view('policies.sharpfleet-terms'));
         Route::get('/policies/privacy', fn() => view('policies.privacy')); 
         Route::get('/policies/support', fn() => view('policies.support'));
         Route::get('/policies/security', fn() => view('policies.security'));

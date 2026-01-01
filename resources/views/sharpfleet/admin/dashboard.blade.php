@@ -4,7 +4,7 @@
 
 @section('sharpfleet-content')
 <div class="hero">
-    <h1>SharpFleet,<br><span class="highlight">Admin Dashboard</span></h1>
+    <h1>SharpFleet<br><span class="highlight">Admin Dashboard</span></h1>
     <p>
 </div>
 
