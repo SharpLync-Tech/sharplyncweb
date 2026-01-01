@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StripeWebhookController extends Controller
 {
@@ -53,53 +54,64 @@ class StripeWebhookController extends Controller
 
         $stripePriceId = (string) env('STRIPE_PRICE_TEST');
 
-        DB::connection('sharpfleet')->transaction(function () use (
-            $organisationId,
-            $stripeCustomerId,
-            $stripeSubscriptionId,
-            $stripePriceId
-        ): void {
-            $organisation = DB::connection('sharpfleet')
-                ->table('organisations')
-                ->where('id', $organisationId)
-                ->first();
+        try {
+            DB::connection('sharpfleet')->transaction(function () use (
+                $organisationId,
+                $stripeCustomerId,
+                $stripeSubscriptionId,
+                $stripePriceId
+            ): void {
+                $organisation = DB::connection('sharpfleet')
+                    ->table('organisations')
+                    ->where('id', $organisationId)
+                    ->first();
 
-            if (!$organisation) {
-                return;
-            }
-
-            $settings = [];
-            if (!empty($organisation->settings)) {
-                $decoded = json_decode((string) $organisation->settings, true);
-                if (is_array($decoded)) {
-                    $settings = $decoded;
+                if (!$organisation) {
+                    Log::warning('Stripe webhook: organisation not found', [
+                        'organisation_id' => $organisationId,
+                    ]);
+                    return;
                 }
-            }
 
-            $settings['subscription_status'] = 'active';
-            $settings['subscription_started_at'] = Carbon::now()->toIso8601String();
+                $settings = [];
+                if (!empty($organisation->settings)) {
+                    $decoded = json_decode((string) $organisation->settings, true);
+                    if (is_array($decoded)) {
+                        $settings = $decoded;
+                    }
+                }
 
-            if (is_string($stripeCustomerId) && $stripeCustomerId !== '') {
-                $settings['stripe_customer_id'] = $stripeCustomerId;
-            }
+                $settings['subscription_status'] = 'active';
+                $settings['subscription_started_at'] = Carbon::now()->toIso8601String();
 
-            if (is_string($stripeSubscriptionId) && $stripeSubscriptionId !== '') {
-                $settings['stripe_subscription_id'] = $stripeSubscriptionId;
-            }
+                if (is_string($stripeCustomerId) && $stripeCustomerId !== '') {
+                    $settings['stripe_customer_id'] = $stripeCustomerId;
+                }
 
-            $settings['stripe_price_id'] = $stripePriceId;
+                if (is_string($stripeSubscriptionId) && $stripeSubscriptionId !== '') {
+                    $settings['stripe_subscription_id'] = $stripeSubscriptionId;
+                }
 
-            unset($settings['trial_cancel_requested_at']);
-            unset($settings['subscription_cancel_requested_at']);
+                $settings['stripe_price_id'] = $stripePriceId;
 
-            DB::connection('sharpfleet')
-                ->table('organisations')
-                ->where('id', $organisationId)
-                ->update([
-                    'settings' => json_encode($settings),
-                    'updated_at' => now(),
-                ]);
-        });
+                unset($settings['trial_cancel_requested_at']);
+                unset($settings['subscription_cancel_requested_at']);
+
+                DB::connection('sharpfleet')
+                    ->table('organisations')
+                    ->where('id', $organisationId)
+                    ->update([
+                        'settings' => json_encode($settings),
+                        'updated_at' => now(),
+                    ]);
+            });
+        } catch (\Throwable $e) {
+            Log::error('Stripe webhook: failed processing checkout.session.completed', [
+                'organisation_id' => $organisationId,
+                'exception' => $e->getMessage(),
+            ]);
+            return response()->json(['error' => 'Unable to process webhook.'], 500);
+        }
 
         return response()->json(['received' => true]);
     }
