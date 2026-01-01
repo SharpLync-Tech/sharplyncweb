@@ -6,9 +6,9 @@
 
 <div class="max-w-700 mx-auto mt-4">
 
-    <h1 class="mb-1">Company Profile</h1>
+    <h1 class="page-title mb-1">Company Profile</h1>
 
-    <p class="mb-3 text-muted">
+    <p class="page-description mb-3">
         Define who your organisation is.
     </p>
 

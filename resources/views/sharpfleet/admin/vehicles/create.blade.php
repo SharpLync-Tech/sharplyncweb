@@ -11,8 +11,8 @@
 
 <div class="max-w-800 mx-auto mt-4">
 
-    <h1 class="mb-1">Add Vehicle / Asset</h1>
-    <p class="mb-3 text-muted">
+    <h1 class="page-title mb-1">Add Vehicle / Asset</h1>
+    <p class="page-description mb-3">
         Assets are identified by name. If an asset is road registered, its registration number
         will automatically be shown to drivers alongside the asset name.
     </p>

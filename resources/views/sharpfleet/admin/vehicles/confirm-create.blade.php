@@ -6,8 +6,8 @@
 
 <div class="max-w-700 mx-auto mt-4">
 
-    <h1 class="mb-2">Confirm add asset</h1>
-    <p class="text-muted mb-3">
+    <h1 class="page-title mb-2">Confirm add asset</h1>
+    <p class="page-description mb-3">
         Please confirm the updated subscription numbers before the asset is created.
     </p>
 
