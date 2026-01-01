@@ -16,7 +16,7 @@ This document describes the subscription-related changes implemented for SharpFl
 \pard\sa80\li720\tx720\bullet\tab Red when the trial has ended (handled via the existing trial-expired experience; see sections below).\par
 \pard\sa80\li360\tx360\bullet\tab A revised Trial Expired screen: removed fixed plan cards and replaced with a scale-based per-vehicle pricing estimate + call-to-action to subscribe via the account page.\par
 \pard\sa120
-These changes intentionally avoid adding payment processor integration (e.g., Stripe checkout) and avoid database schema migrations; they record subscription/cancellation intent in an existing JSON settings field on the organisations table.\par
+These changes avoid database schema migrations; subscription state and related flags are stored in the existing organisations.settings JSON field. Stripe Checkout (test mode) is now integrated for subscription purchase, and the subscription is activated in SharpFleet only after a verified Stripe webhook (not via redirects/query strings).\par
 
 \pard\sa240\b\fs28 2) Existing System Behaviour (Before Changes)\b0\fs24\par
 \pard\sa120 SharpFleet already had a trial restriction system:\par
@@ -120,7 +120,7 @@ Note: Because there is no concept of \"paid-through\" date right now, cancelling
 \pard\sa120 File: app/Http/Controllers/SharpFleet/Admin/AccountController.php\par
 \pard\sa120 Methods:\par
 \pard\sa80\li360\tx360\bullet\tab show(): Loads organisation settings, counts vehicles, reads entitlements, calculates monthly estimate, renders the account view.\par
-\pard\sa80\li360\tx360\bullet\tab subscribe(): Pre-Stripe safety step: does not activate a subscription locally (no DB writes). Redirects back to the account page with an info message: "Subscription checkout will be handled via Stripe. Integration in progress."\par
+\pard\sa80\li360\tx360\bullet\tab subscribe(): Creates a Stripe Checkout Session (mode=subscription) in test mode and redirects the admin to Stripe Checkout. It passes client_reference_id = "org_{organisationId}" and sets quantity to the active vehicle count. This method does not activate a subscription locally (no DB writes).\par
 \pard\sa80\li360\tx360\bullet\tab cancelTrial(): Sets trial_cancel_requested_at then redirects to trial-expired with a warning.\par
 \pard\sa80\li360\tx360\bullet\tab cancelSubscription(): Sets subscription_status=cancelled and subscription_cancel_requested_at then redirects to trial-expired with a warning.\par
 \pard\sa120 Pricing helper:\par
@@ -147,6 +147,9 @@ This approach preserves existing behaviour for tenants that do not use these new
 \pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/subscribe (AccountController@subscribe)\par
 \pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/cancel-trial (AccountController@cancelTrial)\par
 \pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/cancel-subscription (AccountController@cancelSubscription)\par
+\pard\sa120 Stripe webhook endpoint:\par
+\pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/stripe/webhook (StripeWebhookController@handle)\par
+\pard\sa80\li360\tx360\bullet\tab Route is intentionally unauthenticated and excluded from CSRF protection to allow Stripe to POST in (signature verification is mandatory).\par
 \pard\sa120 Middleware considerations:\par
 \pard\sa80\li360\tx360\bullet\tab These account routes explicitly remove SharpFleetTrialCheck so they remain reachable when the trial is expired/cancelled.\par
 \pard\sa120 Trial-expired route enhancement:\par
@@ -175,18 +178,34 @@ This approach preserves existing behaviour for tenants that do not use these new
 This would enable grace periods (keep access until ends_at), accurate renewal/cancellation, and cleaner reporting.\par
 
 \pard\sa240\b\fs28 9) Operational Notes / Limitations\b0\fs24\par
-\pard\sa80\li360\tx360\bullet\tab Subscription checkout is not yet integrated. Clicking Subscribe does not activate locally; it shows an info message and returns to the account page.\par
+\pard\sa80\li360\tx360\bullet\tab Stripe Checkout (test mode) is integrated. Clicking Subscribe redirects to Stripe Checkout; SharpFleet does not activate access during redirect or via query strings.\par
+\pard\sa80\li360\tx360\bullet\tab Subscription activation occurs only after receiving a verified Stripe webhook: checkout.session.completed.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel trial/subscription currently switches the account to read-only immediately (reports-only).\par
 \pard\sa80\li360\tx360\bullet\tab The ?>20 vehicles? rule displays a contact note but still computes an estimate number.\par
 \pard\sa80\li360\tx360\bullet\tab Vehicle count used for pricing is active vehicles only (is_active = 1).\par
+\pard\sa80\li360\tx360\bullet\tab SharpFleet remains the source of truth for vehicle counts. Stripe is provided the quantity at checkout; quantity sync for later vehicle changes is not yet implemented.\par
 
 \pard\sa240\b\fs28 10) Quick Test Checklist (Manual)\b0\fs24\par
 \pard\sa80\li360\tx360\bullet\tab Trial active with 20+ days remaining: banner not shown.\par
 \pard\sa80\li360\tx360\bullet\tab Trial with 10 days remaining: yellow banner shown.\par
 \pard\sa80\li360\tx360\bullet\tab Trial with 3 days remaining: orange banner shown.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel Trial: trial-expired page shown, only reports accessible, account page still accessible.\par
-\pard\sa80\li360\tx360\bullet\tab Subscribe: redirected back to account with info message; no subscription activation occurs locally.\par
+\pard\sa80\li360\tx360\bullet\tab Subscribe: redirected to Stripe Checkout (test mode). Confirm successful checkout completes.\par
+\pard\sa80\li360\tx360\bullet\tab Webhook: verify checkout.session.completed is delivered and returns HTTP 200 with {"received": true}.\par
+\pard\sa80\li360\tx360\bullet\tab After webhook: organisations.settings updated with subscription_status=active, subscription_started_at, stripe_customer_id, stripe_subscription_id, stripe_price_id; trial/cancel flags cleared as applicable.\par
 \pard\sa80\li360\tx360\bullet\tab Cancel Subscription: trial-expired page shown, only reports accessible, account page still accessible.\par
+
+\pard\sa240\b\fs28 11) Stripe Subscription & Webhook Integration (Current State)\b0\fs24\par
+\pard\sa120 Stripe integration is implemented using Stripe Checkout + a signed webhook to activate subscriptions only after payment confirmation.\par
+\pard\sa80\li360\tx360\bullet\tab Checkout (test mode): AccountController@subscribe creates a Checkout Session (mode=subscription), sets quantity=active vehicles, and passes client_reference_id = "org_{organisationId}".\par
+\pard\sa80\li360\tx360\bullet\tab Webhook: /app/sharpfleet/stripe/webhook verifies the Stripe-Signature header using STRIPE_WEBHOOK_SECRET_TEST and handles only checkout.session.completed.\par
+\pard\sa80\li360\tx360\bullet\tab On webhook success: subscription_status=active is set in organisations.settings; Stripe IDs are stored; trial/cancellation flags are cleared.\par
+\pard\sa80\li360\tx360\bullet\tab CSRF: the webhook endpoint is excluded from CSRF verification (required for Stripe POSTs).\par
+
+\pard\sa240\b\fs28 12) Policy Added: SharpFleet Terms & Conditions\b0\fs24\par
+\pard\sa120 A new SharpFleet-specific Terms & Conditions policy page was added (not linked from the policy hub):\par
+\pard\sa80\li360\tx360\bullet\tab View: resources/views/policies/sharpfleet-terms.blade.php\par
+\pard\sa80\li360\tx360\bullet\tab Route: GET /policies/sharpfleet-terms\par
 
 \pard\sa200 End of document.\par
 }
