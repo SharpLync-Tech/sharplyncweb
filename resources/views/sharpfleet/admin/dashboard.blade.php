@@ -37,6 +37,12 @@
         <div class="stats-number">{{ $vehiclesCount }}</div>
         <div class="stats-label">Vehicles</div>
     </div>
+    @if(($hasVehicleAssignmentSupport ?? false))
+        <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
+            <div class="stats-number">{{ (int) ($permanentAssignedVehiclesCount ?? 0) }}</div>
+            <div class="stats-label">Permanent Assigned Vehicles</div>
+        </a>
+    @endif
     @if(($hasOutOfServiceSupport ?? false))
         <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
             <div class="stats-number">{{ (int) ($outOfServiceVehiclesCount ?? 0) }}</div>

@@ -54,7 +54,6 @@
                                 <div class="sharpfleet-nav-dropdown">
                                     <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Operations</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
-                                        <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-dropdown-item">Faults</a>
                                         <a href="/app/sharpfleet/admin/reminders" class="sharpfleet-nav-dropdown-item">Reminders</a>
                                         <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
                                     </div>
@@ -66,6 +65,7 @@
                                     <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Reports</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
+                                        <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-dropdown-item">Faults</a>
                                     </div>
                                 </div>
 
@@ -77,8 +77,6 @@
                                         <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
                                         <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
                                         <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
-                                        <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
-                                        <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-dropdown-item">Vehicles</a>
                                         <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">Customers</a>
                                     </div>
                                 </div>

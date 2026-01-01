@@ -149,6 +149,19 @@ Route::prefix('app/sharpfleet')
                     ->where('organisation_id', $organisationId)
                     ->count();
 
+                $hasVehicleAssignmentSupport = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+                    && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
+                $permanentAssignedVehiclesCount = 0;
+                if ($hasVehicleAssignmentSupport) {
+                    $permanentAssignedVehiclesCount = (int) DB::connection('sharpfleet')
+                        ->table('vehicles')
+                        ->where('organisation_id', $organisationId)
+                        ->where('is_active', 1)
+                        ->where('assignment_type', 'permanent')
+                        ->whereNotNull('assigned_driver_id')
+                        ->count();
+                }
+
                 $hasOutOfServiceSupport = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
                 $outOfServiceVehiclesCount = 0;
                 if ($hasOutOfServiceSupport) {
@@ -212,6 +225,8 @@ Route::prefix('app/sharpfleet')
                 return view('sharpfleet.admin.dashboard', [
                     'driversCount' => $driversCount,
                     'vehiclesCount' => $vehiclesCount,
+                    'hasVehicleAssignmentSupport' => $hasVehicleAssignmentSupport,
+                    'permanentAssignedVehiclesCount' => $permanentAssignedVehiclesCount,
                     'activeTripsCount' => $activeTripsCount,
                     'vehicleReminders' => $vehicleReminders,
                     'hasOutOfServiceSupport' => $hasOutOfServiceSupport,
