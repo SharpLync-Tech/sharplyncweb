@@ -134,7 +134,7 @@
             @endif
 
             <div class="text-muted small mt-3">
-                Pricing when subscribed: $3.50 per vehicle/month for vehicles 1–10, then $2.50 per vehicle/month for vehicles 11–20. Over 20 vehicles: contact us for pricing.
+                Pricing when subscribed: $3.50 per vehicle per month for vehicles 1–10, then $2.50 per vehicle per month for vehicles 11–20. Over 20 vehicles: contact us for pricing.
             </div>
         @endif
     </div>
