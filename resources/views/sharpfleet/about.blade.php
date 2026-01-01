@@ -3,13 +3,11 @@
 @section('title', 'How SharpFleet Started')
 
 @section('sharpfleet-content')
-<div class="hero">
-    <h1>How SharpFleet<br><span class="highlight">Started</span></h1>
-</div>
-
 <div class="card">
     <div class="card-body">
-        <h3 class="section-title">How SharpFleet Started</h3>
+        <div class="hero" style="background: transparent; border: 0; box-shadow: none; padding: 0; margin: 0 0 16px 0; max-width: none; text-align: left; backdrop-filter: none; -webkit-backdrop-filter: none;">
+            <h1>How SharpFleet<br><span class="highlight">Started</span></h1>
+        </div>
 
         <p>I started my own business and needed to log business trips.</p>
 
