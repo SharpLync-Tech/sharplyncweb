@@ -93,6 +93,7 @@ class AccountController extends Controller
 
             $session = \Stripe\Checkout\Session::create([
                 'mode' => 'subscription',
+                'client_reference_id' => 'org_' . $organisationId,
                 'success_url' => $successUrl,
                 'cancel_url' => $cancelUrl,
                 'line_items' => [

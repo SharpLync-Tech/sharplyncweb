@@ -13,6 +13,7 @@ use App\Http\Controllers\SharpFleet\SsoController;
 use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
 use App\Http\Controllers\SharpFleet\BookingController;
+use App\Http\Controllers\SharpFleet\StripeWebhookController;
 
 use App\Http\Controllers\SharpFleet\Admin\VehicleController;
 use App\Http\Controllers\SharpFleet\Admin\CustomerController;
@@ -52,6 +53,8 @@ Route::get('/sharpfleet/about', function () {
 Route::prefix('app/sharpfleet')
     ->middleware([\App\Http\Middleware\SharpFleetNoStore::class])
     ->group(function () {
+
+    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
     // Admin portal SSO handoff (from /admin)
     Route::get('/sso', [SsoController::class, 'login']);
