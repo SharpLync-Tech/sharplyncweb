@@ -61,7 +61,8 @@ class CustomerController extends Controller
 
         $organisationId = (int) $user['organisation_id'];
 
-        if (!$this->customerService->customersTableExists()) {
+        $customersTableExists = $this->customerService->customersTableExists();
+        if (!$customersTableExists) {
             abort(404);
         }
 
@@ -72,7 +73,8 @@ class CustomerController extends Controller
         }
 
         return view('sharpfleet.admin.customers.edit', [
-            'customer' => $customer,
+            'customer'            => $customer,
+            'customersTableExists' => $customersTableExists,
         ]);
     }
 

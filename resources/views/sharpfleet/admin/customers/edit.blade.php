@@ -4,6 +4,8 @@
 
 @section('sharpfleet-content')
 
+@php($customersTableExists = $customersTableExists ?? true)
+
 <div class="container">
     <div class="page-header">
         <div class="flex-between">
