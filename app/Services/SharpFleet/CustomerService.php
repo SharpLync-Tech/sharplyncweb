@@ -32,6 +32,61 @@ class CustomerService
     }
 
     /**
+     * Get a single customer for an organisation.
+     */
+    public function getCustomer(int $organisationId, int $customerId)
+    {
+        if (!$this->customersTableExists()) {
+            return null;
+        }
+
+        return DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $customerId)
+            ->select('id', 'name', 'is_active')
+            ->first();
+    }
+
+    /**
+     * Update customer name (scoped to organisation).
+     */
+    public function updateCustomerName(int $organisationId, int $customerId, string $name): void
+    {
+        if (!$this->customersTableExists()) {
+            return;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $customerId)
+            ->update([
+                'name' => trim($name),
+                'updated_at' => now(),
+            ]);
+    }
+
+    /**
+     * Archive customer (soft archive via is_active=0).
+     */
+    public function archiveCustomer(int $organisationId, int $customerId): void
+    {
+        if (!$this->customersTableExists()) {
+            return;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $customerId)
+            ->update([
+                'is_active' => 0,
+                'updated_at' => now(),
+            ]);
+    }
+
+    /**
      * Create a single customer.
      */
     public function createCustomer(int $organisationId, string $name): int

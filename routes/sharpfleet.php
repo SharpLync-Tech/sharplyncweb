@@ -268,7 +268,11 @@ Route::prefix('app/sharpfleet')
 
             // Customers
             Route::get('/customers', [CustomerController::class, 'index']);
+            Route::get('/customers/create', [CustomerController::class, 'create']);
             Route::post('/customers', [CustomerController::class, 'store']);
+            Route::get('/customers/{customerId}/edit', [CustomerController::class, 'edit'])->whereNumber('customerId');
+            Route::post('/customers/{customerId}', [CustomerController::class, 'update'])->whereNumber('customerId');
+            Route::post('/customers/{customerId}/archive', [CustomerController::class, 'archive'])->whereNumber('customerId');
 
             // Bookings
             Route::get('/bookings', [AdminBookingController::class, 'index']);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -35,6 +36,104 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $customersTableExists = $this->customerService->customersTableExists();
+
+        return view('sharpfleet.admin.customers.create', [
+            'customersTableExists' => $customersTableExists,
+        ]);
+    }
+
+    public function edit(int $customerId)
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        if (!$this->customerService->customersTableExists()) {
+            abort(404);
+        }
+
+        $customer = $this->customerService->getCustomer($organisationId, $customerId);
+
+        if (!$customer || (int) ($customer->is_active ?? 0) !== 1) {
+            abort(404);
+        }
+
+        return view('sharpfleet.admin.customers.edit', [
+            'customer' => $customer,
+        ]);
+    }
+
+    public function update(Request $request, int $customerId): RedirectResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        if (!$this->customerService->customersTableExists()) {
+            return back()->withErrors([
+                'customers' => "Customers can't be managed yet because the database is missing the sharpfleet.customers table.",
+            ]);
+        }
+
+        $customer = $this->customerService->getCustomer($organisationId, $customerId);
+        if (!$customer || (int) ($customer->is_active ?? 0) !== 1) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+        ]);
+
+        $this->customerService->updateCustomerName($organisationId, $customerId, $validated['name']);
+
+        return redirect('/app/sharpfleet/admin/customers')
+            ->with('success', 'Customer updated.');
+    }
+
+    public function archive(Request $request, int $customerId): RedirectResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        if (!$this->customerService->customersTableExists()) {
+            return back()->withErrors([
+                'customers' => "Customers can't be managed yet because the database is missing the sharpfleet.customers table.",
+            ]);
+        }
+
+        $customer = $this->customerService->getCustomer($organisationId, $customerId);
+        if (!$customer || (int) ($customer->is_active ?? 0) !== 1) {
+            abort(404);
+        }
+
+        $this->customerService->archiveCustomer($organisationId, $customerId);
+
+        return redirect('/app/sharpfleet/admin/customers')
+            ->with('success', 'Customer archived.');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $user = session('sharpfleet.user');
@@ -62,7 +161,8 @@ class CustomerController extends Controller
                 $request->file('customers_csv')
             );
 
-            return back()->with('success', "Imported {$result['imported']} customers. Skipped {$result['skipped']}.");
+            return redirect('/app/sharpfleet/admin/customers/create')
+                ->with('success', "Imported {$result['imported']} customers. Skipped {$result['skipped']}.");
         }
 
         // Single add
@@ -72,6 +172,7 @@ class CustomerController extends Controller
 
         $this->customerService->createCustomer($organisationId, $validated['name']);
 
-        return back()->with('success', 'Customer saved.');
+        return redirect('/app/sharpfleet/admin/customers/create')
+            ->with('success', 'Customer saved.');
     }
 }

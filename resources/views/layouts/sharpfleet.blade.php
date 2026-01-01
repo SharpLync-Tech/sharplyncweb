@@ -59,7 +59,13 @@
                                     </div>
                                 </div>
 
-                                <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-link">Customers</a>
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Customers</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">View Customers</a>
+                                        <a href="/app/sharpfleet/admin/customers/create" class="sharpfleet-nav-dropdown-item">Add Customers</a>
+                                    </div>
+                                </div>
 
                                 <div class="sharpfleet-nav-dropdown">
                                     <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Reports</button>
@@ -76,8 +82,6 @@
                                         <a href="/app/sharpfleet/admin/company/profile" class="sharpfleet-nav-dropdown-item">Edit Company Details</a>
                                         <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
                                         <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
-                                        <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
-                                        <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">Customers</a>
                                     </div>
                                 </div>
 
