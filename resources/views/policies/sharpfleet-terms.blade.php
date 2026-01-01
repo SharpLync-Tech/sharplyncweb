@@ -159,10 +159,6 @@
         <li>All payments are processed securely via Stripe</li>
         <li>SharpLync does not store or process credit card or payment details</li>
         <li>Payment information is handled directly by Stripe in accordance with their security standards</li>
-    </ul>
-
-    <h3>Subscription Terms</h3>
-    <ul>
         <li>Subscription fees are charged in advance for each billing period</li>
         <li>You may cancel your subscription at any time</li>
         <li>If you cancel during an active billing period:
