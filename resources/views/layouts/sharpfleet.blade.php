@@ -109,6 +109,7 @@
                             <a href="/app/sharpfleet/logout" class="sharpfleet-nav-link">Logout</a>
                         </div>
                     @else
+                        <a href="/sharpfleet/about" class="sharpfleet-nav-link">About</a>
                         <a href="/app/sharpfleet/login" class="sharpfleet-nav-link">Login</a>
                     @endif
                 </div>

@@ -43,6 +43,11 @@ Route::get('/sharpfleet', function () {
     return view('sharpfleet.home');
 });
 
+// Public About page (marketing)
+Route::get('/sharpfleet/about', function () {
+    return view('sharpfleet.about');
+});
+
 Route::prefix('app/sharpfleet')
     ->middleware([\App\Http\Middleware\SharpFleetNoStore::class])
     ->group(function () {
