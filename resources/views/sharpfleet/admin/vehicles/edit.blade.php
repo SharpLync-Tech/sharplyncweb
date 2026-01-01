@@ -104,8 +104,8 @@
                             </div>
 
                             <div>
-                                <label class="form-label">Vehicle classification (optional)</label>
-                                <input type="text" name="vehicle_class" value="{{ old('vehicle_class', $vehicle->vehicle_class) }}" class="form-control">
+                                <label class="form-label">Vehicle classification</label>
+                                <input type="text" name="vehicle_class" value="{{ old('vehicle_class', $vehicle->vehicle_class) }}" class="form-control" placeholder="Optional">
                                 @error('vehicle_class') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -118,8 +118,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Notes (optional)</label>
-                            <textarea name="notes" rows="3" class="form-control">{{ old('notes', $vehicle->notes) }}</textarea>
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" rows="3" class="form-control" placeholder="Optional">{{ old('notes', $vehicle->notes) }}</textarea>
                             @error('notes') <div class="text-error mt-1">{{ $message }}</div> @enderror
                         </div>
                     </div>
