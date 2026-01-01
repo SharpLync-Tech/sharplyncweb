@@ -5,21 +5,25 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\EntitlementService;
+use App\Services\SharpFleet\StripeSubscriptionSyncService;
 use App\Services\SharpFleet\VehicleService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class VehicleController extends Controller
 {
     protected VehicleService $vehicleService;
+    protected StripeSubscriptionSyncService $stripeSubscriptionSync;
 
     private const PENDING_CREATE_SESSION_KEY = 'sharpfleet.pending_vehicle_create';
 
-    public function __construct(VehicleService $vehicleService)
+    public function __construct(VehicleService $vehicleService, StripeSubscriptionSyncService $stripeSubscriptionSync)
     {
         $this->vehicleService = $vehicleService;
+        $this->stripeSubscriptionSync = $stripeSubscriptionSync;
     }
 
     /**
@@ -196,6 +200,23 @@ class VehicleController extends Controller
         }
 
         $this->vehicleService->createVehicle($organisationId, $payload);
+
+        // Sync subscription quantity to include this new vehicle on the next invoice.
+        try {
+            $activeVehiclesCount = (int) DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->where('organisation_id', $organisationId)
+                ->where('is_active', 1)
+                ->count();
+
+            $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $activeVehiclesCount);
+        } catch (\Throwable $e) {
+            Log::error('SharpFleet: failed syncing Stripe quantity after vehicle create', [
+                'organisation_id' => $organisationId,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+
         $request->session()->forget(self::PENDING_CREATE_SESSION_KEY);
 
         return redirect('/app/sharpfleet/admin/vehicles')
