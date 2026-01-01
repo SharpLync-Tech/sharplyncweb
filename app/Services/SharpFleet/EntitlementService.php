@@ -26,6 +26,14 @@ class EntitlementService
 
     public function isTrialExpired(): bool
     {
+        if ($this->isSubscriptionActive()) {
+            return false;
+        }
+
+        if ($this->hasTrialCancelRequest()) {
+            return true;
+        }
+
         $trialEndsAt = $this->getUserTrialEndDate();
 
         if (!$trialEndsAt) {
@@ -33,6 +41,91 @@ class EntitlementService
         }
 
         return Carbon::now()->isAfter($trialEndsAt);
+    }
+
+    public function getTrialEndsAt(): ?Carbon
+    {
+        return $this->getUserTrialEndDate();
+    }
+
+    /**
+     * Returns whole days remaining (0 or negative when ended), or null when unknown.
+     */
+    public function trialDaysRemaining(): ?int
+    {
+        $trialEndsAt = $this->getTrialEndsAt();
+
+        if (!$trialEndsAt) {
+            return null;
+        }
+
+        return Carbon::now()->diffInDays($trialEndsAt, false);
+    }
+
+    public function isSubscriptionActive(): bool
+    {
+        try {
+            $organisationId = (int) ($this->user['organisation_id'] ?? 0);
+
+            if ($organisationId <= 0) {
+                return false;
+            }
+
+            $org = DB::connection('sharpfleet')
+                ->table('organisations')
+                ->select('settings')
+                ->where('id', $organisationId)
+                ->first();
+
+            if (!$org) {
+                return false;
+            }
+
+            $settings = [];
+            if (!empty($org->settings)) {
+                $decoded = json_decode((string) $org->settings, true);
+                if (is_array($decoded)) {
+                    $settings = $decoded;
+                }
+            }
+
+            return (($settings['subscription_status'] ?? null) === 'active');
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function hasTrialCancelRequest(): bool
+    {
+        try {
+            $organisationId = (int) ($this->user['organisation_id'] ?? 0);
+
+            if ($organisationId <= 0) {
+                return false;
+            }
+
+            $org = DB::connection('sharpfleet')
+                ->table('organisations')
+                ->select('settings')
+                ->where('id', $organisationId)
+                ->first();
+
+            if (!$org) {
+                return false;
+            }
+
+            $settings = [];
+            if (!empty($org->settings)) {
+                $decoded = json_decode((string) $org->settings, true);
+                if (is_array($decoded)) {
+                    $settings = $decoded;
+                }
+            }
+
+            return !empty($settings['trial_cancel_requested_at'] ?? null);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function isTrialActive(): bool

@@ -27,6 +27,7 @@ use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
 use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
 use App\Http\Controllers\SharpFleet\Admin\ReminderController;
+use App\Http\Controllers\SharpFleet\Admin\AccountController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\VehicleReminderService;
@@ -129,6 +130,10 @@ Route::prefix('app/sharpfleet')
 
                 $organisationId = (int) $user['organisation_id'];
 
+                $entitlements = new \App\Services\SharpFleet\EntitlementService($user);
+                $trialDaysRemaining = $entitlements->trialDaysRemaining();
+                $isSubscribed = $entitlements->isSubscriptionActive();
+
                 $driversCount = DB::connection('sharpfleet')
                     ->table('users')
                     ->where('organisation_id', $organisationId)
@@ -230,6 +235,8 @@ Route::prefix('app/sharpfleet')
                 return view('sharpfleet.admin.dashboard', [
                     'driversCount' => $driversCount,
                     'vehiclesCount' => $vehiclesCount,
+                    'trialDaysRemaining' => $trialDaysRemaining,
+                    'isSubscribed' => $isSubscribed,
                     'hasVehicleAssignmentSupport' => $hasVehicleAssignmentSupport,
                     'permanentAssignedVehiclesCount' => $permanentAssignedVehiclesCount,
                     'activeTripsCount' => $activeTripsCount,
@@ -283,6 +290,14 @@ Route::prefix('app/sharpfleet')
 
             // About
             Route::get('/about', fn () => view('sharpfleet.about'));
+
+            // Account & Subscription (must remain accessible even when trial ends)
+            Route::get('/account', [AccountController::class, 'show'])
+                ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
+            Route::post('/account/subscribe', [AccountController::class, 'subscribe'])
+                ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
+            Route::post('/account/cancel-trial', [AccountController::class, 'cancelTrial'])
+                ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
 
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);

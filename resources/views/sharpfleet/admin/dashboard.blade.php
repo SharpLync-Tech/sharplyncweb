@@ -8,6 +8,28 @@
     <p>
 </div>
 
+@php
+    $trialDaysRemaining = $trialDaysRemaining ?? null;
+    $isSubscribed = (bool) ($isSubscribed ?? false);
+    $showTrialBanner = (!$isSubscribed && is_int($trialDaysRemaining) && $trialDaysRemaining > 0 && $trialDaysRemaining <= 14);
+    $trialBannerClass = null;
+    if ($showTrialBanner) {
+        $trialBannerClass = ($trialDaysRemaining >= 7) ? 'alert-yellow' : 'alert-orange';
+    }
+@endphp
+
+@if($showTrialBanner)
+    <div class="alert {{ $trialBannerClass }}">
+        <div class="d-flex justify-between align-items-center w-100 flex-wrap gap-2">
+            <div>
+                <div class="fw-bold">Trial ending soon</div>
+                <div class="small">{{ (int) $trialDaysRemaining }} day(s) remaining on your trial.</div>
+            </div>
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/account">View Account</a>
+        </div>
+    </div>
+@endif
+
 @if (session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -53,6 +75,21 @@
         <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
         <div class="stats-label">Current Active Trips</div>
     </div>
+
+    <a href="/app/sharpfleet/admin/account" class="stats-card" style="text-decoration:none;">
+        <div class="stats-number">
+            @if($isSubscribed)
+                Active
+            @else
+                @if(is_int($trialDaysRemaining) && $trialDaysRemaining > 0)
+                    {{ (int) $trialDaysRemaining }}d
+                @else
+                    Trial
+                @endif
+            @endif
+        </div>
+        <div class="stats-label">Account</div>
+    </a>
 </div>
 
 @if($hasReminders)
@@ -62,7 +99,7 @@
             <a href="/app/sharpfleet/admin/vehicles" class="btn btn-primary btn-sm">Review vehicles</a>
         </div>
 
-        <div class="alert {{ $hasOverdue ? 'alert-danger' : 'alert-warning' }} mb-0" style="align-items:flex-start;">
+        <div class="alert {{ $hasOverdue ? 'alert-error' : 'alert-warning' }} mb-0" style="align-items:flex-start;">
             <div>
                 <div class="fw-bold mb-1">{{ $hasOverdue ? 'Overdue items need attention' : 'Upcoming items due soon' }}</div>
                 <ul class="mb-0" style="margin:0; padding-left: 18px;">

@@ -677,6 +677,18 @@ details.card[open] .incident-toggle-hint-closed {
     border: 1px solid rgba(255, 107, 107, 0.25);
 }
 
+.alert-yellow {
+    background: #fef9c3;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.alert-orange {
+    background: #ffedd5;
+    color: #9a3412;
+    border: 1px solid #fdba74;
+}
+
 /* Utilities */
 .text-center { text-align: center; }
 .text-left { text-align: left; }

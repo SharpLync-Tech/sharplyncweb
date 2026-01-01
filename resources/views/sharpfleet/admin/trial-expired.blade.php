@@ -12,10 +12,20 @@
 
         <div class="auth-content">
             @if (session('warning'))
-                <div class="alert alert-warning">
+                <div class="alert alert-error">
                     {{ session('warning') }}
                 </div>
             @endif
+
+            <div class="alert alert-error" style="align-items:flex-start;">
+                <div class="d-flex justify-between align-items-center w-100 flex-wrap gap-2">
+                    <div>
+                        <div class="fw-bold mb-1">Trial ended</div>
+                        <div class="small">Subscribe to regain full access. You can still view trip reports.</div>
+                    </div>
+                    <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/account">Go to Account</a>
+                </div>
+            </div>
 
             <div class="trial-summary">
                 <h3>What you can still do:</h3>
