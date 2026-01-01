@@ -51,14 +51,14 @@
 @endphp
 
 <div class="grid grid-4 mb-4">
-    <div class="stats-card">
+    <a href="/app/sharpfleet/admin/users" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $driversCount }}</div>
         <div class="stats-label">Drivers</div>
-    </div>
-    <div class="stats-card">
+    </a>
+    <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $vehiclesCount }}</div>
         <div class="stats-label">Vehicles</div>
-    </div>
+    </a>
     @if(($hasVehicleAssignmentSupport ?? false))
         <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
             <div class="stats-number">{{ (int) ($permanentAssignedVehiclesCount ?? 0) }}</div>
@@ -71,10 +71,10 @@
             <div class="stats-label">Vehicles Out of Service</div>
         </a>
     @endif
-    <div class="stats-card">
+    <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
         <div class="stats-label">Current Active Trips</div>
-    </div>
+    </a>
 
     <a href="/app/sharpfleet/admin/account" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">
