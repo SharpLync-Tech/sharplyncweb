@@ -315,7 +315,30 @@ Route::prefix('app/sharpfleet')
 
             // Trial expired page (no middleware needed)
             Route::get('/trial-expired', function () {
-                return view('sharpfleet.admin.trial-expired');
+                $user = session('sharpfleet.user');
+
+                $organisationId = (int) ($user['organisation_id'] ?? 0);
+                $vehiclesCount = 0;
+                if ($organisationId > 0) {
+                    $vehiclesCount = (int) DB::connection('sharpfleet')
+                        ->table('vehicles')
+                        ->where('organisation_id', $organisationId)
+                        ->where('is_active', 1)
+                        ->count();
+                }
+
+                $tier1Vehicles = min($vehiclesCount, 10);
+                $tier2Vehicles = max(0, $vehiclesCount - 10);
+                $monthlyPrice = ($tier1Vehicles * 3.50) + ($tier2Vehicles * 2.50);
+                $requiresContactForPricing = ($vehiclesCount > 20);
+                $monthlyPriceBreakdown = sprintf('%d × $%.2f + %d × $%.2f', $tier1Vehicles, 3.50, $tier2Vehicles, 2.50);
+
+                return view('sharpfleet.admin.trial-expired', [
+                    'vehiclesCount' => $vehiclesCount,
+                    'monthlyPrice' => $monthlyPrice,
+                    'monthlyPriceBreakdown' => $monthlyPriceBreakdown,
+                    'requiresContactForPricing' => $requiresContactForPricing,
+                ]);
             })->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
         });
 

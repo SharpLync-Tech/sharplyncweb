@@ -46,74 +46,33 @@
             </div>
 
             <div class="upgrade-options mt-4">
-                <h3>Ready to continue?</h3>
-                <p>Choose a plan below to keep using all SharpFleet features:</p>
+                <h3>Subscription estimate</h3>
 
-                <div class="billing-plans mt-3">
-                    <div class="plan-option">
-                        <div class="plan-card">
-                            <div class="plan-header">
-                                <h4>Starter</h4>
-                                <div class="plan-price">
-                                    <span class="price">$29</span>
-                                    <span class="period">/month</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li>Up to 3 vehicles</li>
-                                    <li>Basic trip logging</li>
-                                    <li>Email support</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary btn-full mt-2" type="button">
-                                Upgrade to Starter
-                            </button>
+                <div class="stats-card text-left" style="margin-top: 12px;">
+                    <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
+                        <div>
+                            <div class="fw-bold">Based on your vehicles</div>
+                            <div class="text-muted small">Per-vehicle pricing scale (monthly)</div>
+                        </div>
+                        <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/account">Subscribe</a>
+                    </div>
+
+                    <div class="grid grid-2" style="gap: 16px;">
+                        <div class="stats-card" style="margin:0;">
+                            <div class="stats-number">{{ (int) ($vehiclesCount ?? 0) }}</div>
+                            <div class="stats-label">Active vehicles</div>
+                        </div>
+                        <div class="stats-card" style="margin:0;">
+                            <div class="stats-number">${{ number_format((float) ($monthlyPrice ?? 0), 2) }}</div>
+                            <div class="stats-label">Estimated monthly cost</div>
                         </div>
                     </div>
 
-                    <div class="plan-option">
-                        <div class="plan-card">
-                            <div class="plan-header">
-                                <h4>Professional</h4>
-                                <div class="plan-price">
-                                    <span class="price">$59</span>
-                                    <span class="period">/month</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li>Up to 10 vehicles</li>
-                                    <li>Advanced features</li>
-                                    <li>Priority support</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary btn-full mt-2" type="button">
-                                Upgrade to Professional
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="plan-option">
-                        <div class="plan-card">
-                            <div class="plan-header">
-                                <h4>Enterprise</h4>
-                                <div class="plan-price">
-                                    <span class="price">$99</span>
-                                    <span class="period">/month</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li>Unlimited vehicles</li>
-                                    <li>All features</li>
-                                    <li>Dedicated support</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary btn-full mt-2" type="button">
-                                Upgrade to Enterprise
-                            </button>
-                        </div>
+                    <div class="text-muted small mt-2">
+                        $3.50 per vehicle/month for vehicles 1–10, then $2.50 per vehicle/month for vehicles 11–20 ({{ $monthlyPriceBreakdown ?? '' }}).
+                        @if(($requiresContactForPricing ?? false))
+                            <div class="mt-1">Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.</div>
+                        @endif
                     </div>
                 </div>
             </div>
