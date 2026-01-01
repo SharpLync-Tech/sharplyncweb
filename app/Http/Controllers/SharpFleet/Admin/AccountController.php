@@ -57,45 +57,8 @@ class AccountController extends Controller
 
     public function subscribe(Request $request): RedirectResponse
     {
-        $user = $request->session()->get('sharpfleet.user');
-
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
-        }
-
-        $organisationId = (int) ($user['organisation_id'] ?? 0);
-
-        $org = DB::connection('sharpfleet')
-            ->table('organisations')
-            ->where('id', $organisationId)
-            ->first();
-
-        if (!$org) {
-            abort(404, 'Organisation not found');
-        }
-
-        $settings = [];
-        if (!empty($org->settings)) {
-            $decoded = json_decode((string) $org->settings, true);
-            if (is_array($decoded)) {
-                $settings = $decoded;
-            }
-        }
-
-        $settings['subscription_status'] = 'active';
-        $settings['subscription_started_at'] = Carbon::now()->toIso8601String();
-        unset($settings['trial_cancel_requested_at']);
-
-        DB::connection('sharpfleet')
-            ->table('organisations')
-            ->where('id', $organisationId)
-            ->update([
-                'settings' => json_encode($settings),
-                'updated_at' => now(),
-            ]);
-
         return redirect('/app/sharpfleet/admin/account')
-            ->with('success', 'Subscription activated.');
+            ->with('info', 'Subscription checkout will be handled via Stripe. Integration in progress.');
     }
 
     public function cancelTrial(Request $request): RedirectResponse
