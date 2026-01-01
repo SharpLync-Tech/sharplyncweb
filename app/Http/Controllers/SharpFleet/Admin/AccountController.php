@@ -88,10 +88,10 @@ class AccountController extends Controller
         $successUrl = $baseUrl . '/app/sharpfleet/admin/account?checkout=success';
         $cancelUrl = $baseUrl . '/app/sharpfleet/admin/account?checkout=cancelled';
 
-        $client = \Symfony\Component\HttpClient\HttpClient::create();
-        $response = $client->request('POST', 'https://api.stripe.com/v1/checkout/sessions', [
-            'auth_bearer' => $stripeSecret,
-            'body' => [
+        try {
+            \Stripe\Stripe::setApiKey($stripeSecret);
+
+            $session = \Stripe\Checkout\Session::create([
                 'mode' => 'subscription',
                 'success_url' => $successUrl,
                 'cancel_url' => $cancelUrl,
@@ -101,24 +101,22 @@ class AccountController extends Controller
                         'quantity' => $activeVehiclesCount,
                     ],
                 ],
-            ],
-        ]);
+            ]);
 
-        $status = $response->getStatusCode();
-        if ($status < 200 || $status >= 300) {
+            $checkoutUrl = $session?->url;
+            if (!is_string($checkoutUrl) || $checkoutUrl === '') {
+                return redirect('/app/sharpfleet/admin/account')
+                    ->with('error', 'Unable to start Stripe Checkout.');
+            }
+
+            return redirect()->away($checkoutUrl);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Unable to start Stripe Checkout.');
+        } catch (\Throwable $e) {
             return redirect('/app/sharpfleet/admin/account')
                 ->with('error', 'Unable to start Stripe Checkout.');
         }
-
-        $data = $response->toArray(false);
-        $checkoutUrl = is_array($data) ? ($data['url'] ?? null) : null;
-
-        if (!is_string($checkoutUrl) || $checkoutUrl === '') {
-            return redirect('/app/sharpfleet/admin/account')
-                ->with('error', 'Unable to start Stripe Checkout.');
-        }
-
-        return redirect()->away($checkoutUrl);
     }
 
     public function cancelTrial(Request $request): RedirectResponse
