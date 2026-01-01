@@ -276,6 +276,9 @@ Route::prefix('app/sharpfleet')
             // Help
             Route::get('/help', [HelpController::class, 'admin']);
 
+            // About
+            Route::get('/about', fn () => view('sharpfleet.about'));
+
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
@@ -306,6 +309,9 @@ Route::prefix('app/sharpfleet')
 
             // Help
             Route::get('/driver/help', [HelpController::class, 'driver']);
+
+            // About
+            Route::get('/driver/about', fn () => view('sharpfleet.about'));
 
             // Trips
             Route::post('/trips/start', [TripController::class, 'start']);

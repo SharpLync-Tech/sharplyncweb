@@ -81,13 +81,25 @@
                                     </div>
                                 </div>
 
-                                <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-link">Help</a>
+                                <div class="sharpfleet-nav-dropdown">
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Help</button>
+                                    <div class="sharpfleet-nav-dropdown-menu">
+                                        <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-dropdown-item">Instructions</a>
+                                        <a href="/app/sharpfleet/admin/about" class="sharpfleet-nav-dropdown-item">About</a>
+                                    </div>
+                                </div>
                                 <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver</a>
                             </div>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
                             <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link">Bookings</a>
-                            <a href="/app/sharpfleet/driver/help" class="sharpfleet-nav-link">Help</a>
+                            <div class="sharpfleet-nav-dropdown">
+                                <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Help</button>
+                                <div class="sharpfleet-nav-dropdown-menu">
+                                    <a href="/app/sharpfleet/driver/help" class="sharpfleet-nav-dropdown-item">Instructions</a>
+                                    <a href="/app/sharpfleet/driver/about" class="sharpfleet-nav-dropdown-item">About</a>
+                                </div>
+                            </div>
                         @endif
                         <div class="sharpfleet-user-info">
                             <div class="sharpfleet-user-avatar">
