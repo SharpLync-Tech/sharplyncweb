@@ -4,6 +4,7 @@
         use App\Http\Controllers\PageController;
         use App\Http\Controllers\Auth\VerifyController;
         use App\Http\Controllers\Admin\LogViewerController;
+        use App\Http\Controllers\SharpFleet\StripeWebhookController;
         
 
         Route::get('/', fn() => view('/home')); // Home Page
@@ -110,6 +111,8 @@
         Route::get('/email-preview', function () {
             return view('emails.preview');
         });
+
+        Route::post('/app/sharpfleet/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
         require __DIR__.'/facilities.php';
         require __DIR__.'/admin.php';
