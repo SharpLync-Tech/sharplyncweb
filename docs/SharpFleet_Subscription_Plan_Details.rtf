@@ -1,0 +1,192 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}{\f1 Calibri Light;}}
+\fs24
+\pard\sa200\b\f1\fs36 SharpFleet \u8212? Subscription Plan & Trial Access Implementation (Detailed)\b0\f0\fs24\par
+\pard\sa120 Date: 1 January 2026\par
+\pard\sa200
+This document describes the subscription-related changes implemented for SharpFleet, including the account page, trial banner logic, trial-expired screen changes, pricing calculation rules, cancellation behavior, and how the existing trial middleware/entitlements were extended without breaking current functionality.\par
+
+\pard\sa240\b\fs28 1) Scope Summary\b0\fs24\par
+\pard\sa120 The implemented subscription work provides:\par
+\pard\sa80\li360\tx360\bullet\tab A tenant-side Company Admin \bAccount & Subscription\b0 page (view + actions).\par
+\pard\sa80\li360\tx360\bullet\tab A dashboard summary card linking to the account page.\par
+\pard\sa80\li360\tx360\bullet\tab A dashboard trial-warning banner with color thresholds: \par
+\pard\sa80\li720\tx720\bullet\tab Yellow when trial days remaining is between 7 and 14 (inclusive).\par
+\pard\sa80\li720\tx720\bullet\tab Orange when trial days remaining is between 1 and 6 (inclusive).\par
+\pard\sa80\li720\tx720\bullet\tab Red when the trial has ended (handled via the existing trial-expired experience; see sections below).\par
+\pard\sa80\li360\tx360\bullet\tab A revised Trial Expired screen: removed fixed plan cards and replaced with a scale-based per-vehicle pricing estimate + call-to-action to subscribe via the account page.\par
+\pard\sa120
+These changes intentionally avoid adding payment processor integration (e.g., Stripe checkout) and avoid database schema migrations; they record subscription/cancellation intent in an existing JSON settings field on the organisations table.\par
+
+\pard\sa240\b\fs28 2) Existing System Behaviour (Before Changes)\b0\fs24\par
+\pard\sa120 SharpFleet already had a trial restriction system:\par
+\pard\sa80\li360\tx360\bullet\tab Middleware: \bSharpFleetTrialCheck\b0 blocks most SharpFleet actions when the trial is expired.\par
+\pard\sa80\li360\tx360\bullet\tab Service: \bEntitlementService\b0 evaluates trial state and determines what is accessible when expired.\par
+\pard\sa80\li360\tx360\bullet\tab Trial Expired screen: \b/ app / sharpfleet / admin / trial-expired\b0 (rendered via a route closure) already existed.\par
+\pard\sa120
+Trial rules in EntitlementService (original behaviour):\par
+\pard\sa80\li360\tx360\bullet\tab ACTIVE trial: all SharpFleet actions allowed.\par
+\pard\sa80\li360\tx360\bullet\tab EXPIRED trial: reports + logout allowed, most write actions denied.\par
+\pard\sa120
+The service determines the trial end timestamp by checking (in order):\par
+\pard\sa80\li360\tx360\bullet\tab users.trial_ends_at (if present)\par
+\pard\sa80\li360\tx360\bullet\tab organisations.trial_ends_at (fallback)\par
+\pard\sa120
+If no trial value exists, it treats the trial as expired by default.\par
+
+\pard\sa240\b\fs28 3) Data Model and Storage Decisions\b0\fs24\par
+\pard\sa120 No new database columns were required for subscription state. The SharpFleet schema already includes:\par
+\pard\sa80\li360\tx360\bullet\tab organisations.billing_plan (varchar, default 'starter')\par
+\pard\sa80\li360\tx360\bullet\tab organisations.trial_ends_at (timestamp nullable)\par
+\pard\sa80\li360\tx360\bullet\tab organisations.settings (JSON nullable)\par
+\pard\sa120
+To implement subscription state and cancellation intent without schema changes, the following keys are stored in organisations.settings JSON:\par
+\pard\sa80\li360\tx360\bullet\tab subscription_status = 'active' (marks an organisation as subscribed)\par
+\pard\sa80\li360\tx360\bullet\tab subscription_started_at (ISO8601 timestamp when subscription was activated)\par
+\pard\sa80\li360\tx360\bullet\tab subscription_cancel_requested_at (ISO8601 timestamp when cancel subscription was requested)\par
+\pard\sa80\li360\tx360\bullet\tab trial_cancel_requested_at (ISO8601 timestamp when cancel trial was requested)\par
+\pard\sa120
+Important: This is currently a \bstate flag\b0 approach (no payment dates, invoices, billing cycles). If you want “paid until end of month” style behavior later, you’d add subscription period fields (see DB advice section).\par
+
+\pard\sa240\b\fs28 4) Pricing Rules Implemented (Per-Vehicle Scale)\b0\fs24\par
+\pard\sa120 The pricing estimate uses the scale you provided:\par
+\pard\sa80\li360\tx360\bullet\tab $3.50 per vehicle / month \bfor the first 10 vehicles\b0\par
+\pard\sa80\li360\tx360\bullet\tab $2.50 per vehicle / month \bfor vehicles 11?20\b0\par
+\pard\sa80\li360\tx360\bullet\tab When vehicles > 20, the system still calculates using the same scale, but also shows a message: \bcontact us for pricing\b0\par
+\pard\sa120
+Vehicle count is computed as \bactive vehicles\b0 (vehicles where is_active = 1).\par
+\pard\sa120
+Calculation logic:\par
+\pard\sa80\li360\tx360\bullet\tab tier1Vehicles = min(vehiclesCount, 10)\par
+\pard\sa80\li360\tx360\bullet\tab tier2Vehicles = max(0, vehiclesCount - 10)\par
+\pard\sa80\li360\tx360\bullet\tab monthlyPrice = (tier1Vehicles * 3.50) + (tier2Vehicles * 2.50)\par
+\pard\sa80\li360\tx360\bullet\tab requiresContactForPricing = (vehiclesCount > 20)\par
+\pard\sa120
+A human-readable breakdown string is also produced, e.g. \"10 \u215? $3.50 + 4 \u215? $2.50\".\par
+
+\pard\sa240\b\fs28 5) New / Updated UI\b0\fs24\par
+\pard\sa200\b 5.1) Admin Account & Subscription Page\b0\par
+\pard\sa120 Location:\par
+\pard\sa80\li360\tx360\bullet\tab /app/sharpfleet/admin/account\par
+\pard\sa120 Access:\par
+\pard\sa80\li360\tx360\bullet\tab Company Admins only\par
+\pard\sa80\li360\tx360\bullet\tab Must remain accessible even when the trial is expired/cancelled (so that admins can subscribe to regain access).\par
+\pard\sa120 Page behaviour (two states):\par
+\pard\sa80\li360\tx360\bullet\tab If subscribed (subscription_status = active):\par
+\pard\sa80\li720\tx720\bullet\tab Shows active vehicle count and estimated monthly price using scale.\par
+\pard\sa80\li720\tx720\bullet\tab Shows \bCancel Subscription\b0 button.\par
+\pard\sa80\li720\tx720\bullet\tab Shows message explaining: cancelling makes the account read-only (reports only), data access for one year, then archived.\par
+\pard\sa80\li360\tx360\bullet\tab If not subscribed:\par
+\pard\sa80\li720\tx720\bullet\tab Shows trial days remaining (if available) and trial end timestamp.\par
+\pard\sa80\li720\tx720\bullet\tab Shows \bSubscribe\b0 button.\par
+\pard\sa80\li720\tx720\bullet\tab Shows \bCancel Trial\b0 button (only if a cancellation has not already been requested).\par
+\pard\sa80\li720\tx720\bullet\tab Cancel Trial text explains data retention/archive policy.\par
+
+\pard\sa200\b 5.2) Admin Dashboard Summary + Banner\b0\par
+\pard\sa120 The admin dashboard now includes:\par
+\pard\sa80\li360\tx360\bullet\tab A new stats card labeled \bAccount\b0 linking to the account page.\par
+\pard\sa80\li360\tx360\bullet\tab A trial countdown banner that appears only when:\par
+\pard\sa80\li720\tx720\bullet\tab Not subscribed AND trialDaysRemaining is between 1 and 14 inclusive.\par
+\pard\sa120 Banner colors:\par
+\pard\sa80\li360\tx360\bullet\tab Yellow when trialDaysRemaining is between 7 and 14 inclusive.\par
+\pard\sa80\li360\tx360\bullet\tab Orange when trialDaysRemaining is between 1 and 6 inclusive.\par
+\pard\sa120 The banner includes a CTA button: \bView Account\b0 (links to the account page).\par
+
+\pard\sa200\b 5.3) Trial Expired Screen (Removed Plans)\b0\par
+\pard\sa120 Previously, the trial-expired page contained fixed plan cards (Starter/Professional/Enterprise).\par
+\pard\sa120 Those fixed plan cards were removed and replaced with a single \bSubscription estimate\b0 section that shows:\par
+\pard\sa80\li360\tx360\bullet\tab Active vehicle count\par
+\pard\sa80\li360\tx360\bullet\tab Estimated monthly price using the per-vehicle scale\par
+\pard\sa80\li360\tx360\bullet\tab A pricing breakdown string\par
+\pard\sa80\li360\tx360\bullet\tab The >20 vehicles contact note\par
+\pard\sa80\li360\tx360\bullet\tab A \bSubscribe\b0 button that links to the account page\par
+
+\pard\sa240\b\fs28 6) Behavioural Rules: Cancel Trial / Cancel Subscription\b0\fs24\par
+\pard\sa120 You specified that cancelling the trial should record intent and immediately result in read-only access:\par
+\pard\sa80\li360\tx360\bullet\tab \bNo new trips\b0\par
+\pard\sa80\li360\tx360\bullet\tab \bNo adding/editing\b0 (vehicles, drivers, settings, reminders etc.)\par
+\pard\sa80\li360\tx360\bullet\tab Can only log in and view already recorded trip logs (reports)\par
+\pard\sa120 Implementation detail:\par
+\pard\sa80\li360\tx360\bullet\tab Cancel Trial sets organisations.settings.trial_cancel_requested_at, and EntitlementService treats this as trial expired immediately.\par
+\pard\sa120
+Cancel Subscription was added later per request. It behaves similarly (currently):\par
+\pard\sa80\li360\tx360\bullet\tab Sets organisations.settings.subscription_status = 'cancelled' and organisations.settings.subscription_cancel_requested_at.\par
+\pard\sa80\li360\tx360\bullet\tab Immediately results in read-only access because the entitlement logic only treats subscription_status = 'active' as subscribed.\par
+\pard\sa120
+Note: Because there is no concept of \"paid-through\" date right now, cancelling subscription immediately removes full access. If you later want a grace period (e.g., access until subscription_ends_at), new fields would be required.\par
+
+\pard\sa240\b\fs28 7) Code-Level Implementation Details\b0\fs24\par
+\pard\sa200\b 7.1) New Controller: AccountController\b0\par
+\pard\sa120 File: app/Http/Controllers/SharpFleet/Admin/AccountController.php\par
+\pard\sa120 Methods:\par
+\pard\sa80\li360\tx360\bullet\tab show(): Loads organisation settings, counts vehicles, reads entitlements, calculates monthly estimate, renders the account view.\par
+\pard\sa80\li360\tx360\bullet\tab subscribe(): Sets subscription_status=active and subscription_started_at, clears trial_cancel_requested_at, then redirects back to account with success message.\par
+\pard\sa80\li360\tx360\bullet\tab cancelTrial(): Sets trial_cancel_requested_at then redirects to trial-expired with a warning.\par
+\pard\sa80\li360\tx360\bullet\tab cancelSubscription(): Sets subscription_status=cancelled and subscription_cancel_requested_at then redirects to trial-expired with a warning.\par
+\pard\sa120 Pricing helper:\par
+\pard\sa80\li360\tx360\bullet\tab calculateMonthlyPrice(vehiclesCount) implements the per-vehicle scale.\par
+
+\pard\sa200\b 7.2) EntitlementService Extensions\b0\par
+\pard\sa120 File: app/Services/SharpFleet/EntitlementService.php\par
+\pard\sa120 Added/changed behaviours:\par
+\pard\sa80\li360\tx360\bullet\tab isSubscriptionActive(): Reads organisations.settings.subscription_status and returns true only when 'active'.\par
+\pard\sa80\li360\tx360\bullet\tab hasTrialCancelRequest(): Reads organisations.settings.trial_cancel_requested_at and returns true when present.\par
+\pard\sa80\li360\tx360\bullet\tab isTrialExpired(): Updated priority rules:\par
+\pard\sa80\li720\tx720\bullet\tab If subscribed -> not expired.\par
+\pard\sa80\li720\tx720\bullet\tab If trial cancellation requested -> treat as expired.\par
+\pard\sa80\li720\tx720\bullet\tab Else fall back to existing trial_ends_at evaluation.\par
+\pard\sa80\li360\tx360\bullet\tab getTrialEndsAt(): Exposes the resolved trial end timestamp.\par
+\pard\sa80\li360\tx360\bullet\tab trialDaysRemaining(): Returns whole days remaining (can be negative when ended).\par
+\pard\sa120
+This approach preserves existing behaviour for tenants that do not use these new settings keys: if there is no subscription flag and no cancellation flag, the original trial logic applies.\par
+
+\pard\sa200\b 7.3) Route Wiring\b0\par
+\pard\sa120 File: routes/sharpfleet.php\par
+\pard\sa120 Added SharpFleet admin routes:\par
+\pard\sa80\li360\tx360\bullet\tab GET /app/sharpfleet/admin/account (AccountController@show)\par
+\pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/subscribe (AccountController@subscribe)\par
+\pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/cancel-trial (AccountController@cancelTrial)\par
+\pard\sa80\li360\tx360\bullet\tab POST /app/sharpfleet/admin/account/cancel-subscription (AccountController@cancelSubscription)\par
+\pard\sa120 Middleware considerations:\par
+\pard\sa80\li360\tx360\bullet\tab These account routes explicitly remove SharpFleetTrialCheck so they remain reachable when the trial is expired/cancelled.\par
+\pard\sa120 Trial-expired route enhancement:\par
+\pard\sa80\li360\tx360\bullet\tab The /trial-expired route now also queries active vehicles and calculates the scale-based estimate, passing it to the view.\par
+
+\pard\sa200\b 7.4) View Changes\b0\par
+\pard\sa120 New view: resources/views/sharpfleet/admin/account.blade.php\par
+\pard\sa120 Updated views:\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/dashboard.blade.php (banner + account card + corrected alert class for vehicle reminders)\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/trial-expired.blade.php (removed plan cards; added scale estimate section; added Go to Account button and red callout)\par
+
+\pard\sa200\b 7.5) CSS\b0\par
+\pard\sa120 File: public/css/sharpfleet/sharpfleetmain.css\par
+\pard\sa120 Added alert styles for banner colors:\par
+\pard\sa80\li360\tx360\bullet\tab .alert-yellow for 7?14 day warning\par
+\pard\sa80\li360\tx360\bullet\tab .alert-orange for 1?6 day warning\par
+
+\pard\sa240\b\fs28 8) DB Changes Advice (Only If You Want More Accurate Billing)\b0\fs24\par
+\pard\sa120 No DB changes were required for the current implementation because it stores state in organisations.settings JSON.\par
+\pard\sa120 If you later want proper billing lifecycle support (recommended for real subscriptions), you would add columns like:\par
+\pard\sa80\li360\tx360\bullet\tab organisations.subscription_status (enum or varchar)\par
+\pard\sa80\li360\tx360\bullet\tab organisations.subscription_started_at (timestamp)\par
+\pard\sa80\li360\tx360\bullet\tab organisations.subscription_ends_at (timestamp)\par
+\pard\sa80\li360\tx360\bullet\tab organisations.stripe_customer_id / stripe_subscription_id / stripe_price_id (if integrating Stripe)\par
+\pard\sa120
+This would enable grace periods (keep access until ends_at), accurate renewal/cancellation, and cleaner reporting.\par
+
+\pard\sa240\b\fs28 9) Operational Notes / Limitations\b0\fs24\par
+\pard\sa80\li360\tx360\bullet\tab Subscription is currently a manual toggle via the UI buttons. No payments are collected.\par
+\pard\sa80\li360\tx360\bullet\tab Cancel trial/subscription currently switches the account to read-only immediately (reports-only).\par
+\pard\sa80\li360\tx360\bullet\tab The ?>20 vehicles? rule displays a contact note but still computes an estimate number.\par
+\pard\sa80\li360\tx360\bullet\tab Vehicle count used for pricing is active vehicles only (is_active = 1).\par
+
+\pard\sa240\b\fs28 10) Quick Test Checklist (Manual)\b0\fs24\par
+\pard\sa80\li360\tx360\bullet\tab Trial active with 20+ days remaining: banner not shown.\par
+\pard\sa80\li360\tx360\bullet\tab Trial with 10 days remaining: yellow banner shown.\par
+\pard\sa80\li360\tx360\bullet\tab Trial with 3 days remaining: orange banner shown.\par
+\pard\sa80\li360\tx360\bullet\tab Cancel Trial: trial-expired page shown, only reports accessible, account page still accessible.\par
+\pard\sa80\li360\tx360\bullet\tab Subscribe: account shows subscribed state, dashboard banner hidden, full access restored.\par
+\pard\sa80\li360\tx360\bullet\tab Cancel Subscription: trial-expired page shown, only reports accessible, account page still accessible.\par
+
+\pard\sa200 End of document.\par
+}
