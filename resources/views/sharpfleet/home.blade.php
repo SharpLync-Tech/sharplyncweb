@@ -16,6 +16,9 @@
         <p class="hero-intro">
             Logbooks for kilometres and engine hours.<br>
             No GPS. No hardware. No micromanagement.
+            <p class="hero-price">
+            All features included for only <strong>$3.50</strong> per vehicle, per month.
+        </p>
         </p>
 
         {{-- =========================
@@ -54,10 +57,7 @@
             <p>Plant and equipment? <strong class="text-primary">Covered.</strong></p>
             <p>Client visits or job runs? <strong class="text-primary">Covered.</strong></p>
         </div>
-
-        <p class="hero-price">
-            From <strong>$3.50</strong> per vehicle, per month.
-        </p>
+        
 
         <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
             Get Started
@@ -108,7 +108,7 @@
                 </div>
                 <p>
                     Track registrations, servicing, maintenance notes, and key dates.
-                    Get reminders before things expire — not after you get fined.
+                    Get reminders before things expire, all included in your subscription.
                 </p>
             </div>
 
@@ -141,6 +141,34 @@
                     No special devices. No installs. Just log in and get on with work.
                 </p>
             </div>
+
+            <<div class="card">
+                <div class="card-header">
+                    <h3>🏷️ SharpFleet Subscription</h3>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        <strong>$3.50 per vehicle / month</strong><br>
+                        Covers your first <strong>10 vehicles</strong>
+                    </p>
+
+                    <p>
+                        <strong>$2.50 per vehicle / month</strong><br>
+                        For vehicles <strong>11–20</strong>
+                    </p>
+
+                    <p>
+                        <strong>20+ vehicles?</strong><br>
+                        <a href="/contact">Contact us for tailored pricing</a>
+                    </p>
+
+                    <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
+                        Your cost per vehicle goes down as your fleet grows — no long-term commitments, cancel anytime, and keep access to your historical logs.
+                    </p>
+                </div>
+            </div>
+
         </div>
     </section>
 
