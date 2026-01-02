@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\SharpFleet;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\AuditLogService;
+use App\Services\SharpFleet\StripeInvoiceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,10 +15,12 @@ class PlatformController extends Controller
     private const DISPLAY_TIMEZONE = 'Australia/Brisbane';
 
     private AuditLogService $audit;
+    private StripeInvoiceService $stripeInvoices;
 
-    public function __construct(AuditLogService $audit)
+    public function __construct(AuditLogService $audit, StripeInvoiceService $stripeInvoices)
     {
         $this->audit = $audit;
+        $this->stripeInvoices = $stripeInvoices;
     }
 
     public function index(Request $request)
@@ -84,17 +87,104 @@ class PlatformController extends Controller
             ->where('organisation_id', $organisationId)
             ->count();
 
+        $activeVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
         $billingKeys = $this->billingKeysForOrganisations();
         $timezone = $this->organisationTimezone($organisationId);
+
+        $settings = [];
+        if (!empty($organisation->settings)) {
+            $decoded = json_decode((string) $organisation->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
+            }
+        }
+
+        $billingFromSettings = [
+            'subscription_status' => (string) ($settings['subscription_status'] ?? ''),
+            'subscription_started_at' => (string) ($settings['subscription_started_at'] ?? ''),
+            'subscription_cancel_requested_at' => (string) ($settings['subscription_cancel_requested_at'] ?? ''),
+            'stripe_customer_id' => (string) ($settings['stripe_customer_id'] ?? ''),
+            'stripe_subscription_id' => (string) ($settings['stripe_subscription_id'] ?? ''),
+            'stripe_price_id' => (string) ($settings['stripe_price_id'] ?? ''),
+        ];
+
+        $billingEstimate = $this->estimateMonthlyPrice($activeVehiclesCount);
+
+        $recentBillingLogs = collect();
+        if (Schema::connection('sharpfleet')->hasTable('sharpfleet_audit_logs')) {
+            $recentBillingLogs = DB::connection('sharpfleet')
+                ->table('sharpfleet_audit_logs')
+                ->where('organisation_id', $organisationId)
+                ->where(function ($q) {
+                    $q
+                        ->where('action', 'like', 'Billing:%')
+                        ->orWhere('action', 'like', '%Subscription%')
+                        ->orWhere('action', 'like', '%Vehicle%');
+                })
+                ->orderByDesc('id')
+                ->limit(20)
+                ->get();
+        }
+
+        $stripeInvoices = [];
+        $stripeInvoicesError = null;
+        $stripeCustomerId = trim((string) ($billingFromSettings['stripe_customer_id'] ?? ''));
+        if ($stripeCustomerId !== '') {
+            try {
+                $stripeInvoices = $this->stripeInvoices->listInvoicesForCustomer($stripeCustomerId, 10);
+            } catch (\Throwable $e) {
+                $stripeInvoicesError = $e->getMessage();
+            }
+        }
 
         return view('admin.sharpfleet.organisations.show', [
             'organisation' => $organisation,
             'billingKeys' => $billingKeys,
             'usersCount' => $usersCount,
             'vehiclesCount' => $vehiclesCount,
+            'activeVehiclesCount' => $activeVehiclesCount,
+            'billingFromSettings' => $billingFromSettings,
+            'billingEstimate' => $billingEstimate,
+            'recentBillingLogs' => $recentBillingLogs,
+            'stripeInvoices' => $stripeInvoices,
+            'stripeInvoicesError' => $stripeInvoicesError,
             'timezone' => $timezone,
             'displayTimezone' => self::DISPLAY_TIMEZONE,
         ]);
+    }
+
+    private function estimateMonthlyPrice(int $vehiclesCount): array
+    {
+        $vehiclesCount = max(0, $vehiclesCount);
+
+        $tier1Vehicles = min($vehiclesCount, 10);
+        $tier2Vehicles = max(0, $vehiclesCount - 10);
+
+        $tier1Price = 3.50;
+        $tier2Price = 2.50;
+
+        $monthlyPrice = ($tier1Vehicles * $tier1Price) + ($tier2Vehicles * $tier2Price);
+
+        $requiresContact = $vehiclesCount > 20;
+
+        $breakdown = sprintf(
+            '%d × $%.2f + %d × $%.2f',
+            $tier1Vehicles,
+            $tier1Price,
+            $tier2Vehicles,
+            $tier2Price
+        );
+
+        return [
+            'monthlyPrice' => $monthlyPrice,
+            'breakdown' => $breakdown,
+            'requiresContact' => $requiresContact,
+        ];
     }
 
     public function editOrganisation(int $organisationId)

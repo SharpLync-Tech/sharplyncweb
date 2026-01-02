@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\AuditLogService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\EntitlementService;
 use App\Services\SharpFleet\StripeSubscriptionSyncService;
@@ -17,14 +18,16 @@ class VehicleController extends Controller
 {
     protected VehicleService $vehicleService;
     protected StripeSubscriptionSyncService $stripeSubscriptionSync;
+    protected AuditLogService $audit;
 
     private const PENDING_CREATE_SESSION_KEY = 'sharpfleet.pending_vehicle_create';
     private const PENDING_ARCHIVE_SESSION_KEY = 'sharpfleet.pending_vehicle_archive';
 
-    public function __construct(VehicleService $vehicleService, StripeSubscriptionSyncService $stripeSubscriptionSync)
+    public function __construct(VehicleService $vehicleService, StripeSubscriptionSyncService $stripeSubscriptionSync, AuditLogService $audit)
     {
         $this->vehicleService = $vehicleService;
         $this->stripeSubscriptionSync = $stripeSubscriptionSync;
+        $this->audit = $audit;
     }
 
     /**
@@ -211,14 +214,44 @@ class VehicleController extends Controller
         }
 
         try {
-            // Update Stripe FIRST so we don\'t archive the vehicle if billing couldn\'t be updated.
-            $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $newVehiclesCount);
+            // Update Stripe FIRST so we don't archive the vehicle if billing couldn't be updated.
+            $sync = $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $newVehiclesCount);
+
+            $this->audit->logSubscriber($request, 'Billing: Stripe Subscription Updated', [
+                'reason' => 'vehicle_archived',
+                ...$sync,
+            ]);
 
             $this->vehicleService->archiveVehicle($organisationId, $vehicleId);
+
+            $beforePricing = $this->calculateMonthlyPrice($currentVehiclesCount);
+            $afterPricing = $this->calculateMonthlyPrice($newVehiclesCount);
+
+            $this->audit->logSubscriber($request, 'Billing: Vehicle Archived', [
+                'vehicle_id' => $vehicleId,
+                'vehicle_name' => (string) ($record->name ?? ''),
+                'vehicles' => [
+                    'from' => $currentVehiclesCount,
+                    'to' => $newVehiclesCount,
+                ],
+                'monthly_estimate' => [
+                    'from' => $beforePricing['monthlyPrice'],
+                    'to' => $afterPricing['monthlyPrice'],
+                    'from_breakdown' => $beforePricing['breakdown'],
+                    'to_breakdown' => $afterPricing['breakdown'],
+                ],
+            ]);
         } catch (\Throwable $e) {
             Log::error('SharpFleet: failed syncing Stripe quantity before vehicle archive', [
                 'organisation_id' => $organisationId,
                 'vehicle_id' => $vehicleId,
+                'exception' => $e->getMessage(),
+            ]);
+
+            $this->audit->logSubscriber($request, 'Billing: Stripe Subscription Update Failed', [
+                'reason' => 'vehicle_archived',
+                'vehicle_id' => $vehicleId,
+                'to_quantity' => $newVehiclesCount,
                 'exception' => $e->getMessage(),
             ]);
 
@@ -362,20 +395,57 @@ class VehicleController extends Controller
             }
         }
 
-        $this->vehicleService->createVehicle($organisationId, $payload);
+        $beforeVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        $beforePricing = $this->calculateMonthlyPrice($beforeVehiclesCount);
+
+        $vehicleId = (int) $this->vehicleService->createVehicle($organisationId, $payload);
+
+        $afterVehiclesCount = (int) DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->count();
+
+        $afterPricing = $this->calculateMonthlyPrice($afterVehiclesCount);
+
+        $this->audit->logSubscriber($request, 'Billing: Vehicle Added', [
+            'vehicle_id' => $vehicleId,
+            'vehicle_name' => (string) ($payload['name'] ?? ''),
+            'vehicles' => [
+                'from' => $beforeVehiclesCount,
+                'to' => $afterVehiclesCount,
+            ],
+            'monthly_estimate' => [
+                'from' => $beforePricing['monthlyPrice'],
+                'to' => $afterPricing['monthlyPrice'],
+                'from_breakdown' => $beforePricing['breakdown'],
+                'to_breakdown' => $afterPricing['breakdown'],
+            ],
+        ]);
 
         // Sync subscription quantity to include this new vehicle on the next invoice.
         try {
-            $activeVehiclesCount = (int) DB::connection('sharpfleet')
-                ->table('vehicles')
-                ->where('organisation_id', $organisationId)
-                ->where('is_active', 1)
-                ->count();
+            $sync = $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $afterVehiclesCount);
 
-            $this->stripeSubscriptionSync->syncVehicleQuantityToStripe($organisationId, $activeVehiclesCount);
+            $this->audit->logSubscriber($request, 'Billing: Stripe Subscription Updated', [
+                'reason' => 'vehicle_added',
+                ...$sync,
+            ]);
         } catch (\Throwable $e) {
             Log::error('SharpFleet: failed syncing Stripe quantity after vehicle create', [
                 'organisation_id' => $organisationId,
+                'exception' => $e->getMessage(),
+            ]);
+
+            $this->audit->logSubscriber($request, 'Billing: Stripe Subscription Update Failed', [
+                'reason' => 'vehicle_added',
+                'vehicle_id' => $vehicleId,
+                'to_quantity' => $afterVehiclesCount,
                 'exception' => $e->getMessage(),
             ]);
         }

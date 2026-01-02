@@ -103,11 +103,17 @@ class SharpFleetAuditLog
         if ($method === 'POST' && $path === '/app/sharpfleet/admin/vehicles') {
             return 'Created Vehicle';
         }
+        if ($method === 'POST' && $path === '/app/sharpfleet/admin/vehicles/create/confirm') {
+            return 'Created Vehicle (Subscription Confirmed)';
+        }
         if ($method === 'POST' && preg_match('#^/app/sharpfleet/admin/vehicles/(\\d+)$#', $path, $m)) {
             return 'Updated Vehicle #' . $m[1];
         }
         if ($method === 'POST' && preg_match('#^/app/sharpfleet/admin/vehicles/(\\d+)/archive$#', $path, $m)) {
             return 'Archived Vehicle #' . $m[1];
+        }
+        if ($method === 'POST' && preg_match('#^/app/sharpfleet/admin/vehicles/(\d+)/archive/confirm$#', $path, $m)) {
+            return 'Archived Vehicle #' . $m[1] . ' (Subscription Confirmed)';
         }
 
         // Bookings (tenant admin)

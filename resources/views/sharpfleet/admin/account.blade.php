@@ -140,6 +140,43 @@
     </div>
 </div>
 
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="fw-bold mb-2">Recent billing activity</div>
+
+            @if(!empty($billingActivityTableMissing) && $billingActivityTableMissing)
+                <div class="alert alert-warning mb-0">
+                    Billing activity is not available (audit log table missing).
+                </div>
+            @elseif(($billingActivity ?? collect())->isEmpty())
+                <div class="text-muted small">No billing activity yet.</div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Action</th>
+                            <th>User</th>
+                            <th>IP</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($billingActivity as $row)
+                            <tr>
+                                <td>{{ \Carbon\Carbon::parse($row->created_at)->format('Y-m-d H:i') }}</td>
+                                <td>{{ $row->action }}</td>
+                                <td>{{ $row->user_name ?? 'System' }}</td>
+                                <td>{{ $row->ip_address ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+
 <script>
     (function () {
         const showBtn = document.getElementById('sf-show-subscribe-step');

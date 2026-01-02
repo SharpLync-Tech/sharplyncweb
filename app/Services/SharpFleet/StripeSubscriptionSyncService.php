@@ -13,13 +13,23 @@ class StripeSubscriptionSyncService
      * This updates the existing subscription item quantity with proration disabled so the
      * change is reflected on the next invoice (not immediately prorated).
      */
-    public function syncVehicleQuantityToStripe(int $organisationId, int $activeVehiclesCount): void
+    public function syncVehicleQuantityToStripe(int $organisationId, int $activeVehiclesCount): array
     {
         $organisationId = (int) $organisationId;
         $activeVehiclesCount = max(0, (int) $activeVehiclesCount);
 
+        $result = [
+            'organisation_id' => $organisationId,
+            'attempted' => false,
+            'updated' => false,
+            'stripe_subscription_id' => null,
+            'stripe_price_id' => null,
+            'from_quantity' => null,
+            'to_quantity' => $activeVehiclesCount,
+        ];
+
         if ($organisationId < 1) {
-            return;
+            return $result;
         }
 
         $stripeSecret = (string) env('STRIPE_SECRET_TEST');
@@ -34,7 +44,7 @@ class StripeSubscriptionSyncService
             ->first();
 
         if (!$org) {
-            return;
+            return $result;
         }
 
         $settings = [];
@@ -46,13 +56,15 @@ class StripeSubscriptionSyncService
         }
 
         if (($settings['subscription_status'] ?? null) !== 'active') {
-            return;
+            return $result;
         }
 
         $stripeSubscriptionId = $settings['stripe_subscription_id'] ?? null;
         if (!is_string($stripeSubscriptionId) || $stripeSubscriptionId === '') {
-            return;
+            return $result;
         }
+
+        $result['stripe_subscription_id'] = $stripeSubscriptionId;
 
         $expectedPriceId = $settings['stripe_price_id'] ?? null;
         if (!is_string($expectedPriceId) || $expectedPriceId === '') {
@@ -62,6 +74,10 @@ class StripeSubscriptionSyncService
         if (!is_string($expectedPriceId) || $expectedPriceId === '') {
             throw new \RuntimeException('Stripe price is not configured.');
         }
+
+        $result['stripe_price_id'] = $expectedPriceId;
+
+        $result['attempted'] = true;
 
         \Stripe\Stripe::setApiKey($stripeSecret);
 
@@ -94,7 +110,9 @@ class StripeSubscriptionSyncService
 
         $currentQuantityInt = is_numeric($currentQuantity) ? (int) $currentQuantity : null;
         if ($currentQuantityInt !== null && $currentQuantityInt === $activeVehiclesCount) {
-            return;
+            $result['from_quantity'] = $currentQuantityInt;
+            $result['updated'] = false;
+            return $result;
         }
 
         \Stripe\Subscription::update($stripeSubscriptionId, [
@@ -107,6 +125,9 @@ class StripeSubscriptionSyncService
             ],
         ]);
 
+        $result['from_quantity'] = $currentQuantityInt;
+        $result['updated'] = true;
+
         Log::info('SharpFleet: synced Stripe subscription quantity to vehicles', [
             'organisation_id' => $organisationId,
             'stripe_subscription_id' => $stripeSubscriptionId,
@@ -114,5 +135,7 @@ class StripeSubscriptionSyncService
             'from_quantity' => $currentQuantityInt,
             'to_quantity' => $activeVehiclesCount,
         ]);
+
+        return $result;
     }
 }

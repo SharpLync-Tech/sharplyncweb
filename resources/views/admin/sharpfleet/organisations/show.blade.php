@@ -62,53 +62,133 @@
                     <span class="text-muted small">From SharpFleet DB</span>
                 </div>
                 <div class="card-body">
-                    @if(empty($billingKeys))
-                        <div class="text-muted">No billing/subscription columns were detected on the <span class="fw-semibold">organisations</span> table.</div>
+                    <div class="mb-3">
+                        <div class="fw-semibold mb-2">Current estimate</div>
+                        <div class="d-flex flex-wrap gap-3">
+                            <div>
+                                <div class="text-muted small">Active vehicles</div>
+                                <div class="fw-semibold">{{ (int) ($activeVehiclesCount ?? 0) }}</div>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Estimated monthly cost</div>
+                                <div class="fw-semibold">${{ number_format((float) (($billingEstimate['monthlyPrice'] ?? 0)), 2) }}</div>
+                                <div class="text-muted small">{{ $billingEstimate['breakdown'] ?? '' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fw-semibold mb-2">Billing identifiers (from organisations.settings)</div>
+                    @php($b = $billingFromSettings ?? [])
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted" style="width: 220px;">Subscription status</td>
+                                    <td>{{ !empty($b['subscription_status']) ? $b['subscription_status'] : '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Subscription started</td>
+                                    <td>{{ !empty($b['subscription_started_at']) ? $b['subscription_started_at'] : '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Stripe customer</td>
+                                    <td>{{ !empty($b['stripe_customer_id']) ? $b['stripe_customer_id'] : '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Stripe subscription</td>
+                                    <td>{{ !empty($b['stripe_subscription_id']) ? $b['stripe_subscription_id'] : '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Stripe price</td>
+                                    <td>{{ !empty($b['stripe_price_id']) ? $b['stripe_price_id'] : '—' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="fw-semibold mb-2">Recent billing activity</div>
+                    @if(empty($recentBillingLogs) || count($recentBillingLogs) === 0)
+                        <div class="text-muted">No recent billing audit events found (or audit table missing).</div>
+                    @else
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 180px;">When (Brisbane)</th>
+                                        <th>Action</th>
+                                        <th>Actor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentBillingLogs as $log)
+                                        <tr>
+                                            <td style="white-space:nowrap;">
+                                                @if(!empty($log->created_at))
+                                                    {{ \Carbon\Carbon::parse($log->created_at, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y H:i:s') }}
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{{ $log->action ?? '—' }}</div>
+                                                @php($ctxJson = (string)($log->context_json ?? ''))
+                                                @php($ctxArr = $ctxJson !== '' ? (json_decode($ctxJson, true) ?? []) : [])
+                                                @if(!empty($ctxArr['monthly_estimate']))
+                                                    @php($me = $ctxArr['monthly_estimate'] ?? [])
+                                                    <div class="text-muted small">
+                                                        ${{ number_format((float) ($me['from'] ?? 0), 2) }} → ${{ number_format((float) ($me['to'] ?? 0), 2) }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="text-muted small">{{ $log->actor_type ?? '—' }}</div>
+                                                <div class="text-muted small">{{ $log->actor_email ?? '—' }}</div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
+                    <div class="fw-semibold mb-2">Stripe invoices</div>
+                    @if(!empty($stripeInvoicesError))
+                        <div class="text-muted">Unable to load Stripe invoices: {{ $stripeInvoicesError }}</div>
+                    @elseif(empty($stripeInvoices) || count($stripeInvoices) === 0)
+                        <div class="text-muted">No invoices found (or Stripe not configured / missing Stripe customer ID).</div>
                     @else
                         <div class="table-responsive">
                             <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Created</th>
+                                        <th>Invoice</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Total</th>
+                                        <th>Links</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    @foreach($billingKeys as $key)
+                                    @foreach($stripeInvoices as $inv)
+                                        @php
+                                            $currency = strtoupper((string) ($inv['currency'] ?? ''));
+                                            $total = isset($inv['total']) ? ((int) $inv['total'] / 100) : null;
+                                            $created = !empty($inv['created']) ? \Carbon\Carbon::createFromTimestamp((int) $inv['created'], 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y') : '—';
+                                        @endphp
                                         <tr>
-                                            @php
-                                                $label = match((string) $key) {
-                                                    'trial_ends_at' => 'Trial Ends',
-                                                    'subscription_ends_at' => 'Subscription Ends',
-                                                    'subscription_status' => 'Subscription Status',
-                                                    'subscription_id' => 'Subscription ID',
-                                                    'billing_email' => 'Billing Email',
-                                                    'billing_status' => 'Billing Status',
-                                                    'stripe_customer_id' => 'Stripe Customer ID',
-                                                    'stripe_subscription_id' => 'Stripe Subscription ID',
-                                                    'stripe_price_id' => 'Stripe Price ID',
-                                                    'created_at' => 'Created',
-                                                    'updated_at' => 'Updated',
-                                                    default => ucwords(str_replace('_', ' ', (string) $key)),
-                                                };
-                                            @endphp
-                                            <td class="text-muted" style="width: 220px;">{{ $label }}</td>
+                                            <td style="white-space:nowrap;">{{ $created }}</td>
+                                            <td class="fw-semibold">{{ $inv['number'] ?: ($inv['id'] ?? '—') }}</td>
+                                            <td>{{ $inv['status'] ?: '—' }}</td>
+                                            <td class="text-end">@if(!is_null($total)) {{ $currency }} ${{ number_format((float) $total, 2) }} @else — @endif</td>
                                             <td>
-                                                @php $val = $organisation->{$key} ?? null; @endphp
-                                                @if(is_null($val) || $val === '')
-                                                    —
-                                                @else
-                                                    @php
-                                                        $stringVal = is_scalar($val) ? (string) $val : null;
-                                                        $isDateLike = is_string($stringVal) && (str_ends_with((string) $key, '_at') || str_contains((string) $key, 'date'));
-                                                    @endphp
-                                                    @if($isDateLike)
-                                                        @php
-                                                            $formatted = null;
-                                                            try {
-                                                                $formatted = \Carbon\Carbon::parse($stringVal, 'UTC')->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y, H:i');
-                                                            } catch (\Throwable $e) {
-                                                                $formatted = null;
-                                                            }
-                                                        @endphp
-                                                        {{ $formatted ?? $stringVal }}
-                                                    @else
-                                                        {{ is_scalar($val) ? $val : json_encode($val) }}
+                                                @if(!empty($inv['hosted_invoice_url']))
+                                                    <a href="{{ $inv['hosted_invoice_url'] }}" target="_blank" rel="noopener">View</a>
+                                                @endif
+                                                @if(!empty($inv['invoice_pdf']))
+                                                    @if(!empty($inv['hosted_invoice_url']))
+                                                        <span class="text-muted">·</span>
                                                     @endif
+                                                    <a href="{{ $inv['invoice_pdf'] }}" target="_blank" rel="noopener">PDF</a>
                                                 @endif
                                             </td>
                                         </tr>

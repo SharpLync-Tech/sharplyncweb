@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AccountController extends Controller
 {
@@ -42,6 +43,25 @@ class AccountController extends Controller
 
         $pricing = $this->calculateMonthlyPrice($vehiclesCount);
 
+        $billingActivity = collect();
+        $billingActivityTableMissing = false;
+
+        try {
+            $billingActivityTableMissing = !Schema::connection('sharpfleet')->hasTable('sharpfleet_audit_logs');
+            if (!$billingActivityTableMissing) {
+                $billingActivity = DB::connection('sharpfleet')
+                    ->table('sharpfleet_audit_logs')
+                    ->where('organisation_id', $organisationId)
+                    ->where('action', 'like', 'Billing:%')
+                    ->orderByDesc('id')
+                    ->limit(10)
+                    ->get();
+            }
+        } catch (\Throwable $e) {
+            $billingActivity = collect();
+            $billingActivityTableMissing = true;
+        }
+
         return view('sharpfleet.admin.account', [
             'organisation' => $organisation,
             'vehiclesCount' => $vehiclesCount,
@@ -52,6 +72,8 @@ class AccountController extends Controller
             'monthlyPrice' => $pricing['monthlyPrice'],
             'monthlyPriceBreakdown' => $pricing['breakdown'],
             'requiresContactForPricing' => $pricing['requiresContact'],
+            'billingActivity' => $billingActivity,
+            'billingActivityTableMissing' => $billingActivityTableMissing,
         ]);
     }
 

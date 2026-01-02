@@ -108,6 +108,10 @@
                                         'sharpfleet.organisation.view' => 'Platform Admin Viewed Subscriber',
                                         'sharpfleet.organisation.user.update' => 'Platform Admin Updated User Trial',
                                         'sharpfleet.organisation.user.edit.view' => 'Platform Admin Viewed User Edit',
+                                        'Billing: Vehicle Added' => 'Subscriber Added Vehicle (Billing)',
+                                        'Billing: Vehicle Archived' => 'Subscriber Archived Vehicle (Billing)',
+                                        'Billing: Stripe Subscription Updated' => 'Stripe Subscription Updated',
+                                        'Billing: Stripe Subscription Update Failed' => 'Stripe Subscription Update Failed',
                                     ])
                                     <div class="fw-semibold">{{ $actionMap[$actionRaw] ?? ($log->action ?? '—') }}</div>
                                     @php($ctxJson = (string)($log->context_json ?? ''))
