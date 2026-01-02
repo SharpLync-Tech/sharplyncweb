@@ -13,45 +13,39 @@
 <style>
     .sl-password-wrapper {
         margin-bottom: 1.5rem;
-        color: var(--text-light, #ffffff);
     }
 
     .sl-password-wrapper .sl-password-label {
         display: block;
         font-weight: 600;
         margin-bottom: 8px;
-        color: var(--text-light, #ffffff);
     }
 
     .sl-password-wrapper .sl-password-input {
         width: 100%;
         padding: 0.6rem 2.5rem 0.6rem 0.6rem;
         border-radius: 6px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: var(--text-light, #ffffff);
     }
 
     .sl-password-wrapper .sl-password-input::placeholder {
-        color: rgba(255, 255, 255, 0.55);
+        color: var(--text-muted, #6b7280);
     }
 
-    /* iOS/Safari autofill can force a light background; keep contrast readable */
+    /* iOS/Safari autofill can force a background/text color; keep contrast readable */
     .sl-password-wrapper .sl-password-input:-webkit-autofill,
     .sl-password-wrapper .sl-password-input:-webkit-autofill:hover,
     .sl-password-wrapper .sl-password-input:-webkit-autofill:focus,
     .sl-password-wrapper .sl-password-input:-webkit-autofill:active {
-        -webkit-text-fill-color: var(--text-light, #ffffff) !important;
-        caret-color: var(--text-light, #ffffff);
-        box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+        -webkit-text-fill-color: currentColor !important;
+        caret-color: currentColor;
+        box-shadow: 0 0 0px 1000px transparent inset !important;
         transition: background-color 9999s ease-out 0s;
-        border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .sl-password-wrapper .sl-strength-track {
         margin-top: 8px;
         height: 8px;
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--border-color, #e5e7eb);
         border-radius: 6px;
     }
 
@@ -65,7 +59,7 @@
     .sl-password-wrapper .sl-strength-text {
         margin-top: 6px;
         font-size: 0.9rem;
-        color: #ccc;
+        color: var(--text-muted, #6b7280);
     }
 
     .sl-password-wrapper .sl-generate {

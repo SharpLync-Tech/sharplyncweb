@@ -207,5 +207,76 @@ This would enable grace periods (keep access until ends_at), accurate renewal/ca
 \pard\sa80\li360\tx360\bullet\tab View: resources/views/policies/sharpfleet-terms.blade.php\par
 \pard\sa80\li360\tx360\bullet\tab Route: GET /policies/sharpfleet-terms\par
 
+\pard\sa240\b\fs28 13) Platform Admin Billing Override + Stripe Admin Actions (Added)\b0\fs24\par
+\pard\sa120 In addition to the tenant-side subscription workflow, the platform admin now has tools to handle exceptional billing cases (non-profit complimentary access, manual invoicing, special pricing) without breaking the existing trial + Stripe flow.\par
+\pard\sa120 Location (Platform Admin):\par
+\pard\sa80\li360\tx360\bullet\tab Edit subscriber: /admin/sharpfleet/organisations/{id}/edit\par
+\pard\sa80\li360\tx360\bullet\tab View subscriber: /admin/sharpfleet/organisations/{id}\par
+\pard\sa120 Storage (no DB migrations):\par
+\pard\sa80\li360\tx360\bullet\tab organisations.settings.billing_override (JSON object)\par
+\pard\sa120 billing_override keys (current):\par
+\pard\sa80\li360\tx360\bullet\tab mode = 'manual_invoice' or 'comped' (empty string clears override)\par
+\pard\sa80\li360\tx360\bullet\tab access_until_utc (UTC timestamp; access is active only while now <= access_until_utc)\par
+\pard\sa80\li360\tx360\bullet\tab vehicle_cap_override (optional integer)\par
+\pard\sa80\li360\tx360\bullet\tab price_override_monthly (optional number)\par
+\pard\sa80\li360\tx360\bullet\tab invoice_reference (optional string)\par
+\pard\sa80\li360\tx360\bullet\tab notes (optional string)\par
+\pard\sa80\li360\tx360\bullet\tab updated_at_utc (UTC timestamp)\par
+\pard\sa80\li360\tx360\bullet\tab stripe_cancel / stripe_uncancel (optional metadata objects when Stripe actions run)\par
+\pard\sa120 Behaviour (high-level):\par
+\pard\sa80\li360\tx360\bullet\tab If Billing Mode is Manual invoice or Complimentary, Access Until is required and the tenant keeps access even if the trial would be expired.\par
+\pard\sa80\li360\tx360\bullet\tab If an org already has a Stripe subscription id stored and billing mode is switched to Manual/Complimentary, the system schedules the Stripe subscription to cancel at period end (to stop Stripe billing) and marks the local subscription flag as cancelled.\par
+\pard\sa80\li360\tx360\bullet\tab Platform admin can optionally run a Stripe admin action on save: either re-enable a scheduled cancellation (uncancel) or generate a new Stripe Checkout link (create_checkout).\par
+\pard\sa120 Code-level entry points (Platform Admin):\par
+\pard\sa80\li360\tx360\bullet\tab Controller: app/Http/Controllers/Admin/SharpFleet/PlatformController.php (editOrganisation, updateOrganisation)\par
+\pard\sa80\li360\tx360\bullet\tab Views: resources/views/admin/sharpfleet/organisations/edit.blade.php and resources/views/admin/sharpfleet/organisations/show.blade.php\par
+
+\pard\sa240\b\fs28 14) New Service: BillingDisplayService (Consistency Layer)\b0\fs24\par
+\pard\sa120 A shared service now produces a normalized billing status summary so tenant pages and platform admin pages show the same effective state.\par
+\pard\sa120 File: app/Services/SharpFleet/BillingDisplayService.php\par
+\pard\sa120 Method: getOrganisationBillingSummary(int organisationId)\par
+\pard\sa120 Effective mode precedence implemented:\par
+\pard\sa80\li360\tx360\bullet\tab 1) Active access override (billing_override mode + access_until_utc still valid)\par
+\pard\sa80\li360\tx360\bullet\tab 2) Stripe subscription active (settings.subscription_status === 'active')\par
+\pard\sa80\li360\tx360\bullet\tab 3) Trial (fallback to organisations.trial_ends_at)\par
+\pard\sa120 Output fields include:\par
+\pard\sa80\li360\tx360\bullet\tab effective_mode (trial | stripe | manual_invoice | complimentary)\par
+\pard\sa80\li360\tx360\bullet\tab trial_ends_utc / trial_ends_local\par
+\pard\sa80\li360\tx360\bullet\tab access_override_active + access_override_until_utc / access_override_until_local\par
+\pard\sa80\li360\tx360\bullet\tab stripe_subscription_status + stripe ids (customer/subscription/price)\par
+
+\pard\sa240\b\fs28 15) Entitlement Rules Updated: Access Override Enforcement\b0\fs24\par
+\pard\sa120 The existing trial restriction system was extended so an active access override keeps the tenant in “not expired” state.\par
+\pard\sa120 File: app/Services/SharpFleet/EntitlementService.php\par
+\pard\sa120 Change summary:\par
+\pard\sa80\li360\tx360\bullet\tab isTrialExpired() now returns false when subscription is active OR when hasActiveAccessOverride() is true.\par
+\pard\sa80\li360\tx360\bullet\tab Helper: hasActiveAccessOverride() reads organisations.settings.billing_override, validates mode, and checks access_until_utc against current UTC time.\par
+
+\pard\sa240\b\fs28 16) Stripe Admin Tooling (Platform Admin)\b0\fs24\par
+\pard\sa120 A Stripe admin service encapsulates Stripe-side operations used by platform admin actions.\par
+\pard\sa120 File: app/Services/SharpFleet/StripeSubscriptionAdminService.php\par
+\pard\sa120 Methods:\par
+\pard\sa80\li360\tx360\bullet\tab cancelSubscription(string stripeSubscriptionId, bool cancelAtPeriodEnd=true)\par
+\pard\sa80\li360\tx360\bullet\tab uncancelSubscription(string stripeSubscriptionId) (clears cancel_at_period_end and cancel_at)\par
+\pard\sa80\li360\tx360\bullet\tab createCheckoutUrl(int organisationId, int quantity, string baseUrl)\par
+\pard\sa120 Notes:\par
+\pard\sa80\li360\tx360\bullet\tab Stripe keys used are STRIPE_SECRET_TEST and STRIPE_PRICE_TEST (test mode as currently configured).\par
+
+\pard\sa240\b\fs28 17) UI Alignment Updates (Tenant + Platform Admin)\b0\fs24\par
+\pard\sa120 Several pages were updated to show billing state based on effective_mode rather than only trial/subscription flags, preventing “Trial” being shown while an override is active.\par
+\pard\sa120 Examples (current):\par
+\pard\sa80\li360\tx360\bullet\tab Tenant dashboard card “Account” shows: Active (Stripe) / Free (Complimentary) / Manual (Manual invoice) / trial days remaining.\par
+\pard\sa80\li360\tx360\bullet\tab Tenant account page shows “Access active” and Access until timestamp when an override is active.\par
+\pard\sa80\li360\tx360\bullet\tab Platform admin subscriber view shows effective Billing mode and Access until (if applicable), and surfaces Stripe admin results (cancel scheduled / re-enabled / checkout link).\par
+\pard\sa120 Vehicle counts used for pricing and dashboard stats were standardized to count active vehicles only (vehicles.is_active = 1).\par
+
+\pard\sa240\b\fs28 18) Mobile Registration / Set-Password Styling Fix (Password Component)\b0\fs24\par
+\pard\sa120 The shared password field component used across activation and reset flows was adjusted to prevent white-on-white inputs on mobile (notably iOS/Safari autofill behaviour).\par
+\pard\sa120 File: resources/views/components/password-field.blade.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Removed hard-coded inline input colors and switched to shared form styles (uses form-control plus component classes).\par
+\pard\sa80\li360\tx360\bullet\tab Added component-scoped :-webkit-autofill styling to keep text readable and background consistent when the browser autofills a password.\par
+\pard\sa80\li360\tx360\bullet\tab Scoped JS event bindings to the component wrapper (prevents attaching strength/match listeners to unrelated password fields).\par
+
 \pard\sa200 End of document.\par
 }
