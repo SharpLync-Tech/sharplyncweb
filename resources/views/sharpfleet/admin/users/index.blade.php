@@ -29,7 +29,11 @@
     @endif
 
     <div class="mb-3">
-        <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
+            <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/add">Add Driver</a>
+            <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
+        </div>
     </div>
 
     <div class="card">
