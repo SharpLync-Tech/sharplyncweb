@@ -308,6 +308,9 @@ class PlatformController extends Controller
             }
         }
 
+        // Keep an immutable copy so we can detect changes even if we mutate $previousSettings.
+        $originalSettings = $previousSettings;
+
         $stripeCancelResult = null;
         $stripeUncancelResult = null;
         $stripeCheckoutUrl = null;
@@ -477,7 +480,7 @@ class PlatformController extends Controller
             unset($newSettings['billing_override']);
         }
 
-        if ($newSettings !== $previousSettings) {
+        if ($newSettings !== $originalSettings) {
             DB::connection('sharpfleet')
                 ->table('organisations')
                 ->where('id', $organisationId)
@@ -510,6 +513,14 @@ class PlatformController extends Controller
 
         $redirect = redirect()->route('admin.sharpfleet.organisations.show', $organisationId)
             ->with('success', 'Subscriber updated.');
+
+        if (is_array($stripeCancelResult)) {
+            $redirect->with('stripe_cancel_result', $stripeCancelResult);
+        }
+
+        if (is_array($stripeUncancelResult)) {
+            $redirect->with('stripe_uncancel_result', $stripeUncancelResult);
+        }
 
         if (is_string($stripeCheckoutUrl) && $stripeCheckoutUrl !== '') {
             $redirect->with('stripe_checkout_url', $stripeCheckoutUrl);

@@ -25,6 +25,20 @@
         </div>
     @endif
 
+    @if(session('stripe_uncancel_result'))
+        <div class="alert alert-success">
+            <div class="fw-semibold">Stripe subscription re-enabled</div>
+            <div class="small">{{ (session('stripe_uncancel_result')['subscription_id'] ?? '') }}</div>
+        </div>
+    @endif
+
+    @if(session('stripe_cancel_result'))
+        <div class="alert alert-warning">
+            <div class="fw-semibold">Stripe subscription cancellation scheduled</div>
+            <div class="small">{{ (session('stripe_cancel_result')['subscription_id'] ?? '') }}</div>
+        </div>
+    @endif
+
     <div class="row g-3">
         <div class="col-12 col-xl-5">
             <div class="card sl-card">
