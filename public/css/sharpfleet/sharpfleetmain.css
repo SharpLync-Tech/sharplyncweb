@@ -4,6 +4,8 @@
 
 :root {
     --primary-color: #2CBFAE;
+    /* RGB form of --primary-color, used for rgba() effects like glows */
+    --primary-rgb: 44, 191, 174;
     --primary-hover: #25a99a;
     --secondary-color: #0A2A4D;
     --secondary-hover: #1a3a5d;
@@ -84,6 +86,7 @@ html, body {
             height: 100px;
             display: block;
             flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.5));
         }
 
     @keyframes fleet-scroll {
