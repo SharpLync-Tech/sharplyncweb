@@ -29,7 +29,7 @@
         ],
 
         'vehicles' => [
-            'registration_tracking_enabled' => false,
+            'registration_tracking_enabled' => true,
             'servicing_tracking_enabled'    => false,
         ],
 
