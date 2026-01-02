@@ -204,6 +204,30 @@ class PlatformController extends Controller
 
         $timezone = $this->organisationTimezone($organisationId);
 
+        $settings = [];
+        if (!empty($organisation->settings)) {
+            $decoded = json_decode((string) $organisation->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
+            }
+        }
+
+        $billingOverride = [];
+        if (!empty($settings['billing_override']) && is_array($settings['billing_override'])) {
+            $billingOverride = $settings['billing_override'];
+        }
+
+        $billingAccessUntilBrisbane = null;
+        if (!empty($billingOverride['access_until_utc'])) {
+            try {
+                $billingAccessUntilBrisbane = Carbon::parse((string) $billingOverride['access_until_utc'], 'UTC')
+                    ->timezone(self::DISPLAY_TIMEZONE)
+                    ->format('Y-m-d\\TH:i');
+            } catch (\Throwable $e) {
+                $billingAccessUntilBrisbane = null;
+            }
+        }
+
         $trialEndsBrisbane = null;
         if (!empty($organisation->trial_ends_at)) {
             try {
@@ -219,6 +243,12 @@ class PlatformController extends Controller
             'organisation' => $organisation,
             'timezone' => $timezone,
             'trialEndsBrisbane' => $trialEndsBrisbane,
+            'billingMode' => (string) ($billingOverride['mode'] ?? ''),
+            'billingAccessUntilBrisbane' => $billingAccessUntilBrisbane,
+            'billingVehicleCapOverride' => $billingOverride['vehicle_cap_override'] ?? null,
+            'billingPriceOverrideMonthly' => $billingOverride['price_override_monthly'] ?? null,
+            'billingInvoiceReference' => (string) ($billingOverride['invoice_reference'] ?? ''),
+            'billingNotes' => (string) ($billingOverride['notes'] ?? ''),
             'displayTimezone' => self::DISPLAY_TIMEZONE,
         ]);
     }
@@ -242,6 +272,14 @@ class PlatformController extends Controller
             // Admin UI inputs are in Brisbane time
             'trial_ends_at' => 'nullable|string|max:30',
             'extend_trial_days' => 'nullable|integer|min:1|max:3650',
+
+            // Billing / access override (stored in organisations.settings)
+            'billing_mode' => 'nullable|string|in:stripe,manual_invoice,comped',
+            'billing_access_until' => 'nullable|string|max:30',
+            'billing_vehicle_cap_override' => 'nullable|integer|min:1|max:100000',
+            'billing_price_override_monthly' => 'nullable|numeric|min:0|max:100000',
+            'billing_invoice_reference' => 'nullable|string|max:100',
+            'billing_notes' => 'nullable|string|max:1000',
         ]);
 
         DB::connection('sharpfleet')
@@ -288,6 +326,63 @@ class PlatformController extends Controller
                 ]);
         }
 
+        // Update settings JSON (billing override)
+        $previousSettings = [];
+        if (!empty($organisation->settings)) {
+            $decoded = json_decode((string) $organisation->settings, true);
+            if (is_array($decoded)) {
+                $previousSettings = $decoded;
+            }
+        }
+
+        $newSettings = $previousSettings;
+        $previousBillingOverride = (is_array(($previousSettings['billing_override'] ?? null))) ? $previousSettings['billing_override'] : [];
+
+        $mode = trim((string) ($validated['billing_mode'] ?? ''));
+        $invoiceRef = trim((string) ($validated['billing_invoice_reference'] ?? ''));
+        $notes = trim((string) ($validated['billing_notes'] ?? ''));
+
+        $accessUntilUtc = null;
+        $rawAccessUntil = trim((string) ($validated['billing_access_until'] ?? ''));
+        if ($rawAccessUntil !== '') {
+            $accessUntilUtc = Carbon::createFromFormat('Y-m-d\\TH:i', $rawAccessUntil, self::DISPLAY_TIMEZONE)
+                ->timezone('UTC')
+                ->toDateTimeString();
+        }
+
+        $billingOverride = [
+            'mode' => $mode,
+            'access_until_utc' => $accessUntilUtc,
+            'vehicle_cap_override' => $validated['billing_vehicle_cap_override'] ?? null,
+            'price_override_monthly' => $validated['billing_price_override_monthly'] ?? null,
+            'invoice_reference' => $invoiceRef !== '' ? $invoiceRef : null,
+            'notes' => $notes !== '' ? $notes : null,
+            'updated_at_utc' => Carbon::now('UTC')->toDateTimeString(),
+        ];
+
+        // Keep settings tidy: if everything is empty, remove the override key.
+        $hasAnyOverride = ($billingOverride['mode'] !== '')
+            || !empty($billingOverride['access_until_utc'])
+            || !empty($billingOverride['vehicle_cap_override'])
+            || !empty($billingOverride['price_override_monthly'])
+            || !empty($billingOverride['invoice_reference'])
+            || !empty($billingOverride['notes']);
+
+        if ($hasAnyOverride) {
+            $newSettings['billing_override'] = $billingOverride;
+        } else {
+            unset($newSettings['billing_override']);
+        }
+
+        if ($newSettings !== $previousSettings) {
+            DB::connection('sharpfleet')
+                ->table('organisations')
+                ->where('id', $organisationId)
+                ->update([
+                    'settings' => json_encode($newSettings, JSON_UNESCAPED_SLASHES),
+                ]);
+        }
+
         $this->audit->logPlatformAdmin($request, 'sharpfleet.organisation.update', $organisationId, null, [
             'updated' => [
                 'name' => $validated['name'],
@@ -298,6 +393,10 @@ class PlatformController extends Controller
                 'previous_trial_ends_at_utc' => $organisation->trial_ends_at ?? null,
                 'set_trial_ends_at_utc' => $setTrialEndsUtc?->toDateTimeString(),
                 'extend_trial_days' => (int) ($validated['extend_trial_days'] ?? 0),
+            ],
+            'billing_override' => [
+                'previous' => $previousBillingOverride,
+                'new' => $hasAnyOverride ? $billingOverride : null,
             ],
         ]);
 

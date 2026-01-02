@@ -26,7 +26,7 @@ class EntitlementService
 
     public function isTrialExpired(): bool
     {
-        if ($this->isSubscriptionActive()) {
+        if ($this->isSubscriptionActive() || $this->hasActiveAccessOverride()) {
             return false;
         }
 
@@ -90,6 +90,55 @@ class EntitlementService
             }
 
             return (($settings['subscription_status'] ?? null) === 'active');
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function hasActiveAccessOverride(): bool
+    {
+        try {
+            $organisationId = (int) ($this->user['organisation_id'] ?? 0);
+
+            if ($organisationId <= 0) {
+                return false;
+            }
+
+            $org = DB::connection('sharpfleet')
+                ->table('organisations')
+                ->select('settings')
+                ->where('id', $organisationId)
+                ->first();
+
+            if (!$org) {
+                return false;
+            }
+
+            $settings = [];
+            if (!empty($org->settings)) {
+                $decoded = json_decode((string) $org->settings, true);
+                if (is_array($decoded)) {
+                    $settings = $decoded;
+                }
+            }
+
+            $override = $settings['billing_override'] ?? null;
+            if (!is_array($override)) {
+                return false;
+            }
+
+            $mode = (string) ($override['mode'] ?? '');
+            if (!in_array($mode, ['manual_invoice', 'comped'], true)) {
+                return false;
+            }
+
+            $untilUtc = (string) ($override['access_until_utc'] ?? '');
+            if ($untilUtc === '') {
+                return false;
+            }
+
+            $until = Carbon::parse($untilUtc, 'UTC');
+            return Carbon::now('UTC')->lessThanOrEqualTo($until);
         } catch (\Exception $e) {
             return false;
         }

@@ -74,6 +74,57 @@
                     @error('extend_trial_days')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
 
+                <div class="col-12">
+                    <hr>
+                    <div class="fw-semibold mb-2">Billing Mode / Access Override</div>
+                    <div class="text-muted small mb-3">Use this when a subscriber is comped (free), manually invoiced, or needs special handling outside of Stripe.</div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Billing Mode</label>
+                    <select name="billing_mode" class="form-select">
+                        @php
+                            $billingModeValue = old('billing_mode', $billingMode ?? '');
+                        @endphp
+                        <option value="" @selected($billingModeValue === '')>Default (Stripe / Trial rules)</option>
+                        <option value="stripe" @selected($billingModeValue === 'stripe')>Stripe</option>
+                        <option value="manual_invoice" @selected($billingModeValue === 'manual_invoice')>Manual invoice</option>
+                        <option value="comped" @selected($billingModeValue === 'comped')>Comped / Free</option>
+                    </select>
+                    @error('billing_mode')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Access Until (Brisbane time)</label>
+                    <input type="datetime-local" name="billing_access_until" value="{{ old('billing_access_until', $billingAccessUntilBrisbane ?? '') }}" class="form-control">
+                    <div class="text-muted small mt-1">When set (and in the future), access is allowed even if the trial is expired.</div>
+                    @error('billing_access_until')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Vehicle Cap Override (optional)</label>
+                    <input type="number" name="billing_vehicle_cap_override" value="{{ old('billing_vehicle_cap_override', $billingVehicleCapOverride ?? '') }}" class="form-control" min="1" max="100000" placeholder="e.g. 50">
+                    @error('billing_vehicle_cap_override')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Monthly Price Override (optional)</label>
+                    <input type="number" step="0.01" name="billing_price_override_monthly" value="{{ old('billing_price_override_monthly', $billingPriceOverrideMonthly ?? '') }}" class="form-control" min="0" max="100000" placeholder="e.g. 199.00">
+                    @error('billing_price_override_monthly')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Invoice Reference (optional)</label>
+                    <input type="text" name="billing_invoice_reference" value="{{ old('billing_invoice_reference', $billingInvoiceReference ?? '') }}" class="form-control" maxlength="100" placeholder="e.g. INV-10023">
+                    @error('billing_invoice_reference')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Billing Notes (optional)</label>
+                    <textarea name="billing_notes" class="form-control" rows="3" maxlength="1000" placeholder="Why was this overridden? (NFP, referral deal, enterprise, etc.)">{{ old('billing_notes', $billingNotes ?? '') }}</textarea>
+                    @error('billing_notes')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
                 <div class="col-12 d-flex gap-2">
                     <button class="btn btn-primary" type="submit">Save Changes</button>
                     <a class="btn btn-outline-secondary" href="{{ route('admin.sharpfleet.organisations.show', $organisation->id) }}">Cancel</a>
