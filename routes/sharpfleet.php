@@ -334,6 +334,7 @@ Route::prefix('app/sharpfleet')
             Route::get('/setup/company', [SetupWizardController::class, 'company']);
             Route::post('/setup/company', [SetupWizardController::class, 'storeCompany']);
             Route::post('/setup/finish', [SetupWizardController::class, 'finish']);
+            Route::post('/setup/rerun', [SetupWizardController::class, 'rerun']);
 
             // Users (driver access)
             Route::get('/users', [UserController::class, 'index']);

@@ -128,6 +128,41 @@ class SetupWizardController extends Controller
             ->with('success', 'Setup complete.');
     }
 
+    /**
+     * Reset the setup completion flag so the wizard can be re-run (admin only).
+     */
+    public function rerun(Request $request): RedirectResponse
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
+            abort(403, 'Admin access only');
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $settingsService = new CompanySettingsService($organisationId);
+        $settings = $settingsService->all();
+
+        if (!isset($settings['setup']) || !is_array($settings['setup'])) {
+            $settings['setup'] = [];
+        }
+
+        $settings['setup']['completed_at'] = null;
+
+        DB::connection('sharpfleet')
+            ->table('company_settings')
+            ->updateOrInsert(
+                ['organisation_id' => $organisationId],
+                [
+                    'organisation_id' => $organisationId,
+                    'settings_json' => json_encode($settings),
+                ]
+            );
+
+        return redirect('/app/sharpfleet/admin/setup/company')
+            ->with('success', 'Setup wizard reset.');
+    }
+
     private function auNzTimezones(): array
     {
         return [

@@ -56,6 +56,15 @@
         <div class="sf-help__calloutTitle">Recommended</div>
         <div>Do the setup in this order. It prevents driver confusion and reduces “can’t start trip” issues.</div>
     </div>
+
+    <div class="sf-help__callout" style="margin-top: 12px;">
+        <div class="sf-help__calloutTitle">Testing</div>
+        <div class="mb-2">Need to test onboarding again? You can re-run the setup wizard for your company.</div>
+        <form method="POST" action="/app/sharpfleet/admin/setup/rerun" onsubmit="return confirm('Re-run the setup wizard? Admin pages will require completing setup again.');">
+            @csrf
+            <button class="btn btn-secondary btn-sm" type="submit">Re-run setup wizard</button>
+        </form>
+    </div>
 </section>
 
 <section id="admin-setup-checklist" data-sf-help-section class="sf-help__section">

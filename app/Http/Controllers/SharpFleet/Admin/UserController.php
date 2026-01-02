@@ -18,6 +18,7 @@ class UserController extends Controller
             ->table('users')
             ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at')
             ->where('organisation_id', $organisationId)
+            ->where('email', 'not like', 'deleted+%@example.invalid')
             ->where(function ($q) {
                 $q->whereNull('account_status')
                     ->orWhere('account_status', '!=', 'deleted');
@@ -42,6 +43,7 @@ class UserController extends Controller
             ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
+            ->where('email', 'not like', 'deleted+%@example.invalid')
             ->where(function ($q) {
                 $q->whereNull('account_status')
                     ->orWhere('account_status', '!=', 'deleted');
@@ -120,7 +122,10 @@ class UserController extends Controller
                 ->withErrors(['error' => 'Only driver accounts can be deleted.']);
         }
 
-        if (($user->account_status ?? null) === 'deleted') {
+        $email = strtolower(trim((string) ($user->email ?? '')));
+        $alreadyDeleted = str_starts_with($email, 'deleted+') && str_ends_with($email, '@example.invalid');
+
+        if ($alreadyDeleted || ($user->account_status ?? null) === 'deleted') {
             return redirect('/app/sharpfleet/admin/users')
                 ->with('success', 'Driver already deleted.');
         }
@@ -131,7 +136,6 @@ class UserController extends Controller
 
         $updates = [
             'email' => $deletedEmail,
-            'account_status' => 'deleted',
             'is_driver' => 0,
             'updated_at' => now(),
         ];
