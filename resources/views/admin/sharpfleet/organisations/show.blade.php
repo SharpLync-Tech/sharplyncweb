@@ -78,7 +78,9 @@
                     </div>
 
                     <div class="fw-semibold mb-2">Billing identifiers (from organisations.settings)</div>
-                    @php($b = $billingFromSettings ?? [])
+                    @php
+                        $b = $billingFromSettings ?? [];
+                    @endphp
                     <div class="table-responsive mb-3">
                         <table class="table table-sm align-middle mb-0">
                             <tbody>
@@ -131,10 +133,14 @@
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">{{ $log->action ?? '—' }}</div>
-                                                @php($ctxJson = (string)($log->context_json ?? ''))
-                                                @php($ctxArr = $ctxJson !== '' ? (json_decode($ctxJson, true) ?? []) : [])
+                                                @php
+                                                    $ctxJson = (string) ($log->context_json ?? '');
+                                                    $ctxArr = $ctxJson !== '' ? (json_decode($ctxJson, true) ?? []) : [];
+                                                @endphp
                                                 @if(!empty($ctxArr['monthly_estimate']))
-                                                    @php($me = $ctxArr['monthly_estimate'] ?? [])
+                                                    @php
+                                                        $me = $ctxArr['monthly_estimate'] ?? [];
+                                                    @endphp
                                                     <div class="text-muted small">
                                                         ${{ number_format((float) ($me['from'] ?? 0), 2) }} → ${{ number_format((float) ($me['to'] ?? 0), 2) }}
                                                     </div>
