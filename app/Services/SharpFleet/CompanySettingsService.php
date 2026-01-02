@@ -331,10 +331,10 @@ class CompanySettingsService
             = $request->boolean('enable_customer_capture');
 
         $settings['customer']['allow_select']
-            = $request->boolean('allow_customer_select', true);
+            = $request->boolean('allow_customer_select');
 
         $settings['customer']['allow_manual']
-            = $request->boolean('allow_customer_manual', true);
+            = $request->boolean('allow_customer_manual');
 
         // ---- Safety check ----
         $settings['safety_check']['enabled']
@@ -345,7 +345,7 @@ class CompanySettingsService
             = $request->boolean('enable_fault_reporting');
 
         $settings['faults']['allow_during_trip']
-            = $request->boolean('allow_fault_during_trip', true);
+            = $request->boolean('allow_fault_during_trip');
 
         $settings['faults']['require_end_of_trip_check']
             = $request->boolean('require_end_of_trip_fault_check');

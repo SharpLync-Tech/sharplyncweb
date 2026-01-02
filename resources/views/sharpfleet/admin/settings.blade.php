@@ -40,20 +40,14 @@
         ],
     ], $settings ?? []);
 
-    $setupCompletedAt = $settings['setup']['completed_at'] ?? null;
-    $isSetupIncomplete = empty($setupCompletedAt);
 @endphp
 
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">Company Settings</h1>
         <p class="page-description">
-            @if($isSetupIncomplete)
-                Step 2 of 2 — Configure settings.
-            @else
             These settings control how drivers use SharpFleet when starting and ending trips.
             Changes apply immediately to all drivers in your organisation.
-            @endif
         </p>
     </div>
 
@@ -304,12 +298,8 @@
 
         {{-- Actions --}}
         <div class="btn-group">
-            @if($isSetupIncomplete)
-                <button type="submit" name="setup_finish" value="1" class="btn btn-primary">Finish setup</button>
-            @else
-                <button type="submit" name="save" value="1" class="btn btn-primary">Save settings</button>
-                <button type="submit" name="save_and_return" value="1" class="btn btn-secondary">Save & return to Company</button>
-            @endif
+            <button type="submit" name="save" value="1" class="btn btn-primary">Save settings</button>
+            <button type="submit" name="save_and_return" value="1" class="btn btn-secondary">Save & return to Company</button>
         </div>
 
         <div class="mt-5 text-muted small">

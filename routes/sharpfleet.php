@@ -333,6 +333,21 @@ Route::prefix('app/sharpfleet')
             // Setup wizard (mandatory for first-time admin setup)
             Route::get('/setup/company', [SetupWizardController::class, 'company']);
             Route::post('/setup/company', [SetupWizardController::class, 'storeCompany']);
+            Route::get('/setup/settings/presence', [SetupWizardController::class, 'settingsPresence']);
+            Route::post('/setup/settings/presence', [SetupWizardController::class, 'storeSettingsPresence']);
+            Route::get('/setup/settings/trip-rules', [SetupWizardController::class, 'settingsTripRules']);
+            Route::post('/setup/settings/trip-rules', [SetupWizardController::class, 'storeSettingsTripRules']);
+            Route::get('/setup/settings/vehicle-tracking', [SetupWizardController::class, 'settingsVehicleTracking']);
+            Route::post('/setup/settings/vehicle-tracking', [SetupWizardController::class, 'storeSettingsVehicleTracking']);
+            Route::get('/setup/settings/reminders', [SetupWizardController::class, 'settingsReminders']);
+            Route::post('/setup/settings/reminders', [SetupWizardController::class, 'storeSettingsReminders']);
+            Route::get('/setup/settings/client-addresses', [SetupWizardController::class, 'settingsClientAddresses']);
+            Route::post('/setup/settings/client-addresses', [SetupWizardController::class, 'storeSettingsClientAddresses']);
+            Route::get('/setup/settings/safety-check', [SetupWizardController::class, 'settingsSafetyCheck']);
+            Route::post('/setup/settings/safety-check', [SetupWizardController::class, 'storeSettingsSafetyCheck']);
+            Route::get('/setup/settings/incident-reporting', [SetupWizardController::class, 'settingsIncidentReporting']);
+            Route::post('/setup/settings/incident-reporting', [SetupWizardController::class, 'storeSettingsIncidentReporting']);
+            Route::get('/setup/finish', [SetupWizardController::class, 'finishView']);
             Route::post('/setup/finish', [SetupWizardController::class, 'finish']);
             Route::post('/setup/rerun', [SetupWizardController::class, 'rerun']);
 

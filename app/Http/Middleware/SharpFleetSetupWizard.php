@@ -22,12 +22,10 @@ class SharpFleetSetupWizard
             return $next($request);
         }
 
-        // Allow wizard pages + settings page while onboarding.
+            // Always allow setup wizard routes during onboarding.
         $path = ltrim($request->path(), '/');
-        if (
-            str_starts_with($path, 'app/sharpfleet/admin/setup') ||
-            $path === 'app/sharpfleet/admin/settings'
-        ) {
+            $isWizardRoute = str_starts_with($path, 'app/sharpfleet/admin/setup');
+            if ($isWizardRoute) {
             return $next($request);
         }
 

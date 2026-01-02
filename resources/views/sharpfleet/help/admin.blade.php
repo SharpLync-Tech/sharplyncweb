@@ -13,13 +13,18 @@
             'children' => [
                 ['id' => 'admin-setup-checklist', 'title' => 'First-time checklist'],
                 ['id' => 'admin-setup-rerun', 'title' => 'Re-run setup wizard (testing)'],
-                ['id' => 'admin-setup-step-company', 'title' => 'Step 1 — Company profile'],
-                ['id' => 'admin-setup-step-timezone', 'title' => 'Step 2 — Timezone'],
-                ['id' => 'admin-setup-step-vehicles', 'title' => 'Step 3 — Vehicles'],
-                ['id' => 'admin-setup-step-trip-rules', 'title' => 'Step 4 — Trip rules'],
-                ['id' => 'admin-setup-step-safety', 'title' => 'Step 5 — Safety checks (optional)'],
-                ['id' => 'admin-setup-step-invite', 'title' => 'Step 6 — Invite drivers'],
-                ['id' => 'admin-setup-step-test-trip', 'title' => 'Step 7 — Run a test trip'],
+                ['id' => 'admin-setup-step-company', 'title' => 'Step 1 — Company details'],
+                ['id' => 'admin-setup-step-presence', 'title' => 'Step 2 — Passenger/client presence'],
+                ['id' => 'admin-setup-step-trip-rules', 'title' => 'Step 3 — Trip rules'],
+                ['id' => 'admin-setup-step-vehicle-tracking', 'title' => 'Step 4 — Vehicle tracking'],
+                ['id' => 'admin-setup-step-reminders', 'title' => 'Step 5 — Reminder emails'],
+                ['id' => 'admin-setup-step-client-addresses', 'title' => 'Step 6 — Client addresses (optional)'],
+                ['id' => 'admin-setup-step-safety', 'title' => 'Step 7 — Safety checks (optional)'],
+                ['id' => 'admin-setup-step-incident', 'title' => 'Step 8 — Vehicle issue/accident reporting (optional)'],
+                ['id' => 'admin-setup-step-finish', 'title' => 'Step 9 — Finish setup'],
+                ['id' => 'admin-setup-next-vehicles', 'title' => 'Next — Add vehicles'],
+                ['id' => 'admin-setup-step-invite', 'title' => 'Next — Invite drivers'],
+                ['id' => 'admin-setup-step-test-trip', 'title' => 'Next — Run a test trip'],
             ],
         ],
         [
@@ -69,7 +74,7 @@
         <p class="mb-2">This is for testing. It resets the “setup complete” flag and sends you back to Step 1.</p>
         <div class="sf-help__callout sf-help__callout--important">
             <div class="sf-help__calloutTitle">Important</div>
-            <div>Admin pages will require completing setup again until you finish Step 2.</div>
+            <div>Admin pages will require completing setup again until you finish Step 9.</div>
         </div>
         <div class="sf-help__actions">
             <form method="POST" action="/app/sharpfleet/admin/setup/rerun" onsubmit="return confirm('Re-run the setup wizard? Admin pages will require completing setup again.');">
@@ -90,11 +95,16 @@
                 <span class="sf-help__badge">~10–20 minutes</span>
             </div>
             <ol class="mb-0">
-                <li>Company profile</li>
-                <li>Timezone</li>
-                <li>Vehicles</li>
+                <li>Company details</li>
+                <li>Passenger/client presence</li>
                 <li>Trip rules</li>
+                <li>Vehicle tracking</li>
+                <li>Reminder emails</li>
+                <li>Client addresses (optional)</li>
                 <li>Safety checks (optional)</li>
+                <li>Vehicle issue/accident reporting (optional)</li>
+                <li>Finish setup</li>
+                <li>Add vehicles</li>
                 <li>Invite drivers</li>
                 <li>Run a test trip</li>
             </ol>
@@ -117,44 +127,158 @@
 </section>
 
 <section id="admin-setup-step-company" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 1 — Company profile</h3>
+    <h3 class="sf-help__sectionTitle">Step 1 — Company details</h3>
     <div class="sf-help__card">
         <div class="sf-help__cardHeader">
-            <div class="fw-bold">Check your details</div>
-            <span class="sf-help__badge">Company</span>
+            <div class="fw-bold">Set company name and time zone</div>
+            <span class="sf-help__badge">Setup Wizard</span>
         </div>
-        <p class="mb-2">Confirm your company name and basic details. This keeps reports and exports consistent.</p>
+        <p class="mb-2">Set your company name, time zone, and (optionally) industry. This affects how times show across trips, faults, bookings, and reports.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/company">Open Company Overview</a>
-            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/company/profile">Edit Company Details</a>
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/company">Open Step 1</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Why it matters</div>
-            <div>These details appear on reports and help drivers know they’re in the right place.</div>
+            <div>Getting the time zone right prevents confusing trip times and report timestamps later.</div>
         </div>
     </div>
 </section>
 
-<section id="admin-setup-step-timezone" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 2 — Timezone</h3>
+<section id="admin-setup-step-presence" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 2 — Passenger/client presence</h3>
     <div class="sf-help__card">
         <div class="sf-help__cardHeader">
-            <div class="fw-bold">Set your timezone</div>
-            <span class="sf-help__badge">Company Settings</span>
+            <div class="fw-bold">Decide what drivers must record</div>
+            <span class="sf-help__badge">Setup Wizard</span>
         </div>
-        <p class="mb-2">Timezone controls how times display on trips, bookings, faults, and reports.</p>
+        <p class="mb-2">Choose whether drivers must record if a passenger/client was present, and (optionally) capture a customer name for billing/reporting.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/presence">Open Step 2</a>
         </div>
         <div class="sf-help__callout sf-help__callout--important">
             <div class="sf-help__calloutTitle">Important</div>
-            <div>Set timezone before drivers start logging trips. Changing it later can make times look confusing.</div>
+            <div>If you make it required, drivers will be blocked from starting a trip until they answer it.</div>
         </div>
     </div>
 </section>
 
-<section id="admin-setup-step-vehicles" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 3 — Vehicles</h3>
+<section id="admin-setup-step-trip-rules" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 3 — Trip rules</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Choose what drivers must enter</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">Trip rules decide what shows on the driver screen. If something is required, drivers can’t start a trip until it’s filled in.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/trip-rules">Open Step 3</a>
+        </div>
+        <div class="sf-help__callout sf-help__callout--recommended">
+            <div class="sf-help__calloutTitle">Recommended</div>
+            <div>Start with the minimum required fields. You can tighten rules later once everyone is comfortable.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-vehicle-tracking" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 4 — Vehicle tracking</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Choose what admin-managed vehicle details you track</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">Turn on only what you plan to maintain (rego and servicing). These settings control which fields appear on vehicle profiles and which reminders can be used.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/vehicle-tracking">Open Step 4</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>If you enable rego tracking, you’ll see rego fields when creating/editing vehicles.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-reminders" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 5 — Reminder emails</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Set your “due soon” windows</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">These thresholds control when vehicles are marked as due soon and when reminder emails are sent. They apply at a company level (not per vehicle).</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/reminders">Open Step 5</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Example</div>
+            <div>30 days means vehicles become “Due soon” 30 days before the due date.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-client-addresses" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 6 — Client addresses (optional)</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Decide if you need address capture</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">Enable address capture only if you need it for billing or job tracking. Leaving it off reduces sensitive data captured by drivers.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/client-addresses">Open Step 6</a>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-safety" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 7 — Safety checks (optional)</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Set up a quick checklist</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">If you enable safety checks, drivers will be prompted to complete them before starting a trip.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/safety-check">Open Step 7</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/safety-checks">Manage checklist</a>
+        </div>
+        <div class="sf-help__callout">
+            <div class="sf-help__calloutTitle">Tip</div>
+            <div>Keep it short. Drivers are more likely to complete a checklist that takes under a minute.</div>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-incident" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 8 — Vehicle issue/accident reporting (optional)</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Enable incident reporting if you need it</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">Enable this if drivers need to report vehicle issues or accidents. It adds a reporting option in the driver portal.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/incident-reporting">Open Step 8</a>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-step-finish" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Step 9 — Finish setup</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Complete onboarding</div>
+            <span class="sf-help__badge">Setup Wizard</span>
+        </div>
+        <p class="mb-2">Finish setup to unlock the rest of the admin area. You can change settings later under Company Settings.</p>
+        <div class="sf-help__actions">
+            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/finish">Open Step 9</a>
+        </div>
+    </div>
+</section>
+
+<section id="admin-setup-next-vehicles" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Next — Add vehicles</h3>
     <div class="sf-help__card">
         <div class="sf-help__cardHeader">
             <div class="fw-bold">Add your vehicles</div>
@@ -171,44 +295,8 @@
     </div>
 </section>
 
-<section id="admin-setup-step-trip-rules" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 4 — Trip rules</h3>
-    <div class="sf-help__card">
-        <div class="sf-help__cardHeader">
-            <div class="fw-bold">Choose what drivers must enter</div>
-            <span class="sf-help__badge">Company Settings</span>
-        </div>
-        <p class="mb-2">Trip rules decide what shows on the driver screen. If something is required, drivers can’t start a trip until it’s filled in.</p>
-        <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
-        </div>
-        <div class="sf-help__callout sf-help__callout--recommended">
-            <div class="sf-help__calloutTitle">Recommended</div>
-            <div>Start with the minimum required fields. You can tighten rules later once everyone is comfortable.</div>
-        </div>
-    </div>
-</section>
-
-<section id="admin-setup-step-safety" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 5 — Safety checks (optional)</h3>
-    <div class="sf-help__card">
-        <div class="sf-help__cardHeader">
-            <div class="fw-bold">Set up a quick checklist</div>
-            <span class="sf-help__badge">Safety Checks</span>
-        </div>
-        <p class="mb-2">If you enable safety checks, drivers will be prompted to complete them before starting a trip.</p>
-        <div class="sf-help__actions">
-            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/safety-checks">Open Safety Checks</a>
-        </div>
-        <div class="sf-help__callout">
-            <div class="sf-help__calloutTitle">Tip</div>
-            <div>Keep it short. Drivers are more likely to complete a checklist that takes under a minute.</div>
-        </div>
-    </div>
-</section>
-
 <section id="admin-setup-step-invite" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 6 — Invite drivers</h3>
+    <h3 class="sf-help__sectionTitle">Next — Invite drivers</h3>
     <div class="sf-help__card">
         <div class="sf-help__cardHeader">
             <div class="fw-bold">Invite your team</div>
@@ -227,7 +315,7 @@
 </section>
 
 <section id="admin-setup-step-test-trip" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">Step 7 — Run a test trip</h3>
+    <h3 class="sf-help__sectionTitle">Next — Run a test trip</h3>
     <div class="sf-help__card">
         <div class="sf-help__cardHeader">
             <div class="fw-bold">Test the driver experience</div>
