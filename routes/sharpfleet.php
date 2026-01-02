@@ -337,6 +337,7 @@ Route::prefix('app/sharpfleet')
             Route::post('/users/add', [AdminDriverInviteController::class, 'storeManual']);
             Route::get('/users/import', [AdminDriverInviteController::class, 'createImport']);
             Route::post('/users/import', [AdminDriverInviteController::class, 'storeImport']);
+            Route::post('/users/send-invites', [AdminDriverInviteController::class, 'sendInvites']);
             Route::post('/users/{userId}/resend-invite', [AdminDriverInviteController::class, 'resend'])->whereNumber('userId');
             Route::get('/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
             Route::post('/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');

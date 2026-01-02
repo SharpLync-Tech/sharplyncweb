@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Schema;
 
 class DriverInviteController extends Controller
 {
@@ -163,9 +162,6 @@ class DriverInviteController extends Controller
             ->where('email', $email)
             ->first();
 
-        $token = bin2hex(random_bytes(32));
-        $expiresAt = Carbon::now()->addHours(24);
-
         if ($existing) {
             $sameOrg = (int) ($existing->organisation_id ?? 0) === $organisationId;
             $isPending = ($existing->account_status ?? null) === 'pending';
@@ -173,8 +169,6 @@ class DriverInviteController extends Controller
 
             if ($sameOrg && $isPending && $isDriverRole) {
                 $updates = [
-                    'activation_token' => $token,
-                    'activation_expires_at' => $expiresAt,
                     'updated_at' => Carbon::now(),
                 ];
 
@@ -191,14 +185,8 @@ class DriverInviteController extends Controller
                     ->where('id', $existing->id)
                     ->update($updates);
 
-                Mail::to($email)->send(new DriverInvitation((object) [
-                    'email' => $email,
-                    'organisation_name' => $organisation->name,
-                    'activation_token' => $token,
-                ]));
-
                 return redirect('/app/sharpfleet/admin/users')
-                    ->with('success', 'Invitation re-sent.');
+                    ->with('success', 'Driver added.');
             }
 
             return back()->withErrors([
@@ -216,20 +204,14 @@ class DriverInviteController extends Controller
                 'role' => 'driver',
                 'is_driver' => 1,
                 'account_status' => 'pending',
-                'activation_token' => $token,
-                'activation_expires_at' => $expiresAt,
+                'activation_token' => null,
+                'activation_expires_at' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
 
-        Mail::to($email)->send(new DriverInvitation((object) [
-            'email' => $email,
-            'organisation_name' => $organisation->name,
-            'activation_token' => $token,
-        ]));
-
         return redirect('/app/sharpfleet/admin/users')
-            ->with('success', 'Driver added and invitation sent.');
+            ->with('success', 'Driver added.');
     }
 
     public function createImport(Request $request)
@@ -280,7 +262,7 @@ class DriverInviteController extends Controller
         }
 
         $created = 0;
-        $resent = 0;
+        $updated = 0;
         $skipped = 0;
         $invalid = 0;
 
@@ -339,9 +321,6 @@ class DriverInviteController extends Controller
                 ->where('email', $email)
                 ->first();
 
-            $token = bin2hex(random_bytes(32));
-            $expiresAt = Carbon::now()->addHours(24);
-
             if ($existing) {
                 $sameOrg = (int) ($existing->organisation_id ?? 0) === $organisationId;
                 $isPending = ($existing->account_status ?? null) === 'pending';
@@ -349,8 +328,6 @@ class DriverInviteController extends Controller
 
                 if ($sameOrg && $isPending && $isDriverRole) {
                     $updates = [
-                        'activation_token' => $token,
-                        'activation_expires_at' => $expiresAt,
                         'updated_at' => Carbon::now(),
                     ];
 
@@ -366,13 +343,7 @@ class DriverInviteController extends Controller
                         ->where('id', $existing->id)
                         ->update($updates);
 
-                    Mail::to($email)->send(new DriverInvitation((object) [
-                        'email' => $email,
-                        'organisation_name' => $organisation->name,
-                        'activation_token' => $token,
-                    ]));
-
-                    $resent++;
+                    $updated++;
                     continue;
                 }
 
@@ -390,33 +361,103 @@ class DriverInviteController extends Controller
                     'role' => 'driver',
                     'is_driver' => 1,
                     'account_status' => 'pending',
-                    'activation_token' => $token,
-                    'activation_expires_at' => $expiresAt,
+                    'activation_token' => null,
+                    'activation_expires_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
-
-            Mail::to($email)->send(new DriverInvitation((object) [
-                'email' => $email,
-                'organisation_name' => $organisation->name,
-                'activation_token' => $token,
-            ]));
-
             $created++;
         }
 
         fclose($handle);
 
         $message = sprintf(
-            'Import complete: %d created, %d re-sent, %d skipped, %d invalid.',
+            'Import complete: %d added, %d updated, %d skipped, %d invalid.',
             $created,
-            $resent,
+            $updated,
             $skipped,
             $invalid
         );
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', $message);
+    }
+
+    public function sendInvites(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        $validated = $request->validate([
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['integer'],
+        ]);
+
+        $organisation = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->select('id', 'name')
+            ->where('id', $organisationId)
+            ->first();
+
+        if (!$organisation) {
+            abort(403, 'Organisation not found.');
+        }
+
+        $sent = 0;
+        $skipped = 0;
+        $failed = 0;
+
+        foreach ($validated['user_ids'] as $userId) {
+            $userId = (int) $userId;
+
+            $user = DB::connection('sharpfleet')
+                ->table('users')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $userId)
+                ->first();
+
+            if (!$user) {
+                $skipped++;
+                continue;
+            }
+
+            if (($user->role ?? null) !== 'driver' || ($user->account_status ?? null) !== 'pending') {
+                $skipped++;
+                continue;
+            }
+
+            $email = strtolower(trim((string) ($user->email ?? '')));
+            if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $skipped++;
+                continue;
+            }
+
+            $token = bin2hex(random_bytes(32));
+            $expiresAt = Carbon::now()->addHours(24);
+
+            DB::connection('sharpfleet')
+                ->table('users')
+                ->where('id', $userId)
+                ->update([
+                    'activation_token' => $token,
+                    'activation_expires_at' => $expiresAt,
+                    'updated_at' => Carbon::now(),
+                ]);
+
+            try {
+                Mail::to($email)->send(new DriverInvitation((object) [
+                    'email' => $email,
+                    'organisation_name' => $organisation->name,
+                    'activation_token' => $token,
+                ]));
+                $sent++;
+            } catch (\Throwable $e) {
+                $failed++;
+            }
+        }
+
+        return redirect('/app/sharpfleet/admin/users')
+            ->with('success', sprintf('Invites sent: %d. Skipped: %d. Failed: %d.', $sent, $skipped, $failed));
     }
 
     public function resend(Request $request, int $userId)

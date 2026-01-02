@@ -8,7 +8,7 @@
     <div class="page-header">
         <h1 class="page-title">Add Driver</h1>
         <p class="page-description">
-            Create a driver account and send a one-time invitation link. The link expires after 24 hours.
+            Create driver accounts now, then send invitations when you are ready.
         </p>
     </div>
 
@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Add and send invite</button>
+                    <button type="submit" class="btn btn-primary">Add driver</button>
                     <a href="/app/sharpfleet/admin/users" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>

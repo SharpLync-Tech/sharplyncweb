@@ -8,7 +8,7 @@
     <div class="page-header">
         <h1 class="page-title">Import Drivers (CSV)</h1>
         <p class="page-description">
-            Upload a CSV and SharpFleet will create pending driver accounts and send invitation emails.
+            Upload a CSV to create pending driver accounts. You can send invitations from the Users page when you are ready.
         </p>
     </div>
 
@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Import and send invites</button>
+                    <button type="submit" class="btn btn-primary">Import drivers</button>
                     <a href="/app/sharpfleet/admin/users" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
