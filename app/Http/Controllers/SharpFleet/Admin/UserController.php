@@ -17,6 +17,10 @@ class UserController extends Controller
             ->table('users')
             ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at')
             ->where('organisation_id', $organisationId)
+            ->where(function ($q) {
+                $q->whereNull('account_status')
+                    ->orWhere('account_status', '!=', 'deleted');
+            })
             ->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -37,6 +41,10 @@ class UserController extends Controller
             ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
+            ->where(function ($q) {
+                $q->whereNull('account_status')
+                    ->orWhere('account_status', '!=', 'deleted');
+            })
             ->first();
 
         if (!$user) {
@@ -81,5 +89,61 @@ class UserController extends Controller
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'User updated.');
+    }
+
+    public function destroy(Request $request, int $userId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $currentUserId = (int) ($fleetUser['id'] ?? 0);
+
+        if ($currentUserId === $userId) {
+            return redirect('/app/sharpfleet/admin/users')
+                ->withErrors(['error' => 'You cannot delete your own account.']);
+        }
+
+        $user = DB::connection('sharpfleet')
+            ->table('users')
+            ->select('id', 'email', 'role', 'account_status')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        // Only allow deleting drivers via this screen.
+        if (($user->role ?? null) !== 'driver') {
+            return redirect('/app/sharpfleet/admin/users')
+                ->withErrors(['error' => 'Only driver accounts can be deleted.']);
+        }
+
+        if (($user->account_status ?? null) === 'deleted') {
+            return redirect('/app/sharpfleet/admin/users')
+                ->with('success', 'Driver already deleted.');
+        }
+
+        // Soft-delete (keeps historical references intact) but prevents future logins.
+        // Also change email to avoid unique constraint collisions.
+        $deletedEmail = 'deleted+' . $userId . '+' . now()->timestamp . '@example.invalid';
+
+        DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->update([
+                'email' => $deletedEmail,
+                'account_status' => 'deleted',
+                'is_driver' => 0,
+                'password_hash' => null,
+                'remember_token' => null,
+                'activation_token' => null,
+                'activation_expires_at' => null,
+                'updated_at' => now(),
+            ]);
+
+        return redirect('/app/sharpfleet/admin/users')
+            ->with('success', 'Driver deleted.');
     }
 }

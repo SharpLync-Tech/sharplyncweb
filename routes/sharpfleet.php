@@ -336,6 +336,7 @@ Route::prefix('app/sharpfleet')
             Route::post('/users/{userId}/resend-invite', [AdminDriverInviteController::class, 'resend'])->whereNumber('userId');
             Route::get('/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
             Route::post('/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');
+            Route::post('/users/{userId}/delete', [UserController::class, 'destroy'])->whereNumber('userId');
 
             // Trial expired page (no middleware needed)
             Route::get('/trial-expired', function () {

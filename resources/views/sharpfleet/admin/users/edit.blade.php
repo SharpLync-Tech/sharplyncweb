@@ -57,6 +57,19 @@
                 <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
+
+        @if(($user->role ?? '') === 'driver')
+            <hr class="my-4">
+
+            <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/delete') }}"
+                  onsubmit="return confirm('Delete this driver? This will remove their access to SharpFleet and cannot be undone.');">
+                @csrf
+
+                <button type="submit" class="btn btn-danger">
+                    Delete driver
+                </button>
+            </form>
+        @endif
     </div>
 </div>
 
