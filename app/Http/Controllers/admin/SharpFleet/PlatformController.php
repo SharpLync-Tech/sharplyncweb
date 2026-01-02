@@ -284,10 +284,14 @@ class PlatformController extends Controller
             'billing_price_override_monthly' => 'nullable|numeric|min:0|max:100000',
             'billing_invoice_reference' => 'nullable|string|max:100',
             'billing_notes' => 'nullable|string|max:1000',
+
+            // Stripe admin actions
+            'stripe_admin_action' => 'nullable|string|in:uncancel,create_checkout',
         ]);
 
         $selectedBillingMode = trim((string) ($validated['billing_mode'] ?? ''));
         $rawBillingAccessUntil = trim((string) ($validated['billing_access_until'] ?? ''));
+        $stripeAdminAction = trim((string) ($validated['stripe_admin_action'] ?? ''));
 
         if (in_array($selectedBillingMode, ['manual_invoice', 'comped'], true) && $rawBillingAccessUntil === '') {
             throw ValidationException::withMessages([
@@ -305,8 +309,18 @@ class PlatformController extends Controller
         }
 
         $stripeCancelResult = null;
+        $stripeUncancelResult = null;
+        $stripeCheckoutUrl = null;
+
+        $existingStripeSubId = trim((string) ($previousSettings['stripe_subscription_id'] ?? ''));
+
+        if ($stripeAdminAction !== '' && !in_array($selectedBillingMode, ['', 'stripe'], true)) {
+            throw ValidationException::withMessages([
+                'stripe_admin_action' => 'Stripe Admin Action can only be used when Billing Mode is Default or Stripe.',
+            ]);
+        }
+
         if (in_array($selectedBillingMode, ['manual_invoice', 'comped'], true)) {
-            $existingStripeSubId = trim((string) ($previousSettings['stripe_subscription_id'] ?? ''));
             if ($existingStripeSubId !== '') {
                 try {
                     // Default: cancel at period end to avoid mid-cycle cut-off.
@@ -320,6 +334,55 @@ class PlatformController extends Controller
                         'billing_mode' => 'Unable to cancel the Stripe subscription. Billing mode was not changed. (' . $e->getMessage() . ')',
                     ]);
                 }
+            }
+        } elseif ($stripeAdminAction === 'uncancel') {
+            if ($existingStripeSubId === '') {
+                throw ValidationException::withMessages([
+                    'stripe_admin_action' => 'No Stripe subscription id is stored for this organisation. Use "Create Stripe Checkout link" instead.',
+                ]);
+            }
+
+            try {
+                $stripeUncancelResult = $this->stripeSubscriptions->uncancelSubscription($existingStripeSubId);
+
+                // Ensure our local settings treat the subscription as active again.
+                $previousSettings['subscription_status'] = 'active';
+                unset($previousSettings['subscription_cancel_requested_at']);
+            } catch (\Throwable $e) {
+                throw ValidationException::withMessages([
+                    'stripe_admin_action' => 'Unable to re-enable the Stripe subscription. (' . $e->getMessage() . ')',
+                ]);
+            }
+        } elseif ($stripeAdminAction === 'create_checkout') {
+            // Avoid creating a second subscription when our settings already say active.
+            if (($previousSettings['subscription_status'] ?? null) === 'active') {
+                throw ValidationException::withMessages([
+                    'stripe_admin_action' => 'Subscription is already active in Stripe settings. Cancel first or use Re-enable Stripe if it was scheduled to cancel.',
+                ]);
+            }
+
+            $activeVehiclesCount = (int) DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->where('organisation_id', $organisationId)
+                ->where('is_active', 1)
+                ->count();
+
+            if ($activeVehiclesCount < 1) {
+                throw ValidationException::withMessages([
+                    'stripe_admin_action' => 'Organisation must have at least 1 active vehicle to create a Stripe subscription checkout link.',
+                ]);
+            }
+
+            try {
+                $stripeCheckoutUrl = $this->stripeSubscriptions->createCheckoutUrl(
+                    $organisationId,
+                    $activeVehiclesCount,
+                    $request->getSchemeAndHttpHost()
+                );
+            } catch (\Throwable $e) {
+                throw ValidationException::withMessages([
+                    'stripe_admin_action' => 'Unable to create a Stripe Checkout link. (' . $e->getMessage() . ')',
+                ]);
             }
         }
 
@@ -396,6 +459,10 @@ class PlatformController extends Controller
             $billingOverride['stripe_cancel'] = $stripeCancelResult;
         }
 
+        if (is_array($stripeUncancelResult)) {
+            $billingOverride['stripe_uncancel'] = $stripeUncancelResult;
+        }
+
         // Keep settings tidy: if everything is empty, remove the override key.
         $hasAnyOverride = ($billingOverride['mode'] !== '')
             || !empty($billingOverride['access_until_utc'])
@@ -434,10 +501,21 @@ class PlatformController extends Controller
                 'previous' => $previousBillingOverride,
                 'new' => $hasAnyOverride ? $billingOverride : null,
             ],
+            'stripe_admin' => [
+                'action' => $stripeAdminAction !== '' ? $stripeAdminAction : null,
+                'uncancel_result' => $stripeUncancelResult,
+                'checkout_url_created' => $stripeCheckoutUrl !== null,
+            ],
         ]);
 
-        return redirect()->route('admin.sharpfleet.organisations.show', $organisationId)
+        $redirect = redirect()->route('admin.sharpfleet.organisations.show', $organisationId)
             ->with('success', 'Subscriber updated.');
+
+        if (is_string($stripeCheckoutUrl) && $stripeCheckoutUrl !== '') {
+            $redirect->with('stripe_checkout_url', $stripeCheckoutUrl);
+        }
+
+        return $redirect;
     }
 
     public function organisationUsers(Request $request, int $organisationId)

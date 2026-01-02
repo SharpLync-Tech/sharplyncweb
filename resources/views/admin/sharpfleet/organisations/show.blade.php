@@ -16,6 +16,15 @@
         </div>
     </div>
 
+    @if(session('stripe_checkout_url'))
+        <div class="alert alert-info">
+            <div class="fw-semibold">Stripe Checkout link created</div>
+            <div class="small">
+                <a href="{{ session('stripe_checkout_url') }}" target="_blank" rel="noopener">Open Stripe Checkout</a>
+            </div>
+        </div>
+    @endif
+
     <div class="row g-3">
         <div class="col-12 col-xl-5">
             <div class="card sl-card">
