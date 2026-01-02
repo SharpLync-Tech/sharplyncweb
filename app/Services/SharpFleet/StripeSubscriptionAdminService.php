@@ -71,6 +71,8 @@ class StripeSubscriptionAdminService
 
         $sub = \Stripe\Subscription::update($stripeSubscriptionId, [
             'cancel_at_period_end' => false,
+            // Some scheduled cancellations set a cancel_at timestamp; clear it explicitly.
+            'cancel_at' => null,
         ]);
 
         $currentPeriodEnd = is_numeric($sub->current_period_end ?? null) ? (int) $sub->current_period_end : null;
