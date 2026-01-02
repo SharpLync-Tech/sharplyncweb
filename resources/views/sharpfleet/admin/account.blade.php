@@ -57,6 +57,29 @@
                     Cancelling your subscription switches your account to read-only access (reports only). You will have access to your data for one year, after that the account will be archived.
                 </div>
             </div>
+        @elseif(!empty($accessOverrideActive))
+            <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
+                <div>
+                    <div class="fw-bold">Access active</div>
+                    <div class="text-muted small">
+                        @if(($accessOverrideMode ?? null) === 'comped')
+                            Your account is currently comped.
+                        @elseif(($accessOverrideMode ?? null) === 'manual_invoice')
+                            Your account is currently on manual invoicing.
+                        @else
+                            Your account has an access override.
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            @if(!empty($accessOverrideUntilLocal))
+                <div class="text-muted small mb-0">Access until: {{ $accessOverrideUntilLocal->format('d M Y, H:i') }}</div>
+            @endif
+
+            <div class="text-muted small mt-3">
+                Subscription changes are managed by your platform admin while this override is active.
+            </div>
         @else
             <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
                 <div>

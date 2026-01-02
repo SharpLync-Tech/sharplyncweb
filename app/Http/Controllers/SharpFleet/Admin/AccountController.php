@@ -41,6 +41,42 @@ class AccountController extends Controller
         $isSubscribed = $entitlements->isSubscriptionActive();
         $hasCancelRequest = $entitlements->hasTrialCancelRequest();
 
+        // If platform admin has set a manual/comped access override, the customer-facing
+        // account page should not show the Trial/Subscribe UI.
+        $accessOverrideActive = false;
+        $accessOverrideMode = null;
+        $accessOverrideUntilLocal = null;
+
+        try {
+            $settings = [];
+            if (!empty($organisation?->settings)) {
+                $decoded = json_decode((string) $organisation->settings, true);
+                if (is_array($decoded)) {
+                    $settings = $decoded;
+                }
+            }
+
+            $override = $settings['billing_override'] ?? null;
+            if (is_array($override)) {
+                $mode = (string) ($override['mode'] ?? '');
+                if (in_array($mode, ['manual_invoice', 'comped'], true)) {
+                    $accessOverrideMode = $mode;
+
+                    $untilUtc = (string) ($override['access_until_utc'] ?? '');
+                    if ($untilUtc !== '') {
+                        $tz = (string) ($organisation->timezone ?? 'Australia/Brisbane');
+                        $untilUtcCarbon = Carbon::parse($untilUtc, 'UTC');
+                        $accessOverrideUntilLocal = $untilUtcCarbon->copy()->setTimezone($tz);
+                        $accessOverrideActive = Carbon::now('UTC')->lessThanOrEqualTo($untilUtcCarbon);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $accessOverrideActive = false;
+            $accessOverrideMode = null;
+            $accessOverrideUntilLocal = null;
+        }
+
         $pricing = $this->calculateMonthlyPrice($vehiclesCount);
 
         $billingActivity = collect();
@@ -67,6 +103,9 @@ class AccountController extends Controller
             'vehiclesCount' => $vehiclesCount,
             'isSubscribed' => $isSubscribed,
             'hasCancelRequest' => $hasCancelRequest,
+            'accessOverrideActive' => $accessOverrideActive,
+            'accessOverrideMode' => $accessOverrideMode,
+            'accessOverrideUntilLocal' => $accessOverrideUntilLocal,
             'trialEndsAt' => $trialEndsAt,
             'trialDaysRemaining' => $trialDaysRemaining,
             'monthlyPrice' => $pricing['monthlyPrice'],
