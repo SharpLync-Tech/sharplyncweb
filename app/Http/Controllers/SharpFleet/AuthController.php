@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -24,7 +25,8 @@ class AuthController extends Controller
         }
 
         // Attempt remember-me login
-        if ($token = $request->cookie('sharpfleet_remember')) {
+        $token = $request->cookie('sharpfleet_remember');
+        if ($token && Schema::connection('sharpfleet')->hasColumn('users', 'remember_token')) {
             $user = $this->getUserByRememberToken($token);
 
             if ($user) {
@@ -64,7 +66,7 @@ class AuthController extends Controller
         $this->startSession($request, $user);
 
         // Remember this device
-        if ($request->boolean('remember')) {
+        if ($request->boolean('remember') && Schema::connection('sharpfleet')->hasColumn('users', 'remember_token')) {
             $token = Str::random(64);
 
             DB::connection('sharpfleet')

@@ -9,7 +9,7 @@
     ========================== --}}
     <div class="hero">
         <h1>
-            Fleet Management,<br>
+            Fleet Management<br>
             <span class="highlight">Without the Headaches</span>
         </h1>
 
@@ -74,7 +74,7 @@
     ========================== --}}
     <section class="mb-4 hero-features">
         <div class="text-center mb-4">
-            <h2 class="card-title">Everything You Need — Nothing You Don’t</h2>
+            <h2 class="card-title" style="color: var(--text-light);">Everything You Need — Nothing You Don’t</h2>
             <p class="mb-0 max-w-700 mx-auto text-white" style="color: #ffffff;">
                 SharpFleet focuses on the day-to-day realities of running vehicles and drivers,
                 without forcing expensive hardware or rigid workflows on your business.
@@ -149,12 +149,12 @@
 
                 <div class="card-body">
                     <p>
-                        <strong>AU$3.50 per vehicle / month</strong><br>
+                        <strong>AU$3.50 per vehicle per month</strong><br>
                         Covers your first <strong>10 vehicles</strong>
                     </p>
 
                     <p>
-                        <strong>AU$2.50 per vehicle / month</strong><br>
+                        <strong>AU$2.50 per vehicle per month</strong><br>
                         For vehicles <strong>11–20</strong>
                     </p>
 
@@ -165,7 +165,7 @@
 
                     <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
                         Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
-                        (International customers are charged in their local currency at Stripe’s current exchange rate.)
+                        (International customers are charged in their local currency at Stripe’s current exchange rate)
                     </p>
                 </div>
             </div>

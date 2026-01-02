@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class UserController extends Controller
 {
@@ -128,20 +129,33 @@ class UserController extends Controller
         // Also change email to avoid unique constraint collisions.
         $deletedEmail = 'deleted+' . $userId . '+' . now()->timestamp . '@example.invalid';
 
+        $updates = [
+            'email' => $deletedEmail,
+            'account_status' => 'deleted',
+            'is_driver' => 0,
+            'updated_at' => now(),
+        ];
+
+        // Different SharpFleet deployments have slightly different schemas.
+        // Only clear auth/activation fields if the columns exist.
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'password_hash')) {
+            $updates['password_hash'] = null;
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'remember_token')) {
+            $updates['remember_token'] = null;
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'activation_token')) {
+            $updates['activation_token'] = null;
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'activation_expires_at')) {
+            $updates['activation_expires_at'] = null;
+        }
+
         DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
-            ->update([
-                'email' => $deletedEmail,
-                'account_status' => 'deleted',
-                'is_driver' => 0,
-                'password_hash' => null,
-                'remember_token' => null,
-                'activation_token' => null,
-                'activation_expires_at' => null,
-                'updated_at' => now(),
-            ]);
+            ->update($updates);
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'Driver deleted.');
