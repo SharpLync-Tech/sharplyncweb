@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\EntitlementService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -41,40 +42,12 @@ class AccountController extends Controller
         $isSubscribed = $entitlements->isSubscriptionActive();
         $hasCancelRequest = $entitlements->hasTrialCancelRequest();
 
-        // If platform admin has set a manual/comped access override, the customer-facing
-        // account page should not show the Trial/Subscribe UI.
-        $accessOverrideActive = false;
-        $accessOverrideMode = null;
-        $accessOverrideUntilLocal = null;
-
+        $billingSummary = [];
         try {
-            $settings = [];
-            if (!empty($organisation?->settings)) {
-                $decoded = json_decode((string) $organisation->settings, true);
-                if (is_array($decoded)) {
-                    $settings = $decoded;
-                }
-            }
-
-            $override = $settings['billing_override'] ?? null;
-            if (is_array($override)) {
-                $mode = (string) ($override['mode'] ?? '');
-                if (in_array($mode, ['manual_invoice', 'comped'], true)) {
-                    $accessOverrideMode = $mode;
-
-                    $untilUtc = (string) ($override['access_until_utc'] ?? '');
-                    if ($untilUtc !== '') {
-                        $tz = (string) ($organisation->timezone ?? 'Australia/Brisbane');
-                        $untilUtcCarbon = Carbon::parse($untilUtc, 'UTC');
-                        $accessOverrideUntilLocal = $untilUtcCarbon->copy()->setTimezone($tz);
-                        $accessOverrideActive = Carbon::now('UTC')->lessThanOrEqualTo($untilUtcCarbon);
-                    }
-                }
-            }
+            $billingSummary = (new BillingDisplayService())
+                ->getOrganisationBillingSummary($organisationId);
         } catch (\Throwable $e) {
-            $accessOverrideActive = false;
-            $accessOverrideMode = null;
-            $accessOverrideUntilLocal = null;
+            $billingSummary = [];
         }
 
         $pricing = $this->calculateMonthlyPrice($vehiclesCount);
@@ -103,9 +76,7 @@ class AccountController extends Controller
             'vehiclesCount' => $vehiclesCount,
             'isSubscribed' => $isSubscribed,
             'hasCancelRequest' => $hasCancelRequest,
-            'accessOverrideActive' => $accessOverrideActive,
-            'accessOverrideMode' => $accessOverrideMode,
-            'accessOverrideUntilLocal' => $accessOverrideUntilLocal,
+            'billingSummary' => $billingSummary,
             'trialEndsAt' => $trialEndsAt,
             'trialDaysRemaining' => $trialDaysRemaining,
             'monthlyPrice' => $pricing['monthlyPrice'],

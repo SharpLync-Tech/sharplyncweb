@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\SharpFleet;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\AuditLogService;
+use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\StripeInvoiceService;
 use App\Services\SharpFleet\StripeSubscriptionAdminService;
 use Carbon\Carbon;
@@ -119,6 +120,14 @@ class PlatformController extends Controller
 
         $billingEstimate = $this->estimateMonthlyPrice($activeVehiclesCount);
 
+        $billingSummary = [];
+        try {
+            $billingSummary = (new BillingDisplayService())
+                ->getOrganisationBillingSummary($organisationId);
+        } catch (\Throwable $e) {
+            $billingSummary = [];
+        }
+
         $recentBillingLogs = collect();
         if (Schema::connection('sharpfleet')->hasTable('sharpfleet_audit_logs')) {
             $recentBillingLogs = DB::connection('sharpfleet')
@@ -153,6 +162,7 @@ class PlatformController extends Controller
             'vehiclesCount' => $vehiclesCount,
             'activeVehiclesCount' => $activeVehiclesCount,
             'billingFromSettings' => $billingFromSettings,
+            'billingSummary' => $billingSummary,
             'billingEstimate' => $billingEstimate,
             'recentBillingLogs' => $recentBillingLogs,
             'stripeInvoices' => $stripeInvoices,

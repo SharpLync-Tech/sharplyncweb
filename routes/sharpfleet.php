@@ -31,6 +31,7 @@ use App\Http\Controllers\SharpFleet\Admin\ReminderController;
 use App\Http\Controllers\SharpFleet\Admin\AccountController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\VehicleReminderService;
 
 /*
@@ -137,46 +138,12 @@ Route::prefix('app/sharpfleet')
                 $trialDaysRemaining = $entitlements->trialDaysRemaining();
                 $isSubscribed = $entitlements->isSubscriptionActive();
 
-                // Access overrides (manual invoice / complimentary) should supersede trial UI.
-                $accessOverrideActive = false;
-                $accessOverrideMode = null;
-                $accessOverrideUntilLocal = null;
-
+                $billingSummary = [];
                 try {
-                    $org = DB::connection('sharpfleet')
-                        ->table('organisations')
-                        ->where('id', $organisationId)
-                        ->first();
-
-                    $settingsJson = (string) ($org->settings ?? '');
-                    $orgSettings = [];
-                    if ($settingsJson !== '') {
-                        $decoded = json_decode($settingsJson, true);
-                        if (is_array($decoded)) {
-                            $orgSettings = $decoded;
-                        }
-                    }
-
-                    $override = $orgSettings['billing_override'] ?? null;
-                    if (is_array($override)) {
-                        $mode = (string) ($override['mode'] ?? '');
-                        if (in_array($mode, ['manual_invoice', 'comped'], true)) {
-                            $accessOverrideMode = $mode;
-
-                            $untilUtc = (string) ($override['access_until_utc'] ?? '');
-                            if ($untilUtc !== '') {
-                                $untilUtcCarbon = \Carbon\Carbon::parse($untilUtc, 'UTC');
-                                $accessOverrideActive = \Carbon\Carbon::now('UTC')->lessThanOrEqualTo($untilUtcCarbon);
-
-                                $tz = (string) ($org->timezone ?? 'Australia/Brisbane');
-                                $accessOverrideUntilLocal = $untilUtcCarbon->copy()->setTimezone($tz);
-                            }
-                        }
-                    }
+                    $billingSummary = (new BillingDisplayService())
+                        ->getOrganisationBillingSummary($organisationId);
                 } catch (\Throwable $e) {
-                    $accessOverrideActive = false;
-                    $accessOverrideMode = null;
-                    $accessOverrideUntilLocal = null;
+                    $billingSummary = [];
                 }
 
                 $driversCount = DB::connection('sharpfleet')
@@ -282,9 +249,7 @@ Route::prefix('app/sharpfleet')
                     'vehiclesCount' => $vehiclesCount,
                     'trialDaysRemaining' => $trialDaysRemaining,
                     'isSubscribed' => $isSubscribed,
-                    'accessOverrideActive' => $accessOverrideActive,
-                    'accessOverrideMode' => $accessOverrideMode,
-                    'accessOverrideUntilLocal' => $accessOverrideUntilLocal,
+                    'billingSummary' => $billingSummary,
                     'hasVehicleAssignmentSupport' => $hasVehicleAssignmentSupport,
                     'permanentAssignedVehiclesCount' => $permanentAssignedVehiclesCount,
                     'activeTripsCount' => $activeTripsCount,

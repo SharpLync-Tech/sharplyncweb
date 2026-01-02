@@ -10,12 +10,11 @@
 
 @php
     $trialDaysRemaining = $trialDaysRemaining ?? null;
-    $isSubscribed = (bool) ($isSubscribed ?? false);
-    $accessOverrideActive = (bool) ($accessOverrideActive ?? false);
-    $accessOverrideMode = $accessOverrideMode ?? null;
-    $accessOverrideUntilLocal = $accessOverrideUntilLocal ?? null;
+    $billingSummary = $billingSummary ?? [];
+    $effectiveMode = (string) ($billingSummary['effective_mode'] ?? 'trial');
+    $accessOverrideActive = in_array($effectiveMode, ['complimentary', 'manual_invoice'], true);
 
-    $showTrialBanner = (!$isSubscribed && !$accessOverrideActive && is_int($trialDaysRemaining) && $trialDaysRemaining > 0 && $trialDaysRemaining <= 14);
+    $showTrialBanner = ($effectiveMode === 'trial' && is_int($trialDaysRemaining) && $trialDaysRemaining > 0 && $trialDaysRemaining <= 14);
     $trialBannerClass = null;
     if ($showTrialBanner) {
         $trialBannerClass = ($trialDaysRemaining >= 7) ? 'alert-yellow' : 'alert-orange';
@@ -82,12 +81,12 @@
 
     <a href="/app/sharpfleet/admin/account" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">
-            @if($isSubscribed)
+            @if($effectiveMode === 'stripe')
                 Active
             @elseif($accessOverrideActive)
-                @if(($accessOverrideMode ?? null) === 'comped')
+                @if($effectiveMode === 'complimentary')
                     Complimentary
-                @elseif(($accessOverrideMode ?? null) === 'manual_invoice')
+                @elseif($effectiveMode === 'manual_invoice')
                     Manual
                 @else
                     Access

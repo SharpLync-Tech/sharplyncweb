@@ -21,7 +21,13 @@
 
 <div class="card">
     <div class="card-body">
-        @if($isSubscribed)
+        @php
+            $billingSummary = $billingSummary ?? [];
+            $effectiveMode = (string) ($billingSummary['effective_mode'] ?? 'trial');
+            $overrideUntilLocal = $billingSummary['access_override_until_local'] ?? null;
+        @endphp
+
+        @if($effectiveMode === 'stripe')
             <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
                 <div>
                     <div class="fw-bold">Subscription active</div>
@@ -57,14 +63,14 @@
                     Cancelling your subscription switches your account to read-only access (reports only). You will have access to your data for one year, after that the account will be archived.
                 </div>
             </div>
-        @elseif(!empty($accessOverrideActive))
+        @elseif($effectiveMode === 'complimentary' || $effectiveMode === 'manual_invoice')
             <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
                 <div>
                     <div class="fw-bold">Access active</div>
                     <div class="text-muted small">
-                        @if(($accessOverrideMode ?? null) === 'comped')
+                        @if($effectiveMode === 'complimentary')
                             Your account is currently complimentary (free).
-                        @elseif(($accessOverrideMode ?? null) === 'manual_invoice')
+                        @elseif($effectiveMode === 'manual_invoice')
                             Your account is currently on manual invoicing.
                         @else
                             Your account has an access override.
@@ -73,8 +79,8 @@
                 </div>
             </div>
 
-            @if(!empty($accessOverrideUntilLocal))
-                <div class="text-muted small mb-0">Access until: {{ $accessOverrideUntilLocal->format('d M Y, H:i') }}</div>
+            @if(!empty($overrideUntilLocal))
+                <div class="text-muted small mb-0">Access until: {{ $overrideUntilLocal->format('d M Y, H:i') }}</div>
             @endif
 
             <div class="text-muted small mt-3">

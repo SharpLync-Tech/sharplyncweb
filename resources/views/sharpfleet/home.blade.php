@@ -17,7 +17,7 @@
             Logbooks for kilometres and engine hours.<br>
             No GPS. No hardware. No micromanagement.
             <p class="hero-price">
-            All features included for only <strong>$3.50</strong> per vehicle, per month.
+            All features included for only <strong>AU$3.50</strong> per vehicle, per month.
         </p>
         </p>
 
@@ -149,12 +149,12 @@
 
                 <div class="card-body">
                     <p>
-                        <strong>$3.50 per vehicle / month</strong><br>
+                        <strong>AU$3.50 per vehicle / month</strong><br>
                         Covers your first <strong>10 vehicles</strong>
                     </p>
 
                     <p>
-                        <strong>$2.50 per vehicle / month</strong><br>
+                        <strong>AU$2.50 per vehicle / month</strong><br>
                         For vehicles <strong>11–20</strong>
                     </p>
 
@@ -164,7 +164,8 @@
                     </p>
 
                     <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
-                        Your cost per vehicle goes down as your fleet grows — no long-term commitments, cancel anytime, and keep access to your historical logs.
+                        Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
+                        (International customers are charged in their local currency at Stripe’s current exchange rate.)
                     </p>
                 </div>
             </div>

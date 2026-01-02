@@ -103,12 +103,41 @@
                     <div class="fw-semibold mb-2">Billing identifiers (from organisations.settings)</div>
                     @php
                         $b = $billingFromSettings ?? [];
+                        $bs = $billingSummary ?? [];
+                        $effectiveMode = (string) ($bs['effective_mode'] ?? '');
+                        $overrideUntilLocal = $bs['access_override_until_local'] ?? null;
                     @endphp
                     <div class="table-responsive mb-3">
                         <table class="table table-sm align-middle mb-0">
                             <tbody>
                                 <tr>
-                                    <td class="text-muted" style="width: 220px;">Subscription status</td>
+                                    <td class="text-muted" style="width: 220px;">Billing mode</td>
+                                    <td>
+                                        @if($effectiveMode === 'complimentary')
+                                            Complimentary / Free
+                                        @elseif($effectiveMode === 'manual_invoice')
+                                            Manual invoice
+                                        @elseif($effectiveMode === 'stripe')
+                                            Stripe subscription
+                                        @else
+                                            Trial
+                                        @endif
+                                    </td>
+                                </tr>
+                                @if($effectiveMode === 'complimentary' || $effectiveMode === 'manual_invoice')
+                                    <tr>
+                                        <td class="text-muted">Access until (Brisbane)</td>
+                                        <td>
+                                            @if(!empty($overrideUntilLocal))
+                                                {{ $overrideUntilLocal->timezone($displayTimezone ?? 'Australia/Brisbane')->format('d M Y, H:i') }}
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
+                                <tr>
+                                    <td class="text-muted" style="width: 220px;">Stripe subscription status</td>
                                     <td>{{ !empty($b['subscription_status']) ? $b['subscription_status'] : '—' }}</td>
                                 </tr>
                                 <tr>
