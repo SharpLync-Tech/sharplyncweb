@@ -145,7 +145,6 @@ Route::prefix('app/sharpfleet')
                 try {
                     $org = DB::connection('sharpfleet')
                         ->table('organisations')
-                        ->select(['settings', 'timezone'])
                         ->where('id', $organisationId)
                         ->first();
 
