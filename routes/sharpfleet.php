@@ -137,6 +137,49 @@ Route::prefix('app/sharpfleet')
                 $trialDaysRemaining = $entitlements->trialDaysRemaining();
                 $isSubscribed = $entitlements->isSubscriptionActive();
 
+                // Access overrides (manual invoice / complimentary) should supersede trial UI.
+                $accessOverrideActive = false;
+                $accessOverrideMode = null;
+                $accessOverrideUntilLocal = null;
+
+                try {
+                    $org = DB::connection('sharpfleet')
+                        ->table('organisations')
+                        ->select(['settings', 'timezone'])
+                        ->where('id', $organisationId)
+                        ->first();
+
+                    $settingsJson = (string) ($org->settings ?? '');
+                    $orgSettings = [];
+                    if ($settingsJson !== '') {
+                        $decoded = json_decode($settingsJson, true);
+                        if (is_array($decoded)) {
+                            $orgSettings = $decoded;
+                        }
+                    }
+
+                    $override = $orgSettings['billing_override'] ?? null;
+                    if (is_array($override)) {
+                        $mode = (string) ($override['mode'] ?? '');
+                        if (in_array($mode, ['manual_invoice', 'comped'], true)) {
+                            $accessOverrideMode = $mode;
+
+                            $untilUtc = (string) ($override['access_until_utc'] ?? '');
+                            if ($untilUtc !== '') {
+                                $untilUtcCarbon = \Carbon\Carbon::parse($untilUtc, 'UTC');
+                                $accessOverrideActive = \Carbon\Carbon::now('UTC')->lessThanOrEqualTo($untilUtcCarbon);
+
+                                $tz = (string) ($org->timezone ?? 'Australia/Brisbane');
+                                $accessOverrideUntilLocal = $untilUtcCarbon->copy()->setTimezone($tz);
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $accessOverrideActive = false;
+                    $accessOverrideMode = null;
+                    $accessOverrideUntilLocal = null;
+                }
+
                 $driversCount = DB::connection('sharpfleet')
                     ->table('users')
                     ->where('organisation_id', $organisationId)
@@ -240,6 +283,9 @@ Route::prefix('app/sharpfleet')
                     'vehiclesCount' => $vehiclesCount,
                     'trialDaysRemaining' => $trialDaysRemaining,
                     'isSubscribed' => $isSubscribed,
+                    'accessOverrideActive' => $accessOverrideActive,
+                    'accessOverrideMode' => $accessOverrideMode,
+                    'accessOverrideUntilLocal' => $accessOverrideUntilLocal,
                     'hasVehicleAssignmentSupport' => $hasVehicleAssignmentSupport,
                     'permanentAssignedVehiclesCount' => $permanentAssignedVehiclesCount,
                     'activeTripsCount' => $activeTripsCount,

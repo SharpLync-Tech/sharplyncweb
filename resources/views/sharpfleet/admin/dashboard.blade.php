@@ -11,7 +11,11 @@
 @php
     $trialDaysRemaining = $trialDaysRemaining ?? null;
     $isSubscribed = (bool) ($isSubscribed ?? false);
-    $showTrialBanner = (!$isSubscribed && is_int($trialDaysRemaining) && $trialDaysRemaining > 0 && $trialDaysRemaining <= 14);
+    $accessOverrideActive = (bool) ($accessOverrideActive ?? false);
+    $accessOverrideMode = $accessOverrideMode ?? null;
+    $accessOverrideUntilLocal = $accessOverrideUntilLocal ?? null;
+
+    $showTrialBanner = (!$isSubscribed && !$accessOverrideActive && is_int($trialDaysRemaining) && $trialDaysRemaining > 0 && $trialDaysRemaining <= 14);
     $trialBannerClass = null;
     if ($showTrialBanner) {
         $trialBannerClass = ($trialDaysRemaining >= 7) ? 'alert-yellow' : 'alert-orange';
@@ -80,6 +84,14 @@
         <div class="stats-number">
             @if($isSubscribed)
                 Active
+            @elseif($accessOverrideActive)
+                @if(($accessOverrideMode ?? null) === 'comped')
+                    Complimentary
+                @elseif(($accessOverrideMode ?? null) === 'manual_invoice')
+                    Manual
+                @else
+                    Access
+                @endif
             @else
                 @if(is_int($trialDaysRemaining) && $trialDaysRemaining > 0)
                     {{ (int) $trialDaysRemaining }}d

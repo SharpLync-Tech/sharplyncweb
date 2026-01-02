@@ -63,7 +63,7 @@
                     <div class="fw-bold">Access active</div>
                     <div class="text-muted small">
                         @if(($accessOverrideMode ?? null) === 'comped')
-                            Your account is currently comped.
+                            Your account is currently complimentary (free).
                         @elseif(($accessOverrideMode ?? null) === 'manual_invoice')
                             Your account is currently on manual invoicing.
                         @else

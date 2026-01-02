@@ -77,7 +77,7 @@
                 <div class="col-12">
                     <hr>
                     <div class="fw-semibold mb-2">Billing Mode / Access Override</div>
-                    <div class="text-muted small mb-3">Use this when a subscriber is comped (free), manually invoiced, or needs special handling outside of Stripe.</div>
+                    <div class="text-muted small mb-3">Use this when a subscriber is complimentary (free), manually invoiced, or needs special handling outside of Stripe.</div>
                 </div>
 
                 <div class="col-12 col-lg-6">
@@ -89,7 +89,7 @@
                         <option value="" @selected($billingModeValue === '')>Default (Stripe / Trial rules)</option>
                         <option value="stripe" @selected($billingModeValue === 'stripe')>Stripe</option>
                         <option value="manual_invoice" @selected($billingModeValue === 'manual_invoice')>Manual invoice</option>
-                        <option value="comped" @selected($billingModeValue === 'comped')>Comped / Free</option>
+                        <option value="comped" @selected($billingModeValue === 'comped')>Complimentary / Free</option>
                     </select>
                     @error('billing_mode')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
@@ -135,7 +135,7 @@
                         <option value="uncancel" @selected($stripeAdminActionValue === 'uncancel')>Re-enable Stripe (undo scheduled cancellation)</option>
                         <option value="create_checkout" @selected($stripeAdminActionValue === 'create_checkout')>Create Stripe Checkout link (new subscription)</option>
                     </select>
-                    <div class="text-muted small mt-1">Runs when you click Save. Use this when moving back to Stripe from Manual invoice / Comped.</div>
+                    <div class="text-muted small mt-1">Runs when you click Save. Use this when moving back to Stripe from Manual invoice / Complimentary.</div>
                     @error('stripe_admin_action')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
 
