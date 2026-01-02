@@ -12,6 +12,7 @@
             'title' => 'Setup Guide',
             'children' => [
                 ['id' => 'admin-setup-checklist', 'title' => 'First-time checklist'],
+                ['id' => 'admin-setup-rerun', 'title' => 'Re-run setup wizard (testing)'],
                 ['id' => 'admin-setup-step-company', 'title' => 'Step 1 — Company profile'],
                 ['id' => 'admin-setup-step-timezone', 'title' => 'Step 2 — Timezone'],
                 ['id' => 'admin-setup-step-vehicles', 'title' => 'Step 3 — Vehicles'],
@@ -56,14 +57,26 @@
         <div class="sf-help__calloutTitle">Recommended</div>
         <div>Do the setup in this order. It prevents driver confusion and reduces “can’t start trip” issues.</div>
     </div>
+</section>
 
-    <div class="sf-help__callout" style="margin-top: 12px;">
-        <div class="sf-help__calloutTitle">Testing</div>
-        <div class="mb-2">Need to test onboarding again? You can re-run the setup wizard for your company.</div>
-        <form method="POST" action="/app/sharpfleet/admin/setup/rerun" onsubmit="return confirm('Re-run the setup wizard? Admin pages will require completing setup again.');">
-            @csrf
-            <button class="btn btn-secondary btn-sm" type="submit">Re-run setup wizard</button>
-        </form>
+<section id="admin-setup-rerun" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Re-run setup wizard (testing)</h3>
+    <div class="sf-help__card">
+        <div class="sf-help__cardHeader">
+            <div class="fw-bold">Restart onboarding</div>
+            <span class="sf-help__badge">Admin</span>
+        </div>
+        <p class="mb-2">This is for testing. It resets the “setup complete” flag and sends you back to Step 1.</p>
+        <div class="sf-help__callout sf-help__callout--important">
+            <div class="sf-help__calloutTitle">Important</div>
+            <div>Admin pages will require completing setup again until you finish Step 2.</div>
+        </div>
+        <div class="sf-help__actions">
+            <form method="POST" action="/app/sharpfleet/admin/setup/rerun" onsubmit="return confirm('Re-run the setup wizard? Admin pages will require completing setup again.');">
+                @csrf
+                <button class="btn btn-secondary btn-sm" type="submit">Re-run setup wizard</button>
+            </form>
+        </div>
     </div>
 </section>
 
