@@ -59,7 +59,7 @@
     @if ($regoEnabled)
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="page-title" style="font-size:18px; margin-bottom:10px;">Registration (Rego)</h2>
+                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Registration (Rego)</h2>
 
                 @php
                     $regoOverdue = $digest['registration']['overdue'] ?? [];
@@ -110,7 +110,7 @@
     @if ($serviceEnabled)
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="page-title" style="font-size:18px; margin-bottom:10px;">Servicing (Due by date)</h2>
+                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Servicing (Due by date)</h2>
 
                 @php
                     $serviceDateOverdue = $digest['serviceDate']['overdue'] ?? [];
@@ -156,7 +156,7 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="page-title" style="font-size:18px; margin-bottom:10px;">Servicing (Due by reading)</h2>
+                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Servicing (Due by reading)</h2>
 
                 @php
                     $serviceReadingOverdue = $digest['serviceReading']['overdue'] ?? [];

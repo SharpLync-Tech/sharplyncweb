@@ -104,6 +104,14 @@ html, body {
     color: #FFFFFF !important;
 }
 
+/* Utility helpers (some Blade views use Bootstrap-like text classes) */
+.text-white { color: var(--text-light) !important; }
+.text-white-50 { color: rgba(255, 255, 255, 0.75) !important; }
+
+/* If page-title/page-description are used inside cards, keep them readable */
+.card .page-title { color: var(--text-dark) !important; }
+.card .page-description { color: var(--text-muted) !important; }
+
 /* Ensure no inheritance from parent styles */
 html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, button, textarea, select {
     font-family: inherit;
