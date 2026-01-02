@@ -27,6 +27,7 @@ use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
 use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
+use App\Http\Controllers\SharpFleet\Admin\SetupWizardController;
 use App\Http\Controllers\SharpFleet\Admin\ReminderController;
 use App\Http\Controllers\SharpFleet\Admin\AccountController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
@@ -121,7 +122,7 @@ Route::prefix('app/sharpfleet')
     | Admin Routes (ADMIN ONLY)
     |--------------------------------------------------------------------------
     */
-    Route::middleware([\App\Http\Middleware\SharpFleetAdminAuth::class, \App\Http\Middleware\SharpFleetTrialCheck::class, \App\Http\Middleware\SharpFleetAuditLog::class])
+    Route::middleware([\App\Http\Middleware\SharpFleetAdminAuth::class, \App\Http\Middleware\SharpFleetSetupWizard::class, \App\Http\Middleware\SharpFleetTrialCheck::class, \App\Http\Middleware\SharpFleetAuditLog::class])
         ->prefix('admin')
         ->group(function () {
 
@@ -328,6 +329,11 @@ Route::prefix('app/sharpfleet')
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);
+
+            // Setup wizard (mandatory for first-time admin setup)
+            Route::get('/setup/company', [SetupWizardController::class, 'company']);
+            Route::post('/setup/company', [SetupWizardController::class, 'storeCompany']);
+            Route::post('/setup/finish', [SetupWizardController::class, 'finish']);
 
             // Users (driver access)
             Route::get('/users', [UserController::class, 'index']);
