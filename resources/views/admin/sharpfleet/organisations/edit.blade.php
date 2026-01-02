@@ -125,6 +125,20 @@
                     @error('billing_notes')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
 
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Stripe Admin Action (optional)</label>
+                    @php
+                        $stripeAdminActionValue = old('stripe_admin_action', '');
+                    @endphp
+                    <select name="stripe_admin_action" class="form-select">
+                        <option value="" @selected($stripeAdminActionValue === '')>None</option>
+                        <option value="uncancel" @selected($stripeAdminActionValue === 'uncancel')>Re-enable Stripe (undo scheduled cancellation)</option>
+                        <option value="create_checkout" @selected($stripeAdminActionValue === 'create_checkout')>Create Stripe Checkout link (new subscription)</option>
+                    </select>
+                    <div class="text-muted small mt-1">Runs when you click Save. Use this when moving back to Stripe from Manual invoice / Comped.</div>
+                    @error('stripe_admin_action')<div class="text-danger small">{{ $message }}</div>@enderror
+                </div>
+
                 <div class="col-12 d-flex gap-2">
                     <button class="btn btn-primary" type="submit">Save Changes</button>
                     <a class="btn btn-outline-secondary" href="{{ route('admin.sharpfleet.organisations.show', $organisation->id) }}">Cancel</a>
