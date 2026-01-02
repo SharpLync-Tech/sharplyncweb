@@ -85,7 +85,7 @@
                 Active
             @elseif($accessOverrideActive)
                 @if($effectiveMode === 'complimentary')
-                    Complimentary
+                    Free
                 @elseif($effectiveMode === 'manual_invoice')
                     Manual
                 @else

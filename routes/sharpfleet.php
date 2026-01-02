@@ -169,6 +169,7 @@ Route::prefix('app/sharpfleet')
                 $vehiclesCount = DB::connection('sharpfleet')
                     ->table('vehicles')
                     ->where('organisation_id', $organisationId)
+                    ->where('is_active', 1)
                     ->count();
 
                 $hasVehicleAssignmentSupport = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
