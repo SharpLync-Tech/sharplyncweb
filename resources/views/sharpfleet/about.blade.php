@@ -43,7 +43,7 @@
                     -webkit-text-fill-color: transparent;
                 ">Started</span>
 
-                <!-- Gradient underline (inline element, not CSS ::after) -->
+                <!-- Gradient underline -->
                 <span style="
                     display:block;
                     width:120px;
@@ -71,9 +71,9 @@
         </p>
 
         <p>
-            I hate writing.<br>
-            I hate trying to remember trips later.<br>
-            And I hated that something so simple was already becoming a pain.
+            I don’t like writing.<br>
+            I don’t like trying to remember trips later.<br>
+            And I really didn’t like that something so simple was already becoming a pain.
         </p>
 
         <p>

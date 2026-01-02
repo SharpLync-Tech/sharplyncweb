@@ -56,6 +56,7 @@ class CompanyController extends Controller
         $vehiclesCount = DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
             ->count();
 
         return view('sharpfleet.admin.company', [

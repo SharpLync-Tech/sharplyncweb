@@ -10,14 +10,88 @@
     'showStrength' => true,
 ])
 
-<div class="sl-password-wrapper" style="margin-bottom:1.5rem; color:white;">
-    <label style="font-weight:600; color:white;">{{ $label }}</label>
+<style>
+    .sl-password-wrapper {
+        margin-bottom: 1.5rem;
+        color: var(--text-light, #ffffff);
+    }
+
+    .sl-password-wrapper .sl-password-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-light, #ffffff);
+    }
+
+    .sl-password-wrapper .sl-password-input {
+        width: 100%;
+        padding: 0.6rem 2.5rem 0.6rem 0.6rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: var(--text-light, #ffffff);
+    }
+
+    .sl-password-wrapper .sl-password-input::placeholder {
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* iOS/Safari autofill can force a light background; keep contrast readable */
+    .sl-password-wrapper .sl-password-input:-webkit-autofill,
+    .sl-password-wrapper .sl-password-input:-webkit-autofill:hover,
+    .sl-password-wrapper .sl-password-input:-webkit-autofill:focus,
+    .sl-password-wrapper .sl-password-input:-webkit-autofill:active {
+        -webkit-text-fill-color: var(--text-light, #ffffff) !important;
+        caret-color: var(--text-light, #ffffff);
+        box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+        transition: background-color 9999s ease-out 0s;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .sl-password-wrapper .sl-strength-track {
+        margin-top: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+    }
+
+    .sl-password-wrapper .sl-strength-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 6px;
+        transition: width 0.25s;
+    }
+
+    .sl-password-wrapper .sl-strength-text {
+        margin-top: 6px;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .sl-password-wrapper .sl-generate {
+        margin-top: 8px;
+        background: #104976;
+        color: var(--text-light, #ffffff);
+        padding: 0.45rem 0.7rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+</style>
+
+<div class="sl-password-wrapper">
+    <label class="sl-password-label">{{ $label }}</label>
 
     <div style="position:relative;">
-        <input type="password" name="{{ $name }}" id="{{ $name }}" required
-            style="width:100%; padding:0.6rem 2.5rem 0.6rem 0.6rem; border-radius:6px;
-                   background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3);
-                   color:white;">
+        <input
+            type="password"
+            name="{{ $name }}"
+            id="{{ $name }}"
+            required
+            autocomplete="new-password"
+            class="form-control sl-password-input"
+        >
 
         <span class="sl-toggle-password" data-target="{{ $name }}"
             style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
@@ -40,30 +114,33 @@
     </div>
 
     @if($showStrength)
-    <div style="margin-top:8px; height:8px; background:rgba(255,255,255,0.15); border-radius:6px;">
-        <div id="{{ $name }}-strength-bar" style="height:100%; width:0%; border-radius:6px;
-            transition:width 0.25s;"></div>
+    <div class="sl-strength-track">
+        <div id="{{ $name }}-strength-bar" class="sl-strength-bar"></div>
     </div>
-    <div id="{{ $name }}-strength-text" style="margin-top:6px; font-size:0.9rem; color:#ccc;">
+    <div id="{{ $name }}-strength-text" class="sl-strength-text">
         Enter a password
     </div>
     @endif
 
     @if($showGenerator)
     <button type="button" class="sl-generate" data-target="{{ $name }}"
-        style="margin-top:8px; background:#104976; color:white; padding:0.45rem 0.7rem;
-               border:none; border-radius:6px; font-size:0.85rem; cursor:pointer;">
+    >
         Generate Strong Password
     </button>
     @endif
 
     @if($confirm)
     <div style="margin-top:1rem;">
-        <label style="font-weight:600; color:white;">Confirm Password</label>
-        <input type="password" name="{{ $confirm }}" id="{{ $confirm }}" required
-               style="width:100%; padding:0.6rem; border-radius:6px;
-                      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3);
-                      color:white;">
+        <label class="sl-password-label">Confirm Password</label>
+        <input
+            type="password"
+            name="{{ $confirm }}"
+            id="{{ $confirm }}"
+            required
+            autocomplete="new-password"
+            class="form-control sl-password-input"
+            style="padding-right: 0.6rem;"
+        >
         <div id="{{ $confirm }}-match-text" style="margin-top:6px; font-size:0.9rem;"></div>
     </div>
     @endif
@@ -93,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Strength Meter
-    document.querySelectorAll('input[type=password]').forEach(input => {
+    document.querySelectorAll('.sl-password-wrapper input[type=password]').forEach(input => {
         input.addEventListener('input', function () {
             let name = this.id;
             let bar = document.getElementById(`${name}-strength-bar`);
@@ -118,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Password Match Checker
-    document.querySelectorAll('input[type=password]').forEach(input => {
+    document.querySelectorAll('.sl-password-wrapper input[type=password]').forEach(input => {
         if (input.id.includes('confirmation')) {
             input.addEventListener('input', function () {
                 let pw = document.getElementById(this.id.replace('_confirmation', '')).value;
