@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin\SharpFleet;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\AuditLogService;
 use App\Services\SharpFleet\StripeInvoiceService;
+use App\Services\SharpFleet\StripeSubscriptionAdminService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 
 class PlatformController extends Controller
 {
@@ -16,11 +18,13 @@ class PlatformController extends Controller
 
     private AuditLogService $audit;
     private StripeInvoiceService $stripeInvoices;
+    private StripeSubscriptionAdminService $stripeSubscriptions;
 
-    public function __construct(AuditLogService $audit, StripeInvoiceService $stripeInvoices)
+    public function __construct(AuditLogService $audit, StripeInvoiceService $stripeInvoices, StripeSubscriptionAdminService $stripeSubscriptions)
     {
         $this->audit = $audit;
         $this->stripeInvoices = $stripeInvoices;
+        $this->stripeSubscriptions = $stripeSubscriptions;
     }
 
     public function index(Request $request)
@@ -282,6 +286,43 @@ class PlatformController extends Controller
             'billing_notes' => 'nullable|string|max:1000',
         ]);
 
+        $selectedBillingMode = trim((string) ($validated['billing_mode'] ?? ''));
+        $rawBillingAccessUntil = trim((string) ($validated['billing_access_until'] ?? ''));
+
+        if (in_array($selectedBillingMode, ['manual_invoice', 'comped'], true) && $rawBillingAccessUntil === '') {
+            throw ValidationException::withMessages([
+                'billing_access_until' => 'Access Until is required when Billing Mode is Manual invoice or Comped / Free.',
+            ]);
+        }
+
+        // Read existing settings upfront so we can decide whether to cancel Stripe before mutating anything.
+        $previousSettings = [];
+        if (!empty($organisation->settings)) {
+            $decoded = json_decode((string) $organisation->settings, true);
+            if (is_array($decoded)) {
+                $previousSettings = $decoded;
+            }
+        }
+
+        $stripeCancelResult = null;
+        if (in_array($selectedBillingMode, ['manual_invoice', 'comped'], true)) {
+            $existingStripeSubId = trim((string) ($previousSettings['stripe_subscription_id'] ?? ''));
+            if ($existingStripeSubId !== '') {
+                try {
+                    // Default: cancel at period end to avoid mid-cycle cut-off.
+                    $stripeCancelResult = $this->stripeSubscriptions->cancelSubscription($existingStripeSubId, true);
+
+                    // Mark as cancelled in settings immediately so internal logic stops treating it as active.
+                    $previousSettings['subscription_status'] = 'cancelled';
+                    $previousSettings['subscription_cancel_requested_at'] = Carbon::now('UTC')->toIso8601String();
+                } catch (\Throwable $e) {
+                    throw ValidationException::withMessages([
+                        'billing_mode' => 'Unable to cancel the Stripe subscription. Billing mode was not changed. (' . $e->getMessage() . ')',
+                    ]);
+                }
+            }
+        }
+
         DB::connection('sharpfleet')
             ->table('organisations')
             ->where('id', $organisationId)
@@ -327,25 +368,16 @@ class PlatformController extends Controller
         }
 
         // Update settings JSON (billing override)
-        $previousSettings = [];
-        if (!empty($organisation->settings)) {
-            $decoded = json_decode((string) $organisation->settings, true);
-            if (is_array($decoded)) {
-                $previousSettings = $decoded;
-            }
-        }
-
         $newSettings = $previousSettings;
         $previousBillingOverride = (is_array(($previousSettings['billing_override'] ?? null))) ? $previousSettings['billing_override'] : [];
 
-        $mode = trim((string) ($validated['billing_mode'] ?? ''));
+        $mode = $selectedBillingMode;
         $invoiceRef = trim((string) ($validated['billing_invoice_reference'] ?? ''));
         $notes = trim((string) ($validated['billing_notes'] ?? ''));
 
         $accessUntilUtc = null;
-        $rawAccessUntil = trim((string) ($validated['billing_access_until'] ?? ''));
-        if ($rawAccessUntil !== '') {
-            $accessUntilUtc = Carbon::createFromFormat('Y-m-d\\TH:i', $rawAccessUntil, self::DISPLAY_TIMEZONE)
+        if ($rawBillingAccessUntil !== '') {
+            $accessUntilUtc = Carbon::createFromFormat('Y-m-d\\TH:i', $rawBillingAccessUntil, self::DISPLAY_TIMEZONE)
                 ->timezone('UTC')
                 ->toDateTimeString();
         }
@@ -359,6 +391,10 @@ class PlatformController extends Controller
             'notes' => $notes !== '' ? $notes : null,
             'updated_at_utc' => Carbon::now('UTC')->toDateTimeString(),
         ];
+
+        if (is_array($stripeCancelResult)) {
+            $billingOverride['stripe_cancel'] = $stripeCancelResult;
+        }
 
         // Keep settings tidy: if everything is empty, remove the override key.
         $hasAnyOverride = ($billingOverride['mode'] !== '')
