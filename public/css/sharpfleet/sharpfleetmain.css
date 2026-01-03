@@ -150,7 +150,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(10, 42, 77, 0.85);
+    background: rgba(10, 42, 77, 0.75);
     pointer-events: none;
     z-index: 0;
 }
