@@ -153,7 +153,8 @@
                     </label>
                     
                         <label class="checkbox-label">
-                            <input type="checkbox" name="enable_purpose_of_travel" value="1" {{ $companySettings->purposeOfTravelEnabled() ? 'checked' : '' }}>
+                        <input type="checkbox" name="enable_purpose_of_travel" value="1"
+                               {{ filter_var(($settings['trip']['purpose_of_travel_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                             <strong>Enable Purpose of Travel (business trips)</strong>
                         </label>
                 </div>
