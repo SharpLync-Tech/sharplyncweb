@@ -44,15 +44,35 @@ class VehicleController extends Controller
 
         $organisationId = (int) $fleetUser['organisation_id'];
 
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
         $entitlements = new EntitlementService($fleetUser);
         $isSubscribed = $entitlements->isSubscriptionActive();
 
-        $vehicles = $this->vehicleService->getAvailableVehicles($organisationId);
+        $vehicles = $this->vehicleService->getAvailableVehicles(
+            $organisationId,
+            $branchAccessEnabled ? $accessibleBranchIds : null
+        );
 
         $activeTrips = DB::connection('sharpfleet')
             ->table('trips')
+            ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->join('users', 'trips.user_id', '=', 'users.id')
             ->where('trips.organisation_id', $organisationId)
+            ->when(
+                $branchAccessEnabled,
+                fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            )
             ->whereNotNull('trips.started_at')
             ->whereNull('trips.ended_at')
             ->orderByDesc('trips.started_at')

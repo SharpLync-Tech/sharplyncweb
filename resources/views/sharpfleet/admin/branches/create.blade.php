@@ -29,7 +29,10 @@
             @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
             <label class="form-label mt-2">Timezone (IANA)</label>
-            <input type="text" name="timezone" value="{{ old('timezone', $defaultTimezone) }}" required class="form-control" placeholder="e.g. Australia/Brisbane">
+            <select name="timezone" required class="form-control">
+                @php($selectedTimezone = (string) old('timezone', $defaultTimezone))
+                @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
+            </select>
             <div class="form-hint">Use an IANA timezone for correct DST handling (e.g. Europe/London).</div>
             @error('timezone') <div class="text-error mb-2">{{ $message }}</div> @enderror
 

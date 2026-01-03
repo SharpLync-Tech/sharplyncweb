@@ -31,8 +31,20 @@ class BookingController extends Controller
 
         $branchesService = new BranchService();
         $branchesEnabled = $branchesService->branchesEnabled();
-        $branches = $branchesEnabled ? $branchesService->getBranches($organisationId) : collect();
-        $defaultBranch = $branchesEnabled ? $branchesService->getDefaultBranch($organisationId) : null;
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $user['id'])
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $branches = $branchesEnabled
+            ? ($branchAccessEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : $branchesService->getBranches($organisationId))
+            : collect();
+        $defaultBranch = $branchesEnabled ? $branches->first() : null;
         $defaultTimezone = $defaultBranch && isset($defaultBranch->timezone) && trim((string) $defaultBranch->timezone) !== ''
             ? (string) $defaultBranch->timezone
             : (new CompanySettingsService($organisationId))->timezone();
@@ -41,6 +53,10 @@ class BookingController extends Controller
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
+            ->when(
+                $branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+            )
             ->when(
                 Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type'),
                 fn ($q) => $q->where(function ($qq) {
@@ -89,7 +105,7 @@ class BookingController extends Controller
                 ->get();
         }
 
-        $result = $this->bookingService->getUpcomingBookings($organisationId);
+        $result = $this->bookingService->getUpcomingBookings($organisationId, $user);
 
         return view('sharpfleet.admin.bookings.index', [
             'bookingsTableExists' => $result['tableExists'],

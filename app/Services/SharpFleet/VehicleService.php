@@ -10,14 +10,20 @@ class VehicleService
     /**
      * Get all active vehicles for an organisation
      */
-    public function getAvailableVehicles(int $organisationId)
+    public function getAvailableVehicles(int $organisationId, ?array $branchIds = null)
     {
-        return DB::connection('sharpfleet')
+        $query = DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
+            ->when(
+                $branchIds !== null && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('branch_id', $branchIds)
+            )
             ->orderBy('name')
-            ->get();
+            ;
+
+        return $query->get();
     }
 
     /**

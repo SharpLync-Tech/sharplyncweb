@@ -38,9 +38,8 @@
 
             <label class="form-label">Timezone</label>
             <select name="timezone" class="form-control">
-                <option value="Australia/Brisbane" {{ $timezone === 'Australia/Brisbane' ? 'selected' : '' }}>Australia / Brisbane</option>
-                <option value="Australia/Sydney" {{ $timezone === 'Australia/Sydney' ? 'selected' : '' }}>Australia / Sydney</option>
-                <option value="Australia/Melbourne" {{ $timezone === 'Australia/Melbourne' ? 'selected' : '' }}>Australia / Melbourne</option>
+                @php($selectedTimezone = (string) old('timezone', (string) ($timezone ?? 'Australia/Brisbane')))
+                @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
             </select>
         </div>
 

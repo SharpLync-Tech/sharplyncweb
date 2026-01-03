@@ -455,7 +455,7 @@ class BookingService
         return (int) $id;
     }
 
-    public function getUpcomingBookings(int $organisationId): array
+    public function getUpcomingBookings(int $organisationId, ?array $actor = null): array
     {
         $hasBookings = Schema::connection('sharpfleet')->hasTable('bookings');
         $hasCustomers = Schema::connection('sharpfleet')->hasTable('customers');
@@ -465,6 +465,19 @@ class BookingService
                 'tableExists' => false,
                 'bookings' => collect(),
             ];
+        }
+
+        $branches = $this->branchService();
+        $branchAccessEnabled = $branches->branchesEnabled()
+            && $branches->userBranchAccessEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && is_array($actor)
+            && isset($actor['id']);
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branches->getAccessibleBranchIdsForUser($organisationId, (int) $actor['id'])
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
         }
 
         $query = DB::connection('sharpfleet')
@@ -479,6 +492,14 @@ class BookingService
         $query->where('bookings.organisation_id', $organisationId)
             ->where('bookings.status', 'planned')
             ->where('bookings.planned_end', '>=', $this->nowUtc()->toDateTimeString())
+            ->when(
+                $branchAccessEnabled && $branches->bookingsHaveBranchSupport(),
+                fn ($q) => $q->whereIn('bookings.branch_id', $accessibleBranchIds)
+            )
+            ->when(
+                $branchAccessEnabled && !$branches->bookingsHaveBranchSupport() && $branches->vehiclesHaveBranchSupport(),
+                fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            )
             ->orderBy('bookings.planned_start');
 
         $bookings = $query->select(

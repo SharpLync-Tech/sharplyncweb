@@ -37,6 +37,13 @@ class BookingController extends Controller
             abort(403, 'No branch access.');
         }
 
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $user['id'])
+            : [];
+
         // getBranchesForUser() orders default first (when schema supports it)
         $defaultBranch = $branchesEnabled ? $branches->first() : null;
         $defaultTimezone = $defaultBranch && isset($defaultBranch->timezone) && trim((string) $defaultBranch->timezone) !== ''
@@ -47,6 +54,10 @@ class BookingController extends Controller
             ->table('vehicles')
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
+            ->when(
+                $branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+            )
             ->when(
                 Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type'),
                 fn ($q) => $q->where(function ($qq) {
@@ -73,7 +84,7 @@ class BookingController extends Controller
                 ->get();
         }
 
-        $result = $this->bookingService->getUpcomingBookings($organisationId);
+        $result = $this->bookingService->getUpcomingBookings($organisationId, $user);
 
         return view('sharpfleet.driver.bookings.upcoming', [
             'bookingsTableExists' => $result['tableExists'],

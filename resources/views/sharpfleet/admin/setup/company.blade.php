@@ -54,10 +54,8 @@
                 <div class="mb-3">
                     <label class="form-label">Time zone</label>
                     <select name="timezone" class="form-control" required>
-                        @php $selected = old('timezone', $settings['timezone'] ?? 'Australia/Brisbane'); @endphp
-                        @foreach(($timezones ?? []) as $tz)
-                            <option value="{{ $tz }}" {{ $selected === $tz ? 'selected' : '' }}>{{ $tz }}</option>
-                        @endforeach
+                        @php($selectedTimezone = (string) old('timezone', (string) ($settings['timezone'] ?? 'Australia/Brisbane')))
+                        @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
                     </select>
                     <div class="form-hint">This controls how times are shown to drivers and admins.</div>
                 </div>
