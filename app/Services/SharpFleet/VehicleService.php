@@ -37,6 +37,7 @@ class VehicleService
      */
     public function createVehicle(int $organisationId, array $data): int
     {
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
         $hasStartingKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km');
         $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
@@ -62,6 +63,7 @@ class VehicleService
             ->insertGetId([
                 'organisation_id'      => $organisationId,
                 'name'                 => $data['name'],
+                'branch_id'            => $hasBranchId ? ((($data['branch_id'] ?? null) === null || ($data['branch_id'] ?? null) === '') ? null : (int) $data['branch_id']) : null,
                 'is_road_registered'    => (int) ($data['is_road_registered'] ?? 1),
                 'registration_number'  => $data['registration_number'],
                 'tracking_mode'         => $data['tracking_mode'] ?? 'distance',
@@ -88,6 +90,7 @@ class VehicleService
      */
     public function updateVehicle(int $organisationId, int $vehicleId, array $data): void
     {
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
         $hasStartingKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km');
         $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
@@ -111,6 +114,11 @@ class VehicleService
             'notes'                 => $data['notes'] ?? null,
             'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
         ];
+
+        if ($hasBranchId && array_key_exists('branch_id', $data)) {
+            $raw = $data['branch_id'] ?? null;
+            $update['branch_id'] = ($raw === null || $raw === '') ? null : (int) $raw;
+        }
 
         if ($hasAssignmentType && array_key_exists('assignment_type', $data)) {
             $raw = strtolower(trim((string) ($data['assignment_type'] ?? 'none')));

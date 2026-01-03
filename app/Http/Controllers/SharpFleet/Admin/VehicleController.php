@@ -8,6 +8,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\EntitlementService;
 use App\Services\SharpFleet\StripeSubscriptionSyncService;
 use App\Services\SharpFleet\VehicleService;
+use App\Services\SharpFleet\BranchService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -290,9 +291,17 @@ class VehicleController extends Controller
 
         $settingsService = new CompanySettingsService($organisationId);
 
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
+        $defaultBranchId = $branchesEnabled ? $branchService->ensureDefaultBranch($organisationId) : null;
+
         return view('sharpfleet.admin.vehicles.create', [
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'defaultBranchId' => $defaultBranchId,
         ]);
     }
 
@@ -498,6 +507,9 @@ class VehicleController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
 
+            // Branch (optional; requires DB columns)
+            'branch_id' => ['nullable', 'integer'],
+
             // Registration tracking (optional, company-controlled)
             'is_road_registered' => [Rule::requiredIf(fn () => $regoTrackingEnabled), 'boolean'],
 
@@ -532,6 +544,26 @@ class VehicleController extends Controller
             'out_of_service_reason' => ['nullable', 'string', 'max:50'],
             'out_of_service_note' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        if ($branchesEnabled) {
+            $branchId = (int) ($validated['branch_id'] ?? 0);
+            if ($branchId <= 0) {
+                $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+                $validated['branch_id'] = $defaultBranchId > 0 ? $defaultBranchId : null;
+            } else {
+                $branch = $branchService->getBranch($organisationId, $branchId);
+                if (!$branch) {
+                    return back()
+                        ->withErrors(['branch_id' => 'Please select a valid branch.'])
+                        ->withInput();
+                }
+                $validated['branch_id'] = $branchId;
+            }
+        } else {
+            unset($validated['branch_id']);
+        }
 
         $wantsServiceStatus = array_key_exists('is_in_service', $validated) && ((int) ($validated['is_in_service'] ?? 1) === 0);
         if ($wantsServiceStatus) {
@@ -666,6 +698,11 @@ class VehicleController extends Controller
 
         $settingsService = new CompanySettingsService($organisationId);
 
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
+        $defaultBranchId = $branchesEnabled ? $branchService->ensureDefaultBranch($organisationId) : null;
+
         $drivers = DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
@@ -693,6 +730,9 @@ class VehicleController extends Controller
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
             'drivers' => $drivers,
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'defaultBranchId' => $defaultBranchId,
         ]);
     }
 
@@ -723,6 +763,7 @@ class VehicleController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
+            'branch_id' => ['nullable', 'integer'],
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
             'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,other'],
@@ -747,6 +788,26 @@ class VehicleController extends Controller
             'permanent_assignment' => ['nullable', 'boolean'],
             'assigned_driver_id' => ['nullable', 'integer'],
         ]);
+
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        if ($branchesEnabled) {
+            $branchId = (int) ($validated['branch_id'] ?? 0);
+            if ($branchId <= 0) {
+                $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+                $validated['branch_id'] = $defaultBranchId > 0 ? $defaultBranchId : null;
+            } else {
+                $branch = $branchService->getBranch($organisationId, $branchId);
+                if (!$branch) {
+                    return back()
+                        ->withErrors(['branch_id' => 'Please select a valid branch.'])
+                        ->withInput();
+                }
+                $validated['branch_id'] = $branchId;
+            }
+        } else {
+            unset($validated['branch_id']);
+        }
 
         $wantsPermanentAssignment = (int) ($validated['permanent_assignment'] ?? 0) === 1;
         $vehiclesHaveAssignment = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')

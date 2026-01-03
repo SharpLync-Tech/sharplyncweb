@@ -8,6 +8,9 @@
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
     $drivers = $drivers ?? collect();
+    $branchesEnabled = (bool) ($branchesEnabled ?? false);
+    $branches = $branches ?? collect();
+    $defaultBranchId = $defaultBranchId ?? null;
 @endphp
 
 <div class="container mt-4">
@@ -43,6 +46,20 @@
                             <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required class="form-control">
                             @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
                         </div>
+
+                        @if($branchesEnabled)
+                            <div class="form-group">
+                                <label class="form-label">Branch</label>
+                                <select name="branch_id" class="form-control">
+                                    @foreach($branches as $b)
+                                        <option value="{{ (int) $b->id }}" {{ (int) old('branch_id', $vehicle->branch_id ?? $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
+                                            {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('branch_id') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                        @endif
 
                         <div class="form-group">
                             <label class="form-label">Registration number (locked)</label>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
+use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\CompanySettingsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,6 +28,14 @@ class BookingController extends Controller
         }
 
         $organisationId = (int) $user['organisation_id'];
+
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branches = $branchesEnabled ? $branchesService->getBranches($organisationId) : collect();
+        $defaultBranch = $branchesEnabled ? $branchesService->getDefaultBranch($organisationId) : null;
+        $defaultTimezone = $defaultBranch && isset($defaultBranch->timezone) && trim((string) $defaultBranch->timezone) !== ''
+            ? (string) $defaultBranch->timezone
+            : (new CompanySettingsService($organisationId))->timezone();
 
         $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
@@ -89,6 +98,9 @@ class BookingController extends Controller
             'drivers' => $drivers,
             'customersTableExists' => $customersTableExists,
             'customers' => $customers,
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'defaultTimezone' => $defaultTimezone,
         ]);
     }
 
@@ -102,6 +114,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'user_id' => ['required', 'integer'],
             'vehicle_id' => ['required', 'integer'],
+            'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
             'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
@@ -122,6 +135,7 @@ class BookingController extends Controller
         $this->bookingService->createBooking((int) $user['organisation_id'], [
             'user_id' => (int) $validated['user_id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
+            'branch_id' => isset($validated['branch_id']) ? (int) $validated['branch_id'] : null,
             'planned_start' => $plannedStart,
             'planned_end' => $plannedEnd,
             'customer_id' => $validated['customer_id'] ?? null,
@@ -172,6 +186,7 @@ class BookingController extends Controller
         }
 
         $validated = $request->validate([
+            'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
             'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
@@ -183,11 +198,24 @@ class BookingController extends Controller
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
         $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);
 
-        $tz = (new CompanySettingsService((int) $user['organisation_id']))->timezone();
+        $organisationId = (int) $user['organisation_id'];
+        $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+
+        $branchesService = new BranchService();
+        $tz = (new CompanySettingsService($organisationId))->timezone();
+        if ($branchesService->branchesEnabled() && $branchId && $branchId > 0) {
+            $branch = $branchesService->getBranch($organisationId, $branchId);
+            if ($branch && isset($branch->timezone) && trim((string) $branch->timezone) !== '') {
+                $tz = (string) $branch->timezone;
+            }
+        }
+
         $plannedStart = Carbon::createFromFormat('Y-m-d H:i:s', $validated['planned_start_date'] . ' ' . $startTime . ':00', $tz);
         $plannedEnd = Carbon::createFromFormat('Y-m-d H:i:s', $validated['planned_end_date'] . ' ' . $endTime . ':00', $tz);
 
-        $vehicles = $this->bookingService->getAvailableVehicles((int) $user['organisation_id'], $plannedStart, $plannedEnd);
+        $vehicles = $this->bookingService->getAvailableVehicles($organisationId, $plannedStart, $plannedEnd, $branchId);
 
         return response()->json([
             'vehicles' => $vehicles,

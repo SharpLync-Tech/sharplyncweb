@@ -56,6 +56,44 @@
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
             </div>
+
+            @php
+                $branchesEnabled = (bool) ($branchesEnabled ?? false);
+                $branches = $branches ?? collect();
+                $selectedBranchIds = is_array($selectedBranchIds ?? null) ? $selectedBranchIds : [];
+                $selectedBranchMap = [];
+                foreach ($selectedBranchIds as $id) { $selectedBranchMap[(int) $id] = true; }
+            @endphp
+
+            @if($branchesEnabled)
+                <hr class="my-4">
+
+                <h3 class="section-title">Branch access</h3>
+                <p class="text-muted small mb-2">
+                    This controls which branches this user can operate in.
+                </p>
+
+                @if($branches->count() === 0)
+                    <div class="alert alert-error mb-3">No active branches found.</div>
+                @else
+                    @foreach($branches as $b)
+                        @php
+                            $bid = (int) ($b->id ?? 0);
+                            $checked = old('branch_ids') !== null
+                                ? in_array((string) $bid, (array) old('branch_ids', []), true) || in_array($bid, (array) old('branch_ids', []), true)
+                                : isset($selectedBranchMap[$bid]);
+                        @endphp
+                        <label class="checkbox-label mb-1">
+                            <input type="checkbox" name="branch_ids[]" value="{{ $bid }}" {{ $checked ? 'checked' : '' }}>
+                            <strong>{{ (string) ($b->name ?? '') }}</strong>
+                            <span class="text-muted">({{ (string) ($b->timezone ?? '') }})</span>
+                        </label>
+                    @endforeach
+                @endif
+
+                @error('branch_ids') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                @error('branch_ids.*') <div class="text-error mb-2">{{ $message }}</div> @enderror
+            @endif
         </form>
 
         @if(($user->role ?? '') === 'driver')

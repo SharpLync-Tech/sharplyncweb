@@ -9,8 +9,11 @@
 
     $user = session('sharpfleet.user');
     $settingsService = new CompanySettingsService((int) $user['organisation_id']);
-    $companyTimezone = $settingsService->timezone();
+    $companyTimezone = $defaultTimezone ?? $settingsService->timezone();
     $today = \Carbon\Carbon::now($companyTimezone)->format('Y-m-d');
+
+    $branchesEnabled = (bool) ($branchesEnabled ?? false);
+    $branches = $branches ?? collect();
 @endphp
 
 <div class="container">
@@ -50,6 +53,25 @@
             @else
                 <form method="POST" action="{{ url('/app/sharpfleet/bookings') }}">
                     @csrf
+
+                    @if($branchesEnabled && $branches->count() > 1)
+                        <div class="form-group">
+                            <label class="form-label">Branch</label>
+                            <select id="bookingBranchSelect" name="branch_id" class="form-control" required>
+                                <option value="">— Select branch —</option>
+                                @foreach($branches as $br)
+                                    <option value="{{ $br->id }}" {{ (string)old('branch_id') === (string)$br->id ? 'selected' : '' }}>
+                                        {{ $br->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('branch_id')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @elseif($branchesEnabled && $branches->count() === 1)
+                        <input type="hidden" id="bookingBranchSelect" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
+                    @endif
 
                     <div class="grid grid-2">
                         <div class="form-group">
@@ -171,6 +193,8 @@
                     const endHour = document.querySelector('select[name="planned_end_hour"]');
                     const endMinute = document.querySelector('select[name="planned_end_minute"]');
 
+                    const branchSelect = document.getElementById('bookingBranchSelect');
+
                     const bookingVehicleSelect = document.getElementById('bookingVehicleSelect');
                     const bookingVehicleStatus = document.getElementById('bookingVehicleStatus');
                     const createBookingBtn = document.getElementById('createBookingBtn');
@@ -221,6 +245,17 @@
                     async function loadAvailableVehicles() {
                         if (!bookingVehicleSelect || !startDate || !startHour || !startMinute || !endDate || !endHour || !endMinute) return;
 
+                        const branchId = branchSelect ? branchSelect.value : '';
+                        if (branchSelect && !branchId) {
+                            bookingVehicleSelect.disabled = true;
+                            setVehicleSelectOptions([]);
+                            if (bookingVehicleStatus) {
+                                bookingVehicleStatus.textContent = 'Select a branch to load available vehicles.';
+                            }
+                            updateCreateButtonState();
+                            return;
+                        }
+
                         if (!startDate.value || !startHour.value || !startMinute.value || !endDate.value || !endHour.value || !endMinute.value) {
                             bookingVehicleSelect.disabled = true;
                             setVehicleSelectOptions([]);
@@ -237,6 +272,7 @@
                         }
 
                         const params = new URLSearchParams({
+                            branch_id: branchId,
                             planned_start_date: startDate.value,
                             planned_start_hour: startHour.value,
                             planned_start_minute: startMinute.value,
@@ -285,6 +321,10 @@
                     [startDate, startHour, startMinute, endDate, endHour, endMinute].forEach(el => {
                         if (el) el.addEventListener('change', loadAvailableVehicles);
                     });
+
+                    if (branchSelect) {
+                        branchSelect.addEventListener('change', loadAvailableVehicles);
+                    }
 
                     if (bookingVehicleSelect) {
                         bookingVehicleSelect.addEventListener('change', updateCreateButtonState);
@@ -350,8 +390,9 @@
                                     </td>
                                     <td>{{ $b->driver_name }}</td>
                                     <td>{{ $b->customer_name_display ?: '—' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
+                                    @php($rowTz = isset($b->timezone) && trim((string)$b->timezone) !== '' ? (string)$b->timezone : $companyTimezone)
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->timezone($rowTz)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->timezone($rowTz)->format('d/m/Y H:i') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
                                         @if($isMine)

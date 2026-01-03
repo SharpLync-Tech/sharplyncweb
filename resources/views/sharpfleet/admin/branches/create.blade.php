@@ -1,0 +1,52 @@
+@extends('layouts.sharpfleet')
+
+@section('title', 'Add Branch')
+
+@section('sharpfleet-content')
+
+@php
+    $defaultTimezone = (string) ($defaultTimezone ?? '');
+@endphp
+
+<div class="max-w-700 mx-auto mt-4">
+    <div class="page-header">
+        <h1 class="page-title">Add branch</h1>
+        <p class="page-description">Branches control timezone display and booking/trip time interpretation.</p>
+    </div>
+
+    @if ($errors->any())
+        <div class="alert alert-error mb-3">
+            <strong>Please fix the errors below.</strong>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ url('/app/sharpfleet/admin/branches') }}">
+        @csrf
+
+        <div class="card">
+            <label class="form-label">Branch name</label>
+            <input type="text" name="name" value="{{ old('name') }}" required class="form-control" placeholder="e.g. Brisbane Depot">
+            @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+            <label class="form-label mt-2">Timezone (IANA)</label>
+            <input type="text" name="timezone" value="{{ old('timezone', $defaultTimezone) }}" required class="form-control" placeholder="e.g. Australia/Brisbane">
+            <div class="form-hint">Use an IANA timezone for correct DST handling (e.g. Europe/London).</div>
+            @error('timezone') <div class="text-error mb-2">{{ $message }}</div> @enderror
+
+            <input type="hidden" name="is_default" value="0">
+            <label class="checkbox-label mt-2 mb-0">
+                <input type="checkbox" name="is_default" value="1" {{ old('is_default', 0) == 1 ? 'checked' : '' }}>
+                <strong>Make this the default branch</strong>
+            </label>
+
+            <hr class="my-3">
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="{{ url('/app/sharpfleet/admin/branches') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@endsection

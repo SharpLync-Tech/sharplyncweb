@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BranchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -54,8 +55,16 @@ class UserController extends Controller
             abort(404);
         }
 
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
+        $selectedBranchIds = $branchesEnabled ? $branchService->getAccessibleBranchIdsForUser($organisationId, $userId) : [];
+
         return view('sharpfleet.admin.users.edit', [
             'user' => $user,
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'selectedBranchIds' => $selectedBranchIds,
         ]);
     }
 
@@ -66,11 +75,81 @@ class UserController extends Controller
 
         $request->validate([
             'is_driver' => ['required', 'in:0,1'],
+            'branch_ids' => ['nullable', 'array'],
+            'branch_ids.*' => ['integer'],
         ]);
 
         // The form submits a hidden 0 plus a checkbox 1 when checked.
         // Read the resulting scalar value deterministically.
         $isDriver = ((int) $request->input('is_driver', 0) === 1) ? 1 : 0;
+
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+
+        // Persist branch access (schema-guarded). Defaults to the default branch if none provided.
+        if ($branchesEnabled) {
+            $incoming = $request->input('branch_ids', []);
+            $incoming = is_array($incoming) ? $incoming : [];
+
+            $selected = [];
+            foreach ($incoming as $bid) {
+                $bid = (int) $bid;
+                if ($bid > 0 && $branchService->getBranch($organisationId, $bid)) {
+                    $selected[$bid] = true;
+                }
+            }
+
+            if (count($selected) === 0) {
+                $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+                if ($defaultBranchId > 0) {
+                    $selected[$defaultBranchId] = true;
+                }
+            }
+
+            $hasIsActive = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'is_active');
+            $hasCreatedAt = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'created_at');
+            $hasUpdatedAt = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'updated_at');
+
+            DB::connection('sharpfleet')->transaction(function () use ($organisationId, $userId, $selected, $hasIsActive, $hasCreatedAt, $hasUpdatedAt) {
+                if ($hasIsActive) {
+                    DB::connection('sharpfleet')
+                        ->table('user_branch_access')
+                        ->where('organisation_id', $organisationId)
+                        ->where('user_id', $userId)
+                        ->update(['is_active' => 0]);
+                }
+
+                foreach (array_keys($selected) as $branchId) {
+                    $attrs = [
+                        'organisation_id' => $organisationId,
+                        'user_id' => $userId,
+                        'branch_id' => (int) $branchId,
+                    ];
+
+                    $values = [];
+                    if ($hasIsActive) {
+                        $values['is_active'] = 1;
+                    }
+                    if ($hasCreatedAt) {
+                        $values['created_at'] = now();
+                    }
+                    if ($hasUpdatedAt) {
+                        $values['updated_at'] = now();
+                    }
+
+                    // updateOrInsert will update existing rows or create new ones.
+                    DB::connection('sharpfleet')->table('user_branch_access')->updateOrInsert($attrs, $values);
+
+                    // Ensure updated_at is refreshed for existing rows.
+                    if ($hasUpdatedAt) {
+                        DB::connection('sharpfleet')
+                            ->table('user_branch_access')
+                            ->where($attrs)
+                            ->update(['updated_at' => now()] + ($hasIsActive ? ['is_active' => 1] : []));
+                    }
+                }
+            });
+        }
 
         $updated = DB::connection('sharpfleet')
             ->table('users')

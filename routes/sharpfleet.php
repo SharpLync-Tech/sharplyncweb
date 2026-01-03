@@ -23,6 +23,7 @@ use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyController;
 use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
+use App\Http\Controllers\SharpFleet\Admin\BranchController;
 use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
@@ -265,6 +266,13 @@ Route::prefix('app/sharpfleet')
             Route::get('/company', [CompanyController::class, 'index']);
             Route::get('/company/profile', [CompanyProfileController::class, 'edit']);
             Route::post('/company/profile', [CompanyProfileController::class, 'update']);
+
+            // Branches
+            Route::get('/branches', [BranchController::class, 'index']);
+            Route::get('/branches/create', [BranchController::class, 'create']);
+            Route::post('/branches', [BranchController::class, 'store']);
+            Route::get('/branches/{branchId}/edit', [BranchController::class, 'edit'])->whereNumber('branchId');
+            Route::post('/branches/{branchId}', [BranchController::class, 'update'])->whereNumber('branchId');
 
             // Safety Checks (definition)
             Route::get('/safety-checks', [CompanySafetyCheckController::class, 'index']);

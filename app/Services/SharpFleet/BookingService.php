@@ -9,6 +9,11 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    private function branchService(): BranchService
+    {
+        return new BranchService();
+    }
+
     private function vehiclesHavePermanentAssignmentSupport(): bool
     {
         return Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
@@ -152,21 +157,19 @@ class BookingService
         return Carbon::now('UTC');
     }
 
-    private function parseCompanyLocalToUtc(int $organisationId, string $raw): Carbon
+    private function parseLocalToUtc(string $raw, string $timezone, string $field = 'planned_start'): Carbon
     {
         $raw = trim($raw);
         if ($raw === '') {
             throw ValidationException::withMessages([
-                'planned_start' => 'Planned start is required.',
+                $field => 'Planned start is required.',
             ]);
         }
-
-        $tz = (new CompanySettingsService($organisationId))->timezone();
 
         // Controllers produce: YYYY-MM-DD HH:MM:SS (no timezone). Treat as company-local.
         if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $raw) === 1) {
             try {
-                return Carbon::createFromFormat('Y-m-d H:i:s', $raw, $tz)->utc();
+                return Carbon::createFromFormat('Y-m-d H:i:s', $raw, $timezone)->utc();
             } catch (\Throwable $e) {
                 // fall through
             }
@@ -174,12 +177,30 @@ class BookingService
 
         // Fallback: parse as company-local (handles e.g. ISO strings too).
         try {
-            return Carbon::parse($raw, $tz)->utc();
+            return Carbon::parse($raw, $timezone)->utc();
         } catch (\Throwable $e) {
             throw ValidationException::withMessages([
-                'planned_start' => 'Invalid planned date/time.',
+                $field => 'Invalid planned date/time.',
             ]);
         }
+    }
+
+    private function resolveBookingTimezone(int $organisationId, int $vehicleId, ?int $branchId = null): string
+    {
+        $branches = $this->branchService();
+
+        if ($branches->branchesEnabled() && $branches->vehiclesHaveBranchSupport()) {
+            if ($branchId && $branchId > 0) {
+                $branch = $branches->getBranch($organisationId, $branchId);
+                if ($branch && isset($branch->timezone) && trim((string) $branch->timezone) !== '') {
+                    return (string) $branch->timezone;
+                }
+            }
+
+            return $branches->getTimezoneForVehicle($organisationId, $vehicleId);
+        }
+
+        return (new CompanySettingsService($organisationId))->timezone();
     }
 
     public function changeBookingVehicle(int $organisationId, int $bookingId, int $newVehicleId): void
@@ -292,8 +313,14 @@ class BookingService
         $userId = (int) ($data['user_id'] ?? 0);
         $vehicleId = (int) ($data['vehicle_id'] ?? 0);
 
-        $plannedStart = $this->parseCompanyLocalToUtc($organisationId, (string) ($data['planned_start'] ?? ''));
-        $plannedEnd = $this->parseCompanyLocalToUtc($organisationId, (string) ($data['planned_end'] ?? ''));
+        $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
+            ? (int) $data['branch_id']
+            : null;
+
+        $timezone = $this->resolveBookingTimezone($organisationId, $vehicleId, $branchId);
+
+        $plannedStart = $this->parseLocalToUtc((string) ($data['planned_start'] ?? ''), $timezone, 'planned_start');
+        $plannedEnd = $this->parseLocalToUtc((string) ($data['planned_end'] ?? ''), $timezone, 'planned_end');
 
         // Disallow bookings starting in the past (date + time must be in the future).
         if ($plannedStart->lessThan($this->nowUtc())) {
@@ -307,6 +334,17 @@ class BookingService
         }
         if ($vehicleId <= 0) {
             throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
+        }
+
+        // If branches are installed, ensure the requested branch (if provided) matches the vehicle.
+        $branches = $this->branchService();
+        if ($branchId && $branches->branchesEnabled() && $branches->vehiclesHaveBranchSupport()) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            if ($vehicleBranchId && (int) $vehicleBranchId !== (int) $branchId) {
+                throw ValidationException::withMessages([
+                    'branch_id' => 'Selected vehicle does not belong to the selected branch.',
+                ]);
+            }
         }
 
         // If the out-of-service feature exists, block bookings for out-of-service vehicles.
@@ -358,9 +396,7 @@ class BookingService
             ]);
         }
 
-        $id = DB::connection('sharpfleet')
-            ->table('bookings')
-            ->insertGetId([
+        $insert = [
                 'organisation_id' => $organisationId,
                 'user_id' => $userId,
                 'vehicle_id' => $vehicleId,
@@ -372,7 +408,19 @@ class BookingService
                 'notes' => isset($data['notes']) ? trim((string) $data['notes']) : null,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
+
+        if ($branches->branchesEnabled() && $branches->bookingsHaveBranchSupport()) {
+            $insert['branch_id'] = $branchId ?: $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+        }
+
+        if ($branches->bookingsHaveTimezoneSupport()) {
+            $insert['timezone'] = $timezone;
+        }
+
+        $id = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->insertGetId($insert);
 
         return (int) $id;
     }
@@ -453,7 +501,7 @@ class BookingService
             ]);
     }
 
-    public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd)
+    public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd, ?int $branchId = null)
     {
         $plannedStartUtc = $plannedStart->copy()->utc();
         $plannedEndUtc = $plannedEnd->copy()->utc();
@@ -476,6 +524,18 @@ class BookingService
             ->where('vehicles.organisation_id', $organisationId)
             ->where('vehicles.is_active', 1)
             ->orderBy('vehicles.name');
+
+        $branches = $this->branchService();
+        if ($branches->branchesEnabled() && $branches->vehiclesHaveBranchSupport()) {
+            $useBranchId = $branchId;
+            if (!$useBranchId || $useBranchId <= 0) {
+                $defaultBranch = $branches->getDefaultBranch($organisationId);
+                $useBranchId = $defaultBranch ? (int) $defaultBranch->id : null;
+            }
+            if ($useBranchId && $useBranchId > 0) {
+                $vehiclesQuery->where('vehicles.branch_id', $useBranchId);
+            }
+        }
 
         if (Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service')) {
             $vehiclesQuery->where('vehicles.is_in_service', 1);

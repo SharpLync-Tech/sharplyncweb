@@ -7,6 +7,9 @@
 @php
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
+    $branchesEnabled = (bool) ($branchesEnabled ?? false);
+    $branches = $branches ?? collect();
+    $defaultBranchId = $defaultBranchId ?? null;
 @endphp
 
 <div class="max-w-800 mx-auto mt-4">
@@ -53,6 +56,21 @@
             @error('name')
                 <div class="text-error mb-2">{{ $message }}</div>
             @enderror
+
+            @if($branchesEnabled)
+                <label class="form-label mt-2">Branch</label>
+                <select name="branch_id" class="form-control">
+                    @foreach($branches as $b)
+                        <option value="{{ (int) $b->id }}" {{ (int) old('branch_id', $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
+                            {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
+                        </option>
+                    @endforeach
+                </select>
+                <div class="form-hint">Booking and trip times will use this branch timezone.</div>
+                @error('branch_id')
+                    <div class="text-error mb-2">{{ $message }}</div>
+                @enderror
+            @endif
 
             {{-- Registration Tracking (Company Setting) --}}
             @if($vehicleRegistrationTrackingEnabled)
