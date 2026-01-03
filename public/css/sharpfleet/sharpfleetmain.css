@@ -424,18 +424,38 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 }
 
 /* Setup Wizard card (adds an image cover that works with existing cards) */
+.sf-setup-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    /* Blur whatever is behind (gradient + any page chrome). */
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    /* Soft dark tint so the foreground card pops. */
+    background: rgba(10, 42, 77, 0.20);
+}
+
+.sf-setup-layer {
+    position: relative;
+    z-index: 60;
+}
+
 .sf-setup-card {
     padding: 0;
     overflow: hidden;
     /* Very light teal glow on left/right/bottom (keeps top clean under the cover image) */
-    border-left: 1px solid rgba(var(--primary-rgb), 0.16);
-    border-right: 1px solid rgba(var(--primary-rgb), 0.16);
-    border-bottom: 1px solid rgba(var(--primary-rgb), 0.18);
+    border-left: 1px solid rgba(var(--primary-rgb), 0.30);
+    border-right: 1px solid rgba(var(--primary-rgb), 0.30);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.34);
     box-shadow:
         0 8px 22px rgba(10, 42, 77, 0.12),
-        -10px 0 26px rgba(var(--primary-rgb), 0.08),
-        10px 0 26px rgba(var(--primary-rgb), 0.08),
-        0 12px 30px rgba(var(--primary-rgb), 0.10);
+        inset 0 -1px 0 rgba(var(--primary-rgb), 0.22),
+        inset 1px 0 0 rgba(var(--primary-rgb), 0.18),
+        inset -1px 0 0 rgba(var(--primary-rgb), 0.18),
+        -12px 0 30px rgba(var(--primary-rgb), 0.14),
+        12px 0 30px rgba(var(--primary-rgb), 0.14),
+        0 14px 34px rgba(var(--primary-rgb), 0.16);
 }
 
 .sf-setup-card__cover img {

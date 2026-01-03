@@ -12,6 +12,9 @@
     ], $settings ?? []);
 @endphp
 
+<div class="sf-setup-backdrop" aria-hidden="true"></div>
+
+<div class="sf-setup-layer">
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
@@ -68,6 +71,7 @@
             <button type="submit" class="btn btn-primary">Next</button>
         </div>
     </form>
+</div>
 </div>
 
 @endsection

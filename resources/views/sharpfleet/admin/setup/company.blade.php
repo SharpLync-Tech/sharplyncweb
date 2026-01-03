@@ -4,6 +4,9 @@
 
 @section('sharpfleet-content')
 
+<div class="sf-setup-backdrop" aria-hidden="true"></div>
+
+<div class="sf-setup-layer">
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
@@ -73,6 +76,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 
 @endsection
