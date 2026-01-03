@@ -26,7 +26,7 @@
         $setupImgPath = public_path('images/sharpfleet/setup.png');
     @endphp
 
-    <div class="card sf-setup-card" style="max-width: 720px;">
+    <div class="card sf-setup-card" style="max-width: 840px;">
         @if (is_string($setupImgPath) && file_exists($setupImgPath))
             <div class="sf-setup-card__cover" aria-hidden="true">
                 <img src="{{ asset('images/sharpfleet/setup.png') }}?v={{ @filemtime($setupImgPath) ?: time() }}" alt="">

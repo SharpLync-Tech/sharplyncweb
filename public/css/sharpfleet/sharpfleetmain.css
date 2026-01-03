@@ -427,23 +427,32 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 .sf-setup-card {
     padding: 0;
     overflow: hidden;
+    /* Very light teal glow on left/right/bottom (keeps top clean under the cover image) */
+    border-left: 1px solid rgba(var(--primary-rgb), 0.16);
+    border-right: 1px solid rgba(var(--primary-rgb), 0.16);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.18);
+    box-shadow:
+        0 8px 22px rgba(10, 42, 77, 0.12),
+        -10px 0 26px rgba(var(--primary-rgb), 0.08),
+        10px 0 26px rgba(var(--primary-rgb), 0.08),
+        0 12px 30px rgba(var(--primary-rgb), 0.10);
 }
 
 .sf-setup-card__cover img {
     width: 100%;
-    height: 160px;
+    height: 120px;
     object-fit: cover;
     display: block;
 }
 
 .sf-setup-card > .card-header {
     margin-bottom: 0;
-    padding: 24px 32px 16px;
+    padding: 18px 28px 12px;
     border-bottom: 1px solid var(--border-color);
 }
 
 .sf-setup-card > .card-body {
-    padding: 24px 32px 32px;
+    padding: 18px 28px 22px;
 }
 
 .card:hover {
@@ -1145,7 +1154,7 @@ details.card[open] .incident-toggle-hint-closed {
     }
 
     .sf-setup-card__cover img {
-        height: 110px;
+        height: 96px;
     }
 
     .sf-setup-card > .card-header {
