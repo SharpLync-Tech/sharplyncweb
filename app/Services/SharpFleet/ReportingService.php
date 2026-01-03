@@ -24,7 +24,7 @@ class ReportingService
      *
      * @return array{applied: array<string, mixed>, ui: array<string, mixed>, trips: \Illuminate\Support\Collection<int, object>, totals: array{km: float, hours: float}}
      */
-    public function buildTripReport(int $organisationId, Request $request): array
+    public function buildTripReport(int $organisationId, Request $request, ?array $actor = null): array
     {
         $settingsService = new CompanySettingsService($organisationId);
         $settings = $settingsService->all();
@@ -61,6 +61,33 @@ class ReportingService
             $vehicleId = $defaultVehicleId;
         }
 
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled()
+            && is_array($actor)
+            && isset($actor['id']);
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $actor['id'])
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        if ($branchAccessEnabled && $vehicleId) {
+            $vehicleAllowed = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $vehicleId)
+                ->whereIn('branch_id', $accessibleBranchIds)
+                ->exists();
+
+            if (!$vehicleAllowed) {
+                $vehicleId = null;
+            }
+        }
+
         $selectedVehicleLabel = 'All vehicles';
         if ($vehicleId) {
             $vehicleRow = DB::connection('sharpfleet')
@@ -68,6 +95,10 @@ class ReportingService
                 ->select('name', 'registration_number')
                 ->where('organisation_id', $organisationId)
                 ->where('id', $vehicleId)
+                ->when(
+                    $branchAccessEnabled,
+                    fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+                )
                 ->first();
 
             if ($vehicleRow) {
@@ -126,6 +157,10 @@ class ReportingService
             ->table('trips')
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->join('users', 'trips.user_id', '=', 'users.id');
+
+        if ($branchAccessEnabled) {
+            $query->whereIn('vehicles.branch_id', $accessibleBranchIds);
+        }
 
         if ($customerLinkingEnabled) {
             $query->leftJoin('customers', 'trips.customer_id', '=', 'customers.id');
@@ -253,9 +288,9 @@ class ReportingService
     /**
      * Stream a CSV export using the same settings-driven report dataset.
      */
-    public function streamTripReportCsv(int $organisationId, Request $request)
+    public function streamTripReportCsv(int $organisationId, Request $request, ?array $actor = null)
     {
-        $result = $this->buildTripReport($organisationId, $request);
+        $result = $this->buildTripReport($organisationId, $request, $actor);
         /** @var Collection<int, object> $trips */
         $trips = $result['trips'];
 

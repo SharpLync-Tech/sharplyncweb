@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\ReportingService;
 use App\Services\SharpFleet\CompanySettingsService;
+use Illuminate\Support\Facades\Schema;
 
 class ReportController extends Controller
 {
@@ -23,16 +25,32 @@ class ReportController extends Controller
             abort(403, 'Admin access only');
         }
 
-        if ($request->export === 'csv') {
-            return $this->reportingService->streamTripReportCsv((int) $user['organisation_id'], $request);
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser((int) $user['organisation_id'], (int) $user['id'])
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
         }
 
-        $result = $this->reportingService->buildTripReport((int) $user['organisation_id'], $request);
+        if ($request->export === 'csv') {
+            return $this->reportingService->streamTripReportCsv((int) $user['organisation_id'], $request, $user);
+        }
+
+        $result = $this->reportingService->buildTripReport((int) $user['organisation_id'], $request, $user);
 
         $vehicles = \Illuminate\Support\Facades\DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $user['organisation_id'])
             ->where('is_active', 1)
+            ->when(
+                $branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+            )
             ->orderBy('name')
             ->get();
 
