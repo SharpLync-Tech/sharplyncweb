@@ -455,16 +455,17 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
         inset 0 -1px 0 rgba(var(--primary-rgb), 0.22),
         inset 1px 0 0 rgba(var(--primary-rgb), 0.18),
         inset -1px 0 0 rgba(var(--primary-rgb), 0.18),
-        -12px 0 30px rgba(var(--primary-rgb), 0.14),
-        12px 0 30px rgba(var(--primary-rgb), 0.14),
-        0 14px 34px rgba(var(--primary-rgb), 0.16);
+        -12px 0 30px rgba(var(--primary-rgb), 0.3),
+        12px 0 30px rgba(var(--primary-rgb), 0.8),
+        0 14px 34px rgba(var(--primary-rgb), 0.3);
 }
 
 .sf-setup-card__cover img {
     width: 100%;
-    height: 120px;
+    height: 160px;
     object-fit: cover;
     display: block;
+    object-position: 44% 56%;
 }
 
 .sf-setup-card > .card-header {
@@ -477,10 +478,6 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     padding: 18px 28px 22px;
 }
 
-.card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-}
 
 .card-header {
     margin-bottom: 24px;
