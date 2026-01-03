@@ -141,7 +141,11 @@
                     <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
                 </div>
                 <div class="info-row">
-                    @php($tripTz = isset($activeTrip->timezone) && trim((string)$activeTrip->timezone) !== '' ? (string)$activeTrip->timezone : $companyTimezone)
+                    @php
+                        $tripTz = isset($activeTrip->timezone) && trim((string) $activeTrip->timezone) !== ''
+                            ? (string) $activeTrip->timezone
+                            : $companyTimezone;
+                    @endphp
                     <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->timezone($tripTz)->format('M j, Y g:i A') }}
                 </div>
                 <div class="info-row">
