@@ -260,6 +260,7 @@ class ReportingService
         $trips = $result['trips'];
 
         $customerLinkingEnabled = (bool) ($result['customerLinkingEnabled'] ?? false);
+        $purposeOfTravelEnabled = (new CompanySettingsService($organisationId))->purposeOfTravelEnabled();
 
         $headers = [
             'Vehicle',
@@ -267,6 +268,7 @@ class ReportingService
             'Driver',
             'Trip Mode',
             $customerLinkingEnabled ? 'Customer' : null,
+            $purposeOfTravelEnabled ? 'Purpose of Travel' : null,
             'Unit',
             'Start Reading',
             'End Reading',
@@ -277,7 +279,7 @@ class ReportingService
         ];
         $headers = array_values(array_filter($headers, fn ($h) => $h !== null));
 
-        $callback = function () use ($trips, $headers, $customerLinkingEnabled) {
+        $callback = function () use ($trips, $headers, $customerLinkingEnabled, $purposeOfTravelEnabled) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $headers);
 
@@ -293,6 +295,12 @@ class ReportingService
 
                 if ($customerLinkingEnabled) {
                     $row[] = $trip->customer_name_display ?? '';
+                }
+
+                if ($purposeOfTravelEnabled) {
+                    $rawMode = strtolower((string) ($trip->trip_mode ?? ''));
+                    $isBusiness = $rawMode !== 'private';
+                    $row[] = $isBusiness ? ($trip->purpose_of_travel ?? '') : '';
                 }
 
                 $row = array_merge($row, [

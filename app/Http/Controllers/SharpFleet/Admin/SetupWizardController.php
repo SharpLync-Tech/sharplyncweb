@@ -19,6 +19,7 @@ class SetupWizardController extends Controller
     {
         $organisationId = $this->requireAdminOrganisationId($request);
 
+        $settings['trip']['purpose_of_travel_enabled'] = $request->boolean('enable_purpose_of_travel');
         $organisation = DB::connection('sharpfleet')
             ->table('organisations')
             ->select('id', 'name')

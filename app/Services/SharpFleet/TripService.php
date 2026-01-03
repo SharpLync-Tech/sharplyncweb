@@ -190,11 +190,13 @@ class TripService
         $customerName = null;
         $clientPresent = null;
         $clientAddress = null;
+        $purposeOfTravel = null;
 
         $customerCaptureEnabled = (bool) (($settings->all()['customer']['enabled'] ?? false));
         $clientPresenceEnabled = $settings->clientPresenceEnabled();
         $clientPresenceRequired = $settings->clientPresenceRequired();
         $clientAddressesEnabled = $settings->clientAddressesEnabled();
+        $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
         if ($tripMode !== 'private') {
             $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
@@ -242,6 +244,15 @@ class TripService
             } else {
                 $clientPresent = null;
                 $clientAddress = null;
+            }
+
+            if ($purposeOfTravelEnabled) {
+                $purposeOfTravel = isset($data['purpose_of_travel']) ? trim((string) $data['purpose_of_travel']) : '';
+                if ($purposeOfTravel === '') {
+                    $purposeOfTravel = null;
+                } elseif (mb_strlen($purposeOfTravel) > 255) {
+                    $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                }
             }
         }
 
@@ -312,6 +323,7 @@ class TripService
             'distance_method' => $data['distance_method'] ?? 'odometer',
             'client_present'  => $clientPresent,
             'client_address'  => $clientAddress,
+            'purpose_of_travel' => $purposeOfTravel,
 
             // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,
@@ -387,6 +399,10 @@ class TripService
             $customerName = null;
             $clientPresent = null;
             $clientAddress = null;
+            $purposeOfTravel = null;
+
+            $settings = new CompanySettingsService($organisationId);
+            $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
             if ($tripMode !== 'private') {
                 $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
@@ -411,6 +427,15 @@ class TripService
 
                 $clientPresent = $t['client_present'] ?? null;
                 $clientAddress = $t['client_address'] ?? null;
+
+                if ($purposeOfTravelEnabled) {
+                    $purposeOfTravel = isset($t['purpose_of_travel']) ? trim((string) $t['purpose_of_travel']) : '';
+                    if ($purposeOfTravel === '') {
+                        $purposeOfTravel = null;
+                    } elseif (mb_strlen($purposeOfTravel) > 255) {
+                        $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                    }
+                }
             }
 
             $tripModeToStore = $this->tripModeForStorage($tripMode, [
@@ -429,6 +454,7 @@ class TripService
                 'distance_method' => 'odometer',
                 'client_present' => $clientPresent,
                 'client_address' => $clientAddress,
+                'purpose_of_travel' => $purposeOfTravel,
                 'started_at' => $startedAt,
                 'ended_at' => $endedAt,
                 'start_time' => $startedAt,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\ReportingService;
+use App\Services\SharpFleet\CompanySettingsService;
 
 class ReportController extends Controller
 {
@@ -35,6 +36,8 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get();
 
+        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
+
         return view('sharpfleet.admin.reports.trips', [
             'trips' => $result['trips'],
             'totals' => $result['totals'],
@@ -45,6 +48,7 @@ class ReportController extends Controller
             'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
             'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
+            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
         ]);
     }
 

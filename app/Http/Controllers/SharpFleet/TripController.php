@@ -92,6 +92,7 @@ class TripController extends Controller
             'trips.*.customer_name' => ['nullable', 'string', 'max:150'],
             'trips.*.client_present' => ['nullable'],
             'trips.*.client_address' => ['nullable', 'string'],
+            'trips.*.purpose_of_travel' => ['nullable', 'string', 'max:255'],
         ]);
 
         $result = $this->tripService->syncOfflineTrips($user, $validated['trips']);

@@ -21,6 +21,7 @@ class StartTripRequest extends FormRequest
         $settings = $settingsService ? $settingsService->all() : [];
 
         $manualTimesRequired = $settingsService ? $settingsService->requireManualStartEndTimes() : false;
+        $purposeOfTravelEnabled = $settingsService ? $settingsService->purposeOfTravelEnabled() : false;
 
         $tripMode = strtolower(trim((string) $this->input('trip_mode', 'business')));
         $customerEnabled = (bool) ($settings['customer']['enabled'] ?? false);
@@ -32,6 +33,7 @@ class StartTripRequest extends FormRequest
         $customerName = $customerEnabled ? $this->input('customer_name') : null;
         $clientPresent = $clientPresenceEnabled ? $this->input('client_present') : null;
         $clientAddress = ($clientPresenceEnabled && $clientAddressesEnabled) ? $this->input('client_address') : null;
+        $purposeOfTravel = ($purposeOfTravelEnabled && $tripMode !== 'private') ? $this->input('purpose_of_travel') : null;
 
         $startedAt = $manualTimesRequired ? $this->input('started_at') : null;
 
@@ -41,6 +43,7 @@ class StartTripRequest extends FormRequest
             'customer_name' => $customerName === '' ? null : $customerName,
             'client_present' => $clientPresent === '' ? null : $clientPresent,
             'client_address' => $clientAddress === '' ? null : $clientAddress,
+            'purpose_of_travel' => $purposeOfTravel === '' ? null : $purposeOfTravel,
 
             'started_at' => $startedAt === '' ? null : $startedAt,
 
@@ -91,6 +94,7 @@ class StartTripRequest extends FormRequest
             'distance_method' => ['nullable', 'string'],
             'client_present' => $clientPresentRule,
             'client_address' => ['nullable', 'string'],
+            'purpose_of_travel' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

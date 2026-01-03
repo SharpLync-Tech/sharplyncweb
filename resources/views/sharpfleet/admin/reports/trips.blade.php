@@ -126,6 +126,9 @@
                                 <th>Driver</th>
                                 <th>Trip Mode</th>
                                 <th>Customer</th>
+                                @if(($purposeOfTravelEnabled ?? false))
+                                    <th>Purpose of Travel</th>
+                                @endif
                                 <th>Unit</th>
                                 <th>Start Reading</th>
                                 <th>End Reading</th>
@@ -151,6 +154,9 @@
                                     @endphp
                                     <td>{{ $modeLabel }}</td>
                                     <td>{{ $t->customer_name_display ?: '—' }}</td>
+                                    @if(($purposeOfTravelEnabled ?? false))
+                                        <td>{{ $modeLabel === 'Business' ? ($t->purpose_of_travel ?: '—') : '—' }}</td>
+                                    @endif
                                     <td>{{ ($t->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km' }}</td>
                                     <td>{{ number_format($t->start_km) }}</td>
                                     <td>{{ $t->end_km ? number_format($t->end_km) : '—' }}</td>

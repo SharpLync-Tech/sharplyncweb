@@ -151,6 +151,11 @@
                                {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                         <strong>Require drivers to enter a start time and end time for each trip</strong>
                     </label>
+                    
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_purpose_of_travel" value="1" {{ $companySettings->purposeOfTravelEnabled() ? 'checked' : '' }}>
+                            <strong>Enable Purpose of Travel (business trips)</strong>
+                        </label>
                 </div>
             </div>
         </div>

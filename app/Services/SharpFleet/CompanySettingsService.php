@@ -42,6 +42,8 @@ class CompanySettingsService
             'trip_type_required'               => true,
             'allow_private_trips'               => false,
             'require_manual_start_end_times'   => false,
+            // Optional text field captured by drivers on business trips.
+            'purpose_of_travel_enabled'        => false,
         ],
 
         'client_presence' => [
@@ -188,6 +190,14 @@ class CompanySettingsService
         );
     }
 
+    public function purposeOfTravelEnabled(): bool
+    {
+        return (bool) filter_var(
+            $this->settings['trip']['purpose_of_travel_enabled'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+    }
+
     public function requireManualStartEndTimes(): bool
     {
         return (bool) filter_var(
@@ -312,6 +322,9 @@ class CompanySettingsService
 
         $settings['trip']['require_manual_start_end_times']
             = $request->boolean('require_manual_start_end_times');
+
+        $settings['trip']['purpose_of_travel_enabled']
+            = $request->boolean('enable_purpose_of_travel');
 
         // ---- Client presence ----
         $settings['client_presence']['enabled']

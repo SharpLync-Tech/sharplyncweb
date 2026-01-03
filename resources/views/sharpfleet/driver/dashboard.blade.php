@@ -331,6 +331,14 @@
                     </div>
                 @endif
 
+                {{-- Purpose of Travel (Business trips only; optional) --}}
+                @if($settingsService->purposeOfTravelEnabled())
+                    <div id="purposeOfTravelBlock" class="form-group">
+                        <label class="form-label">Purpose of Travel (optional)</label>
+                        <input type="text" name="purpose_of_travel" class="form-control" maxlength="255" placeholder="e.g. Materials pickup at Bunnings">
+                    </div>
+                @endif
+
                 {{-- Start KM --}}
                 <div class="form-group">
                     <label id="startReadingLabel" class="form-label">Starting odometer (km)</label>
@@ -608,6 +616,7 @@
         const clientPresenceBlock = document.getElementById('clientPresenceBlock');
         const customerSelect = document.getElementById('customerSelect');
         const customerNameInput = document.getElementById('customerNameInput');
+        const purposeOfTravelBlock = document.getElementById('purposeOfTravelBlock');
 
         const tripModeRadios = document.querySelectorAll('input[name="trip_mode"][type="radio"]');
         const tripModeHidden = document.querySelector('input[name="trip_mode"][type="hidden"]');
@@ -768,6 +777,9 @@
             if (clientPresenceBlock) {
                 clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
             }
+            if (purposeOfTravelBlock) {
+                purposeOfTravelBlock.style.display = isBusinessTrip ? '' : 'none';
+            }
         }
 
         if (customerSelect && customerNameInput) {
@@ -812,6 +824,7 @@
                 customer_name: payload.customer_name ? String(payload.customer_name) : null,
                 client_present: payload.client_present !== undefined && payload.client_present !== '' ? payload.client_present : null,
                 client_address: payload.client_address ? String(payload.client_address) : null,
+                purpose_of_travel: payload.purpose_of_travel ? String(payload.purpose_of_travel) : null,
             };
         }
 
@@ -901,6 +914,7 @@
                     customer_name: active.customer_name,
                     client_present: active.client_present,
                     client_address: active.client_address,
+                    purpose_of_travel: active.purpose_of_travel,
                 };
 
                 const completed = getOfflineCompletedTrips();

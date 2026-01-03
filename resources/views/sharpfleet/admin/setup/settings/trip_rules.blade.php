@@ -82,6 +82,13 @@
                         <div class="text-muted small ms-4">Enables a private trip type so personal use can be tracked separately.</div>
                     </label>
 
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_purpose_of_travel" value="1" {{ !empty($settings['trip']['purpose_of_travel_enabled']) ? 'checked' : '' }}>
+                            <strong>Enable Purpose of Travel (business trips)</strong>
+                            <div class="text-muted small ms-4">Shows an optional 255 character text field when drivers start a business trip.</div>
+                        </label>
+
+
                     <label class="checkbox-label">
                         <input type="checkbox" name="require_manual_start_end_times" value="1"
                                {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>

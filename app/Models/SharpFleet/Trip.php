@@ -25,6 +25,8 @@ class Trip extends Model
         'client_present',
         'client_address',
 
+        'purpose_of_travel',
+
         // Date / time fields
         'started_at',
         'ended_at',
