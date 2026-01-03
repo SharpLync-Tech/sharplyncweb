@@ -24,7 +24,9 @@
         <div class="alert alert-success mb-3">{{ session('success') }}</div>
     @endif
 
-    @php($setupImgPath = public_path('images/sharpfleet/setup.png'))
+    @php
+        $setupImgPath = public_path('images/sharpfleet/setup.png');
+    @endphp
 
     <div class="card sf-setup-card" style="max-width: 720px;">
         @if (is_string($setupImgPath) && file_exists($setupImgPath))

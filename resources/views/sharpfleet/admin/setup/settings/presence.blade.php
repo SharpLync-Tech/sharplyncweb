@@ -41,7 +41,9 @@
         <div class="alert alert-success mb-3">{{ session('success') }}</div>
     @endif
 
-    @php($setupImgPath = public_path('images/sharpfleet/setup.png'))
+    @php
+        $setupImgPath = public_path('images/sharpfleet/setup.png');
+    @endphp
 
     <form method="POST" action="{{ url('/app/sharpfleet/admin/setup/settings/presence') }}">
         @csrf
