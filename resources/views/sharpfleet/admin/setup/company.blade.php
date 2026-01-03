@@ -11,7 +11,7 @@
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
         <p class="page-description">
-            Step 1 of {{ (int) ($totalSteps ?? 9) }} — Company details.
+            Step 1 of {{ (int) ($totalSteps ?? 10) }} — Company details.
         </p>
     </div>
 

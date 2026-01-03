@@ -335,6 +335,8 @@ Route::prefix('app/sharpfleet')
             Route::post('/setup/company', [SetupWizardController::class, 'storeCompany']);
             Route::get('/setup/settings/presence', [SetupWizardController::class, 'settingsPresence']);
             Route::post('/setup/settings/presence', [SetupWizardController::class, 'storeSettingsPresence']);
+            Route::get('/setup/settings/customer', [SetupWizardController::class, 'settingsCustomer'])->name('sharpfleet.setup.settings.customer');
+            Route::post('/setup/settings/customer', [SetupWizardController::class, 'storeSettingsCustomer'])->name('sharpfleet.setup.settings.customer.store');
             Route::get('/setup/settings/trip-rules', [SetupWizardController::class, 'settingsTripRules']);
             Route::post('/setup/settings/trip-rules', [SetupWizardController::class, 'storeSettingsTripRules']);
             Route::get('/setup/settings/vehicle-tracking', [SetupWizardController::class, 'settingsVehicleTracking']);

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class SetupWizardController extends Controller
 {
-    private const TOTAL_STEPS = 9;
+    private const TOTAL_STEPS = 10;
 
     /**
      * Step 1: Company details
@@ -72,7 +72,7 @@ class SetupWizardController extends Controller
     }
 
     /**
-     * Step 2: Passenger / Client presence + Customer capture
+     * Step 2: Passenger / Client presence
      */
     public function settingsPresence(Request $request)
     {
@@ -100,6 +100,32 @@ class SetupWizardController extends Controller
         $settings['client_presence']['required'] = $request->boolean('require_client_presence');
         $settings['client_presence']['label'] = trim((string) ($validated['client_label'] ?? 'Client'));
 
+        $this->persistSettings($organisationId, $settings);
+
+        return redirect('/app/sharpfleet/admin/setup/settings/customer')
+            ->with('success', 'Step 2 saved. Next: customer/client capture.');
+    }
+
+    /**
+     * Step 3: Customer / Client capture
+     */
+    public function settingsCustomer(Request $request)
+    {
+        $organisationId = $this->requireAdminOrganisationId($request);
+        $settings = $this->loadSettings($organisationId);
+
+        return view('sharpfleet.admin.setup.settings.customer', [
+            'settings' => $settings,
+            'step' => 3,
+            'totalSteps' => self::TOTAL_STEPS,
+        ]);
+    }
+
+    public function storeSettingsCustomer(Request $request): RedirectResponse
+    {
+        $organisationId = $this->requireAdminOrganisationId($request);
+        $settings = $this->loadSettings($organisationId);
+
         $settings['customer']['enabled'] = $request->boolean('enable_customer_capture');
         $settings['customer']['allow_select'] = $request->boolean('allow_customer_select');
         $settings['customer']['allow_manual'] = $request->boolean('allow_customer_manual');
@@ -107,11 +133,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/trip-rules')
-            ->with('success', 'Step 2 saved. Next: trip rules.');
+            ->with('success', 'Step 3 saved. Next: trip rules.');
     }
 
     /**
-     * Step 3: Trip rules
+    * Step 4: Trip rules
      */
     public function settingsTripRules(Request $request)
     {
@@ -120,7 +146,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.trip_rules', [
             'settings' => $settings,
-            'step' => 3,
+            'step' => 4,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -138,11 +164,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/vehicle-tracking')
-            ->with('success', 'Step 3 saved. Next: vehicle tracking.');
+            ->with('success', 'Step 4 saved. Next: vehicle tracking.');
     }
 
     /**
-     * Step 4: Vehicle tracking
+    * Step 5: Vehicle tracking
      */
     public function settingsVehicleTracking(Request $request)
     {
@@ -151,7 +177,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.vehicle_tracking', [
             'settings' => $settings,
-            'step' => 4,
+            'step' => 5,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -167,11 +193,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/reminders')
-            ->with('success', 'Step 4 saved. Next: reminder emails.');
+            ->with('success', 'Step 5 saved. Next: reminder emails.');
     }
 
     /**
-     * Step 5: Reminder emails thresholds
+    * Step 6: Reminder emails thresholds
      */
     public function settingsReminders(Request $request)
     {
@@ -180,7 +206,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.reminders', [
             'settings' => $settings,
-            'step' => 5,
+            'step' => 6,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -202,11 +228,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/client-addresses')
-            ->with('success', 'Step 5 saved. Next: client address tracking.');
+            ->with('success', 'Step 6 saved. Next: client address tracking.');
     }
 
     /**
-     * Step 6: Client address tracking
+    * Step 7: Client address tracking
      */
     public function settingsClientAddresses(Request $request)
     {
@@ -215,7 +241,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.client_addresses', [
             'settings' => $settings,
-            'step' => 6,
+            'step' => 7,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -229,11 +255,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/safety-check')
-            ->with('success', 'Step 6 saved. Next: pre-drive safety check.');
+            ->with('success', 'Step 7 saved. Next: pre-drive safety check.');
     }
 
     /**
-     * Step 7: Safety check
+    * Step 8: Safety check
      */
     public function settingsSafetyCheck(Request $request)
     {
@@ -242,7 +268,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.safety_check', [
             'settings' => $settings,
-            'step' => 7,
+            'step' => 8,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -256,11 +282,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/incident-reporting')
-            ->with('success', 'Step 7 saved. Next: vehicle issue/accident reporting.');
+            ->with('success', 'Step 8 saved. Next: vehicle issue/accident reporting.');
     }
 
     /**
-     * Step 8: Vehicle issue / accident reporting
+    * Step 9: Vehicle issue / accident reporting
      */
     public function settingsIncidentReporting(Request $request)
     {
@@ -269,7 +295,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.settings.incident_reporting', [
             'settings' => $settings,
-            'step' => 8,
+            'step' => 9,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }
@@ -286,11 +312,11 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/finish')
-            ->with('success', 'Step 8 saved. Final step: finish setup.');
+            ->with('success', 'Step 9 saved. Final step: finish setup.');
     }
 
     /**
-     * Step 9: Finish setup (review + complete)
+    * Step 10: Finish setup (review + complete)
      */
     public function finishView(Request $request)
     {
@@ -299,7 +325,7 @@ class SetupWizardController extends Controller
 
         return view('sharpfleet.admin.setup.finish', [
             'settings' => $settings,
-            'step' => 9,
+            'step' => 10,
             'totalSteps' => self::TOTAL_STEPS,
         ]);
     }

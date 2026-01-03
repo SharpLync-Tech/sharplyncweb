@@ -18,7 +18,7 @@
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
-        <p class="page-description">Step {{ (int) ($step ?? 6) }} of {{ (int) ($totalSteps ?? 9) }} — Client addresses.</p>
+        <p class="page-description">Step {{ (int) ($step ?? 7) }} of {{ (int) ($totalSteps ?? 10) }} — Client addresses.</p>
     </div>
 
     @if ($errors->any())

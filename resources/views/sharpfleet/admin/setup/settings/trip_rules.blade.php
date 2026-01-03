@@ -21,7 +21,7 @@
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
-        <p class="page-description">Step {{ (int) ($step ?? 3) }} of {{ (int) ($totalSteps ?? 9) }} — Trip rules.</p>
+        <p class="page-description">Step {{ (int) ($step ?? 4) }} of {{ (int) ($totalSteps ?? 10) }} — Trip rules.</p>
     </div>
 
     @if ($errors->any())
@@ -93,7 +93,7 @@
         </div>
 
         <div class="btn-group">
-            <a href="{{ url('/app/sharpfleet/admin/setup/settings/presence') }}" class="btn btn-secondary">Back</a>
+            <a href="{{ url('/app/sharpfleet/admin/setup/settings/customer') }}" class="btn btn-secondary">Back</a>
             <button type="submit" class="btn btn-primary">Next</button>
         </div>
     </form>

@@ -441,6 +441,25 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     position: relative;
     /* Foreground content above the blurred backdrop. */
     z-index: 1600;
+    /* Keep the wizard card consistently centered and visible near the top. */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 16px 12px 28px;
+}
+
+/* Make all setup wizard pages use the same centered width */
+.sf-setup-layer > .container {
+    width: 100%;
+    max-width: 840px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sf-setup-layer .page-header {
+    margin-top: 0;
+    margin-bottom: 14px;
 }
 
 .sf-setup-card {

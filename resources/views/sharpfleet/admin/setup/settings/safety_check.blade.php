@@ -22,7 +22,7 @@
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
-        <p class="page-description">Step {{ (int) ($step ?? 7) }} of {{ (int) ($totalSteps ?? 9) }} — Pre-drive safety check.</p>
+        <p class="page-description">Step {{ (int) ($step ?? 8) }} of {{ (int) ($totalSteps ?? 10) }} — Pre-drive safety check.</p>
     </div>
 
     @if ($errors->any())

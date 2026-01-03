@@ -20,7 +20,7 @@
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">SharpFleet Setup</h1>
-        <p class="page-description">Step {{ (int) ($step ?? 5) }} of {{ (int) ($totalSteps ?? 9) }} — Reminder emails.</p>
+        <p class="page-description">Step {{ (int) ($step ?? 6) }} of {{ (int) ($totalSteps ?? 10) }} — Reminder emails.</p>
     </div>
 
     @if ($errors->any())
