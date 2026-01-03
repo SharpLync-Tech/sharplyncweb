@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\TripService;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Services\SharpFleet\BranchService;
 use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -118,6 +119,23 @@ class TripController extends Controller
 
         $vehicleId = (int) $validated['vehicle_id'];
         $organisationId = (int) $user['organisation_id'];
+
+        // Enforce branch access (server-side).
+        $branches = new BranchService();
+        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        if (
+            $role !== 'admin'
+            && $branches->branchesEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && $branches->userBranchAccessEnabled()
+        ) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                return response()->json([
+                    'message' => 'Forbidden',
+                ], 403);
+            }
+        }
 
         $vehicle = DB::connection('sharpfleet')
             ->table('vehicles')

@@ -7,6 +7,7 @@
     use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Schema;
     use App\Services\SharpFleet\CompanySettingsService;
+    use App\Services\SharpFleet\BranchService;
 
     $user = session('sharpfleet.user');
 
@@ -26,10 +27,26 @@
     $safetyCheckEnabled = $settingsService->safetyCheckEnabled();
     $safetyCheckItems = $settingsService->safetyCheckItems();
 
+    $branchesService = new BranchService();
+    $branchesEnabled = $branchesService->branchesEnabled();
+    $branchAccessEnabled = $branchesEnabled
+        && $branchesService->vehiclesHaveBranchSupport()
+        && $branchesService->userBranchAccessEnabled();
+    $accessibleBranchIds = $branchAccessEnabled
+        ? $branchesService->getAccessibleBranchIdsForUser((int) $user['organisation_id'], (int) $user['id'])
+        : [];
+    if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+        abort(403, 'No branch access.');
+    }
+
     $vehicles = DB::connection('sharpfleet')
         ->table('vehicles')
         ->where('organisation_id', $user['organisation_id'])
         ->where('is_active', 1)
+        ->when(
+            $branchAccessEnabled,
+            fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+        )
         ->when(
             Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
                 && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id'),
@@ -63,8 +80,13 @@
 
     $lastTrips = DB::connection('sharpfleet')
         ->table('trips')
-        ->select('vehicle_id', 'end_km')
-        ->where('organisation_id', $user['organisation_id'])
+        ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+        ->select('trips.vehicle_id', 'trips.end_km')
+        ->where('trips.organisation_id', $user['organisation_id'])
+        ->when(
+            $branchAccessEnabled,
+            fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+        )
         ->whereNotNull('ended_at')
         ->whereNotNull('end_km')
         ->orderByDesc('ended_at')
@@ -80,6 +102,10 @@
         ->select('trips.*', 'vehicles.name as vehicle_name', 'vehicles.registration_number', 'vehicles.tracking_mode')
         ->where('trips.user_id', $user['id'])
         ->where('trips.organisation_id', $user['organisation_id'])
+        ->when(
+            $branchAccessEnabled,
+            fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+        )
         ->whereNotNull('trips.started_at')
         ->whereNull('trips.ended_at')
         ->first();
@@ -115,7 +141,8 @@
                     <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
                 </div>
                 <div class="info-row">
-                    <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->timezone($companyTimezone)->format('M j, Y g:i A') }}
+                    @php($tripTz = isset($activeTrip->timezone) && trim((string)$activeTrip->timezone) !== '' ? (string)$activeTrip->timezone : $companyTimezone)
+                    <strong>Started:</strong> {{ \Carbon\Carbon::parse($activeTrip->started_at)->timezone($tripTz)->format('M j, Y g:i A') }}
                 </div>
                 <div class="info-row">
                     <strong>

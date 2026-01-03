@@ -347,6 +347,36 @@ class BookingService
             }
         }
 
+        // Enforce branch access for the booking owner (server-side).
+        // This prevents creating bookings in branches the user can't access.
+        if ($branches->branchesEnabled() && $branches->userBranchAccessEnabled() && $userId > 0) {
+            $effectiveBranchId = $branchId;
+
+            if ($effectiveBranchId === null && $branches->vehiclesHaveBranchSupport()) {
+                $effectiveBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            }
+
+            if ($effectiveBranchId === null) {
+                $branchesForUser = $branches->getBranchesForUser($organisationId, $userId);
+                if ($branchesForUser->count() === 0) {
+                    abort(403, 'No branch access.');
+                }
+                $effectiveBranchId = (int) ($branchesForUser->first()->id ?? 0);
+                $effectiveBranchId = $effectiveBranchId > 0 ? $effectiveBranchId : null;
+            }
+
+            if ($effectiveBranchId && !$branches->userCanAccessBranch($organisationId, $userId, (int) $effectiveBranchId)) {
+                throw ValidationException::withMessages([
+                    'branch_id' => 'You do not have access to that branch.',
+                ]);
+            }
+
+            // If we can store bookings.branch_id, keep it consistent.
+            if ($branches->bookingsHaveBranchSupport()) {
+                $branchId = $effectiveBranchId;
+            }
+        }
+
         // If the out-of-service feature exists, block bookings for out-of-service vehicles.
         $this->assertVehicleInService($organisationId, $vehicleId);
 

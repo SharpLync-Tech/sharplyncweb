@@ -13,6 +13,10 @@ class Trip extends Model
         'organisation_id',
         'user_id',
         'vehicle_id',
+
+        // Branch/timezone snapshot (optional columns; schema-guard before writing)
+        'branch_id',
+        'timezone',
         'customer_id',
         'customer_name',
         'trip_mode',

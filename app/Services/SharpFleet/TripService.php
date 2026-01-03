@@ -5,6 +5,7 @@ namespace App\Services\SharpFleet;
 use App\Models\SharpFleet\Trip;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class TripService
@@ -21,31 +22,39 @@ class TripService
         $this->bookingService = $bookingService;
     }
 
-    private function parseDriverLocalDateTime(?string $raw, string $companyTimezone): ?Carbon
+    private function branchService(): BranchService
+    {
+        return new BranchService();
+    }
+
+    private function nowUtc(): Carbon
+    {
+        return Carbon::now('UTC');
+    }
+
+    private function parseDriverLocalToUtc(?string $raw, string $timezone): ?Carbon
     {
         $value = trim((string) ($raw ?? ''));
         if ($value === '') {
             return null;
         }
 
-        $appTz = (string) (config('app.timezone') ?: 'UTC');
-
         try {
-            $dt = Carbon::createFromFormat('Y-m-d\\TH:i', $value, $companyTimezone);
-            return $dt ? $dt->setTimezone($appTz) : null;
+            $dt = Carbon::createFromFormat('Y-m-d\\TH:i', $value, $timezone);
+            return $dt ? $dt->utc() : null;
         } catch (\Throwable $e) {
             // fall through
         }
 
         try {
-            $dt = Carbon::createFromFormat('Y-m-d\\TH:i:s', $value, $companyTimezone);
-            return $dt ? $dt->setTimezone($appTz) : null;
+            $dt = Carbon::createFromFormat('Y-m-d\\TH:i:s', $value, $timezone);
+            return $dt ? $dt->utc() : null;
         } catch (\Throwable $e) {
             // fall through
         }
 
         try {
-            return Carbon::parse($value, $companyTimezone)->setTimezone($appTz);
+            return Carbon::parse($value, $timezone)->utc();
         } catch (\Throwable $e) {
             return null;
         }
@@ -162,9 +171,35 @@ class TripService
 
         $settings = new CompanySettingsService($organisationId);
 
-        $now = Carbon::now();
+        $vehicleId = (int) ($data['vehicle_id'] ?? 0);
+        if ($vehicleId <= 0) {
+            throw ValidationException::withMessages([
+                'vehicle_id' => 'Vehicle is required.',
+            ]);
+        }
+
+        // Enforce branch access (server-side). Vehicle determines branch.
+        $branches = $this->branchService();
+        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        if (
+            $role !== 'admin'
+            && $branches->branchesEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && $branches->userBranchAccessEnabled()
+        ) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                abort(403, 'You do not have access to this branch.');
+            }
+        }
+
+        $tripTimezone = $branches->branchesEnabled()
+            ? $branches->getTimezoneForVehicle($organisationId, $vehicleId)
+            : $settings->timezone();
+
+        $now = $this->nowUtc();
         if ($settings->requireManualStartEndTimes()) {
-            $manualStartedAt = $this->parseDriverLocalDateTime($data['started_at'] ?? null, $settings->timezone());
+            $manualStartedAt = $this->parseDriverLocalToUtc($data['started_at'] ?? null, $tripTimezone);
             if ($manualStartedAt) {
                 $now = $manualStartedAt;
             }
@@ -175,13 +210,13 @@ class TripService
         // Permanent vehicle assignment rules (booking is not required for the assigned driver).
         $this->bookingService->assertVehicleAssignmentAllowsTrip(
             $organisationId,
-            (int) $data['vehicle_id'],
+            $vehicleId,
             (int) $user['id']
         );
 
         $this->bookingService->assertVehicleCanStartTrip(
             $organisationId,
-            (int) $data['vehicle_id'],
+            $vehicleId,
             (int) $user['id'],
             $now
         );
@@ -312,10 +347,10 @@ class TripService
 
         $tripModeToStore = $this->tripModeForStorage($tripMode, $data);
 
-        return Trip::create([
+        $create = [
             'organisation_id' => $organisationId,
             'user_id'         => $user['id'],
-            'vehicle_id'      => $data['vehicle_id'],
+            'vehicle_id'      => $vehicleId,
             'customer_id'     => $customerId,
             'customer_name'   => $customerName,
             'trip_mode'       => $tripModeToStore,
@@ -328,7 +363,16 @@ class TripService
             // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,
             'start_time' => $now,
-        ]);
+        ];
+
+        if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
+            $create['branch_id'] = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+        }
+        if ($branches->tripsHaveTimezoneSupport()) {
+            $create['timezone'] = $tripTimezone;
+        }
+
+        return Trip::create($create);
     }
 
     /**
@@ -348,17 +392,34 @@ class TripService
         $synced = [];
         $skipped = [];
 
+        $branches = $this->branchService();
+        $role = strtolower(trim((string) ($user['role'] ?? '')));
+
         foreach ($trips as $t) {
             $vehicleId = (int) ($t['vehicle_id'] ?? 0);
             $tripMode = $this->normalizeTripMode($organisationId, isset($t['trip_mode']) ? (string) $t['trip_mode'] : null);
             $startKm = (int) ($t['start_km'] ?? 0);
             $endKm = (int) ($t['end_km'] ?? 0);
 
-            $startedAt = Carbon::parse((string) ($t['started_at'] ?? ''));
-            $endedAt = Carbon::parse((string) ($t['ended_at'] ?? ''));
+            // Offline UI sends ISO strings; treat them as UTC.
+            $startedAt = Carbon::parse((string) ($t['started_at'] ?? ''))->utc();
+            $endedAt = Carbon::parse((string) ($t['ended_at'] ?? ''))->utc();
 
             if ($vehicleId <= 0) {
                 throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
+            }
+
+            // Enforce branch access (server-side).
+            if (
+                $role !== 'admin'
+                && $branches->branchesEnabled()
+                && $branches->vehiclesHaveBranchSupport()
+                && $branches->userBranchAccessEnabled()
+            ) {
+                $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+                if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, $userId, (int) $vehicleBranchId)) {
+                    abort(403, 'You do not have access to this branch.');
+                }
             }
             if ($endedAt->lessThanOrEqualTo($startedAt)) {
                 throw ValidationException::withMessages(['ended_at' => 'End time must be after start time.']);
@@ -442,7 +503,11 @@ class TripService
                 'client_present' => $clientPresent,
             ]);
 
-            $trip = Trip::create([
+            $tripTimezone = $branches->branchesEnabled()
+                ? $branches->getTimezoneForVehicle($organisationId, $vehicleId)
+                : (new CompanySettingsService($organisationId))->timezone();
+
+            $create = [
                 'organisation_id' => $organisationId,
                 'user_id' => $userId,
                 'vehicle_id' => $vehicleId,
@@ -459,7 +524,16 @@ class TripService
                 'ended_at' => $endedAt,
                 'start_time' => $startedAt,
                 'end_time' => $endedAt,
-            ]);
+            ];
+
+            if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
+                $create['branch_id'] = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            }
+            if ($branches->tripsHaveTimezoneSupport()) {
+                $create['timezone'] = $tripTimezone;
+            }
+
+            $trip = Trip::create($create);
 
             $synced[] = (int) $trip->id;
         }
@@ -475,7 +549,7 @@ class TripService
      */
     public function endTrip(array $user, array $data): Trip
     {
-        $now = Carbon::now();
+        $now = $this->nowUtc();
 
         $trip = Trip::where('id', $data['trip_id'])
             ->where('organisation_id', $user['organisation_id'])
@@ -483,9 +557,35 @@ class TripService
             ->whereNull('ended_at')
             ->firstOrFail();
 
-        $settings = new CompanySettingsService((int) $user['organisation_id']);
+        $organisationId = (int) $user['organisation_id'];
+        $settings = new CompanySettingsService($organisationId);
+
+        // Enforce branch access (server-side) based on vehicle.
+        $branches = $this->branchService();
+        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        if (
+            $role !== 'admin'
+            && $branches->branchesEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && $branches->userBranchAccessEnabled()
+        ) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, (int) $trip->vehicle_id);
+            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                abort(403, 'You do not have access to this branch.');
+            }
+        }
+
+        $tripTimezone = null;
+        if ($branches->tripsHaveTimezoneSupport() && isset($trip->timezone) && trim((string) $trip->timezone) !== '') {
+            $tripTimezone = (string) $trip->timezone;
+        } elseif ($branches->branchesEnabled()) {
+            $tripTimezone = $branches->getTimezoneForVehicle($organisationId, (int) $trip->vehicle_id);
+        } else {
+            $tripTimezone = $settings->timezone();
+        }
+
         if ($settings->requireManualStartEndTimes()) {
-            $manualEndedAt = $this->parseDriverLocalDateTime($data['ended_at'] ?? null, $settings->timezone());
+            $manualEndedAt = $this->parseDriverLocalToUtc($data['ended_at'] ?? null, (string) $tripTimezone);
             if ($manualEndedAt) {
                 $now = $manualEndedAt;
             }

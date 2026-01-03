@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 
 class BookingController extends Controller
 {
@@ -31,8 +32,13 @@ class BookingController extends Controller
 
         $branchesService = new BranchService();
         $branchesEnabled = $branchesService->branchesEnabled();
-        $branches = $branchesEnabled ? $branchesService->getBranches($organisationId) : collect();
-        $defaultBranch = $branchesEnabled ? $branchesService->getDefaultBranch($organisationId) : null;
+        $branches = $branchesEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : collect();
+        if ($branchesEnabled && $branchesService->userBranchAccessEnabled() && $branches->count() === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        // getBranchesForUser() orders default first (when schema supports it)
+        $defaultBranch = $branchesEnabled ? $branches->first() : null;
         $defaultTimezone = $defaultBranch && isset($defaultBranch->timezone) && trim((string) $defaultBranch->timezone) !== ''
             ? (string) $defaultBranch->timezone
             : (new CompanySettingsService($organisationId))->timezone();
@@ -107,6 +113,22 @@ class BookingController extends Controller
             : null;
 
         $branchesService = new BranchService();
+
+        if ($branchesService->branchesEnabled() && $branchesService->userBranchAccessEnabled()) {
+            $branchesForUser = $branchesService->getBranchesForUser($organisationId, (int) $user['id']);
+            if ($branchesForUser->count() === 0) {
+                abort(403, 'No branch access.');
+            }
+
+            if ($branchId === null) {
+                $branchId = (int) ($branchesForUser->first()->id ?? 0);
+            }
+
+            if ($branchId && !$branchesService->userCanAccessBranch($organisationId, (int) $user['id'], (int) $branchId)) {
+                abort(403, 'No branch access.');
+            }
+        }
+
         $tz = (new CompanySettingsService($organisationId))->timezone();
         if ($branchesService->branchesEnabled() && $branchId && $branchId > 0) {
             $branch = $branchesService->getBranch($organisationId, $branchId);
@@ -152,10 +174,33 @@ class BookingController extends Controller
         $plannedStart = $validated['planned_start_date'] . ' ' . $startTime . ':00';
         $plannedEnd = $validated['planned_end_date'] . ' ' . $endTime . ':00';
 
-        $this->bookingService->createBooking((int) $user['organisation_id'], [
+        $organisationId = (int) $user['organisation_id'];
+        $branchesService = new BranchService();
+        $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+
+        if ($branchesService->branchesEnabled() && $branchesService->userBranchAccessEnabled()) {
+            $branchesForUser = $branchesService->getBranchesForUser($organisationId, (int) $user['id']);
+            if ($branchesForUser->count() === 0) {
+                abort(403, 'No branch access.');
+            }
+
+            if ($branchId === null) {
+                $branchId = (int) ($branchesForUser->first()->id ?? 0);
+            }
+
+            if ($branchId && !$branchesService->userCanAccessBranch($organisationId, (int) $user['id'], (int) $branchId)) {
+                throw ValidationException::withMessages([
+                    'branch_id' => 'You do not have access to that branch.',
+                ]);
+            }
+        }
+
+        $this->bookingService->createBooking($organisationId, [
             'user_id' => (int) $user['id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
-            'branch_id' => isset($validated['branch_id']) ? (int) $validated['branch_id'] : null,
+            'branch_id' => $branchId,
             'planned_start' => $plannedStart,
             'planned_end' => $plannedEnd,
             'customer_id' => $validated['customer_id'] ?? null,
