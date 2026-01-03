@@ -43,7 +43,7 @@
                         @if(session('sharpfleet.user.role') === 'admin')
                             <div class="sharpfleet-nav-primary">
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Fleet</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin') || request()->is('app/sharpfleet/admin/vehicles*') || request()->is('app/sharpfleet/admin/bookings*') ? 'is-active' : '' }}">Fleet</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin" class="sharpfleet-nav-dropdown-item">Dashboard</a>
                                         <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-dropdown-item">Vehicles</a>
@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Operations</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/reminders*') || request()->is('app/sharpfleet/admin/safety-checks*') ? 'is-active' : '' }}">Operations</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/reminders" class="sharpfleet-nav-dropdown-item">Reminders</a>
                                         <a href="/app/sharpfleet/admin/safety-checks" class="sharpfleet-nav-dropdown-item">Safety Checks</a>
@@ -60,7 +60,7 @@
                                 </div>
 
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Customers</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/customers*') ? 'is-active' : '' }}">Customers</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">View Customers</a>
                                         <a href="/app/sharpfleet/admin/customers/create" class="sharpfleet-nav-dropdown-item">Add Customers</a>
@@ -68,7 +68,7 @@
                                 </div>
 
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Reports</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/reports*') || request()->is('app/sharpfleet/admin/faults*') ? 'is-active' : '' }}">Reports</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
                                         <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-dropdown-item">Faults</a>
@@ -76,7 +76,7 @@
                                 </div>
 
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Company</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/company*') || request()->is('app/sharpfleet/admin/users*') || request()->is('app/sharpfleet/admin/settings*') ? 'is-active' : '' }}">Company</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
                                         <a href="/app/sharpfleet/admin/company/profile" class="sharpfleet-nav-dropdown-item">Edit Company Details</a>
@@ -86,19 +86,19 @@
                                 </div>
 
                                 <div class="sharpfleet-nav-dropdown">
-                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Help</button>
+                                    <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/help*') || request()->is('app/sharpfleet/admin/about*') ? 'is-active' : '' }}">Help</button>
                                     <div class="sharpfleet-nav-dropdown-menu">
                                         <a href="/app/sharpfleet/admin/help" class="sharpfleet-nav-dropdown-item">Instructions</a>
                                         <a href="/app/sharpfleet/admin/about" class="sharpfleet-nav-dropdown-item">About</a>
                                     </div>
                                 </div>
-                                <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Driver</a>
+                                <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/driver*') ? 'is-active' : '' }}">Driver</a>
                             </div>
                         @else
-                            <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link">Dashboard</a>
-                            <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link">Bookings</a>
+                            <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/driver*') ? 'is-active' : '' }}">Dashboard</a>
+                            <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/bookings*') ? 'is-active' : '' }}">Bookings</a>
                             <div class="sharpfleet-nav-dropdown">
-                                <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle">Help</button>
+                                <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/driver/help*') || request()->is('app/sharpfleet/driver/about*') ? 'is-active' : '' }}">Help</button>
                                 <div class="sharpfleet-nav-dropdown-menu">
                                     <a href="/app/sharpfleet/driver/help" class="sharpfleet-nav-dropdown-item">Instructions</a>
                                     <a href="/app/sharpfleet/driver/about" class="sharpfleet-nav-dropdown-item">About</a>

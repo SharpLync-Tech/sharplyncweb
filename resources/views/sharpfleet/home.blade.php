@@ -13,14 +13,6 @@
             <span class="highlight">Without the Headaches</span>
         </h1>
 
-        <p class="hero-intro">
-            Logbooks for kilometres and engine hours.<br>
-            No GPS. No hardware. No micromanagement.
-            <p class="hero-price">
-            All features included for only <strong>AU$3.50</strong> per vehicle, per month.
-        </p>
-        </p>
-
         {{-- =========================
              RUNNING VEHICLE BANNER
         ========================== --}}
@@ -51,6 +43,14 @@
                 </div>
             </div>
         </section>
+
+        <p class="hero-intro">
+            Logbooks for kilometres and engine hours.<br>
+            No GPS. No hardware. No micromanagement.
+            <p class="hero-price">
+            All features included for only <strong>AU$3.50</strong> per vehicle, per month.
+        </p>
+        </p>       
 
         <div class="hero-bam">
             <p>Work vehicles? <strong class="text-primary">Covered.</strong></p>
