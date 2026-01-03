@@ -148,7 +148,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 
 @media (min-width: 1024px) {
     .sharpfleet-header {
-        padding: 32px 0; /* try 32px first */
+        padding: 40px 0;
     }
 }
 

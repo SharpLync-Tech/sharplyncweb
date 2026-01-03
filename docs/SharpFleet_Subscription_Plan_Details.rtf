@@ -312,5 +312,95 @@ This would enable grace periods (keep access until ends_at), accurate renewal/ca
 \pard\sa120 Key file touched:\par
 \pard\sa80\li360\tx360\bullet\tab public/css/sharpfleet/sharpfleetmain.css\par
 
+\pard\sa240\b\fs28 20) Multi-Branch & Multi-Timezone Enhancements (3 Jan 2026)\b0\fs24\par
+\pard\sa120 These updates complete the “visibility scoping” layer for the Branch + Timezone rollout and improve timezone selection UX across admin setup and branch management.\par
+
+\pard\sa240\b\fs28 20.1) Core Rules (Branch + Timezone)\b0\fs24\par
+\pard\sa80\li360\tx360\bullet\tab Branches remain the source of truth for locality: a branch has an IANA timezone (e.g. Australia/Brisbane) which is used to interpret human-entered dates/times and to display local times.\par
+\pard\sa80\li360\tx360\bullet\tab All persisted timestamps continue to be stored in UTC (or treated as UTC where legacy rows exist) while being displayed in the relevant local timezone.\par
+\pard\sa80\li360\tx360\bullet\tab DST correctness is maintained by using IANA identifiers everywhere and (where supported by schema) storing per-row timezone snapshots (e.g. trips.timezone, bookings.timezone) to preserve historical correctness if branch timezones change later.\par
+
+\pard\sa240\b\fs28 20.2) Branch Scoping: List Surfaces (Read Visibility)\b0\fs24\par
+\pard\sa120 Earlier work implemented server-side branch enforcement for trip/booking actions. This section documents the additional “list view” scoping implemented so users can only \bsee\b0 vehicles/bookings/trips within branches they can access.\par
+\pard\sa120 Scope is \bguarded\b0 to keep backwards compatibility: scoping is only enabled when all required branch tables/columns exist (see 20.4).\par
+
+\pard\sa200\b 20.2.1) Driver Dashboard (Vehicles + Trips)\b0\par
+\pard\sa120 File: resources/views/sharpfleet/driver/dashboard.blade.php\par
+\pard\sa80\li360\tx360\bullet\tab Vehicle list is now filtered to branches accessible via user_branch_access (when enabled).\par
+\pard\sa80\li360\tx360\bullet\tab “Last trips” lookup is now branch-scoped (joins trips -> vehicles and filters vehicles.branch_id).\par
+\pard\sa80\li360\tx360\bullet\tab Active trip card is now branch-scoped (active trip query joins vehicles and filters vehicles.branch_id).\par
+\pard\sa80\li360\tx360\bullet\tab Trip start time display prefers the per-trip timezone snapshot (trips.timezone) when present, otherwise falls back to company timezone (for legacy rows).\par
+\pard\sa80\li360\tx360\bullet\tab Bugfix: replaced an inline Blade @php(...) expression with a standard @php ... @endphp block to avoid template parse errors in production.\par
+
+\pard\sa200\b 20.2.2) Admin Vehicles List\b0\par
+\pard\sa120 Files:\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Controllers/SharpFleet/Admin/VehicleController.php\par
+\pard\sa80\li360\tx360\bullet\tab app/Services/SharpFleet/VehicleService.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Vehicles list is now filtered to the logged-in admin’s accessible branch IDs (when branch access is enabled).\par
+\pard\sa80\li360\tx360\bullet\tab Active trips list used by the vehicles index is also branch-scoped by joining trips -> vehicles and filtering vehicles.branch_id.\par
+\pard\sa80\li360\tx360\bullet\tab VehicleService::getAvailableVehicles now accepts an optional array of branch IDs, allowing callers to apply a branch filter without changing legacy call sites.\par
+
+\pard\sa200\b 20.2.3) Bookings Lists (Admin + Driver)\b0\par
+\pard\sa120 Files:\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Controllers/SharpFleet/Admin/BookingController.php\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Controllers/SharpFleet/BookingController.php\par
+\pard\sa80\li360\tx360\bullet\tab app/Services/SharpFleet/BookingService.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Admin bookings index: vehicle dropdown is branch-scoped when branch access is enabled.\par
+\pard\sa80\li360\tx360\bullet\tab Admin bookings index: branch selector list is limited to the admin’s accessible branches (when access control is enabled), not “all branches in org”.\par
+\pard\sa80\li360\tx360\bullet\tab Driver bookings upcoming: vehicle dropdown is branch-scoped to the driver’s accessible branches (when enabled).\par
+\pard\sa80\li360\tx360\bullet\tab BookingService::getUpcomingBookings now accepts an optional actor array and applies branch scoping to the bookings dataset when enabled.\par
+\pard\sa80\li360\tx360\bullet\tab Filtering strategy for bookings dataset is backwards compatible: if bookings.branch_id exists, it filters by bookings.branch_id; otherwise it filters by vehicles.branch_id via join.\par
+
+\pard\sa200\b 20.2.4) Trip Reports + CSV Export (Admin)\b0\par
+\pard\sa120 Files:\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Controllers/SharpFleet/Admin/ReportController.php\par
+\pard\sa80\li360\tx360\bullet\tab app/Services/SharpFleet/ReportingService.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Report dataset (UI + CSV) is filtered to the admin’s accessible branch IDs by applying the branch filter on vehicles.branch_id in the trips join query (when enabled).\par
+\pard\sa80\li360\tx360\bullet\tab Vehicle filter dropdown is branch-scoped so admins cannot select vehicles outside their access.\par
+\pard\sa80\li360\tx360\bullet\tab ReportingService methods accept an optional actor parameter to preserve existing call sites while enabling branch-aware behaviour when the actor is supplied.\par
+\pard\sa80\li360\tx360\bullet\tab If an admin attempts to filter by a vehicle ID outside their accessible branches, the filter is ignored and the report falls back to “All vehicles”.\par
+
+\pard\sa240\b\fs28 20.3) Timezone Selection UX (Dropdowns + Grouping)\b0\fs24\par
+\pard\sa120 To reduce mis-typed timezones and improve discoverability, timezone entry fields were updated to use dropdowns driven from the server’s IANA timezone list.\par
+\pard\sa120 HTML select elements do not support truly collapsible submenus, but they do support grouping using optgroup. We implemented grouped sections to achieve the “Australia first” workflow.\par
+
+\pard\sa200\b 20.3.1) Shared Timezone Options Partial\b0\par
+\pard\sa120 File: resources/views/sharpfleet/partials/timezone-options.blade.php\par
+\pard\sa120 Behaviour:\par
+\pard\sa80\li360\tx360\bullet\tab Loads all IANA identifiers via PHP DateTimeZone::listIdentifiers().\par
+\pard\sa80\li360\tx360\bullet\tab Groups are rendered in this order: \bAustralia\b0 (all Australia/*) → \bNew Zealand\b0 (Pacific/Auckland, Pacific/Chatham when available) → \bUnited States\b0 (a curated set of commonly-used zones) → \bAll Other Time Zones\b0 (alphabetical).\par
+\pard\sa80\li360\tx360\bullet\tab Display labels are formatted for readability (slashes spaced, underscores replaced).\par
+
+\pard\sa200\b 20.3.2) Branch Timezone Selection\b0\par
+\pard\sa120 Files:\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/branches/create.blade.php\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/branches/edit.blade.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Replaced free-text timezone input with a grouped dropdown using the shared partial.\par
+\pard\sa80\li360\tx360\bullet\tab Still stores the IANA identifier in branches.timezone (no change to data model).\par
+
+\pard\sa200\b 20.3.3) Company Timezone Selection\b0\par
+\pard\sa120 Files:\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/company-profile.blade.php\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/setup/company.blade.php\par
+\pard\sa120 Changes:\par
+\pard\sa80\li360\tx360\bullet\tab Replaced the previous small hard-coded list (Company Profile) and the previous flat $timezones list (Setup Wizard) with the grouped timezone dropdown partial to keep behaviour consistent.\par
+
+\pard\sa240\b\fs28 20.4) Backwards Compatibility & Safety\b0\fs24\par
+\pard\sa80\li360\tx360\bullet\tab All branch scoping is conditional: it activates only when branches + user_branch_access + vehicles.branch_id exist. If the schema is not installed, behaviour remains unchanged.\par
+\pard\sa80\li360\tx360\bullet\tab Where a user/admin has zero accessible branches (when access control is enabled), pages abort with 403 (“No branch access”) rather than leaking cross-branch data.\par
+\pard\sa80\li360\tx360\bullet\tab Service signatures were extended in a backwards compatible manner (optional parameters), so legacy controllers/routes that have not been updated will continue working.\par
+
+\pard\sa240\b\fs28 20.5) Quick Test Checklist (Manual)\b0\fs24\par
+\pard\sa80\li360\tx360\bullet\tab Create/edit branch: timezone dropdown shows Australia first; saved branch stores the correct IANA identifier.\par
+\pard\sa80\li360\tx360\bullet\tab Driver dashboard: driver sees only vehicles belonging to accessible branches; active trip card does not appear for cross-branch trips.\par
+\pard\sa80\li360\tx360\bullet\tab Admin vehicles list: admin sees only vehicles within accessible branches; active trip indicator only reflects those branches.\par
+\pard\sa80\li360\tx360\bullet\tab Admin bookings: vehicle dropdown is restricted to accessible branches; bookings table contains only branch-accessible bookings.\par
+\pard\sa80\li360\tx360\bullet\tab Driver bookings: vehicle dropdown is restricted to accessible branches; bookings list contains only branch-accessible bookings.\par
+\pard\sa80\li360\tx360\bullet\tab Trip reports + CSV: report results and CSV export are restricted to accessible branches; selecting an out-of-branch vehicle_id does not leak data.\par
+
 \pard\sa200 End of document.\par
 }
