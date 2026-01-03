@@ -427,7 +427,8 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 .sf-setup-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 50;
+    /* Must sit above the sticky header/nav (z-index: 1000) so it blurs it too. */
+    z-index: 1500;
     pointer-events: none;
     /* Blur whatever is behind (gradient + any page chrome). */
     -webkit-backdrop-filter: blur(12px);
@@ -438,7 +439,8 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
 
 .sf-setup-layer {
     position: relative;
-    z-index: 60;
+    /* Foreground content above the blurred backdrop. */
+    z-index: 1600;
 }
 
 .sf-setup-card {
