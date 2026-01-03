@@ -35,10 +35,17 @@
         <div class="alert alert-success mb-3">{{ session('success') }}</div>
     @endif
 
+    @php($setupImgPath = public_path('images/sharpfleet/setup.png'))
+
     <form method="POST" action="{{ url('/app/sharpfleet/admin/setup/settings/trip-rules') }}">
         @csrf
 
-        <div class="card">
+        <div class="card sf-setup-card">
+            @if (is_string($setupImgPath) && file_exists($setupImgPath))
+                <div class="sf-setup-card__cover" aria-hidden="true">
+                    <img src="{{ asset('images/sharpfleet/setup.png') }}?v={{ @filemtime($setupImgPath) ?: time() }}" alt="">
+                </div>
+            @endif
             <div class="card-header">
                 <h2 class="card-title">Trip Rules</h2>
             </div>

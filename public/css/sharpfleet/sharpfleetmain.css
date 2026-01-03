@@ -423,6 +423,29 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, ul, li, form, input, b
     color: var(--text-dark);
 }
 
+/* Setup Wizard card (adds an image cover that works with existing cards) */
+.sf-setup-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.sf-setup-card__cover img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+.sf-setup-card > .card-header {
+    margin-bottom: 0;
+    padding: 24px 32px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sf-setup-card > .card-body {
+    padding: 24px 32px 32px;
+}
+
 .card:hover {
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
@@ -1118,6 +1141,18 @@ details.card[open] .incident-toggle-hint-closed {
     }
 
     .card-header {
+        padding: 16px;
+    }
+
+    .sf-setup-card__cover img {
+        height: 110px;
+    }
+
+    .sf-setup-card > .card-header {
+        padding: 16px;
+    }
+
+    .sf-setup-card > .card-body {
         padding: 16px;
     }
 }

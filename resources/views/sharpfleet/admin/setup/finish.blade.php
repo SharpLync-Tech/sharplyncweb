@@ -24,7 +24,15 @@
         <div class="alert alert-success mb-3">{{ session('success') }}</div>
     @endif
 
-    <div class="card" style="max-width: 720px;">
+    @php($setupImgPath = public_path('images/sharpfleet/setup.png'))
+
+    <div class="card sf-setup-card" style="max-width: 720px;">
+        @if (is_string($setupImgPath) && file_exists($setupImgPath))
+            <div class="sf-setup-card__cover" aria-hidden="true">
+                <img src="{{ asset('images/sharpfleet/setup.png') }}?v={{ @filemtime($setupImgPath) ?: time() }}" alt="">
+            </div>
+        @endif
+
         <div class="card-body">
             <p class="text-muted mb-3">
                 You’re ready to start using SharpFleet.

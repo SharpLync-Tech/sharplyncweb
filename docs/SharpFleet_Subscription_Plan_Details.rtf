@@ -3,6 +3,7 @@
 \fs24
 \pard\sa200\b\f1\fs36 SharpFleet \u8212? Subscription Plan & Trial Access Implementation (Detailed)\b0\f0\fs24\par
 \pard\sa120 Date: 1 January 2026\par
+\pard\sa120 Last updated: 2 January 2026\par
 \pard\sa200
 This document describes the subscription-related changes implemented for SharpFleet, including the account page, trial banner logic, trial-expired screen changes, pricing calculation rules, cancellation behavior, and how the existing trial middleware/entitlements were extended without breaking current functionality.\par
 
@@ -277,6 +278,39 @@ This would enable grace periods (keep access until ends_at), accurate renewal/ca
 \pard\sa80\li360\tx360\bullet\tab Removed hard-coded inline input colors and switched to shared form styles (uses form-control plus component classes).\par
 \pard\sa80\li360\tx360\bullet\tab Added component-scoped :-webkit-autofill styling to keep text readable and background consistent when the browser autofills a password.\par
 \pard\sa80\li360\tx360\bullet\tab Scoped JS event bindings to the component wrapper (prevents attaching strength/match listeners to unrelated password fields).\par
+
+\pard\sa240\b\fs28 19) Post-Subscription Admin UX & Styling Updates (2 Jan 2026)\b0\fs24\par
+\pard\sa120 The following SharpFleet updates were completed after the subscription implementation described above. They are included here for continuity because they touch related admin experience and styling consistency.\par
+
+\pard\sa200\b 19.1) Mandatory Setup Wizard Restructure (Per-Card Steps)\b0\par
+\pard\sa80\li360\tx360\bullet\tab Refactored the admin setup wizard so each step covers one “card” worth of settings (instead of bundling the full Company Settings page into a single step).\par
+\pard\sa80\li360\tx360\bullet\tab Step 2 is now \bPassenger / Client Presence\b0 only (as requested), with clearer guidance on when to require passengers/clients and whether to capture customer details.\par
+\pard\sa80\li360\tx360\bullet\tab Wizard now runs as a multi-step flow through a final “Finish” step (Step 9).\par
+\pard\sa80\li360\tx360\bullet\tab Each wizard step persists only its relevant subset of the organisation/company settings JSON to avoid overwriting unrelated settings.\par
+\pard\sa80\li360\tx360\bullet\tab During incomplete setup, admin access is gated so only /admin/setup/* pages are allowed (prevents bypassing the wizard via Company Settings).\par
+\pard\sa120 Key files touched:\par
+\pard\sa80\li360\tx360\bullet\tab routes/sharpfleet.php (additional setup step routes)\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Controllers/SharpFleet/Admin/SetupWizardController.php (new step actions + targeted saves)\par
+\pard\sa80\li360\tx360\bullet\tab app/Http/Middleware/SharpFleetSetupWizard.php (gating adjustment while setup incomplete)\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/setup/* (new per-step views + updated step count)\par
+
+\pard\sa200\b 19.2) Admin Help Updated to Match Wizard\b0\par
+\pard\sa80\li360\tx360\bullet\tab Updated the admin help content to reflect the new multi-step setup wizard, with an updated table of contents and corrected guidance around “rerun wizard” and completion gating.\par
+\pard\sa120 Key file touched:\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/help/admin.blade.php\par
+
+\pard\sa200\b 19.3) Contrast / Readability Fixes + CSS Guardrails\b0\par
+\pard\sa80\li360\tx360\bullet\tab Fixed white-on-white headings on the reminders page by replacing header-only classes (e.g. page-title) inside cards with card-appropriate title classes.\par
+\pard\sa80\li360\tx360\bullet\tab Fixed black text on gradient headers by adding missing utility classes used in templates (e.g. text-white / text-white-50) to the SharpFleet stylesheet.\par
+\pard\sa80\li360\tx360\bullet\tab Added defensive CSS so if page-title/page-description are accidentally used inside a white card, they render with readable dark/muted colors instead of white.\par
+\pard\sa120 Key files touched:\par
+\pard\sa80\li360\tx360\bullet\tab resources/views/sharpfleet/admin/reminders.blade.php\par
+\pard\sa80\li360\tx360\bullet\tab public/css/sharpfleet/sharpfleetmain.css\par
+
+\pard\sa200\b 19.4) Home Banner: Subtle Glow Enhancement\b0\par
+\pard\sa80\li360\tx360\bullet\tab Added a subtle theme-aligned glow to the scrolling home page banner images using CSS drop-shadow (uses the primary theme color via an RGB variable).\par
+\pard\sa120 Key file touched:\par
+\pard\sa80\li360\tx360\bullet\tab public/css/sharpfleet/sharpfleetmain.css\par
 
 \pard\sa200 End of document.\par
 }
