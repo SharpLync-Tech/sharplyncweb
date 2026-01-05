@@ -58,7 +58,7 @@ final class Roles
 
     public static function canManageUsers(array $user): bool
     {
-        return self::isCompanyAdmin($user);
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
     }
 
     /**

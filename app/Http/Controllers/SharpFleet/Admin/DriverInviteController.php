@@ -4,18 +4,119 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SharpFleet\DriverInvitation;
+use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 
 class DriverInviteController extends Controller
 {
+    private function resolveActorBranchIds(array $fleetUser, int $organisationId, BranchService $branchService): array
+    {
+        if (Roles::bypassesBranchRestrictions($fleetUser)) {
+            return [];
+        }
+
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        if (!$branchesEnabled) {
+            return [];
+        }
+
+        $actorId = (int) ($fleetUser['id'] ?? 0);
+        $ids = $branchService->getAccessibleBranchIdsForUser($organisationId, $actorId);
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn ($v) => $v > 0)));
+
+        if (count($ids) > 0) {
+            return $ids;
+        }
+
+        $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+        return $defaultBranchId > 0 ? [$defaultBranchId] : [];
+    }
+
+    private function assertActorCanAccessUser(array $fleetUser, int $organisationId, int $targetUserId, BranchService $branchService): void
+    {
+        if (Roles::bypassesBranchRestrictions($fleetUser)) {
+            return;
+        }
+
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        if (!$branchesEnabled) {
+            return;
+        }
+
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        if (count($actorBranchIds) === 0) {
+            abort(403, 'You do not have access to any branches.');
+        }
+
+        $targetBranchIds = $branchService->getAccessibleBranchIdsForUser($organisationId, $targetUserId);
+        $targetBranchIds = array_values(array_unique(array_filter(array_map('intval', $targetBranchIds), fn ($v) => $v > 0)));
+
+        if (count(array_intersect($actorBranchIds, $targetBranchIds)) === 0) {
+            abort(403, 'You can only manage users in your branch.');
+        }
+    }
+
+    private function assignUserToActorBranches(int $organisationId, int $userId, array $fleetUser): void
+    {
+        $branchService = new BranchService();
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        if (!$branchesEnabled) {
+            return;
+        }
+
+        if (Roles::bypassesBranchRestrictions($fleetUser)) {
+            return;
+        }
+
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        if (count($actorBranchIds) === 0) {
+            return;
+        }
+
+        $hasIsActive = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'is_active');
+        $hasCreatedAt = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'created_at');
+        $hasUpdatedAt = Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'updated_at');
+
+        DB::connection('sharpfleet')->transaction(function () use ($organisationId, $userId, $actorBranchIds, $hasIsActive, $hasCreatedAt, $hasUpdatedAt) {
+            foreach ($actorBranchIds as $branchId) {
+                $attrs = [
+                    'organisation_id' => $organisationId,
+                    'user_id' => $userId,
+                    'branch_id' => (int) $branchId,
+                ];
+
+                $values = [];
+                if ($hasIsActive) {
+                    $values['is_active'] = 1;
+                }
+                if ($hasCreatedAt) {
+                    $values['created_at'] = now();
+                }
+                if ($hasUpdatedAt) {
+                    $values['updated_at'] = now();
+                }
+
+                DB::connection('sharpfleet')->table('user_branch_access')->updateOrInsert($attrs, $values);
+
+                if ($hasUpdatedAt) {
+                    DB::connection('sharpfleet')
+                        ->table('user_branch_access')
+                        ->where($attrs)
+                        ->update(['updated_at' => now()] + ($hasIsActive ? ['is_active' => 1] : []));
+                }
+            }
+        });
+    }
+
     public function create(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -34,7 +135,7 @@ class DriverInviteController extends Controller
     public function store(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -70,6 +171,10 @@ class DriverInviteController extends Controller
             $isDriverRole = ($existing->role ?? null) === 'driver';
 
             if ($sameOrg && $isPending && $isDriverRole) {
+                // Ensure branch admins can only resend within their branch.
+                $branchService = new BranchService();
+                $this->assertActorCanAccessUser($fleetUser, $organisationId, (int) $existing->id, $branchService);
+
                 DB::connection('sharpfleet')
                     ->table('users')
                     ->where('id', $existing->id)
@@ -113,6 +218,11 @@ class DriverInviteController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
+        $newUserId = (int) DB::connection('sharpfleet')->table('users')->where('organisation_id', $organisationId)->where('email', $email)->value('id');
+        if ($newUserId > 0) {
+            $this->assignUserToActorBranches($organisationId, $newUserId, $fleetUser);
+        }
+
         Mail::to($email)->send(new DriverInvitation((object) [
             'email' => $email,
             'organisation_name' => $organisation->name,
@@ -126,7 +236,7 @@ class DriverInviteController extends Controller
     public function createManual(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -145,7 +255,7 @@ class DriverInviteController extends Controller
     public function storeManual(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -181,6 +291,9 @@ class DriverInviteController extends Controller
             $isDriverRole = ($existing->role ?? null) === 'driver';
 
             if ($sameOrg && $isPending && $isDriverRole) {
+                $branchService = new BranchService();
+                $this->assertActorCanAccessUser($fleetUser, $organisationId, (int) $existing->id, $branchService);
+
                 $updates = [
                     'updated_at' => Carbon::now(),
                 ];
@@ -223,6 +336,11 @@ class DriverInviteController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
+        $newUserId = (int) DB::connection('sharpfleet')->table('users')->where('organisation_id', $organisationId)->where('email', $email)->value('id');
+        if ($newUserId > 0) {
+            $this->assignUserToActorBranches($organisationId, $newUserId, $fleetUser);
+        }
+
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'Driver added.');
     }
@@ -230,7 +348,7 @@ class DriverInviteController extends Controller
     public function createImport(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -249,7 +367,7 @@ class DriverInviteController extends Controller
     public function storeImport(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -346,6 +464,9 @@ class DriverInviteController extends Controller
                 $isDriverRole = ($existing->role ?? null) === 'driver';
 
                 if ($sameOrg && $isPending && $isDriverRole) {
+                    $branchService = new BranchService();
+                    $this->assertActorCanAccessUser($fleetUser, $organisationId, (int) $existing->id, $branchService);
+
                     $updates = [
                         'updated_at' => Carbon::now(),
                     ];
@@ -385,6 +506,10 @@ class DriverInviteController extends Controller
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+            $newUserId = (int) DB::connection('sharpfleet')->table('users')->where('organisation_id', $organisationId)->where('email', $email)->value('id');
+            if ($newUserId > 0) {
+                $this->assignUserToActorBranches($organisationId, $newUserId, $fleetUser);
+            }
             $created++;
         }
 
@@ -405,7 +530,7 @@ class DriverInviteController extends Controller
     public function sendInvites(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -442,6 +567,9 @@ class DriverInviteController extends Controller
                 $skipped++;
                 continue;
             }
+
+            $branchService = new BranchService();
+            $this->assertActorCanAccessUser($fleetUser, $organisationId, $userId, $branchService);
 
             if (($user->role ?? null) !== 'driver' || ($user->account_status ?? null) !== 'pending') {
                 $skipped++;
@@ -485,7 +613,7 @@ class DriverInviteController extends Controller
     public function resend(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
             abort(403, 'Admin access only');
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -499,6 +627,9 @@ class DriverInviteController extends Controller
         if (!$user) {
             abort(404);
         }
+
+        $branchService = new BranchService();
+        $this->assertActorCanAccessUser($fleetUser, $organisationId, $userId, $branchService);
 
         if (($user->account_status ?? null) !== 'pending' || ($user->role ?? null) !== 'driver') {
             return redirect('/app/sharpfleet/admin/users')

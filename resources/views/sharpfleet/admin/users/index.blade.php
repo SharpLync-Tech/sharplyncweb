@@ -7,7 +7,7 @@
 <div class="container">
     @php
         $sfActor = session('sharpfleet.user');
-        $sfIsCompanyAdmin = $sfActor ? \App\Support\SharpFleet\Roles::isCompanyAdmin($sfActor) : false;
+        $sfCanManageUsers = $sfActor ? \App\Support\SharpFleet\Roles::canManageUsers($sfActor) : false;
     @endphp
 
     <div class="page-header">
@@ -33,7 +33,7 @@
         </div>
     @endif
 
-    @if($sfIsCompanyAdmin)
+    @if($sfCanManageUsers)
         <div class="mb-3">
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
@@ -47,7 +47,7 @@
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div class="d-flex gap-2">
-                    @if($sfIsCompanyAdmin)
+                    @if($sfCanManageUsers)
                         <button class="btn btn-primary" type="submit" form="sf-users-invites" formaction="/app/sharpfleet/admin/users/send-invites">
                             Send invites (selected)
                         </button>
@@ -74,7 +74,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 40px;">
-                                    @if($sfIsCompanyAdmin)
+                                    @if($sfCanManageUsers)
                                         <input type="checkbox" id="sf-select-all-invites">
                                     @endif
                                 </th>
@@ -96,7 +96,7 @@
                                 @endphp
                                 <tr class="{{ $isArchived ? 'text-muted' : '' }}">
                                     <td>
-                                        @if($sfIsCompanyAdmin && $isPendingDriver && !$isArchived)
+                                        @if($sfCanManageUsers && $isPendingDriver && !$isArchived)
                                             <input
                                                 type="checkbox"
                                                 class="sf-invite-checkbox"

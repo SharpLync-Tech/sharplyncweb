@@ -11,6 +11,54 @@ use Illuminate\Support\Facades\Schema;
 
 class UserController extends Controller
 {
+    private function resolveActorBranchIds(array $fleetUser, int $organisationId, BranchService $branchService): array
+    {
+        if (Roles::bypassesBranchRestrictions($fleetUser)) {
+            return [];
+        }
+
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        if (!$branchesEnabled) {
+            return [];
+        }
+
+        $actorId = (int) ($fleetUser['id'] ?? 0);
+        $ids = $branchService->getAccessibleBranchIdsForUser($organisationId, $actorId);
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn ($v) => $v > 0)));
+
+        if (count($ids) > 0) {
+            return $ids;
+        }
+
+        $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+        return $defaultBranchId > 0 ? [$defaultBranchId] : [];
+    }
+
+    private function assertActorCanManageTargetUser(array $fleetUser, int $organisationId, int $targetUserId, BranchService $branchService): void
+    {
+        if (Roles::bypassesBranchRestrictions($fleetUser)) {
+            return;
+        }
+
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        if (!$branchesEnabled) {
+            return;
+        }
+
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        if (count($actorBranchIds) === 0) {
+            abort(403, 'You do not have access to any branches.');
+        }
+
+        $targetBranchIds = $branchService->getAccessibleBranchIdsForUser($organisationId, $targetUserId);
+        $targetBranchIds = array_values(array_unique(array_filter(array_map('intval', $targetBranchIds), fn ($v) => $v > 0)));
+
+        $hasIntersection = count(array_intersect($actorBranchIds, $targetBranchIds)) > 0;
+        if (!$hasIntersection) {
+            abort(403, 'You can only manage users in your branch.');
+        }
+    }
+
     public function index(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
@@ -20,6 +68,9 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        $branchService = new BranchService();
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
 
         $status = strtolower(trim((string) $request->query('status', 'active')));
         if (!in_array($status, ['active', 'archived', 'all'], true)) {
@@ -41,6 +92,21 @@ class UserController extends Controller
             ->where(function ($q) {
                 $q->whereNull('account_status')
                     ->orWhere('account_status', '!=', 'deleted');
+            })
+
+            // Branch restriction (only for non-company admins; schema-guarded)
+            ->when(count($actorBranchIds) > 0, function ($q) use ($organisationId, $actorBranchIds) {
+                $q->join('user_branch_access as uba', function ($join) use ($organisationId) {
+                    $join->on('users.id', '=', 'uba.user_id')
+                        ->where('uba.organisation_id', '=', $organisationId);
+                });
+
+                if (Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'is_active')) {
+                    $q->where('uba.is_active', 1);
+                }
+
+                $q->whereIn('uba.branch_id', $actorBranchIds);
+                $q->distinct();
             })
 
             // Archive filter (schema-guarded for backwards compatibility)
@@ -78,6 +144,9 @@ class UserController extends Controller
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
+
         $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
 
         $select = ['id', 'first_name', 'last_name', 'email', 'role', 'is_driver'];
@@ -101,9 +170,12 @@ class UserController extends Controller
             abort(404);
         }
 
-        $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
-        $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
+        $branches = $branchesEnabled
+            ? (Roles::bypassesBranchRestrictions($fleetUser)
+                ? $branchService->getBranches($organisationId)
+                : $branchService->getBranchesForUser($organisationId, (int) ($fleetUser['id'] ?? 0)))
+            : collect();
         $selectedBranchIds = $branchesEnabled ? $branchService->getAccessibleBranchIdsForUser($organisationId, $userId) : [];
 
         return view('sharpfleet.admin.users.edit', [
@@ -123,6 +195,9 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
 
         $target = DB::connection('sharpfleet')
             ->table('users')
@@ -174,24 +249,39 @@ class UserController extends Controller
             }
         }
 
-        $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
 
         // Persist branch access (schema-guarded). Defaults to the default branch if none provided.
         if ($branchesEnabled) {
+            $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+
             $incoming = $request->input('branch_ids', []);
             $incoming = is_array($incoming) ? $incoming : [];
 
             $selected = [];
             foreach ($incoming as $bid) {
                 $bid = (int) $bid;
-                if ($bid > 0 && $branchService->getBranch($organisationId, $bid)) {
+                if ($bid <= 0) {
+                    continue;
+                }
+
+                // Non-company admins may only assign branches they themselves can access.
+                if (!Roles::bypassesBranchRestrictions($fleetUser) && count($actorBranchIds) > 0 && !in_array($bid, $actorBranchIds, true)) {
+                    continue;
+                }
+
+                if ($branchService->getBranch($organisationId, $bid)) {
                     $selected[$bid] = true;
                 }
             }
 
             if (count($selected) === 0) {
-                $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+                $defaultBranchId = 0;
+                if (!Roles::bypassesBranchRestrictions($fleetUser) && count($actorBranchIds) > 0) {
+                    $defaultBranchId = (int) $actorBranchIds[0];
+                } else {
+                    $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+                }
                 if ($defaultBranchId > 0) {
                     $selected[$defaultBranchId] = true;
                 }
@@ -282,6 +372,9 @@ class UserController extends Controller
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
         $currentUserId = (int) ($fleetUser['id'] ?? 0);
 
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
+
         if ($currentUserId === $userId) {
             return redirect('/app/sharpfleet/admin/users')
                 ->withErrors(['error' => 'You cannot archive your own account.']);
@@ -352,6 +445,9 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
 
         if (!Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {
             return redirect('/app/sharpfleet/admin/users')
