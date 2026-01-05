@@ -61,6 +61,15 @@ final class Roles
         return self::isCompanyAdmin($user);
     }
 
+    /**
+     * Users/Drivers screen access for assigning user groups.
+     * Note: does NOT imply permission to archive/unarchive users.
+     */
+    public static function canSetUserGroups(array $user): bool
+    {
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
+    }
+
     public static function canManageBranches(array $user): bool
     {
         return self::isCompanyAdmin($user);

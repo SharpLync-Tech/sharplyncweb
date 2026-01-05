@@ -80,15 +80,18 @@
                                     </div>
                                 @endif
 
-                                @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN)
+                                @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN || $sfRole === \App\Support\SharpFleet\Roles::BRANCH_ADMIN)
                                     <div class="sharpfleet-nav-dropdown">
                                         <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/company*') || request()->is('app/sharpfleet/admin/branches*') || request()->is('app/sharpfleet/admin/users*') || request()->is('app/sharpfleet/admin/settings*') ? 'is-active' : '' }}">Company</button>
                                         <div class="sharpfleet-nav-dropdown-menu">
-                                            <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
-                                            <a href="/app/sharpfleet/admin/company/profile" class="sharpfleet-nav-dropdown-item">Edit Company Details</a>
-                                            <a href="/app/sharpfleet/admin/branches" class="sharpfleet-nav-dropdown-item">Branches</a>
                                             <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
-                                            <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
+
+                                            @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN)
+                                                <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
+                                                <a href="/app/sharpfleet/admin/company/profile" class="sharpfleet-nav-dropdown-item">Edit Company Details</a>
+                                                <a href="/app/sharpfleet/admin/branches" class="sharpfleet-nav-dropdown-item">Branches</a>
+                                                <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
+                                            @endif
                                         </div>
                                     </div>
                                 @endif

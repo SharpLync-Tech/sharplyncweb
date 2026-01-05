@@ -5,6 +5,11 @@
 @section('sharpfleet-content')
 
 <div class="container">
+    @php
+        $sfActor = session('sharpfleet.user');
+        $sfIsCompanyAdmin = $sfActor ? \App\Support\SharpFleet\Roles::isCompanyAdmin($sfActor) : false;
+    @endphp
+
     <div class="page-header">
         <h1 class="page-title">Users</h1>
         <p class="page-description">
@@ -28,21 +33,25 @@
         </div>
     @endif
 
-    <div class="mb-3">
-        <div class="d-flex flex-wrap gap-2 align-items-center">
-            <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
-            <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/add">Add Driver</a>
-            <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
+    @if($sfIsCompanyAdmin)
+        <div class="mb-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
+                <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/add">Add Driver</a>
+                <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
+            </div>
         </div>
-    </div>
+    @endif
 
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit" form="sf-users-invites" formaction="/app/sharpfleet/admin/users/send-invites">
-                        Send invites (selected)
-                    </button>
+                    @if($sfIsCompanyAdmin)
+                        <button class="btn btn-primary" type="submit" form="sf-users-invites" formaction="/app/sharpfleet/admin/users/send-invites">
+                            Send invites (selected)
+                        </button>
+                    @endif
                 </div>
 
                 <div>
@@ -65,7 +74,9 @@
                         <thead>
                             <tr>
                                 <th style="width: 40px;">
-                                    <input type="checkbox" id="sf-select-all-invites">
+                                    @if($sfIsCompanyAdmin)
+                                        <input type="checkbox" id="sf-select-all-invites">
+                                    @endif
                                 </th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -85,7 +96,7 @@
                                 @endphp
                                 <tr class="{{ $isArchived ? 'text-muted' : '' }}">
                                     <td>
-                                        @if($isPendingDriver && !$isArchived)
+                                        @if($sfIsCompanyAdmin && $isPendingDriver && !$isArchived)
                                             <input
                                                 type="checkbox"
                                                 class="sf-invite-checkbox"

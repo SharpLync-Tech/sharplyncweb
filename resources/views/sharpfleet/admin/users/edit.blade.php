@@ -31,16 +31,52 @@
             </div>
         </div>
 
+        @php
+            $sfActor = session('sharpfleet.user');
+            $sfActorCanSetGroups = $sfActor ? \App\Support\SharpFleet\Roles::canSetUserGroups($sfActor) : false;
+            $sfActorIsCompanyAdmin = $sfActor ? (\App\Support\SharpFleet\Roles::normalize($sfActor['role'] ?? null) === \App\Support\SharpFleet\Roles::COMPANY_ADMIN) : false;
+
+            $sfTargetRole = \App\Support\SharpFleet\Roles::normalize($user->role ?? null);
+            $sfRoleOptions = $sfActorIsCompanyAdmin
+                ? [
+                    \App\Support\SharpFleet\Roles::COMPANY_ADMIN => 'Company admin',
+                    \App\Support\SharpFleet\Roles::BRANCH_ADMIN => 'Branch admin',
+                    \App\Support\SharpFleet\Roles::BOOKING_ADMIN => 'Booking admin',
+                    \App\Support\SharpFleet\Roles::DRIVER => 'Driver',
+                ]
+                : [
+                    \App\Support\SharpFleet\Roles::BRANCH_ADMIN => 'Branch admin',
+                    \App\Support\SharpFleet\Roles::BOOKING_ADMIN => 'Booking admin',
+                    \App\Support\SharpFleet\Roles::DRIVER => 'Driver',
+                ];
+        @endphp
+
         <div class="mb-3">
             <div class="info-item">
-                <div class="info-label">Role</div>
-                <div class="info-value">{{ $user->role }}</div>
+                <div class="info-label">User group</div>
+                <div class="info-value">
+                    @if($sfActorCanSetGroups)
+                        <div style="max-width: 360px;">
+                            <select class="form-control" name="role" form="sfUserEditForm" {{ ($sfTargetRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN && !$sfActorIsCompanyAdmin) ? 'disabled' : '' }}>
+                                @foreach($sfRoleOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ (old('role', $sfTargetRole) === $value) ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @if($sfTargetRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN && !$sfActorIsCompanyAdmin)
+                                <div class="text-muted small mt-1">Only company admins can change a company admin's group.</div>
+                            @endif
+                            @error('role') <div class="text-error mt-1">{{ $message }}</div> @enderror
+                        </div>
+                    @else
+                        {{ $sfTargetRole }}
+                    @endif
+                </div>
             </div>
         </div>
 
         <div class="mt-4"></div>
 
-        <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id) }}">
+        <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id) }}" id="sfUserEditForm">
             @csrf
 
             <input type="hidden" name="is_driver" value="0">

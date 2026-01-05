@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
 
-        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+        if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
             abort(403, 'Admin access only');
         }
 
@@ -72,7 +72,7 @@ class UserController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
 
-        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+        if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
             abort(403, 'Admin access only');
         }
 
@@ -118,14 +118,41 @@ class UserController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
 
-        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+        if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
             abort(403, 'Admin access only');
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
+        $target = DB::connection('sharpfleet')
+            ->table('users')
+            ->select('id', 'role')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$target) {
+            abort(404);
+        }
+
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
+        $targetRole = Roles::normalize($target->role ?? null);
+
+        // Branch admins cannot manage company admins.
+        if ($actorRole !== Roles::COMPANY_ADMIN && $targetRole === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
+        }
+
+        // Branch admins cannot change their own role (avoid lockouts).
+        if ($actorRole !== Roles::COMPANY_ADMIN && (int) ($fleetUser['id'] ?? 0) === (int) $userId) {
+            if ($request->has('role')) {
+                return back()->withErrors(['role' => 'You cannot change your own group. Please contact a company administrator.']);
+            }
+        }
+
         $request->validate([
             'is_driver' => ['required', 'in:0,1'],
+            'role' => ['nullable', 'string', 'max:50'],
             'branch_ids' => ['nullable', 'array'],
             'branch_ids.*' => ['integer'],
         ]);
@@ -133,6 +160,19 @@ class UserController extends Controller
         // The form submits a hidden 0 plus a checkbox 1 when checked.
         // Read the resulting scalar value deterministically.
         $isDriver = ((int) $request->input('is_driver', 0) === 1) ? 1 : 0;
+
+        $requestedRole = null;
+        if ($request->has('role')) {
+            $requestedRole = Roles::normalize((string) $request->input('role'));
+
+            $allowed = $actorRole === Roles::COMPANY_ADMIN
+                ? [Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN, Roles::DRIVER]
+                : [Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN, Roles::DRIVER];
+
+            if (!in_array($requestedRole, $allowed, true)) {
+                return back()->withErrors(['role' => 'Invalid group selection.'])->withInput();
+            }
+        }
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
@@ -208,6 +248,8 @@ class UserController extends Controller
             ->where('id', $userId)
             ->update([
                 'is_driver' => $isDriver,
+                // Only update role when explicitly provided by the UI.
+                ...(isset($requestedRole) && $requestedRole !== null ? ['role' => $requestedRole] : []),
                 'updated_at' => now(),
             ]);
 
@@ -218,6 +260,11 @@ class UserController extends Controller
         // If the admin edited their own driver access, update the session so it takes effect immediately.
         if ((int) ($fleetUser['id'] ?? 0) === (int) $userId) {
             $request->session()->put('sharpfleet.user.is_driver', $isDriver);
+
+            // Only company admins may change their own role, so this is safe.
+            if (isset($requestedRole) && $requestedRole !== null) {
+                $request->session()->put('sharpfleet.user.role', $requestedRole);
+            }
         }
 
         return redirect('/app/sharpfleet/admin/users')

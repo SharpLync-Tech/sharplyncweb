@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SharpFleet\DriverInvitation;
+use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,9 @@ class DriverInviteController extends Controller
     public function create(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $organisation = DB::connection('sharpfleet')
@@ -30,6 +34,9 @@ class DriverInviteController extends Controller
     public function store(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $validated = $request->validate([
@@ -119,6 +126,9 @@ class DriverInviteController extends Controller
     public function createManual(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $organisation = DB::connection('sharpfleet')
@@ -135,6 +145,9 @@ class DriverInviteController extends Controller
     public function storeManual(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $validated = $request->validate([
@@ -217,6 +230,9 @@ class DriverInviteController extends Controller
     public function createImport(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $organisation = DB::connection('sharpfleet')
@@ -233,6 +249,9 @@ class DriverInviteController extends Controller
     public function storeImport(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $request->validate([
@@ -386,6 +405,9 @@ class DriverInviteController extends Controller
     public function sendInvites(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $validated = $request->validate([
@@ -463,6 +485,9 @@ class DriverInviteController extends Controller
     public function resend(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::isCompanyAdmin($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $user = DB::connection('sharpfleet')
