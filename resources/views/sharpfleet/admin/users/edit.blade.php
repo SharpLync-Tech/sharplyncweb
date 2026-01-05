@@ -38,6 +38,8 @@
             </div>
         </div>
 
+        <hr class="my-4">
+
         <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id) }}">
             @csrf
 
@@ -51,11 +53,6 @@
             <p class="text-muted small mb-3">
                 If enabled, this user can open /app/sharpfleet/driver. This is useful when an admin also drives.
             </p>
-
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
-            </div>
 
             @php
                 $branchesEnabled = (bool) ($branchesEnabled ?? false);
@@ -94,21 +91,87 @@
                 @error('branch_ids') <div class="text-error mb-2">{{ $message }}</div> @enderror
                 @error('branch_ids.*') <div class="text-error mb-2">{{ $message }}</div> @enderror
             @endif
+
+            <hr class="my-4">
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
 
         @if(($user->role ?? '') === 'driver')
             <hr class="my-4">
 
-            <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/delete') }}"
-                  onsubmit="return confirm('Archive this driver? They will no longer be able to log in, book vehicles, or log trips.');">
-                @csrf
+            <div>
+                <h3 class="section-title">Archive</h3>
+                <p class="text-muted small mb-3">
+                    Archived drivers cannot log in, book vehicles, or log trips. Historical trip data remains.
+                </p>
 
-                <button type="submit" class="btn btn-danger">
+                <button type="button" class="btn btn-danger" id="sfArchiveDriverBtn">
                     Archive driver
                 </button>
-            </form>
+            </div>
         @endif
     </div>
 </div>
+
+@if(($user->role ?? '') === 'driver')
+    <div id="sfArchiveDriverModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5);">
+        <div class="card" style="max-width:520px; margin:10vh auto;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <h3 class="mb-1">Archive driver</h3>
+                        <p class="text-muted mb-0">
+                            Archive this driver? They will no longer be able to log in, book vehicles, or log trips.
+                        </p>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfArchiveDriverClose">Close</button>
+                </div>
+
+                <hr class="my-3">
+
+                <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/delete') }}" id="sfArchiveDriverForm">
+                    @csrf
+
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-secondary" id="sfArchiveDriverCancel">Cancel</button>
+                        <button type="submit" class="btn btn-danger" id="sfArchiveDriverConfirm">Archive</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const btn = document.getElementById('sfArchiveDriverBtn');
+            const modal = document.getElementById('sfArchiveDriverModal');
+            const closeBtn = document.getElementById('sfArchiveDriverClose');
+            const cancelBtn = document.getElementById('sfArchiveDriverCancel');
+
+            function closeModal() {
+                if (!modal) return;
+                modal.style.display = 'none';
+            }
+
+            function openModal() {
+                if (!modal) return;
+                modal.style.display = 'block';
+            }
+
+            if (btn) btn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) closeModal();
+                });
+            }
+        })();
+    </script>
+@endif
 
 @endsection
