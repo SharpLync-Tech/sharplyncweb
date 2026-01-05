@@ -675,12 +675,13 @@ details.card[open] .incident-toggle-hint-closed {
 .btn-secondary {
     background: var(--bg-light);
     color: var(--text-dark);
-    border: 2px solid var(--border-color);
+    border: 1px solid #2CBFAE;
 }
 
 .btn-secondary:hover {
-    background: var(--text-dark);
+    background: #0A2A4D;
     color: var(--text-light);
+    border: 1px solid #2CBFAE;
 }
 
 .btn-danger {
