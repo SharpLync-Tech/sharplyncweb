@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Support\SharpFleet\Roles;
 
 class SharpFleetDriverAuth
 {
@@ -34,8 +35,9 @@ class SharpFleetDriverAuth
         }
 
         // Logged in but not a driver
-        // Allow driver or admin (for sole traders/admins who drive)
-        if (!in_array($user['role'] ?? null, ['driver', 'admin'])) {
+        // Allow driver role, or any admin-type role that has is_driver enabled.
+        $normalizedRole = Roles::normalize($user['role'] ?? null);
+        if (!in_array($normalizedRole, [Roles::DRIVER, Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN], true)) {
             return response()->view('sharpfleet.errors.driver-denied', [], 403);
         }
 

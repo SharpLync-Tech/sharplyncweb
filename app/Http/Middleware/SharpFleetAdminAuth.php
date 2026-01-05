@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Support\SharpFleet\Roles;
 
 class SharpFleetAdminAuth
 {
@@ -32,8 +33,8 @@ class SharpFleetAdminAuth
             ]);
         }
 
-        // Logged in, but not an admin
-        if (($fleetUser['role'] ?? null) !== 'admin') {
+        // Logged in, but not allowed into the admin portal
+        if (!Roles::isAdminPortal($fleetUser)) {
             abort(403, 'SharpFleet admin access only.');
         }
 

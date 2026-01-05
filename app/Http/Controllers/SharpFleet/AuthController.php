@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -134,7 +135,7 @@ class AuthController extends Controller
             'first_name'      => $user->first_name ?? '',
             'last_name'       => $user->last_name ?? '',
             'name'            => trim($user->first_name . ' ' . $user->last_name),
-            'role'            => $user->role, // admin | driver
+            'role'            => Roles::normalize($user->role ?? null),
             'is_driver'       => (int) ($user->is_driver ?? 0),
             'archived_at'     => $archivedAt,
             'logged_in'       => true,
@@ -143,10 +144,14 @@ class AuthController extends Controller
 
     private function redirectByRole(string $role)
     {
+        $role = Roles::normalize($role);
+
         return match ($role) {
-            'admin'  => redirect('/app/sharpfleet/admin'),
-            'driver' => redirect('/app/sharpfleet/driver'),
-            default  => abort(403, 'Unknown SharpFleet role'),
+            Roles::COMPANY_ADMIN,
+            Roles::BRANCH_ADMIN,
+            Roles::BOOKING_ADMIN => redirect('/app/sharpfleet/admin'),
+            Roles::DRIVER => redirect('/app/sharpfleet/driver'),
+            default => abort(403, 'Unknown SharpFleet role'),
         };
     }
 

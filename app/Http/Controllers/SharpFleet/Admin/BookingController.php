@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
 use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageBookings($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -84,9 +85,7 @@ class BookingController extends Controller
                             });
                     })
                     ->orWhere(function ($qq) {
-                        $qq
-                            ->where('role', 'admin')
-                            ->where('is_driver', 1);
+                        $qq->where('is_driver', 1);
                     });
             })
             ->orderBy('first_name')
@@ -123,7 +122,7 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageBookings($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -165,7 +164,7 @@ class BookingController extends Controller
     public function cancel(Request $request, $booking)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageBookings($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -177,7 +176,7 @@ class BookingController extends Controller
     public function changeVehicle(Request $request, $booking)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageBookings($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -197,7 +196,7 @@ class BookingController extends Controller
     public function availableVehicles(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageBookings($user)) {
             abort(403, 'Admin access only');
         }
 

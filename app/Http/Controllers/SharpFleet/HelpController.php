@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 
 class HelpController extends Controller
@@ -11,7 +12,7 @@ class HelpController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isAdminPortal($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -22,10 +23,7 @@ class HelpController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        $role = $user['role'] ?? null;
-        $isDriver = (bool) ($user['is_driver'] ?? ($role === 'driver'));
-
-        if (!$user || (!$isDriver && $role !== 'driver' && $role !== 'admin')) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403, 'Driver access only');
         }
 

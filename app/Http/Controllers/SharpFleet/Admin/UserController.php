@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,11 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
+
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $status = strtolower(trim((string) $request->query('status', 'active')));
@@ -51,7 +57,7 @@ class UserController extends Controller
         }
 
         $users = $query
-            ->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
+            ->orderByRaw("CASE WHEN role IN ('company_admin','admin') THEN 0 ELSE 1 END")
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
@@ -65,6 +71,11 @@ class UserController extends Controller
     public function edit(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
+
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
@@ -106,6 +117,11 @@ class UserController extends Controller
     public function update(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
+
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $request->validate([
@@ -211,6 +227,11 @@ class UserController extends Controller
     public function destroy(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
+
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
         $currentUserId = (int) ($fleetUser['id'] ?? 0);
 
@@ -278,6 +299,11 @@ class UserController extends Controller
     public function unarchive(Request $request, int $userId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
+
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         if (!Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {

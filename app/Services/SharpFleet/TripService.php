@@ -3,6 +3,7 @@
 namespace App\Services\SharpFleet;
 
 use App\Models\SharpFleet\Trip;
+use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -180,9 +181,9 @@ class TripService
 
         // Enforce branch access (server-side). Vehicle determines branch.
         $branches = $this->branchService();
-        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         if (
-            $role !== 'admin'
+            !$bypassBranchRestrictions
             && $branches->branchesEnabled()
             && $branches->vehiclesHaveBranchSupport()
             && $branches->userBranchAccessEnabled()
@@ -393,7 +394,7 @@ class TripService
         $skipped = [];
 
         $branches = $this->branchService();
-        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
 
         foreach ($trips as $t) {
             $vehicleId = (int) ($t['vehicle_id'] ?? 0);
@@ -411,7 +412,7 @@ class TripService
 
             // Enforce branch access (server-side).
             if (
-                $role !== 'admin'
+                !$bypassBranchRestrictions
                 && $branches->branchesEnabled()
                 && $branches->vehiclesHaveBranchSupport()
                 && $branches->userBranchAccessEnabled()
@@ -562,9 +563,9 @@ class TripService
 
         // Enforce branch access (server-side) based on vehicle.
         $branches = $this->branchService();
-        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         if (
-            $role !== 'admin'
+            !$bypassBranchRestrictions
             && $branches->branchesEnabled()
             && $branches->vehiclesHaveBranchSupport()
             && $branches->userBranchAccessEnabled()

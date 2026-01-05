@@ -35,6 +35,7 @@ use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\VehicleReminderService;
+use App\Support\SharpFleet\Roles;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,9 +73,13 @@ Route::prefix('app/sharpfleet')
         if ($request->session()->has('sharpfleet.user')) {
             $role = $request->session()->get('sharpfleet.user.role');
 
+            $role = Roles::normalize((string) $role);
+
             return match ($role) {
-                'admin'  => response('', 302)->header('Location', '/app/sharpfleet/admin'),
-                'driver' => response('', 302)->header('Location', '/app/sharpfleet/driver'),
+                Roles::COMPANY_ADMIN,
+                Roles::BRANCH_ADMIN,
+                Roles::BOOKING_ADMIN => response('', 302)->header('Location', '/app/sharpfleet/admin'),
+                Roles::DRIVER => response('', 302)->header('Location', '/app/sharpfleet/driver'),
                 default  => response('', 302)->header('Location', '/app/sharpfleet/login'),
             };
         }
@@ -130,7 +135,7 @@ Route::prefix('app/sharpfleet')
             Route::get('/', function (Request $request) {
                 $user = $request->session()->get('sharpfleet.user');
 
-                if (!$user || $user['role'] !== 'admin') {
+                if (!$user || !Roles::isAdminPortal($user)) {
                     abort(403, 'Admin access only');
                 }
 
@@ -161,9 +166,7 @@ Route::prefix('app/sharpfleet')
                                     });
                             })
                             ->orWhere(function ($qq) {
-                                $qq
-                                    ->where('role', 'admin')
-                                    ->where('is_driver', 1);
+                                $qq->where('is_driver', 1);
                             });
                     })
                     ->count();

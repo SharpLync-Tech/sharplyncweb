@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\TripService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BranchService;
+use App\Support\SharpFleet\Roles;
 use App\Http\Requests\SharpFleet\Trips\StartTripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -122,9 +123,9 @@ class TripController extends Controller
 
         // Enforce branch access (server-side).
         $branches = new BranchService();
-        $role = strtolower(trim((string) ($user['role'] ?? '')));
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         if (
-            $role !== 'admin'
+            !$bypassBranchRestrictions
             && $branches->branchesEnabled()
             && $branches->vehiclesHaveBranchSupport()
             && $branches->userBranchAccessEnabled()
