@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    private const ARCHIVED_LOGIN_MESSAGE = 'This account has been archived. Please contact your administrator.';
+
     /**
      * Show SharpFleet login page
      */
@@ -30,6 +32,12 @@ class AuthController extends Controller
             $user = $this->getUserByRememberToken($token);
 
             if ($user) {
+                if ($this->isArchived($user)) {
+                    Cookie::queue(Cookie::forget('sharpfleet_remember'));
+                    return view('sharpfleet.login')->withErrors([
+                        'email' => self::ARCHIVED_LOGIN_MESSAGE,
+                    ]);
+                }
                 $this->startSession($request, $user);
                 return $this->redirectByRole($user->role);
             }
@@ -52,6 +60,12 @@ class AuthController extends Controller
             ->table('users')
             ->where('email', $request->email)
             ->first();
+
+        if ($user && $this->isArchived($user)) {
+            return back()->withErrors([
+                'email' => self::ARCHIVED_LOGIN_MESSAGE,
+            ]);
+        }
 
         if (
             !$user ||
@@ -108,6 +122,11 @@ class AuthController extends Controller
     {
         $request->session()->regenerate();
 
+        $archivedAt = null;
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {
+            $archivedAt = $user->archived_at ?? null;
+        }
+
         $request->session()->put('sharpfleet.user', [
             'id'              => $user->id,
             'organisation_id' => $user->organisation_id,
@@ -117,6 +136,7 @@ class AuthController extends Controller
             'name'            => trim($user->first_name . ' ' . $user->last_name),
             'role'            => $user->role, // admin | driver
             'is_driver'       => (int) ($user->is_driver ?? 0),
+            'archived_at'     => $archivedAt,
             'logged_in'       => true,
         ]);
     }
@@ -136,5 +156,14 @@ class AuthController extends Controller
             ->table('users')
             ->where('remember_token', hash('sha256', $token))
             ->first();
+    }
+
+    private function isArchived($user): bool
+    {
+        if (!Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {
+            return false;
+        }
+
+        return !empty($user->archived_at);
     }
 }
