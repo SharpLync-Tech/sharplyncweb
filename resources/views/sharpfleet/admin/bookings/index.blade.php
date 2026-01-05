@@ -14,6 +14,28 @@
 
     $branchesEnabled = (bool) ($branchesEnabled ?? false);
     $branches = $branches ?? collect();
+
+    $vehiclesForJs = collect($vehicles ?? collect())->map(function ($v) {
+        return [
+            'id' => (int) ($v->id ?? 0),
+            'name' => (string) ($v->name ?? ''),
+            'registration_number' => (string) ($v->registration_number ?? ''),
+        ];
+    })->values();
+
+    $driversForJs = collect($drivers ?? collect())->map(function ($d) {
+        return [
+            'id' => (int) ($d->id ?? 0),
+            'name' => trim((string) ($d->first_name ?? '') . ' ' . (string) ($d->last_name ?? '')),
+        ];
+    })->values();
+
+    $branchesForJs = collect($branches)->map(function ($b) {
+        return [
+            'id' => (int) ($b->id ?? 0),
+            'name' => (string) ($b->name ?? ''),
+        ];
+    })->values();
 @endphp
 
 <div class="container">
@@ -396,26 +418,10 @@
             timezone: @json($companyTimezone),
             today: @json($today),
             currentUserId: @json((int) ($user['id'] ?? 0)),
-            vehicles: @json(collect($vehicles)->map(function ($v) {
-                return [
-                    'id' => (int) $v->id,
-                    'name' => (string) ($v->name ?? ''),
-                    'registration_number' => (string) ($v->registration_number ?? ''),
-                ];
-            })->values()),
-            drivers: @json(collect($drivers)->map(function ($d) {
-                return [
-                    'id' => (int) $d->id,
-                    'name' => trim((string) ($d->first_name ?? '') . ' ' . (string) ($d->last_name ?? '')),
-                ];
-            })->values()),
+            vehicles: @json($vehiclesForJs),
+            drivers: @json($driversForJs),
             branchesEnabled: @json((bool) $branchesEnabled),
-            branches: @json(collect($branches)->map(function ($b) {
-                return [
-                    'id' => (int) $b->id,
-                    'name' => (string) ($b->name ?? ''),
-                ];
-            })->values()),
+            branches: @json($branchesForJs),
             customersEnabled: @json((bool) ($customersTableExists ?? false)),
         };
 
