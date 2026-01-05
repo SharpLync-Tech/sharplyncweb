@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <hr class="my-4">
+        <div class="mt-4"></div>
 
         <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id) }}">
             @csrf
@@ -63,7 +63,7 @@
             @endphp
 
             @if($branchesEnabled)
-                <hr class="my-4">
+                <div class="mt-4"></div>
 
                 <h3 class="section-title">Branch access</h3>
                 <p class="text-muted small mb-2">
@@ -92,7 +92,7 @@
                 @error('branch_ids.*') <div class="text-error mb-2">{{ $message }}</div> @enderror
             @endif
 
-            <hr class="my-4">
+            <div class="mt-4"></div>
 
             <div class="btn-group">
                 <button type="submit" class="btn btn-primary">Save</button>
@@ -101,7 +101,7 @@
         </form>
 
         @if(($user->role ?? '') === 'driver')
-            <hr class="my-4">
+            <div class="mt-4"></div>
 
             <div>
                 <h3 class="section-title">Archive</h3>
@@ -131,7 +131,7 @@
                     <button type="button" class="btn btn-secondary btn-sm" id="sfArchiveDriverClose">Close</button>
                 </div>
 
-                <hr class="my-3">
+                <div class="mt-3"></div>
 
                 <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/delete') }}" id="sfArchiveDriverForm">
                     @csrf
