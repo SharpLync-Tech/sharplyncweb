@@ -306,9 +306,11 @@ Route::prefix('app/sharpfleet')
             // Bookings
             Route::get('/bookings', [AdminBookingController::class, 'index']);
             Route::post('/bookings', [AdminBookingController::class, 'store']);
+            Route::post('/bookings/{booking}', [AdminBookingController::class, 'update'])->whereNumber('booking');
             Route::post('/bookings/{booking}/change-vehicle', [AdminBookingController::class, 'changeVehicle']);
             Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel']);
             Route::get('/bookings/available-vehicles', [AdminBookingController::class, 'availableVehicles']);
+            Route::get('/bookings/feed', [AdminBookingController::class, 'feed']);
 
             // Faults
             Route::get('/faults', [AdminFaultController::class, 'index']);

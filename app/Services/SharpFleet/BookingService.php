@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SharpFleet\BookingChanged;
 
 class BookingService
 {
@@ -448,11 +450,345 @@ class BookingService
             $insert['timezone'] = $timezone;
         }
 
+        if (Schema::connection('sharpfleet')->hasColumn('bookings', 'remind_me')) {
+            $insert['remind_me'] = !empty($data['remind_me']) ? 1 : 0;
+        }
+
+        if (Schema::connection('sharpfleet')->hasColumn('bookings', 'created_by_user_id')) {
+            $createdBy = (int) ($data['created_by_user_id'] ?? 0);
+            $insert['created_by_user_id'] = $createdBy > 0 ? $createdBy : null;
+        }
+
         $id = DB::connection('sharpfleet')
             ->table('bookings')
             ->insertGetId($insert);
 
         return (int) $id;
+    }
+
+    public function getBookingsInRange(
+        int $organisationId,
+        Carbon $rangeStartLocal,
+        Carbon $rangeEndLocal,
+        ?array $actor = null,
+        bool $bypassBranchRestrictions = false
+    ): array {
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            return [];
+        }
+
+        $rangeStartUtc = $rangeStartLocal->copy()->utc();
+        $rangeEndUtc = $rangeEndLocal->copy()->utc();
+
+        $branches = $this->branchService();
+        $branchAccessEnabled = $branches->branchesEnabled()
+            && $branches->userBranchAccessEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && is_array($actor)
+            && isset($actor['id'])
+            && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branches->getAccessibleBranchIdsForUser($organisationId, (int) $actor['id'])
+            : [];
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $hasCustomers = Schema::connection('sharpfleet')->hasTable('customers');
+        $hasCreatedBy = Schema::connection('sharpfleet')->hasColumn('bookings', 'created_by_user_id');
+
+        $query = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->join('users', 'bookings.user_id', '=', 'users.id')
+            ->leftJoin('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id');
+
+        if ($hasCustomers) {
+            $query->leftJoin('customers', 'bookings.customer_id', '=', 'customers.id');
+        }
+
+        if ($hasCreatedBy) {
+            $query->leftJoin('users as creator', 'bookings.created_by_user_id', '=', 'creator.id');
+        }
+
+        $query->where('bookings.organisation_id', $organisationId)
+            ->where('bookings.status', 'planned')
+            ->where('bookings.planned_start', '<', $rangeEndUtc->toDateTimeString())
+            ->where('bookings.planned_end', '>', $rangeStartUtc->toDateTimeString())
+            ->when(
+                $branchAccessEnabled && $branches->bookingsHaveBranchSupport(),
+                fn ($q) => $q->whereIn('bookings.branch_id', $accessibleBranchIds)
+            )
+            ->when(
+                $branchAccessEnabled && !$branches->bookingsHaveBranchSupport() && $branches->vehiclesHaveBranchSupport(),
+                fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            );
+
+        $rows = $query->select(
+            'bookings.*',
+            DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name"),
+            'vehicles.name as vehicle_name',
+            'vehicles.registration_number',
+            $hasCustomers
+                ? DB::raw('COALESCE(customers.name, bookings.customer_name) as customer_name_display')
+                : DB::raw('bookings.customer_name as customer_name_display'),
+            $hasCreatedBy
+                ? DB::raw("CONCAT(creator.first_name, ' ', creator.last_name) as created_by_name")
+                : DB::raw("'' as created_by_name")
+        )->orderBy('bookings.planned_start')->get();
+
+        // Return a light JSON-friendly structure with local-time strings for the UI.
+        $out = [];
+        foreach ($rows as $b) {
+            $tz = isset($b->timezone) && trim((string) ($b->timezone ?? '')) !== ''
+                ? (string) $b->timezone
+                : (string) $rangeStartLocal->getTimezone()->getName();
+
+            $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($tz);
+            $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($tz);
+
+            $out[] = [
+                'id' => (int) $b->id,
+                'user_id' => (int) $b->user_id,
+                'driver_name' => (string) ($b->driver_name ?? ''),
+                'vehicle_id' => (int) $b->vehicle_id,
+                'vehicle_name' => (string) ($b->vehicle_name ?? ''),
+                'registration_number' => (string) ($b->registration_number ?? ''),
+                'branch_id' => isset($b->branch_id) ? (int) $b->branch_id : null,
+                'customer_id' => isset($b->customer_id) ? (int) $b->customer_id : null,
+                'customer_name' => (string) ($b->customer_name_display ?? ''),
+                'notes' => (string) ($b->notes ?? ''),
+                'timezone' => $tz,
+                'planned_start_local' => $startLocal->format('Y-m-d H:i'),
+                'planned_end_local' => $endLocal->format('Y-m-d H:i'),
+                'created_by_user_id' => Schema::connection('sharpfleet')->hasColumn('bookings', 'created_by_user_id') ? (isset($b->created_by_user_id) ? (int) $b->created_by_user_id : null) : null,
+                'created_by_name' => (string) ($b->created_by_name ?? ''),
+                'remind_me' => Schema::connection('sharpfleet')->hasColumn('bookings', 'remind_me') ? (int) ($b->remind_me ?? 0) : 0,
+            ];
+        }
+
+        return $out;
+    }
+
+    public function updateBooking(int $organisationId, int $bookingId, array $data, array $actor): void
+    {
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            throw ValidationException::withMessages([
+                'bookings' => 'Bookings are unavailable until the database table is created.',
+            ]);
+        }
+
+        $booking = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $bookingId)
+            ->first();
+
+        if (!$booking) {
+            throw ValidationException::withMessages([
+                'booking' => 'Booking not found.',
+            ]);
+        }
+
+        if ((string) $booking->status !== 'planned') {
+            throw ValidationException::withMessages([
+                'booking' => 'Only planned bookings can be updated.',
+            ]);
+        }
+
+        // Block edits on ended bookings.
+        if (Carbon::parse($booking->planned_end)->utc()->lessThan($this->nowUtc())) {
+            throw ValidationException::withMessages([
+                'booking' => 'This booking has already ended and cannot be updated.',
+            ]);
+        }
+
+        $newUserId = (int) ($data['user_id'] ?? 0);
+        $newVehicleId = (int) ($data['vehicle_id'] ?? 0);
+        $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
+            ? (int) $data['branch_id']
+            : null;
+
+        if ($newUserId <= 0) {
+            throw ValidationException::withMessages(['user_id' => 'Driver is required.']);
+        }
+        if ($newVehicleId <= 0) {
+            throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
+        }
+
+        $timezone = $this->resolveBookingTimezone($organisationId, $newVehicleId, $branchId);
+        $plannedStart = $this->parseLocalToUtc((string) ($data['planned_start'] ?? ''), $timezone, 'planned_start');
+        $plannedEnd = $this->parseLocalToUtc((string) ($data['planned_end'] ?? ''), $timezone, 'planned_end');
+
+        // Disallow edits that move start into the past.
+        if ($plannedStart->lessThan($this->nowUtc())) {
+            throw ValidationException::withMessages([
+                'planned_start_date' => 'Booking start must be in the future.',
+            ]);
+        }
+
+        if ($plannedEnd->lessThanOrEqualTo($plannedStart)) {
+            throw ValidationException::withMessages(['planned_end' => 'End time must be after start time.']);
+        }
+
+        // Enforce out-of-service + permanent assignment rules.
+        $this->assertVehicleInService($organisationId, $newVehicleId);
+
+        if ($this->vehiclesHavePermanentAssignmentSupport()) {
+            $assignment = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('assignment_type')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $newVehicleId)
+                ->first();
+
+            if ($assignment && $this->vehicleAssignmentType($assignment) === 'permanent') {
+                abort(403, 'This vehicle is permanently assigned and cannot be booked.');
+            }
+        }
+
+        // Prevent overlapping planned bookings for the same vehicle (excluding this booking).
+        $overlapExists = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $newVehicleId)
+            ->where('status', 'planned')
+            ->where('id', '!=', (int) $booking->id)
+            ->where('planned_start', '<', $plannedEnd->toDateTimeString())
+            ->where('planned_end', '>', $plannedStart->toDateTimeString())
+            ->exists();
+
+        if ($overlapExists) {
+            throw ValidationException::withMessages([
+                'planned_start' => 'This vehicle is already booked for the selected time window.',
+            ]);
+        }
+
+        $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
+            ? (int) $data['customer_id']
+            : null;
+
+        $customerName = isset($data['customer_name']) ? trim((string) $data['customer_name']) : '';
+        if ($customerName === '') {
+            $customerName = null;
+        }
+        if ($customerName !== null && mb_strlen($customerName) > 150) {
+            $customerName = mb_substr($customerName, 0, 150);
+        }
+
+        $update = [
+            'user_id' => $newUserId,
+            'vehicle_id' => $newVehicleId,
+            'customer_id' => $customerId,
+            'customer_name' => $customerName,
+            'planned_start' => $plannedStart->toDateTimeString(),
+            'planned_end' => $plannedEnd->toDateTimeString(),
+            'notes' => isset($data['notes']) ? trim((string) $data['notes']) : null,
+            'updated_at' => now(),
+        ];
+
+        $branches = $this->branchService();
+        if ($branches->branchesEnabled() && $branches->bookingsHaveBranchSupport()) {
+            $update['branch_id'] = $branchId ?: $branches->getBranchIdForVehicle($organisationId, $newVehicleId);
+        }
+        if ($branches->bookingsHaveTimezoneSupport()) {
+            $update['timezone'] = $timezone;
+        }
+
+        if (Schema::connection('sharpfleet')->hasColumn('bookings', 'remind_me')) {
+            $update['remind_me'] = !empty($data['remind_me']) ? 1 : 0;
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('bookings', 'updated_by_user_id')) {
+            $updatedBy = (int) ($data['updated_by_user_id'] ?? 0);
+            $update['updated_by_user_id'] = $updatedBy > 0 ? $updatedBy : null;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $bookingId)
+            ->update($update);
+
+        // Notify the booking driver of changes (mandatory).
+        $this->emailBookingChanged(
+            organisationId: $organisationId,
+            bookingId: $bookingId,
+            old: $booking,
+            actor: $actor,
+            newPlannedStartUtc: $plannedStart,
+            newPlannedEndUtc: $plannedEnd,
+            newVehicleId: $newVehicleId,
+            event: 'updated'
+        );
+    }
+
+    private function emailBookingChanged(
+        int $organisationId,
+        int $bookingId,
+        object $old,
+        array $actor,
+        Carbon $newPlannedStartUtc,
+        Carbon $newPlannedEndUtc,
+        int $newVehicleId,
+        string $event
+    ): void {
+        try {
+            // Driver email
+            $driver = DB::connection('sharpfleet')
+                ->table('users')
+                ->select('id', 'email', 'first_name', 'last_name')
+                ->where('organisation_id', $organisationId)
+                ->where('id', (int) ($old->user_id ?? 0))
+                ->first();
+
+            if (!$driver || empty($driver->email)) {
+                return;
+            }
+
+            $vehicleOld = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('id', 'name', 'registration_number')
+                ->where('organisation_id', $organisationId)
+                ->where('id', (int) ($old->vehicle_id ?? 0))
+                ->first();
+
+            $vehicleNew = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('id', 'name', 'registration_number')
+                ->where('organisation_id', $organisationId)
+                ->where('id', (int) $newVehicleId)
+                ->first();
+
+            $tz = isset($old->timezone) && trim((string) ($old->timezone ?? '')) !== ''
+                ? (string) $old->timezone
+                : (new CompanySettingsService($organisationId))->timezone();
+
+            $oldStartLocal = Carbon::parse((string) $old->planned_start)->utc()->timezone($tz);
+            $oldEndLocal = Carbon::parse((string) $old->planned_end)->utc()->timezone($tz);
+            $newStartLocal = $newPlannedStartUtc->copy()->utc()->timezone($tz);
+            $newEndLocal = $newPlannedEndUtc->copy()->utc()->timezone($tz);
+
+            $actorName = trim((string) (($actor['first_name'] ?? '') . ' ' . ($actor['last_name'] ?? '')));
+            if ($actorName === '') {
+                $actorName = (string) ($actor['email'] ?? '');
+            }
+
+            Mail::to((string) $driver->email)->send(new BookingChanged(
+                driverName: trim((string) (($driver->first_name ?? '') . ' ' . ($driver->last_name ?? ''))),
+                actorName: $actorName,
+                timezone: $tz,
+                vehicleOldName: $vehicleOld ? (string) ($vehicleOld->name ?? '') : '',
+                vehicleOldReg: $vehicleOld ? (string) ($vehicleOld->registration_number ?? '') : '',
+                vehicleNewName: $vehicleNew ? (string) ($vehicleNew->name ?? '') : '',
+                vehicleNewReg: $vehicleNew ? (string) ($vehicleNew->registration_number ?? '') : '',
+                oldStart: $oldStartLocal,
+                oldEnd: $oldEndLocal,
+                newStart: $newStartLocal,
+                newEnd: $newEndLocal,
+                event: $event
+            ));
+        } catch (\Throwable $e) {
+            // fail silently
+        }
     }
 
     public function getUpcomingBookings(int $organisationId, ?array $actor = null): array
@@ -542,14 +878,37 @@ class BookingService
             abort(403, 'You can only cancel your own bookings.');
         }
 
+        $update = [
+            'status' => 'cancelled',
+            'updated_at' => now(),
+        ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('bookings', 'updated_by_user_id')) {
+            $updatedBy = (int) ($actor['id'] ?? 0);
+            $update['updated_by_user_id'] = $updatedBy > 0 ? $updatedBy : null;
+        }
+
         DB::connection('sharpfleet')
             ->table('bookings')
             ->where('organisation_id', $organisationId)
             ->where('id', $bookingId)
-            ->update([
-                'status' => 'cancelled',
-                'updated_at' => now(),
-            ]);
+
+            ->update($update);
+
+        // Notify the booking driver of cancellation (mandatory).
+        $oldStartUtc = Carbon::parse($booking->planned_start)->utc();
+        $oldEndUtc = Carbon::parse($booking->planned_end)->utc();
+
+        $this->emailBookingChanged(
+            organisationId: $organisationId,
+            bookingId: $bookingId,
+            old: $booking,
+            actor: $actor,
+            newPlannedStartUtc: $oldStartUtc,
+            newPlannedEndUtc: $oldEndUtc,
+            newVehicleId: (int) ($booking->vehicle_id ?? 0),
+            event: 'cancelled'
+        );
     }
 
     public function getAvailableVehicles(int $organisationId, Carbon $plannedStart, Carbon $plannedEnd, ?int $branchId = null)
