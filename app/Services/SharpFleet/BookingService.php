@@ -471,7 +471,8 @@ class BookingService
         Carbon $rangeStartLocal,
         Carbon $rangeEndLocal,
         ?array $actor = null,
-        bool $bypassBranchRestrictions = false
+        bool $bypassBranchRestrictions = false,
+        ?int $branchIdFilter = null
     ): array {
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             return [];
@@ -522,6 +523,15 @@ class BookingService
                 $branchAccessEnabled && !$branches->bookingsHaveBranchSupport() && $branches->vehiclesHaveBranchSupport(),
                 fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
             );
+
+        // Optional UI filter (Branch selector). Still respects access scoping above.
+        if ($branchIdFilter && $branchIdFilter > 0) {
+            if ($branches->bookingsHaveBranchSupport()) {
+                $query->where('bookings.branch_id', (int) $branchIdFilter);
+            } elseif ($branches->vehiclesHaveBranchSupport()) {
+                $query->where('vehicles.branch_id', (int) $branchIdFilter);
+            }
+        }
 
         $rows = $query->select(
             'bookings.*',

@@ -132,6 +132,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'start' => ['required', 'date'],
             'end' => ['required', 'date', 'after:start'],
+            'branch_id' => ['nullable', 'integer'],
         ]);
 
         $organisationId = (int) $user['organisation_id'];
@@ -158,12 +159,17 @@ class BookingController extends Controller
         $rangeStart = Carbon::parse($validated['start'], $timezone)->startOfDay();
         $rangeEnd = Carbon::parse($validated['end'], $timezone)->endOfDay();
 
+        $branchIdFilter = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+
         $bookings = $this->bookingService->getBookingsInRange(
             organisationId: $organisationId,
             rangeStartLocal: $rangeStart,
             rangeEndLocal: $rangeEnd,
             actor: $user,
-            bypassBranchRestrictions: $bypassBranchRestrictions
+            bypassBranchRestrictions: $bypassBranchRestrictions,
+            branchIdFilter: $branchIdFilter
         );
 
         return response()->json([

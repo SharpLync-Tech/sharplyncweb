@@ -412,6 +412,31 @@
 </div>
 
 @if($bookingsTableExists)
+
+<style>
+    /* SharpFleet bookings calendar (locked NAVY/TEAL spec) */
+    .sf-bk-scroll{overflow:auto;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
+    .sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
+    .sf-bk-left{width:240px;flex:0 0 240px;position:sticky;left:0;z-index:6;background:#fff}
+    .sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy)}
+    .sf-bk-time-header{position:relative;height:54px;min-height:54px}
+    .sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy);white-space:nowrap}
+    .sf-bk-row{display:flex}
+    .sf-bk-lane{position:relative;height:54px}
+    .sf-bk-lane-bg{background:#fff}
+    .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal);border-radius:10px;background:rgba(44,191,174,.06);pointer-events:none;display:none}
+    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
+    .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal)}
+    .sf-bk-block:hover{outline:2px solid var(--sl-teal);filter:brightness(1.05)}
+    .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
+    .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
+
+    .sf-bk-month-ind{margin-top:8px;display:flex;align-items:center;gap:8px}
+    .sf-bk-month-bar{flex:1;height:8px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
+    .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal)}
+    .sf-bk-month-txt{font-size:12px;color:var(--sl-navy);white-space:nowrap}
+</style>
+
 <script>
     (function () {
         const sf = {
@@ -620,6 +645,10 @@
             const end = formatYmd(state.rangeEndMs - 86400000);
             const params = new URLSearchParams({ start, end, tz: sf.timezone });
 
+            if (els.branch && els.branch.value) {
+                params.set('branch_id', String(els.branch.value));
+            }
+
             try {
                 const res = await fetch(`/app/sharpfleet/admin/bookings/feed?${params.toString()}`, {
                     credentials: 'same-origin',
@@ -657,6 +686,24 @@
         function renderMonth() {
             clearCalendar();
             if (!els.cal) return;
+
+            // Utilisation indicators only (no bookings rendered in month view).
+            const totalVehicles = Array.isArray(sf.vehicles) ? sf.vehicles.length : 0;
+            const vehicleUsageByDay = new Map(); // ymd -> Set(vehicle_id)
+            state.bookings.forEach(b => {
+                const startMs = parseYmdHi(b.planned_start_local);
+                const endMs = parseYmdHi(b.planned_end_local);
+                if (!isFinite(startMs) || !isFinite(endMs)) return;
+
+                // For month indicators, count a vehicle as "used" on each day it overlaps.
+                const dayStart = parseYmd(formatYmd(startMs));
+                const dayEnd = parseYmd(formatYmd(endMs));
+                for (let t = dayStart; t <= dayEnd; t += 86400000) {
+                    const ymd = formatYmd(t);
+                    if (!vehicleUsageByDay.has(ymd)) vehicleUsageByDay.set(ymd, new Set());
+                    vehicleUsageByDay.get(ymd).add(String(b.vehicle_id));
+                }
+            });
 
             const monthStart = firstDayOfMonth(state.anchorMs);
             const monthEndDay = lastDayOfMonth(state.anchorMs);
@@ -696,6 +743,16 @@
                     });
 
                     td.appendChild(btn);
+
+                    const usedSet = vehicleUsageByDay.get(cellDate);
+                    const usedCount = usedSet ? usedSet.size : 0;
+                    const pct = totalVehicles > 0 ? Math.min(100, Math.round((usedCount / totalVehicles) * 100)) : 0;
+                    const ind = document.createElement('div');
+                    ind.className = 'sf-bk-month-ind';
+                    ind.innerHTML = `<div class="sf-bk-month-bar"><span style="width:${pct}%;"></span></div>` +
+                        `<div class="sf-bk-month-txt">${usedCount}/${totalVehicles}</div>`;
+                    td.appendChild(ind);
+
                     tr.appendChild(td);
                 }
                 tbody.appendChild(tr);
@@ -709,51 +766,45 @@
             clearCalendar();
             if (!els.cal) return;
 
+            // Locked grid: hour-based columns, teal hour dividers and thicker teal day separators.
+            const pxPerHour = (state.view === 'day') ? 92 : 72;
+            const pxPerMin = pxPerHour / 60;
             const minutes = Math.round((state.rangeEndMs - state.rangeStartMs) / 60000);
-            const pxPerMin = (state.view === 'day') ? 0.6 : 0.18;
             const timelineWidth = Math.max(720, Math.round(minutes * pxPerMin));
 
             const scroll = document.createElement('div');
-            scroll.style.overflow = 'auto';
-            scroll.style.maxHeight = '70vh';
-            scroll.className = 'border rounded';
+            scroll.className = 'sf-bk-scroll';
 
             const headerRow = document.createElement('div');
-            headerRow.className = 'd-flex';
+            headerRow.className = 'd-flex sf-bk-header';
 
             const leftHeader = document.createElement('div');
-            leftHeader.className = 'border-b';
-            leftHeader.style.width = '240px';
-            leftHeader.style.flex = '0 0 240px';
-            leftHeader.style.position = 'sticky';
-            leftHeader.style.left = '0';
-            leftHeader.style.zIndex = '3';
-            leftHeader.style.padding = '10px 12px';
-            leftHeader.innerHTML = '<strong>Vehicles</strong>';
+            leftHeader.className = 'sf-bk-left';
+            leftHeader.innerHTML = '<div class="sf-bk-left-inner"><strong>Vehicles</strong></div>';
 
             const timeHeader = document.createElement('div');
-            timeHeader.className = 'border-b';
-            timeHeader.style.position = 'relative';
-            timeHeader.style.height = '44px';
+            timeHeader.className = 'sf-bk-time-header';
             timeHeader.style.minWidth = timelineWidth + 'px';
 
-            const labelStepHours = (state.view === 'day') ? 1 : 6;
-            for (let t = state.rangeStartMs; t <= state.rangeEndMs; t += labelStepHours * 3600000) {
+            // Hour labels (left axis labels are not used in this horizontal-time layout; labels live in header).
+            for (let t = state.rangeStartMs; t <= state.rangeEndMs; t += 3600000) {
                 const minsFromStart = Math.round((t - state.rangeStartMs) / 60000);
                 const x = Math.round(minsFromStart * pxPerMin);
 
                 const lbl = document.createElement('div');
-                lbl.className = 'text-muted small';
-                lbl.style.position = 'absolute';
+                lbl.className = 'sf-bk-time-label';
                 lbl.style.left = x + 'px';
-                lbl.style.top = '10px';
-                lbl.style.whiteSpace = 'nowrap';
-                lbl.style.transform = 'translateX(-2px)';
 
                 const dt = new Date(t);
-                const day = pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1);
-                const hm = pad2(dt.getUTCHours()) + ':' + pad2(dt.getUTCMinutes());
-                lbl.textContent = (state.view === 'day') ? hm : (day + ' ' + hm);
+                const hm = pad2(dt.getUTCHours()) + ':00';
+                // In week view, only show date at midnight ticks to reduce clutter.
+                if (state.view === 'week' && dt.getUTCHours() === 0) {
+                    const day = pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1);
+                    lbl.textContent = day;
+                    lbl.style.fontWeight = '700';
+                } else {
+                    lbl.textContent = hm;
+                }
                 timeHeader.appendChild(lbl);
             }
 
@@ -765,24 +816,44 @@
 
             sf.vehicles.forEach(v => {
                 const row = document.createElement('div');
-                row.className = 'd-flex';
+                row.className = 'sf-bk-row';
 
                 const left = document.createElement('div');
-                left.className = 'border-b';
-                left.style.width = '240px';
-                left.style.flex = '0 0 240px';
-                left.style.position = 'sticky';
-                left.style.left = '0';
-                left.style.zIndex = '2';
-                left.style.padding = '10px 12px';
-                left.innerHTML = '<div class="fw-bold">' + (v.name || '—') + '</div>' + (v.registration_number ? '<div class="text-muted small">' + v.registration_number + '</div>' : '');
+                left.className = 'sf-bk-left';
+                left.innerHTML = '<div class="sf-bk-left-inner">' +
+                    '<div class="fw-bold">' + (v.name || '—') + '</div>' +
+                    (v.registration_number ? '<div class="text-muted small">' + v.registration_number + '</div>' : '') +
+                    '</div>';
 
                 const lane = document.createElement('div');
-                lane.className = 'border-b';
-                lane.style.position = 'relative';
-                lane.style.height = '54px';
+                lane.className = 'sf-bk-lane sf-bk-lane-bg';
                 lane.style.minWidth = timelineWidth + 'px';
                 lane.dataset.vehicleId = String(v.id);
+
+                // Teal hour grid + thicker teal day separators.
+                const hourLine = 'rgba(44,191,174,.28)';
+                const dayLine = 'rgba(44,191,174,.75)';
+                lane.style.backgroundImage =
+                    `repeating-linear-gradient(to right, transparent, transparent ${pxPerHour - 1}px, ${hourLine} ${pxPerHour - 1}px, ${hourLine} ${pxPerHour}px),` +
+                    `repeating-linear-gradient(to right, transparent, transparent ${pxPerHour * 24 - 2}px, ${dayLine} ${pxPerHour * 24 - 2}px, ${dayLine} ${pxPerHour * 24}px)`;
+
+                const slotHover = document.createElement('div');
+                slotHover.className = 'sf-bk-slot-hover';
+                lane.appendChild(slotHover);
+
+                lane.addEventListener('mousemove', (ev) => {
+                    const rect = lane.getBoundingClientRect();
+                    const x = ev.clientX - rect.left;
+                    const minutesFromStart = Math.max(0, Math.round(x / pxPerMin));
+                    const snapped = Math.floor(minutesFromStart / 60) * 60;
+                    const leftPx = Math.round(snapped * pxPerMin);
+                    slotHover.style.left = leftPx + 'px';
+                    slotHover.style.width = Math.max(12, Math.round(60 * pxPerMin)) + 'px';
+                    slotHover.style.display = 'block';
+                });
+                lane.addEventListener('mouseleave', () => {
+                    slotHover.style.display = 'none';
+                });
 
                 lane.addEventListener('click', (ev) => {
                     const target = ev.target;
@@ -793,8 +864,7 @@
                     const rect = lane.getBoundingClientRect();
                     const x = ev.clientX - rect.left;
                     const minutesFromStart = Math.max(0, Math.round(x / pxPerMin));
-                    const slot = 30;
-                    const snapped = Math.floor(minutesFromStart / slot) * slot;
+                    const snapped = Math.floor(minutesFromStart / 60) * 60;
 
                     const startMs = state.rangeStartMs + snapped * 60000;
                     const endMs = startMs + 60 * 60000;
@@ -829,21 +899,15 @@
                 const widthPx = Math.max(12, Math.round(((clampedEnd - clampedStart) / 60000) * pxPerMin));
 
                 const block = document.createElement('div');
-                block.className = 'border rounded';
-                block.style.position = 'absolute';
+                block.className = 'sf-bk-block';
                 block.style.left = leftPx + 'px';
-                block.style.top = '8px';
-                block.style.height = '38px';
                 block.style.width = widthPx + 'px';
-                block.style.padding = '6px 8px';
-                block.style.cursor = 'pointer';
-                block.style.overflow = 'hidden';
                 block.dataset.bookingId = String(b.id);
 
                 const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
                 const time = b.planned_start_local.split(' ')[1] + ' → ' + b.planned_end_local.split(' ')[1];
-                block.innerHTML = '<div class="small" style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + title + '</div>' +
-                    '<div class="text-muted small" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + time + '</div>';
+                block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
+                    '<div class="sf-bk-block-time">' + time + '</div>';
 
                 block.addEventListener('click', (ev) => {
                     ev.stopPropagation();
@@ -854,6 +918,11 @@
             });
 
             els.cal.appendChild(scroll);
+
+            // Default visible range: 06:00–18:00 (scroll to 06:00).
+            const defaultStartHour = 6;
+            const initialScrollLeft = Math.round((defaultStartHour * 60) * pxPerMin);
+            scroll.scrollLeft = initialScrollLeft;
         }
 
         function render() {
