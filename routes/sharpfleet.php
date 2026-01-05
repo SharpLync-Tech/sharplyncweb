@@ -374,6 +374,7 @@ Route::prefix('app/sharpfleet')
             Route::get('/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
             Route::post('/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');
             Route::post('/users/{userId}/delete', [UserController::class, 'destroy'])->whereNumber('userId');
+            Route::post('/users/{userId}/unarchive', [UserController::class, 'unarchive'])->whereNumber('userId');
 
             // Trial expired page (no middleware needed)
             Route::get('/trial-expired', function () {

@@ -16,13 +16,20 @@ class UserController extends Controller
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $status = strtolower(trim((string) $request->query('status', 'active')));
-        if (!in_array($status, ['active', 'archived'], true)) {
+        if (!in_array($status, ['active', 'archived', 'all'], true)) {
             $status = 'active';
+        }
+
+        $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
+
+        $select = ['id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at'];
+        if ($hasArchivedAt) {
+            $select[] = 'archived_at';
         }
 
         $query = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at', 'archived_at')
+            ->select($select)
             ->where('organisation_id', $organisationId)
             ->where('email', 'not like', 'deleted+%@example.invalid')
             ->where(function ($q) {
@@ -31,7 +38,7 @@ class UserController extends Controller
             })
 
             // Archive filter (schema-guarded for backwards compatibility)
-            ->when(Schema::connection('sharpfleet')->hasColumn('users', 'archived_at'), function ($q) use ($status) {
+            ->when($hasArchivedAt && $status !== 'all', function ($q) use ($status) {
                 if ($status === 'archived') {
                     return $q->whereNotNull('archived_at');
                 }
@@ -39,7 +46,7 @@ class UserController extends Controller
                 return $q->whereNull('archived_at');
             });
 
-        if ($status === 'archived') {
+        if ($hasArchivedAt && $status === 'archived') {
             $query->orderByDesc('archived_at');
         }
 
@@ -60,9 +67,16 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
+        $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
+
+        $select = ['id', 'first_name', 'last_name', 'email', 'role', 'is_driver'];
+        if ($hasArchivedAt) {
+            $select[] = 'archived_at';
+        }
+
         $user = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'archived_at')
+            ->select($select)
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
             ->where('email', 'not like', 'deleted+%@example.invalid')
@@ -259,5 +273,50 @@ class UserController extends Controller
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'Driver archived.');
+    }
+
+    public function unarchive(Request $request, int $userId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        if (!Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {
+            return redirect('/app/sharpfleet/admin/users')
+                ->withErrors(['error' => 'Archiving is not enabled for this account yet.']);
+        }
+
+        $user = DB::connection('sharpfleet')
+            ->table('users')
+            ->select('id', 'role', 'archived_at')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        // Keep behaviour consistent with archive: only manage driver accounts here.
+        if (($user->role ?? null) !== 'driver') {
+            return redirect('/app/sharpfleet/admin/users?status=archived')
+                ->withErrors(['error' => 'Only driver accounts can be re-enabled here.']);
+        }
+
+        if (empty($user->archived_at)) {
+            return redirect('/app/sharpfleet/admin/users')
+                ->with('success', 'User is already active.');
+        }
+
+        DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->update([
+                'archived_at' => null,
+                'updated_at' => now(),
+            ]);
+
+        return redirect('/app/sharpfleet/admin/users?status=archived')
+            ->with('success', 'User re-enabled successfully.');
     }
 }
