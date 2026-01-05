@@ -100,11 +100,11 @@
             <hr class="my-4">
 
             <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/delete') }}"
-                  onsubmit="return confirm('Delete this driver? This will remove their access to SharpFleet and cannot be undone.');">
+                  onsubmit="return confirm('Archive this driver? They will no longer be able to log in, book vehicles, or log trips.');">
                 @csrf
 
                 <button type="submit" class="btn btn-danger">
-                    Delete driver
+                    Archive driver
                 </button>
             </form>
         @endif

@@ -36,6 +36,17 @@
         </div>
     </div>
 
+    <div class="mb-3">
+        <form method="GET" action="/app/sharpfleet/admin/users" class="d-flex gap-2 align-items-center">
+            <label class="text-muted small" for="status" style="margin-bottom:0;">Filter</label>
+            <select class="form-control" id="status" name="status" style="max-width: 220px;">
+                <option value="active" {{ (($status ?? 'active') === 'active') ? 'selected' : '' }}>Active users</option>
+                <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
+            </select>
+            <button class="btn btn-secondary" type="submit">Apply</button>
+        </form>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <form method="POST">
@@ -67,10 +78,11 @@
                                 @php
                                     $isPendingDriver = (($user->role ?? '') === 'driver' && ($user->account_status ?? '') === 'pending');
                                     $hasInviteLink = !empty($user->activation_expires_at);
+                                    $isArchived = !empty($user->archived_at);
                                 @endphp
-                                <tr>
+                                <tr class="{{ $isArchived ? 'text-muted' : '' }}">
                                     <td>
-                                        @if($isPendingDriver)
+                                        @if($isPendingDriver && !$isArchived)
                                             <input
                                                 type="checkbox"
                                                 class="sf-invite-checkbox"
@@ -82,7 +94,9 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->role }}</td>
                                     <td>
-                                        @if(($user->account_status ?? '') === 'pending')
+                                        @if($isArchived)
+                                            <span class="badge text-bg-secondary border">Archived</span>
+                                        @elseif(($user->account_status ?? '') === 'pending')
                                             @if($hasInviteLink)
                                                 <span class="text-muted">Pending invite</span>
                                             @else
@@ -101,7 +115,7 @@
                                     </td>
                                     <td class="text-right">
                                         <div class="d-flex gap-2 justify-content-end">
-                                            @if($isPendingDriver && $hasInviteLink)
+                                            @if($isPendingDriver && $hasInviteLink && !$isArchived)
                                                 <button
                                                     class="btn btn-secondary btn-sm"
                                                     type="submit"

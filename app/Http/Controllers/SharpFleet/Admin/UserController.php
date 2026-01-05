@@ -15,15 +15,35 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
-        $users = DB::connection('sharpfleet')
+        $status = strtolower(trim((string) $request->query('status', 'active')));
+        if (!in_array($status, ['active', 'archived'], true)) {
+            $status = 'active';
+        }
+
+        $query = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at')
+            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at', 'archived_at')
             ->where('organisation_id', $organisationId)
             ->where('email', 'not like', 'deleted+%@example.invalid')
             ->where(function ($q) {
                 $q->whereNull('account_status')
                     ->orWhere('account_status', '!=', 'deleted');
             })
+
+            // Archive filter (schema-guarded for backwards compatibility)
+            ->when(Schema::connection('sharpfleet')->hasColumn('users', 'archived_at'), function ($q) use ($status) {
+                if ($status === 'archived') {
+                    return $q->whereNotNull('archived_at');
+                }
+
+                return $q->whereNull('archived_at');
+            });
+
+        if ($status === 'archived') {
+            $query->orderByDesc('archived_at');
+        }
+
+        $users = $query
             ->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -31,6 +51,7 @@ class UserController extends Controller
 
         return view('sharpfleet.admin.users.index', [
             'users' => $users,
+            'status' => $status,
         ]);
     }
 
@@ -41,7 +62,7 @@ class UserController extends Controller
 
         $user = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver')
+            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'archived_at')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
             ->where('email', 'not like', 'deleted+%@example.invalid')
@@ -181,12 +202,12 @@ class UserController extends Controller
 
         if ($currentUserId === $userId) {
             return redirect('/app/sharpfleet/admin/users')
-                ->withErrors(['error' => 'You cannot delete your own account.']);
+                ->withErrors(['error' => 'You cannot archive your own account.']);
         }
 
         $user = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'email', 'role', 'account_status')
+            ->select('id', 'email', 'role', 'account_status', 'archived_at')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
             ->first();
@@ -198,26 +219,22 @@ class UserController extends Controller
         // Only allow deleting drivers via this screen.
         if (($user->role ?? null) !== 'driver') {
             return redirect('/app/sharpfleet/admin/users')
-                ->withErrors(['error' => 'Only driver accounts can be deleted.']);
+                ->withErrors(['error' => 'Only driver accounts can be archived.']);
         }
 
-        $email = strtolower(trim((string) ($user->email ?? '')));
-        $alreadyDeleted = str_starts_with($email, 'deleted+') && str_ends_with($email, '@example.invalid');
-
-        if ($alreadyDeleted || ($user->account_status ?? null) === 'deleted') {
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'archived_at') && !empty($user->archived_at)) {
             return redirect('/app/sharpfleet/admin/users')
-                ->with('success', 'Driver already deleted.');
+                ->with('success', 'Driver already archived.');
         }
-
-        // Soft-delete (keeps historical references intact) but prevents future logins.
-        // Also change email to avoid unique constraint collisions.
-        $deletedEmail = 'deleted+' . $userId . '+' . now()->timestamp . '@example.invalid';
 
         $updates = [
-            'email' => $deletedEmail,
             'is_driver' => 0,
             'updated_at' => now(),
         ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'archived_at')) {
+            $updates['archived_at'] = now();
+        }
 
         // Different SharpFleet deployments have slightly different schemas.
         // Only clear auth/activation fields if the columns exist.
@@ -241,6 +258,6 @@ class UserController extends Controller
             ->update($updates);
 
         return redirect('/app/sharpfleet/admin/users')
-            ->with('success', 'Driver deleted.');
+            ->with('success', 'Driver archived.');
     }
 }
