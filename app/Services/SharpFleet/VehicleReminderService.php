@@ -13,7 +13,8 @@ class VehicleReminderService
         int $registrationDays = 30,
         int $serviceDays = 30,
         int $serviceReadingThreshold = 500,
-        ?string $timezone = null
+        ?string $timezone = null,
+        ?array $branchIds = null
     ): array
     {
         $tz = $timezone ?: config('app.timezone');
@@ -62,12 +63,22 @@ class VehicleReminderService
             ->select($vehicleSelect)
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
+            ->when(
+                is_array($branchIds) && count($branchIds) > 0 && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('branch_id', array_values(array_unique(array_map('intval', $branchIds))))
+            )
             ->get();
+
+        $vehicleIds = $vehicles->pluck('id')->map(fn ($v) => (int) $v)->filter(fn ($v) => $v > 0)->values()->all();
 
         $latestEndedAt = DB::connection('sharpfleet')
             ->table('trips')
             ->selectRaw('vehicle_id, MAX(ended_at) as max_ended_at')
             ->where('organisation_id', $organisationId)
+            ->when(
+                is_array($branchIds) && count($branchIds) > 0,
+                fn ($q) => $q->whereIn('vehicle_id', $vehicleIds)
+            )
             ->whereNotNull('end_km')
             ->whereNotNull('ended_at')
             ->groupBy('vehicle_id');
@@ -80,6 +91,10 @@ class VehicleReminderService
                     ->on('t.ended_at', '=', 'lt.max_ended_at');
             })
             ->where('t.organisation_id', $organisationId)
+            ->when(
+                is_array($branchIds) && count($branchIds) > 0,
+                fn ($q) => $q->whereIn('t.vehicle_id', $vehicleIds)
+            )
             ->select('t.vehicle_id', 't.end_km', 't.ended_at')
             ->get()
             ->keyBy('vehicle_id');

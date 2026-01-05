@@ -257,9 +257,11 @@ class FaultService
         return (int) $id;
     }
 
-    public function listFaultsForOrganisation(int $organisationId, int $limit = 200): Collection
+    public function listFaultsForOrganisation(int $organisationId, int $limit = 200, ?array $branchIds = null): Collection
     {
         $this->assertFaultsTableExists();
+
+        $branchIds = is_array($branchIds) ? array_values(array_unique(array_filter(array_map('intval', $branchIds), fn ($v) => $v > 0))) : null;
 
         return DB::connection('sharpfleet')
             ->table('faults as f')
@@ -274,6 +276,10 @@ class FaultService
                 'u.email as user_email'
             )
             ->where('f.organisation_id', $organisationId)
+            ->when(
+                $branchIds !== null && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                fn ($q) => $q->whereIn('v.branch_id', $branchIds)
+            )
             ->orderByDesc('f.created_at')
             ->limit(max(1, min(500, $limit)))
             ->get();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
@@ -16,7 +17,7 @@ class CompanySettingsController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageCompanySettings($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -36,7 +37,7 @@ class CompanySettingsController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canManageCompanySettings($user)) {
             abort(403, 'Admin access only');
         }
 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\VehicleReminderService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +17,26 @@ class ReminderController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canViewReminders($user)) {
             abort(403, 'Admin access only');
         }
 
         $organisationId = (int) ($user['organisation_id'] ?? 0);
         if ($organisationId <= 0) {
             abort(403, 'Missing organisation');
+        }
+
+        $branchService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        $branchScopeEnabled = !$bypassBranchRestrictions
+            && $branchService->branchesEnabled()
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($user['id'] ?? 0))
+            : [];
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
         }
 
         $settingsService = new CompanySettingsService($organisationId);
@@ -55,7 +70,8 @@ class ReminderController extends Controller
                 registrationDays: $registrationDays,
                 serviceDays: $serviceDays,
                 serviceReadingThreshold: $serviceReadingThreshold,
-                timezone: $timezone
+                timezone: $timezone,
+                branchIds: $branchScopeEnabled ? $accessibleBranchIds : null
             );
 
             if (!$regoEnabled) {

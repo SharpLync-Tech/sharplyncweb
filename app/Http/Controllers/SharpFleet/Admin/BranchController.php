@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +24,9 @@ class BranchController extends Controller
     public function index(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $branchService = new BranchService();
@@ -51,6 +55,9 @@ class BranchController extends Controller
     public function create(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $branchService = new BranchService();
@@ -69,6 +76,9 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $branchService = new BranchService();
@@ -151,6 +161,9 @@ class BranchController extends Controller
     public function edit(Request $request, int $branchId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $branchService = new BranchService();
@@ -177,6 +190,9 @@ class BranchController extends Controller
     public function update(Request $request, int $branchId)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
+            abort(403, 'Admin access only');
+        }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
         $branchService = new BranchService();

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\ReportingService;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Support\Facades\Schema;
 
 class ReportController extends Controller
@@ -21,19 +22,21 @@ class ReportController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canViewReports($user)) {
             abort(403, 'Admin access only');
         }
 
         $branchesService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         $branchesEnabled = $branchesService->branchesEnabled();
         $branchAccessEnabled = $branchesEnabled
             && $branchesService->vehiclesHaveBranchSupport()
             && $branchesService->userBranchAccessEnabled();
-        $accessibleBranchIds = $branchAccessEnabled
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
             ? $branchesService->getAccessibleBranchIdsForUser((int) $user['organisation_id'], (int) $user['id'])
             : [];
-        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
             abort(403, 'No branch access.');
         }
 
@@ -48,7 +51,7 @@ class ReportController extends Controller
             ->where('organisation_id', $user['organisation_id'])
             ->where('is_active', 1)
             ->when(
-                $branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
             )
             ->orderBy('name')

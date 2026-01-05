@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\EntitlementService;
+use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class AccountController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -91,7 +92,7 @@ class AccountController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -156,7 +157,7 @@ class AccountController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -197,7 +198,7 @@ class AccountController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             abort(403, 'Admin access only');
         }
 

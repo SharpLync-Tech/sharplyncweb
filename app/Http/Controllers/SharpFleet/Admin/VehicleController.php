@@ -9,6 +9,7 @@ use App\Services\SharpFleet\EntitlementService;
 use App\Services\SharpFleet\StripeSubscriptionSyncService;
 use App\Services\SharpFleet\VehicleService;
 use App\Services\SharpFleet\BranchService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -45,14 +46,17 @@ class VehicleController extends Controller
         $organisationId = (int) $fleetUser['organisation_id'];
 
         $branchService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
         $branchesEnabled = $branchService->branchesEnabled();
         $branchAccessEnabled = $branchesEnabled
             && $branchService->vehiclesHaveBranchSupport()
             && $branchService->userBranchAccessEnabled();
-        $accessibleBranchIds = $branchAccessEnabled
+        // Company admins bypass branch scoping entirely.
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
             ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
             : [];
-        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
             abort(403, 'No branch access.');
         }
 
@@ -61,7 +65,7 @@ class VehicleController extends Controller
 
         $vehicles = $this->vehicleService->getAvailableVehicles(
             $organisationId,
-            $branchAccessEnabled ? $accessibleBranchIds : null
+            $branchScopeEnabled ? $accessibleBranchIds : null
         );
 
         $activeTrips = DB::connection('sharpfleet')
@@ -70,7 +74,7 @@ class VehicleController extends Controller
             ->join('users', 'trips.user_id', '=', 'users.id')
             ->where('trips.organisation_id', $organisationId)
             ->when(
-                $branchAccessEnabled,
+                $branchScopeEnabled,
                 fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
             )
             ->whereNotNull('trips.started_at')
@@ -122,6 +126,9 @@ class VehicleController extends Controller
         $organisationId = (int) $fleetUser['organisation_id'];
         $vehicleId = (int) $vehicle;
 
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+
         $entitlements = new EntitlementService($fleetUser);
         $isSubscribed = $entitlements->isSubscriptionActive();
 
@@ -135,6 +142,10 @@ class VehicleController extends Controller
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
+        }
+
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
         }
 
         $isActive = (int) ($record->is_active ?? 0) === 1;
@@ -187,6 +198,9 @@ class VehicleController extends Controller
         $organisationId = (int) $fleetUser['organisation_id'];
         $vehicleId = (int) $vehicle;
 
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+
         $entitlements = new EntitlementService($fleetUser);
         $isSubscribed = $entitlements->isSubscriptionActive();
 
@@ -212,6 +226,10 @@ class VehicleController extends Controller
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
+        }
+
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
         }
 
         $isActive = (int) ($record->is_active ?? 0) === 1;
@@ -313,8 +331,21 @@ class VehicleController extends Controller
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+
         $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
-        $defaultBranchId = $branchesEnabled ? $branchService->ensureDefaultBranch($organisationId) : null;
+        if ($branchScopeEnabled) {
+            $branches = $branches->filter(fn ($b) => in_array((int) ($b->id ?? 0), $accessibleBranchIds, true))->values();
+        }
+
+        $defaultBranchId = null;
+        if ($branchesEnabled) {
+            if ($branchScopeEnabled) {
+                $defaultBranchId = count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
+            } else {
+                $defaultBranchId = $branchService->ensureDefaultBranch($organisationId);
+            }
+        }
 
         return view('sharpfleet.admin.vehicles.create', [
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
@@ -567,7 +598,19 @@ class VehicleController extends Controller
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
         if ($branchesEnabled) {
+            $branchId = (int) ($validated['branch_id'] ?? 0);
+            if ($branchScopeEnabled) {
+                if ($branchId <= 0) {
+                    $validated['branch_id'] = count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
+                } elseif (!in_array($branchId, $accessibleBranchIds, true)) {
+                    return back()
+                        ->withErrors(['branch_id' => 'Please select a valid branch.'])
+                        ->withInput();
+                }
+            }
+
             $branchId = (int) ($validated['branch_id'] ?? 0);
             if ($branchId <= 0) {
                 $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
@@ -720,8 +763,25 @@ class VehicleController extends Controller
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
+
         $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
-        $defaultBranchId = $branchesEnabled ? $branchService->ensureDefaultBranch($organisationId) : null;
+        if ($branchScopeEnabled) {
+            $branches = $branches->filter(fn ($b) => in_array((int) ($b->id ?? 0), $accessibleBranchIds, true))->values();
+        }
+
+        $defaultBranchId = null;
+        if ($branchesEnabled) {
+            if ($branchScopeEnabled) {
+                $defaultBranchId = count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
+            } else {
+                $defaultBranchId = $branchService->ensureDefaultBranch($organisationId);
+            }
+        }
 
         $drivers = DB::connection('sharpfleet')
             ->table('users')
@@ -811,7 +871,22 @@ class VehicleController extends Controller
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
         if ($branchesEnabled) {
+            $branchId = (int) ($validated['branch_id'] ?? 0);
+            if ($branchScopeEnabled) {
+                if ($branchId <= 0) {
+                    $validated['branch_id'] = count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
+                } elseif (!in_array($branchId, $accessibleBranchIds, true)) {
+                    return back()
+                        ->withErrors(['branch_id' => 'Please select a valid branch.'])
+                        ->withInput();
+                }
+            }
+
             $branchId = (int) ($validated['branch_id'] ?? 0);
             if ($branchId <= 0) {
                 $defaultBranchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
@@ -969,12 +1044,20 @@ class VehicleController extends Controller
         $organisationId = (int) $fleetUser['organisation_id'];
         $vehicleId = (int) $vehicle;
 
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+
         $record = $this->vehicleService
             ->getVehicleForOrganisation($organisationId, $vehicleId);
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
         }
+
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
+
 
         $entitlements = new EntitlementService($fleetUser);
         if ($entitlements->isSubscriptionActive()) {
@@ -1022,5 +1105,42 @@ class VehicleController extends Controller
             'breakdown' => $breakdown,
             'requiresContact' => $requiresContact,
         ];
+    }
+
+    /**
+     * Company admins bypass branch restrictions; branch admins are restricted to accessible branches.
+     * Returns [branchScopeEnabled, accessibleBranchIds].
+     */
+    private function resolveVehicleBranchScope(array $fleetUser, int $organisationId, BranchService $branchService): array
+    {
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
+        $branchAccessEnabled = $branchService->branchesEnabled()
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
+            : [];
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $accessibleBranchIds = array_values(array_unique(array_map('intval', $accessibleBranchIds)));
+
+        return [$branchScopeEnabled, $accessibleBranchIds];
+    }
+
+    private function assertVehicleRecordInBranches(object $record, array $accessibleBranchIds): void
+    {
+        if (!Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+            return;
+        }
+
+        $branchId = (int) ($record->branch_id ?? 0);
+        if ($branchId <= 0 || !in_array($branchId, $accessibleBranchIds, true)) {
+            abort(403, 'No branch access.');
+        }
     }
 }

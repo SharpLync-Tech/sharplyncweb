@@ -51,6 +51,47 @@ final class Roles
         return self::isAdminPortal($user);
     }
 
+    /**
+     * Reporting screens (Trip reports).
+     * Intentionally excludes booking_admin.
+     */
+    public static function canViewReports(array $user): bool
+    {
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
+    }
+
+    /**
+     * Faults/incident reporting admin screens.
+     * Intentionally excludes booking_admin.
+     */
+    public static function canManageFaults(array $user): bool
+    {
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
+    }
+
+    /**
+     * Reminders admin screen.
+     * Intentionally excludes booking_admin.
+     */
+    public static function canViewReminders(array $user): bool
+    {
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
+    }
+
+    /**
+     * Safety checklist (company-level checklist used in driver flow).
+     * Branch admins may view, but only company admins may update.
+     */
+    public static function canViewSafetyChecks(array $user): bool
+    {
+        return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);
+    }
+
+    public static function canUpdateSafetyChecks(array $user): bool
+    {
+        return self::isCompanyAdmin($user);
+    }
+
     public static function canManageFleet(array $user): bool
     {
         return in_array(self::normalize($user['role'] ?? null), [self::COMPANY_ADMIN, self::BRANCH_ADMIN], true);

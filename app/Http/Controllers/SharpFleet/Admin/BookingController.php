@@ -31,19 +31,22 @@ class BookingController extends Controller
         $organisationId = (int) $user['organisation_id'];
 
         $branchesService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         $branchesEnabled = $branchesService->branchesEnabled();
         $branchAccessEnabled = $branchesEnabled
             && $branchesService->vehiclesHaveBranchSupport()
             && $branchesService->userBranchAccessEnabled();
-        $accessibleBranchIds = $branchAccessEnabled
+        // Company admins bypass branch scoping entirely.
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
             ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $user['id'])
             : [];
-        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
             abort(403, 'No branch access.');
         }
 
         $branches = $branchesEnabled
-            ? ($branchAccessEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : $branchesService->getBranches($organisationId))
+            ? ($branchScopeEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : $branchesService->getBranches($organisationId))
             : collect();
         $defaultBranch = $branchesEnabled ? $branches->first() : null;
         $defaultTimezone = $defaultBranch && isset($defaultBranch->timezone) && trim((string) $defaultBranch->timezone) !== ''
@@ -55,7 +58,7 @@ class BookingController extends Controller
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
             ->when(
-                $branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
             )
             ->when(

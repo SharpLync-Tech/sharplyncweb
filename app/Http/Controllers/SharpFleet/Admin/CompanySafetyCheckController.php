@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +14,7 @@ class CompanySafetyCheckController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canViewSafetyChecks($user)) {
             abort(403, 'Admin access only');
         }
 
@@ -29,7 +30,7 @@ class CompanySafetyCheckController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!$user || !Roles::canUpdateSafetyChecks($user)) {
             abort(403, 'Admin access only');
         }
 
