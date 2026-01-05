@@ -15,6 +15,8 @@
 {{ print_r(auth()->user(), true) }}
         </pre>
 
+        <pre id="sfDebugOutput" class="mb-3 pre-wrap"></pre>
+
         <button type="button" class="btn btn-primary" onclick="startTrip()">Start Trip</button>
     </div>
 
@@ -33,8 +35,32 @@
                 })
             })
             .then(r => r.json())
-            .then(data => alert(JSON.stringify(data)))
-            .catch(err => alert(err));
+            .then(data => {
+                if (window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
+                    window.SharpFleetModal.notice({
+                        title: 'Debug response',
+                        message: JSON.stringify(data)
+                    });
+                    return;
+                }
+
+                // Fallback (non-modal): render to the page.
+                const pre = document.getElementById('sfDebugOutput');
+                if (pre) pre.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                const message = (err && err.message) ? err.message : String(err);
+                if (window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
+                    window.SharpFleetModal.notice({
+                        title: 'Debug error',
+                        message
+                    });
+                    return;
+                }
+
+                const pre = document.getElementById('sfDebugOutput');
+                if (pre) pre.textContent = message;
+            });
         }
     </script>
 </div>

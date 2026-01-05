@@ -89,8 +89,14 @@
                                             @if(!empty($isSubscribed))
                                                 <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive/confirm') }}" class="btn btn-danger btn-sm">Archive</a>
                                             @else
-                                                <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive') }}"
-                                                      onsubmit="return confirm('Archive this vehicle? Drivers will no longer be able to select it.');" class="d-inline">
+                                                <form method="POST"
+                                                    action="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive') }}"
+                                                    class="d-inline"
+                                                    data-sf-confirm
+                                                    data-sf-confirm-title="Archive vehicle"
+                                                    data-sf-confirm-message="Archive this vehicle? Drivers will no longer be able to select it."
+                                                    data-sf-confirm-text="Archive"
+                                                    data-sf-confirm-variant="danger">
                                                     @csrf
                                                     <button type="submit" class="btn btn-danger btn-sm">Archive</button>
                                                 </form>

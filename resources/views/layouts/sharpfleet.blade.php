@@ -146,6 +146,47 @@
         </div>
     </main>
 
+    <div id="sfConfirmModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5);">
+        <div class="card" style="max-width:520px; margin:10vh auto;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <h3 class="mb-1" id="sfConfirmTitle">Confirm</h3>
+                        <p class="text-muted mb-0" id="sfConfirmMessage">Are you sure?</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfConfirmClose">Close</button>
+                </div>
+
+                <div class="mt-3"></div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-secondary" id="sfConfirmCancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="sfConfirmOk">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sfNoticeModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5);">
+        <div class="card" style="max-width:520px; margin:10vh auto;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <h3 class="mb-1" id="sfNoticeTitle">Notice</h3>
+                        <p class="text-muted mb-0" id="sfNoticeMessage"></p>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfNoticeClose">Close</button>
+                </div>
+
+                <div class="mt-3"></div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-primary" id="sfNoticeOk">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- SharpFleet Footer --}}
 <footer class="sharpfleet-footer">
     <div class="sharpfleet-container">
@@ -248,6 +289,130 @@
                     // fail silently
                 }
             });
+        })();
+    </script>
+
+    <script>
+        // Replace native browser popups (confirm/alert) with SharpFleet modals.
+        (function () {
+            const confirmModal = document.getElementById('sfConfirmModal');
+            const confirmTitle = document.getElementById('sfConfirmTitle');
+            const confirmMessage = document.getElementById('sfConfirmMessage');
+            const confirmOk = document.getElementById('sfConfirmOk');
+            const confirmCancel = document.getElementById('sfConfirmCancel');
+            const confirmClose = document.getElementById('sfConfirmClose');
+
+            const noticeModal = document.getElementById('sfNoticeModal');
+            const noticeTitle = document.getElementById('sfNoticeTitle');
+            const noticeMessage = document.getElementById('sfNoticeMessage');
+            const noticeOk = document.getElementById('sfNoticeOk');
+            const noticeClose = document.getElementById('sfNoticeClose');
+
+            let pendingConfirm = null;
+
+            function hide(el) {
+                if (el) el.style.display = 'none';
+            }
+
+            function show(el) {
+                if (el) el.style.display = 'block';
+            }
+
+            function closeConfirm() {
+                pendingConfirm = null;
+                if (confirmOk) {
+                    confirmOk.disabled = false;
+                    confirmOk.className = 'btn btn-primary';
+                    confirmOk.textContent = 'Confirm';
+                }
+                hide(confirmModal);
+            }
+
+            function openConfirm(opts) {
+                if (!confirmModal || !confirmTitle || !confirmMessage || !confirmOk) return;
+
+                confirmTitle.textContent = (opts && opts.title) ? opts.title : 'Confirm';
+                confirmMessage.textContent = (opts && opts.message) ? opts.message : 'Are you sure?';
+                confirmOk.textContent = (opts && opts.confirmText) ? opts.confirmText : 'Confirm';
+                confirmOk.className = (opts && opts.confirmClass) ? opts.confirmClass : 'btn btn-primary';
+
+                pendingConfirm = (opts && typeof opts.onConfirm === 'function') ? opts.onConfirm : null;
+                show(confirmModal);
+            }
+
+            function closeNotice() {
+                hide(noticeModal);
+            }
+
+            function openNotice(opts) {
+                if (!noticeModal || !noticeTitle || !noticeMessage) return;
+                noticeTitle.textContent = (opts && opts.title) ? opts.title : 'Notice';
+                noticeMessage.textContent = (opts && opts.message) ? opts.message : '';
+                show(noticeModal);
+            }
+
+            if (confirmOk) {
+                confirmOk.addEventListener('click', function () {
+                    const fn = pendingConfirm;
+                    if (!fn) {
+                        closeConfirm();
+                        return;
+                    }
+                    confirmOk.disabled = true;
+                    try {
+                        fn();
+                    } finally {
+                        // If navigation happens, this won't matter; otherwise keep UI sane.
+                        closeConfirm();
+                    }
+                });
+            }
+            if (confirmCancel) confirmCancel.addEventListener('click', closeConfirm);
+            if (confirmClose) confirmClose.addEventListener('click', closeConfirm);
+            if (confirmModal) {
+                confirmModal.addEventListener('click', function (e) {
+                    if (e.target === confirmModal) closeConfirm();
+                });
+            }
+
+            if (noticeOk) noticeOk.addEventListener('click', closeNotice);
+            if (noticeClose) noticeClose.addEventListener('click', closeNotice);
+            if (noticeModal) {
+                noticeModal.addEventListener('click', function (e) {
+                    if (e.target === noticeModal) closeNotice();
+                });
+            }
+
+            // Expose minimal API for inline scripts.
+            window.SharpFleetModal = {
+                confirm: openConfirm,
+                notice: openNotice,
+            };
+
+            // Auto-wire forms that request confirmation.
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (!(form instanceof HTMLFormElement)) return;
+                if (!form.hasAttribute('data-sf-confirm')) return;
+
+                e.preventDefault();
+
+                const title = form.getAttribute('data-sf-confirm-title') || 'Confirm';
+                const message = form.getAttribute('data-sf-confirm-message') || 'Are you sure?';
+                const confirmText = form.getAttribute('data-sf-confirm-text') || 'Confirm';
+                const confirmVariant = form.getAttribute('data-sf-confirm-variant') || 'primary';
+                const confirmClass = confirmVariant === 'danger' ? 'btn btn-danger' : 'btn btn-primary';
+
+                openConfirm({
+                    title,
+                    message,
+                    confirmText,
+                    confirmClass,
+                    onConfirm: function () {
+                        form.submit();
+                    }
+                });
+            }, true);
         })();
     </script>
     @stack('scripts')

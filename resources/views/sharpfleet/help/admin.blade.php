@@ -77,7 +77,13 @@
             <div>Admin pages will require completing setup again until you finish Step 9.</div>
         </div>
         <div class="sf-help__actions">
-            <form method="POST" action="/app/sharpfleet/admin/setup/rerun" onsubmit="return confirm('Re-run the setup wizard? Admin pages will require completing setup again.');">
+            <form method="POST"
+                  action="/app/sharpfleet/admin/setup/rerun"
+                  data-sf-confirm
+                  data-sf-confirm-title="Re-run setup wizard"
+                  data-sf-confirm-message="Re-run the setup wizard? Admin pages will require completing setup again until you finish Step 9."
+                  data-sf-confirm-text="Re-run"
+                  data-sf-confirm-variant="danger">
                 @csrf
                 <button class="btn btn-secondary btn-sm" type="submit">Re-run setup wizard</button>
             </form>

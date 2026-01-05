@@ -55,7 +55,13 @@
                                         <div class="d-flex gap-2 flex-wrap">
                                             <a class="btn btn-secondary btn-sm" href="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/edit') }}">Edit</a>
 
-                                            <form method="POST" action="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/archive') }}" onsubmit="return confirm('Archive this customer?');">
+                                            <form method="POST"
+                                                  action="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/archive') }}"
+                                                  data-sf-confirm
+                                                  data-sf-confirm-title="Archive customer"
+                                                  data-sf-confirm-message="Archive this customer? They will be hidden from the list."
+                                                  data-sf-confirm-text="Archive"
+                                                  data-sf-confirm-variant="danger">
                                                 @csrf
                                                 <button type="submit" class="btn btn-danger btn-sm">Archive</button>
                                             </form>

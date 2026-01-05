@@ -68,8 +68,13 @@
                 <p class="card-subtitle">Archived customers are hidden from the list.</p>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url('/app/sharpfleet/admin/customers/' . $customer->id . '/archive') }}"
-                      onsubmit="return confirm('Archive this customer?');">
+                    <form method="POST"
+                        action="{{ url('/app/sharpfleet/admin/customers/' . $customer->id . '/archive') }}"
+                        data-sf-confirm
+                        data-sf-confirm-title="Archive customer"
+                        data-sf-confirm-message="Archive this customer? They will be hidden from the list."
+                        data-sf-confirm-text="Archive"
+                        data-sf-confirm-variant="danger">
                     @csrf
                     <button type="submit" class="btn btn-danger">Archive Customer</button>
                 </form>
