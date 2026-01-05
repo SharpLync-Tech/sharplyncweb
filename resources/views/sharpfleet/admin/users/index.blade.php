@@ -169,7 +169,7 @@
                 <button type="button" class="btn btn-secondary btn-sm" id="sfUnarchiveClose">Close</button>
             </div>
 
-            <hr class="my-3">
+            <div class="mt-3"></div>
 
             <form method="POST" id="sfUnarchiveForm">
                 @csrf
