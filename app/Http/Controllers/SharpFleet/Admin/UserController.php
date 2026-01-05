@@ -79,19 +79,20 @@ class UserController extends Controller
 
         $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
 
-        $select = ['id', 'first_name', 'last_name', 'email', 'role', 'is_driver', 'account_status', 'activation_expires_at'];
+        // Qualify columns because branch admins may join user_branch_access, which can introduce ambiguity.
+        $select = ['users.id as id', 'users.first_name', 'users.last_name', 'users.email', 'users.role', 'users.is_driver', 'users.account_status', 'users.activation_expires_at'];
         if ($hasArchivedAt) {
-            $select[] = 'archived_at';
+            $select[] = 'users.archived_at';
         }
 
         $query = DB::connection('sharpfleet')
             ->table('users')
             ->select($select)
-            ->where('organisation_id', $organisationId)
-            ->where('email', 'not like', 'deleted+%@example.invalid')
+            ->where('users.organisation_id', $organisationId)
+            ->where('users.email', 'not like', 'deleted+%@example.invalid')
             ->where(function ($q) {
-                $q->whereNull('account_status')
-                    ->orWhere('account_status', '!=', 'deleted');
+                $q->whereNull('users.account_status')
+                    ->orWhere('users.account_status', '!=', 'deleted');
             })
 
             // Branch restriction (only for non-company admins; schema-guarded)
@@ -112,20 +113,20 @@ class UserController extends Controller
             // Archive filter (schema-guarded for backwards compatibility)
             ->when($hasArchivedAt && $status !== 'all', function ($q) use ($status) {
                 if ($status === 'archived') {
-                    return $q->whereNotNull('archived_at');
+                    return $q->whereNotNull('users.archived_at');
                 }
 
-                return $q->whereNull('archived_at');
+                return $q->whereNull('users.archived_at');
             });
 
         if ($hasArchivedAt && $status === 'archived') {
-            $query->orderByDesc('archived_at');
+            $query->orderByDesc('users.archived_at');
         }
 
         $users = $query
-            ->orderByRaw("CASE WHEN role IN ('company_admin','admin') THEN 0 ELSE 1 END")
-            ->orderBy('first_name')
-            ->orderBy('last_name')
+            ->orderByRaw("CASE WHEN users.role IN ('company_admin','admin') THEN 0 ELSE 1 END")
+            ->orderBy('users.first_name')
+            ->orderBy('users.last_name')
             ->get();
 
         return view('sharpfleet.admin.users.index', [
