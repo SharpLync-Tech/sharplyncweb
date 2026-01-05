@@ -31,7 +31,13 @@
             <p class="text-muted mb-3">If you believe this is a mistake, please contact your administrator.</p>
 
             <div class="d-flex gap-2 justify-content-center flex-wrap">
-                <a href="{{ url()->previous() }}" class="btn btn-secondary">Go back</a>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="if (window.history && window.history.length > 1) { window.history.back(); } else { window.location.href='{{ $dashboardUrl }}'; }"
+                >
+                    Go back
+                </button>
                 <a href="{{ $dashboardUrl }}" class="btn btn-primary">Go to dashboard</a>
             </div>
         </div>
