@@ -154,7 +154,14 @@
                         <h3 class="mb-1" id="sfConfirmTitle">Confirm</h3>
                         <p class="text-muted mb-0" id="sfConfirmMessage">Are you sure?</p>
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfConfirmClose">Close</button>
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            id="sfConfirmClose"
+                            aria-label="Close"
+                            title="Close"
+                            style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">
+                        &times;
+                    </button>
                 </div>
 
                 <div class="mt-3"></div>
@@ -175,7 +182,14 @@
                         <h3 class="mb-1" id="sfNoticeTitle">Notice</h3>
                         <p class="text-muted mb-0" id="sfNoticeMessage"></p>
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfNoticeClose">Close</button>
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            id="sfNoticeClose"
+                            aria-label="Close"
+                            title="Close"
+                            style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">
+                        &times;
+                    </button>
                 </div>
 
                 <div class="mt-3"></div>

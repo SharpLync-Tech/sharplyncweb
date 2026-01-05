@@ -164,7 +164,14 @@
                             Archive this driver? They will no longer be able to log in, book vehicles, or log trips.
                         </p>
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfArchiveDriverClose">Close</button>
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            id="sfArchiveDriverClose"
+                            aria-label="Close"
+                            title="Close"
+                            style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">
+                        &times;
+                    </button>
                 </div>
 
                 <div class="mt-3"></div>
