@@ -26,7 +26,7 @@ class FaultController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canManageFaults($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -69,7 +69,7 @@ class FaultController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canManageFaults($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];

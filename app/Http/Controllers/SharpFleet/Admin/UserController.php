@@ -64,7 +64,7 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
 
         if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -140,7 +140,7 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
 
         if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -192,7 +192,7 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
 
         if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -367,7 +367,7 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
 
         if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
@@ -442,7 +442,7 @@ class UserController extends Controller
         $fleetUser = $request->session()->get('sharpfleet.user');
 
         if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);

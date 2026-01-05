@@ -13,7 +13,7 @@ class HelpController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::isAdminPortal($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         return view('sharpfleet.help.admin');

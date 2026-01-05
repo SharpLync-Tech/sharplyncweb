@@ -25,7 +25,7 @@ class BranchController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
         if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
@@ -56,7 +56,7 @@ class BranchController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
         if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
@@ -77,7 +77,7 @@ class BranchController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
         if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
@@ -162,7 +162,7 @@ class BranchController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
         if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 
@@ -191,7 +191,7 @@ class BranchController extends Controller
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
         if (!$fleetUser || !Roles::canManageBranches($fleetUser)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
 

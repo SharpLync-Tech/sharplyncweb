@@ -18,7 +18,7 @@ class CompanySettingsController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canManageCompanySettings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $settingsService = new CompanySettingsService(
@@ -38,7 +38,7 @@ class CompanySettingsController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canManageCompanySettings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $settingsService = new CompanySettingsService(

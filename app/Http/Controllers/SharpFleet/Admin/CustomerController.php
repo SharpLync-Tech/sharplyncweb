@@ -22,7 +22,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -41,7 +41,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $customersTableExists = $this->customerService->customersTableExists();
@@ -56,7 +56,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -83,7 +83,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -114,7 +114,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -141,7 +141,7 @@ class CustomerController extends Controller
         $user = session('sharpfleet.user');
 
         if (!$user || ($user['role'] ?? null) !== 'admin') {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];

@@ -18,7 +18,7 @@ class ReminderController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canViewReminders($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) ($user['organisation_id'] ?? 0);

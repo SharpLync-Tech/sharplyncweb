@@ -25,7 +25,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         if (!$user || !Roles::canManageBookings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
@@ -126,7 +126,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         if (!$user || !Roles::canManageBookings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $validated = $request->validate([
@@ -168,7 +168,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         if (!$user || !Roles::canManageBookings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, true);
@@ -180,7 +180,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         if (!$user || !Roles::canManageBookings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $validated = $request->validate([
@@ -200,7 +200,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         if (!$user || !Roles::canManageBookings($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $validated = $request->validate([

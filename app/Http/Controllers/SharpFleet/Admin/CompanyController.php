@@ -18,7 +18,7 @@ class CompanyController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::isCompanyAdmin($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];

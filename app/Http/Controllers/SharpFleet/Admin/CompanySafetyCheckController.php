@@ -15,7 +15,7 @@ class CompanySafetyCheckController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canViewSafetyChecks($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $settingsService = new CompanySettingsService($user['organisation_id']);
@@ -31,7 +31,7 @@ class CompanySafetyCheckController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canUpdateSafetyChecks($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $settingsService = new CompanySettingsService($user['organisation_id']);

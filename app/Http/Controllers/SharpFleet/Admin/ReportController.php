@@ -23,7 +23,7 @@ class ReportController extends Controller
         $user = $request->session()->get('sharpfleet.user');
 
         if (!$user || !Roles::canViewReports($user)) {
-            abort(403, 'Admin access only');
+            abort(403);
         }
 
         $branchesService = new BranchService();
