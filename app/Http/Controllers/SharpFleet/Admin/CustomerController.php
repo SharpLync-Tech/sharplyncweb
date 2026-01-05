@@ -4,9 +4,9 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CustomerService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -17,11 +17,18 @@ class CustomerController extends Controller
         $this->customerService = $customerService;
     }
 
-    public function index()
+    private function getSharpFleetUser(Request $request): ?array
     {
-        $user = session('sharpfleet.user');
+        $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        return is_array($user) ? $user : null;
+    }
+
+    public function index(Request $request)
+    {
+        $user = $this->getSharpFleetUser($request);
+
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
@@ -36,11 +43,11 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $user = session('sharpfleet.user');
+        $user = $this->getSharpFleetUser($request);
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
@@ -51,11 +58,11 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function edit(int $customerId)
+    public function edit(Request $request, int $customerId)
     {
-        $user = session('sharpfleet.user');
+        $user = $this->getSharpFleetUser($request);
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
@@ -80,9 +87,9 @@ class CustomerController extends Controller
 
     public function update(Request $request, int $customerId): RedirectResponse
     {
-        $user = session('sharpfleet.user');
+        $user = $this->getSharpFleetUser($request);
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
@@ -111,9 +118,9 @@ class CustomerController extends Controller
 
     public function archive(Request $request, int $customerId): RedirectResponse
     {
-        $user = session('sharpfleet.user');
+        $user = $this->getSharpFleetUser($request);
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
@@ -138,9 +145,9 @@ class CustomerController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $user = session('sharpfleet.user');
+        $user = $this->getSharpFleetUser($request);
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::canManageFleet($user)) {
             abort(403);
         }
 
