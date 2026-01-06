@@ -45,12 +45,11 @@
         </section>
 
         <p class="hero-intro">
-            Logbooks for kilometres and engine hours.<br>
+            Logbooks for distance or engine hours.<br>
             No GPS. No hardware. No micromanagement.
             <p class="hero-price">
             All features included for only <strong>AU$3.50</strong> per vehicle, per month.
-        </p>
-        </p>       
+        </p>      
 
         <div class="hero-bam">
             <p>Work vehicles? <strong class="text-primary">Covered.</strong></p>
@@ -142,7 +141,7 @@
                 </p>
             </div>
 
-            <<div class="card">
+            <div class="card">
                 <div class="card-header">
                     <h3>🏷️ SharpFleet Subscription</h3>
                 </div>
