@@ -74,7 +74,7 @@
             <div class="stats-label">Vehicles Out of Service</div>
         </a>
     @endif
-    <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
+    <a href="/app/sharpfleet/admin/trips/active" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
         <div class="stats-label">Current Active Trips</div>
     </a>

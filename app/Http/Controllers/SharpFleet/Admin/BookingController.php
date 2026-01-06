@@ -286,6 +286,57 @@ class BookingController extends Controller
         ]);
     }
 
+    /**
+     * List current active trips (started but not ended)
+     */
+    public function activeTrips(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        if ($organisationId <= 0) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $ctx = $this->branchAccessContext($user);
+        $tripsTableExists = Schema::connection('sharpfleet')->hasTable('trips');
+
+        $trips = collect();
+        if ($tripsTableExists) {
+            $trips = DB::connection('sharpfleet')
+                ->table('trips')
+                ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+                ->leftJoin('users', 'trips.user_id', '=', 'users.id')
+                ->where('trips.organisation_id', $organisationId)
+                ->whereNotNull('trips.started_at')
+                ->whereNull('trips.ended_at')
+                ->when(
+                    $ctx['branchScopeEnabled'] && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                    fn ($q) => $q->whereIn('vehicles.branch_id', $ctx['accessibleBranchIds'])
+                )
+                ->orderByDesc('trips.started_at')
+                ->select(
+                    'trips.id as trip_id',
+                    'trips.started_at',
+                    'vehicles.id as vehicle_id',
+                    'vehicles.name as vehicle_name',
+                    'vehicles.registration_number',
+                    'users.id as driver_id',
+                    'users.first_name as driver_first_name',
+                    'users.last_name as driver_last_name'
+                )
+                ->get();
+        }
+
+        return view('sharpfleet.admin.trips.active', [
+            'tripsTableExists' => $tripsTableExists,
+            'trips' => $trips,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
