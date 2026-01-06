@@ -13,6 +13,12 @@
         <p class="page-description">
             Step {{ (int) ($step ?? 1) }} of {{ (int) ($totalSteps ?? 11) }} — Account type.
         </p>
+        <p class="page-description">
+            @php
+                $sfFirstName = trim((string) ($userFirstName ?? ''));
+            @endphp
+            Hi {{ $sfFirstName !== '' ? $sfFirstName : 'there' }}, welcome to SharpFleet. Please complete the setup wizard to get started.
+        </p>
     </div>
 
     @if ($errors->any())

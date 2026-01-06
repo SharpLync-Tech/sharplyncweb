@@ -20,6 +20,29 @@ class SetupWizardController extends Controller
     {
         $organisationId = $this->requireAdminOrganisationId($request);
 
+        $userFirstName = '';
+        $user = $request->session()->get('sharpfleet.user');
+        if (is_array($user)) {
+            $userFirstName = trim((string) ($user['first_name'] ?? ''));
+        }
+
+        // Fallback to DB lookup if session is missing the name.
+        if ($userFirstName === '' && is_array($user)) {
+            $userId = (int) ($user['id'] ?? 0);
+            if ($userId > 0
+                && Schema::connection('sharpfleet')->hasTable('users')
+                && Schema::connection('sharpfleet')->hasColumn('users', 'first_name')) {
+                try {
+                    $userFirstName = trim((string) (DB::connection('sharpfleet')
+                        ->table('users')
+                        ->where('id', $userId)
+                        ->value('first_name') ?? ''));
+                } catch (\Throwable $e) {
+                    $userFirstName = '';
+                }
+            }
+        }
+
         $select = ['id'];
         if (Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
             $select[] = 'account_type';
@@ -39,6 +62,7 @@ class SetupWizardController extends Controller
         return view('sharpfleet.admin.setup.account-type', [
             'organisation' => $organisation,
             'selectedAccountType' => $selected,
+            'userFirstName' => $userFirstName,
             'step' => 1,
             'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
@@ -132,28 +156,89 @@ class SetupWizardController extends Controller
             return $redirect;
         }
 
-        $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:255'],
+        $accountType = OrganisationAccount::forOrganisationId($organisationId);
+
+        $rules = [
             'timezone' => ['required', 'string'],
             'industry' => ['nullable', 'string', 'max:255'],
-        ]);
+        ];
+
+        // Only company accounts need to explicitly provide an organisation name.
+        $rules['company_name'] = ($accountType === OrganisationAccount::TYPE_COMPANY)
+            ? ['required', 'string', 'max:255']
+            : ['nullable', 'string', 'max:255'];
+
+        $validated = $request->validate($rules);
 
         $timezone = (string) $validated['timezone'];
         if (!in_array($timezone, $this->auNzTimezones(), true)) {
             return back()->withErrors(['timezone' => 'Please choose a valid Australia/New Zealand time zone.'])->withInput();
         }
 
-        DB::connection('sharpfleet')
-            ->table('organisations')
-            ->where('id', $organisationId)
-            ->update([
-                'name' => trim($validated['company_name']),
-                'updated_at' => now(),
-            ]);
+        $nameToSave = trim((string) ($validated['company_name'] ?? ''));
+
+        if ($accountType !== OrganisationAccount::TYPE_COMPANY) {
+            // For personal/sole trader, avoid asking again: default to the user's name if the org name is still the placeholder.
+            $user = $request->session()->get('sharpfleet.user');
+            $fullName = '';
+            if (is_array($user)) {
+                $first = trim((string) ($user['first_name'] ?? ''));
+                $last = trim((string) ($user['last_name'] ?? ''));
+                $fullName = trim((string) ($first . ' ' . $last));
+
+                // Fallback to DB lookup if session doesn't have names.
+                if ($fullName === '') {
+                    $userId = (int) ($user['id'] ?? 0);
+                    if ($userId > 0
+                        && Schema::connection('sharpfleet')->hasTable('users')
+                        && Schema::connection('sharpfleet')->hasColumn('users', 'first_name')
+                        && Schema::connection('sharpfleet')->hasColumn('users', 'last_name')) {
+                        try {
+                            $row = DB::connection('sharpfleet')
+                                ->table('users')
+                                ->select('first_name', 'last_name')
+                                ->where('id', $userId)
+                                ->first();
+
+                            $first = trim((string) ($row->first_name ?? ''));
+                            $last = trim((string) ($row->last_name ?? ''));
+                            $fullName = trim((string) ($first . ' ' . $last));
+                        } catch (\Throwable $e) {
+                            $fullName = '';
+                        }
+                    }
+                }
+            }
+
+            $currentName = (string) (DB::connection('sharpfleet')
+                ->table('organisations')
+                ->where('id', $organisationId)
+                ->value('name') ?? '');
+
+            $isPlaceholder = trim($currentName) === '' || trim($currentName) === 'Company';
+            if ($isPlaceholder && $fullName !== '') {
+                $nameToSave = $fullName;
+            }
+        }
+
+        if ($nameToSave !== '') {
+            DB::connection('sharpfleet')
+                ->table('organisations')
+                ->where('id', $organisationId)
+                ->update([
+                    'name' => $nameToSave,
+                    'updated_at' => now(),
+                ]);
+        }
 
         $settings = $this->loadSettings($organisationId);
         $settings['timezone'] = $timezone;
-        $settings['industry'] = trim((string) ($validated['industry'] ?? ''));
+
+        if ($accountType === OrganisationAccount::TYPE_PERSONAL) {
+            $settings['industry'] = '';
+        } else {
+            $settings['industry'] = trim((string) ($validated['industry'] ?? ''));
+        }
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/presence')
