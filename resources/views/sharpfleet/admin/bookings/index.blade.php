@@ -452,6 +452,25 @@
     .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
     .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
 
+    /* Week view: true grid (Mon–Sun columns) with vertical time axis (06:00–18:00) */
+    .sf-wk-days{display:grid;grid-template-columns:repeat(7,var(--sf-wk-col-w,180px));}
+    .sf-wk-dayhead{padding:10px 10px 8px;color:var(--sl-navy,#0A2A4D);border-bottom:2px solid var(--sl-teal,#2CBFAE);}
+    .sf-wk-dayname{font-size:12px;font-weight:800;letter-spacing:.04em;}
+    .sf-wk-daydate{font-size:12px;color:rgba(10,42,77,.75);margin-top:2px;}
+    .sf-wk-dayhead.is-today{background:rgba(44,191,174,.06);}
+
+    .sf-wk-daycell{position:relative;height:672px;min-height:672px;border-right:1px solid rgba(10,42,77,.06);cursor:pointer;
+        background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(44,191,174,.22) 55px, rgba(44,191,174,.22) 56px);
+    }
+    .sf-wk-daycell.is-today{background-color:rgba(44,191,174,.06);}
+    .sf-wk-strongline{position:absolute;left:0;right:0;height:2px;background:rgba(44,191,174,.55);pointer-events:none;z-index:1;}
+    .sf-wk-strongline.top{top:0;}
+    .sf-wk-strongline.mid{top:336px;}
+    .sf-wk-strongline.bottom{bottom:0;}
+
+    /* Reuse booking block styling; override sizing/positioning for vertical blocks inside week cells */
+    .sf-wk-daycell .sf-bk-block{left:6px;right:6px;top:auto;height:auto;z-index:2;}
+
     .sf-bk-month-ind{margin-top:6px;display:flex;align-items:center;gap:8px}
     .sf-bk-month-bar{flex:1;height:10px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
     .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal)}
@@ -994,11 +1013,184 @@
             scroll.scrollLeft = initialScrollLeft;
         }
 
+        function renderWeekGrid() {
+            // Week-specific rendering: 7 day columns (Mon–Sun) with vertical time axis (06:00–18:00).
+            // This intentionally diverges from Day view (which is a horizontal timeline).
+            clearCalendar();
+            if (!els.cal) return;
+
+            const startHour = 6;
+            const endHour = 18;
+            const pxPerHour = 56;
+            const pxPerMin = pxPerHour / 60;
+            const dayColWidth = 180;
+            const dayMs = 86400000;
+
+            const scroll = document.createElement('div');
+            scroll.className = 'sf-bk-scroll';
+
+            const headerRow = document.createElement('div');
+            headerRow.className = 'd-flex sf-bk-header';
+
+            const leftHeader = document.createElement('div');
+            leftHeader.className = 'sf-bk-left';
+            leftHeader.innerHTML = '<div class="sf-bk-left-inner"><strong>Vehicles</strong></div>';
+
+            const daysHeader = document.createElement('div');
+            daysHeader.className = 'sf-wk-days';
+            daysHeader.style.minWidth = (7 * dayColWidth) + 'px';
+
+            const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            for (let i = 0; i < 7; i++) {
+                const dayStartMs = state.rangeStartMs + i * dayMs;
+                const dt = new Date(dayStartMs);
+                const dowMon0 = (dt.getUTCDay() + 6) % 7; // 0=Mon
+                const dayName = dayNames[dowMon0];
+                const dayDate = pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1);
+                const ymd = formatYmd(dayStartMs);
+
+                const head = document.createElement('div');
+                head.className = 'sf-wk-dayhead' + (ymd === sf.today ? ' is-today' : '');
+                head.innerHTML = '<div class="sf-wk-dayname">' + dayName + '</div>' +
+                    '<div class="sf-wk-daydate">' + dayDate + '</div>';
+                daysHeader.appendChild(head);
+            }
+
+            headerRow.appendChild(leftHeader);
+            headerRow.appendChild(daysHeader);
+            scroll.appendChild(headerRow);
+
+            const dayCellByVehicle = new Map(); // `${vehicleId}:${dayIndex}` -> element
+
+            sf.vehicles.forEach(v => {
+                const row = document.createElement('div');
+                row.className = 'sf-bk-row';
+
+                const left = document.createElement('div');
+                left.className = 'sf-bk-left';
+                left.innerHTML = '<div class="sf-bk-left-inner">' +
+                    '<div class="fw-bold">' + (v.name || '—') + '</div>' +
+                    (v.registration_number ? '<div class="text-muted small">' + v.registration_number + '</div>' : '') +
+                    '</div>';
+
+                const days = document.createElement('div');
+                days.className = 'sf-wk-days';
+                days.style.minWidth = (7 * dayColWidth) + 'px';
+
+                for (let i = 0; i < 7; i++) {
+                    const dayStartMs = state.rangeStartMs + i * dayMs;
+                    const ymd = formatYmd(dayStartMs);
+
+                    const cell = document.createElement('div');
+                    cell.className = 'sf-wk-daycell' + (ymd === sf.today ? ' is-today' : '');
+                    cell.dataset.vehicleId = String(v.id);
+                    cell.dataset.dayIndex = String(i);
+
+                    const lineTop = document.createElement('div');
+                    lineTop.className = 'sf-wk-strongline top';
+                    const lineMid = document.createElement('div');
+                    lineMid.className = 'sf-wk-strongline mid';
+                    const lineBottom = document.createElement('div');
+                    lineBottom.className = 'sf-wk-strongline bottom';
+                    cell.appendChild(lineTop);
+                    cell.appendChild(lineMid);
+                    cell.appendChild(lineBottom);
+
+                    cell.addEventListener('click', (ev) => {
+                        const target = ev.target;
+                        if (target && target.closest && target.closest('[data-booking-id]')) {
+                            return;
+                        }
+
+                        const rect = cell.getBoundingClientRect();
+                        const y = ev.clientY - rect.top;
+                        const minutesFromStart = Math.max(0, Math.min((endHour - startHour) * 60, Math.round(y / pxPerMin)));
+                        const snapped = Math.floor(minutesFromStart / 60) * 60;
+
+                        const windowStart = dayStartMs + startHour * 3600000;
+                        let startMs = windowStart + snapped * 60000;
+                        let endMs = startMs + 60 * 60000;
+                        const windowEnd = dayStartMs + endHour * 3600000;
+                        if (endMs > windowEnd) endMs = windowEnd;
+                        if (endMs <= startMs) endMs = startMs + 60 * 60000;
+
+                        openCreateModal({
+                            vehicleId: v.id,
+                            startMs,
+                            endMs,
+                        });
+                    });
+
+                    days.appendChild(cell);
+                    dayCellByVehicle.set(String(v.id) + ':' + String(i), cell);
+                }
+
+                row.appendChild(left);
+                row.appendChild(days);
+                scroll.appendChild(row);
+            });
+
+            // Render booking blocks inside day columns (clipped to 06:00–18:00).
+            state.bookings.forEach(b => {
+                const vehicleId = String(b.vehicle_id);
+                const startMs = parseYmdHi(b.planned_start_local);
+                const endMs = parseYmdHi(b.planned_end_local);
+                if (!isFinite(startMs) || !isFinite(endMs)) return;
+
+                for (let i = 0; i < 7; i++) {
+                    const cell = dayCellByVehicle.get(vehicleId + ':' + String(i));
+                    if (!cell) continue;
+
+                    const dayStartMs = state.rangeStartMs + i * dayMs;
+                    const windowStart = dayStartMs + startHour * 3600000;
+                    const windowEnd = dayStartMs + endHour * 3600000;
+
+                    const segStart = Math.max(startMs, windowStart);
+                    const segEnd = Math.min(endMs, windowEnd);
+                    if (segEnd <= segStart) continue;
+
+                    const topPx = Math.round(((segStart - windowStart) / 60000) * pxPerMin);
+                    const heightPx = Math.max(12, Math.round(((segEnd - segStart) / 60000) * pxPerMin));
+
+                    const segStartDt = new Date(segStart);
+                    const segEndDt = new Date(segEnd);
+                    const segTime = pad2(segStartDt.getUTCHours()) + ':' + pad2(segStartDt.getUTCMinutes()) + ' → ' +
+                        pad2(segEndDt.getUTCHours()) + ':' + pad2(segEndDt.getUTCMinutes());
+
+                    const block = document.createElement('div');
+                    block.className = 'sf-bk-block';
+                    block.style.top = topPx + 'px';
+                    block.style.height = heightPx + 'px';
+                    block.dataset.bookingId = String(b.id);
+
+                    const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
+                    block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
+                        '<div class="sf-bk-block-time">' + segTime + '</div>';
+
+                    block.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        openEditModal(b);
+                    });
+
+                    cell.appendChild(block);
+                }
+            });
+
+            els.cal.appendChild(scroll);
+        }
+
         function render() {
             if (state.view === 'month') {
                 renderMonth();
                 return;
             }
+
+            // Week view diverges from Day view: it is a 7-column grid with vertical time.
+            if (state.view === 'week') {
+                renderWeekGrid();
+                return;
+            }
+
             renderTimeline();
         }
 
