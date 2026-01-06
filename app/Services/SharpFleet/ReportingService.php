@@ -40,6 +40,20 @@ class ReportingService
         $allowDateOverride = $allowOverrides && (bool) ($reporting['allow_date_override'] ?? true);
         $allowCustomerOverride = $allowOverrides && (bool) ($reporting['allow_customer_override'] ?? true);
 
+        $allowDistanceDisplayOverride = $allowOverrides && (bool) ($reporting['allow_distance_display_override'] ?? true);
+        $defaultDistanceDisplay = strtolower(trim((string) ($reporting['default_distance_display'] ?? 'branch')));
+        if (!in_array($defaultDistanceDisplay, ['branch', 'km', 'mi'], true)) {
+            $defaultDistanceDisplay = 'branch';
+        }
+
+        $distanceDisplay = $defaultDistanceDisplay;
+        if ($allowDistanceDisplayOverride) {
+            $raw = strtolower(trim((string) $request->input('distance_display', $defaultDistanceDisplay)));
+            if (in_array($raw, ['branch', 'km', 'mi'], true)) {
+                $distanceDisplay = $raw;
+            }
+        }
+
         $maxRangeDays = $reporting['max_date_range_days'] ?? null;
         $maxRangeDays = is_numeric($maxRangeDays) ? (int) $maxRangeDays : null;
 
@@ -158,6 +172,8 @@ class ReportingService
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->join('users', 'trips.user_id', '=', 'users.id');
 
+        $hasVehicleBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
         if ($branchAccessEnabled) {
             $query->whereIn('vehicles.branch_id', $accessibleBranchIds);
         }
@@ -171,6 +187,7 @@ class ReportingService
             'vehicles.name as vehicle_name',
             'vehicles.registration_number',
             'vehicles.tracking_mode',
+            $hasVehicleBranchId ? 'vehicles.branch_id as vehicle_branch_id' : DB::raw('NULL as vehicle_branch_id'),
             Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
                 ? 'vehicles.assignment_type as vehicle_assignment_type'
                 : DB::raw("NULL as vehicle_assignment_type"),
@@ -215,7 +232,7 @@ class ReportingService
             ->orderByDesc('trips.started_at')
             ->get();
 
-        $totals = $this->calculateTotals($trips);
+        [$trips, $totals] = $this->applyDistanceDisplay($trips, $settingsService, $distanceDisplay);
 
         $dateRangeLabel = '—';
         if ($startDate && $endDate) {
@@ -241,6 +258,7 @@ class ReportingService
             'date_range_label' => $dateRangeLabel,
             'vehicle_label' => $selectedVehicleLabel,
             'customer_label' => $selectedCustomerLabel,
+            'distance_display' => $distanceDisplay,
             'override_note' => $overrideNote,
             'date_range' => [
                 'start' => $startDate ? $startDate->copy()->timezone($companyTimezone)->toDateString() : null,
@@ -252,6 +270,7 @@ class ReportingService
                 'vehicle' => $allowVehicleOverride,
                 'date' => $allowDateOverride,
                 'customer' => $allowCustomerOverride,
+                'distance_display' => $allowDistanceDisplayOverride,
             ],
         ];
 
@@ -266,10 +285,13 @@ class ReportingService
             'allow_date_override' => $allowDateOverride,
             'allow_customer_override' => $allowCustomerOverride,
             'show_customer_filter' => $customerLinkingEnabled,
+            'distance_display' => $distanceDisplay,
+            'allow_distance_display_override' => $allowDistanceDisplayOverride,
             'controls_enabled' => [
                 'vehicle' => $allowVehicleOverride,
                 'date' => $allowDateOverride,
                 'customer' => $allowCustomerOverride,
+                'distance_display' => $allowDistanceDisplayOverride,
             ],
         ];
 
@@ -283,6 +305,113 @@ class ReportingService
             'customerLinkingEnabled' => $customerLinkingEnabled,
             'companyTimezone' => $companyTimezone,
         ];
+    }
+
+    /**
+     * Apply distance display mode to trip rows and totals.
+     *
+     * Assumption: trips.start_km/end_km are stored in kilometres for distance tracking.
+     * Engine-hours mode is not converted.
+     *
+     * @return array{0: Collection<int, object>, 1: array<string, mixed>}
+     */
+    private function applyDistanceDisplay(Collection $trips, CompanySettingsService $settingsService, string $distanceDisplay): array
+    {
+        $distanceDisplay = strtolower(trim($distanceDisplay));
+        if (!in_array($distanceDisplay, ['branch', 'km', 'mi'], true)) {
+            $distanceDisplay = 'branch';
+        }
+
+        $totals = [
+            // Backwards compatible canonical totals (km distance + hours)
+            'km' => 0.0,
+            'hours' => 0.0,
+
+            // Display-focused totals
+            'distance_display' => $distanceDisplay,
+            // For forced display (km/mi)
+            'distance' => 0.0,
+            'distance_unit' => ($distanceDisplay === 'mi') ? 'mi' : 'km',
+            // For mixed display (branch)
+            'distance_km' => 0.0,
+            'distance_mi' => 0.0,
+        ];
+
+        $mapped = $trips->map(function ($trip) use ($settingsService, $distanceDisplay, &$totals) {
+            $trackingMode = (string) ($trip->tracking_mode ?? 'distance');
+            $isHours = ($trackingMode === 'hours');
+
+            // Default row fields
+            $trip->display_unit = $isHours ? 'hours' : 'km';
+            $trip->display_start = $trip->start_km ?? null;
+            $trip->display_end = $trip->end_km ?? null;
+
+            if (!isset($trip->end_km, $trip->start_km) || $trip->end_km === null || $trip->start_km === null) {
+                return $trip;
+            }
+
+            $delta = (float) $trip->end_km - (float) $trip->start_km;
+            if ($delta < 0) {
+                return $trip;
+            }
+
+            if ($isHours) {
+                $totals['hours'] += $delta;
+                return $trip;
+            }
+
+            // Canonical km totals (distance)
+            $totals['km'] += $delta;
+
+            $branchId = isset($trip->vehicle_branch_id) ? (int) ($trip->vehicle_branch_id ?? 0) : 0;
+            $branchUnit = $settingsService->distanceUnitForBranch($branchId > 0 ? $branchId : null); // km|mi
+
+            $rowUnit = 'km';
+            if ($distanceDisplay === 'km') {
+                $rowUnit = 'km';
+            } elseif ($distanceDisplay === 'mi') {
+                $rowUnit = 'mi';
+            } else {
+                // branch (mixed)
+                $rowUnit = $branchUnit;
+            }
+
+            $trip->display_unit = $rowUnit;
+
+            // Convert readings for display when needed
+            if ($rowUnit === 'mi') {
+                $trip->display_start = $this->kmToMi((float) $trip->start_km);
+                $trip->display_end = $trip->end_km !== null ? $this->kmToMi((float) $trip->end_km) : null;
+            } else {
+                $trip->display_start = $trip->start_km;
+                $trip->display_end = $trip->end_km;
+            }
+
+            // Totals for display
+            if ($distanceDisplay === 'km') {
+                $totals['distance'] += $delta;
+                $totals['distance_unit'] = 'km';
+            } elseif ($distanceDisplay === 'mi') {
+                $totals['distance'] += $this->kmToMi($delta);
+                $totals['distance_unit'] = 'mi';
+            } else {
+                // branch (mixed)
+                if ($branchUnit === 'mi') {
+                    $totals['distance_mi'] += $this->kmToMi($delta);
+                } else {
+                    $totals['distance_km'] += $delta;
+                }
+            }
+
+            return $trip;
+        });
+
+        return [$mapped, $totals];
+    }
+
+    private function kmToMi(float $km): float
+    {
+        return $km * 0.621371;
     }
 
     /**
@@ -319,7 +448,12 @@ class ReportingService
             fputcsv($file, $headers);
 
             foreach ($trips as $trip) {
-                $unit = ($trip->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km';
+                $unit = isset($trip->display_unit)
+                    ? (string) $trip->display_unit
+                    : ((($trip->tracking_mode ?? 'distance') === 'hours') ? 'hours' : 'km');
+
+                $startReading = isset($trip->display_start) ? $trip->display_start : $trip->start_km;
+                $endReading = isset($trip->display_end) ? $trip->display_end : $trip->end_km;
 
                 $row = [
                     $trip->vehicle_name,
@@ -340,8 +474,8 @@ class ReportingService
 
                 $row = array_merge($row, [
                     $unit,
-                    $trip->start_km,
-                    $trip->end_km,
+                    $startReading,
+                    $endReading,
                     $trip->client_present ? 'Yes' : 'No',
                     $trip->client_address ?? 'N/A',
                     $trip->started_at,

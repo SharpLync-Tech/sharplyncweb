@@ -98,6 +98,11 @@ class CompanySettingsService
             'allow_vehicle_override' => true,
             'allow_customer_override' => true,
 
+            // Distance display for reports: allow mixed (branch) vs forced km/mi.
+            'allow_distance_display_override' => true,
+            // Supported: branch (mixed by branch), km (force km), mi (force miles)
+            'default_distance_display' => 'branch',
+
             // Default date range rule used when overrides are not provided/allowed.
             // Supported: month_to_date, last_30_days
             'default_date_range' => 'month_to_date',

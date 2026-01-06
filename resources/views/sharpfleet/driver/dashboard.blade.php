@@ -150,7 +150,13 @@
                 </div>
                 <div class="info-row">
                     <strong>
-                        {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours' ? 'Starting Hours:' : 'Starting KM:' }}
+                        @php
+                            $activeTripBranchId = isset($activeTrip->vehicle_branch_id)
+                                ? (int) ($activeTrip->vehicle_branch_id ?? 0)
+                                : (isset($activeTrip->branch_id) ? (int) ($activeTrip->branch_id ?? 0) : 0);
+                            $activeTripDistanceUnit = $settingsService->distanceUnitForBranch($activeTripBranchId > 0 ? $activeTripBranchId : null);
+                        @endphp
+                        {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours' ? 'Starting Hours:' : ('Starting ' . strtoupper($activeTripDistanceUnit) . ':') }}
                     </strong>
                     {{ number_format($activeTrip->start_km) }}
                 </div>
@@ -194,7 +200,7 @@
                     <label class="form-label">
                         {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours'
                             ? 'Ending hour meter (hours)'
-                            : 'Ending odometer (km)'
+                            : ('Ending odometer (' . $activeTripDistanceUnit . ')')
                         }}
                     </label>
                     <input type="number" name="end_km" class="form-control" inputmode="numeric" required min="{{ (int) $activeTrip->start_km }}" placeholder="e.g. 124600">
@@ -276,8 +282,13 @@
                     @endif
                     <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
                         @foreach ($vehicles as $vehicle)
+                            @php
+                                $vehicleBranchId = property_exists($vehicle, 'branch_id') ? (int) ($vehicle->branch_id ?? 0) : 0;
+                                $vehicleDistanceUnit = $settingsService->distanceUnitForBranch($vehicleBranchId > 0 ? $vehicleBranchId : null);
+                            @endphp
                             <option value="{{ $vehicle->id }}"
                                     data-tracking-mode="{{ $vehicle->tracking_mode ?? 'distance' }}"
+                                    data-distance-unit="{{ $vehicleDistanceUnit }}"
                                     data-last-km="{{ $lastTrips[$vehicle->id]->end_km ?? (property_exists($vehicle, 'starting_km') ? ($vehicle->starting_km ?? '') : '') }}">
                                 {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                             </option>
@@ -370,9 +381,10 @@
                     </div>
                 @endif
 
-                {{-- Start KM --}}
+                {{-- Start reading (distance/hours) --}}
                 <div class="form-group">
-                    <label id="startReadingLabel" class="form-label">Starting odometer (km)</label>
+                    @php($defaultDistanceUnit = $settingsService->distanceUnit())
+                    <label id="startReadingLabel" class="form-label">Starting odometer ({{ $defaultDistanceUnit }})</label>
                     <div id="lastKmHint" class="hint-text d-none"></div>
                     <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric"
                            {{ $odometerRequired ? 'required' : '' }}
@@ -708,13 +720,14 @@
             const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
             const lastKm   = selected.dataset.lastKm;
             const mode     = selected.dataset.trackingMode || 'distance';
+            const distanceUnit = selected.dataset.distanceUnit || 'km';
 
             if (startReadingLabel) {
                 if (mode === 'hours') {
                     startReadingLabel.textContent = 'Starting hour meter (hours)';
                     startKmInput.placeholder = 'e.g. 1250';
                 } else {
-                    startReadingLabel.textContent = 'Starting odometer (km)';
+                    startReadingLabel.textContent = `Starting odometer (${distanceUnit})`;
                     startKmInput.placeholder = 'e.g. 124500';
                 }
             }
@@ -729,7 +742,7 @@
                 }
                 lastKmHint.textContent = (mode === 'hours')
                     ? `Last recorded hour meter: ${Number(lastKm).toLocaleString()} hours`
-                    : `Last recorded odometer: ${Number(lastKm).toLocaleString()} km`;
+                    : `Last recorded odometer: ${Number(lastKm).toLocaleString()} ${distanceUnit}`;
                 lastKmHint.classList.remove('d-none');
             } else {
                 if (canAutofill) {
@@ -787,7 +800,7 @@
             vehicleSearchInput.addEventListener('input', filterVehicles);
         }
 
-        // When the PWA is brought back to the foreground, refresh the selected vehicle's last KM.
+        // When the PWA is brought back to the foreground, refresh the selected vehicle's last reading.
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 refreshSelectedVehicleLastKm();

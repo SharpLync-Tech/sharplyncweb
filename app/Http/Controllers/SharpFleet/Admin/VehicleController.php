@@ -520,6 +520,7 @@ class VehicleController extends Controller
         return view('sharpfleet.admin.vehicles.create', [
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+            'companyDistanceUnit' => $settingsService->distanceUnit(),
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,
             'defaultBranchId' => $defaultBranchId,
@@ -978,6 +979,7 @@ class VehicleController extends Controller
             'vehicle' => $record,
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
+            'companyDistanceUnit' => $settingsService->distanceUnit(),
             'drivers' => $drivers,
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,

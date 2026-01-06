@@ -10,6 +10,7 @@
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate = $ui['end_date'] ?? request('end_date');
     $uiCustomerId = $ui['customer_id'] ?? request('customer_id');
+    $uiDistanceDisplay = $ui['distance_display'] ?? request('distance_display', 'branch');
 @endphp
 
 <div class="container">
@@ -26,6 +27,7 @@
                     <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                     <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
                     <input type="hidden" name="customer_id" value="{{ $uiCustomerId }}">
+                    <input type="hidden" name="distance_display" value="{{ $uiDistanceDisplay }}">
                     <button type="submit" class="btn btn-primary">Export CSV</button>
                 </form>
             </div>
@@ -48,7 +50,7 @@
                     @endif
                 </div>
 
-                <div class="grid grid-3">
+                <div class="grid grid-4">
                     <div class="form-group">
                         <label class="form-label">Vehicle</label>
                         <select name="vehicle_id" class="form-control" {{ !($ui['allow_vehicle_override'] ?? true) ? 'disabled' : '' }}>
@@ -75,6 +77,18 @@
                     <div class="form-group">
                         <label class="form-label">End Date</label>
                         <input type="date" name="end_date" value="{{ $uiEndDate }}" class="form-control" {{ !($ui['allow_date_override'] ?? true) ? 'disabled' : '' }}>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Distance display</label>
+                        <select name="distance_display" class="form-control" {{ !($ui['allow_distance_display_override'] ?? true) ? 'disabled' : '' }}>
+                            <option value="branch" {{ (string) $uiDistanceDisplay === 'branch' ? 'selected' : '' }}>Real (mixed by branch)</option>
+                            <option value="km" {{ (string) $uiDistanceDisplay === 'km' ? 'selected' : '' }}>Show in kilometres (km)</option>
+                            <option value="mi" {{ (string) $uiDistanceDisplay === 'mi' ? 'selected' : '' }}>Show in miles (mi)</option>
+                        </select>
+                        @if(!($ui['allow_distance_display_override'] ?? true))
+                            <div class="text-muted mt-1">Distance display is locked by company settings.</div>
+                        @endif
                     </div>
                 </div>
 
@@ -114,7 +128,16 @@
             @else
                 <div class="mb-3">
                     <span class="text-muted">Total:</span>
-                    <span class="fw-bold">{{ number_format($totals['km'] ?? 0, 2) }} km</span>
+                    @php($distanceMode = (string) ($totals['distance_display'] ?? ($uiDistanceDisplay ?? 'branch')))
+                    @if($distanceMode === 'branch')
+                        <span class="fw-bold">{{ number_format((float) ($totals['distance_km'] ?? 0), 2) }} km</span>
+                        <span class="text-muted">(km branches)</span>
+                        <span class="text-muted">/</span>
+                        <span class="fw-bold">{{ number_format((float) ($totals['distance_mi'] ?? 0), 2) }} mi</span>
+                        <span class="text-muted">(mi branches)</span>
+                    @else
+                        <span class="fw-bold">{{ number_format((float) ($totals['distance'] ?? ($totals['km'] ?? 0)), 2) }} {{ (string) ($totals['distance_unit'] ?? 'km') }}</span>
+                    @endif
                     <span class="text-muted">/</span>
                     <span class="fw-bold">{{ number_format($totals['hours'] ?? 0, 2) }} hours</span>
                 </div>
@@ -157,9 +180,9 @@
                                     @if(($purposeOfTravelEnabled ?? false))
                                         <td>{{ $modeLabel === 'Business' ? ($t->purpose_of_travel ?: '—') : '—' }}</td>
                                     @endif
-                                    <td>{{ ($t->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km' }}</td>
-                                    <td>{{ number_format($t->start_km) }}</td>
-                                    <td>{{ $t->end_km ? number_format($t->end_km) : '—' }}</td>
+                                    <td>{{ $t->display_unit ?? (($t->tracking_mode ?? 'distance') === 'hours' ? 'hours' : 'km') }}</td>
+                                    <td>{{ isset($t->display_start) ? number_format((float) $t->display_start) : number_format((float) $t->start_km) }}</td>
+                                    <td>{{ (isset($t->display_end) && $t->display_end !== null) ? number_format((float) $t->display_end) : ($t->end_km ? number_format((float) $t->end_km) : '—') }}</td>
                                     <td>{{ $t->client_present ? 'Yes' : 'No' }}</td>
                                     <td>{{ $t->client_address ?: '—' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($t->started_at)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>

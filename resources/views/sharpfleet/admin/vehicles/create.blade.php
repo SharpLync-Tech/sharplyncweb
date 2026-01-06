@@ -10,6 +10,7 @@
     $branchesEnabled = (bool) ($branchesEnabled ?? false);
     $branches = $branches ?? collect();
     $defaultBranchId = $defaultBranchId ?? null;
+    $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
 @endphp
 
 <div class="max-w-800 mx-auto mt-4">
@@ -136,7 +137,7 @@
                     id="tracking_mode"
                     class="form-control">
                 <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
-                    Distance (kilometres)
+                    Distance ({{ $companyDistanceUnit }})
                 </option>
                 <option value="hours" {{ $tm === 'hours' ? 'selected' : '' }}>
                     Hours (machine hour meter)
@@ -150,8 +151,8 @@
                 This controls what drivers are required to record when using this asset.
             </div>
 
-            {{-- Starting reading (optional; km or hours depending on tracking mode) --}}
-            <label id="starting_reading_label" class="form-label mt-2">Starting odometer (km) (optional)</label>
+                 {{-- Starting reading (optional; distance unit or hours depending on tracking mode) --}}
+                 <label id="starting_reading_label" class="form-label mt-2">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
             <input type="number"
                    name="starting_km"
                    value="{{ old('starting_km') }}"
@@ -298,7 +299,7 @@
                     </div>
 
                     <div>
-                        <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
+                        <label id="service_due_km_label" class="form-label">Next service due reading ({{ $companyDistanceUnit }}) (optional)</label>
                         <input type="number" name="service_due_km" value="{{ old('service_due_km') }}" class="form-control" inputmode="numeric" min="0" placeholder="e.g. 150000">
                         @error('service_due_km')
                             <div class="text-error mb-2">{{ $message }}</div>
@@ -325,6 +326,8 @@
 </div>
 
 <script>
+    const companyDistanceUnit = @json($companyDistanceUnit);
+
     const roadCheckbox = document.getElementById('is_road_registered');
     const regoWrapper  = document.getElementById('rego-wrapper');
 
@@ -338,7 +341,7 @@
         roadCheckbox.addEventListener('change', toggleRego);
     }
 
-    // Tracking mode toggles the label between KM and hours
+    // Tracking mode toggles the label between distance-unit and hours
     const trackingMode = document.getElementById('tracking_mode');
     const startingLabel = document.getElementById('starting_reading_label');
     const startingInput = document.getElementById('starting_km');
@@ -353,7 +356,7 @@
             startingLabel.textContent = 'Starting reading (optional)';
             startingInput.placeholder = '';
         } else {
-            startingLabel.textContent = 'Starting odometer (km) (optional)';
+            startingLabel.textContent = `Starting odometer (${companyDistanceUnit}) (optional)`;
             startingInput.placeholder = 'e.g. 124500';
         }
     }
@@ -371,7 +374,7 @@
         } else if (trackingMode.value === 'none') {
             serviceDueKmLabel.textContent = 'Next service due reading (optional)';
         } else {
-            serviceDueKmLabel.textContent = 'Next service due reading (km) (optional)';
+            serviceDueKmLabel.textContent = `Next service due reading (${companyDistanceUnit}) (optional)`;
         }
     }
     if (trackingMode) {

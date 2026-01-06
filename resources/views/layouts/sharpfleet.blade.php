@@ -205,11 +205,11 @@
 <footer class="sharpfleet-footer">
     <div class="sharpfleet-container">
         <p>
-            &copy; {{ date('Y') }} SharpFleet. Fleet Management powered by
+            &copy; {{ date('Y') }} SharpFleet is a product of
             <a href="https://sharplync.com.au"
                target="_blank"
                rel="noopener">                
-                <span class="highlight">SharpLync</span>                
+                <span class="highlight">SharpLync Pty Ltd</span>                
             </a>
         </p>
     </div>

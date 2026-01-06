@@ -11,6 +11,7 @@
     $branchesEnabled = (bool) ($branchesEnabled ?? false);
     $branches = $branches ?? collect();
     $defaultBranchId = $defaultBranchId ?? null;
+    $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
 @endphp
 
 <div class="container mt-4">
@@ -70,7 +71,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label id="starting_reading_label" class="form-label">Starting odometer (km) (optional)</label>
+                            <label id="starting_reading_label" class="form-label">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
                             <input type="number"
                                    name="starting_km"
                                    value="{{ old('starting_km', $vehicle->starting_km ?? '') }}"
@@ -185,7 +186,7 @@
                                 </div>
 
                                 <div>
-                                    <label id="service_due_km_label" class="form-label">Next service due reading (km) (optional)</label>
+                                    <label id="service_due_km_label" class="form-label">Next service due reading ({{ $companyDistanceUnit }}) (optional)</label>
                                     <input type="number"
                                            name="service_due_km"
                                            value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
@@ -302,6 +303,7 @@
 
 <script>
     (function () {
+        const companyDistanceUnit = @json($companyDistanceUnit);
         const trackingMode = @json($vehicle->tracking_mode ?? 'distance');
         const startingLabel = document.getElementById('starting_reading_label');
         const startingInput = document.getElementById('starting_km');
@@ -316,7 +318,7 @@
             startingLabel.textContent = 'Starting reading (optional)';
             startingInput.placeholder = '';
         } else {
-            startingLabel.textContent = 'Starting odometer (km) (optional)';
+            startingLabel.textContent = `Starting odometer (${companyDistanceUnit}) (optional)`;
             startingInput.placeholder = 'e.g. 124500';
         }
 
@@ -326,7 +328,7 @@
             } else if (trackingMode === 'none') {
                 serviceDueKmLabel.textContent = 'Next service due reading (optional)';
             } else {
-                serviceDueKmLabel.textContent = 'Next service due reading (km) (optional)';
+                serviceDueKmLabel.textContent = `Next service due reading (${companyDistanceUnit}) (optional)`;
             }
         }
     })();
