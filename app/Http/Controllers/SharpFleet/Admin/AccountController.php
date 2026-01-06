@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\EntitlementService;
+use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -234,6 +235,49 @@ class AccountController extends Controller
 
         return redirect('/app/sharpfleet/admin/trial-expired')
             ->with('warning', 'Subscription cancelled. Your account is now read-only (reports only).');
+    }
+
+    public function upgradeToSoleTrader(Request $request): RedirectResponse
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::isCompanyAdmin($user)) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        if ($organisationId <= 0) {
+            abort(403);
+        }
+
+        if (!Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Upgrade requires a database update (organisations.account_type).');
+        }
+
+        $current = OrganisationAccount::forOrganisationId($organisationId);
+        if ($current !== OrganisationAccount::TYPE_PERSONAL) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('error', 'Only Personal accounts can be upgraded to Sole Trader.');
+        }
+
+        $updates = [
+            'account_type' => OrganisationAccount::TYPE_SOLE_TRADER,
+            'updated_at' => now(),
+        ];
+
+        // Keep legacy column in sync where possible.
+        if (Schema::connection('sharpfleet')->hasColumn('organisations', 'company_type')) {
+            $updates['company_type'] = OrganisationAccount::TYPE_SOLE_TRADER;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->update($updates);
+
+        return redirect('/app/sharpfleet/admin')
+            ->with('success', 'Account upgraded to Sole Trader.');
     }
 
     private function calculateMonthlyPrice(int $vehiclesCount): array

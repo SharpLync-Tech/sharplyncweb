@@ -6,6 +6,7 @@
 @php
     use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Schema;
+    use App\Support\SharpFleet\OrganisationAccount;
     use App\Services\SharpFleet\CompanySettingsService;
     use App\Services\SharpFleet\BranchService;
 
@@ -27,9 +28,12 @@
     $safetyCheckEnabled = $settingsService->safetyCheckEnabled();
     $safetyCheckItems = $settingsService->safetyCheckItems();
 
+    $sfAccountType = OrganisationAccount::forOrganisationId((int) ($user['organisation_id'] ?? 0));
+
     $branchesService = new BranchService();
     $branchesEnabled = $branchesService->branchesEnabled();
-    $branchAccessEnabled = $branchesEnabled
+    $branchAccessEnabled = $sfAccountType !== OrganisationAccount::TYPE_PERSONAL
+        && $branchesEnabled
         && $branchesService->vehiclesHaveBranchSupport()
         && $branchesService->userBranchAccessEnabled();
     $accessibleBranchIds = $branchAccessEnabled

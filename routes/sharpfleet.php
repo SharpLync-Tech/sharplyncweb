@@ -339,6 +339,9 @@ Route::prefix('app/sharpfleet')
             Route::post('/account/cancel-subscription', [AccountController::class, 'cancelSubscription'])
                 ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
 
+            Route::post('/account/upgrade-to-sole-trader', [AccountController::class, 'upgradeToSoleTrader'])
+                ->withoutMiddleware([\App\Http\Middleware\SharpFleetTrialCheck::class]);
+
             // Company Settings
             Route::get('/settings', [CompanySettingsController::class, 'edit']);
             Route::post('/settings', [CompanySettingsController::class, 'update']);

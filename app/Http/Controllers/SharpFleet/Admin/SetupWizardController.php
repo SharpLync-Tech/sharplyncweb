@@ -597,6 +597,31 @@ class SetupWizardController extends Controller
         if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
             return $redirect;
         }
+
+        $accountType = OrganisationAccount::forOrganisationId($organisationId);
+        if ($accountType === OrganisationAccount::TYPE_PERSONAL) {
+            $fleetUser = $request->session()->get('sharpfleet.user');
+            $userId = is_array($fleetUser) ? (int) ($fleetUser['id'] ?? 0) : 0;
+
+            if ($userId > 0 && Schema::connection('sharpfleet')->hasColumn('users', 'is_driver')) {
+                $updates = [
+                    'is_driver' => 1,
+                ];
+                if (Schema::connection('sharpfleet')->hasColumn('users', 'updated_at')) {
+                    $updates['updated_at'] = now();
+                }
+
+                DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('id', $userId)
+                    ->update($updates);
+
+                // Ensure driver access works immediately without a re-login.
+                $request->session()->put('sharpfleet.user.is_driver', 1);
+                $request->session()->put('sharpfleet.driver_id', $userId);
+            }
+        }
+
         $settings = $this->loadSettings($organisationId);
 
         if (!isset($settings['setup']) || !is_array($settings['setup'])) {
