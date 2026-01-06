@@ -62,8 +62,8 @@
             </div>
             <div class="card-body">
                 <p class="text-muted mb-3">
-                    Use this if drivers need to record whether a passenger or client was present for a trip.
-                    This is useful for compliance, billing, or reporting.
+                    Indicate whether a passenger or client was present during the trip.
+                    This information may be used for compliance, billing, or reporting purposes.
                 </p>
 
                 <div class="text-muted small mb-3">

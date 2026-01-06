@@ -23,7 +23,7 @@
         } elseif ($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_SOLE_TRADER) {
             $stepTitle = 'Business details';
             $nameLabel = 'Business name';
-            $nameHint = 'Tip: use your trading name.';
+            $nameHint = 'Enter your trading name.';
             $introText = 'These details are used across SharpFleet (emails, reports, and date/time display).';
         }
     @endphp
@@ -100,7 +100,7 @@
                         <input type="text" name="industry" class="form-control"
                                value="{{ old('industry', $settings['industry'] ?? '') }}"
                                placeholder="e.g. Trades, Facilities, Transport">
-                        <div class="form-hint">Used for internal reference and onboarding only.</div>
+                        <div class="form-hint"></div>
                     </div>
                 @endif
 
