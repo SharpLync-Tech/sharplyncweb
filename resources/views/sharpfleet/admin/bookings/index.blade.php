@@ -114,7 +114,7 @@
 
 {{-- Create Booking Modal --}}
 <div id="sfBkCreateModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5);">
-    <div class="card" style="max-width:760px; margin:6vh auto;">
+    <div class="card" style="max-width:760px; margin:3vh auto;">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start gap-2">
                 <div>
@@ -126,7 +126,7 @@
                         id="sfBkCreateClose"
                         aria-label="Close"
                         title="Close"
-                        style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">&times;</button>
+                        style="">&times;</button>
             </div>
 
             <div class="mt-3"></div>
@@ -258,7 +258,7 @@
 
 {{-- Edit Booking Modal --}}
 <div id="sfBkEditModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5);">
-    <div class="card" style="max-width:760px; margin:6vh auto;">
+    <div class="card" style="max-width:760px; margin:3vh auto;">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start gap-2">
                 <div>
@@ -270,7 +270,7 @@
                         id="sfBkEditClose"
                         aria-label="Close"
                         title="Close"
-                        style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">&times;</button>
+                        style="">&times;</button>
             </div>
 
             <div class="alert alert-info" id="sfBkEditCreatedByNotice" style="display:none; margin-top:12px;"></div>
@@ -424,17 +424,39 @@
     .sf-bk-row{display:flex}
     .sf-bk-lane{position:relative;height:54px}
     .sf-bk-lane-bg{background:#fff}
-    .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal);border-radius:10px;background:rgba(44,191,174,.06);pointer-events:none;display:none}
+    .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
+    .sf-bk-slot-plus{color:var(--sl-teal);font-weight:800;font-size:22px;line-height:1}
+    .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18)}
     .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
     .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal)}
     .sf-bk-block:hover{outline:2px solid var(--sl-teal);filter:brightness(1.05)}
     .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
     .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
 
-    .sf-bk-month-ind{margin-top:8px;display:flex;align-items:center;gap:8px}
-    .sf-bk-month-bar{flex:1;height:8px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
+    .sf-bk-month-ind{margin-top:6px;display:flex;align-items:center;gap:8px}
+    .sf-bk-month-bar{flex:1;height:10px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
     .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal)}
     .sf-bk-month-txt{font-size:12px;color:var(--sl-navy);white-space:nowrap}
+
+    /* Booking modals: lighter + sharper SharpFleet feel */
+    #sfBkCreateModal .card-body,
+    #sfBkEditModal .card-body{position:relative;padding:18px 18px 16px;}
+
+    #sfBkCreateModal .form-group,
+    #sfBkEditModal .form-group{margin-bottom:10px;}
+    #sfBkCreateModal .form-label,
+    #sfBkEditModal .form-label{font-size:13px;margin-bottom:4px;}
+    #sfBkCreateModal .form-control,
+    #sfBkEditModal .form-control{font-size:14px;padding:7px 10px;}
+    #sfBkCreateModal textarea.form-control,
+    #sfBkEditModal textarea.form-control{font-size:14px;padding:7px 10px;}
+    #sfBkCreateModal .grid,
+    #sfBkEditModal .grid{gap:12px;}
+
+    #sfBkCreateClose,
+    #sfBkEditClose{position:absolute;top:10px;right:10px;width:44px;height:44px;padding:0;background:transparent;border:0;color:var(--sl-navy);font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:none;}
+    #sfBkCreateClose:hover,
+    #sfBkEditClose:hover{background:rgba(44,191,174,.10);border-radius:10px;}
 </style>
 
 <script>
@@ -656,7 +678,8 @@
                 });
                 if (!res.ok) {
                     const msg = await getResponseErrorMessage(res);
-                    if (window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
+                    // Day view must fail silently.
+                    if (state.view !== 'day' && window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
                         window.SharpFleetModal.notice('Bookings', msg || 'Could not load bookings.');
                     }
                     state.bookings = [];
@@ -667,7 +690,8 @@
                 state.bookings = Array.isArray(data.bookings) ? data.bookings : [];
                 render();
             } catch (e) {
-                if (window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
+                // Day view must fail silently.
+                if (state.view !== 'day' && window.SharpFleetModal && typeof window.SharpFleetModal.notice === 'function') {
                     window.SharpFleetModal.notice('Bookings', 'Could not load bookings (network error).');
                 }
                 state.bookings = [];
@@ -732,7 +756,10 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'btn btn-secondary btn-sm';
-                    btn.style.padding = '4px 8px';
+                    btn.style.display = 'block';
+                    btn.style.width = '100%';
+                    btn.style.padding = '10px';
+                    btn.style.textAlign = 'left';
                     btn.style.opacity = inMonth ? '1' : '0.4';
                     btn.textContent = String(new Date(cellMs).getUTCDate());
                     btn.dataset.date = cellDate;
@@ -829,6 +856,7 @@
                 lane.className = 'sf-bk-lane sf-bk-lane-bg';
                 lane.style.minWidth = timelineWidth + 'px';
                 lane.dataset.vehicleId = String(v.id);
+                lane.style.cursor = 'pointer';
 
                 // Teal hour grid + thicker teal day separators.
                 const hourLine = 'rgba(44,191,174,.28)';
@@ -839,6 +867,7 @@
 
                 const slotHover = document.createElement('div');
                 slotHover.className = 'sf-bk-slot-hover';
+                slotHover.innerHTML = '<div class="sf-bk-slot-tip">Book this time</div><div class="sf-bk-slot-plus">+</div>';
                 lane.appendChild(slotHover);
 
                 lane.addEventListener('mousemove', (ev) => {
@@ -849,7 +878,7 @@
                     const leftPx = Math.round(snapped * pxPerMin);
                     slotHover.style.left = leftPx + 'px';
                     slotHover.style.width = Math.max(12, Math.round(60 * pxPerMin)) + 'px';
-                    slotHover.style.display = 'block';
+                    slotHover.style.display = 'flex';
                 });
                 lane.addEventListener('mouseleave', () => {
                     slotHover.style.display = 'none';
