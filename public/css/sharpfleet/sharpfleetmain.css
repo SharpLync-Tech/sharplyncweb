@@ -1504,6 +1504,26 @@ details.card[open] .incident-toggle-hint-closed {
     margin-bottom: 20px;
 }
 
+.sf-time-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sf-time-hh,
+.sf-time-mm {
+    width: 72px;
+    text-align: center;
+    padding: 6px 8px;
+}
+
+.sf-time-sep {
+    font-weight: 700;
+    color: var(--sl-navy);
+    opacity: .6;
+}
+
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
