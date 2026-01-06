@@ -471,6 +471,29 @@
     /* Reuse booking block styling; override sizing/positioning for vertical blocks inside week cells */
     .sf-wk-daycell .sf-bk-block{left:6px;right:6px;top:auto;height:auto;z-index:2;}
 
+    /* Week view (V1): compact weekly overview + auto-expand busy vehicles */
+    .sf-wk-v1-scroll{overflow-y:auto;overflow-x:hidden;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff;}
+    .sf-wk-v1-header,
+    .sf-wk-v1-row{display:grid;grid-template-columns:240px repeat(7,minmax(0,1fr));}
+    .sf-wk-v1-header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid rgba(10,42,77,.08);}
+    .sf-wk-v1-left{position:sticky;left:0;z-index:6;background:#fff;border-right:1px solid rgba(10,42,77,.06);}
+    .sf-wk-v1-left .sf-bk-left-inner{padding:10px 12px;}
+    .sf-wk-v1-dayhead{padding:10px 10px 8px;color:var(--sl-navy,#0A2A4D);border-bottom:2px solid var(--sl-teal,#2CBFAE);}
+    .sf-wk-v1-dayhead.is-today{background:rgba(44,191,174,.06);}
+    .sf-wk-v1-row{border-bottom:1px solid rgba(10,42,77,.06);}
+    .sf-wk-v1-row.is-expanded{background:rgba(44,191,174,.03);}
+    .sf-wk-v1-cell{border-right:1px solid rgba(10,42,77,.06);min-height:52px;position:relative;background:#fff;}
+    .sf-wk-v1-cell.is-today{background:rgba(44,191,174,.03);}
+    .sf-wk-v1-row.is-expanded .sf-wk-v1-cell{border-right:1px solid rgba(44,191,174,.18);}
+    .sf-wk-v1-row.is-expanded .sf-wk-v1-left{border-right:1px solid rgba(44,191,174,.18);}
+    .sf-wk-v1-chips{padding:6px;min-height:38px;display:flex;flex-direction:column;gap:6px;}
+    .sf-wk-v1-chip{display:block;background:var(--sl-navy,#0A2A4D);color:#fff;border:1px solid var(--sl-teal,#2CBFAE);border-radius:10px;padding:4px 6px;line-height:1.15;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 8px 18px rgba(10,42,77,.12);}
+    .sf-wk-v1-grid{position:relative;margin:0 6px 6px;border-radius:10px;overflow:hidden;background:#fff;}
+    .sf-wk-v1-grid::before{content:'';position:absolute;inset:0;pointer-events:none;
+        background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(44,191,174,.18) 55px, rgba(44,191,174,.18) 56px);
+    }
+    .sf-wk-v1-grid .sf-bk-block{left:6px;right:6px;top:auto;height:auto;z-index:2;}
+
     .sf-bk-month-ind{margin-top:6px;display:flex;align-items:center;gap:8px}
     .sf-bk-month-bar{flex:1;height:10px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
     .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal,#2CBFAE);border-radius:999px}
@@ -1285,6 +1308,213 @@
             els.cal.appendChild(scroll);
         }
 
+        function renderWeekV1() {
+            // Week V1: compact grid (Mon–Sun), auto-expand only vehicles with bookings.
+            clearCalendar();
+            if (!els.cal) return;
+
+            const dayMs = 86400000;
+            const weekStartMs = state.rangeStartMs;
+            const startHour = 6;
+            const endHour = 18;
+            const pxPerHour = 56;
+            const pxPerMin = pxPerHour / 60;
+            const timelineHeight = (endHour - startHour) * pxPerHour;
+
+            const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+            // Bookings by vehicle (only vehicles with at least one booking become expanded).
+            const bookingsByVehicle = new Map();
+            (state.bookings || []).forEach(b => {
+                const vehicleId = String(b.vehicle_id);
+                const startMs = parseYmdHi(b.planned_start_local);
+                const endMs = parseYmdHi(b.planned_end_local);
+                if (!isFinite(startMs) || !isFinite(endMs)) return;
+                if (endMs <= weekStartMs || startMs >= state.rangeEndMs) return;
+                if (!bookingsByVehicle.has(vehicleId)) bookingsByVehicle.set(vehicleId, []);
+                bookingsByVehicle.get(vehicleId).push(b);
+            });
+
+            const wrap = document.createElement('div');
+            wrap.className = 'sf-wk-v1-scroll';
+
+            const header = document.createElement('div');
+            header.className = 'sf-wk-v1-header';
+
+            const leftHead = document.createElement('div');
+            leftHead.className = 'sf-wk-v1-left';
+            leftHead.innerHTML = '<div class="sf-bk-left-inner"><strong>Vehicles</strong></div>';
+            header.appendChild(leftHead);
+
+            for (let i = 0; i < 7; i++) {
+                const dayStartMs = weekStartMs + i * dayMs;
+                const dt = new Date(dayStartMs);
+                const dowMon0 = (dt.getUTCDay() + 6) % 7; // 0=Mon
+                const dayName = dayNames[dowMon0];
+                const dayDate = new Intl.DateTimeFormat(sfLocale, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    timeZone: 'UTC',
+                }).format(new Date(dayStartMs));
+                const ymd = formatYmd(dayStartMs);
+
+                const head = document.createElement('div');
+                head.className = 'sf-wk-v1-dayhead' + (ymd === sf.today ? ' is-today' : '');
+                head.innerHTML = '<div class="sf-wk-dayname">' + dayName + '</div>' +
+                    '<div class="sf-wk-daydate">' + dayDate + '</div>';
+                header.appendChild(head);
+            }
+
+            wrap.appendChild(header);
+
+            sf.vehicles.forEach(v => {
+                const vehicleId = String(v.id);
+                const bookings = bookingsByVehicle.get(vehicleId) || [];
+                const isExpanded = bookings.length > 0;
+
+                const row = document.createElement('div');
+                row.className = 'sf-wk-v1-row' + (isExpanded ? ' is-expanded' : '');
+
+                const left = document.createElement('div');
+                left.className = 'sf-wk-v1-left';
+                left.innerHTML = '<div class="sf-bk-left-inner">' +
+                    '<div class="fw-bold">' + (v.name || '—') + '</div>' +
+                    (v.registration_number ? '<div class="text-muted small">' + v.registration_number + '</div>' : '') +
+                    '</div>';
+                row.appendChild(left);
+
+                for (let i = 0; i < 7; i++) {
+                    const dayStartMs = weekStartMs + i * dayMs;
+                    const ymd = formatYmd(dayStartMs);
+
+                    const cell = document.createElement('div');
+                    cell.className = 'sf-wk-v1-cell' + (ymd === sf.today ? ' is-today' : '');
+                    cell.dataset.vehicleId = vehicleId;
+                    cell.dataset.dayIndex = String(i);
+
+                    if (!isExpanded) {
+                        // Collapsed rows: no hour grid, no time-based positioning.
+                        cell.addEventListener('click', (ev) => {
+                            const target = ev.target;
+                            if (target && target.closest && target.closest('[data-booking-id]')) return;
+                            const startMs = dayStartMs + 9 * 3600000;
+                            const endMs = startMs + 60 * 60000;
+                            openCreateModal({ vehicleId: v.id, startMs, endMs });
+                        });
+
+                        row.appendChild(cell);
+                        continue;
+                    }
+
+                    // Expanded rows: optional chips (overview) + hour grid + time-positioned blocks.
+                    const chips = document.createElement('div');
+                    chips.className = 'sf-wk-v1-chips';
+                    cell.appendChild(chips);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'sf-wk-v1-grid';
+                    grid.style.height = timelineHeight + 'px';
+                    grid.addEventListener('click', (ev) => {
+                        const target = ev.target;
+                        if (target && target.closest && target.closest('[data-booking-id]')) return;
+                        const rect = grid.getBoundingClientRect();
+                        const y = ev.clientY - rect.top;
+                        const minutesFromStart = Math.max(0, Math.min((endHour - startHour) * 60, Math.round(y / pxPerMin)));
+                        const snapped = Math.floor(minutesFromStart / 60) * 60;
+                        const windowStart = dayStartMs + startHour * 3600000;
+                        let startMs = windowStart + snapped * 60000;
+                        let endMs = startMs + 60 * 60000;
+                        const windowEnd = dayStartMs + endHour * 3600000;
+                        if (endMs > windowEnd) endMs = windowEnd;
+                        if (endMs <= startMs) endMs = startMs + 60 * 60000;
+                        openCreateModal({ vehicleId: v.id, startMs, endMs });
+                    });
+                    cell.appendChild(grid);
+
+                    row.appendChild(cell);
+                }
+
+                wrap.appendChild(row);
+            });
+
+            // Render chips + booking blocks only for expanded rows.
+            // Chips: overview (no time positioning). Blocks: accurate time positioning (06:00–18:00).
+            const rowCells = wrap.querySelectorAll('.sf-wk-v1-cell');
+            const cellByKey = new Map();
+            rowCells.forEach(cell => {
+                const vehicleId = String(cell.dataset.vehicleId || '');
+                const dayIndex = String(cell.dataset.dayIndex || '');
+                if (!vehicleId || dayIndex === '') return;
+                cellByKey.set(vehicleId + ':' + dayIndex, cell);
+            });
+
+            (state.bookings || []).forEach(b => {
+                const vehicleId = String(b.vehicle_id);
+                if (!bookingsByVehicle.has(vehicleId)) return; // collapsed rows skip all work
+
+                const startMs = parseYmdHi(b.planned_start_local);
+                const endMs = parseYmdHi(b.planned_end_local);
+                if (!isFinite(startMs) || !isFinite(endMs)) return;
+
+                for (let i = 0; i < 7; i++) {
+                    const cell = cellByKey.get(vehicleId + ':' + String(i));
+                    if (!cell) continue;
+
+                    const dayStartMs = weekStartMs + i * dayMs;
+                    const dayEndMs = dayStartMs + dayMs;
+                    if (endMs <= dayStartMs || startMs >= dayEndMs) continue;
+
+                    const chipWrap = cell.querySelector('.sf-wk-v1-chips');
+                    const grid = cell.querySelector('.sf-wk-v1-grid');
+                    if (!chipWrap || !grid) continue;
+
+                    // Chip time range clipped to the calendar day (overview only).
+                    const chipSegStart = Math.max(startMs, dayStartMs);
+                    const chipSegEnd = Math.min(endMs, dayEndMs);
+                    const chipStartDt = new Date(chipSegStart);
+                    const chipEndDt = new Date(chipSegEnd);
+                    const chipTime = pad2(chipStartDt.getUTCHours()) + ':' + pad2(chipStartDt.getUTCMinutes()) + '–' +
+                        pad2(chipEndDt.getUTCHours()) + ':' + pad2(chipEndDt.getUTCMinutes());
+
+                    const chip = document.createElement('div');
+                    chip.className = 'sf-wk-v1-chip';
+                    chip.textContent = (b.driver_name || 'Driver') + ' ' + chipTime;
+                    chipWrap.appendChild(chip);
+
+                    // Time-positioned block clipped to 06:00–18:00 window.
+                    const windowStart = dayStartMs + startHour * 3600000;
+                    const windowEnd = dayStartMs + endHour * 3600000;
+                    const segStart = Math.max(startMs, windowStart);
+                    const segEnd = Math.min(endMs, windowEnd);
+                    if (segEnd <= segStart) continue;
+
+                    const topPx = Math.round(((segStart - windowStart) / 60000) * pxPerMin);
+                    const heightPx = Math.max(12, Math.round(((segEnd - segStart) / 60000) * pxPerMin));
+
+                    const segStartDt = new Date(segStart);
+                    const segEndDt = new Date(segEnd);
+                    const segTime = pad2(segStartDt.getUTCHours()) + ':' + pad2(segStartDt.getUTCMinutes()) + ' → ' +
+                        pad2(segEndDt.getUTCHours()) + ':' + pad2(segEndDt.getUTCMinutes());
+
+                    const block = document.createElement('div');
+                    block.className = 'sf-bk-block';
+                    block.style.top = topPx + 'px';
+                    block.style.height = heightPx + 'px';
+                    block.dataset.bookingId = String(b.id);
+                    const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
+                    block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
+                        '<div class="sf-bk-block-time">' + segTime + '</div>';
+                    block.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        openEditModal(b);
+                    });
+                    grid.appendChild(block);
+                }
+            });
+
+            els.cal.appendChild(wrap);
+        }
+
         function render() {
             if (state.view === 'month') {
                 renderMonth();
@@ -1293,7 +1523,7 @@
 
             // Week view diverges from Day view: it is a 7-column grid with vertical time.
             if (state.view === 'week') {
-                renderWeekGrid();
+                renderWeekV1();
                 return;
             }
 
