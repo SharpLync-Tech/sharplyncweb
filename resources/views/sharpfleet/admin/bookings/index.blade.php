@@ -13,7 +13,7 @@
     $sfIsDriver = $sfRole === Roles::DRIVER;
     $sfUserId = (int) ($user['id'] ?? 0);
     $sfUserName = trim((string)($user['first_name'] ?? '') . ' ' . (string)($user['last_name'] ?? ''));
-    $sfCanEditBookings = Roles::isAdminPortal($user);
+    $sfCanEditBookings = in_array($sfRole, [Roles::COMPANY_ADMIN, Roles::BOOKING_ADMIN], true);
 
     $settingsService = new CompanySettingsService((int) $user['organisation_id']);
     $companyTimezone = $defaultTimezone ?? $settingsService->timezone();
