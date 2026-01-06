@@ -383,7 +383,9 @@
 
                 {{-- Start reading (distance/hours) --}}
                 <div class="form-group">
-                    @php($defaultDistanceUnit = $settingsService->distanceUnit())
+                    @php
+                        $defaultDistanceUnit = $settingsService->distanceUnit();
+                    @endphp
                     <label id="startReadingLabel" class="form-label">Starting odometer ({{ $defaultDistanceUnit }})</label>
                     <div id="lastKmHint" class="hint-text d-none"></div>
                     <input type="number" id="startKmInput" name="start_km" class="form-control" inputmode="numeric"
