@@ -21,6 +21,62 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
+    private function applyTimeInputs(Request $request): void
+    {
+        // Support mobile-friendly <input type="time"> while remaining compatible with legacy hour/minute selects.
+        $startTime = trim((string) $request->input('planned_start_time', ''));
+        if ($startTime !== '' && (string) $request->input('planned_start_hour', '') === '' && (string) $request->input('planned_start_minute', '') === '') {
+            if (preg_match('/^(\d{1,2}):(\d{2})$/', $startTime, $m) === 1) {
+                $request->merge([
+                    'planned_start_hour' => str_pad((string) ((int) $m[1]), 2, '0', STR_PAD_LEFT),
+                    'planned_start_minute' => str_pad((string) ((int) $m[2]), 2, '0', STR_PAD_LEFT),
+                ]);
+            }
+        }
+
+        $endTime = trim((string) $request->input('planned_end_time', ''));
+        if ($endTime !== '' && (string) $request->input('planned_end_hour', '') === '' && (string) $request->input('planned_end_minute', '') === '') {
+            if (preg_match('/^(\d{1,2}):(\d{2})$/', $endTime, $m) === 1) {
+                $request->merge([
+                    'planned_end_hour' => str_pad((string) ((int) $m[1]), 2, '0', STR_PAD_LEFT),
+                    'planned_end_minute' => str_pad((string) ((int) $m[2]), 2, '0', STR_PAD_LEFT),
+                ]);
+            }
+        }
+    }
+
+    private function assertCustomerInBranchIfSupported(int $organisationId, ?int $customerId, ?int $branchId): void
+    {
+        if (!$customerId || $customerId <= 0) {
+            return;
+        }
+
+        if (!$branchId || $branchId <= 0) {
+            return;
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('customers')) {
+            return;
+        }
+
+        if (!Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')) {
+            return;
+        }
+
+        $customerBranchId = DB::connection('sharpfleet')
+            ->table('customers')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $customerId)
+            ->value('branch_id');
+
+        $customerBranchId = $customerBranchId !== null && $customerBranchId !== '' ? (int) $customerBranchId : null;
+        if ($customerBranchId && $customerBranchId > 0 && (int) $customerBranchId !== (int) $branchId) {
+            throw ValidationException::withMessages([
+                'customer_id' => 'Selected customer does not belong to your branch.',
+            ]);
+        }
+    }
+
     public function upcoming(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
@@ -79,12 +135,60 @@ class BookingController extends Controller
                 ->table('customers')
                 ->where('organisation_id', $organisationId)
                 ->where('is_active', 1)
+                ->when(
+                    $branchAccessEnabled
+                        && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')
+                        && count($accessibleBranchIds) > 0,
+                    fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+                )
                 ->orderBy('name')
                 ->limit(500)
                 ->get();
         }
 
         $result = $this->bookingService->getUpcomingBookings($organisationId, $user);
+
+        $editBooking = null;
+        $editId = (int) $request->query('edit', 0);
+        if ($editId > 0 && Schema::connection('sharpfleet')->hasTable('bookings')) {
+            $row = DB::connection('sharpfleet')
+                ->table('bookings')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $editId)
+                ->first();
+
+            if (!$row) {
+                abort(404);
+            }
+
+            if ((int) ($row->user_id ?? 0) !== (int) ($user['id'] ?? 0)) {
+                abort(403);
+            }
+
+            if ((string) ($row->status ?? '') !== 'planned') {
+                abort(403);
+            }
+
+            $tz = isset($row->timezone) && trim((string) ($row->timezone ?? '')) !== ''
+                ? (string) $row->timezone
+                : $defaultTimezone;
+
+            $startLocal = Carbon::parse((string) $row->planned_start)->utc()->timezone($tz);
+            $endLocal = Carbon::parse((string) $row->planned_end)->utc()->timezone($tz);
+
+            $editBooking = [
+                'id' => (int) $row->id,
+                'branch_id' => isset($row->branch_id) ? (int) ($row->branch_id ?? 0) : null,
+                'vehicle_id' => (int) ($row->vehicle_id ?? 0),
+                'customer_id' => isset($row->customer_id) ? (int) ($row->customer_id ?? 0) : null,
+                'customer_name' => (string) ($row->customer_name ?? ''),
+                'notes' => (string) ($row->notes ?? ''),
+                'planned_start_date' => $startLocal->format('Y-m-d'),
+                'planned_start_time' => $startLocal->format('H:i'),
+                'planned_end_date' => $endLocal->format('Y-m-d'),
+                'planned_end_time' => $endLocal->format('H:i'),
+            ];
+        }
 
         return view('sharpfleet.driver.bookings.upcoming', [
             'bookingsTableExists' => $result['tableExists'],
@@ -95,6 +199,7 @@ class BookingController extends Controller
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,
             'defaultTimezone' => $defaultTimezone,
+            'editBooking' => $editBooking,
         ]);
     }
 
@@ -105,12 +210,16 @@ class BookingController extends Controller
             abort(403, 'Login required');
         }
 
+        $this->applyTimeInputs($request);
+
         $validated = $request->validate([
             'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
+            'planned_start_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
             'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'planned_end_date' => ['required', 'date'],
+            'planned_end_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
             'planned_end_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_end_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
         ]);
@@ -165,13 +274,17 @@ class BookingController extends Controller
             abort(403, 'Login required');
         }
 
+        $this->applyTimeInputs($request);
+
         $validated = $request->validate([
             'vehicle_id' => ['required', 'integer'],
             'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
+            'planned_start_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
             'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'planned_end_date' => ['required', 'date', 'after_or_equal:planned_start_date'],
+            'planned_end_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
             'planned_end_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
             'planned_end_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
             'customer_id' => ['nullable', 'integer'],
@@ -206,7 +319,24 @@ class BookingController extends Controller
                     'branch_id' => 'You do not have access to that branch.',
                 ]);
             }
+
+            // If branches are installed, ensure selected vehicle belongs to selected branch.
+            if ($branchesService->vehiclesHaveBranchSupport() && $branchId && $branchId > 0) {
+                $vehicleBranchId = $branchesService->getBranchIdForVehicle($organisationId, (int) $validated['vehicle_id']);
+                if ($vehicleBranchId && (int) $vehicleBranchId !== (int) $branchId) {
+                    throw ValidationException::withMessages([
+                        'vehicle_id' => 'Selected vehicle does not belong to your branch.',
+                    ]);
+                }
+            }
         }
+
+        $effectiveBranchId = $branchId;
+        if ($branchesService->branchesEnabled() && $branchesService->vehiclesHaveBranchSupport() && (!$effectiveBranchId || $effectiveBranchId <= 0)) {
+            $effectiveBranchId = $branchesService->getBranchIdForVehicle($organisationId, (int) $validated['vehicle_id']);
+            $effectiveBranchId = $effectiveBranchId ? (int) $effectiveBranchId : null;
+        }
+        $this->assertCustomerInBranchIfSupported($organisationId, isset($validated['customer_id']) ? (int) $validated['customer_id'] : null, $effectiveBranchId);
 
         $this->bookingService->createBooking($organisationId, [
             'user_id' => (int) $user['id'],
@@ -232,6 +362,110 @@ class BookingController extends Controller
         $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, false);
 
         return redirect('/app/sharpfleet/bookings')->with('success', 'Booking cancelled.');
+    }
+
+    public function update(Request $request, $booking)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+        if (!$user) {
+            abort(403, 'Login required');
+        }
+
+        $this->applyTimeInputs($request);
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer'],
+            'branch_id' => ['nullable', 'integer'],
+            'planned_start_date' => ['required', 'date'],
+            'planned_start_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
+            'planned_start_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_start_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
+            'planned_end_date' => ['required', 'date', 'after_or_equal:planned_start_date'],
+            'planned_end_time' => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'],
+            'planned_end_hour' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:23'],
+            'planned_end_minute' => ['required', 'regex:/^\d{1,2}$/', 'numeric', 'min:0', 'max:59'],
+            'customer_id' => ['nullable', 'integer'],
+            'customer_name' => ['nullable', 'string', 'max:150'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $organisationId = (int) $user['organisation_id'];
+        $bookingId = (int) $booking;
+
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            abort(404);
+        }
+
+        $row = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $bookingId)
+            ->first();
+
+        if (!$row) {
+            abort(404);
+        }
+
+        if ((int) ($row->user_id ?? 0) !== (int) ($user['id'] ?? 0)) {
+            abort(403);
+        }
+
+        $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
+        $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);
+        $plannedStart = $validated['planned_start_date'] . ' ' . $startTime . ':00';
+        $plannedEnd = $validated['planned_end_date'] . ' ' . $endTime . ':00';
+
+        $branchesService = new BranchService();
+        $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+
+        if ($branchesService->branchesEnabled() && $branchesService->userBranchAccessEnabled()) {
+            $branchesForUser = $branchesService->getBranchesForUser($organisationId, (int) $user['id']);
+            if ($branchesForUser->count() === 0) {
+                abort(403, 'No branch access.');
+            }
+
+            if ($branchId === null) {
+                $branchId = (int) ($branchesForUser->first()->id ?? 0);
+            }
+
+            if ($branchId && !$branchesService->userCanAccessBranch($organisationId, (int) $user['id'], (int) $branchId)) {
+                throw ValidationException::withMessages([
+                    'branch_id' => 'You do not have access to that branch.',
+                ]);
+            }
+
+            if ($branchesService->vehiclesHaveBranchSupport() && $branchId && $branchId > 0) {
+                $vehicleBranchId = $branchesService->getBranchIdForVehicle($organisationId, (int) $validated['vehicle_id']);
+                if ($vehicleBranchId && (int) $vehicleBranchId !== (int) $branchId) {
+                    throw ValidationException::withMessages([
+                        'vehicle_id' => 'Selected vehicle does not belong to your branch.',
+                    ]);
+                }
+            }
+        }
+
+        $effectiveBranchId = $branchId;
+        if ($branchesService->branchesEnabled() && $branchesService->vehiclesHaveBranchSupport() && (!$effectiveBranchId || $effectiveBranchId <= 0)) {
+            $effectiveBranchId = $branchesService->getBranchIdForVehicle($organisationId, (int) $validated['vehicle_id']);
+            $effectiveBranchId = $effectiveBranchId ? (int) $effectiveBranchId : null;
+        }
+        $this->assertCustomerInBranchIfSupported($organisationId, isset($validated['customer_id']) ? (int) $validated['customer_id'] : null, $effectiveBranchId);
+
+        $this->bookingService->updateBooking($organisationId, $bookingId, [
+            'user_id' => (int) $user['id'],
+            'vehicle_id' => (int) $validated['vehicle_id'],
+            'branch_id' => $branchId,
+            'planned_start' => $plannedStart,
+            'planned_end' => $plannedEnd,
+            'customer_id' => $validated['customer_id'] ?? null,
+            'customer_name' => $validated['customer_name'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+            'updated_by_user_id' => (int) ($user['id'] ?? 0),
+        ], $user);
+
+        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking updated.');
     }
 
     public function startTrip()

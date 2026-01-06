@@ -14,6 +14,8 @@
 
     $branchesEnabled = (bool) ($branchesEnabled ?? false);
     $branches = $branches ?? collect();
+
+    $editBooking = $editBooking ?? null;
 @endphp
 
 <div class="container">
@@ -44,14 +46,14 @@
 
     <div class="card">
         <div class="card-header">
-            <h2 class="card-title">Create Booking</h2>
+            <h2 class="card-title">{{ $editBooking ? 'Edit Booking' : 'Create Booking' }}</h2>
             <p class="card-subtitle">Date and time are required. Customer/client is optional.</p>
         </div>
         <div class="card-body">
             @if(!$bookingsTableExists)
                 <p class="text-muted fst-italic">Bookings are unavailable until the database table is created.</p>
             @else
-                <form method="POST" action="{{ url('/app/sharpfleet/bookings') }}">
+                <form method="POST" action="{{ $editBooking ? url('/app/sharpfleet/bookings/' . (int)($editBooking['id'] ?? 0)) : url('/app/sharpfleet/bookings') }}">
                     @csrf
 
                     @if($branchesEnabled && $branches->count() > 1)
@@ -60,7 +62,8 @@
                             <select id="bookingBranchSelect" name="branch_id" class="form-control" required>
                                 <option value="">— Select branch —</option>
                                 @foreach($branches as $br)
-                                    <option value="{{ $br->id }}" {{ (string)old('branch_id') === (string)$br->id ? 'selected' : '' }}>
+                                    @php($selectedBranch = old('branch_id') !== null ? old('branch_id') : ($editBooking ? ($editBooking['branch_id'] ?? '') : ''))
+                                    <option value="{{ $br->id }}" {{ (string)$selectedBranch === (string)$br->id ? 'selected' : '' }}>
                                         {{ $br->name }}
                                     </option>
                                 @endforeach
@@ -76,29 +79,19 @@
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">Start date</label>
-                            <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" value="{{ old('planned_start_date') }}">
+                            @php($startDateVal = old('planned_start_date') !== null ? old('planned_start_date') : ($editBooking ? ($editBooking['planned_start_date'] ?? '') : ''))
+                            <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" value="{{ $startDateVal }}">
                             @error('planned_start_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label class="form-label">Start time</label>
-                            <div class="grid grid-2">
-                                <select name="planned_start_hour" class="form-control" required>
-                                    <option value="">HH</option>
-                                    @for($h = 0; $h <= 23; $h++)
-                                        @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
-                                        <option value="{{ $hh }}" {{ old('planned_start_hour') === $hh ? 'selected' : '' }}>{{ $hh }}</option>
-                                    @endfor
-                                </select>
-                                <select name="planned_start_minute" class="form-control" required>
-                                    <option value="">MM</option>
-                                    @for($m = 0; $m <= 59; $m++)
-                                        @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
-                                        <option value="{{ $mm }}" {{ old('planned_start_minute') === $mm ? 'selected' : '' }}>{{ $mm }}</option>
-                                    @endfor
-                                </select>
-                            </div>
+                            @php($startTimeVal = old('planned_start_time') !== null ? old('planned_start_time') : ($editBooking ? ($editBooking['planned_start_time'] ?? '') : ''))
+                            <input type="time" name="planned_start_time" class="form-control" required value="{{ $startTimeVal }}" step="60">
+                            @error('planned_start_time')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
                             @error('planned_start_hour')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
@@ -111,29 +104,19 @@
                     <div class="grid grid-2">
                         <div class="form-group">
                             <label class="form-label">End date</label>
-                            <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" value="{{ old('planned_end_date') }}">
+                            @php($endDateVal = old('planned_end_date') !== null ? old('planned_end_date') : ($editBooking ? ($editBooking['planned_end_date'] ?? '') : ''))
+                            <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" value="{{ $endDateVal }}">
                             @error('planned_end_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label class="form-label">End time</label>
-                            <div class="grid grid-2">
-                                <select name="planned_end_hour" class="form-control" required>
-                                    <option value="">HH</option>
-                                    @for($h = 0; $h <= 23; $h++)
-                                        @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
-                                        <option value="{{ $hh }}" {{ old('planned_end_hour') === $hh ? 'selected' : '' }}>{{ $hh }}</option>
-                                    @endfor
-                                </select>
-                                <select name="planned_end_minute" class="form-control" required>
-                                    <option value="">MM</option>
-                                    @for($m = 0; $m <= 59; $m++)
-                                        @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
-                                        <option value="{{ $mm }}" {{ old('planned_end_minute') === $mm ? 'selected' : '' }}>{{ $mm }}</option>
-                                    @endfor
-                                </select>
-                            </div>
+                            @php($endTimeVal = old('planned_end_time') !== null ? old('planned_end_time') : ($editBooking ? ($editBooking['planned_end_time'] ?? '') : ''))
+                            <input type="time" name="planned_end_time" class="form-control" required value="{{ $endTimeVal }}" step="60">
+                            @error('planned_end_time')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
                             @error('planned_end_hour')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
@@ -146,7 +129,8 @@
                     <div class="form-group">
                         <label class="form-label">Vehicle (available only)</label>
                         <div id="bookingVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
-                        <select id="bookingVehicleSelect" name="vehicle_id" class="form-control" required disabled>
+                        @php($selectedVehicle = old('vehicle_id') !== null ? old('vehicle_id') : ($editBooking ? ($editBooking['vehicle_id'] ?? '') : ''))
+                        <select id="bookingVehicleSelect" name="vehicle_id" class="form-control" required disabled data-selected-vehicle-id="{{ (string)$selectedVehicle }}">
                             <option value="">— Select vehicle —</option>
                         </select>
                         @error('vehicle_id')
@@ -160,7 +144,8 @@
                             <select id="bookingCustomerSelect" name="customer_id" class="form-control">
                                 <option value="">— Select from list —</option>
                                 @foreach($customers as $c)
-                                    <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
+                                    @php($selectedCustomer = old('customer_id') !== null ? old('customer_id') : ($editBooking ? ($editBooking['customer_id'] ?? '') : ''))
+                                    <option value="{{ $c->id }}" {{ (string)$selectedCustomer === (string)$c->id ? 'selected' : '' }} data-branch-id="{{ property_exists($c, 'branch_id') ? (string)($c->branch_id ?? '') : '' }}">
                                         {{ $c->name }}
                                     </option>
                                 @endforeach
@@ -168,7 +153,8 @@
                             <div class="hint-text">If the customer isn’t in the list, type a name below.</div>
                         @endif
 
-                        <input id="bookingCustomerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name" value="{{ old('customer_name') }}">
+                        @php($customerNameVal = old('customer_name') !== null ? old('customer_name') : ($editBooking ? ($editBooking['customer_name'] ?? '') : ''))
+                        <input id="bookingCustomerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter customer name" value="{{ $customerNameVal }}">
                         @error('customer_name')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
@@ -176,22 +162,26 @@
 
                     <div class="form-group">
                         <label class="form-label">Notes (optional)</label>
-                        <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes for admin/driver">{{ old('notes') }}</textarea>
+                        @php($notesVal = old('notes') !== null ? old('notes') : ($editBooking ? ($editBooking['notes'] ?? '') : ''))
+                        <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes for admin/driver">{{ $notesVal }}</textarea>
                         @error('notes')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <button id="createBookingBtn" type="submit" class="btn btn-primary btn-full" disabled>Create Booking</button>
+                    <button id="createBookingBtn" type="submit" class="btn btn-primary btn-full" disabled>{{ $editBooking ? 'Save Changes' : 'Create Booking' }}</button>
+                    @if($editBooking)
+                        <div class="mt-2">
+                            <a href="{{ url('/app/sharpfleet/bookings') }}" class="btn btn-secondary btn-full">Cancel Edit</a>
+                        </div>
+                    @endif
                 </form>
 
                 <script>
                     const startDate = document.querySelector('input[name="planned_start_date"]');
-                    const startHour = document.querySelector('select[name="planned_start_hour"]');
-                    const startMinute = document.querySelector('select[name="planned_start_minute"]');
+                    const startTime = document.querySelector('input[name="planned_start_time"]');
                     const endDate = document.querySelector('input[name="planned_end_date"]');
-                    const endHour = document.querySelector('select[name="planned_end_hour"]');
-                    const endMinute = document.querySelector('select[name="planned_end_minute"]');
+                    const endTime = document.querySelector('input[name="planned_end_time"]');
 
                     const branchSelect = document.getElementById('bookingBranchSelect');
 
@@ -221,6 +211,33 @@
                         }
                     }
 
+                    function applyCustomerBranchFilter() {
+                        const bookingCustomerSelect = document.getElementById('bookingCustomerSelect');
+                        if (!bookingCustomerSelect || !branchSelect) return;
+
+                        const selectedBranchId = branchSelect.value;
+                        const options = Array.from(bookingCustomerSelect.querySelectorAll('option'));
+                        options.forEach((opt, idx) => {
+                            if (idx === 0) {
+                                opt.hidden = false;
+                                return;
+                            }
+                            const optBranch = opt.getAttribute('data-branch-id') || '';
+                            // If customers table doesn't have branch_id (attribute empty), do not hide.
+                            if (!selectedBranchId || !optBranch) {
+                                opt.hidden = false;
+                                return;
+                            }
+                            opt.hidden = optBranch !== selectedBranchId;
+                        });
+
+                        // If current selection became hidden, clear it.
+                        const selectedOpt = bookingCustomerSelect.selectedOptions && bookingCustomerSelect.selectedOptions[0];
+                        if (selectedOpt && selectedOpt.hidden) {
+                            bookingCustomerSelect.value = '';
+                        }
+                    }
+
                     async function getResponseErrorMessage(res) {
                         try {
                             const data = await res.json();
@@ -243,7 +260,7 @@
                     }
 
                     async function loadAvailableVehicles() {
-                        if (!bookingVehicleSelect || !startDate || !startHour || !startMinute || !endDate || !endHour || !endMinute) return;
+                        if (!bookingVehicleSelect || !startDate || !startTime || !endDate || !endTime) return;
 
                         const branchId = branchSelect ? branchSelect.value : '';
                         if (branchSelect && !branchId) {
@@ -256,7 +273,7 @@
                             return;
                         }
 
-                        if (!startDate.value || !startHour.value || !startMinute.value || !endDate.value || !endHour.value || !endMinute.value) {
+                        if (!startDate.value || !startTime.value || !endDate.value || !endTime.value) {
                             bookingVehicleSelect.disabled = true;
                             setVehicleSelectOptions([]);
                             if (bookingVehicleStatus) {
@@ -274,11 +291,9 @@
                         const params = new URLSearchParams({
                             branch_id: branchId,
                             planned_start_date: startDate.value,
-                            planned_start_hour: startHour.value,
-                            planned_start_minute: startMinute.value,
+                            planned_start_time: startTime.value,
                             planned_end_date: endDate.value,
-                            planned_end_hour: endHour.value,
-                            planned_end_minute: endMinute.value,
+                            planned_end_time: endTime.value,
                         });
 
                         try {
@@ -302,6 +317,12 @@
                             const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
                             setVehicleSelectOptions(vehicles);
                             bookingVehicleSelect.disabled = false;
+
+                            const selectedVehicleId = bookingVehicleSelect.getAttribute('data-selected-vehicle-id');
+                            if (selectedVehicleId) {
+                                bookingVehicleSelect.value = selectedVehicleId;
+                            }
+
                             if (bookingVehicleStatus) {
                                 bookingVehicleStatus.textContent = vehicles.length
                                     ? `Available vehicles: ${vehicles.length}`
@@ -318,12 +339,13 @@
                         }
                     }
 
-                    [startDate, startHour, startMinute, endDate, endHour, endMinute].forEach(el => {
+                    [startDate, startTime, endDate, endTime].forEach(el => {
                         if (el) el.addEventListener('change', loadAvailableVehicles);
                     });
 
                     if (branchSelect) {
                         branchSelect.addEventListener('change', loadAvailableVehicles);
+                        branchSelect.addEventListener('change', applyCustomerBranchFilter);
                     }
 
                     if (bookingVehicleSelect) {
@@ -348,6 +370,7 @@
                     }
 
                     // Initial state
+                    applyCustomerBranchFilter();
                     loadAvailableVehicles();
                     updateCreateButtonState();
                 </script>
@@ -396,10 +419,13 @@
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
                                         @if($isMine)
-                                            <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . $b->id . '/cancel') }}">
-                                                @csrf
-                                                <button type="submit" class="btn btn-secondary">Cancel</button>
-                                            </form>
+                                            <div class="grid grid-2">
+                                                <a class="btn btn-secondary" href="{{ url('/app/sharpfleet/bookings?edit=' . (int)$b->id) }}">Edit</a>
+                                                <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . $b->id . '/cancel') }}">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-secondary">Cancel</button>
+                                                </form>
+                                            </div>
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
