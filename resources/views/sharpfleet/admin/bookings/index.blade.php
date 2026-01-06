@@ -903,8 +903,13 @@
                         tip.appendChild(list);
                         td.appendChild(tip);
 
-                        ind.addEventListener('mouseenter', () => { tip.style.display = 'block'; });
-                        ind.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+                        // Show tooltip when hovering the day cell (users naturally hover the day button).
+                        const showTip = () => { tip.style.display = 'block'; };
+                        const hideTip = () => { tip.style.display = 'none'; };
+                        td.addEventListener('mouseenter', showTip);
+                        td.addEventListener('mouseleave', hideTip);
+                        btn.addEventListener('mouseenter', showTip);
+                        btn.addEventListener('mouseleave', hideTip);
                     }
 
                     tr.appendChild(td);
@@ -1043,6 +1048,7 @@
             });
 
             // Render booking blocks
+            let earliestBookingStartMs = null;
             state.bookings.forEach(b => {
                 const lane = vehicleRowEls.get(String(b.vehicle_id));
                 if (!lane) return;
@@ -1050,6 +1056,12 @@
                 const startMs = parseYmdHi(b.planned_start_local);
                 const endMs = parseYmdHi(b.planned_end_local);
                 if (!isFinite(startMs) || !isFinite(endMs)) return;
+
+                if (startMs >= state.rangeStartMs && startMs < state.rangeEndMs) {
+                    if (earliestBookingStartMs === null || startMs < earliestBookingStartMs) {
+                        earliestBookingStartMs = startMs;
+                    }
+                }
 
                 const clampedStart = Math.max(startMs, state.rangeStartMs);
                 const clampedEnd = Math.min(endMs, state.rangeEndMs);
@@ -1079,10 +1091,15 @@
 
             els.cal.appendChild(scroll);
 
-            // Default visible range: 06:00–18:00 (scroll to 06:00).
-            const defaultStartHour = 6;
-            const initialScrollLeft = Math.round((defaultStartHour * 60) * pxPerMin);
-            scroll.scrollLeft = initialScrollLeft;
+            // Default visible range: scroll to the earliest booking (so overnight bookings aren't "missing").
+            // Falls back to 06:00 if there are no bookings.
+            const fallbackStartHour = 6;
+            if (earliestBookingStartMs !== null) {
+                const targetMs = Math.max(state.rangeStartMs, earliestBookingStartMs - 60 * 60000);
+                scroll.scrollLeft = Math.max(0, Math.round(((targetMs - state.rangeStartMs) / 60000) * pxPerMin));
+            } else {
+                scroll.scrollLeft = Math.round((fallbackStartHour * 60) * pxPerMin);
+            }
         }
 
         function renderWeekGrid() {
