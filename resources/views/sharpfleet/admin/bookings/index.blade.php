@@ -178,25 +178,28 @@
                         <input id="sfBkCreateStartDate" type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Start time</label>
-                        <div class="grid grid-2">
-                            <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control" required>
-                                <option value="">HH</option>
-                                @for($h = 0; $h <= 23; $h++)
-                                    @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
-                                    <option value="{{ $hh }}">{{ $hh }}</option>
-                                @endfor
-                            </select>
-                            <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control" required>
-                                <option value="">MM</option>
-                                @for($m = 0; $m <= 59; $m++)
-                                    @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
-                                    <option value="{{ $mm }}">{{ $mm }}</option>
-                                @endfor
-                            </select>
-                        </div>
+                    <label class="form-label">Start time</label>
+                    <div class="sf-time-row">
+                        <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
+                            <option value="">HH</option>
+                            @for($h = 0; $h <= 23; $h++)
+                                @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
+                                <option value="{{ $hh }}">{{ $hh }}</option>
+                            @endfor
+                        </select>
+
+                        <span class="sf-time-sep">:</span>
+
+                        <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
+                            <option value="">MM</option>
+                            @for($m = 0; $m <= 59; $m+=5)
+                                @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
+                                <option value="{{ $mm }}">{{ $mm }}</option>
+                            @endfor
+                        </select>
                     </div>
                 </div>
+
 
                 <div class="grid grid-2">
                     <div class="form-group">
