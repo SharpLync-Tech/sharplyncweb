@@ -483,8 +483,13 @@
 
     /* Booking modals: lighter + sharper SharpFleet feel */
     #sfBkCreateModal .card-body,
-    #sfBkCreateModal .card {border: 1.5px solid rgba(var(--primary-rgb), 0.35); box-shadow: var(--shadow), 0 0 0 5px rgba(var(--primary-rgb), 0.18), 0 0 18px rgba(var(--primary-rgb), 0.40);}
     #sfBkEditModal .card-body{position:relative;padding:18px 18px 16px;}
+
+    #sfBkCreateModal .card,
+    #sfBkEditModal .card{
+        border:1.5px solid rgba(var(--primary-rgb), 0.35);
+        box-shadow:var(--shadow), 0 0 18px rgba(var(--primary-rgb), 0.22);
+    }
 
     #sfBkCreateModal .form-group,
     #sfBkEditModal .form-group{margin-bottom:10px;}
