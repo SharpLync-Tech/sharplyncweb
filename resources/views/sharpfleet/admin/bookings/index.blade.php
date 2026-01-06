@@ -129,11 +129,11 @@
                     <p class="text-muted mb-0">Driver, vehicle, date and time are required.</p>
                 </div>
                 <button type="button"
-                        class="btn btn-secondary btn-sm"
+                    class="sf-modal-close"
                         id="sfBkCreateClose"
                         aria-label="Close"
                         title="Close"
-                        style="">&times;</button>
+                    style="">&times;</button>
             </div>
 
             <div class="mt-2"></div>
@@ -286,11 +286,11 @@
                     <p class="text-muted mb-0" id="sfBkEditSubtitle"></p>
                 </div>
                 <button type="button"
-                        class="btn btn-secondary btn-sm"
+                    class="sf-modal-close"
                         id="sfBkEditClose"
                         aria-label="Close"
                         title="Close"
-                        style="">&times;</button>
+                    style="">&times;</button>
             </div>
 
             <div class="alert alert-info" id="sfBkEditCreatedByNotice" style="display:none; margin-top:12px;"></div>
@@ -447,7 +447,7 @@
     .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal,#2CBFAE);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
     .sf-bk-slot-plus{color:var(--sl-teal,#2CBFAE);font-weight:800;font-size:22px;line-height:1}
     .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);z-index:10}
-    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:0;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18);border:3px solid var(--sl-teal,#2CBFAE)}
+    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:0;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18);border:1px solid var(--sl-teal,#2CBFAE)}
     .sf-bk-block:hover{filter:brightness(1.05)}
     .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -505,10 +505,7 @@
     #sfBkCreateModal .sf-reminder-inline{font-size:13px;white-space:nowrap;}
     #sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
 
-    #sfBkCreateClose,
-    #sfBkEditClose{position:absolute;top:10px;right:10px;width:44px;height:44px;padding:0;background:transparent;border:0;color:var(--sl-navy);font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:none;}
-    #sfBkCreateClose:hover,
-    #sfBkEditClose:hover{background:rgba(44,191,174,.10);border-radius:10px;}
+    /* Modal close button styling is defined globally in sharpfleetmain.css (.sf-modal-close). */
 </style>
 
 <script>

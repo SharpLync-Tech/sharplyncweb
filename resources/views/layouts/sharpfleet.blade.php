@@ -155,11 +155,11 @@
                         <p class="text-muted mb-0" id="sfConfirmMessage">Are you sure?</p>
                     </div>
                     <button type="button"
-                            class="btn btn-secondary btn-sm"
+                            class="sf-modal-close"
                             id="sfConfirmClose"
                             aria-label="Close"
                             title="Close"
-                            style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">
+                            style="">
                         &times;
                     </button>
                 </div>
@@ -183,11 +183,11 @@
                         <p class="text-muted mb-0" id="sfNoticeMessage"></p>
                     </div>
                     <button type="button"
-                            class="btn btn-secondary btn-sm"
+                            class="sf-modal-close"
                             id="sfNoticeClose"
                             aria-label="Close"
                             title="Close"
-                            style="width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; font-size:22px; line-height:1;">
+                            style="">
                         &times;
                     </button>
                 </div>

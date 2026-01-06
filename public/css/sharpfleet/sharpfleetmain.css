@@ -1733,3 +1733,35 @@ details.card[open] .incident-toggle-hint-closed {
         text-align: left;
     }
 }
+
+/* Shared modal close (top-right X) */
+.sf-modal-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:38px;
+    height:38px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:0;
+    color:var(--secondary-color,#0A2A4D);
+    font-size:28px;
+    line-height:1;
+    cursor:pointer;
+}
+.sf-modal-close:hover{
+    background:rgba(var(--primary-rgb, 44, 191, 174), .10);
+}
+.sf-modal-close:focus{
+    outline:2px solid var(--primary-color,#2CBFAE);
+    outline-offset:2px;
+}
+
+/* Ensure SharpFleet confirm/notice modals have a positioning context for the close button */
+#sfConfirmModal .card-body,
+#sfNoticeModal .card-body{
+    position:relative;
+}
