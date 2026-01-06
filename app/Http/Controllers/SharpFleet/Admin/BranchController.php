@@ -135,6 +135,10 @@ class BranchController extends Controller
             'timezone' => $timezone,
         ];
 
+        if (Schema::connection('sharpfleet')->hasColumn('branches', 'distance_unit')) {
+            $payload['distance_unit'] = $distanceUnit !== '' ? $distanceUnit : null;
+        }
+
         if (Schema::connection('sharpfleet')->hasColumn('branches', 'is_active')) {
             $payload['is_active'] = 1;
         }
@@ -296,6 +300,10 @@ class BranchController extends Controller
             'name' => $name,
             'timezone' => $timezone,
         ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('branches', 'distance_unit')) {
+            $update['distance_unit'] = $distanceUnit !== '' ? $distanceUnit : null;
+        }
 
         if (Schema::connection('sharpfleet')->hasColumn('branches', 'is_active')) {
             $update['is_active'] = $wantsActive ? 1 : 0;

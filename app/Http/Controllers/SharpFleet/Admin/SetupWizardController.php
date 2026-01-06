@@ -8,6 +8,7 @@ use App\Support\SharpFleet\Roles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SetupWizardController extends Controller
 {
@@ -73,6 +74,28 @@ class SetupWizardController extends Controller
             $settings['units']['distance'] = $distanceUnit;
         }
         $this->persistSettings($organisationId, $settings);
+
+        // Optional: persist company default distance unit to DB when supported.
+        if ($distanceUnit === 'km' || $distanceUnit === 'mi') {
+            if (
+                Schema::connection('sharpfleet')->hasTable('companies')
+                && Schema::connection('sharpfleet')->hasColumn('companies', 'default_distance_unit')
+            ) {
+                $query = DB::connection('sharpfleet')->table('companies');
+                $scoped = false;
+                if (Schema::connection('sharpfleet')->hasColumn('companies', 'organisation_id')) {
+                    $query->where('organisation_id', $organisationId);
+                    $scoped = true;
+                } elseif (Schema::connection('sharpfleet')->hasColumn('companies', 'id')) {
+                    $query->where('id', $organisationId);
+                    $scoped = true;
+                }
+
+                if ($scoped) {
+                    $query->update(['default_distance_unit' => $distanceUnit]);
+                }
+            }
+        }
 
         return redirect('/app/sharpfleet/admin/setup/settings/presence')
             ->with('success', 'Step 1 saved. Next: passenger/client presence.');
