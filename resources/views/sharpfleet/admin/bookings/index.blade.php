@@ -812,9 +812,14 @@
                 const endMs = parseYmdHi(b.planned_end_local);
                 if (!isFinite(startMs) || !isFinite(endMs)) return;
 
+                // Treat end time as exclusive for day-overlap counting.
+                // Example: 23:00 → 00:00 should count only on the start day, not the next day.
+                const endExclusiveMs = endMs - 1;
+                if (endExclusiveMs < startMs) return;
+
                 // For month indicators, count a vehicle as "used" on each day it overlaps.
                 const dayStart = parseYmd(formatYmd(startMs));
-                const dayEnd = parseYmd(formatYmd(endMs));
+                const dayEnd = parseYmd(formatYmd(endExclusiveMs));
                 for (let t = dayStart; t <= dayEnd; t += 86400000) {
                     const ymd = formatYmd(t);
                     if (!vehicleUsageByDay.has(ymd)) vehicleUsageByDay.set(ymd, new Set());
