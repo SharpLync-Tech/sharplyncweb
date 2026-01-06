@@ -440,7 +440,7 @@
     /* SharpFleet bookings calendar (locked NAVY/TEAL spec) */
     .sf-bk-scroll{overflow:auto;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
     .sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
-    .sf-bk-left{width:240px;flex:0 0 240px;position:sticky;left:0;z-index:6;background:#fff}
+    .sf-bk-left{width:240px;flex:0 0 240px;position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
     .sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy,#0A2A4D)}
     .sf-bk-time-header{position:relative;height:54px;min-height:54px}
     .sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy,#0A2A4D);white-space:nowrap}
@@ -479,7 +479,7 @@
     .sf-wk-v1-header,
     .sf-wk-v1-row{display:grid;grid-template-columns:240px repeat(7,minmax(0,1fr));}
     .sf-wk-v1-header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid rgba(10,42,77,.08);}
-    .sf-wk-v1-left{position:sticky;left:0;z-index:6;background:#fff;border-right:1px solid rgba(10,42,77,.06);}
+    .sf-wk-v1-left{position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
     .sf-wk-v1-left .sf-bk-left-inner{padding:10px 12px;}
     .sf-wk-v1-dayhead{padding:10px 10px 8px;color:var(--sl-navy,#0A2A4D);border-bottom:2px solid var(--sl-teal,#2CBFAE);}
     .sf-wk-v1-dayhead.is-today{background:rgba(44,191,174,.06);}
