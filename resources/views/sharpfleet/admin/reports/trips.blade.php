@@ -128,7 +128,9 @@
             @else
                 <div class="mb-3">
                     <span class="text-muted">Total:</span>
-                    @php($distanceMode = (string) ($totals['distance_display'] ?? ($uiDistanceDisplay ?? 'branch')))
+                    @php
+                        $distanceMode = (string) ($totals['distance_display'] ?? ($uiDistanceDisplay ?? 'branch'));
+                    @endphp
                     @if($distanceMode === 'branch')
                         <span class="fw-bold">{{ number_format((float) ($totals['distance_km'] ?? 0), 2) }} km</span>
                         <span class="text-muted">(km branches)</span>
