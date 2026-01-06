@@ -345,15 +345,16 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Start time</label>
-                        <div class="grid grid-2">
-                            <select id="sfBkEditStartHour" name="planned_start_hour" class="form-control" required>
+                        <div class="sf-time-row">
+                            <select id="sfBkEditStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
                                 <option value="">HH</option>
                                 @for($h = 0; $h <= 23; $h++)
                                     @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
                                     <option value="{{ $hh }}">{{ $hh }}</option>
                                 @endfor
                             </select>
-                            <select id="sfBkEditStartMinute" name="planned_start_minute" class="form-control" required>
+                            <span class="sf-time-sep">:</span>
+                            <select id="sfBkEditStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
                                 <option value="">MM</option>
                                 @for($m = 0; $m <= 59; $m++)
                                     @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
@@ -371,15 +372,16 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">End time</label>
-                        <div class="grid grid-2">
-                            <select id="sfBkEditEndHour" name="planned_end_hour" class="form-control" required>
+                        <div class="sf-time-row">
+                            <select id="sfBkEditEndHour" name="planned_end_hour" class="form-control sf-time-hh" required>
                                 <option value="">HH</option>
                                 @for($h = 0; $h <= 23; $h++)
                                     @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
                                     <option value="{{ $hh }}">{{ $hh }}</option>
                                 @endfor
                             </select>
-                            <select id="sfBkEditEndMinute" name="planned_end_minute" class="form-control" required>
+                            <span class="sf-time-sep">:</span>
+                            <select id="sfBkEditEndMinute" name="planned_end_minute" class="form-control sf-time-mm" required>
                                 <option value="">MM</option>
                                 @for($m = 0; $m <= 59; $m++)
                                     @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
@@ -527,10 +529,14 @@
 
     #sfBkCreateModal .sf-bk-section-label{font-size:12px;color:rgba(10,42,77,.70);font-weight:600;margin:6px 0 6px;}
     #sfBkCreateModal .sf-time-and-reminder{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;}
-    #sfBkCreateModal .sf-time-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+    #sfBkCreateModal .sf-time-row,
+    #sfBkEditModal .sf-time-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
     #sfBkCreateModal .sf-time-hh,
-    #sfBkCreateModal .sf-time-mm{width:72px;flex:0 0 72px;}
-    #sfBkCreateModal .sf-time-sep{color:var(--sl-navy,#0A2A4D);opacity:.70;}
+    #sfBkCreateModal .sf-time-mm,
+    #sfBkEditModal .sf-time-hh,
+    #sfBkEditModal .sf-time-mm{width:72px;flex:0 0 72px;}
+    #sfBkCreateModal .sf-time-sep,
+    #sfBkEditModal .sf-time-sep{color:var(--sl-navy,#0A2A4D);opacity:.70;}
     #sfBkCreateModal .sf-reminder-inline{font-size:13px;white-space:nowrap;}
     #sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
 
