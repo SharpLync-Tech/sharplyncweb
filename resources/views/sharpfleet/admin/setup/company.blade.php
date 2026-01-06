@@ -71,6 +71,25 @@
                                value="{{ old('company_name', $organisation->name ?? '') }}" required>
                         <div class="form-hint">{{ $nameHint }}</div>
                     </div>
+                @elseif($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_PERSONAL)
+                    @php
+                        $sfUser = session('sharpfleet.user');
+                        $sfName = '';
+                        if (is_array($sfUser)) {
+                            $sfName = trim((string) (($sfUser['first_name'] ?? '') . ' ' . ($sfUser['last_name'] ?? '')));
+                        }
+                        if ($sfName === '') {
+                            $sfName = trim((string) ($organisation->name ?? ''));
+                        }
+                        if ($sfName === '' || $sfName === 'Company') {
+                            $sfName = 'Your account';
+                        }
+                    @endphp
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <div class="form-control-plaintext">{{ $sfName }}</div>
+                        <div class="form-hint">We already captured this during registration.</div>
+                    </div>
                 @endif
 
                 <div class="mb-3">
