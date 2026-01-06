@@ -489,7 +489,7 @@
     .sf-wk-v1-row.is-expanded .sf-wk-v1-cell{border-right:1px solid rgba(44,191,174,.18);}
     .sf-wk-v1-row.is-expanded .sf-wk-v1-left{border-right:1px solid rgba(44,191,174,.18);}
     .sf-wk-v1-chips{padding:6px;min-height:38px;display:flex;flex-direction:column;gap:6px;}
-    .sf-wk-v1-chip{display:block;background:var(--sl-navy,#0A2A4D);color:#fff;border:1px solid var(--sl-teal,#2CBFAE);border-radius:10px;padding:4px 6px;line-height:1.15;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 8px 18px rgba(10,42,77,.12);}
+    .sf-wk-v1-chip{display:block;background:var(--sl-navy,#0A2A4D);color:#fff;border:1px solid var(--sl-teal,#2CBFAE);border-radius:10px;padding:4px 6px;line-height:1.15;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 8px 18px rgba(10,42,77,.12);cursor:pointer;}
     .sf-wk-v1-grid{position:relative;margin:0 6px 6px;border-radius:10px;overflow:hidden;background:#fff;}
     .sf-wk-v1-grid::before{content:'';position:absolute;inset:0;pointer-events:none;
         background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(44,191,174,.18) 55px, rgba(44,191,174,.18) 56px);
@@ -1484,7 +1484,12 @@
 
                     const chip = document.createElement('div');
                     chip.className = 'sf-wk-v1-chip';
+                    chip.dataset.bookingId = String(b.id);
                     chip.textContent = (b.driver_name || 'Driver') + ' ' + chipTime;
+                    chip.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        openEditModal(b);
+                    });
                     chipWrap.appendChild(chip);
 
                     // Time-positioned block clipped to 06:00–18:00 window.
