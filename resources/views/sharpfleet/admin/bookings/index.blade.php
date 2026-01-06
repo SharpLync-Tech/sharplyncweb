@@ -447,11 +447,10 @@
     .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal,#2CBFAE);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
     .sf-bk-slot-plus{color:var(--sl-teal,#2CBFAE);font-weight:800;font-size:22px;line-height:1}
     .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);z-index:10}
-    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
-    .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal,#2CBFAE)}
-    .sf-bk-block:hover{outline:2px solid var(--sl-teal);filter:brightness(1.05)}
-    .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
-    .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
+    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:0;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18);border:3px solid var(--sl-teal,#2CBFAE)}
+    .sf-bk-block:hover{filter:brightness(1.05)}
+    .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
     /* Week view: true grid (Mon–Sun columns) with vertical time axis (06:00–18:00) */
     .sf-wk-days{display:grid;grid-template-columns:repeat(7,var(--sf-wk-col-w,180px));}
@@ -1012,6 +1011,12 @@
                 lane.appendChild(slotHover);
 
                 lane.addEventListener('mousemove', (ev) => {
+                    // Don't show the "Book this time" hover when pointing at an existing booking.
+                    const target = ev.target;
+                    if (target && target.closest && target.closest('[data-booking-id]')) {
+                        slotHover.style.display = 'none';
+                        return;
+                    }
                     const rect = lane.getBoundingClientRect();
                     const x = ev.clientX - rect.left;
                     const minutesFromStart = Math.max(0, Math.round(x / pxPerMin));
