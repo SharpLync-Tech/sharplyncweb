@@ -41,6 +41,8 @@
                 <div class="sharpfleet-nav-links">
                     @if(session()->has('sharpfleet.user'))
                         @php($sfRole = \App\Support\SharpFleet\Roles::normalize(session('sharpfleet.user.role')))
+                        @php($sfOrganisationId = (int) session('sharpfleet.user.organisation_id'))
+                        @php($sfAccountType = \App\Support\SharpFleet\OrganisationAccount::forOrganisationId($sfOrganisationId))
                         @if(\App\Support\SharpFleet\Roles::isAdminPortal(session('sharpfleet.user')))
                             <div class="sharpfleet-nav-primary">
                                 <div class="sharpfleet-nav-dropdown">
@@ -50,7 +52,9 @@
                                         @if($sfRole !== \App\Support\SharpFleet\Roles::BOOKING_ADMIN)
                                             <a href="/app/sharpfleet/admin/vehicles" class="sharpfleet-nav-dropdown-item">Vehicles</a>
                                         @endif
-                                        <a href="/app/sharpfleet/admin/bookings" class="sharpfleet-nav-dropdown-item">Bookings</a>
+                                        @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
+                                            <a href="/app/sharpfleet/admin/bookings" class="sharpfleet-nav-dropdown-item">Bookings</a>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -63,13 +67,15 @@
                                         </div>
                                     </div>
 
-                                    <div class="sharpfleet-nav-dropdown">
-                                        <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/customers*') ? 'is-active' : '' }}">Customers</button>
-                                        <div class="sharpfleet-nav-dropdown-menu">
-                                            <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">View Customers</a>
-                                            <a href="/app/sharpfleet/admin/customers/create" class="sharpfleet-nav-dropdown-item">Add Customers</a>
+                                    @if($sfAccountType !== \App\Support\SharpFleet\OrganisationAccount::TYPE_PERSONAL)
+                                        <div class="sharpfleet-nav-dropdown">
+                                            <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/customers*') ? 'is-active' : '' }}">Customers</button>
+                                            <div class="sharpfleet-nav-dropdown-menu">
+                                                <a href="/app/sharpfleet/admin/customers" class="sharpfleet-nav-dropdown-item">View Customers</a>
+                                                <a href="/app/sharpfleet/admin/customers/create" class="sharpfleet-nav-dropdown-item">Add Customers</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
 
                                     <div class="sharpfleet-nav-dropdown">
                                         <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/reports*') || request()->is('app/sharpfleet/admin/faults*') ? 'is-active' : '' }}">Reports</button>
@@ -84,7 +90,9 @@
                                     <div class="sharpfleet-nav-dropdown">
                                         <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/company*') || request()->is('app/sharpfleet/admin/branches*') || request()->is('app/sharpfleet/admin/users*') || request()->is('app/sharpfleet/admin/settings*') ? 'is-active' : '' }}">Company</button>
                                         <div class="sharpfleet-nav-dropdown-menu">
-                                            <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
+                                            @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
+                                                <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
+                                            @endif
 
                                             @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN)
                                                 <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
@@ -107,7 +115,9 @@
                             </div>
                         @else
                             <a href="/app/sharpfleet/driver" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/driver*') ? 'is-active' : '' }}">Dashboard</a>
-                            <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/bookings*') ? 'is-active' : '' }}">Bookings</a>
+                            @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
+                                <a href="/app/sharpfleet/bookings" class="sharpfleet-nav-link {{ request()->is('app/sharpfleet/bookings*') ? 'is-active' : '' }}">Bookings</a>
+                            @endif
                             <div class="sharpfleet-nav-dropdown">
                                 <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/driver/help*') || request()->is('app/sharpfleet/driver/about*') ? 'is-active' : '' }}">Help</button>
                                 <div class="sharpfleet-nav-dropdown-menu">

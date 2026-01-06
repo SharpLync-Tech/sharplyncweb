@@ -12,16 +12,16 @@ class NewSubscriberNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $email;
-    public $businessType;
+        public string $email;
+        public ?string $businessType;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($email, $businessType)
+        public function __construct(string $email, ?string $businessType)
     {
         $this->email = $email;
-        $this->businessType = $businessType;
+            $this->businessType = $businessType !== null ? strtolower(trim($businessType)) : null;
     }
 
     /**
@@ -43,8 +43,8 @@ class NewSubscriberNotification extends Mailable
             view: 'emails.sharpfleet.new-subscriber',
             with: [
                 'email' => $this->email,
-                'businessType' => $this->businessType,
-                'businessTypeLabel' => $this->businessType === 'sole_trader' ? 'Sole Trader' : 'Company',
+                    'businessType' => $this->businessType,
+                    'businessTypeLabel' => $this->businessType === 'sole_trader' ? 'Sole Trader' : ($this->businessType === 'company' ? 'Company' : 'Not selected (setup wizard)'),
             ],
         );
     }

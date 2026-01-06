@@ -4,21 +4,103 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SetupWizardController extends Controller
 {
-    private const TOTAL_STEPS = 10;
+    private const TOTAL_STEPS_COMPANY = 11;
+    private const TOTAL_STEPS_PERSONAL = 10;
+
+    public function accountType(Request $request)
+    {
+        $organisationId = $this->requireAdminOrganisationId($request);
+
+        $select = ['id'];
+        if (Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
+            $select[] = 'account_type';
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('organisations', 'company_type')) {
+            $select[] = 'company_type';
+        }
+
+        $organisation = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->select($select)
+            ->where('id', $organisationId)
+            ->first();
+
+        $selected = $this->effectiveAccountTypeFromOrganisationRow($organisation) ?: OrganisationAccount::TYPE_COMPANY;
+
+        return view('sharpfleet.admin.setup.account-type', [
+            'organisation' => $organisation,
+            'selectedAccountType' => $selected,
+            'step' => 1,
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
+        ]);
+    }
+
+    public function storeAccountType(Request $request): RedirectResponse
+    {
+        $organisationId = $this->requireAdminOrganisationId($request);
+
+        if (!Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
+            return back()->withErrors([
+                'account_type' => 'Account type requires a database update. Please run the installer SQL to add organisations.account_type, then try again.',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'account_type' => ['required', 'in:personal,sole_trader,company'],
+        ]);
+
+        $accountType = (string) $validated['account_type'];
+        $companyType = null;
+
+        if ($accountType === OrganisationAccount::TYPE_COMPANY) {
+            $companyType = OrganisationAccount::TYPE_COMPANY;
+        } elseif ($accountType === OrganisationAccount::TYPE_SOLE_TRADER) {
+            $companyType = OrganisationAccount::TYPE_SOLE_TRADER;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->update([
+                'account_type' => $accountType,
+                // Keep legacy column in sync where possible.
+                'company_type' => $companyType,
+                'updated_at' => now(),
+            ]);
+
+        if ($accountType === OrganisationAccount::TYPE_PERSONAL) {
+            $settings = $this->loadSettings($organisationId);
+
+            $settings['customer']['enabled'] = false;
+            $settings['customer']['allow_select'] = false;
+            $settings['customer']['allow_manual'] = false;
+
+            $this->persistSettings($organisationId, $settings);
+        }
+
+        return redirect('/app/sharpfleet/admin/setup/company')
+            ->with('success', 'Account type saved. Next: company details.');
+    }
 
     /**
-     * Step 1: Company details
+     * Step 2: Company details
      */
     public function company(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
 
         $settings['trip']['purpose_of_travel_enabled'] = $request->boolean('enable_purpose_of_travel');
         $organisation = DB::connection('sharpfleet')
@@ -34,7 +116,8 @@ class SetupWizardController extends Controller
             'organisation' => $organisation,
             'settings' => $settings,
             'timezones' => $this->auNzTimezones(),
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'company'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
@@ -44,6 +127,10 @@ class SetupWizardController extends Controller
     public function storeCompany(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
 
         $validated = $request->validate([
             'company_name' => ['required', 'string', 'max:255'],
@@ -70,7 +157,7 @@ class SetupWizardController extends Controller
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/presence')
-            ->with('success', 'Step 1 saved. Next: passenger/client presence.');
+            ->with('success', 'Company details saved. Next: passenger/client presence.');
     }
 
     /**
@@ -79,18 +166,26 @@ class SetupWizardController extends Controller
     public function settingsPresence(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.presence', [
             'settings' => $settings,
-            'step' => 2,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'presence'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsPresence(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
 
         $validated = $request->validate([
             'client_label' => ['nullable', 'string', 'max:50'],
@@ -104,8 +199,13 @@ class SetupWizardController extends Controller
 
         $this->persistSettings($organisationId, $settings);
 
+        if (!OrganisationAccount::wizardIncludesCustomerStep($organisationId)) {
+            return redirect('/app/sharpfleet/admin/setup/settings/trip-rules')
+                ->with('success', 'Saved. Next: trip rules.');
+        }
+
         return redirect('/app/sharpfleet/admin/setup/settings/customer')
-            ->with('success', 'Step 2 saved. Next: customer/client capture.');
+            ->with('success', 'Saved. Next: customer/client capture.');
     }
 
     /**
@@ -114,18 +214,36 @@ class SetupWizardController extends Controller
     public function settingsCustomer(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
+
+        if (!OrganisationAccount::wizardIncludesCustomerStep($organisationId)) {
+            return redirect('/app/sharpfleet/admin/setup/settings/trip-rules');
+        }
+
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.customer', [
             'settings' => $settings,
-            'step' => 3,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'customer'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsCustomer(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
+
+        if (!OrganisationAccount::wizardIncludesCustomerStep($organisationId)) {
+            return redirect('/app/sharpfleet/admin/setup/settings/trip-rules');
+        }
+
         $settings = $this->loadSettings($organisationId);
 
         $settings['customer']['enabled'] = $request->boolean('enable_customer_capture');
@@ -144,18 +262,26 @@ class SetupWizardController extends Controller
     public function settingsTripRules(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.trip_rules', [
             'settings' => $settings,
-            'step' => 4,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'trip_rules'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsTripRules(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         $settings['trip']['odometer_required'] = $request->boolean('require_odometer_start');
@@ -175,18 +301,26 @@ class SetupWizardController extends Controller
     public function settingsVehicleTracking(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.vehicle_tracking', [
             'settings' => $settings,
-            'step' => 5,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'vehicle_tracking'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsVehicleTracking(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         $settings['vehicles']['registration_tracking_enabled'] = $request->boolean('enable_vehicle_registration_tracking');
@@ -204,18 +338,26 @@ class SetupWizardController extends Controller
     public function settingsReminders(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.reminders', [
             'settings' => $settings,
-            'step' => 6,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'reminders'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsReminders(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $validated = $request->validate([
             'reminder_registration_days' => ['required', 'integer', 'min:1', 'max:365'],
             'reminder_service_days' => ['required', 'integer', 'min:1', 'max:365'],
@@ -239,18 +381,26 @@ class SetupWizardController extends Controller
     public function settingsClientAddresses(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.client_addresses', [
             'settings' => $settings,
-            'step' => 7,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'client_addresses'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsClientAddresses(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         $settings['client_presence']['enable_addresses'] = $request->boolean('enable_client_addresses');
@@ -266,18 +416,26 @@ class SetupWizardController extends Controller
     public function settingsSafetyCheck(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.safety_check', [
             'settings' => $settings,
-            'step' => 8,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'safety_check'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsSafetyCheck(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         $settings['safety_check']['enabled'] = $request->boolean('enable_safety_check');
@@ -293,18 +451,26 @@ class SetupWizardController extends Controller
     public function settingsIncidentReporting(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.settings.incident_reporting', [
             'settings' => $settings,
-            'step' => 9,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'incident_reporting'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
     public function storeSettingsIncidentReporting(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         $settings['faults']['enabled'] = $request->boolean('enable_fault_reporting');
@@ -323,12 +489,16 @@ class SetupWizardController extends Controller
     public function finishView(Request $request)
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         return view('sharpfleet.admin.setup.finish', [
             'settings' => $settings,
-            'step' => 10,
-            'totalSteps' => self::TOTAL_STEPS,
+            'step' => $this->wizardStepForOrganisation($organisationId, 'finish'),
+            'totalSteps' => $this->wizardTotalStepsForOrganisation($organisationId),
         ]);
     }
 
@@ -338,6 +508,10 @@ class SetupWizardController extends Controller
     public function finish(Request $request): RedirectResponse
     {
         $organisationId = $this->requireAdminOrganisationId($request);
+
+        if ($redirect = $this->redirectIfAccountTypeMissing($organisationId)) {
+            return $redirect;
+        }
         $settings = $this->loadSettings($organisationId);
 
         if (!isset($settings['setup']) || !is_array($settings['setup'])) {
@@ -369,8 +543,91 @@ class SetupWizardController extends Controller
 
         $this->persistSettings($organisationId, $settings);
 
-        return redirect('/app/sharpfleet/admin/setup/company')
+        return redirect('/app/sharpfleet/admin/setup/account-type')
             ->with('success', 'Setup wizard reset.');
+    }
+
+    private function redirectIfAccountTypeMissing(int $organisationId): ?RedirectResponse
+    {
+        if (!Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
+            return null;
+        }
+
+        $accountType = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->value('account_type');
+
+        if (empty($accountType)) {
+            return redirect('/app/sharpfleet/admin/setup/account-type');
+        }
+
+        return null;
+    }
+
+    private function wizardTotalStepsForOrganisation(int $organisationId): int
+    {
+        return OrganisationAccount::wizardIncludesCustomerStep($organisationId)
+            ? self::TOTAL_STEPS_COMPANY
+            : self::TOTAL_STEPS_PERSONAL;
+    }
+
+    private function wizardStepForOrganisation(int $organisationId, string $key): int
+    {
+        $includesCustomer = OrganisationAccount::wizardIncludesCustomerStep($organisationId);
+
+        $steps = $includesCustomer
+            ? [
+                'account_type' => 1,
+                'company' => 2,
+                'presence' => 3,
+                'customer' => 4,
+                'trip_rules' => 5,
+                'vehicle_tracking' => 6,
+                'reminders' => 7,
+                'client_addresses' => 8,
+                'safety_check' => 9,
+                'incident_reporting' => 10,
+                'finish' => 11,
+            ]
+            : [
+                'account_type' => 1,
+                'company' => 2,
+                'presence' => 3,
+                // customer omitted
+                'trip_rules' => 4,
+                'vehicle_tracking' => 5,
+                'reminders' => 6,
+                'client_addresses' => 7,
+                'safety_check' => 8,
+                'incident_reporting' => 9,
+                'finish' => 10,
+            ];
+
+        return (int) ($steps[$key] ?? 1);
+    }
+
+    private function effectiveAccountTypeFromOrganisationRow($organisation): ?string
+    {
+        if (!$organisation) {
+            return null;
+        }
+
+        $accountType = strtolower(trim((string) ($organisation->account_type ?? '')));
+        if (in_array($accountType, [OrganisationAccount::TYPE_PERSONAL, OrganisationAccount::TYPE_SOLE_TRADER, OrganisationAccount::TYPE_COMPANY], true)) {
+            return $accountType;
+        }
+
+        $companyType = strtolower(trim((string) ($organisation->company_type ?? '')));
+        if ($companyType === OrganisationAccount::TYPE_SOLE_TRADER) {
+            return OrganisationAccount::TYPE_SOLE_TRADER;
+        }
+
+        if ($companyType === OrganisationAccount::TYPE_COMPANY) {
+            return OrganisationAccount::TYPE_COMPANY;
+        }
+
+        return null;
     }
 
     private function auNzTimezones(): array

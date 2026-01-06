@@ -346,6 +346,8 @@ Route::prefix('app/sharpfleet')
             // Setup wizard (mandatory for first-time admin setup)
             Route::get('/setup/company', [SetupWizardController::class, 'company']);
             Route::post('/setup/company', [SetupWizardController::class, 'storeCompany']);
+            Route::get('/setup/account-type', [SetupWizardController::class, 'accountType']);
+            Route::post('/setup/account-type', [SetupWizardController::class, 'storeAccountType']);
             Route::get('/setup/settings/presence', [SetupWizardController::class, 'settingsPresence']);
             Route::post('/setup/settings/presence', [SetupWizardController::class, 'storeSettingsPresence']);
             Route::get('/setup/settings/customer', [SetupWizardController::class, 'settingsCustomer'])->name('sharpfleet.setup.settings.customer');

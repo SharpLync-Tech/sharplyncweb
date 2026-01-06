@@ -26,13 +26,6 @@
             <label class="form-label">Company name</label>
             <input type="text" name="name" value="{{ old('name', $organisation->name) }}" required class="form-control mb-2">
 
-            <label class="form-label">Company type</label>
-            <select name="company_type" class="form-control mb-2">
-                <option value="">— Select —</option>
-                <option value="sole_trader" {{ $organisation->company_type === 'sole_trader' ? 'selected' : '' }}>Sole Trader</option>
-                <option value="company" {{ $organisation->company_type === 'company' ? 'selected' : '' }}>Company</option>
-            </select>
-
             <label class="form-label">Industry</label>
             <input type="text" name="industry" value="{{ old('industry', $organisation->industry) }}" class="form-control mb-2">
 

@@ -53,11 +53,18 @@
     );
 @endphp
 
+@php
+    $sfOrgId = (int) (session('sharpfleet.user.organisation_id') ?? 0);
+    $sfAccountType = \App\Support\SharpFleet\OrganisationAccount::forOrganisationId($sfOrgId);
+@endphp
+
 <div class="grid grid-4 mb-4">
-    <a href="/app/sharpfleet/admin/users" class="stats-card" style="text-decoration:none;">
-        <div class="stats-number">{{ $driversCount }}</div>
-        <div class="stats-label">Drivers</div>
-    </a>
+    @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
+        <a href="/app/sharpfleet/admin/users" class="stats-card" style="text-decoration:none;">
+            <div class="stats-number">{{ $driversCount }}</div>
+            <div class="stats-label">Drivers</div>
+        </a>
+    @endif
     <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $vehiclesCount }}</div>
         <div class="stats-label">Vehicles</div>
@@ -74,10 +81,12 @@
             <div class="stats-label">Vehicles Out of Service</div>
         </a>
     @endif
-    <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
-        <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
-        <div class="stats-label">Current Active Trips</div>
-    </a>
+    @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
+        <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
+            <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
+            <div class="stats-label">Current Active Trips</div>
+        </a>
+    @endif
 
     <a href="/app/sharpfleet/admin/account" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">
