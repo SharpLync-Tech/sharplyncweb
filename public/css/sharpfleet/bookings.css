@@ -1,0 +1,108 @@
+/* SharpFleet bookings calendar (locked NAVY/TEAL spec) */
+.sf-bk-scroll{position:relative;overflow-x:auto;overflow-y:auto;max-width:100%;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
+.sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
+.sf-bk-left{width:240px;min-width:240px;max-width:240px;flex:0 0 240px;position:-webkit-sticky;position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
+/* Fallback for environments/layouts where CSS sticky is broken by an ancestor overflow/transform.
+   When enabled on the scroll container, we keep the left column pinned via JS translateX(scrollLeft). */
+.sf-bk-scroll.sf-bk-fake-sticky .sf-bk-left{position:relative;left:auto;transform:translateX(0);will-change:transform;}
+.sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy,#0A2A4D)}
+.sf-bk-time-header{position:relative;height:54px;min-height:54px}
+.sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy,#0A2A4D);white-space:nowrap}
+.sf-bk-row{display:flex}
+.sf-bk-lane{position:relative;height:54px}
+.sf-bk-lane-bg{background:#fff}
+.sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal,#2CBFAE);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
+.sf-bk-slot-plus{color:var(--sl-teal,#2CBFAE);font-weight:800;font-size:22px;line-height:1}
+.sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);z-index:10}
+.sf-bk-block{position:absolute;top:6px;height:42px;border-radius:0;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18);border:1px solid var(--sl-teal,#2CBFAE)}
+.sf-bk-block:hover{filter:brightness(1.05)}
+.sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Week view: true grid (Mon–Sun columns) with vertical time axis (06:00–18:00) */
+.sf-wk-days{display:grid;grid-template-columns:repeat(7,var(--sf-wk-col-w,180px));}
+.sf-wk-dayhead{padding:10px 10px 8px;color:var(--sl-navy,#0A2A4D);border-bottom:2px solid var(--sl-teal,#2CBFAE);}
+.sf-wk-dayname{font-size:12px;font-weight:800;letter-spacing:.04em;}
+.sf-wk-daydate{font-size:12px;color:rgba(10,42,77,.75);margin-top:2px;}
+.sf-wk-dayhead.is-today{background:rgba(44,191,174,.06);}
+
+.sf-wk-daycell{position:relative;height:672px;min-height:672px;border-right:1px solid rgba(10,42,77,.06);cursor:pointer;
+    background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(44,191,174,.22) 55px, rgba(44,191,174,.22) 56px);
+}
+.sf-wk-daycell.is-today{background-color:rgba(44,191,174,.06);}
+.sf-wk-strongline{position:absolute;left:0;right:0;height:2px;background:rgba(44,191,174,.55);pointer-events:none;z-index:1;}
+.sf-wk-strongline.top{top:0;}
+.sf-wk-strongline.mid{top:336px;}
+.sf-wk-strongline.bottom{bottom:0;}
+
+/* Reuse booking block styling; override sizing/positioning for vertical blocks inside week cells */
+.sf-wk-daycell .sf-bk-block{left:6px;right:6px;top:auto;height:auto;z-index:2;}
+
+/* Week view (V1): compact weekly overview + auto-expand busy vehicles */
+.sf-wk-v1-scroll{overflow-y:auto;overflow-x:hidden;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff;}
+.sf-wk-v1-header,
+.sf-wk-v1-row{display:grid;grid-template-columns:240px repeat(7,minmax(0,1fr));}
+.sf-wk-v1-header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid rgba(10,42,77,.08);}
+.sf-wk-v1-left{position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
+.sf-wk-v1-left .sf-bk-left-inner{padding:10px 12px;}
+.sf-wk-v1-dayhead{padding:10px 10px 8px;color:var(--sl-navy,#0A2A4D);border-bottom:2px solid var(--sl-teal,#2CBFAE);}
+.sf-wk-v1-dayhead.is-today{background:rgba(44,191,174,.06);}
+.sf-wk-v1-row{border-bottom:1px solid rgba(10,42,77,.06);}
+.sf-wk-v1-row.is-expanded{background:rgba(44,191,174,.03);}
+.sf-wk-v1-cell{border-right:1px solid rgba(10,42,77,.06);min-height:52px;position:relative;background:#fff;}
+.sf-wk-v1-cell.is-today{background:rgba(44,191,174,.03);}
+.sf-wk-v1-row.is-expanded .sf-wk-v1-cell{border-right:1px solid rgba(44,191,174,.18);}
+.sf-wk-v1-row.is-expanded .sf-wk-v1-left{border-right:1px solid rgba(44,191,174,.18);}
+.sf-wk-v1-chips{padding:6px;min-height:38px;display:flex;flex-direction:column;gap:6px;}
+.sf-wk-v1-chip{display:block;background:var(--sl-navy,#0A2A4D);color:#fff;border:1px solid var(--sl-teal,#2CBFAE);border-radius:10px;padding:4px 6px;line-height:1.15;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 8px 18px rgba(10,42,77,.12);cursor:pointer;}
+.sf-wk-v1-grid{position:relative;margin:0 6px 6px;border-radius:10px;overflow:hidden;background:#fff;}
+.sf-wk-v1-grid::before{content:'';position:absolute;inset:0;pointer-events:none;
+    background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(44,191,174,.18) 55px, rgba(44,191,174,.18) 56px);
+}
+.sf-wk-v1-grid .sf-bk-block{left:6px;right:6px;top:auto;height:auto;z-index:2;}
+
+.sf-bk-month-ind{margin-top:6px;display:flex;align-items:center;gap:8px}
+.sf-bk-month-bar{flex:1;height:10px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
+.sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal,#2CBFAE);border-radius:999px}
+.sf-bk-month-txt{font-size:12px;color:var(--sl-navy);white-space:nowrap}
+
+.sf-bk-month-cell{position:relative;}
+.sf-bk-month-tip{position:absolute;left:10px;right:10px;top:44px;background:var(--sl-navy,#0A2A4D);color:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 10px 24px rgba(10,42,77,.20);z-index:20;display:none;}
+.sf-bk-month-tip-title{font-size:12px;font-weight:800;margin:0 0 6px;}
+.sf-bk-month-tip-list{font-size:12px;opacity:.92;margin:0;line-height:1.35;}
+
+/* Booking modals: lighter + sharper SharpFleet feel */
+#sfBkCreateModal .card-body,
+#sfBkEditModal .card-body{position:relative;padding:18px 18px 16px;}
+
+#sfBkCreateModal .card,
+#sfBkEditModal .card{
+    border:1.5px solid rgba(var(--primary-rgb), 0.35);
+    box-shadow:var(--shadow), 0 0 18px rgba(var(--primary-rgb), 0.22);
+}
+
+#sfBkCreateModal .form-group,
+#sfBkEditModal .form-group{margin-bottom:10px;}
+#sfBkCreateModal .form-label,
+#sfBkEditModal .form-label{font-size:13px;margin-bottom:4px;}
+#sfBkCreateModal .form-control,
+#sfBkEditModal .form-control{font-size:14px;padding:7px 10px;}
+#sfBkCreateModal textarea.form-control,
+#sfBkEditModal textarea.form-control{font-size:14px;padding:7px 10px;}
+#sfBkCreateModal .grid,
+#sfBkEditModal .grid{gap:12px;}
+
+#sfBkCreateModal .sf-bk-section-label{font-size:12px;color:rgba(10,42,77,.70);font-weight:600;margin:6px 0 6px;}
+#sfBkCreateModal .sf-time-and-reminder{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;}
+#sfBkCreateModal .sf-time-row,
+#sfBkEditModal .sf-time-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+#sfBkCreateModal .sf-time-hh,
+#sfBkCreateModal .sf-time-mm,
+#sfBkEditModal .sf-time-hh,
+#sfBkEditModal .sf-time-mm{width:72px;flex:0 0 72px;}
+#sfBkCreateModal .sf-time-sep,
+#sfBkEditModal .sf-time-sep{color:var(--sl-navy,#0A2A4D);opacity:.70;}
+#sfBkCreateModal .sf-reminder-inline{font-size:13px;white-space:nowrap;}
+#sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
+
+/* Modal close button styling is defined globally in sharpfleetmain.css (.sf-modal-close). */
