@@ -131,7 +131,8 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'start' => ['required', 'date'],
-            'end' => ['required', 'date', 'after:start'],
+            // Day view requests a single-day range (start=end).
+            'end' => ['required', 'date', 'after_or_equal:start'],
             'branch_id' => ['nullable', 'integer'],
         ]);
 

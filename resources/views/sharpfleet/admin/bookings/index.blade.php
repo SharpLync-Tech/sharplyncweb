@@ -438,17 +438,17 @@
     .sf-bk-scroll{overflow:auto;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
     .sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
     .sf-bk-left{width:240px;flex:0 0 240px;position:sticky;left:0;z-index:6;background:#fff}
-    .sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy)}
+    .sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy,#0A2A4D)}
     .sf-bk-time-header{position:relative;height:54px;min-height:54px}
-    .sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy);white-space:nowrap}
+    .sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy,#0A2A4D);white-space:nowrap}
     .sf-bk-row{display:flex}
     .sf-bk-lane{position:relative;height:54px}
     .sf-bk-lane-bg{background:#fff}
     .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal,#2CBFAE);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
     .sf-bk-slot-plus{color:var(--sl-teal,#2CBFAE);font-weight:800;font-size:22px;line-height:1}
     .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);z-index:10}
-    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
-    .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal)}
+    .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy,#0A2A4D);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
+    .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal,#2CBFAE)}
     .sf-bk-block:hover{outline:2px solid var(--sl-teal);filter:brightness(1.05)}
     .sf-bk-block-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
     .sf-bk-block-time{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
