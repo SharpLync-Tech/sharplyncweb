@@ -54,8 +54,8 @@
         </div>
     </div>
 
-    <div class="alert alert-info">
-        Bookings require an internet connection to check availability and prevent double-booking.
+    <div id="sfOfflineNotice" class="alert alert-warning" style="display:none;">
+        You’re currently offline. Availability checks may fail until your connection is restored.
     </div>
 
     @if (session('success'))
@@ -172,55 +172,47 @@
                     <input type="hidden" id="sfBkCreateBranch" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
                 @endif
 
-                <div class="grid grid-3 align-end">
+                <div class="sf-bk-section-label">Booking window</div>
 
+                <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkCreateStartDate"
-                            type="date"
-                            name="planned_start_date"
-                            class="form-control"
-                            required
-                            min="{{ $today }}">
+                        <input id="sfBkCreateStartDate" type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Start time</label>
-                        <div class="sf-time-row">
-                            <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
-                                <option value="">HH</option>
-                                @for($h = 0; $h <= 23; $h++)
-                                    @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
-                                    <option value="{{ $hh }}">{{ $hh }}</option>
-                                @endfor
-                            </select>
-                            <span class="sf-time-sep">:</span>
-                            <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
-                                <option value="">MM</option>
-                                @for($m = 0; $m <= 55; $m += 5)
-                                    @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
-                                    <option value="{{ $mm }}">{{ $mm }}</option>
-                                @endfor
-                            </select>
+                        <div class="sf-time-and-reminder">
+                            <div class="sf-time-row">
+                                <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
+                                    <option value="">HH</option>
+                                    @for($h = 0; $h <= 23; $h++)
+                                        @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $hh }}">{{ $hh }}</option>
+                                    @endfor
+                                </select>
+                                <span class="sf-time-sep">:</span>
+                                <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
+                                    <option value="">MM</option>
+                                    @for($m = 0; $m <= 55; $m += 5)
+                                        @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
+                                        <option value="{{ $mm }}">{{ $mm }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            <label class="d-flex align-items-center gap-2 sf-reminder-inline" style="cursor:pointer; margin:0;">
+                                <input id="sfBkCreateRemindMe" type="checkbox" name="remind_me" value="1">
+                                <span class="text-muted">Reminder (1 hour before)</span>
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-group sf-reminder-inline">
-                        <label class="form-label">&nbsp;</label>
-                        <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
-                            <input id="sfBkCreateRemindMe" type="checkbox" name="remind_me" value="1">
-                            <span>Reminder (1 hour before)</span>
-                        </label>
-                    </div>
-
+                <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input id="sfBkCreateEndDate"
-                            type="date"
-                            name="planned_end_date"
-                            class="form-control"
-                            required
-                            min="{{ $today }}">
+                        <input id="sfBkCreateEndDate" type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
                     </div>
 
                     <div class="form-group">
@@ -243,22 +235,12 @@
                             </select>
                         </div>
                     </div>
-
-                </div>
-
-
-
-                <div class="form-group">
-                    <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
-                        <input id="sfBkCreateRemindMe" type="checkbox" name="remind_me" value="1">
-                        <span>Reminder (1 hour before start)</span>
-                    </label>
                 </div>
 
                 <div id="sfBkCreateVehicleSection" style="display:none;">
                     <div class="form-group">
                         <label class="form-label">Available vehicle</label>
-                        <div id="sfBkCreateVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
+                        <div id="sfBkCreateVehicleStatus" class="hint-text">Select a future time to see available vehicles.</div>
                         <select id="sfBkCreateVehicle" name="vehicle_id" class="form-control" required disabled>
                             <option value="">— Select vehicle —</option>
                         </select>
@@ -281,7 +263,7 @@
 
                 <div class="form-group">
                     <label class="form-label text-muted">Notes (optional)</label>
-                    <textarea id="sfBkCreateNotes" name="notes" class="form-control" rows="2" placeholder="Optional"></textarea>
+                    <textarea id="sfBkCreateNotes" name="notes" class="form-control sf-bk-notes" rows="2" placeholder="Optional"></textarea>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
@@ -490,6 +472,15 @@
     #sfBkCreateModal .grid,
     #sfBkEditModal .grid{gap:12px;}
 
+    #sfBkCreateModal .sf-bk-section-label{font-size:12px;color:rgba(10,42,77,.70);font-weight:600;margin:6px 0 6px;}
+    #sfBkCreateModal .sf-time-and-reminder{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;}
+    #sfBkCreateModal .sf-time-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+    #sfBkCreateModal .sf-time-hh,
+    #sfBkCreateModal .sf-time-mm{width:72px;flex:0 0 72px;}
+    #sfBkCreateModal .sf-time-sep{color:var(--sl-navy,#0A2A4D);opacity:.70;}
+    #sfBkCreateModal .sf-reminder-inline{font-size:13px;white-space:nowrap;}
+    #sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
+
     #sfBkCreateClose,
     #sfBkEditClose{position:absolute;top:10px;right:10px;width:44px;height:44px;padding:0;background:transparent;border:0;color:var(--sl-navy);font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:none;}
     #sfBkCreateClose:hover,
@@ -510,6 +501,7 @@
         };
 
         const els = {
+            offlineNotice: document.getElementById('sfOfflineNotice'),
             viewDay: document.getElementById('sfBkViewDay'),
             viewWeek: document.getElementById('sfBkViewWeek'),
             viewMonth: document.getElementById('sfBkViewMonth'),
@@ -567,6 +559,15 @@
 
         function show(el) { if (el) el.style.display = 'block'; }
         function hide(el) { if (el) el.style.display = 'none'; }
+
+        function updateOfflineNotice() {
+            if (!els.offlineNotice) return;
+            if (navigator.onLine === false) {
+                show(els.offlineNotice);
+            } else {
+                hide(els.offlineNotice);
+            }
+        }
 
         function pad2(n) { return String(n).padStart(2, '0'); }
 
@@ -1011,7 +1012,7 @@
                 els.createVehicle.disabled = true;
             }
             if (els.createVehicleStatus) {
-                els.createVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
+                els.createVehicleStatus.textContent = 'Select a future time to see available vehicles.';
             }
             if (els.createSubmit) {
                 els.createSubmit.disabled = true;
@@ -1046,7 +1047,7 @@
                     setVehicleOptions(els.createVehicle, []);
                 }
                 if (els.createVehicleStatus) {
-                    els.createVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
+                    els.createVehicleStatus.textContent = 'Select a future time to see available vehicles.';
                 }
                 if (els.createSubmit) els.createSubmit.disabled = true;
                 return;
@@ -1088,7 +1089,7 @@
                 els.createVehicle.disabled = true;
                 setVehicleOptions(els.createVehicle, []);
                 if (els.createVehicleStatus) {
-                    els.createVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
+                    els.createVehicleStatus.textContent = 'Select a future time to see available vehicles.';
                 }
                 if (els.createSubmit) els.createSubmit.disabled = true;
                 return;
@@ -1337,6 +1338,9 @@
         }
 
         // Initial load
+        updateOfflineNotice();
+        window.addEventListener('online', updateOfflineNotice);
+        window.addEventListener('offline', updateOfflineNotice);
         loadBookingsForRange();
     })();
 </script>
