@@ -792,23 +792,22 @@ class VehicleController extends Controller
             }
         }
 
+        // Driver list for permanent allocation.
+        // Support older/newer schemas and real-world data where driver accounts may not have role === 'driver'
+        // but are flagged via users.is_driver.
+        $hasIsDriverFlag = Schema::connection('sharpfleet')->hasColumn('users', 'is_driver');
+
         $drivers = DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
-            ->where(function ($q) {
-                $q
-                    ->where(function ($qq) {
-                        $qq
-                            ->where('role', 'driver')
-                            ->where(function ($q2) {
-                                $q2->whereNull('is_driver')->orWhere('is_driver', 1);
-                            });
-                    })
-                    ->orWhere(function ($qq) {
-                        $qq
-                            ->where('role', 'admin')
-                            ->where('is_driver', 1);
-                    });
+            ->where(function ($q) use ($hasIsDriverFlag) {
+                // Case-insensitive role match (covers 'driver', 'Driver', etc.)
+                $q->whereRaw('LOWER(role) = ?', ['driver']);
+
+                if ($hasIsDriverFlag) {
+                    // Include any user explicitly marked as a driver (e.g. admin-as-driver).
+                    $q->orWhere('is_driver', 1);
+                }
             })
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -940,19 +939,11 @@ class VehicleController extends Controller
                 ->where('organisation_id', $organisationId)
                 ->where('id', $assignedDriverId)
                 ->where(function ($q) {
-                    $q
-                        ->where(function ($qq) {
-                            $qq
-                                ->where('role', 'driver')
-                                ->where(function ($q2) {
-                                    $q2->whereNull('is_driver')->orWhere('is_driver', 1);
-                                });
-                        })
-                        ->orWhere(function ($qq) {
-                            $qq
-                                ->where('role', 'admin')
-                                ->where('is_driver', 1);
-                        });
+                    $q->whereRaw('LOWER(role) = ?', ['driver']);
+
+                    if (Schema::connection('sharpfleet')->hasColumn('users', 'is_driver')) {
+                        $q->orWhere('is_driver', 1);
+                    }
                 })
                 ->exists();
 
