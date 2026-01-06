@@ -92,7 +92,7 @@
 
         <p>
             Services.<br>
-            Registration.<br>
+            Rego.<br>
             Vehicles.<br>
             Small improvements.
         </p>

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BookingService;
 use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\CompanySettingsService;
-use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -127,20 +126,6 @@ class BookingController extends Controller
     public function __construct(BookingService $bookingService)
     {
         $this->bookingService = $bookingService;
-
-        $this->middleware(function (Request $request, $next) {
-            $user = $request->session()->get('sharpfleet.user');
-            if (!$user) {
-                abort(403);
-            }
-
-            $organisationId = (int) ($user['organisation_id'] ?? 0);
-            if (!OrganisationAccount::bookingsEnabled($organisationId)) {
-                abort(403, 'Bookings are not available for this account type.');
-            }
-
-            return $next($request);
-        });
     }
 
     public function index(Request $request)

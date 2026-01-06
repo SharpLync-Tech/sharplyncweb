@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class RegisterController extends Controller
@@ -130,6 +129,7 @@ class RegisterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'token' => ['required', 'string'],
+            'business_type' => ['required', 'in:sole_trader,company'],
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
         ]);
 
@@ -151,22 +151,15 @@ class RegisterController extends Controller
             DB::connection('sharpfleet')->beginTransaction();
 
             // Create organisation
-            $orgInsert = [
-                // Account type is selected in the setup wizard (step 1).
-                // Keep this neutral; the wizard step 2 will prompt for company name.
-                'name' => 'Company',
-                'company_type' => null,
-                'trial_ends_at' => Carbon::now()->addDays(30),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
-            if (Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type')) {
-                $orgInsert['account_type'] = null;
-            }
-
             $organisationId = DB::connection('sharpfleet')
                 ->table('organisations')
-                ->insertGetId($orgInsert);
+                ->insertGetId([
+                    'name' => $request->business_type === 'sole_trader' ? $user->first_name . ' ' . $user->last_name : 'Company',
+                    'company_type' => $request->business_type, // use company_type as per DB
+                    'trial_ends_at' => Carbon::now()->addDays(30),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
 
             // Update user with organisation, password, and activate account
             DB::connection('sharpfleet')
@@ -191,7 +184,7 @@ class RegisterController extends Controller
             Mail::to($user->email)->send(new \App\Mail\SharpFleet\WelcomeEmail($user->first_name));
 
             // Send notification to admin
-            Mail::to('info@sharplync.com.au')->send(new \App\Mail\SharpFleet\NewSubscriberNotification($user->email, null));
+            Mail::to('info@sharplync.com.au')->send(new \App\Mail\SharpFleet\NewSubscriberNotification($user->email, $request->business_type));
 
             // Log success
             $this->logRegistrationEvent("ACCOUNT ACTIVATED → id={$user->id} email={$user->email}");

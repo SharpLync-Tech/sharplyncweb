@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
-use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -129,36 +128,15 @@ class AuthController extends Controller
             $archivedAt = $user->archived_at ?? null;
         }
 
-        $organisationId = (int) ($user->organisation_id ?? 0);
-        $isDriver = (int) ($user->is_driver ?? 0);
-
-        // Personal mode: the logged-in user must always be a driver.
-        if ($organisationId > 0 && OrganisationAccount::forOrganisationId($organisationId) === OrganisationAccount::TYPE_PERSONAL) {
-            $isDriver = 1;
-
-            if (Schema::connection('sharpfleet')->hasColumn('users', 'is_driver')) {
-                $updates = ['is_driver' => 1];
-                if (Schema::connection('sharpfleet')->hasColumn('users', 'updated_at')) {
-                    $updates['updated_at'] = now();
-                }
-                DB::connection('sharpfleet')
-                    ->table('users')
-                    ->where('id', $user->id)
-                    ->update($updates);
-            }
-
-            $request->session()->put('sharpfleet.driver_id', (int) $user->id);
-        }
-
         $request->session()->put('sharpfleet.user', [
             'id'              => $user->id,
-            'organisation_id' => $organisationId,
+            'organisation_id' => $user->organisation_id,
             'email'           => $user->email,
             'first_name'      => $user->first_name ?? '',
             'last_name'       => $user->last_name ?? '',
             'name'            => trim($user->first_name . ' ' . $user->last_name),
             'role'            => Roles::normalize($user->role ?? null),
-            'is_driver'       => $isDriver,
+            'is_driver'       => (int) ($user->is_driver ?? 0),
             'archived_at'     => $archivedAt,
             'logged_in'       => true,
         ]);

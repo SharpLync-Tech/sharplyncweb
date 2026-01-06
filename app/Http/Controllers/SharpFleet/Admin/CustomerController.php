@@ -4,7 +4,6 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CustomerService;
-use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -16,20 +15,6 @@ class CustomerController extends Controller
     public function __construct(CustomerService $customerService)
     {
         $this->customerService = $customerService;
-
-        $this->middleware(function (Request $request, $next) {
-            $user = $request->session()->get('sharpfleet.user');
-            if (!$user) {
-                abort(403);
-            }
-
-            $organisationId = (int) ($user['organisation_id'] ?? 0);
-            if (!OrganisationAccount::customersEnabled($organisationId)) {
-                abort(403, 'Customers are not available for this account type.');
-            }
-
-            return $next($request);
-        });
     }
 
     private function getSharpFleetUser(Request $request): ?array

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\SharpFleet\DriverInvitation;
 use App\Services\SharpFleet\BranchService;
-use App\Support\SharpFleet\OrganisationAccount;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,23 +14,6 @@ use Illuminate\Support\Facades\Schema;
 
 class DriverInviteController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function (Request $request, $next) {
-            $user = $request->session()->get('sharpfleet.user');
-            if (!$user) {
-                abort(403);
-            }
-
-            $organisationId = (int) ($user['organisation_id'] ?? 0);
-            if (!OrganisationAccount::usersEnabled($organisationId)) {
-                abort(403, 'User management is not available for this account type.');
-            }
-
-            return $next($request);
-        });
-    }
-
     private function resolveActorBranchIds(array $fleetUser, int $organisationId, BranchService $branchService): array
     {
         if (Roles::bypassesBranchRestrictions($fleetUser)) {

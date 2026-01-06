@@ -47,7 +47,7 @@ class SharpFleetSetupWizard
 
         $completedAt = $settings['setup']['completed_at'] ?? null;
         if (empty($completedAt)) {
-            return redirect('/app/sharpfleet/admin/setup/account-type');
+            return redirect('/app/sharpfleet/admin/setup/company');
         }
 
         return $next($request);

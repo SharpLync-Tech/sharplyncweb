@@ -45,6 +45,7 @@ class CompanyProfileController extends Controller
 
         $validated = $request->validate([
             'name'         => 'required|string|max:150',
+            'company_type' => 'nullable|in:sole_trader,company',
             'industry'     => 'nullable|string|max:150',
             'timezone'     => 'required|string|max:100',
         ]);
@@ -54,6 +55,7 @@ class CompanyProfileController extends Controller
             ->where('id', $user['organisation_id'])
             ->update([
                 'name'         => $validated['name'],
+                'company_type' => $validated['company_type'] ?? null,
                 'industry'     => $validated['industry'] ?? null,
             ]);
 

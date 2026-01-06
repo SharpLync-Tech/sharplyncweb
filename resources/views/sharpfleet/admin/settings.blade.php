@@ -199,10 +199,10 @@
                 </p>
 
                 <div class="form-group">
-                    <label class="form-label">Registration window (days)</label>
+                    <label class="form-label">Rego window (days)</label>
                     <input type="number" min="1" step="1" name="reminder_registration_days"
                            value="{{ (int) ($settings['reminders']['registration_days'] ?? 30) }}" class="form-control">
-                    <div class="text-muted small mt-1">Vehicles with registration expiring within this window will be marked as “Due soon”.</div>
+                    <div class="text-muted small mt-1">Vehicles with rego expiring within this window will be marked as “Due soon”.</div>
                 </div>
 
                 <div class="form-group">
@@ -216,7 +216,7 @@
                     <label class="form-label">Service (reading) threshold</label>
                     <input type="number" min="0" step="1" name="reminder_service_reading_threshold"
                            value="{{ (int) ($settings['reminders']['service_reading_threshold'] ?? 500) }}" class="form-control">
-                    <div class="text-muted small mt-1">If a vehicle is within this distance/hours of its due reading, it will be marked as “Due soon”.</div>
+                    <div class="text-muted small mt-1">If a vehicle is within this many km/hours of its due reading, it will be marked as “Due soon”.</div>
                 </div>
             </div>
         </div>

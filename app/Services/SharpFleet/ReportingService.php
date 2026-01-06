@@ -299,7 +299,7 @@ class ReportingService
 
         $headers = [
             'Vehicle',
-            'Registration',
+            'Rego',
             'Driver',
             'Trip Mode',
             $customerLinkingEnabled ? 'Customer' : null,

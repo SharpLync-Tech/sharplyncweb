@@ -53,18 +53,11 @@
     );
 @endphp
 
-@php
-    $sfOrgId = (int) (session('sharpfleet.user.organisation_id') ?? 0);
-    $sfAccountType = \App\Support\SharpFleet\OrganisationAccount::forOrganisationId($sfOrgId);
-@endphp
-
 <div class="grid grid-4 mb-4">
-    @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
-        <a href="/app/sharpfleet/admin/users" class="stats-card" style="text-decoration:none;">
-            <div class="stats-number">{{ $driversCount }}</div>
-            <div class="stats-label">Drivers</div>
-        </a>
-    @endif
+    <a href="/app/sharpfleet/admin/users" class="stats-card" style="text-decoration:none;">
+        <div class="stats-number">{{ $driversCount }}</div>
+        <div class="stats-label">Drivers</div>
+    </a>
     <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">{{ $vehiclesCount }}</div>
         <div class="stats-label">Vehicles</div>
@@ -81,12 +74,10 @@
             <div class="stats-label">Vehicles Out of Service</div>
         </a>
     @endif
-    @if($sfAccountType === \App\Support\SharpFleet\OrganisationAccount::TYPE_COMPANY)
-        <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
-            <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
-            <div class="stats-label">Current Active Trips</div>
-        </a>
-    @endif
+    <a href="/app/sharpfleet/admin/bookings" class="stats-card" style="text-decoration:none;">
+        <div class="stats-number">{{ $activeTripsCount ?? 0 }}</div>
+        <div class="stats-label">Current Active Trips</div>
+    </a>
 
     <a href="/app/sharpfleet/admin/account" class="stats-card" style="text-decoration:none;">
         <div class="stats-number">
@@ -125,7 +116,7 @@
                 <ul class="mb-0" style="margin:0; padding-left: 18px;">
                     @if(($rem['rego_enabled'] ?? false) && ((int) ($rem['rego_overdue'] ?? 0) || (int) ($rem['rego_due_soon'] ?? 0)))
                         <li>
-                            <strong>Registration:</strong>
+                            <strong>Rego:</strong>
                             {{ (int) ($rem['rego_overdue'] ?? 0) }} overdue,
                             {{ (int) ($rem['rego_due_soon'] ?? 0) }} due soon
                         </li>
