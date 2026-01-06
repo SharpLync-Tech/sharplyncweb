@@ -6,8 +6,14 @@
 
 @php
     use App\Services\SharpFleet\CompanySettingsService;
+    use App\Support\SharpFleet\Roles;
 
     $user = session('sharpfleet.user');
+    $sfRole = Roles::normalize($user['role'] ?? null);
+    $sfIsDriver = $sfRole === Roles::DRIVER;
+    $sfUserId = (int) ($user['id'] ?? 0);
+    $sfUserName = trim((string)($user['first_name'] ?? '') . ' ' . (string)($user['last_name'] ?? ''));
+
     $settingsService = new CompanySettingsService((int) $user['organisation_id']);
     $companyTimezone = $defaultTimezone ?? $settingsService->timezone();
     $today = \Carbon\Carbon::now($companyTimezone)->format('Y-m-d');
@@ -129,29 +135,26 @@
                         style="">&times;</button>
             </div>
 
-            <div class="mt-3"></div>
+            <div class="mt-2"></div>
 
             <form id="sfBkCreateForm" method="POST" action="{{ url('/app/sharpfleet/admin/bookings') }}">
                 @csrf
 
-                <div class="grid grid-2">
-                    <div class="form-group">
-                        <label class="form-label">Driver</label>
+                <div class="form-group">
+                    <label class="form-label">Driver</label>
+                    @if($sfIsDriver)
+                        <input type="hidden" id="sfBkCreateDriver" name="user_id" value="{{ $sfUserId }}">
+                        <input type="text" class="form-control" value="{{ $sfUserName ?: 'Driver' }}" readonly>
+                    @else
                         <select id="sfBkCreateDriver" name="user_id" class="form-control" required>
                             <option value="">— Select driver —</option>
                             @foreach($drivers as $d)
-                                <option value="{{ $d->id }}">{{ $d->first_name }} {{ $d->last_name }}</option>
+                                <option value="{{ $d->id }}" {{ (int)$d->id === $sfUserId ? 'selected' : '' }}>
+                                    {{ $d->first_name }} {{ $d->last_name }}
+                                </option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Vehicle (available only)</label>
-                        <div id="sfBkCreateVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
-                        <select id="sfBkCreateVehicle" name="vehicle_id" class="form-control" required disabled>
-                            <option value="">— Select vehicle —</option>
-                        </select>
-                    </div>
+                    @endif
                 </div>
 
                 @if($branchesEnabled && $branches->count() > 1)
@@ -228,6 +231,16 @@
                     </label>
                 </div>
 
+                <div id="sfBkCreateVehicleSection" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Available vehicle</label>
+                        <div id="sfBkCreateVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
+                        <select id="sfBkCreateVehicle" name="vehicle_id" class="form-control" required disabled>
+                            <option value="">— Select vehicle —</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Customer / Client (optional)</label>
                     @if($customersTableExists && $customers->count() > 0)
@@ -243,8 +256,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Notes (optional)</label>
-                    <textarea id="sfBkCreateNotes" name="notes" class="form-control" rows="3"></textarea>
+                    <label class="form-label text-muted">Notes (optional)</label>
+                    <textarea id="sfBkCreateNotes" name="notes" class="form-control" rows="2" placeholder="Optional"></textarea>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
@@ -424,9 +437,9 @@
     .sf-bk-row{display:flex}
     .sf-bk-lane{position:relative;height:54px}
     .sf-bk-lane-bg{background:#fff}
-    .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
-    .sf-bk-slot-plus{color:var(--sl-teal);font-weight:800;font-size:22px;line-height:1}
-    .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18)}
+    .sf-bk-slot-hover{position:absolute;top:6px;height:42px;border:2px solid var(--sl-teal,#2CBFAE);border-radius:10px;background:rgba(44,191,174,.14);pointer-events:none;display:none;align-items:center;justify-content:center}
+    .sf-bk-slot-plus{color:var(--sl-teal,#2CBFAE);font-weight:800;font-size:22px;line-height:1}
+    .sf-bk-slot-tip{position:absolute;left:50%;transform:translateX(-50%);top:-30px;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);z-index:10}
     .sf-bk-block{position:absolute;top:6px;height:42px;border-radius:10px;background:var(--sl-navy);color:#fff;padding:6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 8px 18px rgba(10,42,77,.18)}
     .sf-bk-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sl-teal)}
     .sf-bk-block:hover{outline:2px solid var(--sl-teal);filter:brightness(1.05)}
@@ -491,6 +504,7 @@
             createSubmit: document.getElementById('sfBkCreateSubmit'),
             createBranch: document.getElementById('sfBkCreateBranch'),
             createDriver: document.getElementById('sfBkCreateDriver'),
+            createVehicleSection: document.getElementById('sfBkCreateVehicleSection'),
             createVehicle: document.getElementById('sfBkCreateVehicle'),
             createVehicleStatus: document.getElementById('sfBkCreateVehicleStatus'),
             createStartDate: document.getElementById('sfBkCreateStartDate'),
@@ -501,6 +515,7 @@
             createEndMinute: document.getElementById('sfBkCreateEndMinute'),
             createCustomer: document.getElementById('sfBkCreateCustomer'),
             createCustomerName: document.getElementById('sfBkCreateCustomerName'),
+            createNotes: document.getElementById('sfBkCreateNotes'),
 
             editModal: document.getElementById('sfBkEditModal'),
             editClose: document.getElementById('sfBkEditClose'),
@@ -964,6 +979,9 @@
 
         function resetCreateModalFields() {
             if (els.createForm) els.createForm.reset();
+            if (els.createVehicleSection) {
+                els.createVehicleSection.style.display = 'none';
+            }
             if (els.createVehicle) {
                 els.createVehicle.innerHTML = '<option value="">— Select vehicle —</option>';
                 els.createVehicle.disabled = true;
@@ -974,6 +992,44 @@
             if (els.createSubmit) {
                 els.createSubmit.disabled = true;
             }
+        }
+
+        function createHasValidWindow() {
+            if (!els.createStartDate || !els.createStartHour || !els.createStartMinute || !els.createEndDate || !els.createEndHour || !els.createEndMinute) {
+                return false;
+            }
+            const sd = els.createStartDate.value;
+            const sh = els.createStartHour.value;
+            const sm = els.createStartMinute.value;
+            const ed = els.createEndDate.value;
+            const eh = els.createEndHour.value;
+            const em = els.createEndMinute.value;
+
+            if (!sd || !sh || !sm || !ed || !eh || !em) return false;
+
+            const start = parseYmdHi(`${sd} ${sh}:${sm}`);
+            const end = parseYmdHi(`${ed} ${eh}:${em}`);
+            return isFinite(start) && isFinite(end) && end > start;
+        }
+
+        function updateCreateVehicleSectionVisibility(preselectVehicleId) {
+            if (!els.createVehicleSection) return;
+
+            if (!createHasValidWindow()) {
+                els.createVehicleSection.style.display = 'none';
+                if (els.createVehicle) {
+                    els.createVehicle.disabled = true;
+                    setVehicleOptions(els.createVehicle, []);
+                }
+                if (els.createVehicleStatus) {
+                    els.createVehicleStatus.textContent = 'Select start/end date & time to load available vehicles.';
+                }
+                if (els.createSubmit) els.createSubmit.disabled = true;
+                return;
+            }
+
+            els.createVehicleSection.style.display = 'block';
+            loadAvailableVehiclesForCreate(preselectVehicleId);
         }
 
         function setVehicleOptions(selectEl, vehicles) {
@@ -1090,8 +1146,16 @@
             if (els.createEndHour) els.createEndHour.value = pad2(end.getUTCHours());
             if (els.createEndMinute) els.createEndMinute.value = pad2(end.getUTCMinutes());
 
+            // If driver dropdown exists, default to current user where applicable.
+            if (els.createDriver && els.createDriver.tagName === 'SELECT') {
+                const hasOption = Array.from(els.createDriver.options || []).some(o => String(o.value) === String(sf.currentUserId));
+                if (hasOption) {
+                    els.createDriver.value = String(sf.currentUserId);
+                }
+            }
+
             show(els.createModal);
-            loadAvailableVehiclesForCreate(vehicleId);
+            updateCreateVehicleSectionVisibility(vehicleId);
         }
 
         function closeCreateModal() {
@@ -1213,7 +1277,7 @@
         }
         [els.createStartDate, els.createStartHour, els.createStartMinute, els.createEndDate, els.createEndHour, els.createEndMinute, els.createBranch].forEach(el => {
             if (!el) return;
-            el.addEventListener('change', () => loadAvailableVehiclesForCreate());
+            el.addEventListener('change', () => updateCreateVehicleSectionVisibility());
         });
         wireCustomerFields(els.createCustomer, els.createCustomerName);
 
