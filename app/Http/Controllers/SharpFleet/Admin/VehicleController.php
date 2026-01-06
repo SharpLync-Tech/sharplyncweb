@@ -199,6 +199,90 @@ class VehicleController extends Controller
     }
 
     /**
+     * List out-of-service vehicles (admin only)
+     */
+    public function outOfService(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+
+        $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
+        $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
+        $hasOutOfServiceNote = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_note');
+        $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
+
+        $branchService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
+        $branchesEnabled = $branchService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
+            : [];
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $vehicles = collect();
+        if ($hasIsInService) {
+            $select = [
+                'vehicles.id',
+                'vehicles.name',
+                'vehicles.registration_number',
+                'vehicles.branch_id',
+                'vehicles.is_in_service',
+            ];
+            if ($hasOutOfServiceReason) {
+                $select[] = 'vehicles.out_of_service_reason';
+            }
+            if ($hasOutOfServiceNote) {
+                $select[] = 'vehicles.out_of_service_note';
+            }
+            if ($hasOutOfServiceAt) {
+                $select[] = 'vehicles.out_of_service_at';
+            }
+
+            $vehicles = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->where('vehicles.organisation_id', $organisationId)
+                ->where('vehicles.is_active', 1)
+                ->where('vehicles.is_in_service', 0)
+                ->when(
+                    $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                    fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+                )
+                ->orderBy('vehicles.name')
+                ->select($select)
+                ->get();
+        }
+
+        $branches = collect();
+        if ($branchesEnabled && $branchService->vehiclesHaveBranchSupport()) {
+            $branches = $branchService->getBranches($organisationId);
+            if ($branchScopeEnabled) {
+                $branches = $branches->filter(fn ($b) => in_array((int) ($b->id ?? 0), $accessibleBranchIds, true))->values();
+            }
+        }
+
+        return view('sharpfleet.admin.vehicles.out-of-service', [
+            'hasIsInService' => $hasIsInService,
+            'hasOutOfServiceReason' => $hasOutOfServiceReason,
+            'hasOutOfServiceNote' => $hasOutOfServiceNote,
+            'hasOutOfServiceAt' => $hasOutOfServiceAt,
+            'vehicles' => $vehicles,
+            'branchesEnabled' => ($branchesEnabled && $branchService->vehiclesHaveBranchSupport()),
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
      * Confirmation step (subscribed orgs only) for archiving a vehicle.
      */
     public function confirmArchive(Request $request, $vehicle)

@@ -69,7 +69,7 @@
         </a>
     @endif
     @if(($hasOutOfServiceSupport ?? false))
-        <a href="/app/sharpfleet/admin/vehicles" class="stats-card" style="text-decoration:none;">
+        <a href="/app/sharpfleet/admin/vehicles/out-of-service" class="stats-card" style="text-decoration:none;">
             <div class="stats-number">{{ (int) ($outOfServiceVehiclesCount ?? 0) }}</div>
             <div class="stats-label">Vehicles Out of Service</div>
         </a>
