@@ -845,9 +845,17 @@
                     btn.textContent = String(new Date(cellMs).getUTCDate());
                     btn.dataset.date = cellDate;
                     btn.addEventListener('click', () => {
-                        state.view = 'week';
-                        state.anchorMs = parseYmd(btn.dataset.date);
-                        loadBookingsForRange();
+                        const dayStartMs = parseYmd(btn.dataset.date);
+                        const startMs = dayStartMs + 9 * 3600000;
+                        const endMs = startMs + 60 * 60000;
+                        openCreateModal({
+                            vehicleId: null,
+                            startMs,
+                            endMs,
+                        });
+                        if (els.createStartHour && typeof els.createStartHour.focus === 'function') {
+                            setTimeout(() => els.createStartHour.focus(), 0);
+                        }
                     });
 
                     td.appendChild(btn);
