@@ -125,7 +125,7 @@
                 <ul class="mb-0" style="margin:0; padding-left: 18px;">
                     @if(($rem['rego_enabled'] ?? false) && ((int) ($rem['rego_overdue'] ?? 0) || (int) ($rem['rego_due_soon'] ?? 0)))
                         <li>
-                            <strong>Rego:</strong>
+                            <strong>Registration:</strong>
                             {{ (int) ($rem['rego_overdue'] ?? 0) }} overdue,
                             {{ (int) ($rem['rego_due_soon'] ?? 0) }} due soon
                         </li>

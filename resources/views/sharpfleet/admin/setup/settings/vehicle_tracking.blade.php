@@ -64,7 +64,7 @@
                                {{ ($settings['vehicles']['registration_tracking_enabled'] ?? true) ? 'checked' : '' }}>
                         <div class="flex-grow-1">
                             <div><strong>Enable Vehicle Registration Tracking</strong></div>
-                            <div class="text-muted small">Adds registration fields (rego number, expiry date) on vehicle profiles and can drive reminder emails.</div>
+                            <div class="text-muted small">Adds registration fields (registration number, expiry date) on vehicle profiles and can drive reminder emails.</div>
                         </div>
                     </label>
 

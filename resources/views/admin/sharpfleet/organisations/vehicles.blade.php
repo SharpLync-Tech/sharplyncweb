@@ -21,7 +21,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Rego</th>
+                            <th>Registration</th>
                             <th>Make / Model</th>
                             <th class="text-end">Active</th>
                             <th class="text-end">Action</th>

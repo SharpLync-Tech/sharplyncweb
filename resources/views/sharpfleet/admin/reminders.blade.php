@@ -37,7 +37,7 @@
             </div>
             <div class="text-muted">
                 Timezone: {{ $timezone }}
-                | Rego window: {{ (int) ($settings['registration_days'] ?? 30) }} days
+                | Registration window: {{ (int) ($settings['registration_days'] ?? 30) }} days
                 | Service (date) window: {{ (int) ($settings['service_days'] ?? 30) }} days
                 | Service (reading) threshold: {{ (int) ($settings['service_reading_threshold'] ?? 500) }}
             </div>
@@ -52,14 +52,14 @@
 
     @if (!$regoEnabled && !$serviceEnabled)
         <div class="alert alert-warning">
-            Reminders are currently disabled in Settings (rego + servicing tracking are both off).
+            Reminders are currently disabled in Settings (registration + servicing tracking are both off).
         </div>
     @endif
 
     @if ($regoEnabled)
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Registration (Rego)</h2>
+                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Registration</h2>
 
                 @php
                     $regoOverdue = $digest['registration']['overdue'] ?? [];
@@ -75,7 +75,7 @@
                                 <tr>
                                     <th>Status</th>
                                     <th>Vehicle</th>
-                                    <th>Rego</th>
+                                    <th>Registration</th>
                                     <th>Expiry</th>
                                     <th>Days</th>
                                 </tr>
