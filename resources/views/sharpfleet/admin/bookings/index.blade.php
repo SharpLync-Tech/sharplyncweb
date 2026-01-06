@@ -473,7 +473,7 @@
 
     .sf-bk-month-ind{margin-top:6px;display:flex;align-items:center;gap:8px}
     .sf-bk-month-bar{flex:1;height:10px;border-radius:999px;background:rgba(10,42,77,.08);overflow:hidden}
-    .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal)}
+    .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal,#2CBFAE);border-radius:999px}
     .sf-bk-month-txt{font-size:12px;color:var(--sl-navy);white-space:nowrap}
 
     /* Booking modals: lighter + sharper SharpFleet feel */
@@ -678,7 +678,7 @@
         }
 
         const state = {
-            view: 'week',
+            view: 'day',
             anchorMs: parseYmd(sf.today),
             bookings: [],
             rangeStartMs: null,
