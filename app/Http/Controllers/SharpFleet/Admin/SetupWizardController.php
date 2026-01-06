@@ -49,6 +49,7 @@ class SetupWizardController extends Controller
             'company_name' => ['required', 'string', 'max:255'],
             'timezone' => ['required', 'string'],
             'industry' => ['nullable', 'string', 'max:255'],
+            'distance_unit' => ['nullable', 'in:km,mi'],
         ]);
 
         $timezone = (string) $validated['timezone'];
@@ -67,6 +68,10 @@ class SetupWizardController extends Controller
         $settings = $this->loadSettings($organisationId);
         $settings['timezone'] = $timezone;
         $settings['industry'] = trim((string) ($validated['industry'] ?? ''));
+        $distanceUnit = strtolower(trim((string) ($validated['distance_unit'] ?? '')));
+        if ($distanceUnit === 'km' || $distanceUnit === 'mi') {
+            $settings['units']['distance'] = $distanceUnit;
+        }
         $this->persistSettings($organisationId, $settings);
 
         return redirect('/app/sharpfleet/admin/setup/settings/presence')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
+use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,8 +69,11 @@ class BranchController extends Controller
 
         $default = $branchService->getDefaultBranch($organisationId);
 
+        $settingsService = new CompanySettingsService($organisationId);
+
         return view('sharpfleet.admin.branches.create', [
             'defaultTimezone' => $default ? (string) ($default->timezone ?? '') : '',
+            'companyDistanceUnit' => $settingsService->distanceUnit(),
         ]);
     }
 
@@ -91,11 +95,16 @@ class BranchController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'timezone' => ['required', 'string', 'max:100'],
             'is_default' => ['nullable', 'in:0,1'],
+            'distance_unit' => ['nullable', 'in:km,mi'],
         ]);
 
         $name = trim((string) ($validated['name'] ?? ''));
         $timezone = trim((string) ($validated['timezone'] ?? ''));
         $wantsDefault = (int) ($validated['is_default'] ?? 0) === 1;
+        $distanceUnit = strtolower(trim((string) ($validated['distance_unit'] ?? '')));
+        if ($distanceUnit !== 'km' && $distanceUnit !== 'mi') {
+            $distanceUnit = '';
+        }
 
         if (!$this->isValidTimezone($timezone)) {
             return back()
@@ -142,7 +151,7 @@ class BranchController extends Controller
             $payload['updated_at'] = now();
         }
 
-        DB::connection('sharpfleet')->transaction(function () use ($organisationId, $payload, $shouldBeDefault) {
+        $branchId = (int) DB::connection('sharpfleet')->transaction(function () use ($organisationId, $payload, $shouldBeDefault) {
             $branchId = (int) DB::connection('sharpfleet')->table('branches')->insertGetId($payload);
 
             if ($shouldBeDefault && Schema::connection('sharpfleet')->hasColumn('branches', 'is_default')) {
@@ -152,7 +161,35 @@ class BranchController extends Controller
                     ->where('id', '!=', $branchId)
                     ->update(['is_default' => 0]);
             }
+
+            return $branchId;
         });
+
+        // Optional: per-branch distance unit override stored in company_settings JSON
+        if ($branchId > 0) {
+            $settingsService = new CompanySettingsService($organisationId);
+            $settings = $settingsService->all();
+            if (!isset($settings['units']) || !is_array($settings['units'])) {
+                $settings['units'] = [];
+            }
+            if (!isset($settings['units']['branch_distance']) || !is_array($settings['units']['branch_distance'])) {
+                $settings['units']['branch_distance'] = [];
+            }
+
+            if ($distanceUnit === '') {
+                unset($settings['units']['branch_distance'][(string) $branchId]);
+                unset($settings['units']['branch_distance'][$branchId]);
+            } else {
+                $settings['units']['branch_distance'][(string) $branchId] = $distanceUnit;
+            }
+
+            DB::connection('sharpfleet')
+                ->table('company_settings')
+                ->updateOrInsert(
+                    ['organisation_id' => $organisationId],
+                    ['organisation_id' => $organisationId, 'settings_json' => json_encode($settings)]
+                );
+        }
 
         return redirect('/app/sharpfleet/admin/branches')
             ->with('success', 'Branch created.');
@@ -182,8 +219,16 @@ class BranchController extends Controller
             abort(404);
         }
 
+        $settingsService = new CompanySettingsService($organisationId);
+        $companyDistanceUnit = $settingsService->distanceUnit();
+        $branchDistanceUnit = $settingsService->distanceUnitForBranch($branchId);
+        // If branch unit equals company default, treat as inherit for UI.
+        $branchDistanceUnitOverride = ($branchDistanceUnit === $companyDistanceUnit) ? '' : $branchDistanceUnit;
+
         return view('sharpfleet.admin.branches.edit', [
             'branch' => $branch,
+            'companyDistanceUnit' => $companyDistanceUnit,
+            'branchDistanceUnit' => $branchDistanceUnitOverride,
         ]);
     }
 
@@ -216,12 +261,17 @@ class BranchController extends Controller
             'timezone' => ['required', 'string', 'max:100'],
             'is_default' => ['nullable', 'in:0,1'],
             'is_active' => ['nullable', 'in:0,1'],
+            'distance_unit' => ['nullable', 'in:km,mi'],
         ]);
 
         $name = trim((string) ($validated['name'] ?? ''));
         $timezone = trim((string) ($validated['timezone'] ?? ''));
         $wantsDefault = (int) ($validated['is_default'] ?? 0) === 1;
         $wantsActive = (int) ($validated['is_active'] ?? 1) === 1;
+        $distanceUnit = strtolower(trim((string) ($validated['distance_unit'] ?? '')));
+        if ($distanceUnit !== 'km' && $distanceUnit !== 'mi') {
+            $distanceUnit = '';
+        }
 
         if (!$this->isValidTimezone($timezone)) {
             return back()
@@ -275,6 +325,30 @@ class BranchController extends Controller
                     ->update(['is_default' => 1]);
             }
         });
+
+        // Optional: per-branch distance unit override stored in company_settings JSON
+        $settingsService = new CompanySettingsService($organisationId);
+        $settings = $settingsService->all();
+        if (!isset($settings['units']) || !is_array($settings['units'])) {
+            $settings['units'] = [];
+        }
+        if (!isset($settings['units']['branch_distance']) || !is_array($settings['units']['branch_distance'])) {
+            $settings['units']['branch_distance'] = [];
+        }
+
+        if ($distanceUnit === '') {
+            unset($settings['units']['branch_distance'][(string) $branchId]);
+            unset($settings['units']['branch_distance'][$branchId]);
+        } else {
+            $settings['units']['branch_distance'][(string) $branchId] = $distanceUnit;
+        }
+
+        DB::connection('sharpfleet')
+            ->table('company_settings')
+            ->updateOrInsert(
+                ['organisation_id' => $organisationId],
+                ['organisation_id' => $organisationId, 'settings_json' => json_encode($settings)]
+            );
 
         return redirect('/app/sharpfleet/admin/branches')
             ->with('success', 'Branch updated.');

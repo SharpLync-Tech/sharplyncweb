@@ -7,6 +7,9 @@
 @php
     $isDefault = (int) ($branch->is_default ?? 0) === 1;
     $isActive = !property_exists($branch, 'is_active') ? true : ((int) ($branch->is_active ?? 1) === 1);
+    $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
+    $branchDistanceUnit = (string) ($branchDistanceUnit ?? '');
+    $selectedDistanceUnit = (string) old('distance_unit', $branchDistanceUnit);
 @endphp
 
 <div class="max-w-700 mx-auto mt-4">
@@ -50,6 +53,15 @@
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', $isActive ? 1 : 0) == 1 ? 'checked' : '' }}>
                 <strong>Active</strong>
             </label>
+
+            <label class="form-label mt-3">Distance unit (optional override)</label>
+            <select name="distance_unit" class="form-control">
+                <option value="" {{ $selectedDistanceUnit === '' ? 'selected' : '' }}>Inherit company default ({{ $companyDistanceUnit }})</option>
+                <option value="km" {{ $selectedDistanceUnit === 'km' ? 'selected' : '' }}>Kilometres (km)</option>
+                <option value="mi" {{ $selectedDistanceUnit === 'mi' ? 'selected' : '' }}>Miles (mi)</option>
+            </select>
+            <div class="form-hint">Use this if this branch uses a different distance unit to the company default.</div>
+            @error('distance_unit') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
             <hr class="my-3">
 

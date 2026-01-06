@@ -20,6 +20,17 @@ class CompanySettingsService
         'date_format' => 'd/m/Y',
         'time_format' => 'H:i',
 
+        // Units (display + reporting)
+        // Note: stored in company_settings.settings_json (no schema changes required)
+        'units' => [
+            // Company default distance unit.
+            // Supported: 'km' (kilometres), 'mi' (miles)
+            'distance' => 'km',
+
+            // Optional per-branch overrides: { "{branchId}": "km"|"mi" }
+            'branch_distance' => [],
+        ],
+
         'vehicles' => [
             'registration_tracking_enabled' => true,
             'servicing_tracking_enabled'    => false,
@@ -143,6 +154,39 @@ class CompanySettingsService
     public function timezone(): string
     {
         return $this->settings['timezone'];
+    }
+
+    // ---- Units ----
+
+    /**
+     * Company default distance unit.
+     * Returns 'km' or 'mi'.
+     */
+    public function distanceUnit(): string
+    {
+        $raw = strtolower(trim((string) ($this->settings['units']['distance'] ?? 'km')));
+        return $raw === 'mi' ? 'mi' : 'km';
+    }
+
+    /**
+     * Distance unit for a branch (falls back to company default).
+     * Returns 'km' or 'mi'.
+     */
+    public function distanceUnitForBranch(?int $branchId): string
+    {
+        $branchId = $branchId ? (int) $branchId : 0;
+        if ($branchId > 0) {
+            $map = $this->settings['units']['branch_distance'] ?? [];
+            if (is_array($map)) {
+                $raw = $map[(string) $branchId] ?? $map[$branchId] ?? null;
+                $raw = strtolower(trim((string) ($raw ?? '')));
+                if ($raw === 'km' || $raw === 'mi') {
+                    return $raw;
+                }
+            }
+        }
+
+        return $this->distanceUnit();
     }
 
     public function dateFormat(): string

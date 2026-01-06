@@ -68,6 +68,16 @@
                     <div class="form-hint">Used for internal reference and onboarding only.</div>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Distance unit</label>
+                    @php($selectedDistanceUnit = (string) old('distance_unit', (string) ($settings['units']['distance'] ?? 'km')))
+                    <select name="distance_unit" class="form-control">
+                        <option value="km" {{ $selectedDistanceUnit === 'km' ? 'selected' : '' }}>Kilometres (km)</option>
+                        <option value="mi" {{ $selectedDistanceUnit === 'mi' ? 'selected' : '' }}>Miles (mi)</option>
+                    </select>
+                    <div class="form-hint">Controls how distances are displayed in reports and trip/vehicle readings.</div>
+                </div>
+
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Next</button>
                 </div>

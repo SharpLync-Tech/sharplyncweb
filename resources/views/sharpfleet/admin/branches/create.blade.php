@@ -6,6 +6,8 @@
 
 @php
     $defaultTimezone = (string) ($defaultTimezone ?? '');
+    $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
+    $selectedDistanceUnit = (string) old('distance_unit', '');
 @endphp
 
 <div class="max-w-700 mx-auto mt-4">
@@ -41,6 +43,15 @@
                 <input type="checkbox" name="is_default" value="1" {{ old('is_default', 0) == 1 ? 'checked' : '' }}>
                 <strong>Make this the default branch</strong>
             </label>
+
+            <label class="form-label mt-3">Distance unit (optional override)</label>
+            <select name="distance_unit" class="form-control">
+                <option value="" {{ $selectedDistanceUnit === '' ? 'selected' : '' }}>Inherit company default ({{ $companyDistanceUnit }})</option>
+                <option value="km" {{ $selectedDistanceUnit === 'km' ? 'selected' : '' }}>Kilometres (km)</option>
+                <option value="mi" {{ $selectedDistanceUnit === 'mi' ? 'selected' : '' }}>Miles (mi)</option>
+            </select>
+            <div class="form-hint">Use this if different branches operate in different distance units.</div>
+            @error('distance_unit') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
             <hr class="my-3">
 
