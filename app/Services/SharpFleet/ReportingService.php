@@ -90,6 +90,48 @@ class ReportingService
             }
         }
 
+        $hasVehicleBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
+        $branchesForUi = collect();
+        $showBranchFilter = false;
+        if ($branchesEnabled && $hasVehicleBranchId) {
+            if ($branchAccessEnabled) {
+                $branchesForUi = $branchesService->getBranchesForUser($organisationId, (int) $actor['id']);
+            } else {
+                $branchesForUi = $branchesService->getBranches($organisationId);
+            }
+
+            // Only show the branch selector when the user can actually choose between branches.
+            $showBranchFilter = $branchesForUi->count() > 1;
+        }
+
+        $allowBranchOverride = (bool) $allowOverrides;
+        $selectedBranchIds = [];
+
+        if ($showBranchFilter && $allowBranchOverride) {
+            $raw = $request->input('branch_ids', []);
+            $raw = is_array($raw) ? $raw : [$raw];
+
+            // Treat "all" or empty selection as "all branches".
+            $raw = array_values(array_filter($raw, fn ($v) => $v !== null && $v !== '' && $v !== 'all'));
+            $selectedBranchIds = array_values(array_unique(array_filter(array_map(function ($v) {
+                if (is_numeric($v)) {
+                    $id = (int) $v;
+                    return $id > 0 ? $id : null;
+                }
+                return null;
+            }, $raw))));
+
+            if ($branchAccessEnabled && count($selectedBranchIds) > 0) {
+                $selectedBranchIds = array_values(array_intersect($selectedBranchIds, $accessibleBranchIds));
+            }
+
+            // If user selection ends up empty after validation, fall back to "all".
+            if (count($selectedBranchIds) === 0) {
+                $selectedBranchIds = [];
+            }
+        }
+
         $selectedVehicleLabel = 'All vehicles';
         if ($vehicleId) {
             $vehicleRow = DB::connection('sharpfleet')
@@ -160,10 +202,12 @@ class ReportingService
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->join('users', 'trips.user_id', '=', 'users.id');
 
-        $hasVehicleBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
-
         if ($branchAccessEnabled) {
             $query->whereIn('vehicles.branch_id', $accessibleBranchIds);
+        }
+
+        if ($showBranchFilter && count($selectedBranchIds) > 0) {
+            $query->whereIn('vehicles.branch_id', $selectedBranchIds);
         }
 
         if ($customerLinkingEnabled) {
@@ -238,6 +282,17 @@ class ReportingService
             $overrideNote = 'Some filters are locked by company settings.';
         }
 
+        $branchLabel = 'All branches';
+        if ($showBranchFilter && count($selectedBranchIds) > 0) {
+            $nameById = $branchesForUi->keyBy('id');
+            $names = [];
+            foreach ($selectedBranchIds as $bid) {
+                $row = $nameById->get($bid);
+                $names[] = $row ? (string) ($row->name ?? ('Branch #' . $bid)) : ('Branch #' . $bid);
+            }
+            $branchLabel = implode(', ', $names);
+        }
+
         $applied = [
             'private_trips_included' => $includePrivateTrips,
             // View-friendly keys
@@ -246,6 +301,8 @@ class ReportingService
             'date_range_label' => $dateRangeLabel,
             'vehicle_label' => $selectedVehicleLabel,
             'customer_label' => $selectedCustomerLabel,
+            'branch_filter_enabled' => $showBranchFilter,
+            'branch_label' => $showBranchFilter ? $branchLabel : '—',
             'override_note' => $overrideNote,
             'date_range' => [
                 'start' => $startDate ? $startDate->copy()->timezone($companyTimezone)->toDateString() : null,
@@ -266,15 +323,19 @@ class ReportingService
             'start_date' => $startDate ? $startDate->copy()->timezone($companyTimezone)->toDateString() : null,
             'end_date' => $endDate ? $endDate->copy()->timezone($companyTimezone)->toDateString() : null,
             'customer_id' => $customerId,
+            'branch_ids' => $selectedBranchIds,
             // View-friendly flags
             'allow_vehicle_override' => $allowVehicleOverride,
             'allow_date_override' => $allowDateOverride,
             'allow_customer_override' => $allowCustomerOverride,
+            'allow_branch_override' => $allowBranchOverride,
             'show_customer_filter' => $customerLinkingEnabled,
+            'show_branch_filter' => $showBranchFilter,
             'controls_enabled' => [
                 'vehicle' => $allowVehicleOverride,
                 'date' => $allowDateOverride,
                 'customer' => $allowCustomerOverride,
+                'branch' => $allowBranchOverride,
             ],
         ];
 
@@ -284,6 +345,7 @@ class ReportingService
             'trips' => $trips,
             'totals' => $totals,
             'customers' => $customers,
+            'branches' => $branchesForUi,
             'hasCustomersTable' => $hasCustomersTable,
             'customerLinkingEnabled' => $customerLinkingEnabled,
             'companyTimezone' => $companyTimezone,
@@ -397,18 +459,13 @@ class ReportingService
 
             $trip->display_unit = $rowUnit;
 
-            // Convert readings for display when needed
-            if ($rowUnit === 'mi') {
-                $trip->display_start = $this->kmToMi((float) $trip->start_km);
-                $trip->display_end = $trip->end_km !== null ? $this->kmToMi((float) $trip->end_km) : null;
-            } else {
-                $trip->display_start = $trip->start_km;
-                $trip->display_end = $trip->end_km;
-            }
+            // No automatic conversion: stored readings are treated as already in the branch's local unit.
+            $trip->display_start = $trip->start_km;
+            $trip->display_end = $trip->end_km;
 
             // Totals for display
             if ($rowUnit === 'mi') {
-                $totals['distance_mi'] += $this->kmToMi($delta);
+                $totals['distance_mi'] += $delta;
             } else {
                 $totals['distance_km'] += $delta;
             }
@@ -490,7 +547,6 @@ class ReportingService
             'Trip Mode',
             $customerLinkingEnabled ? 'Customer' : null,
             $purposeOfTravelEnabled ? 'Purpose of Travel' : null,
-            'Unit',
             'Start Reading',
             'End Reading',
             'Client Present',
@@ -533,7 +589,6 @@ class ReportingService
                 }
 
                 $row = array_merge($row, [
-                    $unit,
                     $startReadingText,
                     $endReadingText,
                     $trip->client_present ? 'Yes' : 'No',

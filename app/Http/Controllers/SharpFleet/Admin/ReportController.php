@@ -64,6 +64,7 @@ class ReportController extends Controller
             'totals' => $result['totals'],
             'applied' => $result['applied'],
             'ui' => $result['ui'],
+            'branches' => $result['branches'] ?? collect(),
             'vehicles' => $vehicles,
             'customers' => $result['customers'],
             'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),

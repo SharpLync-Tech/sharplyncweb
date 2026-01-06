@@ -19,6 +19,24 @@
     </div>
 @endif
 
+@if(isset($organisation) && isset($organisation->account_type) && (string) $organisation->account_type === 'personal')
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-between align-items-center flex-wrap gap-2">
+                <div>
+                    <div class="fw-bold">Upgrade to Sole Trader</div>
+                    <div class="text-muted small">This unlocks Customers and other Sole Trader features. No setup wizard rerun.</div>
+                </div>
+
+                <form method="POST" action="/app/sharpfleet/admin/account/upgrade-to-sole-trader">
+                    @csrf
+                    <button class="btn btn-primary" type="submit">Upgrade</button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="card">
     <div class="card-body">
         @php

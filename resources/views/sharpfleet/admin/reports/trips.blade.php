@@ -10,6 +10,10 @@
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate = $ui['end_date'] ?? request('end_date');
     $uiCustomerId = $ui['customer_id'] ?? request('customer_id');
+    $uiBranchIds = $ui['branch_ids'] ?? request('branch_ids', []);
+    $uiBranchIds = is_array($uiBranchIds) ? $uiBranchIds : [$uiBranchIds];
+    $showBranchFilter = (bool) ($ui['show_branch_filter'] ?? false);
+    $filtersGridClass = $showBranchFilter ? 'grid grid-4' : 'grid grid-3';
 @endphp
 
 <div class="container">
@@ -26,6 +30,13 @@
                     <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                     <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
                     <input type="hidden" name="customer_id" value="{{ $uiCustomerId }}">
+                    @if(!empty($uiBranchIds))
+                        @foreach($uiBranchIds as $bid)
+                            @if(is_numeric($bid) && (int) $bid > 0)
+                                <input type="hidden" name="branch_ids[]" value="{{ (int) $bid }}">
+                            @endif
+                        @endforeach
+                    @endif
                     <button type="submit" class="btn btn-primary">Export CSV</button>
                 </form>
             </div>
@@ -40,6 +51,9 @@
                     <strong>Applied settings</strong><br>
                     Reporting period: {{ $applied['date_range_label'] ?? '—' }}<br>
                     Private trips included: {{ ($applied['include_private_trips'] ?? false) ? 'Yes' : 'No' }}<br>
+                    @if(($applied['branch_filter_enabled'] ?? false))
+                        Branches: {{ $applied['branch_label'] ?? 'All branches' }}<br>
+                    @endif
                     Vehicle filter: {{ $applied['vehicle_label'] ?? 'All vehicles' }}<br>
                     Customer linking: {{ ($applied['customer_linking_enabled'] ?? false) ? 'Enabled' : 'Disabled' }}<br>
                     Customer filter: {{ $applied['customer_label'] ?? 'All customers' }}
@@ -48,7 +62,7 @@
                     @endif
                 </div>
 
-                <div class="grid grid-3">
+                <div class="{{ $filtersGridClass }}">
                     <div class="form-group">
                         <label class="form-label">Vehicle</label>
                         <select name="vehicle_id" class="form-control" {{ !($ui['allow_vehicle_override'] ?? true) ? 'disabled' : '' }}>
@@ -76,6 +90,23 @@
                         <label class="form-label">End Date</label>
                         <input type="date" name="end_date" value="{{ $uiEndDate }}" class="form-control" {{ !($ui['allow_date_override'] ?? true) ? 'disabled' : '' }}>
                     </div>
+
+                    @if($showBranchFilter)
+                        <div class="form-group">
+                            <label class="form-label">Branches</label>
+                            <select name="branch_ids[]" class="form-control" multiple {{ !($ui['allow_branch_override'] ?? true) ? 'disabled' : '' }}>
+                                <option value="all" {{ empty(array_filter($uiBranchIds, fn ($v) => is_numeric($v) && (int) $v > 0)) ? 'selected' : '' }}>All branches</option>
+                                @foreach(($branches ?? collect()) as $branch)
+                                    <option value="{{ $branch->id }}" {{ in_array((string) $branch->id, array_map('strval', $uiBranchIds), true) ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if(!($ui['allow_branch_override'] ?? true))
+                                <div class="text-muted mt-1">Branch selection is locked by company settings.</div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
 
                 @if(($ui['show_customer_filter'] ?? false) && ($hasCustomersTable ?? false))
@@ -101,10 +132,6 @@
 
                 <div class="mt-2 text-muted">
                     Times shown in {{ $companyTimezone }}
-                </div>
-
-                <div class="mt-1 text-muted">
-                    Distances are shown using each branch's configured unit (km or mi).
                 </div>
             </form>
         </div>
@@ -149,7 +176,6 @@
                                 @if(($purposeOfTravelEnabled ?? false))
                                     <th>Purpose of Travel</th>
                                 @endif
-                                <th>Unit</th>
                                 <th>Start Reading</th>
                                 <th>End Reading</th>
                                 <th>Client Present</th>
@@ -182,7 +208,6 @@
                                         $startReading = isset($t->display_start) ? $t->display_start : $t->start_km;
                                         $endReading = (isset($t->display_end) && $t->display_end !== null) ? $t->display_end : $t->end_km;
                                     @endphp
-                                    <td>{{ $unit }}</td>
                                     <td>{{ $startReading !== null ? (number_format((float) $startReading) . ' ' . $unit) : '—' }}</td>
                                     <td>{{ $endReading !== null ? (number_format((float) $endReading) . ' ' . $unit) : '—' }}</td>
                                     <td>{{ $t->client_present ? 'Yes' : 'No' }}</td>
@@ -192,6 +217,10 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <div class="mt-2 text-muted small">
+                    Distances are shown using each branch’s local measurement unit.
                 </div>
             @endif
         </div>
