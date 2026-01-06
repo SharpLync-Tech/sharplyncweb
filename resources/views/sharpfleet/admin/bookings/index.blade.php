@@ -476,6 +476,11 @@
     .sf-bk-month-bar > span{display:block;height:100%;background:var(--sl-teal,#2CBFAE);border-radius:999px}
     .sf-bk-month-txt{font-size:12px;color:var(--sl-navy);white-space:nowrap}
 
+    .sf-bk-month-cell{position:relative;}
+    .sf-bk-month-tip{position:absolute;left:10px;right:10px;top:44px;background:var(--sl-navy,#0A2A4D);color:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 10px 24px rgba(10,42,77,.20);z-index:20;display:none;}
+    .sf-bk-month-tip-title{font-size:12px;font-weight:800;margin:0 0 6px;}
+    .sf-bk-month-tip-list{font-size:12px;opacity:.92;margin:0;line-height:1.35;}
+
     /* Booking modals: lighter + sharper SharpFleet feel */
     #sfBkCreateModal .card-body,
     #sfBkEditModal .card-body{position:relative;padding:18px 18px 16px;}
@@ -794,6 +799,8 @@
 
             // Utilisation indicators only (no bookings rendered in month view).
             const totalVehicles = Array.isArray(sf.vehicles) ? sf.vehicles.length : 0;
+            const vehicleNameById = new Map();
+            (sf.vehicles || []).forEach(v => vehicleNameById.set(String(v.id), String(v.name || v.registration_number || 'Vehicle')));
             const vehicleUsageByDay = new Map(); // ymd -> Set(vehicle_id)
             state.bookings.forEach(b => {
                 const startMs = parseYmdHi(b.planned_start_local);
@@ -832,6 +839,7 @@
                     const inMonth = cellMs >= monthStart && cellMs <= monthEndDay;
 
                     const td = document.createElement('td');
+                    td.className = 'sf-bk-month-cell';
                     td.style.verticalAlign = 'top';
 
                     const btn = document.createElement('button');
@@ -868,6 +876,31 @@
                     ind.innerHTML = `<div class="sf-bk-month-bar"><span style="width:${pct}%;"></span></div>` +
                         `<div class="sf-bk-month-txt">${usedCount}/${totalVehicles}</div>`;
                     td.appendChild(ind);
+
+                    if (usedCount > 0 && usedSet) {
+                        const tip = document.createElement('div');
+                        tip.className = 'sf-bk-month-tip';
+
+                        const title = document.createElement('div');
+                        title.className = 'sf-bk-month-tip-title';
+                        title.textContent = 'Booked vehicles';
+
+                        const list = document.createElement('div');
+                        list.className = 'sf-bk-month-tip-list';
+
+                        const names = Array.from(usedSet).map(id => vehicleNameById.get(String(id)) || 'Vehicle');
+                        names.sort((a, b) => String(a).localeCompare(String(b)));
+                        const shown = names.slice(0, 6);
+                        const extra = names.length - shown.length;
+                        list.textContent = shown.join(', ') + (extra > 0 ? ` + ${extra} more` : '');
+
+                        tip.appendChild(title);
+                        tip.appendChild(list);
+                        td.appendChild(tip);
+
+                        ind.addEventListener('mouseenter', () => { tip.style.display = 'block'; });
+                        ind.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+                    }
 
                     tr.appendChild(td);
                 }
