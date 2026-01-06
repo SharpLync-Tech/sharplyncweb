@@ -24,7 +24,7 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user) {
             abort(403);
         }
 
@@ -125,7 +125,7 @@ class BookingController extends Controller
     public function feed(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user) {
             abort(403);
         }
 
@@ -181,9 +181,11 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user) {
             abort(403);
         }
+
+        $isAdminPortalUser = Roles::isAdminPortal($user);
 
         $validated = $request->validate([
             'user_id' => ['required', 'integer'],
@@ -208,7 +210,7 @@ class BookingController extends Controller
         $plannedEnd = $validated['planned_end_date'] . ' ' . $endTime . ':00';
 
         $this->bookingService->createBooking((int) $user['organisation_id'], [
-            'user_id' => (int) $validated['user_id'],
+            'user_id' => $isAdminPortalUser ? (int) $validated['user_id'] : (int) ($user['id'] ?? 0),
             'vehicle_id' => (int) $validated['vehicle_id'],
             'branch_id' => isset($validated['branch_id']) ? (int) $validated['branch_id'] : null,
             'planned_start' => $plannedStart,
@@ -226,7 +228,7 @@ class BookingController extends Controller
     public function update(Request $request, $booking)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user || !Roles::isAdminPortal($user)) {
             abort(403);
         }
 
@@ -271,7 +273,7 @@ class BookingController extends Controller
     public function cancel(Request $request, $booking)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user || !Roles::isAdminPortal($user)) {
             abort(403);
         }
 
@@ -283,7 +285,7 @@ class BookingController extends Controller
     public function changeVehicle(Request $request, $booking)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user || !Roles::isAdminPortal($user)) {
             abort(403);
         }
 
@@ -303,7 +305,7 @@ class BookingController extends Controller
     public function availableVehicles(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user || !Roles::canManageBookings($user)) {
+        if (!$user) {
             abort(403);
         }
 

@@ -13,6 +13,7 @@
     $sfIsDriver = $sfRole === Roles::DRIVER;
     $sfUserId = (int) ($user['id'] ?? 0);
     $sfUserName = trim((string)($user['first_name'] ?? '') . ' ' . (string)($user['last_name'] ?? ''));
+    $sfCanEditBookings = Roles::isAdminPortal($user);
 
     $settingsService = new CompanySettingsService((int) $user['organisation_id']);
     $companyTimezone = $defaultTimezone ?? $settingsService->timezone();
@@ -111,7 +112,7 @@
                 <div id="sfBkCalendar"></div>
 
                 <div class="text-muted small mt-2">
-                    Click an empty slot to create a booking. Click an existing booking to view/edit.
+                    Click an empty slot to create a booking. Click an existing booking to {{ $sfCanEditBookings ? 'view/edit' : 'view details' }}.
                 </div>
             @endif
         </div>
@@ -281,7 +282,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start gap-2">
                 <div>
-                    <h3 class="mb-1">Edit booking</h3>
+                    <h3 class="mb-1" id="sfBkEditTitle">Edit booking</h3>
                     <p class="text-muted mb-0" id="sfBkEditSubtitle"></p>
                 </div>
                 <button type="button"
@@ -416,9 +417,9 @@
 
                 <div class="d-flex justify-content-between gap-2">
                     <button type="button" class="btn btn-secondary" id="sfBkEditCancelBooking">Cancel booking</button>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2" id="sfBkEditActions">
                         <button type="button" class="btn btn-secondary" id="sfBkEditCloseBtn">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary" id="sfBkEditSubmit">Save changes</button>
                     </div>
                 </div>
             </form>
@@ -517,6 +518,7 @@
             timezone: @json($companyTimezone),
             today: @json($today),
             currentUserId: @json((int) ($user['id'] ?? 0)),
+            canEditBookings: @json((bool) $sfCanEditBookings),
             vehicles: @json($vehiclesForJs),
             drivers: @json($driversForJs),
             branchesEnabled: @json((bool) $branchesEnabled),
@@ -560,6 +562,7 @@
             editModal: document.getElementById('sfBkEditModal'),
             editClose: document.getElementById('sfBkEditClose'),
             editCloseBtn: document.getElementById('sfBkEditCloseBtn'),
+            editTitle: document.getElementById('sfBkEditTitle'),
             editSubtitle: document.getElementById('sfBkEditSubtitle'),
             editCreatedByNotice: document.getElementById('sfBkEditCreatedByNotice'),
             editForm: document.getElementById('sfBkEditForm'),
@@ -578,6 +581,8 @@
             editCustomerName: document.getElementById('sfBkEditCustomerName'),
             editNotes: document.getElementById('sfBkEditNotes'),
             editCancelBooking: document.getElementById('sfBkEditCancelBooking'),
+            editActions: document.getElementById('sfBkEditActions'),
+            editSubmit: document.getElementById('sfBkEditSubmit'),
             cancelForm: document.getElementById('sfBkCancelForm'),
         };
 
@@ -1453,6 +1458,17 @@
         function openEditModal(b) {
             if (!els.editModal || !els.editForm) return;
 
+            const canEdit = !!sf.canEditBookings;
+            if (els.editTitle) {
+                els.editTitle.textContent = canEdit ? 'Edit booking' : 'Booking details';
+            }
+            if (els.editCancelBooking) {
+                els.editCancelBooking.style.display = canEdit ? '' : 'none';
+            }
+            if (els.editSubmit) {
+                els.editSubmit.style.display = canEdit ? '' : 'none';
+            }
+
             els.editId.value = String(b.id);
             els.editForm.action = `/app/sharpfleet/admin/bookings/${b.id}`;
 
@@ -1507,6 +1523,29 @@
             }
             if (els.editNotes) {
                 els.editNotes.value = String(b.notes || '');
+            }
+
+            // Week-specific divergence note: modal becomes read-only for non-admin viewers.
+            if (!canEdit) {
+                ['editDriver', 'editVehicle', 'editBranch', 'editStartDate', 'editStartHour', 'editStartMinute', 'editEndDate', 'editEndHour', 'editEndMinute', 'editRemindMe', 'editCustomer', 'editCustomerName', 'editNotes']
+                    .forEach((key) => {
+                        const el = els[key];
+                        if (!el) return;
+                        el.disabled = true;
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.readOnly = true;
+                        }
+                    });
+            } else {
+                ['editDriver', 'editVehicle', 'editBranch', 'editStartDate', 'editStartHour', 'editStartMinute', 'editEndDate', 'editEndHour', 'editEndMinute', 'editRemindMe', 'editCustomer', 'editCustomerName', 'editNotes']
+                    .forEach((key) => {
+                        const el = els[key];
+                        if (!el) return;
+                        el.disabled = false;
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.readOnly = false;
+                        }
+                    });
             }
 
             show(els.editModal);
