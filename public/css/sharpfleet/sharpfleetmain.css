@@ -1523,6 +1523,21 @@ details.card[open] .incident-toggle-hint-closed {
     opacity: .6;
 }
 
+.grid-3 {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+}
+
+.align-end {
+    align-items: end;
+}
+
+.sf-reminder-inline {
+    padding-bottom: 6px;
+}
+
+
 
 .form-row {
     display: grid;

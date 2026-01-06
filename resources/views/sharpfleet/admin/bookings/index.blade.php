@@ -172,73 +172,30 @@
                     <input type="hidden" id="sfBkCreateBranch" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
                 @endif
 
-                <div class="grid grid-2">
+                <div class="grid grid-3 align-end">
+
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkCreateStartDate" type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
-                    </div>
-                    <div class="form-group">
-                    <label class="form-label">Start time</label>
-                    <div class="sf-time-row">
-                        <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
-                            <option value="">HH</option>
-                            @for($h = 0; $h <= 23; $h++)
-                                @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
-                                <option value="{{ $hh }}">{{ $hh }}</option>
-                            @endfor
-                        </select>
-
-                        <span class="sf-time-sep">:</span>
-
-                        <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
-                            <option value="">MM</option>
-                            @for($m = 0; $m <= 59; $m+=5)
-                                @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
-                                <option value="{{ $mm }}">{{ $mm }}</option>
-                            @endfor
-                        </select>
-                    </div>
-                </div>
-
-
-                <div class="grid grid-2">
-                    <div class="form-group">
-                        <label class="form-label">End date</label>
-                        <input
-                            id="sfBkCreateEndDate"
+                        <input id="sfBkCreateStartDate"
                             type="date"
-                            name="planned_end_date"
+                            name="planned_start_date"
                             class="form-control"
                             required
-                            min="{{ $today }}"
-                        >
+                            min="{{ $today }}">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">End time</label>
-
+                        <label class="form-label">Start time</label>
                         <div class="sf-time-row">
-                            <select
-                                id="sfBkCreateEndHour"
-                                name="planned_end_hour"
-                                class="form-control sf-time-hh"
-                                required
-                            >
+                            <select id="sfBkCreateStartHour" name="planned_start_hour" class="form-control sf-time-hh" required>
                                 <option value="">HH</option>
                                 @for($h = 0; $h <= 23; $h++)
                                     @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
                                     <option value="{{ $hh }}">{{ $hh }}</option>
                                 @endfor
                             </select>
-
                             <span class="sf-time-sep">:</span>
-
-                            <select
-                                id="sfBkCreateEndMinute"
-                                name="planned_end_minute"
-                                class="form-control sf-time-mm"
-                                required
-                            >
+                            <select id="sfBkCreateStartMinute" name="planned_start_minute" class="form-control sf-time-mm" required>
                                 <option value="">MM</option>
                                 @for($m = 0; $m <= 55; $m += 5)
                                     @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
@@ -247,7 +204,48 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group sf-reminder-inline">
+                        <label class="form-label">&nbsp;</label>
+                        <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <input id="sfBkCreateRemindMe" type="checkbox" name="remind_me" value="1">
+                            <span>Reminder (1 hour before)</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">End date</label>
+                        <input id="sfBkCreateEndDate"
+                            type="date"
+                            name="planned_end_date"
+                            class="form-control"
+                            required
+                            min="{{ $today }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">End time</label>
+                        <div class="sf-time-row">
+                            <select id="sfBkCreateEndHour" name="planned_end_hour" class="form-control sf-time-hh" required>
+                                <option value="">HH</option>
+                                @for($h = 0; $h <= 23; $h++)
+                                    @php($hh = str_pad((string)$h, 2, '0', STR_PAD_LEFT))
+                                    <option value="{{ $hh }}">{{ $hh }}</option>
+                                @endfor
+                            </select>
+                            <span class="sf-time-sep">:</span>
+                            <select id="sfBkCreateEndMinute" name="planned_end_minute" class="form-control sf-time-mm" required>
+                                <option value="">MM</option>
+                                @for($m = 0; $m <= 55; $m += 5)
+                                    @php($mm = str_pad((string)$m, 2, '0', STR_PAD_LEFT))
+                                    <option value="{{ $mm }}">{{ $mm }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
+
 
 
                 <div class="form-group">
