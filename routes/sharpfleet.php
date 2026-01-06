@@ -283,6 +283,7 @@ Route::prefix('app/sharpfleet')
 
             // Vehicles (CRUD)
             Route::get('/vehicles', [VehicleController::class, 'index']);
+            Route::get('/vehicles/assigned', [VehicleController::class, 'assigned']);
             Route::get('/vehicles/create', [VehicleController::class, 'create']);
             Route::get('/vehicles/create/confirm', [VehicleController::class, 'confirmCreate']);
             Route::post('/vehicles/create/confirm', [VehicleController::class, 'confirmStore']);

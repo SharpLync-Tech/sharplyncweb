@@ -122,6 +122,83 @@ class VehicleController extends Controller
     }
 
     /**
+     * List permanently assigned vehicles and their assigned driver (admin only)
+     */
+    public function assigned(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+
+        $vehiclesHaveAssignment = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+            && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
+
+        $branchService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
+        $branchesEnabled = $branchService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
+            : [];
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $vehicles = collect();
+        if ($vehiclesHaveAssignment) {
+            $vehicles = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->leftJoin('users', function ($join) {
+                    $join->on('vehicles.assigned_driver_id', '=', 'users.id');
+                })
+                ->where('vehicles.organisation_id', $organisationId)
+                ->where('vehicles.is_active', 1)
+                ->where('vehicles.assignment_type', 'permanent')
+                ->whereNotNull('vehicles.assigned_driver_id')
+                ->when(
+                    $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                    fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+                )
+                ->orderBy('vehicles.name')
+                ->select(
+                    'vehicles.id',
+                    'vehicles.name',
+                    'vehicles.registration_number',
+                    'vehicles.branch_id',
+                    'vehicles.is_in_service',
+                    'vehicles.out_of_service_reason',
+                    'vehicles.out_of_service_note',
+                    'vehicles.assigned_driver_id',
+                    'users.first_name as driver_first_name',
+                    'users.last_name as driver_last_name'
+                )
+                ->get();
+        }
+
+        $branches = collect();
+        if ($branchesEnabled && $branchService->vehiclesHaveBranchSupport()) {
+            $branches = $branchService->getBranches($organisationId);
+            if ($branchScopeEnabled) {
+                $branches = $branches->filter(fn ($b) => in_array((int) ($b->id ?? 0), $accessibleBranchIds, true))->values();
+            }
+        }
+
+        return view('sharpfleet.admin.vehicles.assigned', [
+            'vehiclesHaveAssignment' => $vehiclesHaveAssignment,
+            'vehicles' => $vehicles,
+            'branchesEnabled' => ($branchesEnabled && $branchService->vehiclesHaveBranchSupport()),
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
      * Confirmation step (subscribed orgs only) for archiving a vehicle.
      */
     public function confirmArchive(Request $request, $vehicle)
