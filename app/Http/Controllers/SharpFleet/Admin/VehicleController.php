@@ -30,6 +30,15 @@ class VehicleController extends Controller
         $this->vehicleService = $vehicleService;
         $this->stripeSubscriptionSync = $stripeSubscriptionSync;
         $this->audit = $audit;
+
+        // Booking admins can access the admin portal, but must not manage fleet/vehicles.
+        $this->middleware(function (Request $request, $next) {
+            $fleetUser = $request->session()->get('sharpfleet.user');
+            if (!$fleetUser || !Roles::canManageFleet($fleetUser)) {
+                abort(403);
+            }
+            return $next($request);
+        });
     }
 
     /**

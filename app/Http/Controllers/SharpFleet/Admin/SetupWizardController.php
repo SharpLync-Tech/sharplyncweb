@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -395,7 +396,7 @@ class SetupWizardController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             abort(403);
         }
 

@@ -16,6 +16,113 @@ class BookingController extends Controller
 {
     protected BookingService $bookingService;
 
+    private function branchAccessContext(array $user): array
+    {
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+
+        $branchesService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) ($user['id'] ?? 0))
+            : [];
+        $accessibleBranchIds = array_values(array_unique(array_filter(array_map('intval', $accessibleBranchIds), fn ($v) => $v > 0)));
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        return [
+            'branchesService' => $branchesService,
+            'branchScopeEnabled' => $branchScopeEnabled,
+            'accessibleBranchIds' => $accessibleBranchIds,
+        ];
+    }
+
+    private function assertBranchAccessible(?int $branchId, array $ctx): void
+    {
+        if (!$ctx['branchScopeEnabled']) {
+            return;
+        }
+
+        if (!$branchId || $branchId <= 0) {
+            return;
+        }
+
+        if (!in_array((int) $branchId, $ctx['accessibleBranchIds'], true)) {
+            abort(403, 'No branch access.');
+        }
+    }
+
+    private function assertVehicleAccessible(int $organisationId, int $vehicleId, array $ctx): void
+    {
+        if (!$ctx['branchScopeEnabled']) {
+            return;
+        }
+
+        /** @var BranchService $branchesService */
+        $branchesService = $ctx['branchesService'];
+        if (!$branchesService->vehiclesHaveBranchSupport()) {
+            return;
+        }
+
+        $vehicleBranchId = $branchesService->getBranchIdForVehicle($organisationId, $vehicleId);
+        if ($vehicleBranchId && !in_array((int) $vehicleBranchId, $ctx['accessibleBranchIds'], true)) {
+            abort(403, 'No branch access.');
+        }
+    }
+
+    private function assertBookingAccessible(int $organisationId, int $bookingId, array $ctx): void
+    {
+        if (!$ctx['branchScopeEnabled']) {
+            return;
+        }
+
+        /** @var BranchService $branchesService */
+        $branchesService = $ctx['branchesService'];
+        $hasBookings = Schema::connection('sharpfleet')->hasTable('bookings');
+        if (!$hasBookings) {
+            return;
+        }
+
+        $hasBookingBranch = Schema::connection('sharpfleet')->hasColumn('bookings', 'branch_id');
+        $hasVehicleBranch = $branchesService->vehiclesHaveBranchSupport() && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+        if (!$hasBookingBranch && !$hasVehicleBranch) {
+            return;
+        }
+
+        $query = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->where('bookings.organisation_id', $organisationId)
+            ->where('bookings.id', $bookingId);
+
+        if ($hasVehicleBranch) {
+            $query->leftJoin('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id');
+        }
+
+        $row = $query->select(
+            $hasBookingBranch ? 'bookings.branch_id as booking_branch_id' : DB::raw('NULL as booking_branch_id'),
+            $hasVehicleBranch ? 'vehicles.branch_id as vehicle_branch_id' : DB::raw('NULL as vehicle_branch_id')
+        )->first();
+
+        if (!$row) {
+            return;
+        }
+
+        $effectiveBranchId = $hasBookingBranch ? (int) ($row->booking_branch_id ?? 0) : 0;
+        if ($effectiveBranchId <= 0 && $hasVehicleBranch) {
+            $effectiveBranchId = (int) ($row->vehicle_branch_id ?? 0);
+        }
+
+        if ($effectiveBranchId > 0 && !in_array($effectiveBranchId, $ctx['accessibleBranchIds'], true)) {
+            abort(403, 'No branch access.');
+        }
+    }
+
     public function __construct(BookingService $bookingService)
     {
         $this->bookingService = $bookingService;
@@ -187,7 +294,10 @@ class BookingController extends Controller
         }
 
         $role = Roles::normalize($user['role'] ?? null);
-        $canEditBookings = in_array($role, [Roles::COMPANY_ADMIN, Roles::BOOKING_ADMIN], true);
+        $canEditBookings = in_array($role, [Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN], true);
+        if (!$canEditBookings) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'user_id' => ['required', 'integer'],
@@ -211,10 +321,19 @@ class BookingController extends Controller
         $plannedStart = $validated['planned_start_date'] . ' ' . $startTime . ':00';
         $plannedEnd = $validated['planned_end_date'] . ' ' . $endTime . ':00';
 
-        $this->bookingService->createBooking((int) $user['organisation_id'], [
-            'user_id' => $canEditBookings ? (int) $validated['user_id'] : (int) ($user['id'] ?? 0),
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $ctx = $this->branchAccessContext($user);
+        $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+
+        $this->assertBranchAccessible($branchId, $ctx);
+        $this->assertVehicleAccessible($organisationId, (int) $validated['vehicle_id'], $ctx);
+
+        $this->bookingService->createBooking($organisationId, [
+            'user_id' => (int) $validated['user_id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
-            'branch_id' => isset($validated['branch_id']) ? (int) $validated['branch_id'] : null,
+            'branch_id' => $branchId,
             'planned_start' => $plannedStart,
             'planned_end' => $plannedEnd,
             'customer_id' => $validated['customer_id'] ?? null,
@@ -231,10 +350,14 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         $role = $user ? Roles::normalize($user['role'] ?? null) : null;
-        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BOOKING_ADMIN], true);
+        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN], true);
         if (!$user || !$canEditBookings) {
             abort(403);
         }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $ctx = $this->branchAccessContext($user);
+        $this->assertBookingAccessible($organisationId, (int) $booking, $ctx);
 
         $validated = $request->validate([
             'user_id' => ['required', 'integer'],
@@ -258,10 +381,16 @@ class BookingController extends Controller
         $plannedStart = $validated['planned_start_date'] . ' ' . $startTime . ':00';
         $plannedEnd = $validated['planned_end_date'] . ' ' . $endTime . ':00';
 
-        $this->bookingService->updateBooking((int) $user['organisation_id'], (int) $booking, [
+        $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
+            ? (int) $validated['branch_id']
+            : null;
+        $this->assertBranchAccessible($branchId, $ctx);
+        $this->assertVehicleAccessible($organisationId, (int) $validated['vehicle_id'], $ctx);
+
+        $this->bookingService->updateBooking($organisationId, (int) $booking, [
             'user_id' => (int) $validated['user_id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
-            'branch_id' => isset($validated['branch_id']) ? (int) $validated['branch_id'] : null,
+            'branch_id' => $branchId,
             'planned_start' => $plannedStart,
             'planned_end' => $plannedEnd,
             'customer_id' => $validated['customer_id'] ?? null,
@@ -278,12 +407,16 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         $role = $user ? Roles::normalize($user['role'] ?? null) : null;
-        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BOOKING_ADMIN], true);
+        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN], true);
         if (!$user || !$canEditBookings) {
             abort(403);
         }
 
-        $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, true);
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $ctx = $this->branchAccessContext($user);
+        $this->assertBookingAccessible($organisationId, (int) $booking, $ctx);
+
+        $this->bookingService->cancelBooking($organisationId, (int) $booking, $user, true);
 
         return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking cancelled.');
     }
@@ -292,7 +425,7 @@ class BookingController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
         $role = $user ? Roles::normalize($user['role'] ?? null) : null;
-        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BOOKING_ADMIN], true);
+        $canEditBookings = $role && in_array($role, [Roles::COMPANY_ADMIN, Roles::BRANCH_ADMIN, Roles::BOOKING_ADMIN], true);
         if (!$user || !$canEditBookings) {
             abort(403);
         }
@@ -301,8 +434,13 @@ class BookingController extends Controller
             'new_vehicle_id' => ['required', 'integer'],
         ]);
 
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $ctx = $this->branchAccessContext($user);
+        $this->assertBookingAccessible($organisationId, (int) $booking, $ctx);
+        $this->assertVehicleAccessible($organisationId, (int) $validated['new_vehicle_id'], $ctx);
+
         $this->bookingService->changeBookingVehicle(
-            (int) $user['organisation_id'],
+            $organisationId,
             (int) $booking,
             (int) $validated['new_vehicle_id']
         );
@@ -313,7 +451,7 @@ class BookingController extends Controller
     public function availableVehicles(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
-        if (!$user) {
+        if (!$user || !Roles::isAdminPortal($user)) {
             abort(403);
         }
 
@@ -334,6 +472,13 @@ class BookingController extends Controller
         $branchId = isset($validated['branch_id']) && $validated['branch_id'] !== null && $validated['branch_id'] !== ''
             ? (int) $validated['branch_id']
             : null;
+
+        $ctx = $this->branchAccessContext($user);
+        if ($ctx['branchScopeEnabled'] && (!$branchId || $branchId <= 0)) {
+            $branchId = (int) ($ctx['accessibleBranchIds'][0] ?? 0);
+            $branchId = $branchId > 0 ? $branchId : null;
+        }
+        $this->assertBranchAccessible($branchId, $ctx);
 
         $branchesService = new BranchService();
         $tz = (new CompanySettingsService($organisationId))->timezone();

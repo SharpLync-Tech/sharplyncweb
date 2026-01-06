@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +14,7 @@ class SharpFleetSetupWizard
         $user = $request->session()->get('sharpfleet.user');
 
         // Only applies to authenticated admins.
-        if (!$user || ($user['role'] ?? null) !== 'admin') {
+        if (!$user || !Roles::isCompanyAdmin($user)) {
             return $next($request);
         }
 
@@ -22,10 +23,10 @@ class SharpFleetSetupWizard
             return $next($request);
         }
 
-            // Always allow setup wizard routes during onboarding.
+        // Always allow setup wizard routes during onboarding.
         $path = ltrim($request->path(), '/');
-            $isWizardRoute = str_starts_with($path, 'app/sharpfleet/admin/setup');
-            if ($isWizardRoute) {
+        $isWizardRoute = str_starts_with($path, 'app/sharpfleet/admin/setup');
+        if ($isWizardRoute) {
             return $next($request);
         }
 
