@@ -59,18 +59,22 @@
                 </p>
 
                 <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_vehicle_registration_tracking" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="enable_vehicle_registration_tracking" value="1"
                                {{ ($settings['vehicles']['registration_tracking_enabled'] ?? true) ? 'checked' : '' }}>
-                        <strong>Enable Vehicle Registration Tracking</strong>
-                        <div class="text-muted small ms-4">Adds registration fields (rego number, expiry date) on vehicle profiles and can drive reminder emails.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Enable Vehicle Registration Tracking</strong></div>
+                            <div class="text-muted small">Adds registration fields (rego number, expiry date) on vehicle profiles and can drive reminder emails.</div>
+                        </div>
                     </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_vehicle_servicing_tracking" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="enable_vehicle_servicing_tracking" value="1"
                                {{ ($settings['vehicles']['servicing_tracking_enabled'] ?? false) ? 'checked' : '' }}>
-                        <strong>Enable Vehicle Servicing Tracking</strong>
-                        <div class="text-muted small ms-4">Tracks service due dates/readings on vehicles and can drive reminder emails.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Enable Vehicle Servicing Tracking</strong></div>
+                            <div class="text-muted small">Tracks service due dates/readings on vehicles and can drive reminder emails.</div>
+                        </div>
                     </label>
                 </div>
             </div>
