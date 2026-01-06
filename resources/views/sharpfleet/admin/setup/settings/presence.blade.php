@@ -71,18 +71,22 @@
                 </div>
 
                 <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_client_presence" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="enable_client_presence" value="1"
                                {{ ($settings['client_presence']['enabled'] ?? false) ? 'checked' : '' }}>
-                        <strong>Enable passenger/client presence tracking</strong>
-                        <div class="text-muted small ms-4">Shows a simple “Was a passenger/client present?” prompt to drivers.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Enable passenger/client presence tracking</strong></div>
+                            <div class="text-muted small">Shows a simple “Was a passenger/client present?” prompt to drivers.</div>
+                        </div>
                     </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_client_presence" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="require_client_presence" value="1"
                                {{ ($settings['client_presence']['required'] ?? false) ? 'checked' : '' }}>
-                        <strong>Block trip start unless passenger/client presence is recorded</strong>
-                        <div class="text-muted small ms-4">When enabled, drivers must answer the question before the trip can start.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Block trip start unless passenger/client presence is recorded</strong></div>
+                            <div class="text-muted small">When enabled, drivers must answer the question before the trip can start.</div>
+                        </div>
                     </label>
                 </div>
 
