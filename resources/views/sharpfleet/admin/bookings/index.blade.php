@@ -441,6 +441,9 @@
     .sf-bk-scroll{position:relative;overflow-x:auto;overflow-y:auto;max-width:100%;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
     .sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
     .sf-bk-left{width:240px;min-width:240px;max-width:240px;flex:0 0 240px;position:-webkit-sticky;position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
+    /* Fallback for environments/layouts where CSS sticky is broken by an ancestor overflow/transform.
+       When enabled on the scroll container, we keep the left column pinned via JS translateX(scrollLeft). */
+    .sf-bk-scroll.sf-bk-fake-sticky .sf-bk-left{position:relative;left:auto;transform:translateX(0);will-change:transform;}
     .sf-bk-left-inner{padding:10px 12px;color:var(--sl-navy,#0A2A4D)}
     .sf-bk-time-header{position:relative;height:54px;min-height:54px}
     .sf-bk-time-label{position:absolute;top:10px;font-size:12px;color:var(--sl-navy,#0A2A4D);white-space:nowrap}
@@ -843,6 +846,23 @@
             }
         }
 
+        function enableFakeStickyLeft(scrollEl) {
+            if (!scrollEl) return;
+
+            scrollEl.classList.add('sf-bk-fake-sticky');
+            const stickyEls = Array.from(scrollEl.querySelectorAll('.sf-bk-left'));
+
+            const apply = () => {
+                const x = scrollEl.scrollLeft || 0;
+                for (const el of stickyEls) {
+                    el.style.transform = `translateX(${x}px)`;
+                }
+            };
+
+            scrollEl.addEventListener('scroll', apply, { passive: true });
+            apply();
+        }
+
         function renderMonth() {
             clearCalendar();
             if (!els.cal) return;
@@ -1157,6 +1177,9 @@
             } else {
                 scroll.scrollLeft = Math.round((fallbackStartHour * 60) * pxPerMin);
             }
+
+            // Keep the left vehicle column pinned during horizontal scroll, even if CSS sticky is broken.
+            enableFakeStickyLeft(scroll);
         }
 
         function renderWeekGrid() {
