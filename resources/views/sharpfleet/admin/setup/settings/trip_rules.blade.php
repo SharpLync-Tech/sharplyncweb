@@ -61,39 +61,48 @@
                 </p>
 
                 <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_odometer_start" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="require_odometer_start" value="1"
                                {{ ($settings['trip']['odometer_required'] ?? true) ? 'checked' : '' }}>
-                        <strong>Require starting reading when starting a trip (km or hours)</strong>
-                        <div class="text-muted small ms-4">Ensures every trip has a starting reading for accurate distance/usage tracking.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Require a starting reading when starting a trip (distance or hours)</strong></div>
+                            <div class="text-muted small">Ensures every trip has a starting reading for accurate tracking.</div>
+                        </div>
                     </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="allow_odometer_override" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="allow_odometer_override" value="1"
                                {{ ($settings['trip']['odometer_allow_override'] ?? true) ? 'checked' : '' }}>
-                        <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
-                        <div class="text-muted small ms-4">Useful when the last reading is wrong or the vehicle’s display was missed previously.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Allow drivers to override the auto-filled reading (distance or hours)</strong></div>
+                            <div class="text-muted small">Useful when the last reading is wrong or the vehicle’s display was missed previously.</div>
+                        </div>
                     </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="allow_private_trips" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="allow_private_trips" value="1"
                                {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Allow your drivers to use the vehicle for private use</strong>
-                        <div class="text-muted small ms-4">Enables a private trip type so personal use can be tracked separately.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Allow your drivers to use the vehicle for private use</strong></div>
+                            <div class="text-muted small">Enables a private trip type so personal use can be tracked separately.</div>
+                        </div>
                     </label>
 
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="enable_purpose_of_travel" value="1" {{ !empty($settings['trip']['purpose_of_travel_enabled']) ? 'checked' : '' }}>
-                            <strong>Enable Purpose of Travel (business trips)</strong>
-                            <div class="text-muted small ms-4">Shows an optional 255 character text field when drivers start a business trip.</div>
-                        </label>
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="enable_purpose_of_travel" value="1" {{ !empty($settings['trip']['purpose_of_travel_enabled']) ? 'checked' : '' }}>
+                        <div class="flex-grow-1">
+                            <div><strong>Enable Purpose of Travel (business trips)</strong></div>
+                            <div class="text-muted small">Shows an optional 255 character text field when drivers start a business trip.</div>
+                        </div>
+                    </label>
 
-
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_manual_start_end_times" value="1"
+                    <label class="checkbox-label d-flex align-items-start gap-2">
+                        <input class="mt-1" type="checkbox" name="require_manual_start_end_times" value="1"
                                {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Require drivers to enter a start time and end time for each trip</strong>
-                        <div class="text-muted small ms-4">Adds extra detail for auditing, but increases time-to-start for drivers.</div>
+                        <div class="flex-grow-1">
+                            <div><strong>Require drivers to enter a start time and end time for each trip</strong></div>
+                            <div class="text-muted small">Adds extra detail for auditing, but increases time-to-start for drivers.</div>
+                        </div>
                     </label>
                 </div>
             </div>
