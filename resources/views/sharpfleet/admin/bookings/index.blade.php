@@ -590,6 +590,28 @@
 
         function pad2(n) { return String(n).padStart(2, '0'); }
 
+        function localeFromTimezone(tz) {
+            const s = String(tz || '').toLowerCase();
+            if (s.includes('australia')) return 'en-AU';
+            if (s.includes('america') || s.startsWith('us/')) return 'en-US';
+            return 'en-GB';
+        }
+
+        const sfLocale = localeFromTimezone(sf.timezone);
+
+        function formatDisplayDate(ms) {
+            try {
+                return new Intl.DateTimeFormat(sfLocale, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    timeZone: 'UTC',
+                }).format(new Date(ms));
+            } catch (e) {
+                return formatYmd(ms);
+            }
+        }
+
         function parseYmd(ymd) {
             const [y, m, d] = String(ymd).split('-').map(Number);
             return Date.UTC(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
@@ -611,7 +633,7 @@
 
         function formatDmyHi(ms) {
             const dt = new Date(ms);
-            return pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1) + '/' + dt.getUTCFullYear() + ' ' + pad2(dt.getUTCHours()) + ':' + pad2(dt.getUTCMinutes());
+            return formatDisplayDate(ms) + ' ' + pad2(dt.getUTCHours()) + ':' + pad2(dt.getUTCMinutes());
         }
 
         function startOfWeekMonday(ms) {
@@ -700,16 +722,16 @@
         function setRangeLabel() {
             if (!els.range) return;
             if (state.view === 'day') {
-                els.range.textContent = 'Day: ' + formatYmd(state.rangeStartMs);
+                els.range.textContent = 'Day: ' + formatDisplayDate(state.rangeStartMs);
                 return;
             }
             if (state.view === 'week') {
                 const endMs = state.rangeEndMs - 60000;
-                els.range.textContent = 'Week: ' + formatYmd(state.rangeStartMs) + ' → ' + formatYmd(endMs);
+                els.range.textContent = 'Week: ' + formatDisplayDate(state.rangeStartMs) + ' → ' + formatDisplayDate(endMs);
                 return;
             }
             const dt = new Date(state.anchorMs);
-            const month = dt.toLocaleString('en-GB', { month: 'long', timeZone: 'UTC' });
+            const month = dt.toLocaleString(sfLocale, { month: 'long', timeZone: 'UTC' });
             els.range.textContent = 'Month: ' + month + ' ' + dt.getUTCFullYear();
         }
 
@@ -885,7 +907,11 @@
                 const hm = pad2(dt.getUTCHours()) + ':00';
                 // In week view, only show date at midnight ticks to reduce clutter.
                 if (state.view === 'week' && dt.getUTCHours() === 0) {
-                    const day = pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1);
+                    const day = new Intl.DateTimeFormat(sfLocale, {
+                        day: '2-digit',
+                        month: '2-digit',
+                        timeZone: 'UTC',
+                    }).format(new Date(t));
                     lbl.textContent = day;
                     lbl.style.fontWeight = '700';
                 } else {
@@ -1046,7 +1072,11 @@
                 const dt = new Date(dayStartMs);
                 const dowMon0 = (dt.getUTCDay() + 6) % 7; // 0=Mon
                 const dayName = dayNames[dowMon0];
-                const dayDate = pad2(dt.getUTCDate()) + '/' + pad2(dt.getUTCMonth() + 1);
+                const dayDate = new Intl.DateTimeFormat(sfLocale, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    timeZone: 'UTC',
+                }).format(new Date(dayStartMs));
                 const ymd = formatYmd(dayStartMs);
 
                 const head = document.createElement('div');
