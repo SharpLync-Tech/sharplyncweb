@@ -27,6 +27,7 @@
             'id' => (int) ($v->id ?? 0),
             'name' => (string) ($v->name ?? ''),
             'registration_number' => (string) ($v->registration_number ?? ''),
+            'branch_id' => isset($v->branch_id) ? (int) $v->branch_id : null,
         ];
     })->values();
 
@@ -631,6 +632,19 @@
 
         function pad2(n) { return String(n).padStart(2, '0'); }
 
+        function selectedBranchId() {
+            if (!els.branch) return null;
+            const v = String(els.branch.value || '').trim();
+            return v ? v : null;
+        }
+
+        function visibleVehicles() {
+            const branchId = selectedBranchId();
+            const all = Array.isArray(sf.vehicles) ? sf.vehicles : [];
+            if (!branchId) return all;
+            return all.filter(v => String(v.branch_id || '') === branchId);
+        }
+
         function localeFromTimezone(tz) {
             const s = String(tz || '').toLowerCase();
             if (s.includes('australia')) return 'en-AU';
@@ -834,9 +848,10 @@
             if (!els.cal) return;
 
             // Utilisation indicators only (no bookings rendered in month view).
-            const totalVehicles = Array.isArray(sf.vehicles) ? sf.vehicles.length : 0;
+            const vehicles = visibleVehicles();
+            const totalVehicles = vehicles.length;
             const vehicleNameById = new Map();
-            (sf.vehicles || []).forEach(v => vehicleNameById.set(String(v.id), String(v.name || v.registration_number || 'Vehicle')));
+            vehicles.forEach(v => vehicleNameById.set(String(v.id), String(v.name || v.registration_number || 'Vehicle')));
             const vehicleUsageByDay = new Map(); // ymd -> Set(vehicle_id)
             state.bookings.forEach(b => {
                 const startMs = parseYmdHi(b.planned_start_local);
@@ -1013,7 +1028,7 @@
 
             const vehicleRowEls = new Map();
 
-            sf.vehicles.forEach(v => {
+            visibleVehicles().forEach(v => {
                 const row = document.createElement('div');
                 row.className = 'sf-bk-row';
 
@@ -1197,7 +1212,7 @@
 
             const dayCellByVehicle = new Map(); // `${vehicleId}:${dayIndex}` -> element
 
-            sf.vehicles.forEach(v => {
+            visibleVehicles().forEach(v => {
                 const row = document.createElement('div');
                 row.className = 'sf-bk-row';
 
@@ -1373,7 +1388,7 @@
 
             wrap.appendChild(header);
 
-            sf.vehicles.forEach(v => {
+            visibleVehicles().forEach(v => {
                 const vehicleId = String(v.id);
                 const bookings = bookingsByVehicle.get(vehicleId) || [];
                 const isExpanded = bookings.length > 0;
@@ -1844,6 +1859,16 @@
         if (els.viewDay) els.viewDay.addEventListener('click', () => { state.view = 'day'; loadBookingsForRange(); });
         if (els.viewWeek) els.viewWeek.addEventListener('click', () => { state.view = 'week'; loadBookingsForRange(); });
         if (els.viewMonth) els.viewMonth.addEventListener('click', () => { state.view = 'month'; loadBookingsForRange(); });
+
+        if (els.branch) {
+            els.branch.addEventListener('change', () => {
+                // Keep Create modal branch aligned with the current filter (if applicable).
+                if (els.createBranch) {
+                    els.createBranch.value = String(els.branch.value || '');
+                }
+                loadBookingsForRange();
+            });
+        }
 
         if (els.today) els.today.addEventListener('click', () => { state.anchorMs = parseYmd(sf.today); loadBookingsForRange(); });
         if (els.prev) els.prev.addEventListener('click', () => {
