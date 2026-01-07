@@ -185,7 +185,8 @@ class SharpFleetSendBookingReminders extends Command
                 }
 
                 try {
-                    Mail::to($email)->send(new BookingReminder(
+                    // Force Mailgun for reminders to avoid silent no-op when the default mailer is set to "log".
+                    Mail::mailer('mailgun')->to($email)->send(new BookingReminder(
                         driverName: $driverName,
                         timezone: $tz,
                         start: $startLocal,
