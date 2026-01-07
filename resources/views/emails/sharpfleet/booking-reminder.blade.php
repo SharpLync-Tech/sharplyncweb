@@ -1,6 +1,4 @@
-@extends('emails.layouts.default')
-
-@section('content')
+<x-email-layout :title="'Booking reminder'">
     <h2 style="margin:0 0 12px 0;">Booking reminder</h2>
 
     <p style="margin:0 0 12px 0;">
@@ -46,4 +44,4 @@
     <p style="margin:16px 0 0 0;" class="text-muted">
         You received this reminder because “Reminder (1 hour before start)” was selected when the booking was created or edited.
     </p>
-@endsection
+</x-email-layout>
