@@ -31,13 +31,18 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
+        // 🔐 If you're using cookie-based auth for web SPA clients, enable this:
+        // $middleware->prepend(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
+
         /**
          * ------------------------------------------------------------
          * Route middleware aliases
          * ------------------------------------------------------------
          */
         $middleware->alias([
-            'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+            'admin.auth'    => \App\Http\Middleware\AdminAuth::class,
+            'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
+            'auth:sanctum'  => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
     })
     ->withProviders([
