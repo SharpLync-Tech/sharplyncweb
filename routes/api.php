@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Api\DeviceAuditApiController;
+use App\Http\Controllers\Api\DeviceAuditApiController;
 use App\Http\Controllers\Api\MobileAuthController;
 use Illuminate\Support\Facades\Route;
 

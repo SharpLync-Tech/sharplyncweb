@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\CRM\User;
+use App\Models\SharpFleet\User;
 
 class MobileAuthController extends Controller
 {
@@ -18,15 +18,26 @@ class MobileAuthController extends Controller
         ]);
 
         /** @var User|null $user */
-        $user = User::where('email', $data['email'])->first();
+        $user = User::query()
+            ->where('email', $data['email'])
+            ->whereNull('archived_at')
+            ->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        // SharpFleet stores hashes in users.password_hash
+        if (!$user || empty($user->password_hash) || !Hash::check($data['password'], $user->password_hash)) {
             return response()->json([
                 'message' => 'Invalid credentials',
             ], 401);
         }
 
         if ($user->account_status !== 'active') {
+            return response()->json([
+                'message' => 'Account is not active',
+            ], 403);
+        }
+
+        // Extra safety: handle the separate is_active flag when present.
+        if (property_exists($user, 'is_active') && (int) ($user->is_active ?? 1) === 0) {
             return response()->json([
                 'message' => 'Account is not active',
             ], 403);
