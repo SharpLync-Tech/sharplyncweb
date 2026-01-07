@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\SharpFleet\User;
 
 class MobileAuthController extends Controller
@@ -15,6 +16,12 @@ class MobileAuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required|string',
             'device'   => 'nullable|string|max:100',
+        ]);
+
+        // Minimal request logging for diagnostics (never log passwords).
+        Log::info('[MobileAuth] Login attempt', [
+            'email' => (string) ($data['email'] ?? ''),
+            'device' => (string) ($data['device'] ?? ''),
         ]);
 
         /** @var User|null $user */
@@ -36,8 +43,8 @@ class MobileAuthController extends Controller
             ], 403);
         }
 
-        // Extra safety: handle the separate is_active flag when present.
-        if (property_exists($user, 'is_active') && (int) ($user->is_active ?? 1) === 0) {
+        // Extra safety: handle the separate is_active flag (column exists in sharpfleet.users).
+        if ((int) ($user->is_active ?? 1) === 0) {
             return response()->json([
                 'message' => 'Account is not active',
             ], 403);
@@ -48,7 +55,20 @@ class MobileAuthController extends Controller
 
         $tokenName = $data['device'] ?? 'sharpfleet-mobile';
 
-        $token = $user->createToken($tokenName)->plainTextToken;
+        try {
+            $token = $user->createToken($tokenName)->plainTextToken;
+        } catch (\Throwable $e) {
+            Log::error('[MobileAuth] Token creation failed', [
+                'email' => (string) ($data['email'] ?? ''),
+                'device' => (string) ($data['device'] ?? ''),
+                'exception' => get_class($e),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Token creation failed',
+            ], 500);
+        }
 
         return response()->json([
             'token' => $token,
