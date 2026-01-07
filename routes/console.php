@@ -19,6 +19,7 @@ app()->booted(function () {
 
     // Booking reminders are time-sensitive (1 hour before start), so run more frequently.
     app(Schedule::class)
-        ->command('sharpfleet:send-booking-reminders')
-        ->everyFiveMinutes();
+    ->command('sharpfleet:send-booking-reminders --dry-run=0')
+    ->everyFiveMinutes();
+
 });
