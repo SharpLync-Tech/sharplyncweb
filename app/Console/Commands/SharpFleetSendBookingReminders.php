@@ -36,6 +36,9 @@ class SharpFleetSendBookingReminders extends Command
             $windowMinutes = 10;
         }
 
+        $this->info('[SharpFleet Booking Reminders] Starting run');
+        $this->info('[SharpFleet Booking Reminders] Options: org=' . ($onlyOrg !== null ? (string) $onlyOrg : '') . ', dry_run=' . ($dryRun ? '1' : '0') . ', window_minutes=' . $windowMinutes);
+
         if (!Schema::connection('sharpfleet')->hasTable('organisations')) {
             $this->info('No organisations table found to process.');
             return self::SUCCESS;
@@ -76,6 +79,9 @@ class SharpFleetSendBookingReminders extends Command
         $halfWindow = (int) floor($windowMinutes / 2);
         $windowStartUtc = $targetUtc->copy()->subMinutes($halfWindow);
         $windowEndUtc = $targetUtc->copy()->addMinutes($windowMinutes - $halfWindow);
+
+        $this->info('[SharpFleet Booking Reminders] now_utc=' . $nowUtc->toDateTimeString());
+        $this->info('[SharpFleet Booking Reminders] window_start_utc=' . $windowStartUtc->toDateTimeString() . ', window_end_utc=' . $windowEndUtc->toDateTimeString());
 
         foreach ($organisations as $org) {
             $organisationId = (int) ($org->id ?? 0);
@@ -118,6 +124,8 @@ class SharpFleetSendBookingReminders extends Command
                 'vehicles.name as vehicle_name',
                 'vehicles.registration_number as vehicle_reg'
             )->orderBy('bookings.planned_start')->get();
+
+            $this->info('[SharpFleet Booking Reminders] Organisation ' . $organisationId . ' bookings_to_process=' . $bookings->count());
 
             Log::info('[SharpFleet Booking Reminders] Scan', [
                 'organisation_id' => $organisationId,
@@ -181,6 +189,7 @@ class SharpFleetSendBookingReminders extends Command
                         'start_local' => $startLocal->toDateTimeString(),
                         'vehicle' => $vehicleName,
                     ]);
+                    $this->info('[SharpFleet Booking Reminders] DRY RUN would send booking_id=' . $bookingId . ' to ' . $email . ' start_local=' . $startLocal->toDateTimeString());
                     continue;
                 }
 
@@ -203,6 +212,8 @@ class SharpFleetSendBookingReminders extends Command
                         'recipient' => $email,
                     ]);
 
+                    $this->info('[SharpFleet Booking Reminders] Sent booking_id=' . $bookingId . ' to ' . $email);
+
                     if ($hasReminderSentAt) {
                         DB::connection('sharpfleet')
                             ->table('bookings')
@@ -220,11 +231,13 @@ class SharpFleetSendBookingReminders extends Command
                         'recipient' => $email,
                         'error' => $e->getMessage(),
                     ]);
+
+                    $this->error('[SharpFleet Booking Reminders] Failed booking_id=' . $bookingId . ' to ' . $email . ' error=' . $e->getMessage());
                 }
             }
         }
 
-        $this->info('SharpFleet booking reminders run completed.');
+        $this->info('[SharpFleet Booking Reminders] Run completed.');
 
         return self::SUCCESS;
     }
