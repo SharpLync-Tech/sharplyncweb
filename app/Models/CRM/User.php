@@ -6,10 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     /**
      * Connection and table.
@@ -88,6 +89,6 @@ class User extends Authenticatable
      */
     public function getIsProfileCompleteAttribute(): bool
     {
-        return $this->profile && $this->profile->setup_completed;
+        return (bool) ($this->profile && $this->profile->setup_completed);
     }
 }
