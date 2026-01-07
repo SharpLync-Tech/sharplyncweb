@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\SharpFleet\BookingChanged;
 
 class BookingService
@@ -727,7 +728,8 @@ class BookingService
             newPlannedStartUtc: $plannedStart,
             newPlannedEndUtc: $plannedEnd,
             newVehicleId: $newVehicleId,
-            event: 'updated'
+            event: 'updated',
+            newUserId: $newUserId
         );
     }
 
@@ -739,18 +741,37 @@ class BookingService
         Carbon $newPlannedStartUtc,
         Carbon $newPlannedEndUtc,
         int $newVehicleId,
-        string $event
+        string $event,
+        ?int $newUserId = null
     ): void {
         try {
-            // Driver email
-            $driver = DB::connection('sharpfleet')
+            // Driver email(s)
+            // - Always notify the original booking driver.
+            // - If the booking was reassigned to a new driver, also notify the new driver.
+            $oldUserId = (int) ($old->user_id ?? 0);
+            $newUserId = $newUserId !== null ? (int) $newUserId : null;
+
+            $recipientIds = [];
+            if ($oldUserId > 0) {
+                $recipientIds[] = $oldUserId;
+            }
+            if ($event === 'updated' && $newUserId && $newUserId > 0 && $newUserId !== $oldUserId) {
+                $recipientIds[] = $newUserId;
+            }
+            $recipientIds = array_values(array_unique($recipientIds));
+
+            if (count($recipientIds) === 0) {
+                return;
+            }
+
+            $drivers = DB::connection('sharpfleet')
                 ->table('users')
                 ->select('id', 'email', 'first_name', 'last_name')
                 ->where('organisation_id', $organisationId)
-                ->where('id', (int) ($old->user_id ?? 0))
-                ->first();
+                ->whereIn('id', $recipientIds)
+                ->get();
 
-            if (!$driver || empty($driver->email)) {
+            if ($drivers->count() === 0) {
                 return;
             }
 
@@ -782,22 +803,35 @@ class BookingService
                 $actorName = (string) ($actor['email'] ?? '');
             }
 
-            Mail::to((string) $driver->email)->send(new BookingChanged(
-                driverName: trim((string) (($driver->first_name ?? '') . ' ' . ($driver->last_name ?? ''))),
-                actorName: $actorName,
-                timezone: $tz,
-                vehicleOldName: $vehicleOld ? (string) ($vehicleOld->name ?? '') : '',
-                vehicleOldReg: $vehicleOld ? (string) ($vehicleOld->registration_number ?? '') : '',
-                vehicleNewName: $vehicleNew ? (string) ($vehicleNew->name ?? '') : '',
-                vehicleNewReg: $vehicleNew ? (string) ($vehicleNew->registration_number ?? '') : '',
-                oldStart: $oldStartLocal,
-                oldEnd: $oldEndLocal,
-                newStart: $newStartLocal,
-                newEnd: $newEndLocal,
-                event: $event
-            ));
+            // Force Mailgun to avoid silent no-op if the default mailer is set to "log".
+            foreach ($drivers as $driver) {
+                if (!$driver || empty($driver->email)) {
+                    continue;
+                }
+
+                Mail::mailer('mailgun')->to((string) $driver->email)->send(new BookingChanged(
+                    driverName: trim((string) (($driver->first_name ?? '') . ' ' . ($driver->last_name ?? ''))),
+                    actorName: $actorName,
+                    timezone: $tz,
+                    vehicleOldName: $vehicleOld ? (string) ($vehicleOld->name ?? '') : '',
+                    vehicleOldReg: $vehicleOld ? (string) ($vehicleOld->registration_number ?? '') : '',
+                    vehicleNewName: $vehicleNew ? (string) ($vehicleNew->name ?? '') : '',
+                    vehicleNewReg: $vehicleNew ? (string) ($vehicleNew->registration_number ?? '') : '',
+                    oldStart: $oldStartLocal,
+                    oldEnd: $oldEndLocal,
+                    newStart: $newStartLocal,
+                    newEnd: $newEndLocal,
+                    event: $event
+                ));
+            }
         } catch (\Throwable $e) {
-            // fail silently
+            // Don't break booking flows, but log for diagnosis.
+            Log::warning('[SharpFleet] Booking driver notification failed', [
+                'organisation_id' => $organisationId,
+                'booking_id' => $bookingId,
+                'event' => $event,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
