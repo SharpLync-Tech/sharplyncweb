@@ -10,14 +10,11 @@ use App\Http\Controllers\Api\MobileVehicleController;
 use App\Models\SharpFleet\User as SharpFleetUser;
 use Laravel\Sanctum\PersonalAccessToken;
 use App\Services\SharpFleet\VehicleService;
+use Illuminate\Support\Facades\Hash;
 
-/*
-|--------------------------------------------------------------------------
-| 🚨 UNAUTHENTICATED TEST ENDPOINT — This one works
-|--------------------------------------------------------------------------
-*/
+// 🚨 UNAUTHENTICATED TEST ENDPOINT — this one works
 Route::get('/test-vehicles', function (VehicleService $vehicleService) {
-    $vehicles = $vehicleService->getAvailableVehicles(3); // 👈 Use a known org ID for testing
+    $vehicles = $vehicleService->getAvailableVehicles(3); // Use a known org ID for testing
 
     $payload = $vehicles->map(function ($v) {
         $id = (int) ($v->id ?? 0);
@@ -33,11 +30,7 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-/*
-|--------------------------------------------------------------------------
-| 🧪 AUTHENTICATED TEST ENDPOINT — Manual token check
-|--------------------------------------------------------------------------
-*/
+// 🧪 AUTHENTICATED TEST ENDPOINT — bypasses auth:sanctum middleware
 Route::get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
     try {
         $header = $request->header('Authorization');
@@ -49,7 +42,6 @@ Route::get('/test-vehicles-auth', function (Request $request, VehicleService $ve
 
         $accessToken = substr($header, 7);
         $tokenModel = PersonalAccessToken::findToken($accessToken);
-
         if (!$tokenModel) {
             return response()->json(['error' => 'Invalid token'], 401);
         }
@@ -89,14 +81,29 @@ Route::get('/test-vehicles-auth', function (Request $request, VehicleService $ve
     }
 });
 
-/*
-|--------------------------------------------------------------------------
-| ✅ Authenticated API Routes via Sanctum
-|--------------------------------------------------------------------------
-*/
+// 🧪 TOKEN DEBUG ENDPOINT
+Route::get('/test-token-debug', function () {
+    $fullToken = '20|Sp0XAaaIWn9emfbp0MC5iy7EFtkC7XW0mGrsC1Kc7d8b8d944';
+    $tokenId = explode('|', $fullToken)[0];
+    $plain = explode('|', $fullToken)[1];
+
+    $record = PersonalAccessToken::find($tokenId);
+
+    return response()->json([
+        'record_found' => !!$record,
+        'tokenable_type' => $record?->tokenable_type,
+        'user_id' => $record?->tokenable_id,
+        'hash_matches' => Hash::check($plain, $record?->token ?? '[missing]'),
+    ]);
+});
+
+// ✅ Device audit
 Route::post('/device-audit', [DeviceAuditApiController::class, 'store']);
+
+// ✅ Login endpoint
 Route::post('/mobile/login', [MobileAuthController::class, 'login']);
 
+// ✅ Protected endpoints
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/mobile/trips', [MobileTripController::class, 'store']);
 
