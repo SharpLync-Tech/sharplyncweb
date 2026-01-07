@@ -414,8 +414,8 @@
                                     <td>{{ $b->driver_name }}</td>
                                     <td>{{ $b->customer_name_display ?: '—' }}</td>
                                     @php($rowTz = isset($b->timezone) && trim((string)$b->timezone) !== '' ? (string)$b->timezone : $companyTimezone)
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->timezone($rowTz)->format('d/m/Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->timezone($rowTz)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('d/m/Y H:i') }}</td>
                                     <td>{{ ucfirst($b->status) }}</td>
                                     <td>
                                         @if($isMine)
