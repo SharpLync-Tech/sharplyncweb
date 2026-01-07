@@ -41,6 +41,10 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+            'new_guard' => [
+                'driver' => 'session',
+                'provider' => 'new_provider',
+            ],
     ],
 
 
@@ -61,7 +65,7 @@ return [
 
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\SharpFleet\User::class,
         ],
     ],
 
