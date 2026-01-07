@@ -181,6 +181,7 @@
                                 <th>Client Present</th>
                                 <th>Client Address</th>
                                 <th>Started At</th>
+                                <th>Ended At</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -213,6 +214,9 @@
                                     <td>{{ $t->client_present ? 'Yes' : 'No' }}</td>
                                     <td>{{ $t->client_address ?: '—' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($t->started_at)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {{ !empty($t->end_time) ? \Carbon\Carbon::parse($t->end_time)->timezone($companyTimezone)->format('d/m/Y H:i') : '—' }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
