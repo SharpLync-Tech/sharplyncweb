@@ -6,6 +6,10 @@
         use App\Http\Controllers\Admin\LogViewerController;
         use App\Http\Controllers\SharpFleet\StripeWebhookController;
         
+        Route::domain('fleet.sharplync.com.au')->get('/', function () {
+            return redirect('/sharpfleet');
+        });
+
 
         Route::get('/', fn() => view('/home')); // Home Page
         // Route::get('/', fn() => view('coming_soon')); // Coming Soon
