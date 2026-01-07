@@ -11,9 +11,13 @@ use App\Models\SharpFleet\User as SharpFleetUser;
 use Laravel\Sanctum\PersonalAccessToken;
 use App\Services\SharpFleet\VehicleService;
 
-// 🚨 UNAUTHENTICATED TEST ENDPOINT — this one works
+/*
+|--------------------------------------------------------------------------
+| 🚨 UNAUTHENTICATED TEST ENDPOINT — This one works
+|--------------------------------------------------------------------------
+*/
 Route::get('/test-vehicles', function (VehicleService $vehicleService) {
-    $vehicles = $vehicleService->getAvailableVehicles(3); // Use a known org ID for testing
+    $vehicles = $vehicleService->getAvailableVehicles(3); // 👈 Use a known org ID for testing
 
     $payload = $vehicles->map(function ($v) {
         $id = (int) ($v->id ?? 0);
@@ -29,7 +33,11 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-// 🧪 AUTHENTICATED TEST ENDPOINT — bypasses auth:sanctum middleware
+/*
+|--------------------------------------------------------------------------
+| 🧪 AUTHENTICATED TEST ENDPOINT — Manual token check
+|--------------------------------------------------------------------------
+*/
 Route::get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
     try {
         $header = $request->header('Authorization');
@@ -41,6 +49,7 @@ Route::get('/test-vehicles-auth', function (Request $request, VehicleService $ve
 
         $accessToken = substr($header, 7);
         $tokenModel = PersonalAccessToken::findToken($accessToken);
+
         if (!$tokenModel) {
             return response()->json(['error' => 'Invalid token'], 401);
         }
@@ -80,13 +89,14 @@ Route::get('/test-vehicles-auth', function (Request $request, VehicleService $ve
     }
 });
 
-// ✅ Device audit
+/*
+|--------------------------------------------------------------------------
+| ✅ Authenticated API Routes via Sanctum
+|--------------------------------------------------------------------------
+*/
 Route::post('/device-audit', [DeviceAuditApiController::class, 'store']);
-
-// ✅ Login endpoint
 Route::post('/mobile/login', [MobileAuthController::class, 'login']);
 
-// ✅ Protected endpoints
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/mobile/trips', [MobileTripController::class, 'store']);
 
