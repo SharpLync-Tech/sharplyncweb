@@ -30,6 +30,7 @@ class BookingChanged extends Mailable
     public function build()
     {
         $subject = match ($this->event) {
+            'created' => 'Booking created',
             'cancelled' => 'Booking cancelled',
             default => 'Booking updated',
         };

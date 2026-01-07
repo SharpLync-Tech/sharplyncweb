@@ -16,6 +16,12 @@
         <strong>Vehicle:</strong> {{ $oldVehicle ?: '—' }}<br>
         <strong>Time:</strong> {{ $oldStartStr }} → {{ $oldEndStr }} ({{ $timezone }})
     </p>
+@elseif($event === 'created')
+    <p>A booking was created for you by <strong>{{ $actorName }}</strong>.</p>
+    <p>
+        <strong>Vehicle:</strong> {{ $newVehicle ?: '—' }}<br>
+        <strong>Time:</strong> {{ $newStartStr }} → {{ $newEndStr }} ({{ $timezone }})
+    </p>
 @else
     <p>Your booking was changed by <strong>{{ $actorName }}</strong>.</p>
     <p>

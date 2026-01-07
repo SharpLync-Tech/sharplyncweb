@@ -305,7 +305,7 @@ class BookingService
             ]);
     }
 
-    public function createBooking(int $organisationId, array $data): int
+    public function createBooking(int $organisationId, array $data, ?array $actor = null): int
     {
         if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
             throw ValidationException::withMessages([
@@ -463,6 +463,29 @@ class BookingService
         $id = DB::connection('sharpfleet')
             ->table('bookings')
             ->insertGetId($insert);
+
+        // Notify the booking driver that a booking was created for them.
+        // (Previously we only emailed on update/cancel + reminders, so "booking created" had no email.)
+        if (is_array($actor)) {
+            $stub = (object) [
+                'user_id' => $userId,
+                'vehicle_id' => $vehicleId,
+                'planned_start' => $plannedStart->toDateTimeString(),
+                'planned_end' => $plannedEnd->toDateTimeString(),
+                'timezone' => $timezone,
+            ];
+
+            $this->emailBookingChanged(
+                organisationId: $organisationId,
+                bookingId: (int) $id,
+                old: $stub,
+                actor: $actor,
+                newPlannedStartUtc: $plannedStart,
+                newPlannedEndUtc: $plannedEnd,
+                newVehicleId: $vehicleId,
+                event: 'created'
+            );
+        }
 
         return (int) $id;
     }

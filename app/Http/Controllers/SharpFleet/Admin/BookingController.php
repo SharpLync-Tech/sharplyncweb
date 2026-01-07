@@ -392,7 +392,7 @@ class BookingController extends Controller
             'notes' => $validated['notes'] ?? null,
             'remind_me' => $request->boolean('remind_me'),
             'created_by_user_id' => (int) ($user['id'] ?? 0),
-        ]);
+        ], $user);
 
         return redirect('/app/sharpfleet/admin/bookings')->with('success', 'Booking created.');
     }

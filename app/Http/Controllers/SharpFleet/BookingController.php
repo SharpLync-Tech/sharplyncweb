@@ -348,7 +348,7 @@ class BookingController extends Controller
             'customer_id' => $validated['customer_id'] ?? null,
             'customer_name' => $validated['customer_name'] ?? null,
             'notes' => $validated['notes'] ?? null,
-        ]);
+        ], $user);
 
         return redirect('/app/sharpfleet/bookings')->with('success', 'Booking created.');
     }
