@@ -77,6 +77,19 @@ class BookingController extends Controller
         }
     }
 
+    private function resolveEffectiveTimezone(int $organisationId, BranchService $branchesService, ?int $branchId): string
+    {
+        $tz = (new CompanySettingsService($organisationId))->timezone();
+        if ($branchesService->branchesEnabled() && $branchId && $branchId > 0) {
+            $branch = $branchesService->getBranch($organisationId, $branchId);
+            if ($branch && isset($branch->timezone) && trim((string) $branch->timezone) !== '') {
+                $tz = (string) $branch->timezone;
+            }
+        }
+
+        return $tz;
+    }
+
     public function upcoming(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
@@ -338,12 +351,18 @@ class BookingController extends Controller
         }
         $this->assertCustomerInBranchIfSupported($organisationId, isset($validated['customer_id']) ? (int) $validated['customer_id'] : null, $effectiveBranchId);
 
+        // UTC standardisation: incoming planned_* values are local (effective) timezone; persist UTC and store timezone.
+        $tz = $this->resolveEffectiveTimezone($organisationId, $branchesService, $effectiveBranchId ?: $branchId);
+        $plannedStartUtc = Carbon::createFromFormat('Y-m-d H:i:s', $plannedStart, $tz)->utc();
+        $plannedEndUtc = Carbon::createFromFormat('Y-m-d H:i:s', $plannedEnd, $tz)->utc();
+
         $this->bookingService->createBooking($organisationId, [
             'user_id' => (int) $user['id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
             'branch_id' => $branchId,
-            'planned_start' => $plannedStart,
-            'planned_end' => $plannedEnd,
+            'planned_start' => $plannedStartUtc->format('Y-m-d\\TH:i:s\\Z'),
+            'planned_end' => $plannedEndUtc->format('Y-m-d\\TH:i:s\\Z'),
+            'timezone' => $tz,
             'customer_id' => $validated['customer_id'] ?? null,
             'customer_name' => $validated['customer_name'] ?? null,
             'notes' => $validated['notes'] ?? null,
@@ -453,12 +472,18 @@ class BookingController extends Controller
         }
         $this->assertCustomerInBranchIfSupported($organisationId, isset($validated['customer_id']) ? (int) $validated['customer_id'] : null, $effectiveBranchId);
 
+        // UTC standardisation: incoming planned_* values are local (effective) timezone; persist UTC and store timezone.
+        $tz = $this->resolveEffectiveTimezone($organisationId, $branchesService, $effectiveBranchId ?: $branchId);
+        $plannedStartUtc = Carbon::createFromFormat('Y-m-d H:i:s', $plannedStart, $tz)->utc();
+        $plannedEndUtc = Carbon::createFromFormat('Y-m-d H:i:s', $plannedEnd, $tz)->utc();
+
         $this->bookingService->updateBooking($organisationId, $bookingId, [
             'user_id' => (int) $user['id'],
             'vehicle_id' => (int) $validated['vehicle_id'],
             'branch_id' => $branchId,
-            'planned_start' => $plannedStart,
-            'planned_end' => $plannedEnd,
+            'planned_start' => $plannedStartUtc->format('Y-m-d\\TH:i:s\\Z'),
+            'planned_end' => $plannedEndUtc->format('Y-m-d\\TH:i:s\\Z'),
+            'timezone' => $tz,
             'customer_id' => $validated['customer_id'] ?? null,
             'customer_name' => $validated['customer_name'] ?? null,
             'notes' => $validated['notes'] ?? null,
