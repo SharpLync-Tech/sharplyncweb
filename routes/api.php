@@ -13,4 +13,15 @@ Route::post('/mobile/login', [MobileAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/mobile/trips', [MobileTripController::class, 'store']);
 	Route::get('/mobile/me', fn (Request $request) => $request->user());
+	Route::post('/mobile/logout', function (Request $request) {
+		// Revoke ONLY the current token
+		$token = $request->user()?->currentAccessToken();
+		if ($token) {
+			$token->delete();
+		}
+
+		return response()->json([
+			'status' => 'logged_out',
+		]);
+	});
 });
