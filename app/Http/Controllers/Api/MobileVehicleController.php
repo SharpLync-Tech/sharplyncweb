@@ -84,6 +84,8 @@ class MobileVehicleController extends Controller
             ];
         })->values();
 
-        return response()->json($payload);
+        return response()->json([
+            'vehicles' => $payload,
+        ]);
     }
 }
