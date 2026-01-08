@@ -28,6 +28,11 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
+    # ✅ Explicit API route handling (important for /api/* requests)
+    location ~ ^/api/ {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
     # --- PHP handling ---
     location ~ \.php$ {
         include fastcgi_params;
