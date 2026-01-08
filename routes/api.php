@@ -1,3 +1,6 @@
+Route::middleware('api.key')->get('/test-api-key', function () {
+    return response()->json(['status' => 'API key auth OK']);
+});
 <?php
 
 use Illuminate\Http\Request;

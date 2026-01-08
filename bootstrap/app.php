@@ -43,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth'    => \App\Http\Middleware\AdminAuth::class,
             'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
             'auth:sanctum'  => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'api.key'       => \App\Http\Middleware\ApiKeyAuth::class,
         ]);
     })
     ->withProviders([
