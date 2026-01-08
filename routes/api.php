@@ -71,7 +71,12 @@ Route::post('/device-audit', [DeviceAuditApiController::class, 'store']);
 
 // ✅ Authenticated mobile endpoints using Sanctum
 Route::middleware('auth:sanctum')->group(function () {
+
+    // ▶️ START TRIP (live / online)
     Route::post('/mobile/trips', [MobileTripController::class, 'store']);
+
+    // ✅ NEW: SYNC COMPLETED / OFFLINE TRIPS
+    Route::post('/mobile/trips/sync', [MobileTripController::class, 'sync']);
 
     Route::get('/mobile/me', fn (Request $request) => $request->user());
 
@@ -122,4 +127,3 @@ Route::middleware('api.key')->get('/vehicles-api-key', function (VehicleService 
 
     return response()->json(['vehicles' => $payload]);
 });
-
