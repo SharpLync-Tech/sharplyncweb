@@ -28,9 +28,34 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-// 🔧 STRIPPED AUTH TEST — removed Sanctum middleware just to check route reachability
-Route::get('/test-vehicles-auth', function () {
-    dd('👋 Route is alive and reachable');
+// ✅ AUTH TEST USING SANCTUM — logs user and stops before further logic
+Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
+    try {
+        $user = $request->user();
+        Log::info("[SanctumAuth] ✅ Route hit. Resolved user:", [
+            'id' => $user->id ?? null,
+            'class' => get_class($user),
+            'email' => $user->email ?? null,
+        ]);
+
+        // Return early to confirm user auth works
+        return response()->json([
+            'status' => 'OK',
+            'user_id' => $user->id ?? null,
+            'user_class' => get_class($user),
+            'email' => $user->email ?? null,
+        ]);
+    } catch (\Throwable $e) {
+        Log::error('[SanctumAuth] ❌ Exception hit:', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return response()->json([
+            'error' => 'Exception occurred',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
 });
 
 // ✅ Mobile login endpoint
