@@ -39,7 +39,6 @@ Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request 
             'email' => $user->email ?? null,
         ]);
 
-        // Return early to confirm user auth works
         return response()->json([
             'status' => 'OK',
             'user_id' => $user->id ?? null,
@@ -102,6 +101,24 @@ Route::get('/vehicles-public', function (VehicleService $vehicleService) {
 
         return ['id' => $id, 'label' => $label];
     });
+
+    return response()->json(['vehicles' => $payload]);
+});
+
+// ✅ VEHICLE LIST — Protected by Custom API Key
+Route::middleware('api.key')->get('/vehicles-api-key', function (VehicleService $vehicleService) {
+    $vehicles = $vehicleService->getAvailableVehicles(3);
+
+    $payload = $vehicles->map(function ($v) {
+        $id = (int) ($v->id ?? 0);
+        $make = property_exists($v, 'make') ? trim((string) $v->make) : '';
+        $model = property_exists($v, 'model') ? trim((string) $v->model) : '';
+        $rego = property_exists($v, 'registration_number') ? trim((string) $v->registration_number) : '';
+        $label = trim("$make $model");
+        $label = $rego ? "$label – $rego" : $label;
+
+        return ['id' => $id, 'label' => $label];
+    })->values();
 
     return response()->json(['vehicles' => $payload]);
 });
