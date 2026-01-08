@@ -103,3 +103,21 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['status' => 'logged_out']);
     });
 });
+
+// ✅ NEW NO-AUTH PUBLIC VEHICLE ENDPOINT — for debugging
+Route::get('/vehicles-public', function (VehicleService $vehicleService) {
+    $vehicles = $vehicleService->getAvailableVehicles(3); // Replace 3 with your known org ID
+
+    $payload = $vehicles->map(function ($v) {
+        $id = (int) ($v->id ?? 0);
+        $make = property_exists($v, 'make') ? trim((string) $v->make) : '';
+        $model = property_exists($v, 'model') ? trim((string) $v->model) : '';
+        $rego = property_exists($v, 'registration_number') ? trim((string) $v->registration_number) : '';
+        $label = trim("$make $model");
+        $label = $rego ? "$label – $rego" : $label;
+
+        return ['id' => $id, 'label' => $label];
+    });
+
+    return response()->json(['vehicles' => $payload]);
+});
