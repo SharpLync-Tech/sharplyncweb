@@ -10,7 +10,7 @@ class ApiKeyAuth
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $apiKey = env('API_KEY');
+        $apiKey = env('API_SECRET_KEY');
         $providedKey = $request->header('X-API-KEY');
 
         // 🪵 Add this log to debug values
