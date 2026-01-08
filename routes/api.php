@@ -105,9 +105,9 @@ Route::get('/vehicles-public', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-// ✅ VEHICLE LIST — Protected by Custom API Key
+// ✅ VEHICLE ENDPOINT USING API KEY AUTH
 Route::middleware('api.key')->get('/vehicles-api-key', function (VehicleService $vehicleService) {
-    $vehicles = $vehicleService->getAvailableVehicles(3);
+    $vehicles = $vehicleService->getAvailableVehicles(3); // Adjust org_id as needed
 
     $payload = $vehicles->map(function ($v) {
         $id = (int) ($v->id ?? 0);
@@ -122,3 +122,4 @@ Route::middleware('api.key')->get('/vehicles-api-key', function (VehicleService 
 
     return response()->json(['vehicles' => $payload]);
 });
+
