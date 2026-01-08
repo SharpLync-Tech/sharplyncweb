@@ -28,33 +28,9 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-// ✅ AUTH TEST USING SANCTUM — requires Bearer token
-Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
-    $user = $request->user();
-    Log::info("[SanctumAuth] User resolved", ['id' => $user->id ?? null, 'class' => get_class($user)]);
-
-    if (!$user instanceof SharpFleetUser) {
-        return response()->json(['error' => 'Wrong user class'], 403);
-    }
-
-    $organisationId = (int) ($user->organisation_id ?? 0);
-    Log::info("[SanctumAuth] Org ID: $organisationId");
-
-    $vehicles = $vehicleService->getAvailableVehicles($organisationId);
-    Log::info('[SanctumAuth] Vehicles fetched', ['count' => $vehicles->count()]);
-
-    $payload = $vehicles->map(function ($v) {
-        $id = (int) ($v->id ?? 0);
-        $make = property_exists($v, 'make') ? trim((string) $v->make) : '';
-        $model = property_exists($v, 'model') ? trim((string) $v->model) : '';
-        $rego = property_exists($v, 'registration_number') ? trim((string) $v->registration_number) : '';
-        $label = trim("$make $model");
-        $label = $rego ? "$label – $rego" : $label;
-
-        return ['id' => $id, 'label' => $label];
-    })->values();
-
-    return response()->json(['vehicles' => $payload]);
+// 🔧 STRIPPED AUTH TEST — removed Sanctum middleware just to check route reachability
+Route::get('/test-vehicles-auth', function () {
+    dd('👋 Route is alive and reachable');
 });
 
 // ✅ Mobile login endpoint
