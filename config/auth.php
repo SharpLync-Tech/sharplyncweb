@@ -41,12 +41,12 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
-            'new_guard' => [
-                'driver' => 'session',
-                'provider' => 'new_provider',
-            ],
-    ],
 
+        'new_guard' => [
+            'driver' => 'session',
+            'provider' => 'new_provider',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -80,13 +80,12 @@ return [
     */
 
     'passwords' => [
-
         'crm_users' => [
             'provider' => 'crm_users',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
-            'connection' => 'crm',   // 👈 CRITICAL FIX — NOW RESET TOKENS USE CRM DB
+            'connection' => 'crm',
         ],
 
         'users' => [
@@ -94,7 +93,6 @@ return [
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
-            // Admin/CMS resets remain on default MySQL (CMS DB)
         ],
     ],
 
