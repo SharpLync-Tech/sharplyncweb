@@ -1,6 +1,3 @@
-Route::middleware('api.key')->get('/test-api-key', function () {
-    return response()->json(['status' => 'API key auth OK']);
-});
 <?php
 
 use Illuminate\Http\Request;
@@ -31,6 +28,7 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
+
 // ✅ AUTH TEST USING SANCTUM — logs user and stops before further logic
 Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
     try {
@@ -59,6 +57,11 @@ Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request 
             'message' => $e->getMessage(),
         ], 500);
     }
+});
+
+// ✅ API KEY AUTH TEST ENDPOINT
+Route::middleware('api.key')->get('/test-api-key', function () {
+    return response()->json(['status' => 'API key auth OK']);
 });
 
 // ✅ Mobile login endpoint
