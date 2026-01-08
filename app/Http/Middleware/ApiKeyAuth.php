@@ -1,16 +1,19 @@
+<?php
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class ApiKeyAuth
+class ApiKeyMiddleware
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        $key = $request->header('X-API-KEY');
+        $apiKey = env('API_KEY'); // or config('services.api.key')
+        $providedKey = $request->header('X-API-KEY');
 
-        if (!$key || $key !== config('app.api_key')) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$providedKey || $providedKey !== $apiKey) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $next($request);
