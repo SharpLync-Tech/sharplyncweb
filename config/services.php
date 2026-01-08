@@ -42,24 +42,26 @@ return [
     ],
 
     'mailgun' => [
-    'domain' => env('MAILGUN_DOMAIN'),
-    'secret' => env('MAILGUN_SECRET'),
-    'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
-
 
     'microsoft_customer' => [
-    'client_id' => env('MICROSOFT_CUSTOMER_CLIENT_ID'),
-    'client_secret' => env('MICROSOFT_CUSTOMER_CLIENT_SECRET'),
-    'tenant_id' => env('MICROSOFT_CUSTOMER_TENANT_ID'),
-    'redirect' => env('MICROSOFT_CUSTOMER_REDIRECT_URI', 'https://sharplync.com.au/customer/microsoft/callback'),
+        'client_id' => env('MICROSOFT_CUSTOMER_CLIENT_ID'),
+        'client_secret' => env('MICROSOFT_CUSTOMER_CLIENT_SECRET'),
+        'tenant_id' => env('MICROSOFT_CUSTOMER_TENANT_ID'),
+        'redirect' => env('MICROSOFT_CUSTOMER_REDIRECT_URI', 'https://sharplync.com.au/customer/microsoft/callback'),
     ],
-    
 
     'azure_vision' => [
-    'endpoint' => env('AZURE_VISION_ENDPOINT'),
-    'key'      => env('AZURE_VISION_KEY'),
+        'endpoint' => env('AZURE_VISION_ENDPOINT'),
+        'key'      => env('AZURE_VISION_KEY'),
     ],
 
+    // ✅ Add your API key here
+    'api' => [
+        'key' => env('API_KEY'),
+    ],
 
 ];
