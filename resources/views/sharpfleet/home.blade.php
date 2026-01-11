@@ -82,7 +82,7 @@
         </div>
 
         <div class="grid grid-3">
-            <!-- 6 feature cards in a grid -->
+            <!-- 6 feature cards in their own grid -->
             <div class="grid-3">
                 <div class="card">
                     <div class="card-header">
@@ -138,7 +138,10 @@
                         No special devices. No installs. Just log in and get on with work.
                     </p>
                 </div>
-                <!-- Wide card as last child of grid -->
+            </div>
+
+            <!-- Pricing card in its own grid below -->
+            <div class="grid-3">
                 <div class="card card-wide">
                     <div class="card-header">
                         <h3>🏷️ SharpFleet Subscription</h3>
