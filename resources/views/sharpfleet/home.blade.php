@@ -82,87 +82,81 @@
         </div>
 
         <div class="grid grid-3">
-            <div class="card">
-                <div class="card-header">
-                    <h3>🚗 Trip & Logbook Tracking</h3>
+            <!-- 6 feature cards in a grid -->
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🚗 Trip & Logbook Tracking</h3>
+                    </div>
+                    <p>
+                        Record trips, purposes, and distances in a way that suits your business.
+                        Perfect for compliance, tax, and internal reporting — without GPS surveillance.
+                    </p>
                 </div>
-                <p>
-                    Record trips, purposes, and distances in a way that suits your business.
-                    Perfect for compliance, tax, and internal reporting — without GPS surveillance.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>👥 Driver Management</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>👥 Driver Management</h3>
+                    </div>
+                    <p>
+                        Add drivers, assign vehicles, and control what information is required.
+                        Your business sets the rules — SharpFleet simply keeps it organised.
+                    </p>
                 </div>
-                <p>
-                    Add drivers, assign vehicles, and control what information is required.
-                    Your business sets the rules — SharpFleet simply keeps it organised.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>🛠 Vehicle Records</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🛠 Vehicle Records</h3>
+                    </div>
+                    <p>
+                        Track registrations, servicing, maintenance notes, and key dates.
+                        Get reminders before things expire, all included in your subscription.
+                    </p>
                 </div>
-                <p>
-                    Track registrations, servicing, maintenance notes, and key dates.
-                    Get reminders before things expire, all included in your subscription.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>🦺 Safety Checks</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🦺 Safety Checks</h3>
+                    </div>
+                    <p>
+                        Create and record vehicle safety checks that match your operations.
+                        Simple checklists that help protect drivers and demonstrate due diligence.
+                    </p>
                 </div>
-                <p>
-                    Create and record vehicle safety checks that match your operations.
-                    Simple checklists that help protect drivers and demonstrate due diligence.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>🏢 Client & Job Linking</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🏢 Client & Job Linking</h3>
+                    </div>
+                    <p>
+                        Optionally tie trips to clients or jobs — ideal for sole traders,
+                        contractors, and service businesses needing cleaner records.
+                    </p>
                 </div>
-                <p>
-                    Optionally tie trips to clients or jobs — ideal for sole traders,
-                    contractors, and service businesses needing cleaner records.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3>📱 Works Anywhere</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📱 Works Anywhere</h3>
+                    </div>
+                    <p>
+                        SharpFleet works on phones, tablets, and desktops.
+                        No special devices. No installs. Just log in and get on with work.
+                    </p>
                 </div>
-                <p>
-                    SharpFleet works on phones, tablets, and desktops.
-                    No special devices. No installs. Just log in and get on with work.
-                </p>
             </div>
-
-            <div class="card">
+            <!-- Wide card below -->
+            <div class="card card-wide">
                 <div class="card-header">
                     <h3>🏷️ SharpFleet Subscription</h3>
                 </div>
-
                 <div class="card-body">
                     <p>
                         <strong>AU$3.50 per vehicle per month</strong><br>
                         Covers your first <strong>10 vehicles</strong>
                     </p>
-
                     <p>
                         <strong>AU$2.50 per vehicle per month</strong><br>
                         For vehicles <strong>11–20</strong>
                     </p>
-
                     <p>
                         <strong>20+ vehicles?</strong><br>
                         <a href="/contact">Contact us for tailored pricing</a>
                     </p>
-
                     <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
                         Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
                         (International customers are charged in their local currency at Stripe’s current exchange rate)

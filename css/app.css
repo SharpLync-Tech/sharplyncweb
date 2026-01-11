@@ -1,3 +1,8 @@
+.card-wide {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-top: 2rem;
+}
 @media (max-width: 900px) {
   .grid-3 {
     grid-template-columns: 1fr 1fr;
