@@ -90,7 +90,7 @@
                     </div>
                     <p>
                         Record trips, purposes, and distances in a way that suits your business.
-                        Perfect for compliance, tax, and internal reporting — without GPS surveillance.
+                        Perfect for compliance, tax, and internal reporting, without GPS surveillance.
                     </p>
                 </div>
                 <div class="card">
@@ -99,7 +99,7 @@
                     </div>
                     <p>
                         Add drivers, assign vehicles, and control what information is required.
-                        Your business sets the rules — SharpFleet simply keeps it organised.
+                        Your business sets the rules, SharpFleet gives you the tools.
                     </p>
                 </div>
                 <div class="card">
@@ -125,7 +125,7 @@
                         <h3>🏢 Client & Job Linking</h3>
                     </div>
                     <p>
-                        Optionally tie trips to clients or jobs — ideal for sole traders,
+                        Optionally tie trips to clients or jobs. Ideal for sole traders,
                         contractors, and service businesses needing cleaner records.
                     </p>
                 </div>
