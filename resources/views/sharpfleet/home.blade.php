@@ -122,64 +122,85 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h3>🏢 Client & Job Linking</h3>
-                    </div>
-                    <p>
-                        Optionally tie trips to clients or jobs. Ideal for sole traders,
-                        contractors, and service businesses needing cleaner records.
-                    </p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>📱 Works Anywhere</h3>
-                    </div>
-                    <p>
-                        SharpFleet works on phones, tablets, and desktops.
-                        No special devices. No installs. Just log in and get on with work.
-                    </p>
-                </div>
-            </div>
+                        <div class="home-feature-grid">
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>🚗 Trip & Logbook Tracking</h3>
+                                </div>
+                                <p>
+                                    Record trips, purposes, and distances in a way that suits your business.
+                                    Perfect for compliance, tax, and internal reporting, without GPS surveillance.
+                                </p>
+                            </div>
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>👥 Driver Management</h3>
+                                </div>
+                                <p>
+                                    Add drivers, assign vehicles, and control what information is required.
+                                    Your business sets the rules, SharpFleet gives you the tools.
+                                </p>
+                            </div>
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>🛠 Vehicle Records</h3>
+                                </div>
+                                <p>
+                                    Track registrations, servicing, maintenance notes, and key dates.
+                                    Get reminders before things expire, all included in your subscription.
+                                </p>
+                            </div>
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>🦺 Safety Checks</h3>
+                                </div>
+                                <p>
+                                    Create and record vehicle safety checks that match your operations.
+                                    Simple checklists that help protect drivers and demonstrate due diligence.
+                                </p>
+                            </div>
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>🏢 Client & Job Linking</h3>
+                                </div>
+                                <p>
+                                    Optionally tie trips to clients or jobs. Ideal for sole traders,
+                                    contractors, and service businesses needing cleaner records.
+                                </p>
+                            </div>
+                            <div class="home-feature-card">
+                                <div class="home-feature-card-header">
+                                    <h3>📱 Works Anywhere</h3>
+                                </div>
+                                <p>
+                                    SharpFleet works on phones, tablets, and desktops.
+                                    No special devices. No installs. Just log in and get on with work.
+                                </p>
+                            </div>
+                        </div>
 
-            <!-- Pricing card below, full width -->
-            <div class="card card-wide" style="margin-top:2rem;">
-                <div class="card-header">
-                    <h3>🏷️ SharpFleet Subscription</h3>
-                </div>
-                <div class="card-body">
-                    <p>
-                        <strong>AU$3.50 per vehicle per month</strong><br>
-                        Covers your first <strong>10 vehicles</strong>
-                    </p>
-                    <p>
-                        <strong>AU$2.50 per vehicle per month</strong><br>
-                        For vehicles <strong>11–20</strong>
-                    </p>
-                    <p>
-                        <strong>20+ vehicles?</strong><br>
-                        <a href="/contact">Contact us for tailored pricing</a>
-                    </p>
-                    <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
-                        Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
-                        (International customers are charged in their local currency at Stripe’s current exchange rate)
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    {{-- =========================
-         CTA
-    ========================== --}}
-    <div class="hero">
-        <h2>Built for Businesses Like Yours</h2>
-        <p>
-            SharpFleet is designed for real-world operations — tradies, service companies,
-            small fleets, and growing teams who want clarity without complexity.
-        </p>
-        <a href="/app/sharpfleet/admin/register" class="btn">
-            Start Your Free Trial
-        </a>
-    </div>  
-
-@endsection
+                        <div class="home-pricing-grid">
+                            <div class="home-pricing-card">
+                                <div class="home-pricing-card-header">
+                                    <h3>🏷️ SharpFleet Subscription</h3>
+                                </div>
+                                <div class="home-pricing-card-body">
+                                    <p>
+                                        <strong>AU$3.50 per vehicle per month</strong><br>
+                                        Covers your first <strong>10 vehicles</strong>
+                                    </p>
+                                    <p>
+                                        <strong>AU$2.50 per vehicle per month</strong><br>
+                                        For vehicles <strong>11–20</strong>
+                                    </p>
+                                    <p>
+                                        <strong>20+ vehicles?</strong><br>
+                                        <a href="/contact">Contact us for tailored pricing</a>
+                                    </p>
+                                    <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
+                                        Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
+                                        (International customers are charged in their local currency at Stripe’s current exchange rate)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
