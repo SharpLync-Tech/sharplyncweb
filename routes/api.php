@@ -30,7 +30,7 @@ Route::get('/test-vehicles', function (VehicleService $vehicleService) {
 
 
 // ✅ AUTH TEST USING SANCTUM — logs user and stops before further logic
-Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request $request, VehicleService $vehicleService) {
+Route::middleware('auth:sanctum')->get('/test-vehicles-auth', function (Request $request) {
     try {
         $user = $request->user();
         Log::info("[SanctumAuth] ✅ Route hit. Resolved user:", [
@@ -63,36 +63,42 @@ Route::middleware('api.key')->get('/test-api-key', function () {
     return response()->json(['status' => 'API key auth OK']);
 });
 
-// ✅ Mobile login endpoint
+// ✅ Mobile login endpoint (returns API key)
 Route::post('/mobile/login', [MobileAuthController::class, 'login']);
 
 // ✅ Device audit endpoint
 Route::post('/device-audit', [DeviceAuditApiController::class, 'store']);
 
-// ✅ Authenticated mobile endpoints using Sanctum
-Route::middleware('auth:sanctum')->group(function () {
+
+// ======================================================
+// ✅ AUTHENTICATED MOBILE ENDPOINTS (API KEY BASED)
+// ======================================================
+Route::middleware('api.key')->group(function () {
+
+    Route::get('/mobile/me', fn (Request $request) => $request->user());
+
+    // 🚗 Vehicles
+    Route::get('/mobile/vehicles', [MobileVehicleController::class, 'index']);
+
+    Route::get(
+        '/mobile/vehicles/{vehicle}/last-reading',
+        [MobileVehicleController::class, 'lastReading']
+    );
 
     // ▶️ START TRIP (live / online)
     Route::post('/mobile/trips', [MobileTripController::class, 'store']);
 
-    // ✅ NEW: SYNC COMPLETED / OFFLINE TRIPS
+    // 🔄 SYNC COMPLETED / OFFLINE TRIPS
     Route::post('/mobile/trips/sync', [MobileTripController::class, 'sync']);
 
-    Route::get('/mobile/me', fn (Request $request) => $request->user());
-
-    Route::get('/mobile/vehicles', [MobileVehicleController::class, 'index']);
-
-    Route::post('/mobile/logout', function (Request $request) {
-        $token = $request->user()?->currentAccessToken();
-        if ($token) {
-            $token->delete();
-        }
-
+    // 🔓 Mobile logout (API key clients can simply discard key)
+    Route::post('/mobile/logout', function () {
         return response()->json(['status' => 'logged_out']);
     });
 });
 
-// ✅ NEW NO-AUTH PUBLIC VEHICLE ENDPOINT — for debugging
+
+// ✅ NO-AUTH PUBLIC VEHICLE ENDPOINT — debugging only
 Route::get('/vehicles-public', function (VehicleService $vehicleService) {
     $vehicles = $vehicleService->getAvailableVehicles(3);
 
@@ -110,9 +116,10 @@ Route::get('/vehicles-public', function (VehicleService $vehicleService) {
     return response()->json(['vehicles' => $payload]);
 });
 
-// ✅ VEHICLE ENDPOINT USING API KEY AUTH
+
+// ✅ VEHICLE ENDPOINT USING API KEY AUTH (legacy / testing)
 Route::middleware('api.key')->get('/vehicles-api-key', function (VehicleService $vehicleService) {
-    $vehicles = $vehicleService->getAvailableVehicles(3); // Adjust org_id as needed
+    $vehicles = $vehicleService->getAvailableVehicles(3);
 
     $payload = $vehicles->map(function ($v) {
         $id = (int) ($v->id ?? 0);
