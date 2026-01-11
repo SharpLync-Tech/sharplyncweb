@@ -138,29 +138,29 @@
                         No special devices. No installs. Just log in and get on with work.
                     </p>
                 </div>
-            </div>
-            <!-- Wide card below -->
-            <div class="card card-wide">
-                <div class="card-header">
-                    <h3>🏷️ SharpFleet Subscription</h3>
-                </div>
-                <div class="card-body">
-                    <p>
-                        <strong>AU$3.50 per vehicle per month</strong><br>
-                        Covers your first <strong>10 vehicles</strong>
-                    </p>
-                    <p>
-                        <strong>AU$2.50 per vehicle per month</strong><br>
-                        For vehicles <strong>11–20</strong>
-                    </p>
-                    <p>
-                        <strong>20+ vehicles?</strong><br>
-                        <a href="/contact">Contact us for tailored pricing</a>
-                    </p>
-                    <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
-                        Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
-                        (International customers are charged in their local currency at Stripe’s current exchange rate)
-                    </p>
+                <!-- Wide card as last child of grid -->
+                <div class="card card-wide">
+                    <div class="card-header">
+                        <h3>🏷️ SharpFleet Subscription</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <strong>AU$3.50 per vehicle per month</strong><br>
+                            Covers your first <strong>10 vehicles</strong>
+                        </p>
+                        <p>
+                            <strong>AU$2.50 per vehicle per month</strong><br>
+                            For vehicles <strong>11–20</strong>
+                        </p>
+                        <p>
+                            <strong>20+ vehicles?</strong><br>
+                            <a href="/contact">Contact us for tailored pricing</a>
+                        </p>
+                        <p style="font-size:0.9rem;color:#6b7280;margin-top:12px;">
+                            Your cost per vehicle goes down as your fleet grows, no long-term commitments, cancel anytime, and keep access to your historical logs.
+                            (International customers are charged in their local currency at Stripe’s current exchange rate)
+                        </p>
+                    </div>
                 </div>
             </div>
 

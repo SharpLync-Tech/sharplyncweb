@@ -36,7 +36,6 @@ class MobileVehicleController extends Controller
 
         $branchIds = null;
 
-        // Enforce branch access restrictions for non-company-admins when the feature is enabled.
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user->toArray());
         if (
             !$bypassBranchRestrictions
@@ -44,33 +43,27 @@ class MobileVehicleController extends Controller
             && $this->branchService->vehiclesHaveBranchSupport()
             && $this->branchService->userBranchAccessEnabled()
         ) {
-            $ids = $this->branchService->getAccessibleBranchIdsForUser($organisationId, (int) $user->id);
+            $ids = $this->branchService->getAccessibleBranchIdsForUser(
+                $organisationId,
+                (int) $user->id
+            );
+
             if (!empty($ids)) {
                 $branchIds = $ids;
             } else {
-                // If branch access is enabled and the user has no branches, they should see no vehicles.
-                return response()->json([
-                    'vehicles' => [],
-                ]);
+                return response()->json(['vehicles' => []]);
             }
         }
 
         $vehicles = $this->vehicleService->getAvailableVehicles($organisationId, $branchIds);
 
-        // Match the mobile app expectation: a flat array of {id,label}.
-        // Note: this project stores registration as registration_number (not rego).
         $payload = $vehicles->map(function ($v) {
             $id = (int) ($v->id ?? 0);
 
-            $make = property_exists($v, 'make') ? trim((string) ($v->make ?? '')) : '';
-            $model = property_exists($v, 'model') ? trim((string) ($v->model ?? '')) : '';
-
-            $rego = '';
-            if (property_exists($v, 'registration_number')) {
-                $rego = trim((string) ($v->registration_number ?? ''));
-            }
-
-            $name = property_exists($v, 'name') ? trim((string) ($v->name ?? '')) : '';
+            $make  = trim((string) ($v->make ?? ''));
+            $model = trim((string) ($v->model ?? ''));
+            $rego  = trim((string) ($v->registration_number ?? ''));
+            $name  = trim((string) ($v->name ?? ''));
 
             $labelLeft = trim($make . ' ' . $model);
             if ($labelLeft === '') {
@@ -80,24 +73,23 @@ class MobileVehicleController extends Controller
             $label = $rego !== '' ? ($labelLeft . ' – ' . $rego) : $labelLeft;
 
             return [
-                'id' => $id,
+                'id'    => $id,
                 'label' => $label,
             ];
         })->values();
 
-        return response()->json([
-            'vehicles' => $payload,
-        ]);
+        return response()->json(['vehicles' => $payload]);
     }
 
     /**
-     * Mobile API: get authoritative starting reading for a vehicle.
+     * Mobile API: get last reading for a vehicle
      *
-     * Priority:
-     *  1) Last completed trip end_km
-     *  2) vehicles.starting_km
+     * Order:
+     * 1️⃣ Last completed trip (ended_at + end_km)
+     * 2️⃣ vehicles.starting_km
+     * 3️⃣ null (manual entry)
      */
-    public function lastReading(Request $request, int $vehicle): JsonResponse
+    public function lastReading(Request $request, int $vehicleId): JsonResponse
     {
         $user = $request->user();
         if (!$user instanceof SharpFleetUser) {
@@ -109,11 +101,33 @@ class MobileVehicleController extends Controller
             abort(403, 'No SharpFleet organisation context.');
         }
 
-        // 1️⃣ Last completed trip for this vehicle
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('id', $vehicleId)
+            ->where('organisation_id', $organisationId)
+            ->first();
+
+        if (!$vehicle) {
+            return response()->json(['error' => 'Vehicle not found'], 404);
+        }
+
+        $trackingMode = $vehicle->tracking_mode ?? 'distance';
+
+        // tracking_mode = none → manual only
+        if ($trackingMode === 'none') {
+            return response()->json([
+                'vehicle_id'   => $vehicleId,
+                'tracking_mode'=> 'none',
+                'reading'      => null,
+                'source'       => null,
+            ]);
+        }
+
+        // 1️⃣ Last completed trip
         $lastTrip = DB::connection('sharpfleet')
             ->table('trips')
+            ->where('vehicle_id', $vehicleId)
             ->where('organisation_id', $organisationId)
-            ->where('vehicle_id', $vehicle)
             ->whereNotNull('ended_at')
             ->whereNotNull('end_km')
             ->orderByDesc('ended_at')
@@ -121,23 +135,29 @@ class MobileVehicleController extends Controller
 
         if ($lastTrip) {
             return response()->json([
-                'vehicle_id' => $vehicle,
-                'start_km'   => (int) $lastTrip->end_km,
-                'source'     => 'last_trip',
+                'vehicle_id'    => $vehicleId,
+                'tracking_mode' => $trackingMode,
+                'reading'       => (int) $lastTrip->end_km,
+                'source'        => 'last_trip',
             ]);
         }
 
-        // 2️⃣ Fallback → vehicles.starting_km
-        $v = DB::connection('sharpfleet')
-            ->table('vehicles')
-            ->where('organisation_id', $organisationId)
-            ->where('id', $vehicle)
-            ->first();
+        // 2️⃣ Fallback to vehicles.starting_km
+        if ($vehicle->starting_km !== null) {
+            return response()->json([
+                'vehicle_id'    => $vehicleId,
+                'tracking_mode' => $trackingMode,
+                'reading'       => (int) $vehicle->starting_km,
+                'source'        => 'vehicle_starting_km',
+            ]);
+        }
 
+        // 3️⃣ Manual entry required
         return response()->json([
-            'vehicle_id' => $vehicle,
-            'start_km'   => isset($v->starting_km) ? (int) $v->starting_km : null,
-            'source'     => 'vehicle_starting_km',
+            'vehicle_id'    => $vehicleId,
+            'tracking_mode' => $trackingMode,
+            'reading'       => null,
+            'source'        => null,
         ]);
     }
 }
