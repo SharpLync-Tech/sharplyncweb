@@ -116,10 +116,10 @@ class MobileVehicleController extends Controller
         // tracking_mode = none → manual only
         if ($trackingMode === 'none') {
             return response()->json([
-                'vehicle_id'   => $vehicleId,
-                'tracking_mode'=> 'none',
-                'reading'      => null,
-                'source'       => null,
+                'vehicle_id'    => $vehicleId,
+                'tracking_mode' => 'none',
+                'last_reading'  => null,
+                'source'        => null,
             ]);
         }
 
@@ -137,7 +137,7 @@ class MobileVehicleController extends Controller
             return response()->json([
                 'vehicle_id'    => $vehicleId,
                 'tracking_mode' => $trackingMode,
-                'reading'       => (int) $lastTrip->end_km,
+                'last_reading'  => (int) $lastTrip->end_km,
                 'source'        => 'last_trip',
             ]);
         }
@@ -147,7 +147,7 @@ class MobileVehicleController extends Controller
             return response()->json([
                 'vehicle_id'    => $vehicleId,
                 'tracking_mode' => $trackingMode,
-                'reading'       => (int) $vehicle->starting_km,
+                'last_reading'  => (int) $vehicle->starting_km,
                 'source'        => 'vehicle_starting_km',
             ]);
         }
@@ -156,7 +156,7 @@ class MobileVehicleController extends Controller
         return response()->json([
             'vehicle_id'    => $vehicleId,
             'tracking_mode' => $trackingMode,
-            'reading'       => null,
+            'last_reading'  => null,
             'source'        => null,
         ]);
     }
