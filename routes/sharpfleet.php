@@ -466,3 +466,5 @@ Route::prefix('app/sharpfleet')
     */
         Route::get('/debug', fn () => view('sharpfleet.debug'))
             ->middleware(\App\Http\Middleware\SharpFleetAdminAuth::class);
+
+});
