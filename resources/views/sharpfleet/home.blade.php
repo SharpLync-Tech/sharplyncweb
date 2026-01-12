@@ -142,7 +142,7 @@
                 </p>
             </div>
 
-            <<div class="card">
+            <div class="card">
                 <div class="card-header">
                     <h3>🏷️ SharpFleet Subscription</h3>
                 </div>
