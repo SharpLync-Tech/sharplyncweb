@@ -10,6 +10,12 @@ use App\Http\Controllers\Api\MobileVehicleController;
 use App\Models\SharpFleet\User as SharpFleetUser;
 use App\Services\SharpFleet\VehicleService;
 
+Route::post('/_debug/ping', function () {
+    \Log::info('[DEBUG PING] Hit');
+    return response()->json(['ok' => true]);
+});
+
+
 // 🚨 UNAUTHENTICATED TEST ENDPOINT — confirms vehicle service works without login
 Route::get('/test-vehicles', function (VehicleService $vehicleService) {
     $vehicles = $vehicleService->getAvailableVehicles(3);
