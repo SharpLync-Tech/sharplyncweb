@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Services\SharpFleet;
+namespace App\Http\Controllers\SharpFleet\Admin;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BranchService;
+use App\Services\SharpFleet\ReportingService;
+use App\Services\SharpFleet\CompanySettingsService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Support\Facades\Schema;
 
 class ReportingService
