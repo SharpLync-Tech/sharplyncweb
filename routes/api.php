@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\MobileTripController;
 use App\Http\Controllers\Api\MobileVehicleController;
 use App\Http\Controllers\Api\TripStartConfigController;
+use App\Http\Controllers\Api\MobileCustomerController;
 use App\Models\SharpFleet\User as SharpFleetUser;
 use App\Services\SharpFleet\VehicleService;
 
@@ -98,8 +99,11 @@ Route::middleware('api.key')->group(function () {
     // 🔄 SYNC COMPLETED / OFFLINE TRIPS
     Route::post('/mobile/trips/sync', [MobileTripController::class, 'sync']);
 
-    // ⚙️ Trip start configuration (NEW)
+    // ⚙️ Trip start configuration
     Route::get('/mobile/trips/start-config', TripStartConfigController::class);
+
+    // 🧾 Customers (NEW)
+    Route::get('/mobile/customers', [MobileCustomerController::class, 'index']);
 
     // 🔓 Mobile logout (API key clients can simply discard key)
     Route::post('/mobile/logout', function () {
