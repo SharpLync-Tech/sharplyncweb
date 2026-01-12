@@ -17,21 +17,50 @@ class MobileTripController extends Controller
     }
 
     /**
+     * Mobile API (legacy/live): start a trip for the authenticated driver.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user instanceof SharpFleetUser) {
+            abort(403, 'Invalid user context.');
+        }
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer', 'min:1'],
+
+            'trip_mode' => ['nullable', 'string', 'max:50'],
+            'started_at' => ['nullable', 'date'],
+
+            'customer_id' => ['nullable', 'integer', 'min:1'],
+            'customer_name' => ['nullable', 'string', 'max:150'],
+
+            'client_present' => ['nullable'],
+            'client_address' => ['nullable', 'string', 'max:255'],
+
+            'purpose_of_travel' => ['nullable', 'string', 'max:255'],
+
+            'start_km' => ['nullable', 'integer', 'min:0'],
+            'distance_method' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $trip = $this->tripService->startTrip($user->toArray(), $validated);
+
+        return response()->json([
+            'trip' => [
+                'id' => (int) $trip->id,
+                'organisation_id' => (int) $trip->organisation_id,
+                'user_id' => (int) $trip->user_id,
+                'vehicle_id' => (int) $trip->vehicle_id,
+                'trip_mode' => $trip->trip_mode,
+                'started_at' => optional($trip->started_at)->toIso8601String(),
+                'timezone' => $trip->timezone,
+            ],
+        ]);
+    }
+
+    /**
      * ✅ Mobile API (offline-first): sync completed trips captured offline.
-     *
-     * Accepts:
-     *  - { "trip": { ... } }  (single)
-     *  - { "trips": [ ... ] } (batch)
-     *
-     * Mobile payload can send either:
-     *  - started_at / ended_at (preferred)
-     *  - OR start_time / end_time (we map these)
-     *
-     * Required for a "completed trip" sync:
-     * - vehicle_id
-     * - start_km
-     * - end_km
-     * - started_at/ended_at OR start_time/end_time
      */
     public function sync(Request $request): JsonResponse
     {
@@ -39,13 +68,6 @@ class MobileTripController extends Controller
         if (!$user instanceof SharpFleetUser) {
             abort(403, 'Invalid user context.');
         }
-
-        Log::info('[MobileTripController] /mobile/trips/sync hit', [
-            'user_id' => $user->id ?? null,
-            'org_id' => $user->organisation_id ?? null,
-            'has_trip' => $request->has('trip'),
-            'has_trips' => $request->has('trips'),
-        ]);
 
         $validated = $request->validate([
             'trip' => ['nullable', 'array'],
@@ -61,22 +83,22 @@ class MobileTripController extends Controller
 
         if (!empty($validated['trips']) && is_array($validated['trips'])) {
             foreach ($validated['trips'] as $t) {
-                if (is_array($t)) $rawTrips[] = $t;
+                if (is_array($t)) {
+                    $rawTrips[] = $t;
+                }
             }
         }
 
         if (count($rawTrips) === 0) {
-            Log::warning('[MobileTripController] No trips provided');
+            Log::warning('[MobileTripSync] No trips provided', [
+                'user_id' => $user->id ?? null,
+                'org_id' => $user->organisation_id ?? null,
+            ]);
+
             return response()->json([
                 'message' => 'No trips provided.',
             ], 422);
         }
-
-        Log::info('[MobileTripController] Raw trips received', [
-            'count' => count($rawTrips),
-            'first_trip_keys' => array_keys($rawTrips[0] ?? []),
-            'first_trip' => $rawTrips[0] ?? null,
-        ]);
 
         // Map mobile keys to what TripService::syncOfflineTrips expects
         $mappedTrips = array_map(function (array $t) {
@@ -85,7 +107,7 @@ class MobileTripController extends Controller
             $startedAt = Arr::get($t, 'started_at');
             $endedAt   = Arr::get($t, 'ended_at');
 
-            // Mobile uses start_time/end_time
+            // Mobile aliases
             if (!$startedAt) $startedAt = Arr::get($t, 'start_time');
             if (!$endedAt)   $endedAt   = Arr::get($t, 'end_time');
 
@@ -107,73 +129,85 @@ class MobileTripController extends Controller
             ];
         }, $rawTrips);
 
-        Log::info('[MobileTripController] Mapped trips', [
+        // Loud debug: log what we are about to send to TripService
+        Log::info('[MobileTripSync] Incoming trips mapped', [
+            'user_id' => $user->id ?? null,
+            'org_id' => $user->organisation_id ?? null,
             'count' => count($mappedTrips),
-            'first_mapped' => $mappedTrips[0] ?? null,
+            'trips' => $mappedTrips,
         ]);
 
         // Validate core fields before passing into service
         foreach ($mappedTrips as $i => $t) {
-            $idx = $i + 1;
-
             if (empty($t['vehicle_id']) || (int) $t['vehicle_id'] <= 0) {
-                Log::warning('[MobileTripController] Rejecting trip: missing vehicle_id', [
-                    'trip_index' => $idx,
+                Log::warning('[MobileTripSync] Missing vehicle_id', [
+                    'index' => $i,
                     'trip' => $t,
                 ]);
 
                 return response()->json([
-                    'message' => "Trip #{$idx} missing vehicle_id.",
+                    'message' => "Trip #".($i+1)." missing vehicle_id.",
                 ], 422);
             }
 
             if (empty($t['started_at']) || empty($t['ended_at'])) {
-                Log::warning('[MobileTripController] Rejecting trip: missing started_at/ended_at', [
-                    'trip_index' => $idx,
+                Log::warning('[MobileTripSync] Missing started_at/ended_at', [
+                    'index' => $i,
                     'trip' => $t,
                 ]);
 
                 return response()->json([
-                    'message' => "Trip #{$idx} missing started_at/ended_at (or start_time/end_time).",
+                    'message' => "Trip #".($i+1)." missing started_at/ended_at (or start_time/end_time).",
                 ], 422);
             }
 
-            // For THIS mobile sync flow, we require readings.
-            // If a tenant allows blanks later, we can relax this.
-            if ($t['start_km'] === null || $t['start_km'] === '' || $t['end_km'] === null || $t['end_km'] === '') {
-                Log::warning('[MobileTripController] Rejecting trip: missing start_km/end_km', [
-                    'trip_index' => $idx,
+            // We lock schema: offline sync must provide readings
+            if ($t['start_km'] === null || $t['start_km'] === '' || !is_numeric($t['start_km'])) {
+                Log::warning('[MobileTripSync] Missing/invalid start_km', [
+                    'index' => $i,
                     'trip' => $t,
                 ]);
 
                 return response()->json([
-                    'message' => "Trip #{$idx} missing start_km/end_km.",
+                    'message' => "Trip #".($i+1)." missing or invalid start_km.",
+                ], 422);
+            }
+
+            if ($t['end_km'] === null || $t['end_km'] === '' || !is_numeric($t['end_km'])) {
+                Log::warning('[MobileTripSync] Missing/invalid end_km', [
+                    'index' => $i,
+                    'trip' => $t,
+                ]);
+
+                return response()->json([
+                    'message' => "Trip #".($i+1)." missing or invalid end_km.",
                 ], 422);
             }
         }
 
-        try {
-            $result = $this->tripService->syncOfflineTrips($user->toArray(), $mappedTrips);
+        $result = $this->tripService->syncOfflineTrips($user->toArray(), $mappedTrips);
 
-            Log::info('[MobileTripController] TripService::syncOfflineTrips completed', [
+        Log::info('[MobileTripSync] TripService result', [
+            'user_id' => $user->id ?? null,
+            'org_id' => $user->organisation_id ?? null,
+            'result' => $result,
+        ]);
+
+        $synced = is_array($result['synced'] ?? null) ? $result['synced'] : [];
+        $skipped = is_array($result['skipped'] ?? null) ? $result['skipped'] : [];
+
+        if (count($synced) + count($skipped) === 0) {
+            Log::warning('[MobileTripSync] WARNING: Service returned empty synced/skipped arrays', [
+                'user_id' => $user->id ?? null,
+                'org_id' => $user->organisation_id ?? null,
+                'mappedTrips' => $mappedTrips,
                 'result' => $result,
             ]);
-
-            return response()->json([
-                'status' => 'ok',
-                'synced_count' => is_array($mappedTrips) ? count($mappedTrips) : 0,
-                'result' => $result,
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('[MobileTripController] syncOfflineTrips failed', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'message' => 'Trip sync failed on server.',
-                'error' => $e->getMessage(),
-            ], 500);
         }
+
+        return response()->json([
+            'status' => 'ok',
+            'result' => $result,
+        ]);
     }
 }
