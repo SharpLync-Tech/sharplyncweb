@@ -206,6 +206,51 @@ class TripService
             }
         }
 
+        $safetyCheckConfirmed = null;
+        if (array_key_exists('safety_check_confirmed', $data)) {
+            $rawSafetyCheck = $data['safety_check_confirmed'];
+            if ($rawSafetyCheck !== null && $rawSafetyCheck !== '') {
+                if (is_bool($rawSafetyCheck)) {
+                    $safetyCheckConfirmed = $rawSafetyCheck ? 1 : 0;
+                } elseif (is_int($rawSafetyCheck)) {
+                    $safetyCheckConfirmed = $rawSafetyCheck;
+                } elseif (is_numeric($rawSafetyCheck)) {
+                    $safetyCheckConfirmed = (int) $rawSafetyCheck;
+                } elseif (is_string($rawSafetyCheck)) {
+                    $asBool = filter_var($rawSafetyCheck, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    if ($asBool === null) {
+                        throw ValidationException::withMessages([
+                            'safety_check_confirmed' => 'Safety check confirmation must be true/false or 0/1.',
+                        ]);
+                    }
+                    $safetyCheckConfirmed = $asBool ? 1 : 0;
+                } else {
+                    throw ValidationException::withMessages([
+                        'safety_check_confirmed' => 'Safety check confirmation must be true/false or 0/1.',
+                    ]);
+                }
+                if ($safetyCheckConfirmed !== 0 && $safetyCheckConfirmed !== 1) {
+                    throw ValidationException::withMessages([
+                        'safety_check_confirmed' => 'Safety check confirmation must be 0 or 1.',
+                    ]);
+                }
+            }
+        }
+
+        $safetyCheckConfirmedAt = null;
+        if (array_key_exists('safety_check_confirmed_at', $data)) {
+            $rawSafetyCheckAt = trim((string) ($data['safety_check_confirmed_at'] ?? ''));
+            if ($rawSafetyCheckAt !== '') {
+                try {
+                    $safetyCheckConfirmedAt = Carbon::parse($rawSafetyCheckAt)->utc();
+                } catch (\Throwable $e) {
+                    throw ValidationException::withMessages([
+                        'safety_check_confirmed_at' => 'Safety check confirmation time is invalid.',
+                    ]);
+                }
+            }
+        }
+
         $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
 
         // Permanent vehicle assignment rules (booking is not required for the assigned driver).
@@ -364,6 +409,8 @@ class TripService
             // Datetime fields (DB expects DATETIME, not TIME)
             'started_at' => $now,
             'start_time' => $now,
+            'safety_check_confirmed' => $safetyCheckConfirmed,
+            'safety_check_confirmed_at' => $safetyCheckConfirmedAt,
         ];
 
         if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
