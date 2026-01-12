@@ -81,7 +81,7 @@ Route::middleware('api.key')->group(function () {
     Route::get('/mobile/vehicles', [MobileVehicleController::class, 'index']);
 
     Route::get(
-        '/mobile/vehicles/{vehicle}/last-reading',
+        '/mobile/vehicles/{vehicle}/last_reading',
         [MobileVehicleController::class, 'lastReading']
     );
 
