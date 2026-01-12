@@ -36,10 +36,15 @@ class Trip extends Model
         'ended_at',
         'start_time',
         'end_time',
+
+        'safety_check_confirmed',
+        'safety_check_confirmed_at',
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
         'ended_at'   => 'datetime',
+        'safety_check_confirmed' => 'boolean',
+        'safety_check_confirmed_at' => 'datetime',
     ];
 }
