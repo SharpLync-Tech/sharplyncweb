@@ -839,6 +839,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 block.style.top = topPx + 'px';
                 block.style.height = heightPx + 'px';
                 block.dataset.bookingId = String(b.id);
+                // Tooltip content: driver, customer, vehicle, time, notes
+                let tooltip = '';
+                tooltip += 'Driver: ' + (b.driver_name || 'Driver') + '\n';
+                if (b.customer_name) tooltip += 'Customer: ' + b.customer_name + '\n';
+                if (b.vehicle_name) tooltip += 'Vehicle: ' + b.vehicle_name + '\n';
+                tooltip += 'Time: ' + segTime + '\n';
+                if (b.notes) tooltip += 'Notes: ' + b.notes;
+                block.setAttribute('data-tooltip', tooltip.trim());
 
                 const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
                 block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
@@ -1054,6 +1062,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 block.style.top = topPx + 'px';
                 block.style.height = heightPx + 'px';
                 block.dataset.bookingId = String(b.id);
+                // Tooltip content: driver, customer, vehicle, time, notes
+                let tooltip = '';
+                tooltip += 'Driver: ' + (b.driver_name || 'Driver') + '\n';
+                if (b.customer_name) tooltip += 'Customer: ' + b.customer_name + '\n';
+                if (b.vehicle_name) tooltip += 'Vehicle: ' + b.vehicle_name + '\n';
+                tooltip += 'Time: ' + segTime + '\n';
+                if (b.notes) tooltip += 'Notes: ' + b.notes;
+                block.setAttribute('data-tooltip', tooltip.trim());
                 const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
                 block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
                     '<div class="sf-bk-block-time">' + segTime + '</div>';
