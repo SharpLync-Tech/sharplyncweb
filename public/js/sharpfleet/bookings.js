@@ -1,3 +1,55 @@
+// Booking block tooltip logic
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltip = document.createElement('div');
+    tooltip.style.position = 'fixed';
+    tooltip.style.background = '#0A2A4D';
+    tooltip.style.color = '#fff';
+    tooltip.style.padding = '10px 16px';
+    tooltip.style.borderRadius = '8px';
+    tooltip.style.fontSize = '15px';
+    tooltip.style.boxShadow = '0 4px 16px rgba(10,42,77,0.18)';
+    tooltip.style.zIndex = '9999';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.maxWidth = '340px';
+    tooltip.style.whiteSpace = 'pre-line';
+    tooltip.style.display = 'none';
+    document.body.appendChild(tooltip);
+
+    function showTooltip(e, text) {
+        tooltip.textContent = text;
+        tooltip.style.display = 'block';
+        const offset = 18;
+        let x = e.clientX + offset;
+        let y = e.clientY + offset;
+        // Prevent overflow
+        if (x + tooltip.offsetWidth > window.innerWidth) {
+            x = window.innerWidth - tooltip.offsetWidth - 12;
+        }
+        if (y + tooltip.offsetHeight > window.innerHeight) {
+            y = window.innerHeight - tooltip.offsetHeight - 12;
+        }
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    }
+
+    function hideTooltip() {
+        tooltip.style.display = 'none';
+    }
+
+    document.querySelectorAll('.sf-bk-block[data-tooltip]').forEach(function(block) {
+        block.addEventListener('mouseenter', function(e) {
+            showTooltip(e, block.getAttribute('data-tooltip'));
+        });
+        block.addEventListener('mousemove', function(e) {
+            showTooltip(e, block.getAttribute('data-tooltip'));
+        });
+        block.addEventListener('mouseleave', hideTooltip);
+        block.addEventListener('touchstart', function(e) {
+            showTooltip(e.touches[0], block.getAttribute('data-tooltip'));
+        });
+        block.addEventListener('touchend', hideTooltip);
+    });
+});
 (function () {
     const sf = window.SharpFleetBookingsConfig || null;
     if (!sf || !sf.timezone || !sf.today) return;

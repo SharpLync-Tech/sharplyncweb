@@ -1,3 +1,37 @@
+/* Tooltip for booking block */
+.sf-bk-block[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    background: #0A2A4D;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    white-space: pre-line;
+    font-size: 14px;
+    box-shadow: 0 4px 16px rgba(10,42,77,0.18);
+    z-index: 10;
+    margin-top: 8px;
+    min-width: 180px;
+    max-width: 320px;
+    pointer-events: none;
+}
+.sf-bk-block[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #0A2A4D;
+    margin-top: 0px;
+    z-index: 11;
+}
 /* Strong override for booking block text color */
 .sf-bk-block .sf-bk-block-title,
 .sf-bk-block .sf-bk-block-time {
