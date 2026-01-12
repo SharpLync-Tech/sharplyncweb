@@ -1,81 +1,123 @@
 <?php
 
-namespace App\Http\Controllers\SharpFleet\Admin;
+namespace App\Services\SharpFleet;
 
-use App\Http\Controllers\Controller;
-use App\Services\SharpFleet\BranchService;
-use App\Services\SharpFleet\ReportingService;
-use App\Services\SharpFleet\CompanySettingsService;
-use App\Support\SharpFleet\Roles;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class ReportController extends Controller
+class ReportingService
 {
-    protected ReportingService $reportingService;
-
-    public function __construct(ReportingService $reportingService)
+    public function buildTripReport(int $organisationId, Request $request, array $user): array
     {
-        $this->reportingService = $reportingService;
-    }
+        // -----------------------------------------
+        // Base query
+        // -----------------------------------------
+        $query = DB::connection('sharpfleet')
+            ->table('trips as t')
+            ->leftJoin('customers as c', 'c.id', '=', 't.customer_id')
+            ->leftJoin('vehicles as v', 'v.id', '=', 't.vehicle_id')
+            ->leftJoin('drivers as d', 'd.id', '=', 't.driver_id');
 
-    public function trips(\Illuminate\Http\Request $request)
-    {
-        $user = $request->session()->get('sharpfleet.user');
-
-        if (!$user || !Roles::canViewReports($user)) {
-            abort(403);
+        // -----------------------------------------
+        // Filters (simplified – keep your existing ones)
+        // -----------------------------------------
+        if ($request->filled('vehicle_id')) {
+            $query->where('t.vehicle_id', (int) $request->vehicle_id);
         }
 
-        $branchesService = new BranchService();
-        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
-        $branchesEnabled = $branchesService->branchesEnabled();
-        $branchAccessEnabled = $branchesEnabled
-            && $branchesService->vehiclesHaveBranchSupport()
-            && $branchesService->userBranchAccessEnabled();
-        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
-        $accessibleBranchIds = $branchScopeEnabled
-            ? $branchesService->getAccessibleBranchIdsForUser((int) $user['organisation_id'], (int) $user['id'])
-            : [];
-        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
-            abort(403, 'No branch access.');
+        if ($request->filled('start_date')) {
+            $query->whereDate('t.started_at', '>=', $request->start_date);
         }
 
-        if ($request->export === 'csv') {
-            return $this->reportingService->streamTripReportCsv((int) $user['organisation_id'], $request, $user);
+        if ($request->filled('end_date')) {
+            $query->whereDate('t.started_at', '<=', $request->end_date);
         }
 
-        $result = $this->reportingService->buildTripReport((int) $user['organisation_id'], $request, $user);
+        if ($request->filled('customer_id')) {
+            $query->where('t.customer_id', (int) $request->customer_id);
+        }
 
-        $vehicles = \Illuminate\Support\Facades\DB::connection('sharpfleet')
-            ->table('vehicles')
-            ->where('organisation_id', $user['organisation_id'])
-            ->where('is_active', 1)
-            ->when(
-                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
-                fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
-            )
-            ->orderBy('name')
+        // -----------------------------------------
+        // 🔥 SELECT – THIS IS THE IMPORTANT PART
+        // -----------------------------------------
+        $trips = $query->select([
+                't.id',
+
+                // 🔴 🔴 🔴 THIS WAS MISSING 🔴 🔴 🔴
+                't.customer_id',
+
+                't.vehicle_id',
+                't.driver_id',
+
+                't.vehicle_name',
+                't.driver_name',
+
+                't.trip_mode',
+                't.started_at',
+                't.end_time',
+                't.purpose_of_travel',
+
+                // Display logic stays exactly as before
+                DB::raw('COALESCE(c.name, t.customer_name_display) as customer_name_display'),
+
+                'v.registration_number',
+            ])
+            ->where('t.organisation_id', $organisationId)
+            ->orderByDesc('t.started_at')
             ->get();
 
-        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
+        // -----------------------------------------
+        // Totals (simplified example)
+        // -----------------------------------------
+        $totals = [
+            'distance_km' => 0,
+            'distance_mi' => 0,
+            'hours'       => 0,
+        ];
 
-        return view('sharpfleet.admin.reports.trips', [
-            'trips' => $result['trips'],
-            'totals' => $result['totals'],
-            'applied' => $result['applied'],
-            'ui' => $result['ui'],
-            'branches' => $result['branches'] ?? collect(),
-            'vehicles' => $vehicles,
-            'customers' => $result['customers'],
-            'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
-            'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
-            'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
-            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
-        ]);
-    }
+        // -----------------------------------------
+        // UI / Applied metadata (simplified)
+        // -----------------------------------------
+        $applied = [
+            'vehicle_label' => $request->vehicle_id ? 'Filtered vehicle' : 'All vehicles',
+            'customer_label' => $request->customer_id ? 'Filtered customer' : 'All customers',
+        ];
 
-    public function vehicles()
-    {
-        // to be implemented later
+        $ui = [
+            'vehicle_id' => $request->vehicle_id,
+            'start_date' => $request->start_date,
+            'end_date'   => $request->end_date,
+            'customer_id' => $request->customer_id,
+        ];
+
+        // -----------------------------------------
+        // Customers (for filter dropdown)
+        // -----------------------------------------
+        $hasCustomersTable = Schema::connection('sharpfleet')->hasTable('customers');
+
+        $customers = collect();
+
+        if ($hasCustomersTable) {
+            $customers = DB::connection('sharpfleet')
+                ->table('customers')
+                ->where('organisation_id', $organisationId)
+                ->orderBy('name')
+                ->get();
+        }
+
+        // -----------------------------------------
+        // Final payload
+        // -----------------------------------------
+        return [
+            'trips' => $trips,
+            'totals' => $totals,
+            'applied' => $applied,
+            'ui' => $ui,
+            'customers' => $customers,
+            'hasCustomersTable' => $hasCustomersTable,
+            'customerLinkingEnabled' => true,
+            'companyTimezone' => config('app.timezone'),
+        ];
     }
 }
