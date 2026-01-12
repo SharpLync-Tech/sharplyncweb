@@ -129,13 +129,15 @@
                                             <div class="mt-1">
                                                 <a
                                                     class="text-primary small"
-                                                    href="{{ url('/app/sharpfleet/admin/customers/create') }}
-                                                        ?name={{ urlencode($t->customer_name_display) }}
-                                                        &trip_id={{ $t->id }}
-                                                        &return=trips"
+                                                    href="{{ url('/app/sharpfleet/admin/customers/create') . '?' . http_build_query([
+                                                        'name'    => $t->customer_name_display,
+                                                        'trip_id' => $t->id,
+                                                        'return'  => 'trips',
+                                                    ]) }}"
                                                 >
                                                     Convert to customer
                                                 </a>
+
                                             </div>
                                         @endif
                                     </td>
