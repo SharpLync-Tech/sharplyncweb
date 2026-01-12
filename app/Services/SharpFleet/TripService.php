@@ -405,6 +405,50 @@ class TripService
             // Offline UI sends ISO strings; treat them as UTC.
             $startedAt = Carbon::parse((string) ($t['started_at'] ?? ''))->utc();
             $endedAt = Carbon::parse((string) ($t['ended_at'] ?? ''))->utc();
+            $safetyCheckConfirmed = null;
+            if (array_key_exists('safety_check_confirmed', $t)) {
+                $rawSafetyCheck = $t['safety_check_confirmed'];
+                if ($rawSafetyCheck !== null && $rawSafetyCheck !== '') {
+                    if (is_bool($rawSafetyCheck)) {
+                        $safetyCheckConfirmed = $rawSafetyCheck ? 1 : 0;
+                    } elseif (is_int($rawSafetyCheck)) {
+                        $safetyCheckConfirmed = $rawSafetyCheck;
+                    } elseif (is_numeric($rawSafetyCheck)) {
+                        $safetyCheckConfirmed = (int) $rawSafetyCheck;
+                    } elseif (is_string($rawSafetyCheck)) {
+                        $asBool = filter_var($rawSafetyCheck, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                        if ($asBool === null) {
+                            throw ValidationException::withMessages([
+                                'safety_check_confirmed' => 'Safety check confirmation must be true/false or 0/1.',
+                            ]);
+                        }
+                        $safetyCheckConfirmed = $asBool ? 1 : 0;
+                    } else {
+                        throw ValidationException::withMessages([
+                            'safety_check_confirmed' => 'Safety check confirmation must be true/false or 0/1.',
+                        ]);
+                    }
+                    if ($safetyCheckConfirmed !== 0 && $safetyCheckConfirmed !== 1) {
+                        throw ValidationException::withMessages([
+                            'safety_check_confirmed' => 'Safety check confirmation must be 0 or 1.',
+                        ]);
+                    }
+                }
+            }
+
+            $safetyCheckConfirmedAt = null;
+            if (array_key_exists('safety_check_confirmed_at', $t)) {
+                $rawSafetyCheckAt = trim((string) ($t['safety_check_confirmed_at'] ?? ''));
+                if ($rawSafetyCheckAt !== '') {
+                    try {
+                        $safetyCheckConfirmedAt = Carbon::parse($rawSafetyCheckAt)->utc();
+                    } catch (\Throwable $e) {
+                        throw ValidationException::withMessages([
+                            'safety_check_confirmed_at' => 'Safety check confirmation time is invalid.',
+                        ]);
+                    }
+                }
+            }
 
             if ($vehicleId <= 0) {
                 throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
@@ -525,6 +569,8 @@ class TripService
                 'ended_at' => $endedAt,
                 'start_time' => $startedAt,
                 'end_time' => $endedAt,
+                'safety_check_confirmed' => $safetyCheckConfirmed,
+                'safety_check_confirmed_at' => $safetyCheckConfirmedAt,
             ];
 
             if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {

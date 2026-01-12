@@ -45,8 +45,8 @@
         Route::get('/verify/{token}', [VerifyController::class, 'verify'])->name('verify.email');
 
         // Log Test - Remove in Prod
-        Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
-        Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
+        // Route::get('/admin/registration-log', [LogViewerController::class, 'index'])->name('admin.registration.log');
+        //Route::post('/admin/registration-log/clear', [LogViewerController::class, 'clear'])->name('admin.registration.log.clear');
 
         // Trend Micro
         Route::view('/trend-micro', 'trend-micro')->name('trend-micro');        
