@@ -1,7 +1,7 @@
 <header class="sf-mobile-header">
     <div class="sf-mobile-header-inner">
         <img
-            src="{{ asset('images/sharpfleet/logo.png') }}"
+            src="{{ asset('images/sharpfleet/setup.png') }}"
             alt="SharpFleet"
             class="sf-mobile-logo"
         >
