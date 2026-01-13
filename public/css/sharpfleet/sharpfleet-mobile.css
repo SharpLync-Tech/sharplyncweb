@@ -1,96 +1,6 @@
-/* ================================
-   SharpFleet Mobile App Shell
-================================ */
-
-.sf-mobile {
-    margin: 0;
-    padding: 0;
-    background: #0A2A4D;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #EAF7F4;
-}
-
-.sf-mobile-app {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(
-        180deg,
-        #0A2A4D 0%,
-        #0B3B5F 45%,
-        #06233A 100%
-    );
-}
-
-/* Header */
-.sf-mobile-header {
-    padding: 14px 16px;
-}
-
-.sf-mobile-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.sf-mobile-logo {
-    height: 28px;
-}
-
-.sf-mobile-menu-btn {
-    background: none;
-    border: none;
-    color: #EAF7F4;
-    font-size: 22px;
-}
-
-/* Content */
-.sf-mobile-content {
-    flex: 1;
-    padding: 24px 20px 90px;
-}
-
-/* Dashboard */
-.sf-mobile-dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.sf-mobile-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #2CBFAE;
-    margin: 0;
-}
-
-.sf-mobile-subtitle {
-    opacity: 0.85;
-}
-
-/* Buttons */
-.sf-mobile-primary-btn {
-    background: #2CBFAE;
-    color: #06233A;
-    border: none;
-    border-radius: 16px;
-    padding: 18px;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.sf-mobile-secondary-btn {
-    background: rgba(255,255,255,0.08);
-    color: #EAF7F4;
-    border: none;
-    border-radius: 16px;
-    padding: 16px;
-    font-size: 16px;
-}
-
-/* ================================
-   Mobile Footer (App-style)
-================================ */
+/* ======================================
+   SharpFleet Mobile Footer (App-grade)
+====================================== */
 
 .sf-mobile-footer {
     position: fixed;
@@ -100,6 +10,7 @@
     z-index: 50;
 }
 
+/* Blur + glass effect */
 .sf-mobile-footer-blur {
     position: relative;
     backdrop-filter: blur(14px);
@@ -107,6 +18,7 @@
     border-top: 1px solid rgba(255,255,255,0.18);
 }
 
+/* Navy tint overlay */
 .sf-mobile-footer-tint {
     position: absolute;
     inset: 0;
@@ -114,13 +26,15 @@
     pointer-events: none;
 }
 
+/* Footer container */
 .sf-mobile-footer-inner {
     position: relative;
-    height: 72px;
+    height: 68px; /* tuned */
     display: flex;
     padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Nav item */
 .sf-mobile-footer-item {
     flex: 1;
     display: flex;
@@ -129,9 +43,11 @@
     justify-content: center;
     text-decoration: none;
     color: #BFEDE6;
-    opacity: 0.85;
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
 }
 
+/* Icon wrapper */
 .sf-footer-icon-wrap {
     position: relative;
     width: 30px;
@@ -141,11 +57,13 @@
     justify-content: center;
 }
 
+/* Icon */
 .sf-footer-icon {
     font-size: 22px;
     color: #BFEDE6;
 }
 
+/* Glow (active only) */
 .sf-footer-glow {
     position: absolute;
     inset: 0;
@@ -160,10 +78,11 @@
     color: rgba(44,191,174,0.35);
 }
 
-/* Labels */
+/* Label */
 .sf-footer-label {
     font-size: 11px;
-    margin-top: 4px;
+    margin-top: 2px;   /* tight */
+    line-height: 1;
     opacity: 0.85;
 }
 
@@ -181,21 +100,7 @@
     font-weight: 600;
 }
 
+/* Subtle emphasis (not loud) */
 .sf-mobile-footer-item.active {
     box-shadow: 0 0 10px rgba(44,191,174,0.35);
-}
-
-
-.sf-mobile-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
-}
-
-.sf-mobile-nav-item.active {
-    color: #2CBFAE;
 }

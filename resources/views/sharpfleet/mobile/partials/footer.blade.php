@@ -12,7 +12,7 @@
             'key' => 'start',
             'label' => 'Start',
             'icon' => 'play-circle-outline',
-            'url' => '#', // will open Start Trip sheet later
+            'url' => '#', // opens Start Drive sheet (JS later)
         ],
         [
             'key' => 'history',
@@ -36,7 +36,8 @@
         <div class="sf-mobile-footer-inner">
             @foreach ($nav as $item)
                 @php
-                    $active = str_starts_with($path, ltrim(parse_url($item['url'], PHP_URL_PATH), '/'));
+                    $itemPath = ltrim(parse_url($item['url'], PHP_URL_PATH), '/');
+                    $active = $itemPath !== '' && $path === $itemPath;
                 @endphp
 
                 <a
@@ -44,8 +45,8 @@
                     class="sf-mobile-footer-item {{ $active ? 'active' : '' }}"
                 >
                     <span class="sf-footer-icon-wrap">
-                        @if($active)
-                            <span class="sf-footer-glow">
+                        @if ($active)
+                            <span class="sf-footer-glow" aria-hidden="true">
                                 <ion-icon name="{{ $item['icon'] }}"></ion-icon>
                             </span>
                         @endif
