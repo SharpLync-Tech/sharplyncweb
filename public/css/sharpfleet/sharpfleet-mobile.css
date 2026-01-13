@@ -27,47 +27,61 @@
 ====================================== */
 
 .sf-mobile-header {
+    background-image: url('/images/sharpfleet/setup.png');
+    background-size: cover;
+    background-position: 42% 58%;
+    background-repeat: no-repeat;
+    color: var(--text-light);
+    padding: 16px 0;
+    box-shadow: var(--shadow);
     position: sticky;
     top: 0;
-    z-index: 60;
-    height: 88px;
-    overflow: hidden;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 /* Header background image */
-.sf-mobile-header-bg {
-    position: absolute;
-    inset: 0;
-    background-image: url('/images/sharpfleet/setup.png');
-    background-size: auto 140%;
-    background-position: center top;
-    opacity: 0.35;              /* key change */
-    filter: blur(1px);          /* softens harsh edges */
-}
+
 
 /* Dark overlay for contrast */
 .sf-mobile-header-overlay {
-    background: linear-gradient(
-        180deg,
-        rgba(10,42,77,0.95) 0%,
-        rgba(10,42,77,0.85) 60%,
-        rgba(10,42,77,0.75) 100%    
-    );
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(10,42,77,0.98) 0%,
+            rgba(10,42,77,0.92) 40%,
+            rgba(10,42,77,0.82) 75%,
+            rgba(10,42,77,0.75) 100%
+        );
+    pointer-events: none;
 }
+
 
 /* Header content */
 .sf-mobile-header-inner {
-    position: relative;
-    height: 100%;
-    padding: 16px 18px env(safe-area-inset-top);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    background: transparent;
 }
 
 /* Logo */
 .sf-mobile-header-logo {
-    height: 28px;
+    height: 100px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-light);
 }
 
 /* Hamburger */
