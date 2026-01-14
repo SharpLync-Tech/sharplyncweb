@@ -23,21 +23,26 @@
 }
 
 /* ======================================
-   Header
+   SharpFleet Mobile Header (Sticky)
 ====================================== */
 
 .sf-mobile-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
     background-image: url('/images/sharpfleet/setup.png');
     background-size: cover;
     background-position: 42% 58%;
     background-repeat: no-repeat;
+
     padding: 16px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
 }
 
-.sf-mobile-header-overlay {
+.sf-mobile-header::before {
+    content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -55,19 +60,40 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 16px;
+}
+
+/* Logo */
+.sf-mobile-header-logo {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #EAF7F4;
+}
+
+/* Hamburger */
+.sf-mobile-header-menu {
+    background: none;
+    border: none;
+    color: #EAF7F4;
+    font-size: 26px;
+    padding: 4px;
+    cursor: pointer;
 }
 
 /* ======================================
-   Main Content
+   Main Content Area
 ====================================== */
 
 .sf-mobile-content {
     flex: 1;
-    padding: 24px 20px 90px;
+    padding: 24px 20px 96px;
 }
 
 /* ======================================
-   Dashboard
+   Dashboard / Screens
 ====================================== */
 
 .sf-mobile-dashboard {
@@ -85,14 +111,21 @@
 
 .sf-mobile-subtitle {
     opacity: 0.85;
+    font-size: 15px;
 }
 
 /* ======================================
    Buttons
 ====================================== */
 
-.sf-mobile-primary-btn {
+.sf-mobile-primary-btn,
+.sf-mobile-secondary-btn {
     width: 100%;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.1s ease;
+}
+
+.sf-mobile-primary-btn {
     background: #2CBFAE;
     color: #06233A;
     border: none;
@@ -102,8 +135,12 @@
     font-weight: 700;
 }
 
+.sf-mobile-primary-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(44,191,174,0.35);
+}
+
 .sf-mobile-secondary-btn {
-    width: 100%;
     background: rgba(255,255,255,0.08);
     color: #EAF7F4;
     border: none;
@@ -112,91 +149,87 @@
     font-size: 16px;
 }
 
+.sf-mobile-secondary-btn:active {
+    transform: translateY(1px);
+    background: rgba(255,255,255,0.12);
+}
+
 /* ======================================
-   Forms (CRITICAL MOBILE FIXES)
+   Cards (More screen, settings, info)
 ====================================== */
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 16px;
-}
-
-.form-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #BFEDE6;
-}
-
-/* Inputs */
-.form-control {
-    width: 100%;
-    max-width: 100%;
-
+.sf-mobile-card {
     background: rgba(255,255,255,0.06);
-    color: #EAF7F4;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    padding: 16px;
+}
 
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px;
-
-    padding: 14px 14px;
+.sf-mobile-card-title {
     font-size: 16px;
-
-    box-sizing: border-box;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #EAF7F4;
 }
 
-/* Datetime + number fix */
-input[type="datetime-local"],
-input[type="number"],
-select {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+.sf-mobile-card-text {
+    font-size: 14px;
+    line-height: 1.35;
+    opacity: 0.85;
+    margin-bottom: 12px;
 }
 
-/* Remove Win95 arrows, keep functionality */
-input[type="number"] {
-    appearance: textfield;
-    -moz-appearance: textfield;
+/* iOS install hint (More screen only) */
+.sf-mobile-install-hint {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(10,42,77,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.sf-mobile-install-hint-title {
+    font-weight: 700;
+    color: #2CBFAE;
+    margin-bottom: 4px;
 }
 
-/* Select styling */
-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    background-image:
-        linear-gradient(45deg, transparent 50%, #2CBFAE 50%),
-        linear-gradient(135deg, #2CBFAE 50%, transparent 50%);
-    background-position:
-        calc(100% - 18px) calc(50% - 3px),
-        calc(100% - 12px) calc(50% - 3px);
-    background-size: 6px 6px;
-    background-repeat: no-repeat;
-}
-
-/* Accent color (radio / checkbox) */
-input[type="radio"],
-input[type="checkbox"] {
-    accent-color: #2CBFAE;
-}
-
-/* Hint text */
-.hint-text {
+.sf-mobile-install-hint-text {
     font-size: 13px;
-    opacity: 0.75;
+    opacity: 0.9;
 }
 
 /* ======================================
-   Footer
+   List Items (More / Settings)
+====================================== */
+
+.sf-mobile-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+    margin-top: 12px;
+
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    text-decoration: none;
+    color: #EAF7F4;
+}
+
+.sf-mobile-list-item:active {
+    transform: translateY(1px);
+}
+
+.sf-mobile-list-item-arrow {
+    font-size: 18px;
+    opacity: 0.6;
+}
+
+/* ======================================
+   Mobile Footer (App-grade)
 ====================================== */
 
 .sf-mobile-footer {
@@ -207,17 +240,31 @@ input[type="checkbox"] {
     z-index: 50;
 }
 
+/* Blur + glass */
 .sf-mobile-footer-blur {
+    position: relative;
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid rgba(255,255,255,0.18);
 }
 
+/* Navy tint */
+.sf-mobile-footer-tint {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,42,77,0.45);
+    pointer-events: none;
+}
+
+/* Footer layout */
 .sf-mobile-footer-inner {
+    position: relative;
     height: 68px;
     display: flex;
     padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Nav item */
 .sf-mobile-footer-item {
     flex: 1;
     display: flex;
@@ -227,8 +274,62 @@ input[type="checkbox"] {
     text-decoration: none;
     color: #BFEDE6;
     opacity: 0.75;
+    transition: opacity 0.15s ease;
+}
+
+/* Icon wrapper */
+.sf-footer-icon-wrap {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon */
+.sf-footer-icon {
+    font-size: 22px;
+    color: #BFEDE6;
+}
+
+/* Glow (active only) */
+.sf-footer-glow {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: blur(6px);
+}
+
+.sf-footer-glow ion-icon {
+    font-size: 26px;
+    color: rgba(44,191,174,0.35);
+}
+
+/* Label */
+.sf-footer-label {
+    font-size: 11px;
+    margin-top: 2px;
+    line-height: 1;
+    opacity: 0.85;
+}
+
+/* Active state */
+.sf-mobile-footer-item.active {
+    opacity: 1;
+}
+
+.sf-mobile-footer-item.active .sf-footer-icon {
+    color: #2CBFAE;
+}
+
+.sf-mobile-footer-item.active .sf-footer-label {
+    color: #2CBFAE;
+    font-weight: 600;
 }
 
 .sf-mobile-footer-item.active {
-    opacity: 1;
+    box-shadow: 0 0 10px rgba(44,191,174,0.35);
 }
