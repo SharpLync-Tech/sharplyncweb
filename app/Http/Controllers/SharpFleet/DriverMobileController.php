@@ -146,6 +146,17 @@ class DriverMobileController extends Controller
         ));
     }
 
+    public function history(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        return view('sharpfleet.mobile.history');
+    }
+
     public function more(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');

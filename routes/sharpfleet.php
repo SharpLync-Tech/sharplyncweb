@@ -116,7 +116,7 @@ Route::prefix('app/sharpfleet')
         Route::get('/mobile/start', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.start');
 
-        Route::get('/mobile/history', [DriverMobileController::class, 'dashboard'])
+        Route::get('/mobile/history', [DriverMobileController::class, 'history'])
             ->name('sharpfleet.mobile.history');
 
         Route::get('/mobile/more', [DriverMobileController::class, 'more'])
