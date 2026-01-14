@@ -1,5 +1,5 @@
 {{-- =========================================================
-     SharpFleet Mobile – Start Trip Sheet
+     SharpFleet Mobile â€“ Start Trip Sheet
      Action Pill UX (Modal Sections)
      Backend logic unchanged
 ========================================================= --}}
@@ -151,8 +151,8 @@
                         margin-bottom:10px;
                     "
                 >
-                    <span>🧾 Trip Details</span>
-                    <span id="tripDetailsStatus">⭕</span>
+                    <span>Trip Details</span>
+                    <ion-icon id="tripDetailsStatus" class="sf-status-icon" name="ellipse-outline"></ion-icon>
                 </button>
 
                 {{-- Client / Customer --}}
@@ -166,8 +166,8 @@
                         margin-bottom:10px;
                     "
                 >
-                    <span>👤 Client / Customer</span>
-                    <span id="clientStatus">⭕</span>
+                    <span>Client / Customer</span>
+                    <ion-icon id="clientStatus" class="sf-status-icon" name="ellipse-outline"></ion-icon>
                 </button>
 
                 {{-- Safety Check --}}
@@ -181,8 +181,8 @@
                             justify-content:space-between;
                         "
                     >
-                        <span>🛡 Safety Check</span>
-                        <span id="safetyStatus">⚠️</span>
+                        <span>Safety Check</span>
+                        <ion-icon id="safetyStatus" class="sf-status-icon" name="ellipse-outline"></ion-icon>
                     </button>
                 @endif
             </div>
@@ -248,7 +248,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self" data-status-target="tripDetailsStatus">
             Save
         </button>
     </div>
@@ -334,7 +334,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self" data-status-target="clientStatus">
             Save
         </button>
     </div>
@@ -379,7 +379,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self" data-status-target="safetyStatus">
             Confirm
         </button>
     </div>
@@ -534,6 +534,16 @@
         vehicleSearchInput.addEventListener('input', filterVehicles);
     }
     tripModeRadios.forEach(r => r.addEventListener('change', updateBusinessOnlyBlocksVisibility));
+
+    document.querySelectorAll('[data-status-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-status-target');
+            const target = targetId ? document.getElementById(targetId) : null;
+            if (!target) return;
+            target.setAttribute('name', 'checkmark-circle');
+            target.classList.add('sf-status-complete');
+        });
+    });
 
     updateStartKm();
     updateBusinessOnlyBlocksVisibility();
