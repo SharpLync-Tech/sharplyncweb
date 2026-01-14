@@ -1,5 +1,5 @@
 {{-- =========================================================
-     SharpFleet Mobile – Start Trip Sheet
+     SharpFleet Mobile â€“ Start Trip Sheet
      Full Desktop Form Reused (Mobile Safe)
      Backend logic unchanged
 ========================================================= --}}
@@ -83,214 +83,226 @@
             </div>
 
             {{-- ===============================
-                 Manual Start Time
+                 Trip Details
             ================================ --}}
-            @if($manualTripTimesRequired)
-                <div class="form-group">
-                    <label class="form-label">Start time</label>
+            <details class="form-group">
+                <summary class="form-label">Trip Details</summary>
 
-                    <input
-                        type="datetime-local"
-                        name="started_at"
-                        class="form-control sharpfleet-trip-datetime"
-                        required
-                    >
-
-                    <div class="hint-text">
-                        Enter the local time for this trip.
-                    </div>
-                </div>
-            @endif
-
-            {{-- ===============================
-                 Trip Type
-            ================================ --}}
-            <div class="form-group">
-                <label class="form-label">Trip Type</label>
-
-                @if($allowPrivateTrips)
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input
-                                type="radio"
-                                name="trip_mode"
-                                value="business"
-                                checked
-                            >
-                            Business
-                        </label>
-
-                        <label class="radio-label">
-                            <input
-                                type="radio"
-                                name="trip_mode"
-                                value="private"
-                            >
-                            Private
-                        </label>
-                    </div>
-                @else
-                    <div class="hint-text">Business</div>
-                    <input type="hidden" name="trip_mode" value="business">
-                @endif
-            </div>
-
-            {{-- ===============================
-                 Client Presence
-            ================================ --}}
-            @if(($settings['client_presence']['enabled'] ?? false) === true)
-                <div id="clientPresenceBlock">
+                {{-- ===============================
+                     Manual Start Time
+                ================================ --}}
+                @if($manualTripTimesRequired)
                     <div class="form-group">
-                    <label class="form-label">
-                        {{ $settings['client_presence']['label'] ?? 'Client' }} Present?
-                        {{ ($settings['client_presence']['required'] ?? false) ? '(Required)' : '' }}
+                        <label class="form-label">Start time</label>
+
+                        <input
+                            type="datetime-local"
+                            name="started_at"
+                            class="form-control sharpfleet-trip-datetime"
+                            required
+                        >
+
+                        <div class="hint-text">
+                            Enter the local time for this trip.
+                        </div>
+                    </div>
+                @endif
+
+                {{-- ===============================
+                     Trip Type
+                ================================ --}}
+                <div class="form-group">
+                    <label class="form-label">Trip Type</label>
+
+                    @if($allowPrivateTrips)
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input
+                                    type="radio"
+                                    name="trip_mode"
+                                    value="business"
+                                    checked
+                                >
+                                Business
+                            </label>
+
+                            <label class="radio-label">
+                                <input
+                                    type="radio"
+                                    name="trip_mode"
+                                    value="private"
+                                >
+                                Private
+                            </label>
+                        </div>
+                    @else
+                        <div class="hint-text">Business</div>
+                        <input type="hidden" name="trip_mode" value="business">
+                    @endif
+                </div>
+
+                {{-- ===============================
+                     Purpose of Travel
+                ================================ --}}
+                @if($settingsService->purposeOfTravelEnabled())
+                    <div id="purposeOfTravelBlock" class="form-group">
+                        <label class="form-label">Purpose of Travel (optional)</label>
+                        <input
+                            type="text"
+                            name="purpose_of_travel"
+                            class="form-control"
+                            maxlength="255"
+                            placeholder="e.g. Materials pickup at Bunnings"
+                        >
+                    </div>
+                @endif
+
+                {{-- ===============================
+                     Starting Reading
+                ================================ --}}
+                <div class="form-group">
+                    @php $defaultDistanceUnit = $settingsService->distanceUnit(); @endphp
+
+                    <label id="startReadingLabel" class="form-label">
+                        Starting odometer ({{ $defaultDistanceUnit }})
                     </label>
 
-                    <select
-                        name="client_present"
-                        class="form-control"
-                        {{ ($settings['client_presence']['required'] ?? false) ? 'required' : '' }}
-                    >
-                        <option value="">— Select —</option>
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div>
+                    <div id="lastKmHint" class="hint-text d-none"></div>
 
-                @if(($settings['client_presence']['enable_addresses'] ?? false) === true)
-                    <div class="form-group">
-                        <label class="form-label">Client Address (for billing/job tracking)</label>
-
-                        <input
-                            type="text"
-                            name="client_address"
-                            class="form-control"
-                            placeholder="e.g. 123 Main St, Suburb"
-                        >
-                    </div>
-                @endif
-                </div>
-            @endif
-
-            {{-- ===============================
-                 Customer / Client
-            ================================ --}}
-            @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
-                @php
-                    $partyLabel = trim((string) $settingsService->clientLabel());
-                    $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
-                @endphp
-                <div id="customerBlock" class="form-group">
-                    <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
-
-                    @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
-                        <select id="customerSelect" name="customer_id" class="form-control">
-                            <option value="">- Select from list -</option>
-                            @foreach($customers as $c)
-                                <option value="{{ $c->id }}">{{ $c->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="hint-text">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
-                    @endif
-
-                    @if($settings['customer']['allow_manual'] ?? true)
-                        <input
-                            id="customerNameInput"
-                            type="text"
-                            name="customer_name"
-                            class="form-control mt-2"
-                            maxlength="150"
-                            placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)"
-                        >
-                    @endif
-                </div>
-            @endif
-
-            {{-- ===============================
-                 Purpose of Travel
-            ================================ --}}
-            @if($settingsService->purposeOfTravelEnabled())
-                <div id="purposeOfTravelBlock" class="form-group">
-                    <label class="form-label">Purpose of Travel (optional)</label>
                     <input
-                        type="text"
-                        name="purpose_of_travel"
+                        type="number"
+                        id="startKmInput"
+                        name="start_km"
                         class="form-control"
-                        maxlength="255"
-                        placeholder="e.g. Materials pickup at Bunnings"
+                        inputmode="numeric"
+                        placeholder="e.g. 124500"
+                        {{ $odometerRequired ? 'required' : '' }}
+                        {{ $odometerAllowOverride ? '' : 'readonly' }}
                     >
+
+                    @if(!$odometerRequired)
+                        <div class="hint-text">
+                            If left blank, the last recorded reading will be used.
+                        </div>
+                    @endif
                 </div>
-            @endif
+            </details>
 
             {{-- ===============================
-                 Starting Reading
+                 Client / Customer
             ================================ --}}
-            <div class="form-group">
-                @php $defaultDistanceUnit = $settingsService->distanceUnit(); @endphp
+            <details class="form-group">
+                <summary class="form-label">Client / Customer</summary>
 
-                <label id="startReadingLabel" class="form-label">
-                    Starting odometer ({{ $defaultDistanceUnit }})
-                </label>
+                @if(($settings['client_presence']['enabled'] ?? false) === true)
+                    <div id="clientPresenceBlock">
+                        <div class="form-group">
+                            <label class="form-label">
+                                {{ $settings['client_presence']['label'] ?? 'Client' }} Present?
+                                {{ ($settings['client_presence']['required'] ?? false) ? '(Required)' : '' }}
+                            </label>
 
-                <div id="lastKmHint" class="hint-text d-none"></div>
+                            <select
+                                name="client_present"
+                                class="form-control"
+                                {{ ($settings['client_presence']['required'] ?? false) ? 'required' : '' }}
+                            >
+                                <option value="">- Select -</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
 
-                <input
-                    type="number"
-                    id="startKmInput"
-                    name="start_km"
-                    class="form-control"
-                    inputmode="numeric"
-                    placeholder="e.g. 124500"
-                    {{ $odometerRequired ? 'required' : '' }}
-                    {{ $odometerAllowOverride ? '' : 'readonly' }}
-                >
+                        @if(($settings['client_presence']['enable_addresses'] ?? false) === true)
+                            <div class="form-group">
+                                <label class="form-label">Client Address (for billing/job tracking)</label>
 
-                @if(!$odometerRequired)
-                    <div class="hint-text">
-                        If left blank, the last recorded reading will be used.
+                                <input
+                                    type="text"
+                                    name="client_address"
+                                    class="form-control"
+                                    placeholder="e.g. 123 Main St, Suburb"
+                                >
+                            </div>
+                        @endif
                     </div>
                 @endif
-            </div>
+
+                @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
+                    @php
+                        $partyLabel = trim((string) $settingsService->clientLabel());
+                        $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
+                    @endphp
+                    <div id="customerBlock" class="form-group">
+                        <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
+
+                        @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
+                            <select id="customerSelect" name="customer_id" class="form-control">
+                                <option value="">- Select from list -</option>
+                                @foreach($customers as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="hint-text">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
+                        @endif
+
+                        @if($settings['customer']['allow_manual'] ?? true)
+                            <input
+                                id="customerNameInput"
+                                type="text"
+                                name="customer_name"
+                                class="form-control mt-2"
+                                maxlength="150"
+                                placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)"
+                            >
+                        @endif
+                    </div>
+                @endif
+            </details>
 
             {{-- ===============================
                  Safety Check
             ================================ --}}
-            @if($safetyCheckEnabled)
-                @php
-                    $safetyCount = is_array($safetyCheckItems) ? count($safetyCheckItems) : 0;
-                @endphp
+            <details class="form-group">
+                <summary class="form-label">Safety Check</summary>
 
-                <div class="form-group" id="preDriveSafetyCheckBlock">
-                    <label class="form-label">Pre-Drive Safety Check</label>
+                @if($safetyCheckEnabled)
+                    @php
+                        $safetyCount = is_array($safetyCheckItems) ? count($safetyCheckItems) : 0;
+                    @endphp
 
-                    @if($safetyCount > 0)
-                        <div class="hint-text" style="margin-bottom: 6px;">
-                            Complete the checks below before starting your trip.
-                        </div>
+                    <div class="form-group" id="preDriveSafetyCheckBlock">
+                        <label class="form-label">Pre-Drive Safety Check</label>
 
-                        <ul class="text-muted" style="margin-left:16px;">
-                            @foreach($safetyCheckItems as $item)
-                                <li>{{ $item['label'] ?? '' }}</li>
-                            @endforeach
-                        </ul>
+                        @if($safetyCount > 0)
+                            <div class="hint-text" style="margin-bottom: 6px;">
+                                Complete the checks below before starting your trip.
+                            </div>
 
-                        <label class="checkbox-label">
-                            <input
-                                type="checkbox"
-                                name="safety_check_confirmed"
-                                value="1"
-                                required
-                            >
-                            <strong>I have completed the safety check</strong>
-                        </label>
-                    @else
-                        <div class="alert alert-info">
-                            Safety checks are enabled, but no checklist items are configured yet.
-                            Please ask an admin to configure the checklist.
-                        </div>
-                    @endif
-                </div>
-            @endif
+                            <ul class="text-muted" style="margin-left:16px;">
+                                @foreach($safetyCheckItems as $item)
+                                    <li>{{ $item['label'] ?? '' }}</li>
+                                @endforeach
+                            </ul>
+
+                            <label class="checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    name="safety_check_confirmed"
+                                    value="1"
+                                    required
+                                >
+                                <strong>I have completed the safety check</strong>
+                            </label>
+                        @else
+                            <div class="alert alert-info">
+                                Safety checks are enabled, but no checklist items are configured yet.
+                                Please ask an admin to configure the checklist.
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </details>
 
             {{-- ===============================
                  Submit
@@ -422,3 +434,4 @@
 
     </div>
 </div>
+
