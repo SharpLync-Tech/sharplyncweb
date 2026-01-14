@@ -27,61 +27,50 @@
 ====================================== */
 
 .sf-mobile-header {
-    background-image: url('/images/sharpfleet/setup.png');
-    background-size: cover;
-    background-position: 42% 58%;
-    background-repeat: no-repeat;
-    color: var(--text-light);
-    padding: 16px 0;
-    box-shadow: var(--shadow);
     position: sticky;
     top: 0;
     left: 0;
     right: 0;
-    width: 100%;
     z-index: 1000;
+
+    background-image: url('/images/sharpfleet/setup.png');
+    background-size: cover;
+    background-position: 42% 58%;
+    background-repeat: no-repeat;
+
+    padding: 16px 0;
 }
 
-/* Header background image */
-
-
-/* Dark overlay for contrast */
-.sf-mobile-header-overlay {
+.sf-mobile-header::before {
+    content: '';
     position: absolute;
     inset: 0;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(10,42,77,0.98) 0%,
-            rgba(10,42,77,0.92) 40%,
-            rgba(10,42,77,0.82) 75%,
-            rgba(10,42,77,0.75) 100%
-        );
-    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(10,42,77,0.98) 0%,
+        rgba(10,42,77,0.92) 40%,
+        rgba(10,42,77,0.82) 75%,
+        rgba(10,42,77,0.75) 100%
+    );
 }
 
-
-/* Header content */
 .sf-mobile-header-inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
-    z-index: 1;
-    background: transparent;
+    padding: 0 16px;
 }
 
 /* Logo */
 .sf-mobile-header-logo {
     height: 100px;
-    width: auto;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 24px;
-    font-weight: 700;
     text-decoration: none;
-    color: var(--text-light);
+    color: #EAF7F4;
 }
 
 /* Hamburger */
@@ -90,10 +79,8 @@
     border: none;
     color: #EAF7F4;
     font-size: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 4px;
+    cursor: pointer;
 }
 
 /* ======================================
@@ -102,11 +89,11 @@
 
 .sf-mobile-content {
     flex: 1;
-    padding: 24px 20px 90px;
+    padding: 24px 20px 96px;
 }
 
 /* ======================================
-   Dashboard
+   Dashboard / Screens
 ====================================== */
 
 .sf-mobile-dashboard {
@@ -124,11 +111,19 @@
 
 .sf-mobile-subtitle {
     opacity: 0.85;
+    font-size: 15px;
 }
 
 /* ======================================
    Buttons
 ====================================== */
+
+.sf-mobile-primary-btn,
+.sf-mobile-secondary-btn {
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.1s ease;
+}
 
 .sf-mobile-primary-btn {
     background: #2CBFAE;
@@ -140,6 +135,11 @@
     font-weight: 700;
 }
 
+.sf-mobile-primary-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(44,191,174,0.35);
+}
+
 .sf-mobile-secondary-btn {
     background: rgba(255,255,255,0.08);
     color: #EAF7F4;
@@ -147,6 +147,85 @@
     border-radius: 16px;
     padding: 16px;
     font-size: 16px;
+}
+
+.sf-mobile-secondary-btn:active {
+    transform: translateY(1px);
+    background: rgba(255,255,255,0.12);
+}
+
+/* ======================================
+   Cards (More screen, settings, info)
+====================================== */
+
+.sf-mobile-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.sf-mobile-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #EAF7F4;
+}
+
+.sf-mobile-card-text {
+    font-size: 14px;
+    line-height: 1.35;
+    opacity: 0.85;
+    margin-bottom: 12px;
+}
+
+/* iOS install hint (More screen only) */
+.sf-mobile-install-hint {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(10,42,77,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.sf-mobile-install-hint-title {
+    font-weight: 700;
+    color: #2CBFAE;
+    margin-bottom: 4px;
+}
+
+.sf-mobile-install-hint-text {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* ======================================
+   List Items (More / Settings)
+====================================== */
+
+.sf-mobile-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+    margin-top: 12px;
+
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    text-decoration: none;
+    color: #EAF7F4;
+}
+
+.sf-mobile-list-item:active {
+    transform: translateY(1px);
+}
+
+.sf-mobile-list-item-arrow {
+    font-size: 18px;
+    opacity: 0.6;
 }
 
 /* ======================================

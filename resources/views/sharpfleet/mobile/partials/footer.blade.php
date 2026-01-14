@@ -1,5 +1,5 @@
 @php
-    $path = request()->path();
+    $path = '/' . ltrim(request()->path(), '/');
 
     $nav = [
         [
@@ -7,59 +7,63 @@
             'label' => 'Home',
             'icon' => 'home-outline',
             'url' => '/app/sharpfleet/mobile',
+            'active_when' => ['/app/sharpfleet/mobile'],
         ],
         [
             'key' => 'start',
             'label' => 'Start',
             'icon' => 'play-circle-outline',
-            'url' => '#', // opens Start Drive sheet (JS later)
+            'url' => '/app/sharpfleet/mobile/start',
+            'active_when' => ['/app/sharpfleet/mobile/start'],
         ],
         [
             'key' => 'history',
             'label' => 'History',
             'icon' => 'time-outline',
             'url' => '/app/sharpfleet/mobile/history',
+            'active_when' => ['/app/sharpfleet/mobile/history'],
         ],
         [
             'key' => 'more',
             'label' => 'More',
             'icon' => 'menu-outline',
             'url' => '/app/sharpfleet/mobile/more',
+            'active_when' => ['/app/sharpfleet/mobile/more'],
         ],
     ];
+
+    $isActive = function(array $item) use ($path) {
+        foreach (($item['active_when'] ?? []) as $match) {
+            if ($path === $match) return true;
+            if (str_starts_with($path, rtrim($match, '/') . '/')) return true;
+        }
+        return false;
+    };
 @endphp
 
-<nav class="sf-mobile-footer">
+<nav class="sf-mobile-footer" aria-label="SharpFleet Mobile Navigation">
     <div class="sf-mobile-footer-blur">
         <div class="sf-mobile-footer-tint"></div>
 
         <div class="sf-mobile-footer-inner">
             @foreach ($nav as $item)
-                @php
-                    $itemPath = ltrim(parse_url($item['url'], PHP_URL_PATH), '/');
-                    $active = $itemPath !== '' && $path === $itemPath;
-                @endphp
+                @php $active = $isActive($item); @endphp
 
                 <a
                     href="{{ $item['url'] }}"
                     class="sf-mobile-footer-item {{ $active ? 'active' : '' }}"
                 >
                     <span class="sf-footer-icon-wrap">
-                        @if ($active)
-                            <span class="sf-footer-glow" aria-hidden="true">
+                        @if($active)
+                            <span class="sf-footer-glow">
                                 <ion-icon name="{{ $item['icon'] }}"></ion-icon>
                             </span>
                         @endif
 
-                        <ion-icon
-                            name="{{ $item['icon'] }}"
-                            class="sf-footer-icon"
-                        ></ion-icon>
+                        <ion-icon name="{{ $item['icon'] }}" class="sf-footer-icon"></ion-icon>
                     </span>
 
-                    <span class="sf-footer-label">
-                        {{ $item['label'] }}
-                    </span>
+                    <span class="sf-footer-label">{{ $item['label'] }}</span>
                 </a>
             @endforeach
         </div>
