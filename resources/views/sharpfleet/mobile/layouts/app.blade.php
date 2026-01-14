@@ -40,5 +40,36 @@
     {{-- Mobile JS (later) --}}
     @stack('scripts')
 
+    <script>
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Stop Chrome from showing the default mini-infobar
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show your custom install button
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.style.display = 'flex';
+            }
+        });
+
+        async function installPWA() {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+
+            deferredPrompt = null;
+
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.style.display = 'none';
+            }
+        }
+    </script>
+
+
 </body>
 </html>
