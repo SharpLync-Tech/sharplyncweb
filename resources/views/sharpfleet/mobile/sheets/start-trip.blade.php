@@ -540,7 +540,7 @@
             const targetId = btn.getAttribute('data-status-target');
             const target = targetId ? document.getElementById(targetId) : null;
             if (!target) return;
-            target.setAttribute('name', 'checkmark-circle');
+            target.setAttribute('name', 'checkmark');
             target.classList.add('sf-status-complete');
         });
     });
