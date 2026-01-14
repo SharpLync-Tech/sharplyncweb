@@ -14,7 +14,7 @@
     <button
         class="sf-mobile-primary-btn"
         type="button"
-        id="open-start-trip-btn"
+        data-sheet-open="start-trip"
     >
         Start Drive
     </button>
@@ -25,6 +25,5 @@
 
 </section>
 
-{{-- Start Trip Sheet --}}
 @include('sharpfleet.mobile.sheets.start-trip')
 @endsection

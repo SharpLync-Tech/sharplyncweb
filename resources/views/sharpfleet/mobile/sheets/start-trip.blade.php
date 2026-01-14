@@ -3,11 +3,12 @@
 {{-- No backend or route changes --}}
 
 <div
-    id="sf-start-trip-sheet"
-    class="sf-sheet sf-sheet-hidden"
+    id="sf-sheet-start-trip"
+    class="sf-sheet"
     role="dialog"
     aria-modal="true"
     aria-labelledby="sf-start-trip-title"
+    aria-hidden="true"
 >
 
     {{-- Sheet Header --}}
@@ -17,11 +18,12 @@
         <button
             type="button"
             class="sf-sheet-close"
-            onclick="closeStartTripSheet()"
+            data-sheet-close
             aria-label="Close"
         >
             <ion-icon name="close-outline"></ion-icon>
         </button>
+
     </div>
 
     {{-- Sheet Body --}}

@@ -28,14 +28,9 @@
     transition: transform 0.25s ease;
 }
 
-/* Visible */
-.sf-sheet-active {
+/* OPEN STATE — must match JS */
+.sf-sheet.is-open {
     transform: translateY(0);
-}
-
-/* Hidden */
-.sf-sheet-hidden {
-    transform: translateY(100%);
 }
 
 /* Header */

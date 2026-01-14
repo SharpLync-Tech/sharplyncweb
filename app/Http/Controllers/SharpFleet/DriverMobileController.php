@@ -20,27 +20,21 @@ class DriverMobileController extends Controller
             abort(403);
         }
 
-        /* -------------------------------------------------
-         | Company / Driver Settings
-         ------------------------------------------------- */
         $settingsService = new CompanySettingsService($user['organisation_id']);
         $settings = $settingsService->all();
 
-        $allowPrivateTrips        = $settingsService->allowPrivateTrips();
-        $faultsEnabled            = $settingsService->faultsEnabled();
-        $allowFaultsDuringTrip    = $settingsService->allowFaultsDuringTrip();
-        $companyTimezone          = $settingsService->timezone();
+        $allowPrivateTrips       = $settingsService->allowPrivateTrips();
+        $faultsEnabled           = $settingsService->faultsEnabled();
+        $allowFaultsDuringTrip   = $settingsService->allowFaultsDuringTrip();
+        $companyTimezone         = $settingsService->timezone();
 
-        $odometerRequired         = $settingsService->odometerRequired();
-        $odometerAllowOverride    = $settingsService->odometerAllowOverride();
-        $manualTripTimesRequired  = $settingsService->requireManualStartEndTimes();
+        $odometerRequired        = $settingsService->odometerRequired();
+        $odometerAllowOverride   = $settingsService->odometerAllowOverride();
+        $manualTripTimesRequired = $settingsService->requireManualStartEndTimes();
 
-        $safetyCheckEnabled       = $settingsService->safetyCheckEnabled();
-        $safetyCheckItems         = $settingsService->safetyCheckItems();
+        $safetyCheckEnabled      = $settingsService->safetyCheckEnabled();
+        $safetyCheckItems        = $settingsService->safetyCheckItems();
 
-        /* -------------------------------------------------
-         | Branch access
-         ------------------------------------------------- */
         $branchesService = new BranchService();
 
         $branchesEnabled = $branchesService->branchesEnabled();
@@ -59,9 +53,6 @@ class DriverMobileController extends Controller
             abort(403, 'No branch access.');
         }
 
-        /* -------------------------------------------------
-         | Vehicles
-         ------------------------------------------------- */
         $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $user['organisation_id'])
@@ -89,9 +80,6 @@ class DriverMobileController extends Controller
             ->orderBy('name')
             ->get();
 
-        /* -------------------------------------------------
-         | Last trip per vehicle
-         ------------------------------------------------- */
         $lastTrips = DB::connection('sharpfleet')
             ->table('trips')
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
@@ -108,9 +96,6 @@ class DriverMobileController extends Controller
             ->unique('vehicle_id')
             ->keyBy('vehicle_id');
 
-        /* -------------------------------------------------
-         | Active Trip
-         ------------------------------------------------- */
         $activeTrip = DB::connection('sharpfleet')
             ->table('trips')
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
@@ -130,9 +115,6 @@ class DriverMobileController extends Controller
             ->whereNull('trips.ended_at')
             ->first();
 
-        /* -------------------------------------------------
-         | Render mobile dashboard
-         ------------------------------------------------- */
         return view('sharpfleet.mobile.dashboard', compact(
             'settingsService',
             'settings',
@@ -149,5 +131,16 @@ class DriverMobileController extends Controller
             'safetyCheckEnabled',
             'safetyCheckItems'
         ));
+    }
+
+    public function more(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        return view('sharpfleet.mobile.more');
     }
 }

@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 use App\Http\Controllers\SharpFleet\AuthController;
 use App\Http\Controllers\SharpFleet\Auth\ForgotPasswordController as SharpFleetForgotPasswordController;
@@ -13,26 +11,8 @@ use App\Http\Controllers\SharpFleet\SsoController;
 use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
 use App\Http\Controllers\SharpFleet\BookingController;
-use App\Http\Controllers\SharpFleet\Admin\VehicleController;
-use App\Http\Controllers\SharpFleet\Admin\CustomerController;
-use App\Http\Controllers\SharpFleet\Admin\BookingController as AdminBookingController;
-use App\Http\Controllers\SharpFleet\Admin\FaultController as AdminFaultController;
-use App\Http\Controllers\SharpFleet\Admin\ReportController;
-use App\Http\Controllers\SharpFleet\Admin\CompanySettingsController;
-use App\Http\Controllers\SharpFleet\Admin\CompanyController;
-use App\Http\Controllers\SharpFleet\Admin\CompanyProfileController;
-use App\Http\Controllers\SharpFleet\Admin\BranchController;
-use App\Http\Controllers\SharpFleet\Admin\CompanySafetyCheckController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
-use App\Http\Controllers\SharpFleet\Admin\UserController;
-use App\Http\Controllers\SharpFleet\Admin\DriverInviteController as AdminDriverInviteController;
-use App\Http\Controllers\SharpFleet\Admin\SetupWizardController;
-use App\Http\Controllers\SharpFleet\Admin\ReminderController;
-use App\Http\Controllers\SharpFleet\Admin\AccountController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
-use App\Services\SharpFleet\CompanySettingsService;
-use App\Services\SharpFleet\BillingDisplayService;
-use App\Services\SharpFleet\VehicleReminderService;
 use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
 
@@ -66,8 +46,6 @@ Route::prefix('app/sharpfleet')
 
         return view('sharpfleet.home');
     });
-
-    Route::get('/test-home', fn () => view('sharpfleet.test-home'));
 
     /*
     |--------------------------------------------------------------------------
@@ -111,9 +89,6 @@ Route::prefix('app/sharpfleet')
         | Driver Mobile (PWA)
         |--------------------------------------------------------------------------
         */
-        Route::get('/mobile', fn () => view('sharpfleet.mobile.dashboard'))
-            ->name('sharpfleet.mobile.dashboard');
-
         Route::get('/mobile', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.dashboard');
 
@@ -122,6 +97,9 @@ Route::prefix('app/sharpfleet')
 
         Route::get('/mobile/history', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.history');
+
+        Route::get('/mobile/more', [DriverMobileController::class, 'more'])
+            ->name('sharpfleet.mobile.more');
 
         // Driver help / about
         Route::get('/driver/help', [HelpController::class, 'driver']);
@@ -146,11 +124,6 @@ Route::prefix('app/sharpfleet')
         Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Debug (ADMIN ONLY)
-    |--------------------------------------------------------------------------
-    */
     Route::get('/debug', fn () => view('sharpfleet.debug'))
         ->middleware(\App\Http\Middleware\SharpFleetAdminAuth::class);
 });
