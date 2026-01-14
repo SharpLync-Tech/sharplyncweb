@@ -114,7 +114,8 @@ class DriverMobileController extends Controller
                 'trips.*',
                 'vehicles.name as vehicle_name',
                 'vehicles.registration_number',
-                'vehicles.tracking_mode'
+                'vehicles.tracking_mode',
+                'vehicles.branch_id as vehicle_branch_id'
             )
             ->where('trips.user_id', $user['id'])
             ->where('trips.organisation_id', $user['organisation_id'])
