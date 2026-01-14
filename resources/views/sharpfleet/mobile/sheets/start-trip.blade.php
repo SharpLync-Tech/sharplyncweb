@@ -274,7 +274,7 @@
                 $partyLabel = trim((string) $settingsService->clientLabel());
                 $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
             @endphp
-            <div id="customerBlock" class="form-group">
+            <div id="customerBlock" class="form-group" style="margin-bottom: 14px;">
                 <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
 
                 @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
@@ -303,7 +303,7 @@
 
         @if(($settings['client_presence']['enabled'] ?? false) === true)
             <div id="clientPresenceBlock">
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 12px;">
                     <label class="form-label">
                         {{ $settings['client_presence']['label'] ?? 'Client' }} Present?
                         {{ ($settings['client_presence']['required'] ?? false) ? '(Required)' : '' }}
