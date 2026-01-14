@@ -20,7 +20,6 @@
     right: 0;
     bottom: 0;
 
-    /* 🔥 Go higher */
     height: 92vh;
     max-height: 92vh;
 
@@ -38,6 +37,9 @@
 
     transform: translateY(100%);
     transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+
+    /* 🔒 HARD STOP horizontal movement */
+    overflow-x: hidden;
 }
 
 /* Open state */
@@ -76,17 +78,27 @@
 .sf-sheet-body {
     padding: 20px;
     overflow-y: auto;
+    overflow-x: hidden; /* 🔒 critical */
     -webkit-overflow-scrolling: touch;
 }
 
 /* ======================================
-   Form Styling (Kill Win95)
+   Form Containment (NO STYLING CHANGES)
 ====================================== */
 
+.sf-sheet-body form {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .sf-sheet-body .form-group {
+    width: 100%;
+    max-width: 100%;
     margin-bottom: 18px;
 }
 
+/* Labels */
 .sf-sheet-body .form-label {
     display: block;
     margin-bottom: 6px;
@@ -98,15 +110,42 @@
 /* Inputs / selects */
 .sf-sheet-body .form-control {
     width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box; /* 🔥 important */
+
     padding: 14px 14px;
     border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.18);
     background: rgba(255,255,255,0.08);
     color: #EAF7F4;
     font-size: 16px;
+
     outline: none;
 }
 
+/* iOS datetime fix */
+.sf-sheet-body input[type="datetime-local"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Number input fix */
+.sf-sheet-body input[type="number"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Select fix */
+.sf-sheet-body select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Placeholder */
 .sf-sheet-body .form-control::placeholder {
     color: rgba(234,247,244,0.45);
 }
@@ -121,6 +160,7 @@
 .radio-group {
     display: flex;
     gap: 18px;
+    flex-wrap: wrap; /* 🔒 prevent overflow */
 }
 
 .radio-label {
@@ -168,7 +208,7 @@
     opacity: 0.9;
 }
 
-/* Primary button spacing override */
+/* Primary button spacing */
 .sf-sheet-body .sf-mobile-primary-btn {
     margin-top: 20px;
 }
