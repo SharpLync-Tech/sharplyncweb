@@ -119,6 +119,8 @@
 .sf-sheet-body input[type="datetime-local"] {
     width: 100%;
     max-width: 100%;
+    min-width: 0;
+    display: block;
     box-sizing: border-box;
 
     /* Make it visually match other inputs */

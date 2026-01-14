@@ -266,6 +266,38 @@
     </div>
 
     <div class="sf-sheet-body">
+        @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
+            @php
+                $partyLabel = trim((string) $settingsService->clientLabel());
+                $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
+            @endphp
+            <div id="customerBlock" class="form-group">
+                <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
+
+                @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
+                    <select id="customerSelect" name="customer_id" class="form-control" form="startTripForm">
+                        <option value="">- Select from list -</option>
+                        @foreach($customers as $c)
+                            <option value="{{ $c->id }}">{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="hint-text">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
+                @endif
+
+                @if($settings['customer']['allow_manual'] ?? true)
+                    <input
+                        id="customerNameInput"
+                        type="text"
+                        name="customer_name"
+                        class="form-control mt-2"
+                        maxlength="150"
+                        placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)"
+                        form="startTripForm"
+                    >
+                @endif
+            </div>
+        @endif
+
         @if(($settings['client_presence']['enabled'] ?? false) === true)
             <div id="clientPresenceBlock">
                 <div class="form-group">
@@ -298,38 +330,6 @@
                             form="startTripForm"
                         >
                     </div>
-                @endif
-            </div>
-        @endif
-
-        @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
-            @php
-                $partyLabel = trim((string) $settingsService->clientLabel());
-                $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
-            @endphp
-            <div id="customerBlock" class="form-group">
-                <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
-
-                @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
-                    <select id="customerSelect" name="customer_id" class="form-control" form="startTripForm">
-                        <option value="">- Select from list -</option>
-                        @foreach($customers as $c)
-                            <option value="{{ $c->id }}">{{ $c->name }}</option>
-                        @endforeach
-                    </select>
-                    <div class="hint-text">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
-                @endif
-
-                @if($settings['customer']['allow_manual'] ?? true)
-                    <input
-                        id="customerNameInput"
-                        type="text"
-                        name="customer_name"
-                        class="form-control mt-2"
-                        maxlength="150"
-                        placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)"
-                        form="startTripForm"
-                    >
                 @endif
             </div>
         @endif
