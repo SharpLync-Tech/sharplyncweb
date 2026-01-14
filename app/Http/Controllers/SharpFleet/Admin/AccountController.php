@@ -236,6 +236,42 @@ class AccountController extends Controller
             ->with('warning', 'Subscription cancelled. Your account is now read-only (reports only).');
     }
 
+    public function upgradeToSoleTrader(Request $request): RedirectResponse
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::isCompanyAdmin($user)) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+
+        $updates = ['updated_at' => now()];
+        $hasAccountType = Schema::connection('sharpfleet')->hasColumn('organisations', 'account_type');
+        $hasCompanyType = Schema::connection('sharpfleet')->hasColumn('organisations', 'company_type');
+
+        if ($hasAccountType) {
+            $updates['account_type'] = 'sole_trader';
+        }
+
+        if ($hasCompanyType) {
+            $updates['company_type'] = 'sole_trader';
+        }
+
+        if (count($updates) <= 1) {
+            return redirect('/app/sharpfleet/admin/account')
+                ->with('warning', 'Unable to upgrade account type (missing database columns).');
+        }
+
+        DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->update($updates);
+
+        return redirect('/app/sharpfleet/admin/account')
+            ->with('success', 'Account upgraded to Sole Trader.');
+    }
+
     private function calculateMonthlyPrice(int $vehiclesCount): array
     {
         $vehiclesCount = max(0, $vehiclesCount);
@@ -251,7 +287,7 @@ class AccountController extends Controller
         $requiresContact = $vehiclesCount > 20;
 
         $breakdown = sprintf(
-            '%d × $%.2f + %d × $%.2f',
+            '%d Ã— $%.2f + %d Ã— $%.2f',
             $tier1Vehicles,
             $tier1Price,
             $tier2Vehicles,
@@ -265,3 +301,4 @@ class AccountController extends Controller
         ];
     }
 }
+
