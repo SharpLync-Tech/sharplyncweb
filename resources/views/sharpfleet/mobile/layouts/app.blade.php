@@ -30,13 +30,12 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-    {{-- App Shell --}}
     <div class="sf-mobile-app">
 
         {{-- Header --}}
         @include('sharpfleet.mobile.partials.header')
 
-        {{-- Main Content --}}
+        {{-- Main --}}
         <main class="sf-mobile-content">
             @yield('content')
         </main>
@@ -46,32 +45,43 @@
 
     </div>
 
-    {{-- Backdrop (for sheets later) --}}
+    {{-- Backdrop (future sheets) --}}
     @include('sharpfleet.mobile.partials.overlays.backdrop')
 
     @stack('scripts')
 
     {{-- ===============================
-         PWA Install Logic (Chrome)
+         Service Worker Registration
     ================================ --}}
     <script>
-        let deferredPrompt = null;
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+
+    {{-- ===============================
+         PWA Install Logic (Chrome/Edge)
+    ================================ --}}
+    <script>
+        window.deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            deferredPrompt = e;
+            window.deferredPrompt = e;
 
             const btn = document.getElementById('pwa-install-btn');
             if (btn) btn.style.display = 'flex';
         });
 
         async function installPWA() {
-            if (!deferredPrompt) return;
+            if (!window.deferredPrompt) {
+                alert('Install not available yet');
+                return;
+            }
 
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-
-            deferredPrompt = null;
+            window.deferredPrompt.prompt();
+            await window.deferredPrompt.userChoice;
+            window.deferredPrompt = null;
 
             const btn = document.getElementById('pwa-install-btn');
             if (btn) btn.style.display = 'none';

@@ -19,7 +19,7 @@
         Report Vehicle Issue
     </button>
 
-    {{-- PWA install button (Chrome / Android only) --}}
+    {{-- PWA install button (Chrome / Edge / Android) --}}
     <button
         id="pwa-install-btn"
         onclick="installPWA()"
@@ -29,7 +29,7 @@
         📲 Install SharpFleet App
     </button>
 
-    {{-- iOS install hint --}}
+    {{-- iOS manual install hint --}}
     <div
         id="ios-install-hint"
         class="sf-mobile-secondary-btn"
