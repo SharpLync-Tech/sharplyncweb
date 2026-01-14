@@ -124,6 +124,19 @@ Route::prefix('app/sharpfleet')
         Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
     });
 
+    /*
+    |----------------------------------------------------------------------
+    | Admin Routes (ADMIN ONLY)
+    |----------------------------------------------------------------------
+    */
+    Route::middleware([
+        \App\Http\Middleware\SharpFleetAdminAuth::class,
+        \App\Http\Middleware\SharpFleetTrialCheck::class,
+    ])->group(function () {
+        Route::get('/admin', fn () => view('sharpfleet.admin.dashboard'));
+        Route::get('/admin/dashboard', fn () => view('sharpfleet.admin.dashboard'));
+    });
+
     Route::get('/debug', fn () => view('sharpfleet.debug'))
         ->middleware(\App\Http\Middleware\SharpFleetAdminAuth::class);
 });
