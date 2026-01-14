@@ -396,9 +396,15 @@
     color: #EAF7F4;
 }
 
-.sf-datetime-wrap {
-    max-width: min(100%, 280px);
+.sf-datetime-wrap{
+    width: 100%;
+    max-width: 280px;
 }
+.sf-datetime-wrap input{
+    width: 100%;
+    max-width: 100%;
+}
+
 
 
 @keyframes sf-pop {

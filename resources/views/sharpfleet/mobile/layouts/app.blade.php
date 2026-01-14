@@ -18,8 +18,8 @@
     <link rel="apple-touch-icon" href="/images/sharpfleet/pwa/icon-192.png">
 
     {{-- CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css?v=20260114-1') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css?v=20260114-1') }}">
 
     @stack('styles')
 </head>
