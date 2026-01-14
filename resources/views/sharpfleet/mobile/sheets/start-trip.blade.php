@@ -305,5 +305,120 @@
 
         </form>
 
+        <script>
+        (function () {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            if (!vehicleSelect) return;
+
+            const vehicleSearchInput = document.getElementById('vehicleSearchInput');
+            const vehicleSearchHint = document.getElementById('vehicleSearchHint');
+            const startKmInput = document.getElementById('startKmInput');
+            const lastKmHint = document.getElementById('lastKmHint');
+            const startReadingLabel = document.getElementById('startReadingLabel');
+
+            let lastAutoFilledReading = null;
+
+            const allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
+                value: opt.value,
+                text: opt.text,
+                trackingMode: opt.dataset.trackingMode || 'distance',
+                distanceUnit: opt.dataset.distanceUnit || 'km',
+                lastKm: opt.dataset.lastKm || ''
+            }));
+
+            function rebuildVehicleOptions(filtered) {
+                const currentValue = vehicleSelect.value;
+                vehicleSelect.innerHTML = '';
+
+                filtered.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.value;
+                    opt.textContent = v.text;
+                    opt.dataset.trackingMode = v.trackingMode;
+                    opt.dataset.distanceUnit = v.distanceUnit;
+                    opt.dataset.lastKm = v.lastKm;
+                    vehicleSelect.appendChild(opt);
+                });
+
+                if (filtered.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'No vehicles match your search';
+                    vehicleSelect.appendChild(opt);
+                    vehicleSelect.value = '';
+                    return;
+                }
+
+                const stillExists = filtered.some(v => v.value === currentValue);
+                vehicleSelect.value = stillExists ? currentValue : filtered[0].value;
+                updateStartKm();
+            }
+
+            function filterVehicles() {
+                const q = (vehicleSearchInput?.value || '').trim().toLowerCase();
+                const filtered = q
+                    ? allVehicleOptions.filter(v => v.text.toLowerCase().includes(q))
+                    : allVehicleOptions;
+
+                if (vehicleSearchHint) {
+                    vehicleSearchHint.textContent = `Showing ${filtered.length} of ${allVehicleOptions.length} vehicles`;
+                }
+
+                rebuildVehicleOptions(filtered);
+            }
+
+            function updateStartKm() {
+                const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
+                if (!selected) return;
+
+                const lastKm = selected.dataset.lastKm || '';
+                const mode = selected.dataset.trackingMode || 'distance';
+                const distanceUnit = selected.dataset.distanceUnit || 'km';
+
+                if (startReadingLabel && startKmInput) {
+                    if (mode === 'hours') {
+                        startReadingLabel.textContent = 'Starting hour meter (hours)';
+                        startKmInput.placeholder = 'e.g. 1250';
+                    } else {
+                        startReadingLabel.textContent = `Starting odometer (${distanceUnit})`;
+                        startKmInput.placeholder = 'e.g. 124500';
+                    }
+                }
+
+                if (startKmInput) {
+                    const currentVal = (startKmInput.value || '').trim();
+                    const canAutofill = currentVal === '' ||
+                        (lastAutoFilledReading !== null && currentVal === String(lastAutoFilledReading));
+
+                    if (lastKm) {
+                        if (canAutofill) {
+                            startKmInput.value = lastKm;
+                            lastAutoFilledReading = lastKm;
+                        }
+                        if (lastKmHint) {
+                            lastKmHint.textContent = (mode === 'hours')
+                                ? `Last recorded hour meter: ${Number(lastKm).toLocaleString()} hours`
+                                : `Last recorded odometer: ${Number(lastKm).toLocaleString()} ${distanceUnit}`;
+                            lastKmHint.classList.remove('d-none');
+                        }
+                    } else if (lastKmHint) {
+                        if (canAutofill) {
+                            startKmInput.value = '';
+                            lastAutoFilledReading = null;
+                        }
+                        lastKmHint.classList.add('d-none');
+                    }
+                }
+            }
+
+            vehicleSelect.addEventListener('change', updateStartKm);
+            if (vehicleSearchInput) {
+                vehicleSearchInput.addEventListener('input', filterVehicles);
+            }
+
+            updateStartKm();
+        })();
+        </script>
+
     </div>
 </div>
