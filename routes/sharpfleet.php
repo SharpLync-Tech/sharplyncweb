@@ -12,6 +12,7 @@ use App\Http\Controllers\SharpFleet\TripController;
 use App\Http\Controllers\SharpFleet\FaultController;
 use App\Http\Controllers\SharpFleet\BookingController;
 use App\Http\Controllers\SharpFleet\Admin\RegisterController;
+use App\Http\Controllers\SharpFleet\Admin\DashboardController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
@@ -133,8 +134,8 @@ Route::prefix('app/sharpfleet')
         \App\Http\Middleware\SharpFleetAdminAuth::class,
         \App\Http\Middleware\SharpFleetTrialCheck::class,
     ])->group(function () {
-        Route::get('/admin', fn () => view('sharpfleet.admin.dashboard'));
-        Route::get('/admin/dashboard', fn () => view('sharpfleet.admin.dashboard'));
+        Route::get('/admin', [DashboardController::class, 'index']);
+        Route::get('/admin/dashboard', [DashboardController::class, 'index']);
     });
 
     Route::get('/debug', fn () => view('sharpfleet.debug'))
