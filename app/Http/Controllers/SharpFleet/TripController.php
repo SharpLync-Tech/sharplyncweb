@@ -38,7 +38,12 @@ class TripController extends Controller
             $request->validated()
         );
 
-        return redirect('/app/sharpfleet/driver')
+        $previousUrl = url()->previous();
+        $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
+            ? '/app/sharpfleet/mobile'
+            : '/app/sharpfleet/driver';
+
+        return redirect($redirectTo)
             ->with('success', 'Trip started successfully');
     }
 
@@ -67,7 +72,12 @@ class TripController extends Controller
             $request->only(['trip_id', 'end_km', 'ended_at'])
         );
 
-        return redirect('/app/sharpfleet/driver')
+        $previousUrl = url()->previous();
+        $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
+            ? '/app/sharpfleet/mobile'
+            : '/app/sharpfleet/driver';
+
+        return redirect($redirectTo)
             ->with('success', 'Trip ended successfully');
     }
 
