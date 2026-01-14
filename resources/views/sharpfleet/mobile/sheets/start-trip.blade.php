@@ -143,7 +143,7 @@
                 {{-- Trip Details --}}
                 <button
                     type="button"
-                    class="sf-mobile-primary-btn"
+                    class="sf-mobile-secondary-btn sf-mobile-action-pill"
                     data-sheet-open="trip-details"
                     style="
                         width:100%;
@@ -158,7 +158,7 @@
                 {{-- Client / Customer --}}
                 <button
                     type="button"
-                    class="sf-mobile-primary-btn"
+                    class="sf-mobile-secondary-btn sf-mobile-action-pill"
                     data-sheet-open="client-details"
                     style="
                         width:100%;
@@ -174,7 +174,7 @@
                 @if($safetyCheckEnabled)
                     <button
                         type="button"
-                        class="sf-mobile-primary-btn"
+                        class="sf-mobile-secondary-btn sf-mobile-action-pill"
                         data-sheet-open="safety-check"
                         style="
                             width:100%;
