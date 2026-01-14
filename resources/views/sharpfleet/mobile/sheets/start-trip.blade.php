@@ -83,24 +83,27 @@
             </div>
 
             {{-- ===============================
-                 Start Time
-            ================================ --}}
+                Start Time
+            =============================== --}}
             @if($manualTripTimesRequired)
                 <div class="form-group">
                     <label class="form-label">Start time</label>
 
-                    <input
-                        type="datetime-local"
-                        name="started_at"
-                        class="form-control sharpfleet-trip-datetime"
-                        required
-                    >
+                    <div class="sf-datetime-wrap">
+                        <input
+                            type="datetime-local"
+                            name="started_at"
+                            class="form-control sharpfleet-trip-datetime"
+                            required
+                        >
+                    </div>
 
                     <div class="hint-text">
                         Enter the local time for this trip.
                     </div>
                 </div>
             @endif
+
 
             {{-- ===============================
                  Starting Reading
@@ -199,6 +202,29 @@
             </button>
 
         </form>
+    </div>
+</div>
+
+<div
+    id="sf-mobile-validation-modal"
+    class="sf-mobile-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+>
+    <div class="sf-mobile-modal-backdrop" data-modal-close></div>
+    <div class="sf-mobile-modal-card" role="document">
+        <div class="sf-mobile-modal-header">
+            <div class="sf-mobile-modal-title">Complete required sections</div>
+            <button type="button" class="sf-sheet-close" data-modal-close aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="hint-text">Please complete:</div>
+        <ul id="sf-mobile-validation-list" class="sf-mobile-modal-list"></ul>
+        <button type="button" class="sf-mobile-primary-btn" data-modal-close>
+            OK
+        </button>
     </div>
 </div>
 
@@ -547,6 +573,69 @@
             target.classList.add('sf-status-complete');
         });
     });
+
+    const startTripForm = document.getElementById('startTripForm');
+    const validationModal = document.getElementById('sf-mobile-validation-modal');
+    const validationList = document.getElementById('sf-mobile-validation-list');
+
+    function closeValidationModal() {
+        if (!validationModal) return;
+        validationModal.classList.remove('is-open');
+        validationModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function openValidationModal(items) {
+        if (!validationModal || !validationList) return;
+        validationList.innerHTML = '';
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            validationList.appendChild(li);
+        });
+        validationModal.classList.add('is-open');
+        validationModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    document.querySelectorAll('[data-modal-close]').forEach(btn => {
+        btn.addEventListener('click', closeValidationModal);
+    });
+
+    function sectionHasInvalid(selectors) {
+        return selectors.some(sel => {
+            const el = document.querySelector(sel);
+            if (!el) return false;
+            return !el.checkValidity();
+        });
+    }
+
+    if (startTripForm) {
+        startTripForm.addEventListener('submit', (e) => {
+            if (startTripForm.checkValidity()) return;
+            e.preventDefault();
+
+            const missing = [];
+            if (sectionHasInvalid(['#vehicleSelect'])) {
+                missing.push('Vehicle');
+            }
+            if (sectionHasInvalid(['input[name=\"started_at\"][form=\"startTripForm\"]', '#startKmInput'])) {
+                missing.push('Trip Details');
+            }
+            if (sectionHasInvalid(['select[name=\"client_present\"][form=\"startTripForm\"]'])) {
+                missing.push('Client / Customer');
+            }
+            if (sectionHasInvalid(['input[name=\"safety_check_confirmed\"][form=\"startTripForm\"]'])) {
+                missing.push('Safety Check');
+            }
+
+            if (missing.length === 0) {
+                missing.push('Trip form');
+            }
+
+            openValidationModal(missing);
+        });
+    }
 
     updateStartKm();
     updateBusinessOnlyBlocksVisibility();
