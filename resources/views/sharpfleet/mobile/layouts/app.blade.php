@@ -26,25 +26,30 @@
 
 <body class="sf-mobile">
 
+{{-- Ionicons --}}
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
 <div class="sf-mobile-app">
 
+    {{-- Header --}}
     @include('sharpfleet.mobile.partials.header')
 
+    {{-- Main --}}
     <main class="sf-mobile-content">
         @yield('content')
     </main>
 
+    {{-- Footer --}}
     @include('sharpfleet.mobile.partials.footer')
 
 </div>
 
+{{-- Global Backdrop --}}
 @include('sharpfleet.mobile.partials.overlays.backdrop')
 
 {{-- ===============================
-     Sheet Controller
+     Sheet Controller (GLOBAL)
 ================================ --}}
 <script>
 (function () {
@@ -52,11 +57,13 @@
 
     function openSheet(id) {
         const sheet = document.getElementById('sf-sheet-' + id);
-        if (!sheet) return;
+        if (!sheet || !backdrop) return;
 
         sheet.classList.add('is-open');
         sheet.setAttribute('aria-hidden', 'false');
+
         backdrop.style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeSheets() {
@@ -64,7 +71,9 @@
             sheet.classList.remove('is-open');
             sheet.setAttribute('aria-hidden', 'true');
         });
-        backdrop.style.display = 'none';
+
+        if (backdrop) backdrop.style.display = 'none';
+        document.body.style.overflow = '';
     }
 
     document.addEventListener('click', (e) => {

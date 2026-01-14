@@ -14,7 +14,7 @@
     <button
         class="sf-mobile-primary-btn"
         type="button"
-        onclick="openStartTripSheet()"
+        id="open-start-trip-btn"
     >
         Start Drive
     </button>
@@ -28,15 +28,3 @@
 {{-- Start Trip Sheet --}}
 @include('sharpfleet.mobile.sheets.start-trip')
 @endsection
-
-@push('scripts')
-<script>
-    function openStartTripSheet() {
-        document.body.classList.add('sf-sheet-open');
-    }
-
-    function closeStartTripSheet() {
-        document.body.classList.remove('sf-sheet-open');
-    }
-</script>
-@endpush
