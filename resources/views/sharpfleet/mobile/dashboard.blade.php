@@ -25,51 +25,18 @@
 
 </section>
 
-{{-- =================================================
-     Start Trip Sheet
-     Only load when data exists
-================================================= --}}
-@isset($vehicles)
-    @include('sharpfleet.mobile.sheets.start-trip')
-@endisset
-
+{{-- Start Trip Sheet --}}
+@include('sharpfleet.mobile.sheets.start-trip')
 @endsection
 
 @push('scripts')
 <script>
-function openStartTripSheet() {
-    const sheet = document.getElementById('sf-start-trip-sheet');
-    const backdrop = document.getElementById('sf-sheet-backdrop');
-
-    if (!sheet || !backdrop) {
-        alert('Start Trip data not loaded yet');
-        return;
+    function openStartTripSheet() {
+        document.body.classList.add('sf-sheet-open');
     }
 
-    sheet.classList.remove('sf-sheet-hidden');
-    sheet.classList.add('sf-sheet-visible');
-
-    backdrop.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeStartTripSheet() {
-    const sheet = document.getElementById('sf-start-trip-sheet');
-    const backdrop = document.getElementById('sf-sheet-backdrop');
-
-    if (!sheet || !backdrop) return;
-
-    sheet.classList.remove('sf-sheet-visible');
-    sheet.classList.add('sf-sheet-hidden');
-
-    backdrop.style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const backdrop = document.getElementById('sf-sheet-backdrop');
-    if (!backdrop) return;
-    backdrop.addEventListener('click', closeStartTripSheet);
-});
+    function closeStartTripSheet() {
+        document.body.classList.remove('sf-sheet-open');
+    }
 </script>
 @endpush

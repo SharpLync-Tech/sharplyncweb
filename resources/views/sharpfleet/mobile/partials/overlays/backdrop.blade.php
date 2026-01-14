@@ -1,1 +1,5 @@
-<div id="sf-sheet-backdrop" class="sf-sheet-backdrop"></div>
+<div
+    id="sf-sheet-backdrop"
+    class="sf-sheet-backdrop"
+    onclick="closeStartTripSheet()"
+></div>
