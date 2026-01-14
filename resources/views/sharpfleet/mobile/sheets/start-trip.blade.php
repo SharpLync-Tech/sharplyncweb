@@ -281,7 +281,7 @@
                             <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
                     </select>
-                    <div class="hint-text">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
+                    <div class="hint-text mb-3">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
                 @endif
 
                 @if($settings['customer']['allow_manual'] ?? true)
@@ -289,9 +289,9 @@
                         id="customerNameInput"
                         type="text"
                         name="customer_name"
-                        class="form-control mt-2"
+                        class="form-control mt-2 mb-3"
                         maxlength="150"
-                        placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)"
+                        placeholder="Or enter {{ $partyLabelLower }} name (e.g. John Doe or Job 12345)"
                         form="startTripForm"
                     >
                 @endif
