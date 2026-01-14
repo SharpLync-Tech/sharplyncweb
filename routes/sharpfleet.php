@@ -34,6 +34,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BillingDisplayService;
 use App\Services\SharpFleet\VehicleReminderService;
 use App\Support\SharpFleet\Roles;
+use App\Http\Controllers\SharpFleet\DriverMobileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,14 +114,14 @@ Route::prefix('app/sharpfleet')
         Route::get('/mobile', fn () => view('sharpfleet.mobile.dashboard'))
             ->name('sharpfleet.mobile.dashboard');
 
-        Route::get('/mobile/start', fn () => view('sharpfleet.mobile.dashboard'))
+        Route::get('/mobile', [DriverMobileController::class, 'dashboard'])
+            ->name('sharpfleet.mobile.dashboard');
+
+        Route::get('/mobile/start', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.start');
 
-        Route::get('/mobile/history', fn () => view('sharpfleet.mobile.dashboard'))
+        Route::get('/mobile/history', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.history');
-
-        Route::get('/mobile/more', fn () => view('sharpfleet.mobile.more'))
-            ->name('sharpfleet.mobile.more');
 
         // Driver help / about
         Route::get('/driver/help', [HelpController::class, 'driver']);
