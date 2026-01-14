@@ -1,6 +1,8 @@
-{{-- Mobile Start Trip Sheet --}}
-{{-- Reuses existing Start Trip logic --}}
-{{-- No backend or route changes --}}
+{{-- =========================================================
+     SharpFleet Mobile – Start Trip Sheet
+     Full Desktop Form Reused (Mobile Safe)
+     Backend logic unchanged
+========================================================= --}}
 
 <div
     id="sf-sheet-start-trip"
@@ -11,7 +13,9 @@
     aria-labelledby="sf-start-trip-title"
 >
 
-    {{-- Sheet Header --}}
+    {{-- ===============================
+         Sheet Header
+    ================================ --}}
     <div class="sf-sheet-header">
         <h2 id="sf-start-trip-title">Start a Trip</h2>
 
@@ -25,33 +29,200 @@
         </button>
     </div>
 
-    {{-- Sheet Body --}}
+    {{-- ===============================
+         Sheet Body
+    ================================ --}}
     <div class="sf-sheet-body">
 
-        {{-- TEMP VISIBILITY CHECK --}}
-        <p style="opacity:.8; margin-bottom:12px;">
-            Select vehicle and start your trip.
-        </p>
-
-        {{-- START TRIP FORM --}}
         <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm">
             @csrf
 
+            {{-- ===============================
+                 Vehicle
+            ================================ --}}
             <div class="form-group">
                 <label class="form-label">Vehicle</label>
 
-                <select name="vehicle_id" class="form-control" required>
+                <select
+                    id="vehicleSelect"
+                    name="vehicle_id"
+                    class="form-control"
+                    required
+                >
                     @foreach ($vehicles as $vehicle)
-                        <option value="{{ $vehicle->id }}">
+                        @php
+                            $vehicleBranchId = property_exists($vehicle, 'branch_id')
+                                ? (int) ($vehicle->branch_id ?? 0)
+                                : 0;
+
+                            $vehicleDistanceUnit = $settingsService->distanceUnitForBranch(
+                                $vehicleBranchId > 0 ? $vehicleBranchId : null
+                            );
+                        @endphp
+
+                        <option
+                            value="{{ $vehicle->id }}"
+                            data-tracking-mode="{{ $vehicle->tracking_mode ?? 'distance' }}"
+                            data-distance-unit="{{ $vehicleDistanceUnit }}"
+                            data-last-km="{{ $lastTrips[$vehicle->id]->end_km ?? ($vehicle->starting_km ?? '') }}"
+                        >
                             {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            <button type="submit" class="sf-mobile-primary-btn">
+            {{-- ===============================
+                 Manual Start Time
+            ================================ --}}
+            @if($manualTripTimesRequired)
+                <div class="form-group">
+                    <label class="form-label">Start time</label>
+
+                    <input
+                        type="datetime-local"
+                        name="started_at"
+                        class="form-control"
+                        required
+                    >
+
+                    <div class="hint-text">
+                        Enter the local time for this trip.
+                    </div>
+                </div>
+            @endif
+
+            {{-- ===============================
+                 Trip Type
+            ================================ --}}
+            <div class="form-group">
+                <label class="form-label">Trip Type</label>
+
+                @if($allowPrivateTrips)
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input
+                                type="radio"
+                                name="trip_mode"
+                                value="business"
+                                checked
+                            >
+                            Business
+                        </label>
+
+                        <label class="radio-label">
+                            <input
+                                type="radio"
+                                name="trip_mode"
+                                value="private"
+                            >
+                            Private
+                        </label>
+                    </div>
+                @else
+                    <div class="hint-text">Business</div>
+                    <input type="hidden" name="trip_mode" value="business">
+                @endif
+            </div>
+
+            {{-- ===============================
+                 Client Presence
+            ================================ --}}
+            @if(($settings['client_presence']['enabled'] ?? false) === true)
+                <div class="form-group">
+                    <label class="form-label">
+                        {{ $settings['client_presence']['label'] ?? 'Client' }} Present?
+                        {{ ($settings['client_presence']['required'] ?? false) ? '(Required)' : '' }}
+                    </label>
+
+                    <select
+                        name="client_present"
+                        class="form-control"
+                        {{ ($settings['client_presence']['required'] ?? false) ? 'required' : '' }}
+                    >
+                        <option value="">— Select —</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+
+                @if(($settings['client_presence']['enable_addresses'] ?? false) === true)
+                    <div class="form-group">
+                        <label class="form-label">Client Address</label>
+
+                        <input
+                            type="text"
+                            name="client_address"
+                            class="form-control"
+                            placeholder="e.g. 123 Main St"
+                        >
+                    </div>
+                @endif
+            @endif
+
+            {{-- ===============================
+                 Starting Reading
+            ================================ --}}
+            <div class="form-group">
+                @php $defaultDistanceUnit = $settingsService->distanceUnit(); @endphp
+
+                <label class="form-label">
+                    Starting odometer ({{ $defaultDistanceUnit }})
+                </label>
+
+                <input
+                    type="number"
+                    name="start_km"
+                    class="form-control"
+                    inputmode="numeric"
+                    placeholder="e.g. 124500"
+                    {{ $odometerRequired ? 'required' : '' }}
+                    {{ $odometerAllowOverride ? '' : 'readonly' }}
+                >
+
+                @if(!$odometerRequired)
+                    <div class="hint-text">
+                        If left blank, the last recorded reading will be used.
+                    </div>
+                @endif
+            </div>
+
+            {{-- ===============================
+                 Safety Check
+            ================================ --}}
+            @if($safetyCheckEnabled && is_array($safetyCheckItems) && count($safetyCheckItems))
+                <div class="form-group">
+                    <label class="form-label">Pre-Drive Safety Check</label>
+
+                    <ul class="text-muted" style="margin-left:16px;">
+                        @foreach($safetyCheckItems as $item)
+                            <li>{{ $item['label'] ?? '' }}</li>
+                        @endforeach
+                    </ul>
+
+                    <label class="checkbox-label">
+                        <input
+                            type="checkbox"
+                            name="safety_check_confirmed"
+                            value="1"
+                            required
+                        >
+                        <strong>I have completed the safety check</strong>
+                    </label>
+                </div>
+            @endif
+
+            {{-- ===============================
+                 Submit
+            ================================ --}}
+            <button
+                type="submit"
+                class="sf-mobile-primary-btn"
+                style="margin-top: 12px;"
+            >
                 Start Trip
             </button>
+
         </form>
 
     </div>
