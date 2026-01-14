@@ -80,6 +80,17 @@ class DriverMobileController extends Controller
             ->orderBy('name')
             ->get();
 
+        $customers = collect();
+        if (($settings['customer']['enabled'] ?? false) && Schema::connection('sharpfleet')->hasTable('customers')) {
+            $customers = DB::connection('sharpfleet')
+                ->table('customers')
+                ->where('organisation_id', $user['organisation_id'])
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->limit(500)
+                ->get();
+        }
+
         $lastTrips = DB::connection('sharpfleet')
             ->table('trips')
             ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
@@ -119,6 +130,7 @@ class DriverMobileController extends Controller
             'settingsService',
             'settings',
             'vehicles',
+            'customers',
             'lastTrips',
             'activeTrip',
             'allowPrivateTrips',
