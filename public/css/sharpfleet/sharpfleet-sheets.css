@@ -1,14 +1,13 @@
 /* ======================================
-   SharpFleet Mobile Sheets (App Grade)
+   SharpFleet Mobile Sheets
 ====================================== */
 
 /* Backdrop */
 .sf-sheet-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(5, 20, 35, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
     z-index: 900;
     display: none;
 }
@@ -20,24 +19,20 @@
     right: 0;
     bottom: 0;
 
-    /* 🔥 Go higher */
-    height: 92vh;
-    max-height: 92vh;
+    max-height: 92vh;              /* slightly higher */
+    width: 100%;
+    overflow: hidden;
 
-    background: linear-gradient(
-        180deg,
-        #0B3B5F 0%,
-        #06233A 100%
-    );
+    background: #0B3B5F;
+    border-radius: 20px 20px 0 0;
 
-    border-radius: 22px 22px 0 0;
     z-index: 1000;
 
     display: flex;
     flex-direction: column;
 
     transform: translateY(100%);
-    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    transition: transform 0.25s ease;
 }
 
 /* Open state */
@@ -47,12 +42,12 @@
 
 /* Header */
 .sf-sheet-header {
-    padding: 18px 20px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
 }
 
 .sf-sheet-header h2 {
@@ -67,108 +62,23 @@
     background: none;
     border: none;
     color: #EAF7F4;
-    font-size: 26px;
+    font-size: 22px;
     line-height: 1;
-    padding: 2px;
+    padding: 4px;
 }
 
 /* Body */
 .sf-sheet-body {
-    padding: 20px;
+    padding: 18px 20px 24px;
     overflow-y: auto;
+    overflow-x: hidden;            /* critical: kill sideways scroll */
     -webkit-overflow-scrolling: touch;
 }
 
-/* ======================================
-   Form Styling (Kill Win95)
-====================================== */
-
-.sf-sheet-body .form-group {
-    margin-bottom: 18px;
-}
-
-.sf-sheet-body .form-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #BFEDE6;
-}
-
-/* Inputs / selects */
-.sf-sheet-body .form-control {
-    width: 100%;
-    padding: 14px 14px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.08);
-    color: #EAF7F4;
-    font-size: 16px;
-    outline: none;
-}
-
-.sf-sheet-body .form-control::placeholder {
-    color: rgba(234,247,244,0.45);
-}
-
-/* Focus */
-.sf-sheet-body .form-control:focus {
-    border-color: #2CBFAE;
-    box-shadow: 0 0 0 2px rgba(44,191,174,0.25);
-}
-
-/* Radio group */
-.radio-group {
-    display: flex;
-    gap: 18px;
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-    color: #EAF7F4;
-}
-
-.radio-label input {
-    accent-color: #2CBFAE;
-}
-
-/* Checkbox */
-.checkbox-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 15px;
-    color: #EAF7F4;
-}
-
-.checkbox-label input {
-    margin-top: 3px;
-    accent-color: #2CBFAE;
-}
-
-/* Hint text */
-.hint-text {
-    margin-top: 6px;
-    font-size: 13px;
-    opacity: 0.75;
-}
-
-/* Safety list */
-.sf-sheet-body ul {
-    margin: 10px 0 12px 0;
-    padding-left: 18px;
-}
-
-.sf-sheet-body ul li {
-    margin-bottom: 4px;
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-/* Primary button spacing override */
-.sf-sheet-body .sf-mobile-primary-btn {
-    margin-top: 20px;
+/* Ensure nothing can exceed sheet width */
+.sf-sheet-body *,
+.sf-sheet-body *::before,
+.sf-sheet-body *::after {
+    box-sizing: border-box;
+    max-width: 100%;
 }
