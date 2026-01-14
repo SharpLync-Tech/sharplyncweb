@@ -7,7 +7,7 @@
     @if($activeTrip)
         <h1 class="sf-mobile-title">Drive in Progress</h1>
 
-        <div class="sf-mobile-card" style="margin-bottom: 16px;">
+        <div class="sf-mobile-card sf-drive-active" style="margin-bottom: 16px;">
             <div class="sf-mobile-card-title">Trip in Progress</div>
             <div class="hint-text" style="margin-top: 8px;">
                 <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})

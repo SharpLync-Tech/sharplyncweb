@@ -405,6 +405,42 @@
     max-width: 100%;
 }
 
+.sf-drive-active {
+    position: relative;
+    overflow: hidden;
+}
+
+/* thin animated border */
+.sf-drive-active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;                 /* thickness of the line */
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(46,196,182,0.6) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: sf-drive-glow 10s linear infinite;
+    pointer-events: none;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+}
+@keyframes sf-drive-glow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+
 
 
 @keyframes sf-pop {
