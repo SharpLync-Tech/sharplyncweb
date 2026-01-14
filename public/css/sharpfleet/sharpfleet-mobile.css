@@ -154,18 +154,6 @@
     background: rgba(255,255,255,0.12);
 }
 
-.sf-mobile-action-pill {
-    border: 1px solid #2CBFAE;
-}
-
-.sf-status-icon {
-    color: rgba(234,247,244,0.7);
-}
-
-.sf-status-complete {
-    color: #2CBFAE;
-}
-
 /* ======================================
    Cards (More screen, settings, info)
 ====================================== */
@@ -344,4 +332,24 @@
 
 .sf-mobile-footer-item.active {
     box-shadow: 0 0 10px rgba(44,191,174,0.35);
+}
+
+.sf-status-icon {
+    font-size: 26px;
+    position: relative;
+    top: 4.5px;   /* try 1–2px max */
+    
+}
+
+.sf-status-complete {
+    color: #2EC4B6;
+    text-shadow:
+        0 0 4px rgba(46, 196, 182, 0.6),
+        0 0 8px rgba(46, 196, 182, 0.3);
+}
+
+
+@keyframes sf-pop {
+    0%   { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(1);   opacity: 1; }
 }
