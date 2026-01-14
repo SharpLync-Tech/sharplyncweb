@@ -259,7 +259,10 @@
 ========================================================= --}}
 <div id="sf-sheet-client-details" class="sf-sheet" aria-hidden="true">
     <div class="sf-sheet-header">
-        <h2>Client / Customer</h2>
+        @php
+            $partySheetLabel = trim((string) $settingsService->clientLabel());
+        @endphp
+        <h2>{{ $partySheetLabel !== '' ? $partySheetLabel : 'Client / Customer' }}</h2>
         <button type="button" class="sf-sheet-close" data-sheet-close="self">
             <ion-icon name="close-outline"></ion-icon>
         </button>
