@@ -126,6 +126,13 @@
     font-size: 15px;     /* slightly smaller = cleaner */
 }
 
+/* Prevent iOS from letting the internal control overflow the input */
+.sf-sheet-body input[type="datetime-local"]::-webkit-date-and-time-value {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Force internal WebKit control to behave */
 .sf-sheet-body input[type="datetime-local"]::-webkit-date-and-time-value {
     text-align: left;
