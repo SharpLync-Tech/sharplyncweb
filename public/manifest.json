@@ -1,0 +1,23 @@
+{
+  "name": "SharpFleet",
+  "short_name": "SharpFleet",
+  "description": "SharpFleet driver app for trips, vehicles and safety checks",
+  "start_url": "/app/sharpfleet/mobile",
+  "scope": "/app/sharpfleet/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A2A4D",
+  "theme_color": "#0A2A4D",
+  "icons": [
+    {
+      "src": "/images/sharpfleet/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/sharpfleet/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
