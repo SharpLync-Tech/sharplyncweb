@@ -407,40 +407,47 @@
 
 .sf-drive-active {
     position: relative;
-    overflow: hidden;
+    border-radius: 16px;
 }
 
-/* thin animated border */
 .sf-drive-active::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    padding: 1px;                 /* thickness of the line */
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(46,196,182,0.6) 50%,
-        transparent 100%
-    );
-    background-size: 200% 100%;
-    animation: sf-drive-glow 10s linear infinite;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
     pointer-events: none;
+
+    background: conic-gradient(
+        from var(--spin-angle),
+        transparent 0deg,
+        #2EC4B6 60deg,
+        transparent 120deg
+    );
+
+    animation: sf-spin-gradient 3s linear infinite;
+
     mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
     -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
-    mask-composite: exclude;
     -webkit-mask-composite: xor;
-}
-@keyframes sf-drive-glow {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
+    mask-composite: exclude;
 }
 
+/* REQUIRED for Safari / iOS */
+@property --spin-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
 
+@keyframes sf-spin-gradient {
+    from { --spin-angle: 0deg; }
+    to   { --spin-angle: 360deg; }
+}
 
 
 @keyframes sf-pop {
