@@ -11,13 +11,13 @@
     {{-- PWA --}}
     <link rel="manifest" href="/manifest.json">
 
-    {{-- Apple PWA polish --}}
+    {{-- Apple PWA --}}
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SharpFleet">
     <link rel="apple-touch-icon" href="/images/sharpfleet/pwa/icon-192.png">
 
-    {{-- Mobile-only CSS --}}
+    {{-- CSS --}}
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css') }}">
 
@@ -26,82 +26,68 @@
 
 <body class="sf-mobile">
 
-    {{-- Ionicons --}}
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-    <div class="sf-mobile-app">
+<div class="sf-mobile-app">
 
-        {{-- Header --}}
-        @include('sharpfleet.mobile.partials.header')
+    @include('sharpfleet.mobile.partials.header')
 
-        {{-- Main --}}
-        <main class="sf-mobile-content">
-            @yield('content')
-        </main>
+    <main class="sf-mobile-content">
+        @yield('content')
+    </main>
 
-        {{-- Footer --}}
-        @include('sharpfleet.mobile.partials.footer')
+    @include('sharpfleet.mobile.partials.footer')
 
-    </div>
+</div>
 
-    {{-- Backdrop (future sheets) --}}
-    @include('sharpfleet.mobile.partials.overlays.backdrop')
+@include('sharpfleet.mobile.partials.overlays.backdrop')
 
-    @stack('scripts')
+{{-- ===============================
+     Sheet Controller
+================================ --}}
+<script>
+(function () {
+    const backdrop = document.getElementById('sf-sheet-backdrop');
 
-    {{-- ===============================
-         Service Worker Registration
-    ================================ --}}
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
-        }
-    </script>
+    function openSheet(id) {
+        const sheet = document.getElementById('sf-sheet-' + id);
+        if (!sheet) return;
 
-    {{-- ===============================
-         PWA Install Logic (Chrome/Edge)
-    ================================ --}}
-    <script>
-        window.deferredPrompt = null;
+        sheet.classList.add('is-open');
+        sheet.setAttribute('aria-hidden', 'false');
+        backdrop.style.display = 'block';
+    }
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            window.deferredPrompt = e;
-
-            const btn = document.getElementById('pwa-install-btn');
-            if (btn) btn.style.display = 'flex';
+    function closeSheets() {
+        document.querySelectorAll('.sf-sheet.is-open').forEach(sheet => {
+            sheet.classList.remove('is-open');
+            sheet.setAttribute('aria-hidden', 'true');
         });
+        backdrop.style.display = 'none';
+    }
 
-        async function installPWA() {
-            if (!window.deferredPrompt) {
-                alert('Install not available yet');
-                return;
-            }
+    document.addEventListener('click', (e) => {
+        const openBtn = e.target.closest('[data-sheet-open]');
+        const closeBtn = e.target.closest('[data-sheet-close]');
 
-            window.deferredPrompt.prompt();
-            await window.deferredPrompt.userChoice;
-            window.deferredPrompt = null;
-
-            const btn = document.getElementById('pwa-install-btn');
-            if (btn) btn.style.display = 'none';
+        if (openBtn) {
+            openSheet(openBtn.dataset.sheetOpen);
         }
-    </script>
 
-    {{-- ===============================
-         iOS Install Hint
-    ================================ --}}
-    <script>
-        (function () {
-            const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-            const isStandalone = window.navigator.standalone === true;
+        if (closeBtn || e.target === backdrop) {
+            closeSheets();
+        }
+    });
+})();
+</script>
 
-            if (isIos && !isStandalone) {
-                const hint = document.getElementById('ios-install-hint');
-                if (hint) hint.style.display = 'block';
-            }
-        })();
-    </script>
+{{-- Service Worker --}}
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+</script>
 
 </body>
 </html>

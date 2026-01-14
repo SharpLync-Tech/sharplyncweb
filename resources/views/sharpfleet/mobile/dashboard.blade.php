@@ -11,7 +11,11 @@
         No active trip
     </p>
 
-    <button class="sf-mobile-primary-btn" type="button">
+    <button
+        class="sf-mobile-primary-btn"
+        type="button"
+        data-sheet-open="start-trip"
+    >
         Start Drive
     </button>
 
@@ -20,4 +24,7 @@
     </button>
 
 </section>
+
+{{-- Start Trip Sheet --}}
+@include('sharpfleet.mobile.sheets.start-trip')
 @endsection
