@@ -11,7 +11,6 @@
         No active trip
     </p>
 
-    {{-- Start Drive --}}
     <button
         class="sf-mobile-primary-btn"
         type="button"
@@ -20,36 +19,32 @@
         Start Drive
     </button>
 
-    {{-- Report issue (later) --}}
     <button class="sf-mobile-secondary-btn" type="button">
         Report Vehicle Issue
     </button>
 
 </section>
 
-{{-- ===============================
+{{-- =================================================
      Start Trip Sheet
-================================ --}}
-@include('sharpfleet.mobile.sheets.start-trip')
+     Only load when data exists
+================================================= --}}
+@isset($vehicles)
+    @include('sharpfleet.mobile.sheets.start-trip')
+@endisset
 
 @endsection
 
 @push('scripts')
 <script>
-/*
-|--------------------------------------------------------------------------
-| Mobile Sheet Control – Start Trip
-|--------------------------------------------------------------------------
-| No framework
-| No dependencies
-| Safe for PWA
-*/
-
 function openStartTripSheet() {
     const sheet = document.getElementById('sf-start-trip-sheet');
     const backdrop = document.getElementById('sf-sheet-backdrop');
 
-    if (!sheet || !backdrop) return;
+    if (!sheet || !backdrop) {
+        alert('Start Trip data not loaded yet');
+        return;
+    }
 
     sheet.classList.remove('sf-sheet-hidden');
     sheet.classList.add('sf-sheet-visible');
@@ -71,11 +66,9 @@ function closeStartTripSheet() {
     document.body.style.overflow = '';
 }
 
-/* Close when backdrop tapped */
 document.addEventListener('DOMContentLoaded', () => {
     const backdrop = document.getElementById('sf-sheet-backdrop');
     if (!backdrop) return;
-
     backdrop.addEventListener('click', closeStartTripSheet);
 });
 </script>
