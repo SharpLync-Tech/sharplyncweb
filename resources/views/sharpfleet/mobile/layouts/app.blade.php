@@ -66,12 +66,24 @@
         document.body.style.overflow = 'hidden';
     }
 
+    function closeSheet(sheet) {
+        if (!sheet) return;
+        sheet.classList.remove('is-open');
+        sheet.setAttribute('aria-hidden', 'true');
+    }
+
     function closeSheets() {
         document.querySelectorAll('.sf-sheet.is-open').forEach(sheet => {
-            sheet.classList.remove('is-open');
-            sheet.setAttribute('aria-hidden', 'true');
+            closeSheet(sheet);
         });
 
+        if (backdrop) backdrop.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function syncBackdrop() {
+        const hasOpen = document.querySelector('.sf-sheet.is-open');
+        if (hasOpen) return;
         if (backdrop) backdrop.style.display = 'none';
         document.body.style.overflow = '';
     }
@@ -84,7 +96,16 @@
             openSheet(openBtn.dataset.sheetOpen);
         }
 
-        if (closeBtn || e.target === backdrop) {
+        if (closeBtn) {
+            if (closeBtn.dataset.sheetClose === 'self') {
+                closeSheet(closeBtn.closest('.sf-sheet'));
+                syncBackdrop();
+            } else {
+                closeSheets();
+            }
+        }
+
+        if (e.target === backdrop) {
             closeSheets();
         }
     });

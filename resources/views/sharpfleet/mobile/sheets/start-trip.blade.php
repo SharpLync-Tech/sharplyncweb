@@ -208,7 +208,7 @@
 <div id="sf-sheet-trip-details" class="sf-sheet" aria-hidden="true">
     <div class="sf-sheet-header">
         <h2>Trip Details</h2>
-        <button type="button" class="sf-sheet-close" data-sheet-close>
+        <button type="button" class="sf-sheet-close" data-sheet-close="self">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -248,7 +248,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close>
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
             Save
         </button>
     </div>
@@ -260,7 +260,7 @@
 <div id="sf-sheet-client-details" class="sf-sheet" aria-hidden="true">
     <div class="sf-sheet-header">
         <h2>Client / Customer</h2>
-        <button type="button" class="sf-sheet-close" data-sheet-close>
+        <button type="button" class="sf-sheet-close" data-sheet-close="self">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -334,7 +334,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close>
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
             Save
         </button>
     </div>
@@ -347,7 +347,7 @@
 <div id="sf-sheet-safety-check" class="sf-sheet" aria-hidden="true">
     <div class="sf-sheet-header">
         <h2>Safety Check</h2>
-        <button type="button" class="sf-sheet-close" data-sheet-close>
+        <button type="button" class="sf-sheet-close" data-sheet-close="self">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -379,7 +379,7 @@
             </div>
         @endif
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-close>
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-close="self">
             Confirm
         </button>
     </div>
