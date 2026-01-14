@@ -211,6 +211,7 @@
     role="dialog"
     aria-modal="true"
     aria-hidden="true"
+    hidden
 >
     <div class="sf-mobile-modal-backdrop" data-modal-close></div>
     <div class="sf-mobile-modal-card" role="document">
@@ -582,6 +583,7 @@
         if (!validationModal) return;
         validationModal.classList.remove('is-open');
         validationModal.setAttribute('aria-hidden', 'true');
+        validationModal.hidden = true;
         document.body.style.overflow = '';
     }
 
@@ -595,6 +597,7 @@
         });
         validationModal.classList.add('is-open');
         validationModal.setAttribute('aria-hidden', 'false');
+        validationModal.hidden = false;
         document.body.style.overflow = 'hidden';
     }
 
