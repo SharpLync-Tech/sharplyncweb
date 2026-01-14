@@ -1,5 +1,6 @@
 {{-- =========================================================
-     SharpFleet Mobile – Start Trip Sheet (Modal Sections UX)
+     SharpFleet Mobile – Start Trip Sheet
+     Action Pill UX (Modal Sections)
      Backend logic unchanged
 ========================================================= --}}
 
@@ -11,6 +12,7 @@
     aria-hidden="true"
     aria-labelledby="sf-start-trip-title"
 >
+
     {{-- ===============================
          Sheet Header
     ================================ --}}
@@ -113,23 +115,56 @@
             </div>
 
             {{-- ===============================
-                 ACTION CARDS
+                 Before You Start
             ================================ --}}
-            <div class="form-group">
-                <button type="button" class="sf-card-btn" data-sheet-open="trip-details">
-                    🧾 Trip Details
-                    <span class="sf-card-status" id="tripDetailsStatus">⭕</span>
+            <div class="form-group" style="margin-top:20px;">
+                <div class="form-label" style="margin-bottom:8px;">
+                    Before you start
+                </div>
+
+                {{-- Trip Details --}}
+                <button
+                    type="button"
+                    class="sf-mobile-primary-btn"
+                    data-sheet-open="trip-details"
+                    style="
+                        width:100%;
+                        justify-content:space-between;
+                        margin-bottom:10px;
+                    "
+                >
+                    <span>🧾 Trip Details</span>
+                    <span id="tripDetailsStatus">⭕</span>
                 </button>
 
-                <button type="button" class="sf-card-btn" data-sheet-open="client-details">
-                    👤 Client / Customer
-                    <span class="sf-card-status" id="clientStatus">⭕</span>
+                {{-- Client / Customer --}}
+                <button
+                    type="button"
+                    class="sf-mobile-primary-btn"
+                    data-sheet-open="client-details"
+                    style="
+                        width:100%;
+                        justify-content:space-between;
+                        margin-bottom:10px;
+                    "
+                >
+                    <span>👤 Client / Customer</span>
+                    <span id="clientStatus">⭕</span>
                 </button>
 
+                {{-- Safety Check --}}
                 @if($safetyCheckEnabled)
-                    <button type="button" class="sf-card-btn" data-sheet-open="safety-check">
-                        🛡 Safety Check
-                        <span class="sf-card-status" id="safetyStatus">⭕</span>
+                    <button
+                        type="button"
+                        class="sf-mobile-primary-btn"
+                        data-sheet-open="safety-check"
+                        style="
+                            width:100%;
+                            justify-content:space-between;
+                        "
+                    >
+                        <span>🛡 Safety Check</span>
+                        <span id="safetyStatus">⚠️</span>
                     </button>
                 @endif
             </div>
@@ -140,7 +175,7 @@
             <button
                 type="submit"
                 class="sf-mobile-primary-btn"
-                style="margin-top:16px;"
+                style="margin-top:18px;"
             >
                 Start Trip
             </button>
