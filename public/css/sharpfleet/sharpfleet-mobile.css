@@ -425,7 +425,7 @@
         transparent 120deg
     );
 
-    animation: sf-spin-gradient 3s linear infinite;
+    animation: sf-spin-gradient 3.5s linear infinite;
 
     mask:
         linear-gradient(#fff 0 0) content-box,
