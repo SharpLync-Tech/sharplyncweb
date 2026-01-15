@@ -38,7 +38,7 @@
             {{-- ===============================
                  Vehicle
             ================================ --}}
-            <div class="form-group" style="margin-bottom: 16px;">
+            <div class="form-group" style="margin-bottom: 24px;">
                 <label class="form-label">Vehicle</label>
 
                 @if($vehicles->count() > 10)
@@ -84,7 +84,7 @@
                 Start Time
             =============================== --}}
             @if($manualTripTimesRequired)
-                <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 1.75rem;">
                     <label class="form-label">Start time</label>
 
                     <div class="sf-datetime-wrap">
@@ -106,7 +106,7 @@
             {{-- ===============================
                  Starting Reading
             ================================ --}}
-            <div class="form-group" style="margin-bottom: 1.25rem;">
+            <div class="form-group" style="margin-bottom: 1.75rem;">
 
                 @php $defaultDistanceUnit = $settingsService->distanceUnit(); @endphp
 
@@ -142,8 +142,8 @@
             {{-- ===============================
                  Before You Start
             ================================ --}}
-            <div class="form-group" style="margin-top:20px;">
-                <div class="form-label" style="margin-bottom:8px;">
+            <div class="form-group" style="margin-top:28px;">
+                <div class="form-label" style="margin-bottom:12px;">
                     Before you start
                 </div>
 
@@ -155,7 +155,7 @@
                     style="
                         width:100%;
                         justify-content:space-between;
-                        margin-bottom:10px;
+                        margin-bottom:14px;
                     "
                 >
                     <span>Trip Details</span>
@@ -170,7 +170,7 @@
                     style="
                         width:100%;
                         justify-content:space-between;
-                        margin-bottom:10px;
+                        margin-bottom:14px;
                     "
                 >
                     <span>{{ $clientPresenceLabel }}</span>
@@ -200,7 +200,7 @@
             <button
                 type="submit"
                 class="sf-mobile-primary-btn"
-                style="margin-top:18px;"
+                style="margin-top:24px;"
             >
                 Start Trip
             </button>
@@ -249,7 +249,7 @@
             <label class="form-label">Trip Type</label>
 
         @if($allowPrivateTrips)
-            <div class="radio-group" style="margin-top: 10px; margin-bottom: 12px;">
+            <div class="radio-group" style="margin-top: 14px; margin-bottom: 18px;">
                 <label class="radio-label">
                     <input type="radio" name="trip_mode" value="business" checked form="startTripForm">
                     Business
@@ -266,7 +266,7 @@
         </div>
 
         @if($settingsService->purposeOfTravelEnabled())
-            <div id="purposeOfTravelBlock" class="form-group" style="margin-top: 6px;">
+            <div id="purposeOfTravelBlock" class="form-group" style="margin-top: 12px;">
                 <label class="form-label">Purpose of Travel (optional)</label>
                 <input
                     type="text"
@@ -305,7 +305,7 @@
                 $partyLabel = trim((string) $settingsService->clientLabel());
                 $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
             @endphp
-            <div id="customerBlock" class="form-group" style="margin-bottom: 14px;">
+            <div id="customerBlock" class="form-group" style="margin-bottom: 20px;">
                 <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
 
                 @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
@@ -334,7 +334,7 @@
 
         @if(($settings['client_presence']['enabled'] ?? false) === true)
             <div id="clientPresenceBlock">
-                <div class="form-group" style="margin-top: 12px;">
+                <div class="form-group" style="margin-top: 18px;">
                     <label class="form-label">
                         {{ $settings['client_presence']['label'] ?? 'Client' }} Present?
                         {{ ($settings['client_presence']['required'] ?? false) ? '(Required)' : '' }}
@@ -392,7 +392,7 @@
         @endphp
 
         @if($safetyCount > 0)
-            <div class="hint-text" style="margin-bottom: 6px;">
+            <div class="hint-text" style="margin-bottom: 12px;">
                 Complete the checks below before starting your trip.
             </div>
 
