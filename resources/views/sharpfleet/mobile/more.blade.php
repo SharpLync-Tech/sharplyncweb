@@ -30,12 +30,12 @@
         <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>
 
-    <a href="/app/sharpfleet/driver/help" class="sf-mobile-list-item">
+    <a href="/app/sharpfleet/mobile/help" class="sf-mobile-list-item">
         <span>Help</span>
         <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>
 
-    <a href="/app/sharpfleet/driver/about" class="sf-mobile-list-item">
+    <a href="/app/sharpfleet/mobile/about" class="sf-mobile-list-item">
         <span>About SharpFleet</span>
         <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>

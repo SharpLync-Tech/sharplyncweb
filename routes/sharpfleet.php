@@ -126,6 +126,12 @@ Route::prefix('app/sharpfleet')
         Route::get('/mobile/more', [DriverMobileController::class, 'more'])
             ->name('sharpfleet.mobile.more');
 
+        Route::get('/mobile/help', [DriverMobileController::class, 'help'])
+            ->name('sharpfleet.mobile.help');
+
+        Route::get('/mobile/about', [DriverMobileController::class, 'about'])
+            ->name('sharpfleet.mobile.about');
+
         // Driver help / about
         Route::get('/driver/help', [HelpController::class, 'driver']);
         Route::get('/driver/about', fn () => view('sharpfleet.about'));
