@@ -45,20 +45,22 @@
         </button>
     </div>
 
-    <div class="sf-mobile-card" style="margin-bottom: 16px;">
-        <div class="sf-mobile-card-title">Bookings</div>
-        <div class="sf-mobile-card-text">Open a range view or create a booking.</div>
+    <div id="sf-bookings-online-only">
+        <div class="sf-mobile-card" style="margin-bottom: 16px;">
+            <div class="sf-mobile-card-title">Bookings</div>
+            <div class="sf-mobile-card-text">Open a range view or create a booking.</div>
 
-        <div style="display: flex; gap: 8px; margin-top: 10px;">
-            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-day" style="flex:1; padding: 12px;">Day</button>
-            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-week" style="flex:1; padding: 12px;">Week</button>
-            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-month" style="flex:1; padding: 12px;">Month</button>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-day" style="flex:1; padding: 12px;">Day</button>
+                <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-week" style="flex:1; padding: 12px;">Week</button>
+                <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-month" style="flex:1; padding: 12px;">Month</button>
+            </div>
+
+            <button type="button" class="sf-mobile-primary-btn" data-sheet-open="booking-create" style="margin-top: 12px;" data-offline-action="booking">
+                Create Booking
+            </button>
         </div>
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-open="booking-create" style="margin-top: 12px;" data-offline-action="booking">
-            Create Booking
-        </button>
-    </div>
 </section>
 
 {{-- Day Sheet --}}
@@ -287,6 +289,7 @@
         @endif
     </div>
 </div>
+    </div>
 
 <script>
     (function () {
@@ -302,9 +305,11 @@
         const bookingForm = document.getElementById('mobileBookingForm');
         const offlineCard = document.getElementById('sf-bookings-offline');
         const offlineClose = document.getElementById('sf-bookings-offline-close');
+        const onlineOnly = document.getElementById('sf-bookings-online-only');
 
         function setOfflineState(isOffline) {
             if (offlineCard) offlineCard.style.display = isOffline ? '' : 'none';
+            if (onlineOnly) onlineOnly.style.display = isOffline ? 'none' : '';
 
             document.querySelectorAll('[data-offline-action="booking"]').forEach(el => {
                 if (isOffline) {

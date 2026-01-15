@@ -20,21 +20,21 @@
 
     $reportLabels = [
         'general' => [
-            'title' => 'General Trip Report',
+            'title' => 'Trip Report',
             'badge' => 'GENERAL',
-            'desc'  => 'Operational overview of recorded trips',
+            'desc'  => 'Internal and operational visibility',
             'class' => 'badge-neutral',
         ],
         'tax' => [
-            'title' => 'Tax Logbook Report',
+            'title' => 'Logbook Report',
             'badge' => 'TAX',
-            'desc'  => 'Business travel aligned with tax logbook requirements',
+            'desc'  => 'Business travel suitable for tax reporting',
             'class' => 'badge-primary',
         ],
         'care' => [
             'title' => 'Client Care Travel Report',
             'badge' => 'CARE',
-            'desc'  => 'Client-linked travel evidence for funded care services',
+            'desc'  => 'Client-linked travel evidence',
             'class' => 'badge-success',
         ],
     ];
@@ -104,11 +104,15 @@
 
                     {{-- GENERAL --}}
                     <label class="card p-3 cursor-pointer">
-                        <input type="radio" name="report_type" value="general"
+                        <input
+                            type="radio"
+                            name="report_type"
+                            value="general"
                             {{ $reportType === 'general' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                            onchange="this.form.submit()"
+                        >
                         <span class="badge badge-neutral mb-1">GENERAL</span>
-                        <strong>General Trip Report</strong>
+                        <strong>Trip Report</strong>
                         <div class="text-muted small">
                             Internal and operational visibility
                         </div>
@@ -116,11 +120,15 @@
 
                     {{-- TAX --}}
                     <label class="card p-3 cursor-pointer">
-                        <input type="radio" name="report_type" value="tax"
+                        <input
+                            type="radio"
+                            name="report_type"
+                            value="tax"
                             {{ $reportType === 'tax' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                            onchange="this.form.submit()"
+                        >
                         <span class="badge badge-primary mb-1">TAX</span>
-                        <strong>Tax Logbook Report</strong>
+                        <strong>Logbook Report</strong>
                         <div class="text-muted small">
                             Business travel suitable for tax reporting
                         </div>
@@ -128,9 +136,13 @@
 
                     {{-- CARE --}}
                     <label class="card p-3 cursor-pointer">
-                        <input type="radio" name="report_type" value="care"
+                        <input
+                            type="radio"
+                            name="report_type"
+                            value="care"
                             {{ $reportType === 'care' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                            onchange="this.form.submit()"
+                        >
                         <span class="badge badge-success mb-1">CARE</span>
                         <strong>Client Care Travel Report</strong>
                         <div class="text-muted small">
@@ -158,8 +170,10 @@
                         <select name="vehicle_id" class="form-control">
                             <option value="">All vehicles</option>
                             @foreach($vehicles as $vehicle)
-                                <option value="{{ $vehicle->id }}"
-                                    {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}>
+                                <option
+                                    value="{{ $vehicle->id }}"
+                                    {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}
+                                >
                                     {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                                 </option>
                             @endforeach
