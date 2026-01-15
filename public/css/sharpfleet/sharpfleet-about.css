@@ -1,0 +1,66 @@
+/* =========================================
+   SharpFleet – About Page
+   Purpose: clean, readable, human story
+========================================= */
+
+.sf-about-card {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* HERO */
+.sf-about-hero {
+  margin-bottom: 28px;
+}
+
+.sf-about-title {
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  margin: 0 0 12px 0;
+}
+
+.sf-about-title span {
+  display: inline-block;
+  background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.sf-about-underline {
+  display: block;
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+  border-radius: 2px;
+}
+
+/* STORY TEXT */
+.sf-about-story p {
+  margin: 0 0 16px 0;
+  line-height: 1.65;
+  max-width: 680px;
+}
+
+.sf-about-key {
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* Closing paragraph */
+.sf-about-close {
+  margin-top: 24px;
+}
+
+/* Mobile breathing room */
+@media (max-width: 640px) {
+  .sf-about-card {
+    padding: 0;
+  }
+
+  .sf-about-story p {
+    max-width: none;
+  }
+}
