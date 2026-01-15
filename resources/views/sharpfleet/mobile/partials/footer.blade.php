@@ -14,6 +14,7 @@
             'label' => 'Start',
             'icon' => 'play-circle-outline',
             'url' => '/app/sharpfleet/mobile/start',
+            'data_sheet_open' => 'start-trip',
             'active_when' => ['/app/sharpfleet/mobile/start'],
         ],
         [
@@ -52,6 +53,7 @@
                 <a
                     href="{{ $item['url'] }}"
                     class="sf-mobile-footer-item {{ $active ? 'active' : '' }}"
+                    {{ isset($item['data_sheet_open']) ? 'data-sheet-open=' . $item['data_sheet_open'] : '' }}
                 >
                     <span class="sf-footer-icon-wrap">
                         @if($active)

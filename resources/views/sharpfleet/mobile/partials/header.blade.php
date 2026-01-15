@@ -11,12 +11,5 @@
             >
         </div>
 
-        <button
-            class="sf-mobile-header-menu"
-            aria-label="Menu"
-            type="button"
-        >
-            <ion-icon name="menu-outline"></ion-icon>
-        </button>
     </div>
 </header>

@@ -93,7 +93,13 @@
         const closeBtn = e.target.closest('[data-sheet-close]');
 
         if (openBtn) {
-            openSheet(openBtn.dataset.sheetOpen);
+            const sheetId = openBtn.dataset.sheetOpen;
+            const sheet = document.getElementById('sf-sheet-' + sheetId);
+
+            if (sheet) {
+                e.preventDefault();
+                openSheet(sheetId);
+            }
         }
 
         if (closeBtn) {
