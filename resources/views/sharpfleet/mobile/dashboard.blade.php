@@ -80,6 +80,9 @@
             <div class="hint-text" style="margin-top: 6px;">
                 Ready when you are.
             </div>
+            <div class="hint-text" style="margin-top: 6px;">
+                Tap the Start icon in the footer to begin a trip.
+            </div>
         </div>
     @endif
 

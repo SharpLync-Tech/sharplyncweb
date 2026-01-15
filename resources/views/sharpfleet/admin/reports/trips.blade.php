@@ -7,16 +7,14 @@
 @php
     use Carbon\Carbon;
 
-    $companyTimezone = $companyTimezone ?? config('app.timezone');
-
     /*
     |--------------------------------------------------------------------------
-    | Resolve client / customer label
-    | EXACT SAME SOURCE + LOGIC AS start-trip.blade.php
+    | Inputs resolved by controller (single source of truth)
     |--------------------------------------------------------------------------
     */
-    $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
-    $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
+    $companyTimezone      = $companyTimezone ?? config('app.timezone');
+    $clientPresenceLabel  = trim((string) ($clientPresenceLabel ?? 'Client'));
+    $clientPresenceLabel  = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
 
     /*
     |--------------------------------------------------------------------------
@@ -29,13 +27,18 @@
 
     $reportType = request('report_type', 'general');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Totals
+    |--------------------------------------------------------------------------
+    */
     $totalTrips    = $trips->count();
     $businessTrips = $trips->where('trip_mode', 'business')->count();
     $privateTrips  = $trips->where('trip_mode', 'private')->count();
 
     /*
     |--------------------------------------------------------------------------
-    | Date format by timezone (display only)
+    | Date formatting (display only)
     |--------------------------------------------------------------------------
     */
     if (str_starts_with($companyTimezone, 'America/')) {
@@ -78,7 +81,7 @@
         ],
     ];
 
-    $activeReport = $reportLabels[$reportType];
+    $activeReport = $reportLabels[$reportType] ?? $reportLabels['general'];
 @endphp
 
 <div class="container">
@@ -126,33 +129,6 @@
         </div>
     </div>
 
-    {{-- ================= HARD DEBUG (INTENTIONAL) ================= --}}
-    <div class="card mb-3 border-danger">
-        <div class="card-body">
-            <h5 class="text-danger mb-2">DEBUG — Report Context</h5>
-
-            <pre class="small bg-light p-2 mb-2">
-clientPresenceLabel:
-{{ var_export($clientPresenceLabel, true) }}
-            </pre>
-
-            <pre class="small bg-light p-2 mb-2">
-settings['client_presence']:
-{{ var_export($settings['client_presence'] ?? null, true) }}
-            </pre>
-
-            <pre class="small bg-light p-2 mb-2">
-First trip (raw object):
-{{ var_export($trips->first(), true) }}
-            </pre>
-
-            <pre class="small bg-light p-2">
-customer_name_display (what table shows):
-{{ var_export($trips->first()->customer_name_display ?? null, true) }}
-            </pre>
-        </div>
-    </div>
-
     {{-- ================= SUMMARY ================= --}}
     <div class="card mb-3">
         <div class="card-body">
@@ -192,7 +168,7 @@ customer_name_display (what table shows):
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Business / Private</th>
-                                <th>{{ $clientPresenceLabel }} TEST</th>
+                                <th>{{ $clientPresenceLabel }}</th>
                                 @if($purposeOfTravelEnabled)
                                     <th>Purpose of travel</th>
                                 @endif
@@ -215,7 +191,9 @@ customer_name_display (what table shows):
                                         <td>{{ $t->purpose_of_travel ?: '—' }}</td>
                                     @endif
 
-                                    <td>{{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}</td>
+                                    <td>
+                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
+                                    </td>
                                     <td>
                                         {{ $t->end_time
                                             ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)
