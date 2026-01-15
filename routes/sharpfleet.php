@@ -40,6 +40,7 @@ use App\Http\Controllers\SharpFleet\DriverMobileController;
 
 Route::get('/sharpfleet', fn () => view('sharpfleet.home'));
 Route::get('/sharpfleet/about', fn () => view('sharpfleet.about'));
+Route::get('/sharpfleet/why', fn () => view('sharpfleet.why'));
 
 Route::prefix('app/sharpfleet')
     ->middleware([\App\Http\Middleware\SharpFleetNoStore::class])
@@ -155,6 +156,7 @@ Route::prefix('app/sharpfleet')
         \App\Http\Middleware\SharpFleetTrialCheck::class,
         \App\Http\Middleware\SharpFleetAuditLog::class,
     ])->group(function () {
+
         Route::get('/admin', [DashboardController::class, 'index']);
         Route::get('/admin/dashboard', [DashboardController::class, 'index']);
 

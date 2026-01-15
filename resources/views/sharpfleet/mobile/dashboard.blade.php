@@ -95,13 +95,16 @@
     {{-- ===============================
          Secondary Action
     ================================ --}}
-    <button
-        class="sf-mobile-secondary-btn"
-        type="button"
-        style="margin-top: 12px;"
-    >
-        Report Vehicle Issue
-    </button>
+    @if($faultsEnabled)
+        <button
+            class="sf-mobile-secondary-btn"
+            type="button"
+            data-sheet-open="report-fault"
+            style="margin-top: 12px;"
+        >
+            Report Vehicle Issue
+        </button>
+    @endif
 
 </section>
 
@@ -110,4 +113,9 @@
 
 {{-- End Trip Sheet --}}
 @include('sharpfleet.mobile.sheets.end-trip')
+
+{{-- Report Fault Sheet --}}
+@if($faultsEnabled)
+    @include('sharpfleet.mobile.sheets.report-fault')
+@endif
 @endsection
