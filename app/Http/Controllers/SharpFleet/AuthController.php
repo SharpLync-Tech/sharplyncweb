@@ -23,7 +23,8 @@ class AuthController extends Controller
         // Already logged into SharpFleet
         if ($request->session()->has('sharpfleet.user')) {
             return $this->redirectByRole(
-                $request->session()->get('sharpfleet.user.role')
+                $request->session()->get('sharpfleet.user.role'),
+                $request
             );
         }
 
@@ -98,7 +99,7 @@ class AuthController extends Controller
             );
         }
 
-        return $this->redirectByRole($user->role);
+        return $this->redirectByRole($user->role, $request);
     }
 
     /**
@@ -142,7 +143,7 @@ class AuthController extends Controller
         ]);
     }
 
-    private function redirectByRole(string $role)
+    private function redirectByRole(string $role, ?Request $request = null)
     {
         $role = Roles::normalize($role);
 
@@ -150,9 +151,44 @@ class AuthController extends Controller
             Roles::COMPANY_ADMIN,
             Roles::BRANCH_ADMIN,
             Roles::BOOKING_ADMIN => redirect('/app/sharpfleet/admin'),
-            Roles::DRIVER => redirect('/app/sharpfleet/driver'),
+            Roles::DRIVER => $this->redirectDriver($request),
             default => abort(403, 'Unknown SharpFleet role'),
         };
+    }
+
+    private function redirectDriver(?Request $request = null)
+    {
+        if ($this->isMobileRequest($request)) {
+            return redirect('/app/sharpfleet/mobile');
+        }
+
+        return redirect('/app/sharpfleet/driver');
+    }
+
+    private function isMobileRequest(?Request $request = null): bool
+    {
+        if (!$request) {
+            return false;
+        }
+
+        $path = '/' . ltrim($request->path(), '/');
+        if (str_starts_with($path, '/app/sharpfleet/mobile')) {
+            return true;
+        }
+
+        $ua = strtolower((string) $request->header('User-Agent', ''));
+        if ($ua === '') {
+            return false;
+        }
+
+        $mobileHints = ['iphone', 'android', 'ipad', 'ipod', 'mobile', 'windows phone'];
+        foreach ($mobileHints as $hint) {
+            if (str_contains($ua, $hint)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function getUserByRememberToken(string $token)

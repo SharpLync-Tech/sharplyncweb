@@ -5,6 +5,8 @@
 @section('content')
 <section class="sf-mobile-dashboard">
 
+    <div id="offlineTripAlert" class="sf-mobile-card" style="display:none;"></div>
+
     {{-- ===============================
          Greeting / Identity
     ================================ --}}
@@ -15,7 +17,7 @@
 
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 👋
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}
         </h1>
 
         <div class="sf-mobile-subtitle">
@@ -81,6 +83,29 @@
         </div>
     @endif
 
+    <div id="offlineActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px; display:none;">
+        <div class="sf-mobile-card-title">Trip in Progress (Offline)</div>
+        <div class="hint-text" style="margin-top: 6px;">
+            <strong>Vehicle:</strong> <span id="offlineTripVehicle">-</span>
+        </div>
+        <div class="hint-text" style="margin-top: 6px;">
+            <strong>Started:</strong> <span id="offlineTripStarted">-</span>
+        </div>
+        <div class="hint-text" style="margin-top: 6px;">
+            <strong>Starting reading:</strong> <span id="offlineTripStartKm">-</span>
+        </div>
+    </div>
+
+    <button
+        id="offlineEndDriveBtn"
+        type="button"
+        class="sf-mobile-primary-btn"
+        data-sheet-open="end-trip"
+        style="margin-bottom: 20px; display:none;"
+    >
+        End Drive
+    </button>
+
     {{-- ===============================
          Trip Requirements
     ================================ --}}
@@ -127,4 +152,258 @@
 @if($faultsEnabled)
     @include('sharpfleet.mobile.sheets.report-fault')
 @endif
+
+<script>
+    (function () {
+        const MANUAL_TRIP_TIMES_REQUIRED = @json((bool) $manualTripTimesRequired);
+        const COMPANY_TIMEZONE = @json($companyTimezone ?? 'UTC');
+
+        const offlineTripAlert = document.getElementById('offlineTripAlert');
+        const offlineActiveTripCard = document.getElementById('offlineActiveTripCard');
+        const offlineEndDriveBtn = document.getElementById('offlineEndDriveBtn');
+
+        const startTripForm = document.getElementById('startTripForm');
+        const endTripForm = document.getElementById('endTripForm');
+
+        const OFFLINE_ACTIVE_KEY = 'sharpfleet_offline_active_trip_v1';
+        const OFFLINE_COMPLETED_KEY = 'sharpfleet_offline_completed_trips_v1';
+
+        function showOfflineMessage(msg) {
+            if (!offlineTripAlert) return;
+            offlineTripAlert.textContent = msg;
+            offlineTripAlert.style.display = '';
+        }
+
+        function getLocalJson(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function setLocalJson(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function getOfflineActiveTrip() {
+            return getLocalJson(OFFLINE_ACTIVE_KEY, null);
+        }
+
+        function setOfflineActiveTrip(trip) {
+            if (trip === null) {
+                localStorage.removeItem(OFFLINE_ACTIVE_KEY);
+                return;
+            }
+            setLocalJson(OFFLINE_ACTIVE_KEY, trip);
+        }
+
+        function getOfflineCompletedTrips() {
+            return getLocalJson(OFFLINE_COMPLETED_KEY, []);
+        }
+
+        function setOfflineCompletedTrips(trips) {
+            setLocalJson(OFFLINE_COMPLETED_KEY, trips);
+        }
+
+        function renderOfflineActiveTrip() {
+            if (!offlineActiveTripCard || !offlineEndDriveBtn) return;
+            const t = getOfflineActiveTrip();
+            if (!t) {
+                offlineActiveTripCard.style.display = 'none';
+                offlineEndDriveBtn.style.display = 'none';
+                return;
+            }
+
+            offlineActiveTripCard.style.display = '';
+            offlineEndDriveBtn.style.display = '';
+
+            const v = document.getElementById('offlineTripVehicle');
+            const s = document.getElementById('offlineTripStarted');
+            const skm = document.getElementById('offlineTripStartKm');
+
+            if (v) v.textContent = t.vehicle_text || '-';
+            if (s) {
+                try {
+                    s.textContent = new Date(t.started_at).toLocaleString(undefined, { timeZone: COMPANY_TIMEZONE });
+                } catch (e) {
+                    try { s.textContent = new Date(t.started_at).toLocaleString(); } catch (e2) { s.textContent = t.started_at; }
+                }
+            }
+            if (skm) skm.textContent = String(t.start_km ?? '-');
+        }
+
+        function getCsrfToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        }
+
+        async function syncOfflineTripsIfPossible() {
+            if (!navigator.onLine) return;
+            const completed = getOfflineCompletedTrips();
+            if (!Array.isArray(completed) || completed.length === 0) return;
+
+            try {
+                const res = await fetch('/app/sharpfleet/trips/offline-sync', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                    },
+                    body: JSON.stringify({ trips: completed }),
+                });
+
+                if (!res.ok) {
+                    let msg = 'Could not sync offline trips yet.';
+                    try {
+                        const data = await res.json();
+                        if (data && data.message) msg = data.message;
+                    } catch (e) {}
+                    showOfflineMessage(msg);
+                    return;
+                }
+
+                const data = await res.json();
+                setOfflineCompletedTrips([]);
+                showOfflineMessage(`Offline trips synced (${(data.synced || []).length} sent).`);
+                setTimeout(() => window.location.reload(), 800);
+            } catch (e) {
+                // ignore network errors
+            }
+        }
+
+        function buildOfflineStartPayload(form) {
+            const fd = new FormData(form);
+            const payload = Object.fromEntries(fd.entries());
+
+            const mode = payload.trip_mode ? String(payload.trip_mode) : 'business';
+            return {
+                vehicle_id: Number(payload.vehicle_id),
+                trip_mode: mode,
+                start_km: Number(payload.start_km),
+                started_at: payload.started_at ? String(payload.started_at) : null,
+                customer_id: payload.customer_id ? Number(payload.customer_id) : null,
+                customer_name: payload.customer_name ? String(payload.customer_name) : null,
+                client_present: payload.client_present !== undefined && payload.client_present !== '' ? payload.client_present : null,
+                client_address: payload.client_address ? String(payload.client_address) : null,
+                purpose_of_travel: payload.purpose_of_travel ? String(payload.purpose_of_travel) : null,
+            };
+        }
+
+        if (startTripForm) {
+            startTripForm.addEventListener('submit', (e) => {
+                if (navigator.onLine) return;
+
+                e.preventDefault();
+
+                if (getOfflineActiveTrip()) {
+                    showOfflineMessage('A trip is already in progress offline. End it before starting another.');
+                    return;
+                }
+
+                const payload = buildOfflineStartPayload(startTripForm);
+                if (!payload.vehicle_id || Number.isNaN(payload.vehicle_id)) {
+                    showOfflineMessage('Select a vehicle before starting.');
+                    return;
+                }
+                if (Number.isNaN(payload.start_km)) {
+                    showOfflineMessage('Enter a valid starting reading.');
+                    return;
+                }
+                if (MANUAL_TRIP_TIMES_REQUIRED && (!payload.started_at || String(payload.started_at).trim() === '')) {
+                    showOfflineMessage('Enter a start time before starting.');
+                    return;
+                }
+
+                const vehicleSelect = document.getElementById('vehicleSelect');
+                const selectedOpt = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
+                const vehicleText = selectedOpt ? selectedOpt.textContent : '';
+
+                setOfflineActiveTrip({
+                    ...payload,
+                    started_at: MANUAL_TRIP_TIMES_REQUIRED ? new Date(String(payload.started_at)).toISOString() : new Date().toISOString(),
+                    vehicle_text: vehicleText,
+                });
+
+                showOfflineMessage('No signal: trip started offline. End it to sync later.');
+                renderOfflineActiveTrip();
+            });
+        }
+
+        if (endTripForm) {
+            endTripForm.addEventListener('submit', async (e) => {
+                if (navigator.onLine) return;
+
+                e.preventDefault();
+                const active = getOfflineActiveTrip();
+                if (!active) {
+                    showOfflineMessage('No offline trip found to end.');
+                    return;
+                }
+
+                const fd = new FormData(endTripForm);
+                const endKmRaw = fd.get('end_km');
+                const endKmVal = Number(endKmRaw);
+                if (Number.isNaN(endKmVal)) {
+                    showOfflineMessage('Enter a valid ending reading.');
+                    return;
+                }
+                if (endKmVal < Number(active.start_km)) {
+                    showOfflineMessage('Ending reading must be the same as or greater than the starting reading.');
+                    return;
+                }
+
+                const endedAtVal = MANUAL_TRIP_TIMES_REQUIRED ? String(fd.get('ended_at') || '').trim() : '';
+                if (MANUAL_TRIP_TIMES_REQUIRED && endedAtVal === '') {
+                    showOfflineMessage('Enter an end time before ending.');
+                    return;
+                }
+
+                let endedAtIso = '';
+                if (MANUAL_TRIP_TIMES_REQUIRED) {
+                    try {
+                        endedAtIso = new Date(endedAtVal).toISOString();
+                    } catch (e) {
+                        showOfflineMessage('Enter a valid end time.');
+                        return;
+                    }
+                }
+
+                const completedTrip = {
+                    vehicle_id: active.vehicle_id,
+                    trip_mode: active.trip_mode,
+                    start_km: active.start_km,
+                    end_km: endKmVal,
+                    started_at: active.started_at,
+                    ended_at: MANUAL_TRIP_TIMES_REQUIRED ? endedAtIso : new Date().toISOString(),
+                    customer_id: active.customer_id,
+                    customer_name: active.customer_name,
+                    client_present: active.client_present,
+                    client_address: active.client_address,
+                    purpose_of_travel: active.purpose_of_travel,
+                };
+
+                const completed = getOfflineCompletedTrips();
+                completed.push(completedTrip);
+                setOfflineCompletedTrips(completed);
+                setOfflineActiveTrip(null);
+
+                showOfflineMessage('Trip ended offline. Will sync when signal returns.');
+                renderOfflineActiveTrip();
+                await syncOfflineTripsIfPossible();
+            });
+        }
+
+        window.addEventListener('online', () => {
+            showOfflineMessage('Back online. Syncing offline trips...');
+            syncOfflineTripsIfPossible();
+        });
+
+        renderOfflineActiveTrip();
+        syncOfflineTripsIfPossible();
+    })();
+</script>
 @endsection

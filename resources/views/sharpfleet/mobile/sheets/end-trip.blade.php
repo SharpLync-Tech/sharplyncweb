@@ -1,4 +1,3 @@
-@if($activeTrip)
 <div
     id="sf-sheet-end-trip"
     class="sf-sheet"
@@ -23,7 +22,9 @@
     <div class="sf-sheet-body">
         <form method="POST" action="/app/sharpfleet/trips/end" id="endTripForm">
             @csrf
-            <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
+            @if($activeTrip)
+                <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
+            @endif
 
             @if($manualTripTimesRequired)
                 <div class="form-group">
@@ -39,18 +40,19 @@
             @endif
 
             @php
-                $activeTripBranchId = isset($activeTrip->vehicle_branch_id)
+                $activeTripBranchId = isset($activeTrip) && isset($activeTrip->vehicle_branch_id)
                     ? (int) ($activeTrip->vehicle_branch_id ?? 0)
                     : 0;
                 $activeTripDistanceUnit = $settingsService->distanceUnitForBranch(
                     $activeTripBranchId > 0 ? $activeTripBranchId : null
                 );
-                $minEndKm = (int) ($activeTrip->start_km ?? 0);
+                $minEndKm = isset($activeTrip) ? (int) ($activeTrip->start_km ?? 0) : 0;
+                $trackingMode = isset($activeTrip) ? ($activeTrip->tracking_mode ?? 'distance') : 'distance';
             @endphp
 
             <div class="form-group">
                 <label class="form-label">
-                    {{ ($activeTrip->tracking_mode ?? 'distance') === 'hours'
+                    {{ $trackingMode === 'hours'
                         ? 'Ending hour meter (hours)'
                         : ('Ending odometer (' . $activeTripDistanceUnit . ')')
                     }}
@@ -72,4 +74,3 @@
         </form>
     </div>
 </div>
-@endif
