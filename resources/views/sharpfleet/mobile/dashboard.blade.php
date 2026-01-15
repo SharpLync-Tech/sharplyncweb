@@ -17,7 +17,7 @@
 
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 👋
         </h1>
 
         <div class="sf-mobile-subtitle">
@@ -234,6 +234,17 @@
             if (skm) skm.textContent = String(t.start_km ?? '-');
         }
 
+        function closeSheets() {
+            document.querySelectorAll('.sf-sheet.is-open').forEach(sheet => {
+                sheet.classList.remove('is-open');
+                sheet.setAttribute('aria-hidden', 'true');
+            });
+
+            const backdrop = document.getElementById('sf-sheet-backdrop');
+            if (backdrop) backdrop.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
         function getCsrfToken() {
             const meta = document.querySelector('meta[name="csrf-token"]');
             return meta ? meta.getAttribute('content') : '';
@@ -297,6 +308,10 @@
             startTripForm.addEventListener('submit', (e) => {
                 if (navigator.onLine) return;
 
+                if (!startTripForm.checkValidity()) {
+                    return;
+                }
+
                 e.preventDefault();
 
                 if (getOfflineActiveTrip()) {
@@ -328,6 +343,7 @@
                     vehicle_text: vehicleText,
                 });
 
+                closeSheets();
                 showOfflineMessage('No signal: trip started offline. End it to sync later.');
                 renderOfflineActiveTrip();
             });
@@ -336,6 +352,10 @@
         if (endTripForm) {
             endTripForm.addEventListener('submit', async (e) => {
                 if (navigator.onLine) return;
+
+                if (!endTripForm.checkValidity()) {
+                    return;
+                }
 
                 e.preventDefault();
                 const active = getOfflineActiveTrip();
@@ -391,6 +411,7 @@
                 setOfflineCompletedTrips(completed);
                 setOfflineActiveTrip(null);
 
+                closeSheets();
                 showOfflineMessage('Trip ended offline. Will sync when signal returns.');
                 renderOfflineActiveTrip();
                 await syncOfflineTripsIfPossible();

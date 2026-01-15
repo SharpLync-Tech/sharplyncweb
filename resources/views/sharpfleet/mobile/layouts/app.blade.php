@@ -26,7 +26,7 @@
 
 <body class="sf-mobile">
 
-{{-- Ionicons --}}
+{{-- Ionicons (fallback handled below for offline) --}}
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
@@ -34,6 +34,11 @@
 
     {{-- Header --}}
     @include('sharpfleet.mobile.partials.header')
+
+    {{-- Offline Banner --}}
+    <div id="sf-offline-banner" class="sf-mobile-offline-banner" style="display:none;">
+        You are currently working offline
+    </div>
 
     {{-- Main --}}
     <main class="sf-mobile-content">
@@ -123,6 +128,53 @@
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
 }
+</script>
+
+{{-- Offline banner + icon fallback --}}
+<script>
+(function () {
+    const banner = document.getElementById('sf-offline-banner');
+
+    function updateBanner() {
+        if (!banner) return;
+        banner.style.display = navigator.onLine ? 'none' : 'block';
+    }
+
+    window.addEventListener('online', updateBanner);
+    window.addEventListener('offline', updateBanner);
+    updateBanner();
+
+    function iconSvg(name) {
+        const stroke = 'currentColor';
+        const common = 'fill="none" stroke="' + stroke + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+
+        const icons = {
+            'close-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18" ' + common + '></line><line x1="18" y1="6" x2="6" y2="18" ' + common + '></line></svg>',
+            'menu-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6" ' + common + '></line><line x1="3" y1="12" x2="21" y2="12" ' + common + '></line><line x1="3" y1="18" x2="21" y2="18" ' + common + '></line></svg>',
+            'home-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5" ' + common + '></path><path d="M5 10.5V20h14v-9.5" ' + common + '></path></svg>',
+            'play-circle-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" ' + common + '></circle><polygon points="10,8 17,12 10,16" fill="currentColor"></polygon></svg>',
+            'time-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" ' + common + '></circle><line x1="12" y1="7" x2="12" y2="12" ' + common + '></line><line x1="12" y1="12" x2="16" y2="14" ' + common + '></line></svg>',
+            'ellipse-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" ' + common + '></circle></svg>',
+        };
+
+        return icons[name] || '';
+    }
+
+    function replaceIoniconsWithFallback() {
+        if (customElements.get('ion-icon')) return;
+        document.querySelectorAll('ion-icon').forEach(el => {
+            const name = el.getAttribute('name') || '';
+            const svg = iconSvg(name);
+            if (!svg) return;
+            const span = document.createElement('span');
+            span.className = 'sf-icon-fallback ' + (el.getAttribute('class') || '');
+            span.innerHTML = svg;
+            el.replaceWith(span);
+        });
+    }
+
+    window.addEventListener('load', replaceIoniconsWithFallback);
+})();
 </script>
 
 </body>
