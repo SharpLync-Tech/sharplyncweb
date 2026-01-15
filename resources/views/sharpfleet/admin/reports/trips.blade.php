@@ -5,6 +5,8 @@
 @section('sharpfleet-content')
 
 @php
+    use Carbon\Carbon;
+
     $companyTimezone = $companyTimezone ?? config('app.timezone');
 
     $uiVehicleId = $ui['vehicle_id'] ?? request('vehicle_id');
@@ -17,6 +19,30 @@
     $totalTrips     = $trips->count();
     $businessTrips  = $trips->where('trip_mode', 'business')->count();
     $privateTrips   = $trips->where('trip_mode', 'private')->count();
+
+    /**
+     * Determine human-readable date format from timezone
+     */
+    $dateFormat = 'Y-m-d'; // fallback
+
+    if (str_starts_with($companyTimezone, 'America/')) {
+        $dateFormat = 'm/d/Y';
+    } elseif (
+        str_starts_with($companyTimezone, 'Australia/') ||
+        str_starts_with($companyTimezone, 'Europe/') ||
+        str_starts_with($companyTimezone, 'Africa/') ||
+        str_starts_with($companyTimezone, 'Asia/')
+    ) {
+        $dateFormat = 'd/m/Y';
+    }
+
+    $displayStartDate = $uiStartDate
+        ? Carbon::parse($uiStartDate)->timezone($companyTimezone)->format($dateFormat)
+        : '—';
+
+    $displayEndDate = $uiEndDate
+        ? Carbon::parse($uiEndDate)->timezone($companyTimezone)->format($dateFormat)
+        : '—';
 
     $reportLabels = [
         'general' => [
@@ -102,15 +128,10 @@
             <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
                 <div class="grid grid-3">
 
-                    {{-- GENERAL --}}
                     <label class="card p-3 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="report_type"
-                            value="general"
+                        <input type="radio" name="report_type" value="general"
                             {{ $reportType === 'general' ? 'checked' : '' }}
-                            onchange="this.form.submit()"
-                        >
+                            onchange="this.form.submit()">
                         <span class="badge badge-neutral mb-1">GENERAL</span>
                         <strong>Trip Report</strong>
                         <div class="text-muted small">
@@ -118,15 +139,10 @@
                         </div>
                     </label>
 
-                    {{-- TAX --}}
                     <label class="card p-3 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="report_type"
-                            value="tax"
+                        <input type="radio" name="report_type" value="tax"
                             {{ $reportType === 'tax' ? 'checked' : '' }}
-                            onchange="this.form.submit()"
-                        >
+                            onchange="this.form.submit()">
                         <span class="badge badge-primary mb-1">TAX</span>
                         <strong>Logbook Report</strong>
                         <div class="text-muted small">
@@ -134,15 +150,10 @@
                         </div>
                     </label>
 
-                    {{-- CARE --}}
                     <label class="card p-3 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="report_type"
-                            value="care"
+                        <input type="radio" name="report_type" value="care"
                             {{ $reportType === 'care' ? 'checked' : '' }}
-                            onchange="this.form.submit()"
-                        >
+                            onchange="this.form.submit()">
                         <span class="badge badge-success mb-1">CARE</span>
                         <strong>Client Care Travel Report</strong>
                         <div class="text-muted small">
@@ -170,10 +181,8 @@
                         <select name="vehicle_id" class="form-control">
                             <option value="">All vehicles</option>
                             @foreach($vehicles as $vehicle)
-                                <option
-                                    value="{{ $vehicle->id }}"
-                                    {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}
-                                >
+                                <option value="{{ $vehicle->id }}"
+                                    {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}>
                                     {{ $vehicle->name }} ({{ $vehicle->registration_number }})
                                 </option>
                             @endforeach
@@ -218,7 +227,7 @@
                     <span class="text-muted small">Private</span>
                 </div>
                 <div>
-                    <strong>{{ $uiStartDate ?: '—' }} → {{ $uiEndDate ?: '—' }}</strong><br>
+                    <strong>{{ $displayStartDate }} → {{ $displayEndDate }}</strong><br>
                     <span class="text-muted small">Reporting period</span>
                 </div>
             </div>
@@ -265,10 +274,12 @@
                                         <td>{{ $t->purpose_of_travel ?: '—' }}</td>
                                     @endif
 
-                                    <td>{{ \Carbon\Carbon::parse($t->started_at)->timezone($companyTimezone)->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
+                                    </td>
                                     <td>
                                         {{ $t->end_time
-                                            ? \Carbon\Carbon::parse($t->end_time)->timezone($companyTimezone)->format('d/m/Y H:i')
+                                            ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)
                                             : '—'
                                         }}
                                     </td>

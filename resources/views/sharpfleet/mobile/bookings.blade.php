@@ -38,9 +38,25 @@
     <div id="sf-bookings-offline" class="sf-mobile-card" style="margin-bottom: 16px; display: none;">
         <div class="sf-mobile-card-title">Offline mode</div>
         <div class="sf-mobile-card-text">
-            <span style="color:#1fa6a0;">
-            ℹ️ Bookings aren’t available while offline to avoid schedule conflicts. Reconnect to create or cancel bookings.
+            <span style="
+                display:inline-block;
+                width:18px;
+                height:18px;
+                line-height:18px;
+                text-align:center;
+                border-radius:50%;
+                border:1.5px solid #1fa6a0;
+                color:#1fa6a0;
+                font-size:12px;
+                font-weight:700;
+                margin-right:6px;
+            ">
+                i
             </span>
+            <span style="color:#1fa6a0;">
+                Bookings aren’t available while offline to avoid schedule conflicts. Reconnect to create or cancel bookings.
+            </span>
+
         </div>
         <button type="button" class="sf-mobile-secondary-btn" id="sf-bookings-offline-close">
             Close
