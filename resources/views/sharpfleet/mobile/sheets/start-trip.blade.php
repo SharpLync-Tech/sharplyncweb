@@ -315,7 +315,7 @@
                             <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
                     </select>
-                    <div class="hint-text mb-3">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
+                    <div class="hint-text mt-2 mb-4">If the {{ $partyLabelLower }} isn't in the list, type a name below.</div>
                 @endif
 
                 @if($settings['customer']['allow_manual'] ?? true)
