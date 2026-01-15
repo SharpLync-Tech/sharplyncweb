@@ -12,9 +12,9 @@
     | Inputs resolved by controller (single source of truth)
     |--------------------------------------------------------------------------
     */
-    $companyTimezone      = $companyTimezone ?? config('app.timezone');
-    $clientPresenceLabel  = trim((string) ($clientPresenceLabel ?? 'Client'));
-    $clientPresenceLabel  = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
+    $companyTimezone     = $companyTimezone ?? config('app.timezone');
+    $clientPresenceLabel = trim((string) ($clientPresenceLabel ?? 'Client'));
+    $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
 
     /*
     |--------------------------------------------------------------------------
@@ -41,11 +41,9 @@
     | Date formatting (display only)
     |--------------------------------------------------------------------------
     */
-    if (str_starts_with($companyTimezone, 'America/')) {
-        $dateFormat = 'm/d/Y';
-    } else {
-        $dateFormat = 'd/m/Y';
-    }
+    $dateFormat = str_starts_with($companyTimezone, 'America/')
+        ? 'm/d/Y'
+        : 'd/m/Y';
 
     $displayStartDate = $uiStartDate
         ? Carbon::parse($uiStartDate)->timezone($companyTimezone)->format($dateFormat)
@@ -191,9 +189,7 @@
                                         <td>{{ $t->purpose_of_travel ?: '—' }}</td>
                                     @endif
 
-                                    <td>
-                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
-                                    </td>
+                                    <td>{{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}</td>
                                     <td>
                                         {{ $t->end_time
                                             ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)

@@ -238,7 +238,7 @@
                 @csrf
 
                 @if($branchesEnabled && $branches->count() > 1)
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 14px;">
                         <label class="form-label">Branch</label>
                         <select id="mobileBookingBranchSelect" name="branch_id" class="form-control" required>
                             <option value="">- Select branch -</option>
@@ -251,7 +251,7 @@
                     <input type="hidden" id="mobileBookingBranchSelect" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
                 @endif
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
                         <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
@@ -262,7 +262,7 @@
                     </div>
                 </div>
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                     <div class="form-group">
                         <label class="form-label">End date</label>
                         <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
@@ -273,7 +273,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 14px;">
                     <label class="form-label">Vehicle (available only)</label>
                     <div id="mobileBookingVehicleStatus" class="hint-text">Select start/end date & time to load available vehicles.</div>
                     <select id="mobileBookingVehicleSelect" name="vehicle_id" class="form-control" required disabled>
@@ -282,7 +282,7 @@
                 </div>
 
                 @if($customersTableExists && $customers->count() > 0)
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 14px;">
                         <label class="form-label">Customer / Client (optional)</label>
                         <select id="mobileBookingCustomerSelect" name="customer_id" class="form-control">
                             <option value="">- Select from list -</option>
@@ -295,7 +295,7 @@
                     </div>
                 @endif
 
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 14px;">
                     <label class="form-label">Notes (optional)</label>
                     <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes"></textarea>
                 </div>
@@ -473,4 +473,3 @@
     })();
 </script>
 @endsection
-
