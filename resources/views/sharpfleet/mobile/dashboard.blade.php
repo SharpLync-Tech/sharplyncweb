@@ -471,14 +471,12 @@
         }
 
         if (reportFaultForm) {
-            reportFaultForm.addEventListener('submit', (e) => {
-                if (navigator.onLine) return;
+            reportFaultForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
 
                 if (!reportFaultForm.checkValidity()) {
                     return;
                 }
-
-                e.preventDefault();
 
                 const fd = new FormData(reportFaultForm);
                 const payload = Object.fromEntries(fd.entries());
@@ -498,6 +496,34 @@
                 if (!payload.description || String(payload.description).trim() === '') {
                     showOfflineMessage('Add a description before reporting.');
                     return;
+                }
+
+                if (navigator.onLine) {
+                    try {
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 8000);
+
+                        const res = await fetch('/app/sharpfleet/faults/standalone', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-CSRF-TOKEN': getCsrfToken(),
+                            },
+                            body: fd,
+                            signal: controller.signal,
+                        });
+
+                        clearTimeout(timeout);
+
+                        if (res.ok) {
+                            closeSheets();
+                            showOfflineMessage('Report submitted.');
+                            setTimeout(() => window.location.href = '/app/sharpfleet/mobile', 500);
+                            return;
+                        }
+                    } catch (e) {
+                        // fall back to offline queue
+                    }
                 }
 
                 const reports = getOfflineFaultReports();
