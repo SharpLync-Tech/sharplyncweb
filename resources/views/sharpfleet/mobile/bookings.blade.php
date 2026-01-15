@@ -66,67 +66,86 @@
             });
         @endphp
 
-        <div class="sf-mobile-card" style="margin-bottom: 12px;">
-            <div class="sf-mobile-card-title">My Bookings</div>
-            @if(!$bookingsTableExists)
+        @if(!$bookingsTableExists)
+            <div class="sf-mobile-card">
                 <div class="hint-text">Bookings are unavailable until the database table is created.</div>
-            @elseif($bookingsMineDay->count() === 0)
+            </div>
+        @elseif($bookingsMineDay->count() === 0 && $bookingsOtherDay->count() === 0)
+            <div class="sf-mobile-card">
                 <div class="hint-text">No bookings in this range.</div>
-            @else
-                @foreach($mineGrouped as $date => $rows)
-                    <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                        <div class="hint-text"><strong>{{ \Carbon\Carbon::parse($date)->format('M j, Y') }}</strong></div>
-                    @foreach($rows as $b)
-                            @php
-                                $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
-                                $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
-                                $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
-                                $endUtc = Carbon::parse($b->planned_end)->utc();
-                                $canCancel = $endUtc->greaterThan($nowLocal->copy()->timezone('UTC'));
-                            @endphp
-                            <div class="hint-text" style="margin-top: 6px;">
-                                <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
-                            </div>
-                            @if(!empty($b->customer_name_display))
-                                <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
-                            @endif
-                            @if($canCancel)
-                                <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;">
-                                    @csrf
-                                    <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;">Cancel Booking</button>
-                                </form>
-                            @endif
-                        @endforeach
-                    </div>
-                @endforeach
-            @endif
-        </div>
+            </div>
+        @else
+            @php
+                $dayKeys = collect(array_keys($mineGrouped->all()))
+                    ->merge(array_keys($otherGrouped->all()))
+                    ->unique()
+                    ->sort()
+                    ->values();
+            @endphp
 
-        <div class="sf-mobile-card">
-            <div class="sf-mobile-card-title">Other Booked Vehicles</div>
-            @if(!$bookingsTableExists)
-                <div class="hint-text">Bookings are unavailable until the database table is created.</div>
-            @elseif($bookingsOtherDay->count() === 0)
-                <div class="hint-text">No other bookings in this range.</div>
-            @else
-                @foreach($otherGrouped as $date => $rows)
-                    <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                        <div class="hint-text"><strong>{{ \Carbon\Carbon::parse($date)->format('M j, Y') }}</strong></div>
-                        @foreach($rows as $b)
-                            @php
-                                $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
-                                $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
-                                $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
-                            @endphp
-                            <div class="hint-text" style="margin-top: 6px;">
-                                <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
-                            </div>
-                            <div class="hint-text" style="margin-top: 4px;">Booked</div>
-                        @endforeach
+            @foreach($dayKeys as $dateKey)
+                @php
+                    $mineRows = $mineGrouped->get($dateKey, collect());
+                    $otherRows = $otherGrouped->get($dateKey, collect());
+                    $totalRows = $mineRows->count() + $otherRows->count();
+                    $isLong = $totalRows > 6;
+                @endphp
+
+                <div class="sf-mobile-card" style="margin-bottom: 12px;">
+                    <div class="sf-mobile-card-title">
+                        {{ \Carbon\Carbon::parse($dateKey)->format('l j F') }}
                     </div>
-                @endforeach
-            @endif
-        </div>
+
+                    <div class="sf-booking-day-block {{ $isLong ? 'is-collapsed' : '' }}">
+                        @if($mineRows->count() > 0)
+                            <div class="hint-text" style="margin-top: 8px;"><strong>My Bookings</strong></div>
+                            @foreach($mineRows as $b)
+                                @php
+                                    $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
+                                    $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
+                                    $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
+                                    $endUtc = Carbon::parse($b->planned_end)->utc();
+                                    $canCancel = $endUtc->greaterThan($nowLocal->copy()->timezone('UTC'));
+                                @endphp
+                                <div class="hint-text" style="margin-top: 6px;">
+                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                                </div>
+                                @if(!empty($b->customer_name_display))
+                                    <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
+                                @endif
+                                @if($canCancel)
+                                    <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;">
+                                        @csrf
+                                        <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;">Cancel Booking</button>
+                                    </form>
+                                @endif
+                            @endforeach
+                        @endif
+
+                        @if($otherRows->count() > 0)
+                            <div class="hint-text" style="margin-top: 10px;"><strong>Other Booked Vehicles</strong></div>
+                            @foreach($otherRows as $b)
+                                @php
+                                    $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
+                                    $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
+                                    $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
+                                @endphp
+                                <div class="hint-text" style="margin-top: 6px;">
+                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                                </div>
+                                <div class="hint-text" style="margin-top: 4px;">Booked</div>
+                            @endforeach
+                        @endif
+                    </div>
+
+                    @if($isLong)
+                        <button type="button" class="sf-mobile-secondary-btn sf-booking-day-toggle" style="margin-top: 10px; padding: 10px;">
+                            Show more
+                        </button>
+                    @endif
+                </div>
+            @endforeach
+        @endif
     </div>
 </div>
 
@@ -354,6 +373,17 @@
         if (branchSelect) {
             branchSelect.addEventListener('change', loadVehicles);
         }
+
+        document.querySelectorAll('.sf-booking-day-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const card = btn.closest('.sf-mobile-card');
+                if (!card) return;
+                const block = card.querySelector('.sf-booking-day-block');
+                if (!block) return;
+                block.classList.toggle('is-collapsed');
+                btn.textContent = block.classList.contains('is-collapsed') ? 'Show more' : 'Show less';
+            });
+        });
     })();
 </script>
 @endsection

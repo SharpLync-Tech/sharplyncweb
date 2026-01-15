@@ -1,6 +1,6 @@
 /* =========================================
    SharpFleet – About Page
-   Purpose: clean, readable, human story
+   Purpose: calm, confident, brand-aligned
 ========================================= */
 
 .sf-about-card {
@@ -20,21 +20,29 @@
   margin: 0 0 12px 0;
 }
 
+/* NAVY → TEAL gradient (SharpFleet correct direction) */
 .sf-about-title span {
   display: inline-block;
-  background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+  background: linear-gradient(
+    90deg,
+    #0A2A4D 0%,     /* Navy */
+    #0A2A4D 55%,    /* Hold navy longer */
+    #2CBFAE 100%    /* Teal accent */
+  );
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
 
+/* Underline: subtle, supportive, not competing */
 .sf-about-underline {
   display: block;
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, #2CBFAE, #0A2A4D);
+  width: 96px;
+  height: 3px;
+  background: #2CBFAE;
   border-radius: 2px;
+  margin-top: 10px;
 }
 
 /* STORY TEXT */

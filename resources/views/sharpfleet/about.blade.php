@@ -28,7 +28,7 @@
         <div class="sf-about-story">
 
             <p>
-                I started SharpFleet for a simple reason — I needed a better way to log business trips.
+                I started SharpFleet for a simple reason; I needed a better way to log business trips.
             </p>
 
             <p>
@@ -71,7 +71,7 @@
             </p>
 
             <p class="sf-about-key">
-                Software should adapt to businesses — not the other way around.
+                Software should adapt to businesses, not the other way around.
             </p>
 
             <p>
@@ -86,7 +86,7 @@
             </p>
 
             <p>
-                The system supports you — it doesn’t police your drivers.
+                The system supports you, it doesn’t police your drivers.
             </p>
 
             <p>
@@ -105,7 +105,7 @@
             </p>
 
             <p class="sf-about-close">
-                Set the rules that make sense for your business —<br>
+                Set the rules that make sense for your business,<br>
                 and let your drivers get on with the job 🚗
             </p>
 

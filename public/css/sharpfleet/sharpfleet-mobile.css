@@ -410,6 +410,23 @@
     border-radius: 16px;
 }
 
+.sf-booking-day-block.is-collapsed {
+    max-height: 220px;
+    overflow: hidden;
+    position: relative;
+}
+
+.sf-booking-day-block.is-collapsed::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    background: linear-gradient(180deg, rgba(10,42,77,0) 0%, rgba(10,42,77,0.9) 100%);
+    pointer-events: none;
+}
+
 .sf-drive-active::before {
     content: '';
     position: absolute;
