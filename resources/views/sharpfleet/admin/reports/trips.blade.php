@@ -9,10 +9,20 @@
 
     $companyTimezone = $companyTimezone ?? config('app.timezone');
 
-    // Resolve client/customer label EXACTLY like start-trip.blade.php
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve client / customer label
+    | EXACT SAME SOURCE + LOGIC AS start-trip.blade.php
+    |--------------------------------------------------------------------------
+    */
     $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
     $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
 
+    /*
+    |--------------------------------------------------------------------------
+    | UI state
+    |--------------------------------------------------------------------------
+    */
     $uiVehicleId = $ui['vehicle_id'] ?? request('vehicle_id');
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate   = $ui['end_date'] ?? request('end_date');
@@ -23,8 +33,11 @@
     $businessTrips = $trips->where('trip_mode', 'business')->count();
     $privateTrips  = $trips->where('trip_mode', 'private')->count();
 
-    // Date format by timezone (display only)
-    $dateFormat = 'Y-m-d';
+    /*
+    |--------------------------------------------------------------------------
+    | Date format by timezone (display only)
+    |--------------------------------------------------------------------------
+    */
     if (str_starts_with($companyTimezone, 'America/')) {
         $dateFormat = 'm/d/Y';
     } else {
@@ -39,6 +52,11 @@
         ? Carbon::parse($uiEndDate)->timezone($companyTimezone)->format($dateFormat)
         : '—';
 
+    /*
+    |--------------------------------------------------------------------------
+    | Report labels
+    |--------------------------------------------------------------------------
+    */
     $reportLabels = [
         'general' => [
             'title' => 'Trip Report',
@@ -105,6 +123,33 @@
                 Reporting period shown in local time<br>
                 Time zone: {{ $companyTimezone }}
             </div>
+        </div>
+    </div>
+
+    {{-- ================= HARD DEBUG (INTENTIONAL) ================= --}}
+    <div class="card mb-3 border-danger">
+        <div class="card-body">
+            <h5 class="text-danger mb-2">DEBUG — Report Context</h5>
+
+            <pre class="small bg-light p-2 mb-2">
+clientPresenceLabel:
+{{ var_export($clientPresenceLabel, true) }}
+            </pre>
+
+            <pre class="small bg-light p-2 mb-2">
+settings['client_presence']:
+{{ var_export($settings['client_presence'] ?? null, true) }}
+            </pre>
+
+            <pre class="small bg-light p-2 mb-2">
+First trip (raw object):
+{{ var_export($trips->first(), true) }}
+            </pre>
+
+            <pre class="small bg-light p-2">
+customer_name_display (what table shows):
+{{ var_export($trips->first()->customer_name_display ?? null, true) }}
+            </pre>
         </div>
     </div>
 
