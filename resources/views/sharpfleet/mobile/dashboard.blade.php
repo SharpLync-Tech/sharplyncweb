@@ -8,13 +8,18 @@
     {{-- ===============================
          Greeting / Identity
     ================================ --}}
+    @php
+        $driverFirstName = trim((string) ($user['first_name'] ?? ''));
+        $displayCompanyName = trim((string) $settingsService->companyName());
+    @endphp
+
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $user->first_name ?? 'Driver' }} 👋
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 👋
         </h1>
 
         <div class="sf-mobile-subtitle">
-            SharpFleet · {{ $companyName ?? 'Your Company' }}
+            SharpFleet · {{ $displayCompanyName !== '' ? $displayCompanyName : 'Company' }}
         </div>
     </div>
 
