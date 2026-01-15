@@ -30,10 +30,12 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Company settings (single source of truth)
+        | Company settings (SINGLE SOURCE OF TRUTH)
         |--------------------------------------------------------------------------
         */
-        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -50,7 +52,7 @@ class ReportController extends Controller
         }
 
         if ($reportType === 'care') {
-            // Care reports require client-linked trips
+            // Care reports require customer-linked trips
             $request->merge([
                 'require_customer' => true,
             ]);
@@ -112,10 +114,11 @@ class ReportController extends Controller
         */
         $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
-            ->where('organisation_id', $user['organisation_id'])
+            ->where('organisation_id', (int) $user['organisation_id'])
             ->where('is_active', 1)
             ->when(
-                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                $branchScopeEnabled
+                && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
             )
             ->orderBy('name')
@@ -137,9 +140,11 @@ class ReportController extends Controller
             'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
             'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
 
-            // 🔐 Canonical values from CompanySettingsService
-            'companyTimezone' => $companySettings->timezone(),
-            'purposeOfTravelEnabled' => $companySettings->purposeOfTravelEnabled(),
+            // Time & formatting
+            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
+            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+
+            // 🔑 LABEL RESOLVED ONCE — SAME AS START TRIP
             'clientPresenceLabel' => $companySettings->clientLabel(),
         ]);
     }
