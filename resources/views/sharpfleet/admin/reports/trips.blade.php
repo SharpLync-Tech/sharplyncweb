@@ -16,15 +16,14 @@
     // general | tax | care
     $reportType = request('report_type', 'general');
 
-    $totalTrips     = $trips->count();
-    $businessTrips  = $trips->where('trip_mode', 'business')->count();
-    $privateTrips   = $trips->where('trip_mode', 'private')->count();
+    $totalTrips    = $trips->count();
+    $businessTrips = $trips->where('trip_mode', 'business')->count();
+    $privateTrips  = $trips->where('trip_mode', 'private')->count();
 
     /**
-     * Determine human-readable date format from timezone
+     * Date format based on timezone (display only)
      */
-    $dateFormat = 'Y-m-d'; // fallback
-
+    $dateFormat = 'Y-m-d';
     if (str_starts_with($companyTimezone, 'America/')) {
         $dateFormat = 'm/d/Y';
     } elseif (
@@ -60,7 +59,7 @@
         'care' => [
             'title' => 'Client Care Travel Report',
             'badge' => 'CARE',
-            'desc'  => 'Client-linked travel evidence',
+            'desc'  => $clientLabel . '-linked travel evidence',
             'class' => 'badge-success',
         ],
     ];
@@ -130,8 +129,8 @@
 
                     <label class="card p-3 cursor-pointer">
                         <input type="radio" name="report_type" value="general"
-                            {{ $reportType === 'general' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                               {{ $reportType === 'general' ? 'checked' : '' }}
+                               onchange="this.form.submit()">
                         <span class="badge badge-neutral mb-1">GENERAL</span>
                         <strong>Trip Report</strong>
                         <div class="text-muted small">
@@ -141,8 +140,8 @@
 
                     <label class="card p-3 cursor-pointer">
                         <input type="radio" name="report_type" value="tax"
-                            {{ $reportType === 'tax' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                               {{ $reportType === 'tax' ? 'checked' : '' }}
+                               onchange="this.form.submit()">
                         <span class="badge badge-primary mb-1">TAX</span>
                         <strong>Logbook Report</strong>
                         <div class="text-muted small">
@@ -152,12 +151,12 @@
 
                     <label class="card p-3 cursor-pointer">
                         <input type="radio" name="report_type" value="care"
-                            {{ $reportType === 'care' ? 'checked' : '' }}
-                            onchange="this.form.submit()">
+                               {{ $reportType === 'care' ? 'checked' : '' }}
+                               onchange="this.form.submit()">
                         <span class="badge badge-success mb-1">CARE</span>
-                        <strong>Client Care Travel Report</strong>
+                        <strong>{{ $clientLabel }} Care Travel Report</strong>
                         <div class="text-muted small">
-                            Client-linked travel evidence
+                            {{ $clientLabel }}-linked travel evidence
                         </div>
                     </label>
 
@@ -251,7 +250,7 @@
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Business / Private</th>
-                                <th>Customer</th>
+                                <th>{{ $clientLabel }}</th>
                                 @if(($purposeOfTravelEnabled ?? false))
                                     <th>Purpose of travel</th>
                                 @endif
@@ -274,9 +273,7 @@
                                         <td>{{ $t->purpose_of_travel ?: '—' }}</td>
                                     @endif
 
-                                    <td>
-                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
-                                    </td>
+                                    <td>{{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}</td>
                                     <td>
                                         {{ $t->end_time
                                             ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)
