@@ -147,7 +147,7 @@
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Business / Private</th>
-                                <th>{{ $clientPresenceLabel }}</th>
+                                <th>{{ $clientPresenceLabel }} TEST</th>
                                 @if($purposeOfTravelEnabled)
                                     <th>Purpose of travel</th>
                                 @endif
