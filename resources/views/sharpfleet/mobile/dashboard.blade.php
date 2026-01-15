@@ -109,6 +109,10 @@
     {{-- ===============================
          Trip Requirements
     ================================ --}}
+    @php
+        $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
+        $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
+    @endphp
     <div class="sf-mobile-card" style="margin-bottom: 20px;">
         <div class="sf-mobile-card-title">
             Before each trip, your company requires:
@@ -121,7 +125,7 @@
                 <li>Safety check</li>
             @endif
             @if(($settings['client_presence']['enabled'] ?? false) === true)
-                <li>Client presence (when applicable)</li>
+                <li>{{ $clientPresenceLabel }} presence (when applicable)</li>
             @endif
         </ul>
     </div>
@@ -547,4 +551,3 @@
     })();
 </script>
 @endsection
-
