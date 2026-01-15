@@ -83,7 +83,14 @@ self.addEventListener('fetch', (event) => {
           return res;
         } catch {
           const cached = await caches.match(req);
-          return cached || caches.match('/offline.html');
+          if (cached) return cached;
+
+          if (url.pathname.startsWith('/app/sharpfleet/mobile')) {
+            const cachedDashboard = await caches.match('/app/sharpfleet/mobile');
+            if (cachedDashboard) return cachedDashboard;
+          }
+
+          return caches.match('/offline.html');
         }
       })()
     );

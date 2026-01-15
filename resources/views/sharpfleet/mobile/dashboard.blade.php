@@ -17,7 +17,7 @@
 
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 👋
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 
         </h1>
 
         <div class="sf-mobile-subtitle">
@@ -164,9 +164,11 @@
 
         const startTripForm = document.getElementById('startTripForm');
         const endTripForm = document.getElementById('endTripForm');
+        const reportFaultForm = document.getElementById('reportFaultForm');
 
         const OFFLINE_ACTIVE_KEY = 'sharpfleet_offline_active_trip_v1';
         const OFFLINE_COMPLETED_KEY = 'sharpfleet_offline_completed_trips_v1';
+        const OFFLINE_FAULTS_KEY = 'sharpfleet_offline_fault_reports_v1';
 
         function showOfflineMessage(msg) {
             if (!offlineTripAlert) return;
@@ -205,6 +207,14 @@
 
         function setOfflineCompletedTrips(trips) {
             setLocalJson(OFFLINE_COMPLETED_KEY, trips);
+        }
+
+        function getOfflineFaultReports() {
+            return getLocalJson(OFFLINE_FAULTS_KEY, []);
+        }
+
+        function setOfflineFaultReports(reports) {
+            setLocalJson(OFFLINE_FAULTS_KEY, reports);
         }
 
         function renderOfflineActiveTrip() {
@@ -248,6 +258,48 @@
         function getCsrfToken() {
             const meta = document.querySelector('meta[name="csrf-token"]');
             return meta ? meta.getAttribute('content') : '';
+        }
+
+        async function syncOfflineFaultReportsIfPossible() {
+            if (!navigator.onLine) return;
+            const reports = getOfflineFaultReports();
+            if (!Array.isArray(reports) || reports.length === 0) return;
+
+            const remaining = [];
+            let syncedCount = 0;
+
+            for (const report of reports) {
+                try {
+                    const formData = new FormData();
+                    Object.keys(report).forEach((key) => {
+                        if (report[key] !== null && report[key] !== undefined) {
+                            formData.append(key, report[key]);
+                        }
+                    });
+
+                    const res = await fetch('/app/sharpfleet/faults/standalone', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': getCsrfToken(),
+                        },
+                        body: formData,
+                    });
+
+                    if (!res.ok) {
+                        remaining.push(report);
+                    } else {
+                        syncedCount += 1;
+                    }
+                } catch (e) {
+                    remaining.push(report);
+                }
+            }
+
+            setOfflineFaultReports(remaining);
+            if (syncedCount > 0) {
+                showOfflineMessage(`Offline fault reports synced (${syncedCount} sent).`);
+            }
         }
 
         async function syncOfflineTripsIfPossible() {
@@ -418,13 +470,54 @@
             });
         }
 
+        if (reportFaultForm) {
+            reportFaultForm.addEventListener('submit', (e) => {
+                if (navigator.onLine) return;
+
+                if (!reportFaultForm.checkValidity()) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                const fd = new FormData(reportFaultForm);
+                const payload = Object.fromEntries(fd.entries());
+
+                if (!payload.vehicle_id) {
+                    showOfflineMessage('Select a vehicle before reporting.');
+                    return;
+                }
+                if (!payload.report_type) {
+                    showOfflineMessage('Select a report type.');
+                    return;
+                }
+                if (!payload.severity) {
+                    showOfflineMessage('Select a severity.');
+                    return;
+                }
+                if (!payload.description || String(payload.description).trim() === '') {
+                    showOfflineMessage('Add a description before reporting.');
+                    return;
+                }
+
+                const reports = getOfflineFaultReports();
+                reports.push(payload);
+                setOfflineFaultReports(reports);
+
+                closeSheets();
+                showOfflineMessage('No signal: report queued and will sync later.');
+            });
+        }
+
         window.addEventListener('online', () => {
             showOfflineMessage('Back online. Syncing offline trips...');
             syncOfflineTripsIfPossible();
+            syncOfflineFaultReportsIfPossible();
         });
 
         renderOfflineActiveTrip();
         syncOfflineTripsIfPossible();
+        syncOfflineFaultReportsIfPossible();
     })();
 </script>
 @endsection

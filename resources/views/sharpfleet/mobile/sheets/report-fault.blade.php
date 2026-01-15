@@ -1,5 +1,5 @@
 {{-- =========================================================
-     SharpFleet Mobile – Report Vehicle Issue
+     SharpFleet Mobile  Report Vehicle Issue
 ========================================================= --}}
 
 <div
@@ -94,3 +94,4 @@
         </form>
     </div>
 </div>
+
