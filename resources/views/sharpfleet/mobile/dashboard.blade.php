@@ -4,14 +4,32 @@
 
 @section('content')
 <section class="sf-mobile-dashboard">
-    @if($activeTrip)
-        <h1 class="sf-mobile-title">Drive in Progress</h1>
 
-        <div class="sf-mobile-card sf-drive-active" style="margin-bottom: 16px;">
-            <div class="sf-mobile-card-title">Trip in Progress</div>
+    {{-- ===============================
+         Greeting / Identity
+    ================================ --}}
+    <div style="margin-bottom: 16px;">
+        <h1 class="sf-mobile-title">
+            Hi {{ $user->first_name ?? 'Driver' }} 👋
+        </h1>
+
+        <div class="sf-mobile-subtitle">
+            SharpFleet · {{ $companyName ?? 'Your Company' }}
+        </div>
+    </div>
+
+    {{-- ===============================
+         Drive Status
+    ================================ --}}
+    @if($activeTrip)
+        <div class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px;">
+            <div class="sf-mobile-card-title">Drive in Progress</div>
+
             <div class="hint-text" style="margin-top: 8px;">
-                <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
+                <strong>Vehicle:</strong>
+                {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
             </div>
+
             <div class="hint-text" style="margin-top: 6px;">
                 @php
                     $tripTz = isset($activeTrip->timezone) && trim((string) $activeTrip->timezone) !== ''
@@ -21,6 +39,7 @@
                 <strong>Started:</strong>
                 {{ \Carbon\Carbon::parse($activeTrip->started_at)->timezone($tripTz)->format('M j, Y g:i A') }}
             </div>
+
             <div class="hint-text" style="margin-top: 6px;">
                 @php
                     $activeTripBranchId = isset($activeTrip->vehicle_branch_id)
@@ -39,33 +58,46 @@
                 {{ number_format($activeTrip->start_km) }}
             </div>
         </div>
-
-        <button
-            type="button"
-            class="sf-mobile-primary-btn"
-            data-sheet-open="end-trip"
-        >
-            End Drive
-        </button>
     @else
-        <h1 class="sf-mobile-title">Ready to Drive</h1>
-
-        <p class="sf-mobile-subtitle">
-            No active trip
-        </p>
-
-        <button
-            type="button"
-            class="sf-mobile-primary-btn"
-            data-sheet-open="start-trip"
-        >
-            Start Drive
-        </button>
+        <div class="sf-mobile-card" style="margin-bottom: 20px;">
+            <div class="sf-mobile-card-title">No Active Trip</div>
+            <div class="hint-text" style="margin-top: 6px;">
+                Ready when you are.
+            </div>
+        </div>
     @endif
 
-    <button class="sf-mobile-secondary-btn" type="button" style="margin-top: 12px;">
+    {{-- ===============================
+         Trip Requirements
+    ================================ --}}
+    <div class="sf-mobile-card" style="margin-bottom: 20px;">
+        <div class="sf-mobile-card-title">
+            Before each trip, your company requires:
+        </div>
+
+        <ul class="hint-text" style="margin: 8px 0 0 16px;">
+            <li>Vehicle selection</li>
+            <li>Starting odometer</li>
+            @if($safetyCheckEnabled)
+                <li>Safety check</li>
+            @endif
+            @if(($settings['client_presence']['enabled'] ?? false) === true)
+                <li>Client presence (when applicable)</li>
+            @endif
+        </ul>
+    </div>
+
+    {{-- ===============================
+         Secondary Action
+    ================================ --}}
+    <button
+        class="sf-mobile-secondary-btn"
+        type="button"
+        style="margin-top: 12px;"
+    >
         Report Vehicle Issue
     </button>
+
 </section>
 
 {{-- Start Trip Sheet --}}
