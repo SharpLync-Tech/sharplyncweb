@@ -21,7 +21,7 @@
         </h1>
 
         <div class="sf-mobile-subtitle">
-            SharpFleet - {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
+            {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
         </div>
     </div>
 

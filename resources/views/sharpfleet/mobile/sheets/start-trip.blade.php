@@ -1,7 +1,5 @@
 {{-- =========================================================
-     SharpFleet Mobile â€“ Start Trip Sheet
-     Action Pill UX (Modal Sections)
-     Backend logic unchanged
+     SharpFleet Mobile - Start Trip Sheet     
 ========================================================= --}}
 
 <div
@@ -86,7 +84,7 @@
                 Start Time
             =============================== --}}
             @if($manualTripTimesRequired)
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 1.25rem;">
                     <label class="form-label">Start time</label>
 
                     <div class="sf-datetime-wrap">
@@ -108,7 +106,8 @@
             {{-- ===============================
                  Starting Reading
             ================================ --}}
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+
                 @php $defaultDistanceUnit = $settingsService->distanceUnit(); @endphp
 
                 <label id="startReadingLabel" class="form-label">
