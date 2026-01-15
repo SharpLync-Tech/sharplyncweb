@@ -1,16 +1,15 @@
 {{-- =========================================================
      SharpFleet – Why SharpFleet
-     Simple Accordion / FAQ Style Page
-     No JS Required – Mobile & Desktop Friendly
+     Accordion / FAQ Page (Refactored Copy)
 ========================================================= --}}
 
 @extends('layouts.sharpfleet')
 
+@section('title', 'Why SharpFleet')
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/sharpfleet/why-sharpfleet.css') }}">
 @endpush
-
-@section('title', 'Why SharpFleet')
 
 @section('sharpfleet-content')
 
@@ -19,20 +18,22 @@
     {{-- ===============================
          Page Header
     ================================ --}}
-    <header class="sf-page-header">
-        <h1>Why SharpFleet</h1>
-        <p class="sf-page-intro">
+    <div class="hero">
+        <h1>
+            Why <span class="highlight">SharpFleet</span>
+        </h1>
+
+        <p class="hero-intro">
             Simple answers to the most common questions about why businesses choose SharpFleet.
             No fluff. No surprises. Just straightforward fleet management.
         </p>
-    </header>
+    </div>
 
     {{-- ===============================
          Accordion Section
     ================================ --}}
-    <section class="sf-accordion">
+    <section class="sf-accordion mb-4">
 
-        {{-- Why use SharpFleet --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why use SharpFleet?</span>
@@ -40,17 +41,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, is built specifically for real-world businesses that
-                    want an easy, reliable way to track trips, vehicles, and compliance without complexity.
+                    SharpFleet was built for real-world businesses that want clear, reliable fleet records
+                    without complexity or micromanagement.
                 </p>
                 <p>
-                    It focuses on what actually matters: trip records, driver accountability, reminders,
-                    reporting, and offline reliability — not flashy features you’ll never use.
+                    It focuses on trips, compliance, and accountability — making it easier for drivers to
+                    do the right thing and for businesses to stay organised.
                 </p>
             </div>
         </details>
 
-        {{-- Why different --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet different from other fleet systems?</span>
@@ -58,17 +58,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, does not try to be a surveillance platform.
-                    There’s no constant tracking, no micromanagement, and no unnecessary data collection.
+                    Many fleet systems are built for large enterprises, packed with features most small
+                    businesses never use.
                 </p>
                 <p>
-                    It’s designed around trust, compliance, and usability — making it easier for drivers
-                    to actually use, and easier for businesses to manage.
+                    SharpFleet takes a simpler approach — focusing on the tools businesses actually need,
+                    without GPS surveillance, expensive hardware, or rigid workflows.
                 </p>
             </div>
         </details>
 
-        {{-- Affordable --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet so affordable?</span>
@@ -76,17 +75,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, includes everything in one affordable price.
-                    There are no add-ons, no locked features, and no surprise upgrades.
+                    Pricing is simple and transparent. You pay a flat, affordable rate per vehicle,
+                    per month — and everything is included.
                 </p>
                 <p>
-                    You pay a simple per-vehicle, per-month cost — often less than a coffee a day —
-                    making it accessible for sole traders, not just big fleets.
+                    There are no feature tiers, no add-ons, and no surprise upgrades as your business grows.
+                    For many customers, it works out to less than a coffee a day.
                 </p>
             </div>
         </details>
 
-        {{-- No GPS --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why doesn’t SharpFleet use GPS tracking?</span>
@@ -94,17 +92,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, avoids GPS tracking by design.
-                    This protects driver privacy and reduces legal, ethical, and compliance concerns.
+                    SharpFleet is designed around trust and privacy. Drivers aren’t constantly tracked,
+                    and vehicles aren’t turned into monitoring devices.
                 </p>
                 <p>
-                    Trip records are still accurate and compliant — without turning vehicles into
-                    tracking devices.
+                    You still get accurate, compliant trip records — without raising privacy concerns
+                    or creating unnecessary tension with staff.
                 </p>
             </div>
         </details>
 
-        {{-- NDIS --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet ideal for NDIS and Aged Care providers?</span>
@@ -112,17 +109,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, supports client-based trips, clear records,
-                    and audit-friendly reporting without overcomplicating the process.
+                    Clear records matter. SharpFleet makes it easy to log trips linked to clients,
+                    support workers, and services — without overcomplicating the process.
                 </p>
                 <p>
-                    It works reliably in regional areas, supports offline use, and keeps records simple
-                    for compliance and invoicing.
+                    It works reliably in regional areas, supports offline use, and produces
+                    audit-friendly records when they’re needed.
                 </p>
             </div>
         </details>
 
-        {{-- Sole traders --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet perfect for sole traders and small fleets?</span>
@@ -130,17 +126,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, is not priced or designed only for large fleets.
-                    It scales down just as well as it scales up.
+                    SharpFleet scales with you. Whether you run one vehicle or twenty,
+                    the experience stays simple and consistent.
                 </p>
                 <p>
-                    Whether you have one vehicle or twenty, you get the same features and the same
-                    simple experience.
+                    You’re not paying for enterprise features you don’t need — just practical
+                    tools that support day-to-day operations.
                 </p>
             </div>
         </details>
 
-        {{-- Offline --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why does SharpFleet work offline?</span>
@@ -148,16 +143,16 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, is designed for real conditions —
-                    rural areas, job sites, farms, and regional roads.
+                    Not all work happens in areas with reliable mobile coverage.
+                    SharpFleet is built to handle rural, regional, and job-site conditions.
                 </p>
                 <p>
-                    Trips can be recorded without coverage and synced automatically when back online.
+                    Trips can be recorded offline and automatically synced once connectivity
+                    is restored — no data lost.
                 </p>
             </div>
         </details>
 
-        {{-- No hardware --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why don’t I need extra hardware?</span>
@@ -165,13 +160,14 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, works entirely on devices you already own.
-                    Phones, tablets, or computers — no trackers, no installs, no vehicle downtime.
+                    SharpFleet works on devices you already own — phones, tablets, and computers.
+                </p>
+                <p>
+                    There’s no need for trackers, installations, or vehicle downtime to get started.
                 </p>
             </div>
         </details>
 
-        {{-- Drivers --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet easy for drivers to use?</span>
@@ -179,13 +175,15 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, is built mobile-first.
-                    Starting and ending a trip takes seconds, not training sessions.
+                    The system is designed to be quick and intuitive. Starting or ending a trip
+                    takes seconds, not training sessions.
+                </p>
+                <p>
+                    Less friction means better data and fewer missed entries.
                 </p>
             </div>
         </details>
 
-        {{-- Everything included --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is everything included with SharpFleet?</span>
@@ -193,16 +191,30 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet, unlike other products, does not lock features behind tiers.
-                    Reporting, reminders, branches, roles, and offline use are all included.
+                    SharpFleet keeps pricing honest. Reporting, reminders, safety checks,
+                    branches, and offline use are all part of the same subscription.
                 </p>
                 <p>
-                    What you see is what you get — simple, honest pricing.
+                    What you see is what you get — no feature lockouts and no upsell pressure.
                 </p>
             </div>
         </details>
 
     </section>
+
+    {{-- ===============================
+         CTA
+    ================================ --}}
+    <div class="hero">
+        <h2>Built for Real Businesses</h2>
+        <p>
+            SharpFleet is designed for tradies, service businesses, NDIS providers,
+            and small fleets who want clarity without complexity.
+        </p>
+        <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
+            Get Started
+        </a>
+    </div>
 
 </div>
 

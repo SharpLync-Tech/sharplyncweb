@@ -164,6 +164,143 @@ class DriverMobileController extends Controller
         return view('sharpfleet.mobile.history');
     }
 
+    public function bookings(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+        $settingsService = new CompanySettingsService($organisationId);
+        $companyTimezone = $settingsService->timezone();
+        $settings = $settingsService->all();
+
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branches = $branchesEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : collect();
+
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $user['id'])
+            : [];
+
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $customersTableExists = Schema::connection('sharpfleet')->hasTable('customers');
+        $customerEnabled = (bool) ($settings['customer']['enabled'] ?? false);
+        $customerJoinEnabled = $customersTableExists && $customerEnabled;
+        $customers = collect();
+
+        if ($customersTableExists && $customerEnabled) {
+            $customers = DB::connection('sharpfleet')
+                ->table('customers')
+                ->where('organisation_id', $organisationId)
+                ->where('is_active', 1)
+                ->when(
+                    $branchAccessEnabled
+                        && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')
+                        && count($accessibleBranchIds) > 0,
+                    fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+                )
+                ->orderBy('name')
+                ->limit(500)
+                ->get();
+        }
+
+        $bookingsTableExists = Schema::connection('sharpfleet')->hasTable('bookings');
+        $bookingsMine = collect();
+        $bookingsOther = collect();
+
+        $range = strtolower((string) $request->query('range', 'week'));
+        if (!in_array($range, ['day', 'week', 'month'], true)) {
+            $range = 'week';
+        }
+
+        $nowLocal = \Carbon\Carbon::now($companyTimezone);
+        if ($range === 'day') {
+            $rangeStartLocal = $nowLocal->copy()->startOfDay();
+            $rangeEndLocal = $nowLocal->copy()->endOfDay();
+        } elseif ($range === 'month') {
+            $rangeStartLocal = $nowLocal->copy()->startOfMonth();
+            $rangeEndLocal = $nowLocal->copy()->endOfMonth();
+        } else {
+            $rangeStartLocal = $nowLocal->copy()->startOfWeek();
+            $rangeEndLocal = $nowLocal->copy()->endOfWeek();
+        }
+
+        if ($bookingsTableExists) {
+            $rangeStartUtc = $rangeStartLocal->copy()->timezone('UTC');
+            $rangeEndUtc = $rangeEndLocal->copy()->timezone('UTC');
+
+            $query = DB::connection('sharpfleet')
+                ->table('bookings')
+                ->join('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id')
+                ->when(
+                    $customerJoinEnabled,
+                    fn ($q) => $q->leftJoin('customers', 'bookings.customer_id', '=', 'customers.id')
+                )
+                ->select(
+                    'bookings.id',
+                    'bookings.user_id',
+                    'bookings.planned_start',
+                    'bookings.planned_end',
+                    'bookings.status',
+                    'bookings.timezone',
+                    'vehicles.name as vehicle_name',
+                    'vehicles.registration_number',
+                    $customerJoinEnabled
+                        ? DB::raw('COALESCE(customers.name, bookings.customer_name) as customer_name_display')
+                        : DB::raw('bookings.customer_name as customer_name_display')
+                )
+                ->where('bookings.organisation_id', $organisationId)
+                ->where('bookings.status', 'planned')
+                ->where('bookings.planned_start', '<=', $rangeEndUtc->toDateTimeString())
+                ->where('bookings.planned_end', '>=', $rangeStartUtc->toDateTimeString())
+                ->when(
+                    $branchAccessEnabled && $branchesService->bookingsHaveBranchSupport(),
+                    fn ($q) => $q->whereIn('bookings.branch_id', $accessibleBranchIds)
+                )
+                ->when(
+                    $branchAccessEnabled && !$branchesService->bookingsHaveBranchSupport() && $branchesService->vehiclesHaveBranchSupport(),
+                    fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+                )
+                ->orderBy('bookings.planned_start');
+
+            $bookings = $query->get();
+
+            $bookingsMine = $bookings->filter(function ($b) use ($user) {
+                return (int) $b->user_id === (int) $user['id'];
+            })->values();
+
+            $bookingsOther = $bookings->filter(function ($b) use ($user) {
+                return (int) $b->user_id !== (int) $user['id'];
+            })->values();
+        }
+
+        $today = $nowLocal->format('Y-m-d');
+
+        return view('sharpfleet.mobile.bookings', [
+            'bookingsTableExists' => $bookingsTableExists,
+            'bookingsMine' => $bookingsMine,
+            'bookingsOther' => $bookingsOther,
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'customersTableExists' => $customersTableExists && $customerEnabled,
+            'customers' => $customers,
+            'companyTimezone' => $companyTimezone,
+            'range' => $range,
+            'rangeStartLocal' => $rangeStartLocal,
+            'rangeEndLocal' => $rangeEndLocal,
+            'today' => $today,
+        ]);
+    }
+
     public function more(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');

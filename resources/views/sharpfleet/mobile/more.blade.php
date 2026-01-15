@@ -25,19 +25,24 @@
     </div>
 
     {{-- Links --}}
+    <a href="/app/sharpfleet/mobile/bookings" class="sf-mobile-list-item">
+        <span>Bookings</span>
+        <span class="sf-mobile-list-item-arrow">&gt;</span>
+    </a>
+
     <a href="/app/sharpfleet/driver/help" class="sf-mobile-list-item">
         <span>Help</span>
-        <span class="sf-mobile-list-item-arrow">›</span>
+        <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>
 
     <a href="/app/sharpfleet/driver/about" class="sf-mobile-list-item">
         <span>About SharpFleet</span>
-        <span class="sf-mobile-list-item-arrow">›</span>
+        <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>
 
     <a href="/app/sharpfleet/logout" class="sf-mobile-list-item">
         <span>Log out</span>
-        <span class="sf-mobile-list-item-arrow">›</span>
+        <span class="sf-mobile-list-item-arrow">&gt;</span>
     </a>
 
 </section>
