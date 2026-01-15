@@ -38,7 +38,7 @@
             {{-- ===============================
                  Vehicle
             ================================ --}}
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 16px;">
                 <label class="form-label">Vehicle</label>
 
                 @if($vehicles->count() > 10)
