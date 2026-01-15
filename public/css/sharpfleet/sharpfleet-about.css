@@ -1,6 +1,6 @@
 /* =========================================
    SharpFleet – About Page
-   Purpose: calm, confident, brand-aligned
+   Calm, confident, brand-aligned
 ========================================= */
 
 .sf-about-card {
@@ -18,31 +18,21 @@
   line-height: 1.05;
   letter-spacing: -0.5px;
   margin: 0 0 12px 0;
+  color: #0A2A4D; /* Solid SharpFleet navy */
 }
 
-/* NAVY → TEAL gradient (SharpFleet correct direction) */
-.sf-about-title span {
-  display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #0A2A4D 0%,     /* Navy */
-    #0A2A4D 55%,    /* Hold navy longer */
-    #2CBFAE 100%    /* Teal accent */
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Underline: subtle, supportive, not competing */
+/* Underline: teal, longer, animated */
 .sf-about-underline {
   display: block;
-  width: 96px;
+  width: 200px;
   height: 3px;
   background: #2CBFAE;
   border-radius: 2px;
   margin-top: 10px;
+
+  /* Animation */
+  transform-origin: left;
+  animation: sfUnderlineReveal 0.6s ease-out forwards;
 }
 
 /* STORY TEXT */
@@ -57,17 +47,32 @@
   margin-top: 12px;
 }
 
-/* Closing paragraph */
 .sf-about-close {
   margin-top: 24px;
 }
 
+/* Underline animation */
+@keyframes sfUnderlineReveal {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .sf-about-underline {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
 /* Mobile breathing room */
 @media (max-width: 640px) {
-  .sf-about-card {
-    padding: 0;
-  }
-
   .sf-about-story p {
     max-width: none;
   }

@@ -12,11 +12,14 @@
     $monthStartUtc = $monthStartLocal->copy()->timezone('UTC');
     $monthEndUtc = $monthEndLocal->copy()->timezone('UTC');
 
-    $filterRange = function ($rows, $startUtc, $endUtc) {
+    $nowUtc = $nowLocal->copy()->timezone('UTC');
+    $filterRange = function ($rows, $startUtc, $endUtc) use ($nowUtc) {
         return $rows->filter(function ($b) use ($startUtc, $endUtc) {
             $start = Carbon::parse($b->planned_start)->utc();
             $end = Carbon::parse($b->planned_end)->utc();
-            return $start->lessThanOrEqualTo($endUtc) && $end->greaterThanOrEqualTo($startUtc);
+            return $start->lessThanOrEqualTo($endUtc)
+                && $end->greaterThanOrEqualTo($startUtc)
+                && $end->greaterThan($nowUtc);
         })->values();
     };
 
