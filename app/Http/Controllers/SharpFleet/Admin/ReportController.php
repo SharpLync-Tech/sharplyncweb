@@ -29,27 +29,18 @@ class ReportController extends Controller
 
         /**
          * -----------------------------------------
-         * Resolve report type (default: general)
+         * Resolve report type
          * -----------------------------------------
          */
         $reportType = $request->input('report_type', 'general');
 
-        /**
-         * -----------------------------------------
-         * Enforce report-type rules (backend-light)
-         * -----------------------------------------
-         * We mutate the request so existing services
-         * continue to work without modification.
-         */
         if ($reportType === 'tax') {
-            // Tax logbook reports should only include business travel
             $request->merge([
                 'trip_mode' => 'business',
             ]);
         }
 
         if ($reportType === 'care') {
-            // Client care reports should only include trips linked to a customer
             $request->merge([
                 'require_customer' => true,
             ]);
@@ -82,7 +73,7 @@ class ReportController extends Controller
 
         /**
          * -----------------------------------------
-         * CSV export (inherits report rules)
+         * CSV export
          * -----------------------------------------
          */
         if ($request->export === 'csv') {
@@ -95,7 +86,7 @@ class ReportController extends Controller
 
         /**
          * -----------------------------------------
-         * Build report data
+         * Build report
          * -----------------------------------------
          */
         $result = $this->reportingService->buildTripReport(
@@ -106,7 +97,7 @@ class ReportController extends Controller
 
         /**
          * -----------------------------------------
-         * Vehicles (respect branch scope)
+         * Vehicles
          * -----------------------------------------
          */
         $vehicles = \Illuminate\Support\Facades\DB::connection('sharpfleet')
@@ -120,13 +111,13 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get();
 
-        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
-
         /**
          * -----------------------------------------
-         * Render view
+         * Company settings (labels & flags)
          * -----------------------------------------
          */
+        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
+
         return view('sharpfleet.admin.reports.trips', [
             'trips' => $result['trips'],
             'totals' => $result['totals'],
@@ -139,6 +130,9 @@ class ReportController extends Controller
             'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
             'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+
+            // 🔑 IMPORTANT: label comes from DB-backed settings
+            'clientLabel' => (string) ($companySettings->clientPresenceLabel() ?? 'Client'),
         ]);
     }
 
