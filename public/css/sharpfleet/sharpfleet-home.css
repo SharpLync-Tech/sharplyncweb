@@ -1,0 +1,46 @@
+/* =========================================
+   SharpFleet Home Page – Layout Overrides
+   Scope: home page only
+   Purpose: 6 cards aligned + pricing full width
+========================================= */
+
+.sf-home-features-wrap {
+  width: 100%;
+}
+
+/* Force a real grid for the top 6 cards (independent of global .grid rules) */
+.sf-home-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+/* Full-width pricing row */
+.sf-home-pricing-row {
+  margin-top: 1.25rem;
+}
+
+.sf-home-pricing-card {
+  width: 100%;
+}
+
+/* Keep the pricing note style consistent and not weirdly greyed out */
+.sf-home-pricing-note {
+  font-size: 0.9rem;
+  margin-top: 12px;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .sf-home-features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .sf-home-features-grid {
+    grid-template-columns: 1fr;
+  }
+}

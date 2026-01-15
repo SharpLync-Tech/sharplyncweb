@@ -217,26 +217,21 @@ class DriverMobileController extends Controller
         $bookingsMine = collect();
         $bookingsOther = collect();
 
-        $range = strtolower((string) $request->query('range', 'week'));
-        if (!in_array($range, ['day', 'week', 'month'], true)) {
-            $range = 'week';
-        }
-
         $nowLocal = \Carbon\Carbon::now($companyTimezone);
-        if ($range === 'day') {
-            $rangeStartLocal = $nowLocal->copy()->startOfDay();
-            $rangeEndLocal = $nowLocal->copy()->endOfDay();
-        } elseif ($range === 'month') {
-            $rangeStartLocal = $nowLocal->copy()->startOfMonth();
-            $rangeEndLocal = $nowLocal->copy()->endOfMonth();
-        } else {
-            $rangeStartLocal = $nowLocal->copy()->startOfWeek();
-            $rangeEndLocal = $nowLocal->copy()->endOfWeek();
-        }
+        $dayStartLocal = $nowLocal->copy()->startOfDay();
+        $dayEndLocal = $nowLocal->copy()->endOfDay();
+        $weekStartLocal = $nowLocal->copy()->startOfWeek();
+        $weekEndLocal = $nowLocal->copy()->endOfWeek();
+        $monthStartLocal = $nowLocal->copy()->startOfMonth();
+        $monthEndLocal = $nowLocal->copy()->endOfMonth();
+
+        // Fetch a superset that covers the current month plus week edges.
+        $fetchStartLocal = $monthStartLocal->copy()->startOfWeek();
+        $fetchEndLocal = $monthEndLocal->copy()->endOfWeek();
 
         if ($bookingsTableExists) {
-            $rangeStartUtc = $rangeStartLocal->copy()->timezone('UTC');
-            $rangeEndUtc = $rangeEndLocal->copy()->timezone('UTC');
+            $rangeStartUtc = $fetchStartLocal->copy()->timezone('UTC');
+            $rangeEndUtc = $fetchEndLocal->copy()->timezone('UTC');
 
             $query = DB::connection('sharpfleet')
                 ->table('bookings')
@@ -294,9 +289,13 @@ class DriverMobileController extends Controller
             'customersTableExists' => $customersTableExists && $customerEnabled,
             'customers' => $customers,
             'companyTimezone' => $companyTimezone,
-            'range' => $range,
-            'rangeStartLocal' => $rangeStartLocal,
-            'rangeEndLocal' => $rangeEndLocal,
+            'dayStartLocal' => $dayStartLocal,
+            'dayEndLocal' => $dayEndLocal,
+            'weekStartLocal' => $weekStartLocal,
+            'weekEndLocal' => $weekEndLocal,
+            'monthStartLocal' => $monthStartLocal,
+            'monthEndLocal' => $monthEndLocal,
+            'nowLocal' => $nowLocal,
             'today' => $today,
         ]);
     }

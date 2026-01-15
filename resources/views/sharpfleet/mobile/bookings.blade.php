@@ -5,7 +5,27 @@
 @section('content')
 @php
     use Carbon\Carbon;
-    $rangeLabel = ucfirst($range ?? 'week');
+    $dayStartUtc = $dayStartLocal->copy()->timezone('UTC');
+    $dayEndUtc = $dayEndLocal->copy()->timezone('UTC');
+    $weekStartUtc = $weekStartLocal->copy()->timezone('UTC');
+    $weekEndUtc = $weekEndLocal->copy()->timezone('UTC');
+    $monthStartUtc = $monthStartLocal->copy()->timezone('UTC');
+    $monthEndUtc = $monthEndLocal->copy()->timezone('UTC');
+
+    $filterRange = function ($rows, $startUtc, $endUtc) {
+        return $rows->filter(function ($b) use ($startUtc, $endUtc) {
+            $start = Carbon::parse($b->planned_start)->utc();
+            $end = Carbon::parse($b->planned_end)->utc();
+            return $start->lessThanOrEqualTo($endUtc) && $end->greaterThanOrEqualTo($startUtc);
+        })->values();
+    };
+
+    $bookingsMineDay = $filterRange($bookingsMine, $dayStartUtc, $dayEndUtc);
+    $bookingsOtherDay = $filterRange($bookingsOther, $dayStartUtc, $dayEndUtc);
+    $bookingsMineWeek = $filterRange($bookingsMine, $weekStartUtc, $weekEndUtc);
+    $bookingsOtherWeek = $filterRange($bookingsOther, $weekStartUtc, $weekEndUtc);
+    $bookingsMineMonth = $filterRange($bookingsMine, $monthStartUtc, $monthEndUtc);
+    $bookingsOtherMonth = $filterRange($bookingsOther, $monthStartUtc, $monthEndUtc);
 @endphp
 
 <section class="sf-mobile-dashboard">
@@ -13,28 +33,150 @@
     <p class="sf-mobile-subtitle">Manage your bookings and see vehicle availability.</p>
 
     <div class="sf-mobile-card" style="margin-bottom: 16px;">
-        <div class="sf-mobile-card-title">View Range</div>
+        <div class="sf-mobile-card-title">Bookings</div>
+        <div class="sf-mobile-card-text">Open a range view or create a booking.</div>
+
         <div style="display: flex; gap: 8px; margin-top: 10px;">
-            @foreach (['day' => 'Day', 'week' => 'Week', 'month' => 'Month'] as $key => $label)
-                @php $active = ($range ?? 'week') === $key; @endphp
-                <a
-                    href="{{ url('/app/sharpfleet/mobile/bookings') }}?range={{ $key }}"
-                    class="sf-mobile-secondary-btn"
-                    style="flex: 1; padding: 12px; text-align: center; {{ $active ? 'border:1px solid rgba(44,191,174,0.7); color:#2CBFAE;' : '' }}"
-                >
-                    {{ $label }}
-                </a>
-            @endforeach
+            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-day" style="flex:1; padding: 12px;">Day</button>
+            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-week" style="flex:1; padding: 12px;">Week</button>
+            <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-month" style="flex:1; padding: 12px;">Month</button>
         </div>
-        <div class="hint-text" style="margin-top: 10px;">
-            Showing {{ $rangeLabel }} bookings ({{ $rangeStartLocal->format('M j') }} - {{ $rangeEndLocal->format('M j') }})
+
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-open="booking-create" style="margin-top: 12px;">
+            Create Booking
+        </button>
+    </div>
+</section>
+
+{{-- Day Sheet --}}
+<div id="sf-sheet-bookings-day" class="sf-sheet" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sf-bookings-day-title">
+    <div class="sf-sheet-header">
+        <h2 id="sf-bookings-day-title">Day Bookings</h2>
+        <button type="button" class="sf-sheet-close" data-sheet-close aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="sf-sheet-body">
+        @php
+            $mineGrouped = $bookingsMineDay->groupBy(function ($b) {
+                return \Carbon\Carbon::parse($b->planned_start)->utc()->toDateString();
+            });
+            $otherGrouped = $bookingsOtherDay->groupBy(function ($b) {
+                return \Carbon\Carbon::parse($b->planned_start)->utc()->toDateString();
+            });
+        @endphp
+
+        <div class="sf-mobile-card" style="margin-bottom: 12px;">
+            <div class="sf-mobile-card-title">My Bookings</div>
+            @if(!$bookingsTableExists)
+                <div class="hint-text">Bookings are unavailable until the database table is created.</div>
+            @elseif($bookingsMineDay->count() === 0)
+                <div class="hint-text">No bookings in this range.</div>
+            @else
+                @foreach($mineGrouped as $date => $rows)
+                    <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                        <div class="hint-text"><strong>{{ \Carbon\Carbon::parse($date)->format('M j, Y') }}</strong></div>
+                    @foreach($rows as $b)
+                            @php
+                                $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
+                                $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
+                                $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
+                                $endUtc = Carbon::parse($b->planned_end)->utc();
+                                $canCancel = $endUtc->greaterThan($nowLocal->copy()->timezone('UTC'));
+                            @endphp
+                            <div class="hint-text" style="margin-top: 6px;">
+                                <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                            </div>
+                            @if(!empty($b->customer_name_display))
+                                <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
+                            @endif
+                            @if($canCancel)
+                                <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;">
+                                    @csrf
+                                    <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;">Cancel Booking</button>
+                                </form>
+                            @endif
+                        @endforeach
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
+        <div class="sf-mobile-card">
+            <div class="sf-mobile-card-title">Other Booked Vehicles</div>
+            @if(!$bookingsTableExists)
+                <div class="hint-text">Bookings are unavailable until the database table is created.</div>
+            @elseif($bookingsOtherDay->count() === 0)
+                <div class="hint-text">No other bookings in this range.</div>
+            @else
+                @foreach($otherGrouped as $date => $rows)
+                    <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                        <div class="hint-text"><strong>{{ \Carbon\Carbon::parse($date)->format('M j, Y') }}</strong></div>
+                        @foreach($rows as $b)
+                            @php
+                                $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
+                                $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('g:i A');
+                                $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
+                            @endphp
+                            <div class="hint-text" style="margin-top: 6px;">
+                                <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                            </div>
+                            <div class="hint-text" style="margin-top: 4px;">Booked</div>
+                        @endforeach
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
+</div>
 
-    <div class="sf-mobile-card" style="margin-bottom: 16px;">
-        <div class="sf-mobile-card-title">New Booking</div>
-        <div class="sf-mobile-card-text">Bookings require an internet connection.</div>
+{{-- Week Sheet --}}
+<div id="sf-sheet-bookings-week" class="sf-sheet" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sf-bookings-week-title">
+    <div class="sf-sheet-header">
+        <h2 id="sf-bookings-week-title">Week Bookings</h2>
+        <button type="button" class="sf-sheet-close" data-sheet-close aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="sf-sheet-body">
+        <div class="hint-text" style="margin-bottom: 12px;">
+            {{ $weekStartLocal->format('M j') }} - {{ $weekEndLocal->format('M j') }}
+        </div>
+        @include('sharpfleet.mobile.partials.bookings-calendar', [
+            'bookingsMine' => $bookingsMineWeek,
+            'bookingsOther' => $bookingsOtherWeek,
+        ])
+    </div>
+</div>
 
+{{-- Month Sheet --}}
+<div id="sf-sheet-bookings-month" class="sf-sheet" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sf-bookings-month-title">
+    <div class="sf-sheet-header">
+        <h2 id="sf-bookings-month-title">Month Bookings</h2>
+        <button type="button" class="sf-sheet-close" data-sheet-close aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="sf-sheet-body">
+        <div class="hint-text" style="margin-bottom: 12px;">
+            {{ $monthStartLocal->format('M j') }} - {{ $monthEndLocal->format('M j') }}
+        </div>
+        @include('sharpfleet.mobile.partials.bookings-calendar', [
+            'bookingsMine' => $bookingsMineMonth,
+            'bookingsOther' => $bookingsOtherMonth,
+        ])
+    </div>
+</div>
+
+{{-- Create Booking Sheet --}}
+<div id="sf-sheet-booking-create" class="sf-sheet" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sf-booking-create-title">
+    <div class="sf-sheet-header">
+        <h2 id="sf-booking-create-title">Create Booking</h2>
+        <button type="button" class="sf-sheet-close" data-sheet-close aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="sf-sheet-body">
         @if(!$bookingsTableExists)
             <div class="hint-text">Bookings are unavailable until the database table is created.</div>
         @else
@@ -110,59 +252,7 @@
             </form>
         @endif
     </div>
-
-    <div class="sf-mobile-card" style="margin-bottom: 16px;">
-        <div class="sf-mobile-card-title">My Bookings</div>
-
-        @if(!$bookingsTableExists)
-            <div class="hint-text">Bookings are unavailable until the database table is created.</div>
-        @elseif($bookingsMine->count() === 0)
-            <div class="hint-text">No bookings in this range.</div>
-        @else
-            @foreach($bookingsMine as $b)
-                @php
-                    $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
-                    $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('M j, g:i A');
-                    $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('M j, g:i A');
-                @endphp
-                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
-                    <div class="hint-text"><strong>Vehicle:</strong> {{ $b->vehicle_name }} ({{ $b->registration_number }})</div>
-                    <div class="hint-text" style="margin-top: 4px;"><strong>Time:</strong> {{ $startLocal }} - {{ $endLocal }}</div>
-                    @if(!empty($b->customer_name_display))
-                        <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
-                    @endif
-                    <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 8px;">
-                        @csrf
-                        <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;">Cancel Booking</button>
-                    </form>
-                </div>
-            @endforeach
-        @endif
-    </div>
-
-    <div class="sf-mobile-card">
-        <div class="sf-mobile-card-title">Other Booked Vehicles</div>
-
-        @if(!$bookingsTableExists)
-            <div class="hint-text">Bookings are unavailable until the database table is created.</div>
-        @elseif($bookingsOther->count() === 0)
-            <div class="hint-text">No other bookings in this range.</div>
-        @else
-            @foreach($bookingsOther as $b)
-                @php
-                    $rowTz = isset($b->timezone) && trim((string) $b->timezone) !== '' ? (string) $b->timezone : $companyTimezone;
-                    $startLocal = Carbon::parse($b->planned_start)->utc()->timezone($rowTz)->format('M j, g:i A');
-                    $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('M j, g:i A');
-                @endphp
-                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
-                    <div class="hint-text"><strong>Vehicle:</strong> {{ $b->vehicle_name }} ({{ $b->registration_number }})</div>
-                    <div class="hint-text" style="margin-top: 4px;"><strong>Time:</strong> {{ $startLocal }} - {{ $endLocal }}</div>
-                    <div class="hint-text" style="margin-top: 4px;">Booked</div>
-                </div>
-            @endforeach
-        @endif
-    </div>
-</section>
+</div>
 
 <script>
     (function () {
