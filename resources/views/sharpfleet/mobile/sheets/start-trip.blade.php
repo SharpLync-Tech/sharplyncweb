@@ -134,6 +134,11 @@
                 @endif
             </div>
 
+            @php
+                $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
+                $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
+            @endphp
+
             {{-- ===============================
                  Before You Start
             ================================ --}}
@@ -168,7 +173,7 @@
                         margin-bottom:10px;
                     "
                 >
-                    <span>Client / Customer</span>
+                    <span>{{ $clientPresenceLabel }}</span>
                     <ion-icon id="clientStatus" class="sf-status-icon" name="ellipse-outline"></ion-icon>
                 </button>
 
@@ -288,7 +293,7 @@
         @php
             $partySheetLabel = trim((string) $settingsService->clientLabel());
         @endphp
-        <h2>{{ $partySheetLabel !== '' ? $partySheetLabel : 'Client / Customer' }}</h2>
+        <h2>{{ $partySheetLabel !== '' ? $partySheetLabel : $clientPresenceLabel }}</h2>
         <button type="button" class="sf-sheet-close" data-sheet-close="self">
             <ion-icon name="close-outline"></ion-icon>
         </button>
@@ -417,6 +422,8 @@
 
 <script>
 (function () {
+    const CLIENT_PRESENCE_LABEL = @json($clientPresenceLabel);
+
     const vehicleSelect = document.getElementById('vehicleSelect');
     if (!vehicleSelect) return;
 
@@ -625,7 +632,7 @@
                 missing.push('Trip Details');
             }
             if (sectionHasInvalid(['select[name=\"client_present\"][form=\"startTripForm\"]'])) {
-                missing.push('Client / Customer');
+                missing.push(CLIENT_PRESENCE_LABEL);
             }
             if (sectionHasInvalid(['input[name=\"safety_check_confirmed\"][form=\"startTripForm\"]'])) {
                 missing.push('Safety Check');
