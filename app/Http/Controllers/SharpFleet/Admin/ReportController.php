@@ -9,6 +9,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -27,30 +28,32 @@ class ReportController extends Controller
             abort(403);
         }
 
-        /**
-         * -----------------------------------------
-         * Resolve report type
-         * -----------------------------------------
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Report type handling
+        |--------------------------------------------------------------------------
+        */
         $reportType = $request->input('report_type', 'general');
 
         if ($reportType === 'tax') {
+            // Tax logbook = business only
             $request->merge([
                 'trip_mode' => 'business',
             ]);
         }
 
         if ($reportType === 'care') {
+            // Care reports require client-linked trips
             $request->merge([
                 'require_customer' => true,
             ]);
         }
 
-        /**
-         * -----------------------------------------
-         * Branch access enforcement
-         * -----------------------------------------
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Branch access enforcement
+        |--------------------------------------------------------------------------
+        */
         $branchesService = new BranchService();
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         $branchesEnabled = $branchesService->branchesEnabled();
@@ -71,11 +74,11 @@ class ReportController extends Controller
             abort(403, 'No branch access.');
         }
 
-        /**
-         * -----------------------------------------
-         * CSV export
-         * -----------------------------------------
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | CSV export (inherits report rules)
+        |--------------------------------------------------------------------------
+        */
         if ($request->export === 'csv') {
             return $this->reportingService->streamTripReportCsv(
                 (int) $user['organisation_id'],
@@ -84,23 +87,23 @@ class ReportController extends Controller
             );
         }
 
-        /**
-         * -----------------------------------------
-         * Build report
-         * -----------------------------------------
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Build report data
+        |--------------------------------------------------------------------------
+        */
         $result = $this->reportingService->buildTripReport(
             (int) $user['organisation_id'],
             $request,
             $user
         );
 
-        /**
-         * -----------------------------------------
-         * Vehicles
-         * -----------------------------------------
-         */
-        $vehicles = \Illuminate\Support\Facades\DB::connection('sharpfleet')
+        /*
+        |--------------------------------------------------------------------------
+        | Vehicles (respect branch scope)
+        |--------------------------------------------------------------------------
+        */
+        $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $user['organisation_id'])
             ->where('is_active', 1)
@@ -111,13 +114,37 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get();
 
-        /**
-         * -----------------------------------------
-         * Company settings (labels & flags)
-         * -----------------------------------------
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Company settings → client label (NO hardcoding)
+        |--------------------------------------------------------------------------
+        */
+        $companySettingsRow = DB::connection('sharpfleet')
+            ->table('company_settings')
+            ->where('organisation_id', (int) $user['organisation_id'])
+            ->first();
+
+        $clientLabel = 'Client'; // safe fallback
+
+        if ($companySettingsRow && !empty($companySettingsRow->settings)) {
+            $settings = json_decode($companySettingsRow->settings, true);
+
+            if (
+                isset($settings['client_presence']['label']) &&
+                is_string($settings['client_presence']['label']) &&
+                trim($settings['client_presence']['label']) !== ''
+            ) {
+                $clientLabel = $settings['client_presence']['label'];
+            }
+        }
+
         $companySettings = new CompanySettingsService((int) $user['organisation_id']);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Render view
+        |--------------------------------------------------------------------------
+        */
         return view('sharpfleet.admin.reports.trips', [
             'trips' => $result['trips'],
             'totals' => $result['totals'],
@@ -131,8 +158,8 @@ class ReportController extends Controller
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
             'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
 
-            // 🔑 IMPORTANT: label comes from DB-backed settings
-            'clientLabel' => (string) ($companySettings->clientPresenceLabel() ?? 'Client'),
+            // ✅ DB-driven label
+            'clientLabel' => $clientLabel,
         ]);
     }
 
