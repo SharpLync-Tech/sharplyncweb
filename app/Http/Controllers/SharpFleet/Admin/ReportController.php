@@ -7,6 +7,7 @@ use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\ReportingService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class ReportController extends Controller
@@ -18,7 +19,7 @@ class ReportController extends Controller
         $this->reportingService = $reportingService;
     }
 
-    public function trips(\Illuminate\Http\Request $request)
+    public function trips(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
 
@@ -26,26 +27,88 @@ class ReportController extends Controller
             abort(403);
         }
 
+        /**
+         * -----------------------------------------
+         * Resolve report type (default: general)
+         * -----------------------------------------
+         */
+        $reportType = $request->input('report_type', 'general');
+
+        /**
+         * -----------------------------------------
+         * Enforce report-type rules (backend-light)
+         * -----------------------------------------
+         * We mutate the request so existing services
+         * continue to work without modification.
+         */
+        if ($reportType === 'tax') {
+            // Tax logbook reports should only include business travel
+            $request->merge([
+                'trip_mode' => 'business',
+            ]);
+        }
+
+        if ($reportType === 'care') {
+            // Client care reports should only include trips linked to a customer
+            $request->merge([
+                'require_customer' => true,
+            ]);
+        }
+
+        /**
+         * -----------------------------------------
+         * Branch access enforcement
+         * -----------------------------------------
+         */
         $branchesService = new BranchService();
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
         $branchesEnabled = $branchesService->branchesEnabled();
         $branchAccessEnabled = $branchesEnabled
             && $branchesService->vehiclesHaveBranchSupport()
             && $branchesService->userBranchAccessEnabled();
+
         $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+
         $accessibleBranchIds = $branchScopeEnabled
-            ? $branchesService->getAccessibleBranchIdsForUser((int) $user['organisation_id'], (int) $user['id'])
+            ? $branchesService->getAccessibleBranchIdsForUser(
+                (int) $user['organisation_id'],
+                (int) $user['id']
+            )
             : [];
+
         if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
             abort(403, 'No branch access.');
         }
 
+        /**
+         * -----------------------------------------
+         * CSV export (inherits report rules)
+         * -----------------------------------------
+         */
         if ($request->export === 'csv') {
-            return $this->reportingService->streamTripReportCsv((int) $user['organisation_id'], $request, $user);
+            return $this->reportingService->streamTripReportCsv(
+                (int) $user['organisation_id'],
+                $request,
+                $user
+            );
         }
 
-        $result = $this->reportingService->buildTripReport((int) $user['organisation_id'], $request, $user);
+        /**
+         * -----------------------------------------
+         * Build report data
+         * -----------------------------------------
+         */
+        $result = $this->reportingService->buildTripReport(
+            (int) $user['organisation_id'],
+            $request,
+            $user
+        );
 
+        /**
+         * -----------------------------------------
+         * Vehicles (respect branch scope)
+         * -----------------------------------------
+         */
         $vehicles = \Illuminate\Support\Facades\DB::connection('sharpfleet')
             ->table('vehicles')
             ->where('organisation_id', $user['organisation_id'])
@@ -59,6 +122,11 @@ class ReportController extends Controller
 
         $companySettings = new CompanySettingsService((int) $user['organisation_id']);
 
+        /**
+         * -----------------------------------------
+         * Render view
+         * -----------------------------------------
+         */
         return view('sharpfleet.admin.reports.trips', [
             'trips' => $result['trips'],
             'totals' => $result['totals'],
