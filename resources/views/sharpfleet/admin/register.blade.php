@@ -64,6 +64,13 @@
         </div>
     </div>
 </div>
+<style>
+#activationSubmit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const termsCheckbox = document.getElementById('terms_agree');
