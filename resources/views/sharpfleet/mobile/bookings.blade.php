@@ -251,23 +251,23 @@
                     <input type="hidden" id="mobileBookingBranchSelect" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
                 @endif
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                    <div class="form-group">
+                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
+                    <div class="form-group" style="margin-right: 6px;">
                         <label class="form-label">Start date</label>
                         <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-left: 6px;">
                         <label class="form-label">Start time</label>
                         <input type="time" name="planned_start_time" class="form-control" required step="60">
                     </div>
                 </div>
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                    <div class="form-group">
+                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
+                    <div class="form-group" style="margin-right: 6px;">
                         <label class="form-label">End date</label>
                         <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-left: 6px;">
                         <label class="form-label">End time</label>
                         <input type="time" name="planned_end_time" class="form-control" required step="60">
                     </div>
