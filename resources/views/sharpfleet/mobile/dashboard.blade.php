@@ -17,7 +17,7 @@
 
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}<span style="font-size:0.85em; vertical-align:middle;">👋</span>
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}<span style="font-size:0.65em; vertical-align:middle;"> 👋</span>
         </h1>
 
         <div class="sf-mobile-subtitle">
