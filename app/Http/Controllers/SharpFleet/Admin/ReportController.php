@@ -116,24 +116,32 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Company settings (RAW, decoded for Blade)
+        | Organisation settings (SOURCE OF TRUTH FOR LABELS)
+        | Matches start-trip.blade.php exactly
         |--------------------------------------------------------------------------
         */
         $settings = [];
 
-        $companySettingsRow = DB::connection('sharpfleet')
-            ->table('company_settings')
-            ->where('organisation_id', (int) $user['organisation_id'])
+        $organisationRow = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', (int) $user['organisation_id'])
             ->first();
 
-        if ($companySettingsRow && !empty($companySettingsRow->settings)) {
-            $decoded = json_decode($companySettingsRow->settings, true);
+        if ($organisationRow && !empty($organisationRow->settings)) {
+            $decoded = json_decode($organisationRow->settings, true);
             if (is_array($decoded)) {
                 $settings = $decoded;
             }
         }
 
-        $companySettingsService = new CompanySettingsService((int) $user['organisation_id']);
+        /*
+        |--------------------------------------------------------------------------
+        | CompanySettingsService (RULES ONLY – not labels)
+        |--------------------------------------------------------------------------
+        */
+        $companySettingsService = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -153,7 +161,7 @@ class ReportController extends Controller
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
             'purposeOfTravelEnabled' => (bool) $companySettingsService->purposeOfTravelEnabled(),
 
-            // 🔑 SAME SOURCE AS start-trip.blade.php
+            // 🔑 EXACT SAME STRUCTURE AS start-trip.blade.php
             'settings' => $settings,
         ]);
     }

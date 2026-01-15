@@ -353,8 +353,8 @@
                 </div>
 
                 @if(($settings['client_presence']['enable_addresses'] ?? false) === true)
-                    <div class="form-group">
-                        <label class="form-label">Client Address (for billing/job tracking)</label>
+                    <div class="form-group" style="margin-top: 18px;">
+                        <label class="form-label">{{ $clientPresenceLabel }} Address (for billing/job tracking)</label>
 
                         <input
                             type="text"
