@@ -251,25 +251,25 @@
                     <input type="hidden" id="mobileBookingBranchSelect" name="branch_id" value="{{ (int) ($branches->first()->id ?? 0) }}">
                 @endif
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
-                    <div class="form-group" style="margin-right: 6px;">
+                <div class="grid" style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 22px; margin-bottom: 18px;">
+                    <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
+                        <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" style="margin-right: 10px;">
                     </div>
-                    <div class="form-group" style="margin-left: 6px;">
+                    <div class="form-group">
                         <label class="form-label">Start time</label>
-                        <input type="time" name="planned_start_time" class="form-control" required step="60">
+                        <input type="time" name="planned_start_time" class="form-control" required step="60" style="margin-left: 10px;">
                     </div>
                 </div>
 
-                <div class="grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
-                    <div class="form-group" style="margin-right: 6px;">
+                <div class="grid" style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 22px; margin-bottom: 18px;">
+                    <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
+                        <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" style="margin-right: 10px;">
                     </div>
-                    <div class="form-group" style="margin-left: 6px;">
+                    <div class="form-group">
                         <label class="form-label">End time</label>
-                        <input type="time" name="planned_end_time" class="form-control" required step="60">
+                        <input type="time" name="planned_end_time" class="form-control" required step="60" style="margin-left: 10px;">
                     </div>
                 </div>
 
