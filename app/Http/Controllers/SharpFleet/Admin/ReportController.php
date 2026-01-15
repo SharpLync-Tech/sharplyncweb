@@ -30,23 +30,10 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Company settings (SINGLE SOURCE OF TRUTH)
+        | Company settings (single source of truth)
         |--------------------------------------------------------------------------
         */
-        $companySettingsService = new CompanySettingsService(
-            (int) $user['organisation_id']
-        );
-
-        // Resolve client/customer label EXACTLY like driver flows
-        // Fallback is defensive, but should never be hit
-        $clientPresenceLabel = trim((string) (
-            $companySettingsService->getClientPresenceLabel()
-                ?? 'Client'
-        ));
-
-        if ($clientPresenceLabel === '') {
-            $clientPresenceLabel = 'Client';
-        }
+        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
 
         /*
         |--------------------------------------------------------------------------
@@ -128,8 +115,7 @@ class ReportController extends Controller
             ->where('organisation_id', $user['organisation_id'])
             ->where('is_active', 1)
             ->when(
-                $branchScopeEnabled
-                    && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
             )
             ->orderBy('name')
@@ -150,11 +136,11 @@ class ReportController extends Controller
             'customers' => $result['customers'],
             'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
             'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
-            'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
-            'purposeOfTravelEnabled' => (bool) $companySettingsService->purposeOfTravelEnabled(),
 
-            // ✅ FINAL, RESOLVED LABEL — NO JSON, NO GUESSING
-            'clientPresenceLabel' => $clientPresenceLabel,
+            // 🔐 Canonical values from CompanySettingsService
+            'companyTimezone' => $companySettings->timezone(),
+            'purposeOfTravelEnabled' => $companySettings->purposeOfTravelEnabled(),
+            'clientPresenceLabel' => $companySettings->clientLabel(),
         ]);
     }
 

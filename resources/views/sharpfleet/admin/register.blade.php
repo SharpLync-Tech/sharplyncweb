@@ -44,7 +44,17 @@
                 <div class="form-hint">This will be your login email</div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full mt-2">
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="checkbox-label" for="terms_agree">
+                    <input type="checkbox" id="terms_agree" name="terms_agree" required>
+                    I have read and agree to the
+                    <a href="https://sharplync.com.au/policies/sharpfleet-terms" target="_blank" rel="noopener">
+                        Terms &amp; Conditions
+                    </a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full mt-2" id="activationSubmit" disabled>
                 Send Activation Email
             </button>
         </form>
@@ -54,4 +64,18 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const termsCheckbox = document.getElementById('terms_agree');
+    const submitButton = document.getElementById('activationSubmit');
+    if (!termsCheckbox || !submitButton) return;
+
+    const syncState = () => {
+        submitButton.disabled = !termsCheckbox.checked;
+    };
+
+    termsCheckbox.addEventListener('change', syncState);
+    syncState();
+});
+</script>
 @endsection
