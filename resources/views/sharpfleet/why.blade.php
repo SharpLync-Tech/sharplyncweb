@@ -8,7 +8,7 @@
 
 @section('title', 'Why SharpFleet')
 
-@section('content')
+@section('sharpfleet-content')
 
 <div class="sf-page">
 

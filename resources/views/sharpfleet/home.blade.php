@@ -24,7 +24,7 @@
             <div class="fleet-banner-track">
                 <div class="fleet-banner-row">
                     {{-- First set --}}
-                    @for ($i = 0; $i <= 9; $i++)
+                    @for ($i = 1; $i <= 10; $i++)
                         <img
                             src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
                             alt="SharpFleet supported vehicle {{ $i }}"
@@ -33,7 +33,7 @@
                     @endfor
 
                     {{-- Duplicate set for seamless loop --}}
-                    @for ($i = 1; $i <= 9; $i++)
+                    @for ($i = 1; $i <= 10; $i++)
                         <img
                             src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
                             alt=""
@@ -45,7 +45,7 @@
         </section>
 
         <p class="hero-intro">
-            Logbooks for kilometres and engine hours.<br>
+            Logbooks for distance and engine hours.<br>
             No GPS. No hardware. No micromanagement.
             <p class="hero-price">
             All features included for only <strong>AU$3.50</strong> per vehicle, per month.
