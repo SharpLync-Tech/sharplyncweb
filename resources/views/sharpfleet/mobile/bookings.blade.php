@@ -254,22 +254,22 @@
                 <div class="grid" style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 34px; margin-bottom: 20px;">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" style="margin-right: 18px;">
+                        <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" style="margin-right: 18px; max-width: 170px; width: 100%;">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Start time</label>
-                        <input type="time" name="planned_start_time" class="form-control" required step="60" style="margin-left: 18px;">
+                        <input type="time" name="planned_start_time" class="form-control" required step="60" style="margin-left: 18px; max-width: 170px; width: 100%;">
                     </div>
                 </div>
 
                 <div class="grid" style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 34px; margin-bottom: 20px;">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" style="margin-right: 18px;">
+                        <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" style="margin-right: 18px; max-width: 170px; width: 100%;">
                     </div>
                     <div class="form-group">
                         <label class="form-label">End time</label>
-                        <input type="time" name="planned_end_time" class="form-control" required step="60" style="margin-left: 18px;">
+                        <input type="time" name="planned_end_time" class="form-control" required step="60" style="margin-left: 18px; max-width: 170px; width: 100%;">
                     </div>
                 </div>
 
