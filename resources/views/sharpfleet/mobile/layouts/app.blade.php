@@ -155,9 +155,23 @@ if ('serviceWorker' in navigator) {
             'play-circle-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" ' + common + '></circle><polygon points="10,8 17,12 10,16" fill="currentColor"></polygon></svg>',
             'time-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" ' + common + '></circle><line x1="12" y1="7" x2="12" y2="12" ' + common + '></line><line x1="12" y1="12" x2="16" y2="14" ' + common + '></line></svg>',
             'ellipse-outline': '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" ' + common + '></circle></svg>',
+            'checkmark': '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="5 13 9 17 19 7" ' + common + '></polyline></svg>',
         };
 
         return icons[name] || '';
+    }
+
+    function swapFallbackIcon(el, name) {
+        if (!el) return;
+        const tag = (el.tagName || '').toLowerCase();
+        if (tag === 'ion-icon') {
+            el.setAttribute('name', name);
+            return;
+        }
+        if (el.classList && el.classList.contains('sf-icon-fallback')) {
+            const svg = iconSvg(name);
+            if (svg) el.innerHTML = svg;
+        }
     }
 
     function replaceIoniconsWithFallback() {
@@ -172,6 +186,8 @@ if ('serviceWorker' in navigator) {
             el.replaceWith(span);
         });
     }
+
+    window.sfSwapIcon = swapFallbackIcon;
 
     window.addEventListener('load', replaceIoniconsWithFallback);
 })();

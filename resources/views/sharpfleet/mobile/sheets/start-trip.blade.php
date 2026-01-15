@@ -576,7 +576,11 @@
             const targetId = btn.getAttribute('data-status-target');
             const target = targetId ? document.getElementById(targetId) : null;
             if (!target) return;
-            target.setAttribute('name', 'checkmark');
+            if (window.sfSwapIcon) {
+                window.sfSwapIcon(target, 'checkmark');
+            } else {
+                target.setAttribute('name', 'checkmark');
+            }
             target.classList.add('sf-status-complete');
         });
     });
