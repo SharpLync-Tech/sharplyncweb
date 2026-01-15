@@ -4,7 +4,7 @@
      No JS Required – Mobile & Desktop Friendly
 ========================================================= --}}
 
-@extends('sharpfleet.layouts.app')
+@extends('layouts.sharpfleet')
 
 @section('title', 'Why SharpFleet')
 
