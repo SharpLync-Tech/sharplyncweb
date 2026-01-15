@@ -27,72 +27,86 @@
         ========================== --}}
         <div class="sf-about-story">
 
-            <p>I started my own business and needed to log business trips.</p>
-
             <p>
-                I had two cars.<br>
-                I was constantly swapping between them.
+                I started SharpFleet for a simple reason — I needed a better way to log business trips.
             </p>
 
             <p>
-                Half the time the logbook wasn’t in the car I was driving.<br>
-                And when it was, I couldn’t be bothered writing things down anyway.
+                I was running my own business and using more than one vehicle.<br>
+                Switching cars meant switching logbooks, and half the time the one I needed wasn’t there.
             </p>
 
             <p>
-                I don’t like writing.<br>
-                I don’t like trying to remember trips later.<br>
-                And I really didn’t like that something so simple was already becoming a pain.
+                And even when it was, writing things down later never worked.<br>
+                Trips were forgotten, details were missed, and something that should have been simple became frustrating.
             </p>
 
             <p>
-                So I built my own logbook — on my phone.<br>
-                Something I knew would always be with me, no matter which car I was using.
+                So I built my own logbook — on my phone.
             </p>
 
             <p>
-                It started as a really basic tool just for me.<br>
-                Something I could actually use without thinking about it.
+                Something I always had with me.<br>
+                Something I could use in the moment, without thinking about it.
             </p>
 
-            <p>Then I added a bit here and there as I needed it.</p>
+            <p>
+                It started as a basic tool, built purely to solve my own problem.<br>
+                Then, as real life demanded it, I added more.
+            </p>
 
             <p>
-                Services.<br>
-                Rego.<br>
                 Vehicles.<br>
-                Small improvements.
+                Rego.<br>
+                Servicing.<br>
+                Reminders.
             </p>
 
-            <p>As it grew, I realised something else:</p>
+            <p>
+                Small improvements that made day-to-day work easier.
+            </p>
+
+            <p>
+                As SharpFleet grew, one idea became clear:
+            </p>
 
             <p class="sf-about-key">
-                Business owners should be the ones setting the rules.
+                Software should adapt to businesses — not the other way around.
             </p>
 
             <p>
-                Not software.<br>
-                Not rigid systems.
+                Too many systems force rigid rules, unnecessary hardware, or constant monitoring.<br>
+                That’s not how most businesses actually work.
             </p>
 
             <p>
-                So I built SharpFleet to give business owners the tools,<br>
-                and let them decide how strict or flexible they want to be.
+                SharpFleet was built to give business owners control.<br>
+                You decide what needs to be tracked.<br>
+                You decide how strict the rules are.
             </p>
 
             <p>
-                It wasn’t planned.<br>
-                There was no big idea behind it.
+                The system supports you — it doesn’t police your drivers.
             </p>
 
             <p>
-                It just grew out of fixing a problem I didn’t want to deal with anymore.
+                There was no grand plan.<br>
+                No pitch deck.<br>
+                No “startup idea”.
+            </p>
+
+            <p>
+                Just a real problem, solved properly.
             </p>
 
             <p class="sf-about-close">
-                That’s it. That’s how it started.<br>
-                Now it’s available to you — set the rules for your business,<br>
-                and let your drivers… well, drive 🚗
+                Today, SharpFleet helps businesses keep accurate records without the stress.<br>
+                Clear, flexible, and built for real-world work.
+            </p>
+
+            <p class="sf-about-close">
+                Set the rules that make sense for your business —<br>
+                and let your drivers get on with the job 🚗
             </p>
 
         </div>
