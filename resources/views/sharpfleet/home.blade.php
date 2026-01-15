@@ -24,7 +24,7 @@
             <div class="fleet-banner-track">
                 <div class="fleet-banner-row">
                     {{-- First set --}}
-                    @for ($i = 1; $i <= 9; $i++)
+                    @for ($i = 0; $i <= 9; $i++)
                         <img
                             src="{{ asset('images/sharpfleet/' . $i . '.png') }}"
                             alt="SharpFleet supported vehicle {{ $i }}"
