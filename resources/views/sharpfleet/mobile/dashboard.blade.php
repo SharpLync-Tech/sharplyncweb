@@ -10,7 +10,7 @@
     ================================ --}}
     @php
         $driverFirstName = trim((string) ($user['first_name'] ?? ''));
-        $displayCompanyName = trim((string) $settingsService->companyName());
+        $organisationName = trim((string) ($user['organisation_name'] ?? ''));
     @endphp
 
     <div style="margin-bottom: 16px;">
@@ -19,7 +19,7 @@
         </h1>
 
         <div class="sf-mobile-subtitle">
-            SharpFleet · {{ $displayCompanyName !== '' ? $displayCompanyName : 'Company' }}
+            SharpFleet · {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
         </div>
     </div>
 
