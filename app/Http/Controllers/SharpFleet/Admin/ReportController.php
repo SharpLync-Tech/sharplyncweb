@@ -30,6 +30,26 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Company settings (SINGLE SOURCE OF TRUTH)
+        |--------------------------------------------------------------------------
+        */
+        $companySettingsService = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        // Resolve client/customer label EXACTLY like driver flows
+        // Fallback is defensive, but should never be hit
+        $clientPresenceLabel = trim((string) (
+            $companySettingsService->getClientPresenceLabel()
+                ?? 'Client'
+        ));
+
+        if ($clientPresenceLabel === '') {
+            $clientPresenceLabel = 'Client';
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Report type handling
         |--------------------------------------------------------------------------
         */
@@ -108,40 +128,12 @@ class ReportController extends Controller
             ->where('organisation_id', $user['organisation_id'])
             ->where('is_active', 1)
             ->when(
-                $branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
+                $branchScopeEnabled
+                    && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
             )
             ->orderBy('name')
             ->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Organisation settings (SOURCE OF TRUTH FOR LABELS)
-        | Matches start-trip.blade.php exactly
-        |--------------------------------------------------------------------------
-        */
-        $settings = [];
-
-        $organisationRow = DB::connection('sharpfleet')
-            ->table('organisations')
-            ->where('id', (int) $user['organisation_id'])
-            ->first();
-
-        if ($organisationRow && !empty($organisationRow->settings)) {
-            $decoded = json_decode($organisationRow->settings, true);
-            if (is_array($decoded)) {
-                $settings = $decoded;
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | CompanySettingsService (RULES ONLY – not labels)
-        |--------------------------------------------------------------------------
-        */
-        $companySettingsService = new CompanySettingsService(
-            (int) $user['organisation_id']
-        );
 
         /*
         |--------------------------------------------------------------------------
@@ -161,8 +153,8 @@ class ReportController extends Controller
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
             'purposeOfTravelEnabled' => (bool) $companySettingsService->purposeOfTravelEnabled(),
 
-            // 🔑 EXACT SAME STRUCTURE AS start-trip.blade.php
-            'settings' => $settings,
+            // ✅ FINAL, RESOLVED LABEL — NO JSON, NO GUESSING
+            'clientPresenceLabel' => $clientPresenceLabel,
         ]);
     }
 
