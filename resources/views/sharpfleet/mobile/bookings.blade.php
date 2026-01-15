@@ -35,6 +35,16 @@
     <h1 class="sf-mobile-title">Bookings</h1>
     <p class="sf-mobile-subtitle">Manage your bookings and see vehicle availability.</p>
 
+    <div id="sf-bookings-offline" class="sf-mobile-card" style="margin-bottom: 16px; display: none;">
+        <div class="sf-mobile-card-title">Offline mode</div>
+        <div class="sf-mobile-card-text">
+            Bookings are read-only while offline. Reconnect to create or cancel bookings.
+        </div>
+        <button type="button" class="sf-mobile-secondary-btn" id="sf-bookings-offline-close">
+            Close
+        </button>
+    </div>
+
     <div class="sf-mobile-card" style="margin-bottom: 16px;">
         <div class="sf-mobile-card-title">Bookings</div>
         <div class="sf-mobile-card-text">Open a range view or create a booking.</div>
@@ -45,7 +55,7 @@
             <button type="button" class="sf-mobile-secondary-btn" data-sheet-open="bookings-month" style="flex:1; padding: 12px;">Month</button>
         </div>
 
-        <button type="button" class="sf-mobile-primary-btn" data-sheet-open="booking-create" style="margin-top: 12px;">
+        <button type="button" class="sf-mobile-primary-btn" data-sheet-open="booking-create" style="margin-top: 12px;" data-offline-action="booking">
             Create Booking
         </button>
     </div>
@@ -111,7 +121,7 @@
                                     $canCancel = $endUtc->greaterThan($nowLocal->copy()->timezone('UTC'));
                                 @endphp
                                 <div class="hint-text" style="margin-top: 6px;">
-                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) - {{ $startLocal }} - {{ $endLocal }}
                                 </div>
                                 @if(!empty($b->customer_name_display))
                                     <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
@@ -119,7 +129,9 @@
                                 @if($canCancel)
                                     <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;">
                                         @csrf
-                                        <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;">Cancel Booking</button>
+                                        <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;" data-offline-action="booking">
+                                            Cancel Booking
+                                        </button>
                                     </form>
                                 @endif
                             @endforeach
@@ -134,7 +146,7 @@
                                     $endLocal = Carbon::parse($b->planned_end)->utc()->timezone($rowTz)->format('g:i A');
                                 @endphp
                                 <div class="hint-text" style="margin-top: 6px;">
-                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) · {{ $startLocal }} - {{ $endLocal }}
+                                    <strong>{{ $b->vehicle_name }}</strong> ({{ $b->registration_number }}) - {{ $startLocal }} - {{ $endLocal }}
                                 </div>
                                 <div class="hint-text" style="margin-top: 4px;">Booked</div>
                             @endforeach
@@ -202,7 +214,7 @@
         @if(!$bookingsTableExists)
             <div class="hint-text">Bookings are unavailable until the database table is created.</div>
         @else
-            <form method="POST" action="/app/sharpfleet/bookings">
+            <form method="POST" action="/app/sharpfleet/bookings" id="mobileBookingForm">
                 @csrf
 
                 @if($branchesEnabled && $branches->count() > 1)
@@ -268,7 +280,7 @@
                     <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes"></textarea>
                 </div>
 
-                <button id="mobileBookingSubmit" type="submit" class="sf-mobile-primary-btn" style="margin-top: 10px;" disabled>
+                <button id="mobileBookingSubmit" type="submit" class="sf-mobile-primary-btn" style="margin-top: 10px;" disabled data-offline-action="booking">
                     Create Booking
                 </button>
             </form>
@@ -287,6 +299,35 @@
         const vehicleSelect = document.getElementById('mobileBookingVehicleSelect');
         const vehicleStatus = document.getElementById('mobileBookingVehicleStatus');
         const submitBtn = document.getElementById('mobileBookingSubmit');
+        const bookingForm = document.getElementById('mobileBookingForm');
+        const offlineCard = document.getElementById('sf-bookings-offline');
+        const offlineClose = document.getElementById('sf-bookings-offline-close');
+
+        function setOfflineState(isOffline) {
+            if (offlineCard) offlineCard.style.display = isOffline ? '' : 'none';
+
+            document.querySelectorAll('[data-offline-action="booking"]').forEach(el => {
+                if (isOffline) {
+                    el.setAttribute('disabled', 'disabled');
+                } else {
+                    el.removeAttribute('disabled');
+                }
+            });
+
+            if (vehicleStatus && isOffline) {
+                vehicleStatus.textContent = 'Bookings are read-only while offline.';
+            }
+        }
+
+        function syncOfflineState() {
+            setOfflineState(!navigator.onLine);
+        }
+
+        if (offlineClose && offlineCard) {
+            offlineClose.addEventListener('click', () => {
+                offlineCard.style.display = 'none';
+            });
+        }
 
         function updateSubmitState() {
             if (!submitBtn || !vehicleSelect) return;
@@ -310,6 +351,13 @@
 
         async function loadVehicles() {
             if (!vehicleSelect || !startDate || !startTime || !endDate || !endTime) return;
+            if (!navigator.onLine) {
+                vehicleSelect.disabled = true;
+                setVehicleOptions([]);
+                if (vehicleStatus) vehicleStatus.textContent = 'Bookings are read-only while offline.';
+                updateSubmitState();
+                return;
+            }
 
             if (!startDate.value || !startTime.value || !endDate.value || !endTime.value) {
                 vehicleSelect.disabled = true;
@@ -377,6 +425,18 @@
             branchSelect.addEventListener('change', loadVehicles);
         }
 
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', (e) => {
+                if (navigator.onLine) return;
+                e.preventDefault();
+                setOfflineState(true);
+            });
+        }
+
+        window.addEventListener('online', syncOfflineState);
+        window.addEventListener('offline', syncOfflineState);
+        syncOfflineState();
+
         document.querySelectorAll('.sf-booking-day-toggle').forEach(btn => {
             btn.addEventListener('click', () => {
                 const card = btn.closest('.sf-mobile-card');
@@ -390,3 +450,4 @@
     })();
 </script>
 @endsection
+
