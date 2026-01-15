@@ -13,8 +13,8 @@
     ========================== --}}
     <div class="hero">
         <h1>
-            Fleet Management<br>
-            <span class="highlight">Without the Headaches</span>
+            Fleet Management:<br>
+            <span class="highlight">Streamlined from Start to Finish</span>
         </h1>
 
         {{-- =========================
