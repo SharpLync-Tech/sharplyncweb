@@ -350,7 +350,12 @@ class BookingController extends Controller
             'notes' => $validated['notes'] ?? null,
         ], $user);
 
-        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking created.');
+        $previousUrl = url()->previous();
+        $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
+            ? '/app/sharpfleet/mobile/bookings'
+            : '/app/sharpfleet/bookings';
+
+        return redirect($redirectTo)->with('success', 'Booking created.');
     }
 
     public function cancel(Request $request, $booking)
@@ -362,7 +367,12 @@ class BookingController extends Controller
 
         $this->bookingService->cancelBooking((int) $user['organisation_id'], (int) $booking, $user, false);
 
-        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking cancelled.');
+        $previousUrl = url()->previous();
+        $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
+            ? '/app/sharpfleet/mobile/bookings'
+            : '/app/sharpfleet/bookings';
+
+        return redirect($redirectTo)->with('success', 'Booking cancelled.');
     }
 
     public function update(Request $request, $booking)
@@ -467,7 +477,12 @@ class BookingController extends Controller
             'updated_by_user_id' => (int) ($user['id'] ?? 0),
         ], $user);
 
-        return redirect('/app/sharpfleet/bookings')->with('success', 'Booking updated.');
+        $previousUrl = url()->previous();
+        $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
+            ? '/app/sharpfleet/mobile/bookings'
+            : '/app/sharpfleet/bookings';
+
+        return redirect($redirectTo)->with('success', 'Booking updated.');
     }
 
     public function startTrip()

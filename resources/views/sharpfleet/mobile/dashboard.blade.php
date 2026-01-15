@@ -63,6 +63,15 @@
                 {{ number_format($activeTrip->start_km) }}
             </div>
         </div>
+
+        <button
+            type="button"
+            class="sf-mobile-primary-btn"
+            data-sheet-open="end-trip"
+            style="margin-bottom: 20px;"
+        >
+            End Drive
+        </button>
     @else
         <div class="sf-mobile-card" style="margin-bottom: 20px;">
             <div class="sf-mobile-card-title">No Active Trip</div>
