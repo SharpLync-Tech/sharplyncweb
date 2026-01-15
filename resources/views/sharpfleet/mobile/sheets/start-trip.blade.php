@@ -249,7 +249,7 @@
             <label class="form-label">Trip Type</label>
 
         @if($allowPrivateTrips)
-            <div class="radio-group">
+            <div class="radio-group" style="margin-top: 10px; margin-bottom: 12px;">
                 <label class="radio-label">
                     <input type="radio" name="trip_mode" value="business" checked form="startTripForm">
                     Business
@@ -266,14 +266,14 @@
         </div>
 
         @if($settingsService->purposeOfTravelEnabled())
-            <div id="purposeOfTravelBlock" class="form-group">
+            <div id="purposeOfTravelBlock" class="form-group" style="margin-top: 6px;">
                 <label class="form-label">Purpose of Travel (optional)</label>
                 <input
                     type="text"
                     name="purpose_of_travel"
                     class="form-control"
                     maxlength="255"
-                    placeholder="e.g. Materials pickup at Bunnings"
+                    placeholder="e.g. Site visit, delivery, client meeting"
                     form="startTripForm"
                 >
             </div>
