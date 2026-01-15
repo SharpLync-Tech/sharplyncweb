@@ -38,7 +38,9 @@
     <div id="sf-bookings-offline" class="sf-mobile-card" style="margin-bottom: 16px; display: none;">
         <div class="sf-mobile-card-title">Offline mode</div>
         <div class="sf-mobile-card-text">
-            Bookings aren’t available while offline because changes could cause schedule conflicts. Reconnect to continue.
+            <span style="color:#1fa6a0;">
+            ℹ️ Bookings aren’t available while offline to avoid schedule conflicts. Reconnect to create or cancel bookings.
+            </span>
         </div>
         <button type="button" class="sf-mobile-secondary-btn" id="sf-bookings-offline-close">
             Close
