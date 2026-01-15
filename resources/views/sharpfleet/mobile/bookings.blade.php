@@ -38,7 +38,7 @@
     <div id="sf-bookings-offline" class="sf-mobile-card" style="margin-bottom: 16px; display: none;">
         <div class="sf-mobile-card-title">Offline mode</div>
         <div class="sf-mobile-card-text">
-            Bookings are read-only while offline. Reconnect to create or cancel bookings.
+            Bookings aren’t available while offline because changes could cause schedule conflicts. Reconnect to continue.
         </div>
         <button type="button" class="sf-mobile-secondary-btn" id="sf-bookings-offline-close">
             Close
