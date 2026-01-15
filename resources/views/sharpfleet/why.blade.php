@@ -6,6 +6,10 @@
 
 @extends('layouts.sharpfleet')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/sharpfleet/why-sharpfleet.css') }}">
+@endpush
+
 @section('title', 'Why SharpFleet')
 
 @section('sharpfleet-content')
