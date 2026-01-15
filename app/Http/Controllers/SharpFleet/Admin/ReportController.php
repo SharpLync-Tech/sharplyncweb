@@ -116,29 +116,24 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Company settings → client label (NO hardcoding)
+        | Company settings (RAW, decoded for Blade)
         |--------------------------------------------------------------------------
         */
+        $settings = [];
+
         $companySettingsRow = DB::connection('sharpfleet')
             ->table('company_settings')
             ->where('organisation_id', (int) $user['organisation_id'])
             ->first();
 
-        $clientLabel = 'Client'; // safe fallback
-
         if ($companySettingsRow && !empty($companySettingsRow->settings)) {
-            $settings = json_decode($companySettingsRow->settings, true);
-
-            if (
-                isset($settings['client_presence']['label']) &&
-                is_string($settings['client_presence']['label']) &&
-                trim($settings['client_presence']['label']) !== ''
-            ) {
-                $clientLabel = $settings['client_presence']['label'];
+            $decoded = json_decode($companySettingsRow->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
             }
         }
 
-        $companySettings = new CompanySettingsService((int) $user['organisation_id']);
+        $companySettingsService = new CompanySettingsService((int) $user['organisation_id']);
 
         /*
         |--------------------------------------------------------------------------
@@ -156,10 +151,10 @@ class ReportController extends Controller
             'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
             'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
             'companyTimezone' => (string) ($result['companyTimezone'] ?? 'UTC'),
-            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+            'purposeOfTravelEnabled' => (bool) $companySettingsService->purposeOfTravelEnabled(),
 
-            // ✅ DB-driven label
-            'clientLabel' => $clientLabel,
+            // 🔑 SAME SOURCE AS start-trip.blade.php
+            'settings' => $settings,
         ]);
     }
 
