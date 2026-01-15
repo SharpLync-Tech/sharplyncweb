@@ -127,13 +127,20 @@ class DriverMobileController extends Controller
             ->whereNull('trips.ended_at')
             ->first();
 
+        $organisationName = (string) (DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', (int) $user['organisation_id'])
+            ->value('name') ?? '');
+
         return view('sharpfleet.mobile.dashboard', compact(
+            'user',
             'settingsService',
             'settings',
             'vehicles',
             'customers',
             'lastTrips',
             'activeTrip',
+            'organisationName',
             'allowPrivateTrips',
             'faultsEnabled',
             'allowFaultsDuringTrip',

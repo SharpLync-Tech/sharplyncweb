@@ -10,16 +10,16 @@
     ================================ --}}
     @php
         $driverFirstName = trim((string) ($user['first_name'] ?? ''));
-        $organisationName = trim((string) ($user['organisation_name'] ?? ''));
+        $organisationName = trim((string) ($organisationName ?? ''));
     @endphp
 
     <div style="margin-bottom: 16px;">
         <h1 class="sf-mobile-title">
-            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }} 👋
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}
         </h1>
 
         <div class="sf-mobile-subtitle">
-            SharpFleet · {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
+            SharpFleet - {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
         </div>
     </div>
 
