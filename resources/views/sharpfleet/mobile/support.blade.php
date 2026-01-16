@@ -10,7 +10,9 @@
 
 <section class="sf-mobile-dashboard">
     <h1 class="sf-mobile-title">Support</h1>
-    <p class="sf-mobile-subtitle">Tell us what happened and we will help.</p>
+    <p class="sf-mobile-subtitle" style="margin-top: -6px; margin-bottom: 20px;">
+        Tell us what happened and we will help.
+    </p>
 
     @if (session('success'))
         <div id="sfSupportSuccess" class="sf-mobile-card" style="margin-bottom: 16px;">
@@ -36,13 +38,13 @@
     <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form">
         @csrf
 
-        <div class="form-group" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label">Support request</label>
             <textarea
                 id="sfSupportMessage"
                 name="message"
                 class="form-control sf-support-textarea"
-                rows="10"
+                rows="12"
                 maxlength="500"
                 required
                 placeholder="Describe the issue, what you were trying to do, and any error you saw."
