@@ -83,7 +83,8 @@
             </div>
         </div>
 
-        <div id="offlineTripAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
+    <div id="offlineTripAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
+    <div id="supportSentAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
     @endif
 
     <div id="offlineActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px; display:none;">
@@ -169,6 +170,7 @@
         const offlineActiveTripCard = document.getElementById('offlineActiveTripCard');
         const offlineEndDriveBtn = document.getElementById('offlineEndDriveBtn');
         const noActiveTripCard = document.getElementById('noActiveTripCard');
+        const supportSentAlert = document.getElementById('supportSentAlert');
 
         const startTripForm = document.getElementById('startTripForm');
         const endTripForm = document.getElementById('endTripForm');
@@ -605,11 +607,26 @@
             showOfflineMessage('Back online. Syncing offline trips...');
             syncOfflineTripsIfPossible();
             syncOfflineFaultReportsIfPossible();
+            showSupportSentMessage();
         });
 
         renderOfflineActiveTrip();
         syncOfflineTripsIfPossible();
         syncOfflineFaultReportsIfPossible();
+        showSupportSentMessage();
+
+        function showSupportSentMessage() {
+            if (!supportSentAlert || !navigator.onLine) return;
+            const key = 'sf_support_sent_notice_v1';
+            const stamp = localStorage.getItem(key);
+            if (!stamp) return;
+            supportSentAlert.textContent = 'Support request sent.';
+            supportSentAlert.style.display = '';
+            localStorage.removeItem(key);
+            setTimeout(() => {
+                supportSentAlert.style.display = 'none';
+            }, 4000);
+        }
     })();
 </script>
 @endsection

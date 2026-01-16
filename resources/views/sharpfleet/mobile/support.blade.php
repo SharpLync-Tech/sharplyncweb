@@ -83,6 +83,7 @@
     const queuedCard = document.getElementById('sfSupportQueued');
     const form = document.getElementById('sfSupportForm');
     const QUEUE_KEY = 'sf_support_queue_v1';
+    const QUEUED_NOTICE_DELAY_MS = 1000;
 
     function updateCounter() {
         if (!message || !counter) return;
@@ -156,38 +157,6 @@
         };
     }
 
-    async function sendQueuedRequest(item) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
-
-        try {
-            const fd = new FormData();
-            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            fd.append('_token', token);
-            fd.append('message', item.message || '');
-            if (item.platform) fd.append('platform', item.platform);
-            if (item.usage_mode) fd.append('usage_mode', item.usage_mode);
-            if (item.client_timezone) fd.append('client_timezone', item.client_timezone);
-            if (item.logs) fd.append('logs', item.logs);
-
-            const res = await fetch('/app/sharpfleet/mobile/support', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                },
-                body: fd,
-                signal: controller.signal,
-            });
-
-            clearTimeout(timeout);
-            return res && res.ok;
-        } catch (e) {
-            clearTimeout(timeout);
-            return false;
-        }
-    }
-
     async function syncQueue() {
         if (!navigator.onLine) return;
         const queue = getQueue();
@@ -227,9 +196,13 @@
             e.preventDefault();
 
             const payload = buildQueuedPayload();
-            const queue = getQueue();
-            queue.push(payload);
-            setQueue(queue);
+            if (window.sfQueueSupportRequest) {
+                window.sfQueueSupportRequest(payload);
+            } else {
+                const queue = getQueue();
+                queue.push(payload);
+                setQueue(queue);
+            }
 
             form.reset();
             updateCounter();
@@ -237,6 +210,9 @@
             if (modeField) modeField.value = detectUsageMode();
             if (timezoneField) timezoneField.value = detectTimezone();
             showQueued();
+            setTimeout(() => {
+                window.location.href = '/app/sharpfleet/mobile';
+            }, QUEUED_NOTICE_DELAY_MS);
         });
     }
 

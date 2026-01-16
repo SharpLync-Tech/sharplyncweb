@@ -286,5 +286,106 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+{{-- Support request queue (local storage) --}}
+<script>
+(function () {
+    const SUPPORT_QUEUE_KEY = 'sf_support_queue_v1';
+    const SUPPORT_SENT_KEY = 'sf_support_sent_notice_v1';
+
+    function getQueue() {
+        try {
+            const raw = localStorage.getItem(SUPPORT_QUEUE_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function setQueue(items) {
+        try {
+            localStorage.setItem(SUPPORT_QUEUE_KEY, JSON.stringify(items));
+        } catch (e) {
+            // ignore storage errors
+        }
+    }
+
+    function buildFormData(item) {
+        const fd = new FormData();
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        fd.append('_token', token);
+        fd.append('message', item.message || '');
+        if (item.platform) fd.append('platform', item.platform);
+        if (item.usage_mode) fd.append('usage_mode', item.usage_mode);
+        if (item.client_timezone) fd.append('client_timezone', item.client_timezone);
+        if (item.logs) fd.append('logs', item.logs);
+        return fd;
+    }
+
+    async function sendQueuedRequest(item) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        try {
+            const res = await fetch('/app/sharpfleet/mobile/support', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                },
+                body: buildFormData(item),
+                signal: controller.signal,
+            });
+            clearTimeout(timeout);
+            return res && res.ok;
+        } catch (e) {
+            clearTimeout(timeout);
+            return false;
+        }
+    }
+
+    async function syncQueue() {
+        if (!navigator.onLine) return;
+        const queue = getQueue();
+        if (queue.length === 0) return;
+
+        const remaining = [];
+        let sentAny = false;
+        for (const item of queue) {
+            const ok = await sendQueuedRequest(item);
+            if (!ok) {
+                remaining.push(item);
+            } else {
+                sentAny = true;
+            }
+        }
+        setQueue(remaining);
+
+        if (sentAny && remaining.length === 0) {
+            try {
+                localStorage.setItem(SUPPORT_SENT_KEY, new Date().toISOString());
+            } catch (e) {
+                // ignore storage errors
+            }
+        }
+    }
+
+    window.sfQueueSupportRequest = function (payload) {
+        const queue = getQueue();
+        queue.push(payload);
+        setQueue(queue);
+    };
+
+    window.sfSyncSupportQueue = syncQueue;
+
+    window.addEventListener('online', () => {
+        syncQueue();
+    });
+
+    syncQueue();
+})();
+</script>
+
 </body>
 </html>
