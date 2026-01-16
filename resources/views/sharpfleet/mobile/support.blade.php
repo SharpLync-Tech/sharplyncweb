@@ -33,57 +33,36 @@
         </div>
     @endif
 
-    <div class="sf-mobile-card">
-        <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm">
-            @csrf
+    <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm">
+        @csrf
 
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Your name</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    value="{{ $driverName !== '' ? $driverName : 'Driver' }}"
-                    readonly
-                >
-            </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label">Support request</label>
+            <textarea
+                id="sfSupportMessage"
+                name="message"
+                class="form-control"
+                rows="10"
+                maxlength="500"
+                required
+                placeholder="Describe the issue, what you were trying to do, and any error you saw."
+            >{{ old('message') }}</textarea>
+            <div class="hint-text" id="sfSupportCounter">0 / 500</div>
+        </div>
 
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Email</label>
-                <input
-                    type="email"
-                    class="form-control"
-                    value="{{ $driverEmail !== '' ? $driverEmail : 'Unknown' }}"
-                    readonly
-                >
-            </div>
+        <input type="hidden" name="platform" id="sfSupportPlatform">
+        <input type="hidden" name="usage_mode" id="sfSupportUsageMode">
+        <input type="hidden" name="client_timezone" id="sfSupportClientTimezone">
+        <input type="hidden" name="logs" id="sfSupportLogs">
 
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Support request</label>
-                <textarea
-                    id="sfSupportMessage"
-                    name="message"
-                    class="form-control"
-                    rows="5"
-                    maxlength="500"
-                    required
-                    placeholder="Describe the issue, what you were trying to do, and any error you saw."
-                >{{ old('message') }}</textarea>
-                <div class="hint-text" id="sfSupportCounter">0 / 500</div>
-            </div>
+        <div class="hint-text" style="margin-bottom: 12px;">
+            We will include device warnings/errors from the last 3 days to help debugging.
+        </div>
 
-            <input type="hidden" name="platform" id="sfSupportPlatform">
-            <input type="hidden" name="usage_mode" id="sfSupportUsageMode">
-            <input type="hidden" name="logs" id="sfSupportLogs">
-
-            <div class="hint-text" style="margin-bottom: 12px;">
-                We will include device warnings/errors from the last 3 days to help debugging.
-            </div>
-
-            <button type="submit" class="sf-mobile-primary-btn">
-                Send Support Request
-            </button>
-        </form>
-    </div>
+        <button type="submit" class="sf-mobile-primary-btn">
+            Send Support Request
+        </button>
+    </form>
 </section>
 
 <script>
@@ -93,6 +72,7 @@
     const platformField = document.getElementById('sfSupportPlatform');
     const modeField = document.getElementById('sfSupportUsageMode');
     const logsField = document.getElementById('sfSupportLogs');
+    const timezoneField = document.getElementById('sfSupportClientTimezone');
     const form = document.getElementById('sfSupportForm');
 
     function updateCounter() {
@@ -114,6 +94,14 @@
         return (isStandalone || iosStandalone) ? 'PWA' : 'Browser';
     }
 
+    function detectTimezone() {
+        try {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
     function serializeLogs() {
         if (!window.sfGetLogs) return '';
         const logs = window.sfGetLogs();
@@ -128,6 +116,7 @@
     updateCounter();
     if (platformField) platformField.value = detectPlatform();
     if (modeField) modeField.value = detectUsageMode();
+    if (timezoneField) timezoneField.value = detectTimezone();
 
     if (message) {
         message.addEventListener('input', updateCounter);
