@@ -38,7 +38,7 @@
     <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form">
         @csrf
 
-        <div class="form-group" style="margin-bottom: 14px;">
+        <div class="form-group sf-support-group">
             <label class="form-label">Support request</label>
             <textarea
                 id="sfSupportMessage"
