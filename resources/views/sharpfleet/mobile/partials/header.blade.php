@@ -12,4 +12,10 @@
         </div>
 
     </div>
+
+    @hasSection('mobile-header-meta')
+        <div class="sf-mobile-header-meta">
+            @yield('mobile-header-meta')
+        </div>
+    @endif
 </header>
