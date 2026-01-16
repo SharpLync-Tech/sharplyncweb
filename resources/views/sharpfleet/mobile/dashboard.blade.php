@@ -5,8 +5,6 @@
 @section('content')
 <section class="sf-mobile-dashboard">
 
-    <div id="offlineTripAlert" class="sf-mobile-card" style="display:none;"></div>
-
     {{-- ===============================
          Greeting / Identity
     ================================ --}}
@@ -84,6 +82,8 @@
                 Tap the Start icon in the footer to begin a trip.
             </div>
         </div>
+
+        <div id="offlineTripAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
     @endif
 
     <div id="offlineActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px; display:none;">
