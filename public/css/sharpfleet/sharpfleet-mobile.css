@@ -384,6 +384,10 @@
         0 0 8px rgba(46, 196, 182, 0.3);
 }
 
+.sf-status-pulse {
+    animation: sf-pop 220ms ease-out;
+}
+
 .sf-mobile-modal {
     position: fixed;
     inset: 0;

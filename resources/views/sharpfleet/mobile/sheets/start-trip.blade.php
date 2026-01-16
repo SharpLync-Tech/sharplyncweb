@@ -584,6 +584,9 @@
                 target.setAttribute('name', 'checkmark');
             }
             target.classList.add('sf-status-complete');
+            target.classList.remove('sf-status-pulse');
+            void target.offsetWidth;
+            target.classList.add('sf-status-pulse');
         });
     });
 
