@@ -253,6 +253,9 @@
 
     const successCard = document.getElementById('sfSupportSuccess');
     if (successCard) {
+        if (!navigator.onLine) {
+            successCard.style.display = 'none';
+        } else {
         setTimeout(() => {
             successCard.style.transition = 'opacity 300ms ease';
             successCard.style.opacity = '0';
@@ -261,6 +264,7 @@
                 window.location.href = '/app/sharpfleet/mobile';
             }, 320);
         }, 4000);
+        }
     }
 })();
 </script>
