@@ -152,6 +152,11 @@
     max-width: 100%;
     min-height: 220px;
     resize: vertical;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(44, 191, 174, 0.55);
+    border-radius: 16px;
+    color: #EAF7F4;
+    box-shadow: 0 0 0 1px rgba(44, 191, 174, 0.18), 0 0 18px rgba(44, 191, 174, 0.25);
 }
 
 .sf-support-form {
