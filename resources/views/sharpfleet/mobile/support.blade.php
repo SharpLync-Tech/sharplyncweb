@@ -33,7 +33,7 @@
         </div>
     @endif
 
-    <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm">
+    <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form">
         @csrf
 
         <div class="form-group" style="margin-bottom: 16px;">
@@ -41,7 +41,7 @@
             <textarea
                 id="sfSupportMessage"
                 name="message"
-                class="form-control"
+                class="form-control sf-support-textarea"
                 rows="10"
                 maxlength="500"
                 required

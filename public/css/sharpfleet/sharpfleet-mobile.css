@@ -146,6 +146,18 @@
     font-size: 15px;
 }
 
+.sf-support-textarea {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    min-height: 220px;
+    resize: vertical;
+}
+
+.sf-support-form {
+    width: 100%;
+}
+
 /* ======================================
    Buttons
 ====================================== */
