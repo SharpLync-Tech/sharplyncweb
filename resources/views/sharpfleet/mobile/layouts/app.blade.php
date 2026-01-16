@@ -182,6 +182,10 @@ if ('serviceWorker' in navigator) {
             if (!svg) return;
             const span = document.createElement('span');
             span.className = 'sf-icon-fallback ' + (el.getAttribute('class') || '');
+            Array.from(el.attributes).forEach(attr => {
+                if (attr.name === 'class' || attr.name === 'name') return;
+                span.setAttribute(attr.name, attr.value);
+            });
             span.innerHTML = svg;
             el.replaceWith(span);
         });
