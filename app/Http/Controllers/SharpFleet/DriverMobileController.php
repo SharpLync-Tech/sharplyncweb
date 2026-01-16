@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
@@ -309,6 +310,82 @@ class DriverMobileController extends Controller
         }
 
         return view('sharpfleet.mobile.more');
+    }
+
+    public function support(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        $organisationName = (string) (DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', (int) $user['organisation_id'])
+            ->value('name') ?? '');
+
+        return view('sharpfleet.mobile.support', [
+            'user' => $user,
+            'organisationName' => $organisationName,
+        ]);
+    }
+
+    public function supportSend(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:500'],
+            'platform' => ['nullable', 'string', 'max:40'],
+            'usage_mode' => ['nullable', 'string', 'max:40'],
+            'logs' => ['nullable', 'string', 'max:20000'],
+        ]);
+
+        $name = trim((string) (($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')));
+        $email = trim((string) ($user['email'] ?? ''));
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+
+        $bodyLines = [
+            'SharpFleet Mobile Support Request',
+            '----------------------------------',
+            'Name: ' . ($name !== '' ? $name : 'Unknown'),
+            'Email: ' . ($email !== '' ? $email : 'Unknown'),
+            'Organisation ID: ' . ($organisationId ?: 'Unknown'),
+            'Platform: ' . ($validated['platform'] ?? 'Unknown'),
+            'Usage mode: ' . ($validated['usage_mode'] ?? 'Unknown'),
+            'Submitted: ' . now()->toDateTimeString(),
+            '',
+            'Message:',
+            $validated['message'],
+            '',
+        ];
+
+        if (!empty($validated['logs'])) {
+            $bodyLines[] = 'Device Logs (warnings/errors, last 3 days / 100 entries):';
+            $bodyLines[] = $validated['logs'];
+        }
+
+        $body = implode("\n", $bodyLines);
+
+        try {
+            Mail::raw($body, function ($message) use ($email, $name) {
+                $message->to('info@sharplync.com.au')
+                    ->subject('SharpFleet Mobile Support Request');
+
+                if ($email !== '') {
+                    $message->replyTo($email, $name !== '' ? $name : null);
+                }
+            });
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Could not send your support request. Please try again.');
+        }
+
+        return back()->with('success', 'Support request sent. We will get back to you shortly.');
     }
 
     public function help(Request $request)

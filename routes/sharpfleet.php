@@ -126,6 +126,11 @@ Route::prefix('app/sharpfleet')
         Route::get('/mobile/more', [DriverMobileController::class, 'more'])
             ->name('sharpfleet.mobile.more');
 
+        Route::get('/mobile/support', [DriverMobileController::class, 'support'])
+            ->name('sharpfleet.mobile.support');
+        Route::post('/mobile/support', [DriverMobileController::class, 'supportSend'])
+            ->name('sharpfleet.mobile.support.send');
+
         Route::get('/mobile/help', [DriverMobileController::class, 'help'])
             ->name('sharpfleet.mobile.help');
 

@@ -197,5 +197,94 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+{{-- Client-side logs (warnings/errors only; local storage, 3 days / 100 entries) --}}
+<script>
+(function () {
+    const LOG_KEY = 'sf_mobile_logs_v1';
+    const MAX_ENTRIES = 100;
+    const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000;
+    let memoryLogs = [];
+
+    function safeParse(raw) {
+        try { return JSON.parse(raw); } catch (e) { return []; }
+    }
+
+    function prune(logs) {
+        const cutoff = Date.now() - MAX_AGE_MS;
+        const filtered = (Array.isArray(logs) ? logs : []).filter(item => {
+            const ts = item && item.ts ? Date.parse(item.ts) : NaN;
+            return Number.isFinite(ts) && ts >= cutoff;
+        });
+        return filtered.slice(-MAX_ENTRIES);
+    }
+
+    function persist(logs) {
+        try {
+            localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+        } catch (e) {
+            // ignore storage errors
+        }
+    }
+
+    function load() {
+        let logs = [];
+        try {
+            const raw = localStorage.getItem(LOG_KEY);
+            logs = safeParse(raw || '[]');
+        } catch (e) {
+            logs = [];
+        }
+        logs = prune(logs);
+        memoryLogs = logs.slice();
+        persist(logs);
+    }
+
+    function normalizeMessage(message) {
+        if (typeof message === 'string') return message.slice(0, 500);
+        try {
+            return JSON.stringify(message).slice(0, 500);
+        } catch (e) {
+            return 'Unserializable message';
+        }
+    }
+
+    function addLog(level, message, context) {
+        if (level !== 'warning' && level !== 'error') return;
+        const entry = {
+            ts: new Date().toISOString(),
+            level,
+            message: normalizeMessage(message),
+            context: context || null,
+        };
+        memoryLogs.push(entry);
+        const pruned = prune(memoryLogs);
+        memoryLogs = pruned.slice();
+        persist(pruned);
+    }
+
+    window.sfLog = addLog;
+    window.sfGetLogs = function () {
+        return prune(memoryLogs.slice());
+    };
+
+    load();
+
+    window.addEventListener('error', (event) => {
+        addLog('error', event.message || 'Unhandled error', {
+            source: event.filename || null,
+            line: event.lineno || null,
+            column: event.colno || null,
+        });
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+        const reason = event && event.reason ? event.reason : 'Unhandled promise rejection';
+        addLog('error', reason && reason.message ? reason.message : reason, {
+            source: 'promise',
+        });
+    });
+})();
+</script>
+
 </body>
 </html>

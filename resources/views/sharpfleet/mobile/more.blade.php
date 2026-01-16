@@ -17,6 +17,10 @@
         <span>Help</span>
     </a>
 
+    <a href="/app/sharpfleet/mobile/support" class="sf-mobile-list-item">
+        <span>Support</span>
+    </a>
+
     <a href="/app/sharpfleet/mobile/about" class="sf-mobile-list-item">
         <span>About SharpFleet</span>
     </a>
