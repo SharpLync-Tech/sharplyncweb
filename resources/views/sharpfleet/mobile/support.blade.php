@@ -10,7 +10,7 @@
 
 <section class="sf-mobile-dashboard">
     <h1 class="sf-mobile-title">Support</h1>
-    <p class="sf-mobile-subtitle" style="margin-top: -6px; margin-bottom: 20px;">
+    <p class="sf-mobile-subtitle" style="margin-top: -6px; margin-bottom: 14px;">
         Tell us what happened and we will help.
     </p>
 
@@ -44,7 +44,7 @@
                 id="sfSupportMessage"
                 name="message"
                 class="form-control sf-support-textarea"
-                rows="12"
+                rows="13"
                 maxlength="500"
                 required
                 placeholder="Describe the issue, what you were trying to do, and any error you saw."
