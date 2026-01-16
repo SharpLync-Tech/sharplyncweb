@@ -35,6 +35,11 @@
         </div>
     @endif
 
+    <div id="sfSupportQueued" class="sf-mobile-card" style="margin-bottom: 16px; display: none;">
+        <div class="sf-mobile-card-title">Queued for sending</div>
+        <div class="sf-mobile-card-text">Queued, will send when online.</div>
+    </div>
+
     <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form">
         @csrf
 
@@ -75,7 +80,9 @@
     const modeField = document.getElementById('sfSupportUsageMode');
     const logsField = document.getElementById('sfSupportLogs');
     const timezoneField = document.getElementById('sfSupportClientTimezone');
+    const queuedCard = document.getElementById('sfSupportQueued');
     const form = document.getElementById('sfSupportForm');
+    const QUEUE_KEY = 'sf_support_queue_v1';
 
     function updateCounter() {
         if (!message || !counter) return;
@@ -115,6 +122,89 @@
         }
     }
 
+    function getQueue() {
+        try {
+            const raw = localStorage.getItem(QUEUE_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function setQueue(items) {
+        try {
+            localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
+        } catch (e) {
+            // ignore storage errors
+        }
+    }
+
+    function showQueued() {
+        if (!queuedCard) return;
+        queuedCard.style.display = '';
+    }
+
+    function buildQueuedPayload() {
+        return {
+            message: message ? String(message.value || '').trim() : '',
+            platform: platformField ? String(platformField.value || '') : detectPlatform(),
+            usage_mode: modeField ? String(modeField.value || '') : detectUsageMode(),
+            client_timezone: timezoneField ? String(timezoneField.value || '') : detectTimezone(),
+            logs: serializeLogs(),
+            queuedAt: new Date().toISOString(),
+        };
+    }
+
+    async function sendQueuedRequest(item) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+
+        try {
+            const fd = new FormData();
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            fd.append('_token', token);
+            fd.append('message', item.message || '');
+            if (item.platform) fd.append('platform', item.platform);
+            if (item.usage_mode) fd.append('usage_mode', item.usage_mode);
+            if (item.client_timezone) fd.append('client_timezone', item.client_timezone);
+            if (item.logs) fd.append('logs', item.logs);
+
+            const res = await fetch('/app/sharpfleet/mobile/support', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                },
+                body: fd,
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeout);
+            return res && res.ok;
+        } catch (e) {
+            clearTimeout(timeout);
+            return false;
+        }
+    }
+
+    async function syncQueue() {
+        if (!navigator.onLine) return;
+        const queue = getQueue();
+        if (queue.length === 0) return;
+
+        const remaining = [];
+        for (const item of queue) {
+            const ok = await sendQueuedRequest(item);
+            if (!ok) remaining.push(item);
+        }
+        setQueue(remaining);
+
+        if (remaining.length === 0 && queuedCard) {
+            queuedCard.style.display = 'none';
+        }
+    }
+
     updateCounter();
     if (platformField) platformField.value = detectPlatform();
     if (modeField) modeField.value = detectUsageMode();
@@ -125,12 +215,41 @@
     }
 
     if (form) {
-        form.addEventListener('submit', () => {
+        form.addEventListener('submit', (e) => {
             if (logsField) {
                 logsField.value = serializeLogs();
             }
+
+            if (navigator.onLine) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const payload = buildQueuedPayload();
+            const queue = getQueue();
+            queue.push(payload);
+            setQueue(queue);
+
+            form.reset();
+            updateCounter();
+            if (platformField) platformField.value = detectPlatform();
+            if (modeField) modeField.value = detectUsageMode();
+            if (timezoneField) timezoneField.value = detectTimezone();
+            showQueued();
         });
     }
+
+    const existingQueue = getQueue();
+    if (existingQueue.length > 0) {
+        showQueued();
+    }
+
+    window.addEventListener('online', () => {
+        syncQueue();
+    });
+
+    syncQueue();
 
     const successCard = document.getElementById('sfSupportSuccess');
     if (successCard) {
