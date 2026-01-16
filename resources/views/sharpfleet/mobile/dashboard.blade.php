@@ -73,7 +73,7 @@
             End Drive
         </button>
     @else
-        <div class="sf-mobile-card" style="margin-bottom: 20px;">
+        <div id="noActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px;">
             <div class="sf-mobile-card-title">No Active Trip</div>
             <div class="hint-text" style="margin-top: 6px;">
                 Ready when you are.
@@ -168,6 +168,7 @@
         const offlineTripAlert = document.getElementById('offlineTripAlert');
         const offlineActiveTripCard = document.getElementById('offlineActiveTripCard');
         const offlineEndDriveBtn = document.getElementById('offlineEndDriveBtn');
+        const noActiveTripCard = document.getElementById('noActiveTripCard');
 
         const startTripForm = document.getElementById('startTripForm');
         const endTripForm = document.getElementById('endTripForm');
@@ -181,6 +182,12 @@
             if (!offlineTripAlert) return;
             offlineTripAlert.textContent = msg;
             offlineTripAlert.style.display = '';
+        }
+
+        function hideOfflineMessage() {
+            if (!offlineTripAlert) return;
+            offlineTripAlert.textContent = '';
+            offlineTripAlert.style.display = 'none';
         }
 
         function getLocalJson(key, fallback) {
@@ -230,11 +237,13 @@
             if (!t) {
                 offlineActiveTripCard.style.display = 'none';
                 offlineEndDriveBtn.style.display = 'none';
+                if (noActiveTripCard) noActiveTripCard.style.display = '';
                 return;
             }
 
             offlineActiveTripCard.style.display = '';
             offlineEndDriveBtn.style.display = '';
+            if (noActiveTripCard) noActiveTripCard.style.display = 'none';
 
             const v = document.getElementById('offlineTripVehicle');
             const s = document.getElementById('offlineTripStarted');
@@ -343,7 +352,10 @@
         async function syncOfflineTripsIfPossible() {
             if (!navigator.onLine) return;
             const completed = getOfflineCompletedTrips();
-            if (!Array.isArray(completed) || completed.length === 0) return;
+            if (!Array.isArray(completed) || completed.length === 0) {
+                hideOfflineMessage();
+                return;
+            }
 
             try {
                 const res = await fetch('/app/sharpfleet/trips/offline-sync', {
@@ -370,6 +382,7 @@
                 const data = await res.json();
                 setOfflineCompletedTrips([]);
                 showOfflineMessage(`Offline trips synced (${(data.synced || []).length} sent).`);
+                setTimeout(() => hideOfflineMessage(), 1800);
                 setTimeout(() => window.location.reload(), 800);
             } catch (e) {
                 // ignore network errors
