@@ -139,6 +139,7 @@
             successCard.style.opacity = '0';
             setTimeout(() => {
                 successCard.style.display = 'none';
+                window.location.href = '/app/sharpfleet/mobile';
             }, 320);
         }, 4000);
     }
