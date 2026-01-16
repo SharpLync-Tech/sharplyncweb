@@ -2,28 +2,26 @@
 
 @section('title', 'Driver')
 
-@php
-    $driverFirstName = trim((string) ($user['first_name'] ?? ''));
-    $organisationName = trim((string) ($organisationName ?? ''));
-@endphp
-
-@section('mobile-header-meta')
-    <div class="sf-mobile-header-meta-left">
-        Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}
-        <span class="sf-mobile-header-wave" aria-hidden="true">&#128075;</span>
-    </div>
-    <div class="sf-mobile-header-meta-right">
-        {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
-    </div>
-@endsection
-
 @section('content')
 <section class="sf-mobile-dashboard">
 
     {{-- ===============================
          Greeting / Identity
     ================================ --}}
-    {{-- Greeting now lives in the sticky header --}}
+    @php
+        $driverFirstName = trim((string) ($user['first_name'] ?? ''));
+        $organisationName = trim((string) ($organisationName ?? ''));
+    @endphp
+
+    <div style="margin-bottom: 16px;">
+        <h1 class="sf-mobile-title">
+            Hi {{ $driverFirstName !== '' ? $driverFirstName : 'Driver' }}<span style="font-size:0.65em; vertical-align:middle;"> 👋</span>
+        </h1>
+
+        <div class="sf-mobile-subtitle">
+            {{ $organisationName !== '' ? $organisationName : 'Organisation' }}
+        </div>
+    </div>
 
     {{-- ===============================
          Drive Status

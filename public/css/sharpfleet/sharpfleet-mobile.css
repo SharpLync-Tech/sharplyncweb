@@ -63,34 +63,6 @@
     padding: 0 16px;
 }
 
-.sf-mobile-header-meta {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 16px 12px;
-}
-
-.sf-mobile-header-meta-left,
-.sf-mobile-header-meta-right {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2CBFAE;
-    line-height: 1.2;
-}
-
-.sf-mobile-header-meta-right {
-    text-align: right;
-    opacity: 1;
-}
-
-.sf-mobile-header-wave {
-    margin-left: 4px;
-    font-size: 0.8em;
-    vertical-align: middle;
-}
 
 /* Logo */
 .sf-mobile-header-logo {
