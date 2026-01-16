@@ -267,6 +267,37 @@
             return meta ? meta.getAttribute('content') : '';
         }
 
+        async function submitFormOnline(form) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'Accept': 'text/html',
+                    },
+                    body: new FormData(form),
+                    signal: controller.signal,
+                });
+
+                clearTimeout(timeout);
+
+                if (res.ok) {
+                    const target = res.url || window.location.href;
+                    window.location.href = target;
+                    return { ok: true };
+                }
+
+                return { ok: false, networkError: false };
+            } catch (e) {
+                clearTimeout(timeout);
+                return { ok: false, networkError: true };
+            }
+        }
+
         async function syncOfflineFaultReportsIfPossible() {
             if (!navigator.onLine) return;
             const reports = getOfflineFaultReports();
@@ -364,9 +395,7 @@
         }
 
         if (startTripForm) {
-            startTripForm.addEventListener('submit', (e) => {
-                if (navigator.onLine) return;
-
+            startTripForm.addEventListener('submit', async (e) => {
                 if (!startTripForm.checkValidity()) {
                     return;
                 }
@@ -376,6 +405,15 @@
                 if (getOfflineActiveTrip()) {
                     showOfflineMessage('A trip is already in progress offline. End it before starting another.');
                     return;
+                }
+
+                if (navigator.onLine) {
+                    const result = await submitFormOnline(startTripForm);
+                    if (result.ok) return;
+                    if (!result.networkError) {
+                        showOfflineMessage('Could not start the trip right now. Please try again.');
+                        return;
+                    }
                 }
 
                 const payload = buildOfflineStartPayload(startTripForm);
@@ -410,14 +448,22 @@
 
         if (endTripForm) {
             endTripForm.addEventListener('submit', async (e) => {
-                if (navigator.onLine) return;
-
                 if (!endTripForm.checkValidity()) {
                     return;
                 }
 
                 e.preventDefault();
+
                 const active = getOfflineActiveTrip();
+                if (!active && navigator.onLine) {
+                    const result = await submitFormOnline(endTripForm);
+                    if (result.ok) return;
+                    if (!result.networkError) {
+                        showOfflineMessage('Could not end the trip right now. Please try again.');
+                        return;
+                    }
+                }
+
                 if (!active) {
                     showOfflineMessage('No offline trip found to end.');
                     return;
