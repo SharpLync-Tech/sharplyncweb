@@ -153,6 +153,7 @@
     min-height: 300px;
     resize: vertical;
     padding: 18px 18px;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(44, 191, 174, 0.55);
     border-radius: 16px;
@@ -162,15 +163,15 @@
 
 .sf-support-form {
     width: 100%;
+    padding: 0 20px;
 }
 
 .sf-support-group .form-label {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .sf-support-group {
     margin-bottom: 14px;
-    padding: 0 6px;
 }
 
 /* ======================================
