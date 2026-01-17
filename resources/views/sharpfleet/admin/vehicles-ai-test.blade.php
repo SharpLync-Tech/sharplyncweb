@@ -385,6 +385,7 @@
                 clearList(locationList);
                 setStatus(locationStatus, '');
                 clearAll();
+            }
         });
     });
 })();
