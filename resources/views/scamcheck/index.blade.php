@@ -74,7 +74,7 @@
                     Browse…
                 </button>
 
-                <p style="margin-top:8px; font-size:0.9em; opacity:0.8;">
+                <p style="margin-top:8px; font-size:0.9em; color:#ffffff; opacity:0.85;">
                     📎 Supports email files (.eml, .msg) and screenshots (JPG, PNG)
                 </p>
 
@@ -107,10 +107,7 @@
                 const result = document.querySelector('.result-container');
                 if (result) {
                     setTimeout(() => {
-                        result.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
+                        result.scrollIntoView({ behavior: "smooth", block: "start" });
                     }, 300);
                 }
             });
@@ -168,6 +165,24 @@
 
                 <div class="section-title">Recommended Action</div>
                 <p>{!! nl2br(e($recommended)) !!}</p>
+            </div>
+
+            <!-- IMPORTANT NOTICE -->
+            <div class="result-box safe"
+                 style="margin-top:24px; border-left-width:6px; color:#0a2a4d;">
+                <strong>Important notice</strong>
+                <p style="margin-top:8px;">
+                    SharpLync ThreatCheck provides an <strong>informational analysis only</strong>.
+                    Results are <strong>not guaranteed to be accurate or complete</strong>.
+                </p>
+                <p>
+                    Always <strong>independently verify</strong> messages before clicking links,
+                    making payments, or sharing information.
+                </p>
+                <p style="margin-bottom:0;">
+                    SharpLync accepts <strong>no liability for any loss or damage</strong>
+                    resulting from reliance on this analysis.
+                </p>
             </div>
 
             <!-- ACTIONS -->
