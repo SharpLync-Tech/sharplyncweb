@@ -47,4 +47,25 @@ class VehicleAiTestController extends Controller
             'items' => $items,
         ]);
     }
+
+    public function trims(Request $request, VehicleAiClient $client): JsonResponse
+    {
+        $validated = $request->validate([
+            'make' => ['required', 'string', 'max:40'],
+            'model' => ['required', 'string', 'max:40'],
+            'query' => ['nullable', 'string', 'max:40'],
+            'location' => ['required', 'string', 'max:10'],
+        ]);
+
+        $location = strtoupper($validated['location']);
+        $query = trim((string) ($validated['query'] ?? ''));
+        $make = trim($validated['make']);
+        $model = trim($validated['model']);
+
+        $items = $client->suggestTrims($make, $model, $query, $location);
+
+        return response()->json([
+            'items' => $items,
+        ]);
+    }
 }

@@ -35,6 +35,12 @@ class VehicleAiClient
         return $this->askList($prompt);
     }
 
+    public function suggestTrims(string $make, string $model, string $query, string $location): array
+    {
+        $prompt = "Return up to 12 trim levels or variants for the {$make} {$model} popular in {$location} that start with: \"{$query}\".";
+        return $this->askList($prompt);
+    }
+
     protected function askList(string $prompt): array
     {
         if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {

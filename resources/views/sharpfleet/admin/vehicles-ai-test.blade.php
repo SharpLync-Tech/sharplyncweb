@@ -39,6 +39,13 @@
                 <div id="aiModelStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiModelList" class="ai-list"></div>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Variant</label>
+                <input id="aiTrimInput" class="form-control" type="text" placeholder="Start typing a variant">
+                <div id="aiTrimStatus" class="form-hint" style="color: #6b7280;"></div>
+                <div id="aiTrimList" class="ai-list"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -70,16 +77,20 @@
 (function () {
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
+    const trimInput = document.getElementById('aiTrimInput');
     const locationSelect = document.getElementById('aiLocation');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
+    const trimList = document.getElementById('aiTrimList');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
+    const trimStatus = document.getElementById('aiTrimStatus');
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     let currentMake = '';
     let makeTimer = null;
     let modelTimer = null;
+    let trimTimer = null;
 
     function setStatus(el, text) {
         if (!el) return;
@@ -157,6 +168,30 @@
             modelInput.value = item;
             clearList(modelList);
             setStatus(modelStatus, 'Model selected.');
+            trimInput.focus();
+            fetchTrims();
+        });
+    }
+
+    async function fetchTrims() {
+        const query = (trimInput.value || '').trim();
+        if (!currentMake || !modelInput.value.trim()) {
+            clearList(trimList);
+            setStatus(trimStatus, 'Select a make and model first.');
+            return;
+        }
+        setStatus(trimStatus, 'Loading variants...');
+        const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/trims', {
+            make: currentMake,
+            model: modelInput.value.trim(),
+            query,
+            location: locationSelect.value,
+        });
+        setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
+        renderList(trimList, data.items, (item) => {
+            trimInput.value = item;
+            clearList(trimList);
+            setStatus(trimStatus, 'Variant selected.');
         });
     }
 
@@ -169,15 +204,19 @@
 
     const makeTimerRef = { value: null };
     const modelTimerRef = { value: null };
+    const trimTimerRef = { value: null };
 
     makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
     modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
+    trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
 
     locationSelect.addEventListener('change', () => {
         clearList(makeList);
         clearList(modelList);
+        clearList(trimList);
         setStatus(makeStatus, '');
         setStatus(modelStatus, '');
+        setStatus(trimStatus, '');
         if (makeInput.value.trim().length >= 2) {
             fetchMakes();
         }
