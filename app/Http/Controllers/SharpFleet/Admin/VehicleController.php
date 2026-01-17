@@ -746,6 +746,7 @@ class VehicleController extends Controller
 
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
+            'first_registration_year' => ['nullable', 'integer', 'min:1900', 'max:2100'],
 
             'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
             'vehicle_class' => ['nullable', 'string', 'max:100'],
@@ -833,6 +834,30 @@ class VehicleController extends Controller
                 ->withInput();
         }
 
+        if (
+            array_key_exists('first_registration_year', $validated) &&
+            $validated['first_registration_year'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year')
+        ) {
+            return back()
+                ->withErrors([
+                    'first_registration_year' => "First registration year can't be saved yet because the database is missing column vehicles.first_registration_year. Run: ALTER TABLE vehicles ADD COLUMN first_registration_year SMALLINT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
+        if (
+            array_key_exists('first_registration_year', $validated) &&
+            $validated['first_registration_year'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year')
+        ) {
+            return back()
+                ->withErrors([
+                    'first_registration_year' => "First registration year can't be saved yet because the database is missing column vehicles.first_registration_year. Run: ALTER TABLE vehicles ADD COLUMN first_registration_year SMALLINT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
         /*
          |----------------------------------------------------------
          | NORMALISE DATA
@@ -907,6 +932,239 @@ class VehicleController extends Controller
 
         return redirect('/app/sharpfleet/admin/vehicles')
             ->with('success', 'Asset added successfully.');
+    }
+
+    /**
+     * Show edit form (rego locked)
+     */
+    public function details(Request $request, $vehicle)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
+
+        $settingsService = new CompanySettingsService($organisationId);
+        $timezone = $settingsService->timezone();
+        $dateFormat = $settingsService->dateFormat();
+
+        $branchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')
+            ? (int) ($record->branch_id ?? 0)
+            : 0;
+
+        $distanceUnit = $settingsService->distanceUnitForBranch($branchId);
+        if (
+            Schema::connection('sharpfleet')->hasTable('branches')
+            && Schema::connection('sharpfleet')->hasColumn('branches', 'distance_unit')
+            && $branchId > 0
+        ) {
+            $branchUnit = DB::connection('sharpfleet')
+                ->table('branches')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $branchId)
+                ->value('distance_unit');
+
+            $branchUnit = strtolower(trim((string) ($branchUnit ?? '')));
+            if (in_array($branchUnit, ['km', 'mi'], true)) {
+                $distanceUnit = $branchUnit;
+            }
+        }
+
+        $trackingMode = (string) ($record->tracking_mode ?? 'distance');
+        $isHours = $trackingMode === 'hours';
+
+        $convertDistance = function (?float $value) use ($distanceUnit) {
+            if ($value === null) {
+                return null;
+            }
+            if ($distanceUnit === 'mi') {
+                return $value * 0.621371;
+            }
+            return $value;
+        };
+
+        $lastTrip = DB::connection('sharpfleet')
+            ->table('trips')
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $vehicleId)
+            ->whereNotNull('end_km')
+            ->orderByDesc('ended_at')
+            ->first();
+
+        $lastReadingRaw = null;
+        if ($lastTrip && $lastTrip->end_km !== null) {
+            $lastReadingRaw = (float) $lastTrip->end_km;
+        } elseif (Schema::connection('sharpfleet')->hasColumn('vehicles', 'starting_km')) {
+            $lastReadingRaw = $record->starting_km !== null ? (float) $record->starting_km : null;
+        }
+
+        $lastReadingDisplay = $isHours ? $lastReadingRaw : $convertDistance($lastReadingRaw);
+
+        $sumDelta = function (?string $start, ?string $end) use ($organisationId, $vehicleId) {
+            $query = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('organisation_id', $organisationId)
+                ->where('vehicle_id', $vehicleId)
+                ->whereNotNull('start_km')
+                ->whereNotNull('end_km');
+
+            if ($start) {
+                $query->where('started_at', '>=', $start);
+            }
+            if ($end) {
+                $query->where('started_at', '<=', $end);
+            }
+
+            return (float) ($query->selectRaw('SUM(CASE WHEN end_km >= start_km THEN end_km - start_km ELSE 0 END) as total')->value('total') ?? 0);
+        };
+
+        $now = \Carbon\Carbon::now($timezone);
+        $weekStart = $now->copy()->startOfWeek();
+        $monthStart = $now->copy()->startOfMonth();
+        $yearStart = $now->copy()->startOfYear();
+
+        $totalSince = $sumDelta(null, null);
+        $totalWeek = $sumDelta($weekStart->toDateTimeString(), $now->toDateTimeString());
+        $totalMonth = $sumDelta($monthStart->toDateTimeString(), $now->toDateTimeString());
+        $totalYear = $sumDelta($yearStart->toDateTimeString(), $now->toDateTimeString());
+
+        $formatTotal = function (float $value) use ($isHours, $convertDistance) {
+            if ($isHours) {
+                return round($value, 1);
+            }
+            return round((float) $convertDistance($value), 1);
+        };
+
+        $totals = [
+            'since' => $formatTotal($totalSince),
+            'week' => $formatTotal($totalWeek),
+            'month' => $formatTotal($totalMonth),
+            'year' => $formatTotal($totalYear),
+        ];
+
+        $drivers = DB::connection('sharpfleet')
+            ->table('trips')
+            ->join('users', 'trips.user_id', '=', 'users.id')
+            ->selectRaw('trips.user_id, COUNT(*) as trip_count, CONCAT(users.first_name, " ", users.last_name) as driver_name')
+            ->where('trips.organisation_id', $organisationId)
+            ->where('trips.vehicle_id', $vehicleId)
+            ->groupBy('trips.user_id', 'users.first_name', 'users.last_name')
+            ->orderByDesc('trip_count')
+            ->limit(3)
+            ->get();
+
+        $customers = collect();
+        $settings = $settingsService->all();
+        $customerEnabled = (bool) ($settings['customer']['enabled'] ?? false);
+        $hasCustomersTable = Schema::connection('sharpfleet')->hasTable('customers');
+        $hasCustomerName = Schema::connection('sharpfleet')->hasColumn('trips', 'customer_name');
+        $hasCustomerId = Schema::connection('sharpfleet')->hasColumn('trips', 'customer_id');
+
+        if ($customerEnabled && ($hasCustomerName || $hasCustomerId)) {
+            $query = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('trips.organisation_id', $organisationId)
+                ->where('trips.vehicle_id', $vehicleId);
+
+            if ($hasCustomersTable && $hasCustomerId) {
+                $query->leftJoin('customers', 'trips.customer_id', '=', 'customers.id');
+                $query->selectRaw('COALESCE(customers.name, trips.customer_name) as customer_name_display, COUNT(*) as trip_count');
+                $query->groupBy('customer_name_display');
+            } else {
+                $query->selectRaw('trips.customer_name as customer_name_display, COUNT(*) as trip_count');
+                $query->groupBy('trips.customer_name');
+            }
+
+            $customers = $query
+                ->orderByDesc('trip_count')
+                ->limit(3)
+                ->get();
+        }
+
+        $age = null;
+        if (Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year')) {
+            $year = (int) ($record->first_registration_year ?? 0);
+            if ($year > 0) {
+                $start = \Carbon\Carbon::create($year, 1, 1, 0, 0, 0, $timezone);
+                $diff = $start->diff($now);
+                $age = [
+                    'years' => $diff->y,
+                    'months' => $diff->m,
+                ];
+            }
+        }
+
+        $faults = collect();
+        if ($settingsService->faultsEnabled() && Schema::connection('sharpfleet')->hasTable('faults')) {
+            $faults = DB::connection('sharpfleet')
+                ->table('faults')
+                ->leftJoin('users', 'faults.user_id', '=', 'users.id')
+                ->select(
+                    'faults.id',
+                    'faults.title',
+                    'faults.description',
+                    'faults.severity',
+                    'faults.status',
+                    'faults.created_at',
+                    DB::raw("CONCAT(users.first_name, ' ', users.last_name) as reporter_name")
+                )
+                ->where('faults.organisation_id', $organisationId)
+                ->where('faults.vehicle_id', $vehicleId)
+                ->orderByDesc('faults.created_at')
+                ->limit(5)
+                ->get();
+        }
+
+        $assignment = null;
+        if (
+            Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type') &&
+            Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id')
+        ) {
+            $assignmentType = (string) ($record->assignment_type ?? '');
+            if ($assignmentType === 'permanent' && !empty($record->assigned_driver_id)) {
+                $driver = DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('organisation_id', $organisationId)
+                    ->where('id', (int) $record->assigned_driver_id)
+                    ->first();
+                $assignment = $driver ? trim((string) ($driver->first_name ?? '') . ' ' . (string) ($driver->last_name ?? '')) : 'Assigned driver';
+            } else {
+                $assignment = 'Not permanently assigned';
+            }
+        }
+
+        return view('sharpfleet.admin.vehicles.details', [
+            'vehicle' => $record,
+            'trackingMode' => $trackingMode,
+            'distanceUnit' => $distanceUnit,
+            'lastReading' => $lastReadingDisplay,
+            'totals' => $totals,
+            'drivers' => $drivers,
+            'customers' => $customers,
+            'age' => $age,
+            'faults' => $faults,
+            'assignment' => $assignment,
+            'dateFormat' => $dateFormat,
+            'serviceDueDate' => $record->service_due_date ?? null,
+            'serviceDueReading' => $record->service_due_km ?? null,
+        ]);
     }
 
     /**
@@ -1017,6 +1275,7 @@ class VehicleController extends Controller
             'branch_id' => ['nullable', 'integer'],
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
+            'first_registration_year' => ['nullable', 'integer', 'min:1900', 'max:2100'],
             'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
             'vehicle_class' => ['nullable', 'string', 'max:100'],
             'wheelchair_accessible' => ['nullable', 'boolean'],

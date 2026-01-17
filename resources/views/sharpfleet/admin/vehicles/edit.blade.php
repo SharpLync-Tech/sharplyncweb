@@ -48,6 +48,18 @@
                             @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">First registration year</label>
+                            <input type="number"
+                                   name="first_registration_year"
+                                   value="{{ old('first_registration_year', $vehicle->first_registration_year ?? '') }}"
+                                   class="form-control"
+                                   min="1900"
+                                   max="2100"
+                                   placeholder="e.g. 2018">
+                            @error('first_registration_year') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                        </div>
+
                         @if($branchesEnabled)
                             <div class="form-group">
                                 <label class="form-label">Branch</label>

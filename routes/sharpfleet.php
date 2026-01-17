@@ -225,6 +225,7 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/vehicles/create/confirm', [VehicleController::class, 'confirmStore']);
         Route::post('/admin/vehicles/create/cancel', [VehicleController::class, 'cancelCreate']);
         Route::post('/admin/vehicles', [VehicleController::class, 'store']);
+        Route::get('/admin/vehicles/{vehicle}/details', [VehicleController::class, 'details']);
         Route::get('/admin/vehicles/{vehicle}/edit', [VehicleController::class, 'edit']);
         Route::post('/admin/vehicles/{vehicle}', [VehicleController::class, 'update']);
         Route::get('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchive']);
@@ -258,6 +259,7 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/faults/{fault}/status', [AdminFaultController::class, 'updateStatus']);
 
         Route::get('/admin/reminders', [ReminderController::class, 'index']);
+        Route::get('/admin/reminders/vehicles', [ReminderController::class, 'vehicles']);
         Route::get('/admin/reports', fn () => redirect('/app/sharpfleet/admin/reports/trips'));
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
 

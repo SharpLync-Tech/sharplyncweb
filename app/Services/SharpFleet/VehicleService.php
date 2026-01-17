@@ -48,6 +48,8 @@ class VehicleService
         $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
+        $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
+        $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -79,6 +81,7 @@ class VehicleService
                 'vehicle_class'        => $data['vehicle_class'] ?? null,
                 'wheelchair_accessible'=> !empty($data['wheelchair_accessible']) ? 1 : 0,
                 'registration_expiry'   => $hasRegistrationExpiry ? ($data['registration_expiry'] ?? null) : null,
+                'first_registration_year' => $hasFirstRegistrationYear ? ($data['first_registration_year'] ?? null) : null,
                 'service_due_date'      => $hasServiceDueDate ? ($data['service_due_date'] ?? null) : null,
                 'service_due_km'        => $hasServiceDueKm ? ($data['service_due_km'] ?? null) : null,
                 'notes'                => $data['notes'] ?? null,
@@ -120,6 +123,10 @@ class VehicleService
             'notes'                 => $data['notes'] ?? null,
             'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
         ];
+
+        if ($hasFirstRegistrationYear && array_key_exists('first_registration_year', $data)) {
+            $update['first_registration_year'] = $data['first_registration_year'] ?? null;
+        }
 
         if ($hasBranchId && array_key_exists('branch_id', $data)) {
             $raw = $data['branch_id'] ?? null;
