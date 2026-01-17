@@ -93,19 +93,57 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
+                        <div class="form-hint mb-2">
+                            Tip: Start typing a make and model, then pick a variant. We will suggest the best matching vehicle type.
+                        </div>
+                        <div class="form-hint mb-3">
+                            AI is only used to suggest details; you can edit any field before saving.
+                        </div>
 
                         <div class="form-row">
                             <div>
                                 <label class="form-label">Make</label>
-                                <input type="text" name="make" value="{{ old('make', $vehicle->make) }}" class="form-control">
+                                <div class="ai-input-wrap">
+                                    <input id="aiMakeInput"
+                                           type="text"
+                                           name="make"
+                                           value="{{ old('make', $vehicle->make) }}"
+                                           class="form-control">
+                                    <button type="button" class="ai-clear-btn" data-clear="make" aria-label="Clear make">x</button>
+                                </div>
+                                <div id="aiMakeStatus" class="form-hint"></div>
+                                <div id="aiMakeList" class="ai-list"></div>
                                 @error('make') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
 
                             <div>
                                 <label class="form-label">Model</label>
-                                <input type="text" name="model" value="{{ old('model', $vehicle->model) }}" class="form-control">
+                                <div class="ai-input-wrap">
+                                    <input id="aiModelInput"
+                                           type="text"
+                                           name="model"
+                                           value="{{ old('model', $vehicle->model) }}"
+                                           class="form-control">
+                                    <button type="button" class="ai-clear-btn" data-clear="model" aria-label="Clear model">x</button>
+                                </div>
+                                <div id="aiModelStatus" class="form-hint"></div>
+                                <div id="aiModelList" class="ai-list"></div>
                                 @error('model') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Variant</label>
+                            <div class="ai-input-wrap">
+                                <input id="aiTrimInput"
+                                       type="text"
+                                       name="variant"
+                                       value="{{ old('variant') }}"
+                                       class="form-control">
+                                <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">x</button>
+                            </div>
+                            <div id="aiTrimStatus" class="form-hint"></div>
+                            <div id="aiTrimList" class="ai-list"></div>
                         </div>
 
                         <div class="form-row">
@@ -123,6 +161,7 @@
                                     <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
                                     <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
+                                <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
                                 @error('vehicle_type') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
 
@@ -306,6 +345,58 @@
     </form>
 </div>
 
+<style>
+.ai-input-wrap {
+    position: relative;
+}
+
+.ai-input-wrap .form-control {
+    padding-right: 38px;
+}
+
+.ai-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(10, 42, 77, 0.08);
+    color: #0A2A4D;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.ai-clear-btn:hover {
+    background: rgba(10, 42, 77, 0.18);
+}
+
+.ai-list {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ai-chip {
+    border: 1px solid rgba(44, 191, 174, 0.35);
+    background: rgba(44, 191, 174, 0.08);
+    color: #0A2A4D;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.ai-chip:hover {
+    background: rgba(44, 191, 174, 0.18);
+}
+</style>
+
 <script>
     (function () {
         const companyDistanceUnit = @json($companyDistanceUnit);
@@ -336,6 +427,246 @@
                 serviceDueKmLabel.textContent = `Next service due reading (${companyDistanceUnit}) (optional)`;
             }
         }
+    })();
+
+    (function () {
+        const makeInput = document.getElementById('aiMakeInput');
+        const modelInput = document.getElementById('aiModelInput');
+        const trimInput = document.getElementById('aiTrimInput');
+        const makeList = document.getElementById('aiMakeList');
+        const modelList = document.getElementById('aiModelList');
+        const trimList = document.getElementById('aiTrimList');
+        const makeStatus = document.getElementById('aiMakeStatus');
+        const modelStatus = document.getElementById('aiModelStatus');
+        const trimStatus = document.getElementById('aiTrimStatus');
+        const branchSelect = document.getElementById('branch_id');
+        const vehicleTypeSelect = document.getElementById('vehicle_type');
+        const vehicleTypeStatus = document.getElementById('vehicleTypeStatus');
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        if (!makeInput || !modelInput || !trimInput) {
+            return;
+        }
+
+        let currentMake = makeInput.value.trim();
+
+        function setStatus(el, text) {
+            if (!el) return;
+            el.textContent = text;
+        }
+
+        function clearList(el) {
+            if (el) el.innerHTML = '';
+        }
+
+        function clearModels() {
+            modelInput.value = '';
+            trimInput.value = '';
+            clearList(modelList);
+            clearList(trimList);
+            setStatus(modelStatus, '');
+            setStatus(trimStatus, '');
+        }
+
+        function clearAll() {
+            makeInput.value = '';
+            currentMake = '';
+            clearList(makeList);
+            setStatus(makeStatus, '');
+            clearModels();
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Auto-suggested from make, model, and variant.';
+            }
+        }
+
+        function renderList(el, items, onPick) {
+            clearList(el);
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'ai-chip';
+                btn.textContent = item;
+                btn.addEventListener('click', () => onPick(item));
+                el.appendChild(btn);
+            });
+        }
+
+        async function postJson(url, payload) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) return { items: [] };
+            return res.json();
+        }
+
+        function getBranchId() {
+            if (!branchSelect) {
+                return 0;
+            }
+            const value = parseInt(branchSelect.value || '0', 10);
+            return Number.isFinite(value) ? value : 0;
+        }
+
+        async function fetchMakes() {
+            const query = (makeInput.value || '').trim();
+            if (query.length < 2) {
+                clearList(makeList);
+                setStatus(makeStatus, 'Type at least 2 characters.');
+                return;
+            }
+            setStatus(makeStatus, 'Loading makes...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/makes', {
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(makeStatus, data.items.length ? 'Pick a make.' : 'No makes found.');
+            renderList(makeList, data.items, (item) => {
+                currentMake = item;
+                makeInput.value = item;
+                clearList(makeList);
+                setStatus(makeStatus, 'Make selected.');
+                clearModels();
+                modelInput.focus();
+                fetchModels();
+            });
+        }
+
+        async function fetchModels() {
+            const query = (modelInput.value || '').trim();
+            if (!currentMake) {
+                clearList(modelList);
+                setStatus(modelStatus, 'Select a make first.');
+                return;
+            }
+            setStatus(modelStatus, 'Loading models...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/models', {
+                make: currentMake,
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(modelStatus, data.items.length ? 'Pick a model.' : 'No models found.');
+            renderList(modelList, data.items, (item) => {
+                modelInput.value = item;
+                clearList(modelList);
+                setStatus(modelStatus, 'Model selected.');
+                trimInput.focus();
+                fetchTrims();
+                fetchVehicleType();
+            });
+        }
+
+        async function fetchTrims() {
+            const query = (trimInput.value || '').trim();
+            if (!currentMake || !modelInput.value.trim()) {
+                clearList(trimList);
+                setStatus(trimStatus, 'Select a make and model first.');
+                return;
+            }
+            setStatus(trimStatus, 'Loading variants...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/trims', {
+                make: currentMake,
+                model: modelInput.value.trim(),
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
+            renderList(trimList, data.items, (item) => {
+                trimInput.value = item;
+                clearList(trimList);
+                setStatus(trimStatus, 'Variant selected.');
+                fetchVehicleType();
+            });
+        }
+
+        function normalizeVehicleType(type) {
+            const raw = (type || '').toLowerCase().trim();
+            if (raw === 'pickup' || raw === 'truck' || raw === 'light_truck') {
+                return 'ute';
+            }
+            if (raw === 'excavator') {
+                return 'ex';
+            }
+            if (raw === 'bulldozer') {
+                return 'dozer';
+            }
+            const allowed = new Set(['sedan', 'hatch', 'suv', 'van', 'bus', 'ute', 'ex', 'dozer', 'other']);
+            return allowed.has(raw) ? raw : 'other';
+        }
+
+        async function fetchVehicleType() {
+            const make = currentMake.trim();
+            const model = modelInput.value.trim();
+            if (!make || !model || !vehicleTypeSelect) {
+                return;
+            }
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Suggesting vehicle type...';
+            }
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/type', {
+                make,
+                model,
+                variant: trimInput.value.trim(),
+                branch_id: getBranchId(),
+            });
+            const selected = normalizeVehicleType(data.type);
+            vehicleTypeSelect.value = selected;
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Auto-suggested from make, model, and variant.';
+            }
+        }
+
+        function debounce(fn, delay, timerRef) {
+            return function () {
+                clearTimeout(timerRef.value);
+                timerRef.value = setTimeout(fn, delay);
+            };
+        }
+
+        const makeTimerRef = { value: null };
+        const modelTimerRef = { value: null };
+        const trimTimerRef = { value: null };
+        const typeTimerRef = { value: null };
+
+        makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
+        modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
+        trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
+        trimInput.addEventListener('input', debounce(fetchVehicleType, 500, typeTimerRef));
+
+        makeInput.addEventListener('change', () => {
+            currentMake = makeInput.value.trim();
+            clearModels();
+        });
+        modelInput.addEventListener('change', () => {
+            fetchVehicleType();
+        });
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', () => {
+                clearAll();
+            });
+        }
+
+        document.querySelectorAll('.ai-clear-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-clear');
+                if (target === 'make') {
+                    clearAll();
+                } else if (target === 'model') {
+                    clearModels();
+                } else if (target === 'trim') {
+                    trimInput.value = '';
+                    clearList(trimList);
+                    setStatus(trimStatus, '');
+                    fetchVehicleType();
+                }
+            });
+        });
     })();
 
     (function () {

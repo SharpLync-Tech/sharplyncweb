@@ -39,25 +39,6 @@
 
         <div class="card">
 
-            {{-- Asset name --}}
-            <label class="form-label">
-                Asset name / identifier
-            </label>
-            <input type="text"
-                   name="name"
-                   value="{{ old('name') }}"
-                   required
-                   placeholder="e.g. White Camry, Tractor 3, Forklift A"
-                   class="form-control">
-
-            <div class="form-hint">
-                This is how drivers and reports will identify this asset.
-            </div>
-
-            @error('name')
-                <div class="text-error mb-2">{{ $message }}</div>
-            @enderror
-
             @if($branchesEnabled)
                 <label class="form-label mt-2">Branch</label>
                 <select name="branch_id" id="branch_id" class="form-control">
@@ -75,105 +56,30 @@
                 @enderror
             @endif
 
-            {{-- Registration Tracking (Company Setting) --}}
-            @if($vehicleRegistrationTrackingEnabled)
-                @php $road = old('is_road_registered', 1); @endphp
-
-                {{-- IMPORTANT: always submit a value --}}
-                <input type="hidden" name="is_road_registered" value="0">
-
-                <label class="checkbox-label mb-2">
-                    <input type="checkbox"
-                           id="is_road_registered"
-                           name="is_road_registered"
-                           value="1"
-                           {{ $road == 1 ? 'checked' : '' }}>
-                    <strong>This asset is road registered</strong>
-                </label>
-
-                <div class="form-hint">
-                    Road-registered assets require a registration number and will display it to drivers.
-                </div>
-
-                {{-- Registration number --}}
-                <div id="rego-wrapper">
-                    <label class="form-label">
-                        Registration number
-                    </label>
-                    <input type="text"
-                           name="registration_number"
-                           value="{{ old('registration_number') }}"
-                           placeholder="e.g. ABC-123"
-                           class="form-control">
-
-                    @error('registration_number')
-                        <div class="text-error mb-2">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-row">
-                    <div>
-                        <label class="form-label">Registration expiry date (optional)</label>
-                        <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
-                        @error('registration_expiry')
-                            <div class="text-error mb-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="form-label">&nbsp;</label>
-                        <div class="form-hint">
-                            Tip: use the vehicle Notes field for reminders.
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- Usage tracking --}}
-            @php $tm = old('tracking_mode', 'distance'); @endphp
-                <label class="form-label">
-                Usage tracking
+            <label class="form-label mt-3">
+                Asset name / identifier
             </label>
-
-            <select name="tracking_mode"
-                    id="tracking_mode"
-                    class="form-control">
-                <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
-                    Distance ({{ $companyDistanceUnit }})
-                </option>
-                <option value="hours" {{ $tm === 'hours' ? 'selected' : '' }}>
-                    Hours (machine hour meter)
-                </option>
-                <option value="none" {{ $tm === 'none' ? 'selected' : '' }}>
-                    No usage tracking
-                </option>
-            </select>
+            <input type="text"
+                   name="name"
+                   value="{{ old('name') }}"
+                   required
+                   placeholder="e.g. White Camry, Tractor 3, Forklift A"
+                   class="form-control">
 
             <div class="form-hint">
-                This controls what drivers are required to record when using this asset.
+                This is how drivers and reports will identify this asset.
             </div>
 
-                 {{-- Starting reading (optional; distance unit or hours depending on tracking mode) --}}
-                 <label id="starting_reading_label" class="form-label mt-2">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
-            <input type="number"
-                   name="starting_km"
-                   value="{{ old('starting_km') }}"
-                   id="starting_km"
-                   class="form-control"
-                   inputmode="numeric"
-                   min="0"
-                   placeholder="e.g. 124500">
-            <div class="form-hint">
-                If set, this will be used to prefill the first trip's starting reading for this vehicle.
-            </div>
-
-            @error('starting_km')
+            @error('name')
                 <div class="text-error mb-2">{{ $message }}</div>
             @enderror
 
-            <hr class="my-3">
-            <h3 class="section-title">AI assist</h3>
-            <div class="form-hint mb-2">Tip: Start typing and we'll do the rest.</div>
+            <div class="form-hint mt-3">
+                Tip: Start typing a make and model, then pick a variant. We will suggest the best matching vehicle type.
+            </div>
+            <div class="form-hint mb-2">
+                AI is only used to suggest details; you can edit any field before saving.
+            </div>
 
             {{-- Make / Model (AI-assisted) --}}
             <div class="form-row">
@@ -258,6 +164,102 @@
                 </div>
             </div>
 
+            {{-- Registration Tracking (Company Setting) --}}
+            @if($vehicleRegistrationTrackingEnabled)
+                @php $road = old('is_road_registered', 1); @endphp
+
+                {{-- IMPORTANT: always submit a value --}}
+                <input type="hidden" name="is_road_registered" value="0">
+
+                <label class="checkbox-label mb-2">
+                    <input type="checkbox"
+                           id="is_road_registered"
+                           name="is_road_registered"
+                           value="1"
+                           {{ $road == 1 ? 'checked' : '' }}>
+                    <strong>This asset is road registered</strong>
+                </label>
+
+                <div class="form-hint">
+                    Road-registered assets require a registration number and will display it to drivers.
+                </div>
+
+                {{-- Registration number --}}
+                <div id="rego-wrapper">
+                    <label class="form-label">
+                        Registration number
+                    </label>
+                    <input type="text"
+                           name="registration_number"
+                           value="{{ old('registration_number') }}"
+                           placeholder="e.g. ABC-123"
+                           class="form-control">
+
+                    @error('registration_number')
+                        <div class="text-error mb-2">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Registration expiry date (optional)</label>
+                        <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
+                        @error('registration_expiry')
+                            <div class="text-error mb-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="form-label">&nbsp;</label>
+                        <div class="form-hint">
+                            Tip: use the vehicle Notes field for reminders.
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Usage tracking --}}
+            @php $tm = old('tracking_mode', 'distance'); @endphp
+            <label class="form-label mt-2">
+                Usage tracking
+            </label>
+
+            <select name="tracking_mode"
+                    id="tracking_mode"
+                    class="form-control">
+                <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
+                    Distance ({{ $companyDistanceUnit }})
+                </option>
+                <option value="hours" {{ $tm === 'hours' ? 'selected' : '' }}>
+                    Hours (machine hour meter)
+                </option>
+                <option value="none" {{ $tm === 'none' ? 'selected' : '' }}>
+                    No usage tracking
+                </option>
+            </select>
+
+            <div class="form-hint">
+                This controls what drivers are required to record when using this asset.
+            </div>
+
+            {{-- Starting reading (optional; distance unit or hours depending on tracking mode) --}}
+            <label id="starting_reading_label" class="form-label mt-2">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
+            <input type="number"
+                   name="starting_km"
+                   value="{{ old('starting_km') }}"
+                   id="starting_km"
+                   class="form-control"
+                   inputmode="numeric"
+                   min="0"
+                   placeholder="e.g. 124500">
+            <div class="form-hint">
+                If set, this will be used to prefill the first trip's starting reading for this vehicle.
+            </div>
+
+            @error('starting_km')
+                <div class="text-error mb-2">{{ $message }}</div>
+            @enderror
+
             {{-- Accessibility --}}
             <label class="checkbox-label mb-2">
                 <input type="checkbox"
@@ -272,78 +274,6 @@
             <textarea name="notes"
                       rows="3"
                       class="form-control">{{ old('notes') }}</textarea>
-
-            <hr class="my-3">
-            <h3 class="mb-2">Service Status</h3>
-            <p class="text-muted mb-2">
-                If a vehicle is out of service, drivers cannot book it or use it for trips.
-            </p>
-
-            @php
-                $isInService = old('is_in_service', 1);
-                $reason = old('out_of_service_reason', '');
-                $note = old('out_of_service_note', '');
-            @endphp
-
-            <input type="hidden" name="is_in_service" value="1">
-            <label class="checkbox-label mb-2">
-                <input type="checkbox" name="is_in_service" value="0" {{ (int) $isInService === 0 ? 'checked' : '' }}>
-                <strong>Mark vehicle as out of service</strong>
-            </label>
-            @error('is_in_service')
-                <div class="text-error mb-2">{{ $message }}</div>
-            @enderror
-
-            <div class="form-row">
-                <div>
-                    <label class="form-label">Reason</label>
-                    <select name="out_of_service_reason" class="form-control">
-                        <option value="" {{ $reason === '' ? 'selected' : '' }}>Select a reason</option>
-                        <option value="Service" {{ $reason === 'Service' ? 'selected' : '' }}>Service</option>
-                        <option value="Repair" {{ $reason === 'Repair' ? 'selected' : '' }}>Repair</option>
-                        <option value="Accident" {{ $reason === 'Accident' ? 'selected' : '' }}>Accident</option>
-                        <option value="Inspection" {{ $reason === 'Inspection' ? 'selected' : '' }}>Inspection</option>
-                        <option value="Other" {{ $reason === 'Other' ? 'selected' : '' }}>Other</option>
-                    </select>
-                    @error('out_of_service_reason')
-                        <div class="text-error mb-2">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div>
-                    <label class="form-label">Location / note (optional)</label>
-                    <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
-                    @error('out_of_service_note')
-                        <div class="text-error mb-2">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            {{-- Servicing Tracking (Company Setting) --}}
-            @if($vehicleServicingTrackingEnabled)
-                <hr class="my-3">
-                <h3 class="mb-2">Servicing Details</h3>
-                <p class="text-muted mb-3">
-                    These fields are admin-managed.
-                </p>
-
-                <div class="form-row">
-                    <div>
-                        <label class="form-label">Next service due date (optional)</label>
-                        <input type="date" name="service_due_date" value="{{ old('service_due_date') }}" class="form-control">
-                        @error('service_due_date')
-                            <div class="text-error mb-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label id="service_due_km_label" class="form-label">Next service due reading ({{ $companyDistanceUnit }}) (optional)</label>
-                        <input type="number" name="service_due_km" value="{{ old('service_due_km') }}" class="form-control" inputmode="numeric" min="0" placeholder="e.g. 150000">
-                        @error('service_due_km')
-                            <div class="text-error mb-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            @endif
 
         </div>
 
@@ -452,24 +382,6 @@
 
     trackingMode.addEventListener('change', updateStartingReadingLabel);
     updateStartingReadingLabel();
-
-    // Service due reading label matches tracking mode
-    const serviceDueKmLabel = document.getElementById('service_due_km_label');
-    function updateServiceDueKmLabel() {
-        if (!trackingMode || !serviceDueKmLabel) return;
-
-        if (trackingMode.value === 'hours') {
-            serviceDueKmLabel.textContent = 'Next service due reading (hours) (optional)';
-        } else if (trackingMode.value === 'none') {
-            serviceDueKmLabel.textContent = 'Next service due reading (optional)';
-        } else {
-            serviceDueKmLabel.textContent = `Next service due reading (${companyDistanceUnit}) (optional)`;
-        }
-    }
-    if (trackingMode) {
-        trackingMode.addEventListener('change', updateServiceDueKmLabel);
-    }
-    updateServiceDueKmLabel();
 
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
