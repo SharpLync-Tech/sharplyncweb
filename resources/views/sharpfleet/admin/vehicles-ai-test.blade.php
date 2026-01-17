@@ -128,8 +128,9 @@
 }
 
 .ai-clear-btn::before {
-    content: "\\00D7";
+    content: "x";
     color: #0A2A4D;
+    font-weight: 700;
 }
 
 .ai-clear-btn:hover {
