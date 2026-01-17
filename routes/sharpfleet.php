@@ -240,6 +240,8 @@ Route::prefix('app/sharpfleet')
             ->name('sharpfleet.admin.vehicles-ai-test.models');
         Route::post('/admin/vehicles-ai-test/trims', [VehicleAiTestController::class, 'trims'])
             ->name('sharpfleet.admin.vehicles-ai-test.trims');
+        Route::post('/admin/vehicles-ai-test/countries', [VehicleAiTestController::class, 'countries'])
+            ->name('sharpfleet.admin.vehicles-ai-test.countries');
 
         Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
         Route::get('/admin/bookings/feed', [AdminBookingController::class, 'feed']);

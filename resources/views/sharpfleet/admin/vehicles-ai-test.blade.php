@@ -16,14 +16,13 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <label class="form-label">Region</label>
-                <select id="aiLocation" class="form-control">
-                    <option value="AU">Australia</option>
-                    <option value="NZ">New Zealand</option>
-                    <option value="US">United States</option>
-                    <option value="RSA">South Africa</option>
-                    <option value="UK">United Kingdom</option>
-                </select>
+                <label class="form-label">Country</label>
+                <div class="ai-input-wrap">
+                    <input id="aiLocationInput" class="form-control" type="text" placeholder="Start typing a country">
+                    <button type="button" class="ai-clear-btn" data-clear="country" aria-label="Clear country">×</button>
+                </div>
+                <div id="aiLocationStatus" class="form-hint" style="color: #6b7280;"></div>
+                <div id="aiLocationList" class="ai-list"></div>
             </div>
 
             <div class="form-group">
@@ -115,16 +114,19 @@
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
     const trimInput = document.getElementById('aiTrimInput');
-    const locationSelect = document.getElementById('aiLocation');
+    const locationInput = document.getElementById('aiLocationInput');
+    const locationList = document.getElementById('aiLocationList');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
     const trimList = document.getElementById('aiTrimList');
+    const locationStatus = document.getElementById('aiLocationStatus');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
     const trimStatus = document.getElementById('aiTrimStatus');
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     let currentMake = '';
+    let locationTimer = null;
     let makeTimer = null;
     let modelTimer = null;
     let trimTimer = null;
@@ -181,8 +183,42 @@
         return res.json();
     }
 
+    function getLocation() {
+        return (locationInput.value || '').trim();
+    }
+
+    async function fetchCountries() {
+        const query = getLocation();
+        if (query.length < 2) {
+            clearList(locationList);
+            setStatus(locationStatus, 'Type at least 2 characters.');
+            return;
+        }
+        setStatus(locationStatus, 'Loading countries...');
+        const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/countries', {
+            query,
+        });
+        setStatus(locationStatus, data.items.length ? 'Pick a country.' : 'No countries found.');
+        renderList(locationList, data.items, (item) => {
+            locationInput.value = item;
+            clearList(locationList);
+            setStatus(locationStatus, 'Country selected.');
+            clearAll();
+            locationInput.value = item;
+            if (makeInput.value.trim().length >= 2) {
+                fetchMakes();
+            }
+        });
+    }
+
     async function fetchMakes() {
         const query = (makeInput.value || '').trim();
+        const location = getLocation();
+        if (!location) {
+            clearList(makeList);
+            setStatus(makeStatus, 'Select a country first.');
+            return;
+        }
         if (query.length < 2) {
             clearList(makeList);
             setStatus(makeStatus, 'Type at least 2 characters.');
@@ -191,7 +227,7 @@
         setStatus(makeStatus, 'Loading makes...');
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/makes', {
             query,
-            location: locationSelect.value,
+            location,
         });
         setStatus(makeStatus, data.items.length ? 'Pick a make.' : 'No makes found.');
         renderList(makeList, data.items, (item) => {
@@ -216,7 +252,7 @@
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/models', {
             make: currentMake,
             query,
-            location: locationSelect.value,
+            location: getLocation(),
         });
         setStatus(modelStatus, data.items.length ? 'Pick a model.' : 'No models found.');
         renderList(modelList, data.items, (item) => {
@@ -243,7 +279,7 @@
             make: currentMake,
             model: modelInput.value.trim(),
             query,
-            location: locationSelect.value,
+            location: getLocation(),
         });
         setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
         renderList(trimList, data.items, (item) => {
@@ -260,19 +296,18 @@
         };
     }
 
+    const locationTimerRef = { value: null };
     const makeTimerRef = { value: null };
     const modelTimerRef = { value: null };
     const trimTimerRef = { value: null };
 
+    locationInput.addEventListener('input', debounce(fetchCountries, 300, locationTimerRef));
     makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
     modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
     trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
 
-    locationSelect.addEventListener('change', () => {
+    locationInput.addEventListener('change', () => {
         clearAll();
-        if (makeInput.value.trim().length >= 2) {
-            fetchMakes();
-        }
     });
 
     makeInput.addEventListener('change', () => {
@@ -291,6 +326,11 @@
                 trimInput.value = '';
                 clearList(trimList);
                 setStatus(trimStatus, '');
+            } else if (target === 'country') {
+                locationInput.value = '';
+                clearList(locationList);
+                setStatus(locationStatus, '');
+                clearAll();
             }
         });
     });

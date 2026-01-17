@@ -30,6 +30,12 @@ class VehicleAiClient
         return $this->askList($prompt);
     }
 
+    public function suggestCountries(string $query): array
+    {
+        $prompt = "Return up to 12 countries that start with: \"{$query}\". Use short country names.";
+        return $this->askList($prompt);
+    }
+
     public function suggestModels(string $make, string $query, string $location): array
     {
         $prompt = "Return up to 12 models for the make \"{$make}\" popular in {$location} that start with: \"{$query}\". " .

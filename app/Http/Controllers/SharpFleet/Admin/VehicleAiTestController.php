@@ -18,7 +18,7 @@ class VehicleAiTestController extends Controller
     {
         $validated = $request->validate([
             'query' => ['required', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:10'],
+            'location' => ['required', 'string', 'max:40'],
         ]);
 
         $location = strtoupper($validated['location']);
@@ -34,7 +34,7 @@ class VehicleAiTestController extends Controller
         $validated = $request->validate([
             'make' => ['required', 'string', 'max:40'],
             'query' => ['nullable', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:10'],
+            'location' => ['required', 'string', 'max:40'],
         ]);
 
         $location = strtoupper($validated['location']);
@@ -54,7 +54,7 @@ class VehicleAiTestController extends Controller
             'make' => ['required', 'string', 'max:40'],
             'model' => ['required', 'string', 'max:40'],
             'query' => ['nullable', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:10'],
+            'location' => ['required', 'string', 'max:40'],
         ]);
 
         $location = strtoupper($validated['location']);
@@ -63,6 +63,19 @@ class VehicleAiTestController extends Controller
         $model = trim($validated['model']);
 
         $items = $client->suggestTrims($make, $model, $query, $location);
+
+        return response()->json([
+            'items' => $items,
+        ]);
+    }
+
+    public function countries(Request $request, VehicleAiClient $client): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => ['required', 'string', 'max:40'],
+        ]);
+
+        $items = $client->suggestCountries(trim($validated['query']));
 
         return response()->json([
             'items' => $items,
