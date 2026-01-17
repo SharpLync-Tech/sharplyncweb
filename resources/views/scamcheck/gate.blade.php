@@ -10,13 +10,11 @@
 <div class="sc-page">
     <div style="max-width:900px; margin:0 auto; padding-top:40px;">
 
-        <!-- HEADER -->
         <h2 class="threat-title">
             <img src="/images/security.png" class="shield-icon-img" alt="SharpLync Security Shield">
             SharpLync <strong>ThreatCheck</strong>
         </h2>
 
-        <!-- NOTICE CARD -->
         <div class="result-box safe" style="border-left-width:6px;">
 
             <h3 class="gate-title" style="margin-top:0;">
@@ -29,13 +27,11 @@
             </p>
 
             <p>
-                While advanced analysis techniques are used, <strong>results are not guaranteed to be accurate</strong>
-                and should not be relied upon as the sole basis for decision-making.
+                Results are <strong>not guaranteed to be accurate</strong> and should never be the sole basis for action.
             </p>
 
             <p>
-                You remain responsible for <strong>independently verifying</strong> the legitimacy of any communication
-                before taking action.
+                You are responsible for <strong>independently verifying</strong> any communication before responding.
             </p>
 
             <div class="section-title">Please do not submit:</div>
@@ -46,29 +42,30 @@
             </ul>
 
             <p style="margin-top:16px;">
-                Submitted content is processed for <strong>analysis purposes only</strong> and is
+                Content is processed for <strong>analysis only</strong> and is
                 <strong>not stored long-term</strong>.
             </p>
 
+            <form method="POST" action="/scam-checker/acknowledge" style="margin-top:24px;">
+                @csrf
 
-            <!-- ACKNOWLEDGEMENT -->
-            <div style="margin-top:24px;">
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
                     <input type="checkbox" id="acknowledge"
                            style="width:18px; height:18px;">
                     <span>I understand and wish to continue</span>
                 </label>
-            </div>
 
-            <!-- ACTION -->
-            <div style="margin-top:30px;">
-                <a href="/scam-checker"
-                   id="proceed-btn"
-                   class="scam-btn"
-                   style="pointer-events:none; opacity:0.5;">
-                    Proceed to ThreatCheck
-                </a>
-            </div>
+                <div style="margin-top:30px;">
+                    <button
+                        type="submit"
+                        id="proceed-btn"
+                        class="scam-btn"
+                        disabled
+                        style="opacity:0.5;">
+                        Proceed to ThreatCheck
+                    </button>
+                </div>
+            </form>
 
         </div>
     </div>
@@ -84,13 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!checkbox || !button) return;
 
     checkbox.addEventListener('change', function () {
-        if (this.checked) {
-            button.style.pointerEvents = 'auto';
-            button.style.opacity = '1';
-        } else {
-            button.style.pointerEvents = 'none';
-            button.style.opacity = '0.5';
-        }
+        button.disabled = !this.checked;
+        button.style.opacity = this.checked ? '1' : '0.5';
     });
 });
 </script>
