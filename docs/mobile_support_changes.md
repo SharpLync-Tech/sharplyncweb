@@ -8,8 +8,11 @@ This document summarizes the changes made to add a mobile Support page, offline-
 - Adds a mobile Support page reachable from the More screen.
 - Accepts a 500-character support request from the driver.
 - Captures driver name and email (read-only), platform (Apple/Android/Other), usage mode (Browser/PWA), and recent device logs.
+- Captures client timezone and company timezone for response context.
 - Sends a support email to `info@sharplync.com.au`.
-- Shows a success banner that auto-fades after 4 seconds.
+- Shows a success banner that auto-fades after 4 seconds and redirects to Home.
+- When offline, queues the request locally, shows a queued banner, then redirects Home.
+- When back online, queued requests are sent in the background and Home shows “Support request sent”.
 
 ### Files
 - `resources/views/sharpfleet/mobile/support.blade.php`
@@ -18,11 +21,13 @@ This document summarizes the changes made to add a mobile Support page, offline-
   - Success/error handling and auto-fade.
   - JS to detect platform and PWA vs browser.
   - Serializes logs from in-memory/localStorage buffer for email payload.
+  - Offline queue handling + redirect to Home after queueing.
 
 - `app/Http/Controllers/SharpFleet/DriverMobileController.php`
   - `support()` action renders the Support page.
   - `supportSend()` action validates input and sends the email via `Mail::raw`.
   - Uses reply-to with the driver email when available.
+  - Includes organisation name, company admin contact (name/email), and company timezone in the email.
 
 - `routes/sharpfleet.php`
   - Adds GET `/app/sharpfleet/mobile/support`
@@ -47,6 +52,10 @@ This document summarizes the changes made to add a mobile Support page, offline-
     - `window.sfGetLogs()`
   - Hooks `window.error` and `unhandledrejection`.
   - Prunes logs by age and entry count.
+  - Adds a support queue sender:
+    - `window.sfQueueSupportRequest(payload)`
+    - `window.sfSyncSupportQueue()`
+  - Sets a localStorage flag when queued requests are sent (used to show Home success).
 
 ## Offline Trip Flow Improvements
 

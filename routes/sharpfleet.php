@@ -28,6 +28,7 @@ use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\SetupWizardController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
 use App\Http\Controllers\SharpFleet\Admin\VehicleController;
+use App\Http\Controllers\SharpFleet\Admin\VehicleAiTestController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
@@ -230,6 +231,13 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchiveStore']);
         Route::post('/admin/vehicles/{vehicle}/archive/cancel', [VehicleController::class, 'cancelArchive']);
         Route::post('/admin/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']);
+
+        Route::get('/admin/vehicles-ai-test', [VehicleAiTestController::class, 'index'])
+            ->name('sharpfleet.admin.vehicles-ai-test');
+        Route::post('/admin/vehicles-ai-test/makes', [VehicleAiTestController::class, 'makes'])
+            ->name('sharpfleet.admin.vehicles-ai-test.makes');
+        Route::post('/admin/vehicles-ai-test/models', [VehicleAiTestController::class, 'models'])
+            ->name('sharpfleet.admin.vehicles-ai-test.models');
 
         Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
         Route::get('/admin/bookings/feed', [AdminBookingController::class, 'feed']);
