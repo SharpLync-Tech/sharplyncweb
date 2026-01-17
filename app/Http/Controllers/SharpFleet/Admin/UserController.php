@@ -283,7 +283,7 @@ class UserController extends Controller
                 'trips.ended_at',
                 'trips.start_km',
                 'trips.end_km',
-                'trips.tracking_mode',
+                'vehicles.tracking_mode',
                 'vehicles.id as vehicle_id',
                 'vehicles.name as vehicle_name',
                 'vehicles.registration_number'
