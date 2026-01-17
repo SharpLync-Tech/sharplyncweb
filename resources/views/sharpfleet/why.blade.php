@@ -102,6 +102,29 @@
             </div>
         </details>
 
+        {{-- 🔹 NEW FAQ ITEM --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>What if a driver needs to use their own vehicle?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    Sometimes fleet vehicles aren’t available. SharpFleet supports this by allowing
+                    organisations to record trips made using personal vehicles — when enabled by an admin.
+                </p>
+                <p>
+                    Personal vehicle trips are designed for occasional, real-world exceptions and are
+                    recorded for reporting and reimbursement purposes, without adding personal cars
+                    as fleet assets.
+                </p>
+                <p>
+                    To keep things fair, private vehicle usage is limited in proportion to your subscribed
+                    fleet size and is not intended to replace fleet vehicles or avoid subscriptions.
+                </p>
+            </div>
+        </details>
+
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet ideal for NDIS and Aged Care providers?</span>

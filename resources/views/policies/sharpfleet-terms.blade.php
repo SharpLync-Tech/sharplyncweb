@@ -8,7 +8,7 @@
 </div>
 @endsection
 
-@section('policy_version', 'v1.1')
+@section('policy_version', 'v1.2')
 @section('policy_updated', '1 January 2026')
 
 @section('policy_content')
@@ -128,6 +128,47 @@
 
     <p>
         We reserve the right to suspend or terminate access where misuse, abuse, or risk is identified.
+    </p>
+</div>
+
+<div class="policy-divider"></div>
+
+{{-- 🔹 NEW SECTION --}}
+<div class="policy-section">
+    <h2>4A. Private Vehicle Usage &amp; Fair Use</h2>
+
+    <p>
+        SharpFleet may allow organisations to record trips made using personal or non-fleet vehicles (“Private Vehicle Trips”)
+        where this feature is explicitly enabled by an administrator.
+    </p>
+
+    <p>
+        Private Vehicle Trips are provided to support <strong>occasional, operational exceptions</strong>,
+        such as when subscribed fleet vehicles are temporarily unavailable.
+    </p>
+
+    <p>
+        Private Vehicle Trips:
+    </p>
+    <ul>
+        <li>Are recorded for reporting, reimbursement, and record-keeping purposes only</li>
+        <li>Do not represent fleet assets</li>
+        <li>Do not include vehicle ownership, servicing, or compliance management</li>
+    </ul>
+
+    <p>
+        Use of Private Vehicle Trips is subject to <strong>fair use</strong> and is not intended to replace,
+        substitute, or materially reduce the number of fleet vehicles subscribed within SharpFleet.
+    </p>
+
+    <p>
+        SharpFleet may apply limits, proportional allowances, or restrictions on private vehicle usage
+        based on subscribed fleet size and system configuration.
+    </p>
+
+    <p>
+        SharpLync reserves the right to monitor usage patterns and to restrict, disable, or review access
+        to Private Vehicle Trip functionality where usage appears inconsistent with fair use or these Terms.
     </p>
 </div>
 
