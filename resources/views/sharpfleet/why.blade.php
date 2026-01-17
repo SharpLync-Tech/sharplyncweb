@@ -102,7 +102,7 @@
             </div>
         </details>
 
-        {{-- 🔹 NEW FAQ ITEM --}}
+        {{-- 🔹 Private vehicle FAQ --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>What if a driver needs to use their own vehicle?</span>
@@ -125,19 +125,20 @@
             </div>
         </details>
 
+        {{-- 🔹 Replaced industry-specific section --}}
         <details class="sf-accordion-item">
             <summary>
-                <span>Why is SharpFleet ideal for NDIS and Aged Care providers?</span>
+                <span>Why does SharpFleet work for service-based businesses?</span>
                 <span class="sf-accordion-icon">+</span>
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    Clear records matter. SharpFleet makes it easy to log trips linked to clients,
-                    support workers, and services — without overcomplicating the process.
+                    Clear records matter in any service-based operation. SharpFleet makes it easy to log
+                    trips linked to customers, jobs, or work activities without slowing teams down.
                 </p>
                 <p>
-                    It works reliably in regional areas, supports offline use, and produces
-                    audit-friendly records when they’re needed.
+                    It supports real-world working conditions, including regional operations, shared
+                    vehicles, and offline use, while producing audit-friendly records when needed.
                 </p>
             </div>
         </details>
@@ -231,8 +232,8 @@
     <div class="hero">
         <h2>Built for Real Businesses</h2>
         <p>
-            SharpFleet is designed for tradies, service businesses, NDIS providers,
-            and small fleets who want clarity without complexity.
+            SharpFleet is designed for tradies, service teams, and growing fleets
+            who want clarity without complexity.
         </p>
         <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
             Get Started

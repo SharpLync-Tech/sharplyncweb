@@ -173,7 +173,6 @@
                                     <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
                                     <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
-                                <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
                                 @error('vehicle_type') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
 
@@ -183,6 +182,7 @@
                                 @error('vehicle_class') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
+                        <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
 
                         <div class="form-group">
                             <label class="checkbox-label mb-2">
@@ -206,23 +206,21 @@
                     <div class="card">
                         <div class="card-body">
                             <h3 class="section-title">Registration</h3>
-                            <div class="form-row">
-                                <div>
-                                    <label class="form-label">Registration expiry date (optional)</label>
-                                    <input type="date"
-                                           name="registration_expiry"
-                                           value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
-                                           class="form-control">
-                                    @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
-
-                                <div>
-                                    <label class="form-label">&nbsp;</label>
-                                    <div class="form-hint">
-                                        Tip: use Notes for reminder details.
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Registration expiry date (optional)</label>
+                                <input type="text"
+                                       class="form-control sf-date"
+                                       placeholder="dd / mm / yyyy"
+                                       name="registration_expiry"
+                                       value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
+                                       inputmode="numeric">
+                                @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
+                        </div>
+                        <div class="form-hint">
+                            Tip: use Notes for reminder details.
+                        </div>
                         </div>
                     </div>
                 @endif
@@ -234,10 +232,12 @@
                             <div class="form-row">
                                 <div>
                                     <label class="form-label">Last service date (optional)</label>
-                                    <input type="date"
+                                    <input type="text"
+                                           class="form-control sf-date"
+                                           placeholder="dd / mm / yyyy"
                                            name="last_service_date"
                                            value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
-                                           class="form-control">
+                                           inputmode="numeric">
                                     @error('last_service_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                 </div>
 
@@ -257,10 +257,12 @@
                             <div class="form-row">
                                 <div>
                                     <label class="form-label">Next service due date (optional)</label>
-                                    <input type="date"
+                                    <input type="text"
+                                           class="form-control sf-date"
+                                           placeholder="dd / mm / yyyy"
                                            name="service_due_date"
                                            value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
-                                           class="form-control">
+                                           inputmode="numeric">
                                     @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                 </div>
 
@@ -392,12 +394,13 @@
 }
 
 .sf-vehicle-edit .form-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px;
-    align-items: flex-start;
+    align-items: start;
 }
 
 .sf-vehicle-edit .form-row > div {
-    flex: 1;
     min-width: 0;
 }
 
@@ -460,7 +463,19 @@
 }
 </style>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    (function () {
+        if (typeof flatpickr === 'undefined') return;
+        flatpickr('.sf-date', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            allowInput: true,
+        });
+    })();
     (function () {
         const companyDistanceUnit = @json($companyDistanceUnit);
         const trackingMode = @json($vehicle->tracking_mode ?? 'distance');
