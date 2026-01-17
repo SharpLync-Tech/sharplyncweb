@@ -25,7 +25,7 @@
             <p class="form-hint" style="color: #6b7280; margin-top: 8px;">💡 Tip: Start typing and we’ll do the rest</p>
         </div>
         <div class="card-body">
-            <div class="form-group">
+            <div class="form-group" style="display:none;">
                 <label class="form-label">Quick entry</label>
                 <div class="ai-input-wrap">
                     <input id="aiFreeTextInput" class="form-control" type="text" placeholder="e.g. Toyota Camry 2020 GL">
@@ -118,13 +118,18 @@
     transform: translateY(-50%);
     border: none;
     background: rgba(10, 42, 77, 0.08);
-    color: #0A2A4D;
+    color: transparent;
     width: 24px;
     height: 24px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 16px;
     line-height: 1;
+}
+
+.ai-clear-btn::before {
+    content: "\\00D7";
+    color: #0A2A4D;
 }
 
 .ai-clear-btn:hover {
@@ -163,12 +168,11 @@
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     let currentMake = '';
-
-    const quickEntry = document.getElementById('aiFreeTextInput');
-    if (quickEntry) {
-        const group = quickEntry.closest('.form-group');
-        if (group) group.style.display = 'none';
+    const tipLine = document.querySelector('.card-header .form-hint');
+    if (tipLine) {
+        tipLine.textContent = "Tip: Start typing and we'll do the rest";
     }
+
     let locationTimer = null;
     let makeTimer = null;
     let modelTimer = null;
