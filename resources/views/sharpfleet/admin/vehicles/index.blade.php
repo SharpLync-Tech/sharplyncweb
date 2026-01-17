@@ -1,4 +1,4 @@
-@extends('layouts.sharpfleet')
+@extends('layouts.sharpfleet') 
 
 @section('title', 'Vehicles')
 
@@ -49,7 +49,7 @@
                         <tbody>
                             @foreach($vehicles as $v)
                                 <tr>
-                                    <td class="fw-bold">{{ $v->name }}</td>
+                                    <td><a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/details') }}">{{ $v->name }}</a></td>
                                     <td>{{ $v->registration_number }}</td>
                                     <td>
                                         @php
