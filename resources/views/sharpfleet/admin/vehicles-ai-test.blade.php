@@ -158,7 +158,7 @@
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
     const trimInput = document.getElementById('aiTrimInput');
-    const locationInput = document.getElementById('aiLocationInput');
+    const branchSelect = document.getElementById('branch_id');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
     const trimList = document.getElementById('aiTrimList');
@@ -229,18 +229,16 @@
         return res.json();
     }
 
-    function getLocation() {
-        return (locationInput.value || '').trim();
+    function getBranchId() {
+        if (!branchSelect) {
+            return 0;
+        }
+        const value = parseInt(branchSelect.value || '0', 10);
+        return Number.isFinite(value) ? value : 0;
     }
 
     async function fetchMakes() {
         const query = (makeInput.value || '').trim();
-        const location = getLocation();
-        if (!location) {
-            clearList(makeList);
-            setStatus(makeStatus, 'Location not available.');
-            return;
-        }
         if (query.length < 2) {
             clearList(makeList);
             setStatus(makeStatus, 'Type at least 2 characters.');
@@ -249,7 +247,7 @@
         setStatus(makeStatus, 'Loading makes...');
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/makes', {
             query,
-            location,
+            branch_id: getBranchId(),
         });
         setStatus(makeStatus, data.items.length ? 'Pick a make.' : 'No makes found.');
         renderList(makeList, data.items, (item) => {
@@ -274,7 +272,7 @@
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/models', {
             make: currentMake,
             query,
-            location: getLocation(),
+            branch_id: getBranchId(),
         });
         setStatus(modelStatus, data.items.length ? 'Pick a model.' : 'No models found.');
         renderList(modelList, data.items, (item) => {
@@ -301,7 +299,7 @@
             make: currentMake,
             model: modelInput.value.trim(),
             query,
-            location: getLocation(),
+            branch_id: getBranchId(),
         });
         setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
         renderList(trimList, data.items, (item) => {
@@ -336,6 +334,12 @@
         currentMake = makeInput.value.trim();
         clearModels();
     });
+
+    if (branchSelect) {
+        branchSelect.addEventListener('change', () => {
+            clearAll();
+        });
+    }
 
     document.querySelectorAll('.ai-clear-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -382,11 +386,21 @@
                 This is how drivers and reports will identify this asset.
             </div>
 
+            @if (!empty($branchesEnabled) && $branchesEnabled)
+                <label class="form-label mt-2">Branch</label>
+                <select name="branch_id" id="branch_id" class="form-control">
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}" @selected((int) $defaultBranchId === (int) $branch->id)>
+                            {{ $branch->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="form-hint">Used to localize AI suggestions.</div>
+            @endif
+
             <hr class="my-3">
             <h3 class="section-title">AI assist</h3>
             <div class="form-hint mb-2">Tip: Start typing and we'll do the rest.</div>
-
-            <input id="aiLocationInput" type="hidden" value="{{ $aiCountry }}">
 
             <div class="form-row">
                 <div>
@@ -628,12 +642,10 @@
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
     const trimInput = document.getElementById('aiTrimInput');
-    const locationInput = document.getElementById('aiLocationInput');
-    const locationList = document.getElementById('aiLocationList');
+    const branchSelect = document.getElementById('branch_id');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
     const trimList = document.getElementById('aiTrimList');
-    const locationStatus = document.getElementById('aiLocationStatus');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
     const trimStatus = document.getElementById('aiTrimStatus');
@@ -693,42 +705,16 @@
         return res.json();
     }
 
-    function getLocation() {
-        return (locationInput.value || '').trim();
-    }
-
-    async function fetchCountries() {
-        const query = getLocation();
-        if (query.length < 2) {
-            clearList(locationList);
-            setStatus(locationStatus, 'Type at least 2 characters.');
-            return;
+    function getBranchId() {
+        if (!branchSelect) {
+            return 0;
         }
-        setStatus(locationStatus, 'Loading countries...');
-        const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/countries', {
-            query,
-        });
-        setStatus(locationStatus, data.items.length ? 'Pick a country.' : 'No countries found.');
-        renderList(locationList, data.items, (item) => {
-            locationInput.value = item;
-            clearList(locationList);
-            setStatus(locationStatus, 'Country selected.');
-            clearAll();
-            locationInput.value = item;
-            if (makeInput.value.trim().length >= 2) {
-                fetchMakes();
-            }
-        });
+        const value = parseInt(branchSelect.value || '0', 10);
+        return Number.isFinite(value) ? value : 0;
     }
 
     async function fetchMakes() {
         const query = (makeInput.value || '').trim();
-        const location = getLocation();
-        if (!location) {
-            clearList(makeList);
-            setStatus(makeStatus, 'Select a country first.');
-            return;
-        }
         if (query.length < 2) {
             clearList(makeList);
             setStatus(makeStatus, 'Type at least 2 characters.');
@@ -737,7 +723,7 @@
         setStatus(makeStatus, 'Loading makes...');
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/makes', {
             query,
-            location,
+            branch_id: getBranchId(),
         });
         setStatus(makeStatus, data.items.length ? 'Pick a make.' : 'No makes found.');
         renderList(makeList, data.items, (item) => {
@@ -762,7 +748,7 @@
         const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/models', {
             make: currentMake,
             query,
-            location: getLocation(),
+            branch_id: getBranchId(),
         });
         setStatus(modelStatus, data.items.length ? 'Pick a model.' : 'No models found.');
         renderList(modelList, data.items, (item) => {
@@ -789,7 +775,7 @@
             make: currentMake,
             model: modelInput.value.trim(),
             query,
-            location: getLocation(),
+            branch_id: getBranchId(),
         });
         setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
         renderList(trimList, data.items, (item) => {
@@ -806,24 +792,24 @@
         };
     }
 
-    const locationTimerRef = { value: null };
     const makeTimerRef = { value: null };
     const modelTimerRef = { value: null };
     const trimTimerRef = { value: null };
 
-    locationInput.addEventListener('input', debounce(fetchCountries, 300, locationTimerRef));
     makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
     modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
     trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
-
-    locationInput.addEventListener('change', () => {
-        clearAll();
-    });
 
     makeInput.addEventListener('change', () => {
         currentMake = makeInput.value.trim();
         clearModels();
     });
+
+    if (branchSelect) {
+        branchSelect.addEventListener('change', () => {
+            clearAll();
+        });
+    }
 
     document.querySelectorAll('.ai-clear-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -836,11 +822,6 @@
                 trimInput.value = '';
                 clearList(trimList);
                 setStatus(trimStatus, '');
-            } else if (target === 'country') {
-                locationInput.value = '';
-                clearList(locationList);
-                setStatus(locationStatus, '');
-                clearAll();
             }
         });
     });

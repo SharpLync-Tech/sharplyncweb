@@ -15,47 +15,37 @@ class VehicleAiTestController extends Controller
 {
     public function index(Request $request): View
     {
-        $fleetUser = $request->session()->get('sharpfleet.user');
-        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
-            abort(403, 'No SharpFleet organisation context.');
-        }
-
+        $fleetUser = $this->getFleetUser($request);
         $organisationId = (int) $fleetUser['organisation_id'];
-        $settingsService = new CompanySettingsService($organisationId);
-        $timezone = $settingsService->timezone();
 
         $branchService = new BranchService();
-        if ($branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport()) {
-            $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
-            $branchScopeEnabled = $branchService->userBranchAccessEnabled() && !$bypassBranchRestrictions;
-            $branchId = null;
+        $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveBranchScope(
+            $fleetUser,
+            $organisationId,
+            $branchService
+        );
 
+        $branches = $branchesEnabled ? $branchService->getBranches($organisationId) : collect();
+        if ($branchScopeEnabled) {
+            $branches = $branches->filter(
+                fn ($b) => in_array((int) ($b->id ?? 0), $accessibleBranchIds, true)
+            )->values();
+        }
+
+        $defaultBranchId = null;
+        if ($branchesEnabled) {
             if ($branchScopeEnabled) {
-                $accessibleBranchIds = $branchService->getAccessibleBranchIdsForUser(
-                    $organisationId,
-                    (int) ($fleetUser['id'] ?? 0)
-                );
-                if (count($accessibleBranchIds) === 0) {
-                    abort(403, 'No branch access.');
-                }
-                $branchId = (int) $accessibleBranchIds[0];
+                $defaultBranchId = count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
             } else {
-                $branchId = (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
-            }
-
-            if ($branchId > 0) {
-                $branch = $branchService->getBranch($organisationId, $branchId);
-                $branchTimezone = $branch && isset($branch->timezone) ? trim((string) $branch->timezone) : '';
-                if ($branchTimezone !== '') {
-                    $timezone = $branchTimezone;
-                }
+                $defaultBranchId = $branchService->ensureDefaultBranch($organisationId);
             }
         }
 
-        $aiCountry = $this->countryFromTimezone($timezone);
-
         return view('sharpfleet.admin.vehicles-ai-test', [
-            'aiCountry' => $aiCountry,
+            'branchesEnabled' => $branchesEnabled,
+            'branches' => $branches,
+            'defaultBranchId' => $defaultBranchId,
         ]);
     }
 
@@ -63,10 +53,13 @@ class VehicleAiTestController extends Controller
     {
         $validated = $request->validate([
             'query' => ['required', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:40'],
+            'branch_id' => ['nullable', 'integer'],
         ]);
 
-        $location = strtoupper($validated['location']);
+        $location = strtoupper($this->resolveLocationFromBranch(
+            $request,
+            (int) ($validated['branch_id'] ?? 0)
+        ));
         $items = $client->suggestMakes(trim($validated['query']), $location);
 
         return response()->json([
@@ -79,10 +72,13 @@ class VehicleAiTestController extends Controller
         $validated = $request->validate([
             'make' => ['required', 'string', 'max:40'],
             'query' => ['nullable', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:40'],
+            'branch_id' => ['nullable', 'integer'],
         ]);
 
-        $location = strtoupper($validated['location']);
+        $location = strtoupper($this->resolveLocationFromBranch(
+            $request,
+            (int) ($validated['branch_id'] ?? 0)
+        ));
         $query = trim((string) ($validated['query'] ?? ''));
         $make = trim($validated['make']);
 
@@ -99,10 +95,13 @@ class VehicleAiTestController extends Controller
             'make' => ['required', 'string', 'max:40'],
             'model' => ['required', 'string', 'max:40'],
             'query' => ['nullable', 'string', 'max:40'],
-            'location' => ['required', 'string', 'max:40'],
+            'branch_id' => ['nullable', 'integer'],
         ]);
 
-        $location = strtoupper($validated['location']);
+        $location = strtoupper($this->resolveLocationFromBranch(
+            $request,
+            (int) ($validated['branch_id'] ?? 0)
+        ));
         $query = trim((string) ($validated['query'] ?? ''));
         $make = trim($validated['make']);
         $model = trim($validated['model']);
@@ -151,5 +150,91 @@ class VehicleAiTestController extends Controller
         }
 
         return 'Australia';
+    }
+
+    private function getFleetUser(Request $request): array
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        return $fleetUser;
+    }
+
+    private function resolveBranchScope(array $fleetUser, int $organisationId, BranchService $branchService): array
+    {
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($fleetUser);
+        $branchAccessEnabled = $branchService->branchesEnabled()
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($fleetUser['id'] ?? 0))
+            : [];
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $accessibleBranchIds = array_values(array_unique(array_map('intval', $accessibleBranchIds)));
+
+        return [$branchScopeEnabled, $accessibleBranchIds];
+    }
+
+    private function resolveBranchId(
+        array $fleetUser,
+        int $organisationId,
+        BranchService $branchService,
+        int $branchId
+    ): ?int {
+        if (!$branchService->branchesEnabled() || !$branchService->vehiclesHaveBranchSupport()) {
+            return null;
+        }
+
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveBranchScope(
+            $fleetUser,
+            $organisationId,
+            $branchService
+        );
+
+        if ($branchScopeEnabled) {
+            if ($branchId > 0) {
+                if (!in_array($branchId, $accessibleBranchIds, true)) {
+                    abort(403, 'No branch access.');
+                }
+                return $branchId;
+            }
+
+            return count($accessibleBranchIds) > 0 ? (int) $accessibleBranchIds[0] : null;
+        }
+
+        if ($branchId > 0) {
+            return $branchId;
+        }
+
+        return (int) ($branchService->ensureDefaultBranch($organisationId) ?? 0);
+    }
+
+    private function resolveLocationFromBranch(Request $request, int $branchId): string
+    {
+        $fleetUser = $this->getFleetUser($request);
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $settingsService = new CompanySettingsService($organisationId);
+
+        $timezone = $settingsService->timezone();
+        $branchService = new BranchService();
+        $resolvedBranchId = $this->resolveBranchId($fleetUser, $organisationId, $branchService, $branchId);
+
+        if ($resolvedBranchId) {
+            $branch = $branchService->getBranch($organisationId, $resolvedBranchId);
+            $branchTimezone = $branch && isset($branch->timezone) ? trim((string) $branch->timezone) : '';
+            if ($branchTimezone !== '') {
+                $timezone = $branchTimezone;
+            }
+        }
+
+        return $this->countryFromTimezone($timezone);
     }
 }
