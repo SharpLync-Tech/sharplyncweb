@@ -9,7 +9,7 @@
 @endphp
 
 <section class="sf-mobile-dashboard">
-    <h1 class="sf-mobile-title">Feedback &Support</h1>
+    <h1 class="sf-mobile-title">Feedback & Support</h1>
     <p class="sf-mobile-subtitle" style="margin-top: -6px; margin-bottom: 14px;">
         Tell us what happened or share feedback, it helps us improve SharpFleet.
     </p>

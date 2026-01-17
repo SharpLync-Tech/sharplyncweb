@@ -5,7 +5,15 @@
 @section('sharpfleet-content')
 
 @php
-    $unitLabel = ($trackingMode ?? 'distance') === 'hours' ? 'hours' : ($distanceUnit ?? 'km');
+    $isHours = ($trackingMode ?? 'distance') === 'hours';
+    $unitLabel = $isHours ? 'hours' : ($distanceUnit ?? 'km');
+    $formatReading = function ($value) use ($isHours) {
+        if ($value === null) {
+            return 'N/A';
+        }
+        $decimals = $isHours ? 1 : 0;
+        return number_format((float) $value, $decimals);
+    };
     $formatDate = function ($value) use ($dateFormat) {
         try {
             if ($value instanceof \Carbon\Carbon) {
@@ -39,22 +47,22 @@
         <div class="card">
             <div class="card-body">
                 <h3 class="section-title">Usage summary</h3>
-                <div class="mb-2"><strong>Last counter:</strong> {{ $lastReading !== null ? number_format($lastReading, 1) : 'N/A' }} {{ $unitLabel }}</div>
-                <div><strong>Total since tracked:</strong> {{ number_format($totals['since'] ?? 0, 1) }} {{ $unitLabel }}</div>
-                <div><strong>Total this week:</strong> {{ number_format($totals['week'] ?? 0, 1) }} {{ $unitLabel }}</div>
-                <div><strong>Total this month:</strong> {{ number_format($totals['month'] ?? 0, 1) }} {{ $unitLabel }}</div>
-                <div><strong>Total this year:</strong> {{ number_format($totals['year'] ?? 0, 1) }} {{ $unitLabel }}</div>
+                <div class="mb-2"><strong>Last counter:</strong> {{ $formatReading($lastReading) }} {{ $unitLabel }}</div>
+                <div><strong>Total since tracked:</strong> {{ $formatReading($totals['since'] ?? 0) }} {{ $unitLabel }}</div>
+                <div><strong>Total this week:</strong> {{ $formatReading($totals['week'] ?? 0) }} {{ $unitLabel }}</div>
+                <div><strong>Total this month:</strong> {{ $formatReading($totals['month'] ?? 0) }} {{ $unitLabel }}</div>
+                <div><strong>Total this year:</strong> {{ $formatReading($totals['year'] ?? 0) }} {{ $unitLabel }}</div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-body">
                 <h3 class="section-title">Servicing</h3>
-                <div class="mb-2"><strong>Last service reading:</strong> {{ $lastReading !== null ? number_format($lastReading, 1) : 'N/A' }} {{ $unitLabel }}</div>
+                <div class="mb-2"><strong>Last service reading:</strong> {{ $formatReading($lastReading) }} {{ $unitLabel }}</div>
                 <div class="mb-2">
                     <strong>Next service due:</strong>
                     @if(!empty($serviceDueReading))
-                        {{ number_format((float) $serviceDueReading, 1) }} {{ $unitLabel }}
+                        {{ $formatReading((float) $serviceDueReading) }} {{ $unitLabel }}
                     @else
                         N/A
                     @endif
