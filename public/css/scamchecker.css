@@ -210,7 +210,9 @@ textarea:focus {
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     box-shadow: 0 0 14px rgba(44,191,174,0.45);
-    transition: 0.18s ease;
+    transition: 0.18s ease;    
+    text-decoration: none;    
+    display: inline-block; 
 }
 
 .scam-btn:hover {

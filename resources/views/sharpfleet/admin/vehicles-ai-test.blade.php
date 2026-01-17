@@ -159,11 +159,9 @@
     const modelInput = document.getElementById('aiModelInput');
     const trimInput = document.getElementById('aiTrimInput');
     const locationInput = document.getElementById('aiLocationInput');
-    const locationList = document.getElementById('aiLocationList');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
     const trimList = document.getElementById('aiTrimList');
-    const locationStatus = document.getElementById('aiLocationStatus');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
     const trimStatus = document.getElementById('aiTrimStatus');
@@ -175,7 +173,6 @@
         tipLine.textContent = "Tip: Start typing and we'll do the rest";
     }
 
-    let locationTimer = null;
     let makeTimer = null;
     let modelTimer = null;
     let trimTimer = null;
@@ -236,36 +233,12 @@
         return (locationInput.value || '').trim();
     }
 
-    async function fetchCountries() {
-        const query = getLocation();
-        if (query.length < 2) {
-            clearList(locationList);
-            setStatus(locationStatus, 'Type at least 2 characters.');
-            return;
-        }
-        setStatus(locationStatus, 'Loading countries...');
-        const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/countries', {
-            query,
-        });
-        setStatus(locationStatus, data.items.length ? 'Pick a country.' : 'No countries found.');
-        renderList(locationList, data.items, (item) => {
-            locationInput.value = item;
-            clearList(locationList);
-            setStatus(locationStatus, 'Country selected.');
-            clearAll();
-            locationInput.value = item;
-            if (makeInput.value.trim().length >= 2) {
-                fetchMakes();
-            }
-        });
-    }
-
     async function fetchMakes() {
         const query = (makeInput.value || '').trim();
         const location = getLocation();
         if (!location) {
             clearList(makeList);
-            setStatus(makeStatus, 'Select a country first.');
+            setStatus(makeStatus, 'Location not available.');
             return;
         }
         if (query.length < 2) {
@@ -351,19 +324,13 @@
         };
     }
 
-    const locationTimerRef = { value: null };
     const makeTimerRef = { value: null };
     const modelTimerRef = { value: null };
     const trimTimerRef = { value: null };
 
-    locationInput.addEventListener('input', debounce(fetchCountries, 300, locationTimerRef));
     makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
     modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
     trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
-
-    locationInput.addEventListener('change', () => {
-        clearAll();
-    });
 
     makeInput.addEventListener('change', () => {
         currentMake = makeInput.value.trim();
@@ -381,11 +348,6 @@
                 trimInput.value = '';
                 clearList(trimList);
                 setStatus(trimStatus, '');
-            } else if (target === 'country') {
-                locationInput.value = '';
-                clearList(locationList);
-                setStatus(locationStatus, '');
-                clearAll();
             }
         });
     });
@@ -424,15 +386,7 @@
             <h3 class="section-title">AI assist</h3>
             <div class="form-hint mb-2">Tip: Start typing and we'll do the rest.</div>
 
-            <div class="form-group">
-                <label class="form-label">Country</label>
-                <div class="ai-input-wrap">
-                    <input id="aiLocationInput" class="form-control" type="text" placeholder="Start typing a country">
-                    <button type="button" class="ai-clear-btn" data-clear="country" aria-label="Clear country">x</button>
-                </div>
-                <div id="aiLocationStatus" class="form-hint"></div>
-                <div id="aiLocationList" class="ai-list"></div>
-            </div>
+            <input id="aiLocationInput" type="hidden" value="{{ $aiCountry }}">
 
             <div class="form-row">
                 <div>
