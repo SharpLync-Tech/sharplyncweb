@@ -121,28 +121,76 @@
             <h3 class="scam-result-title">Scam Analysis Result</h3>
 
             @php
-                $json = json_decode($result, true);
+                // Defensive defaults: never allow "unknown" states to look safe.
+                $raw = $result;
+                $json = json_decode($raw, true);
                 $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
 
+                // Defaults
+                $verdict = 'Unclear';
+                $score = 50;
+                $summary = 'The analysis could not be displayed reliably.';
+                $redFlags = ['Insufficient or degraded analysis output'];
+                $recommended = 'Independently verify the message. Avoid clicking links or making payments until verified.';
+                $severityClass = 'sus';
+
                 if ($isJson) {
-                    $verdict     = ucfirst($json['verdict'] ?? '');
-                    $score       = $json['risk_score'] ?? 'N/A';
-                    $summary     = $json['summary'] ?? '';
-                    $redFlags    = $json['red_flags'] ?? [];
+                    $verdict = ucfirst($json['verdict'] ?? 'Unclear');
+                    $score = $json['risk_score'] ?? 50;
+                    $summary = $json['summary'] ?? '';
+                    $redFlags = $json['red_flags'] ?? [];
                     $recommended = $json['recommended_action'] ?? '';
 
+                    // Ensure types
+                    if (!is_array($redFlags)) {
+                        $redFlags = ['Analysis returned an unexpected format for red flags'];
+                    }
+
+                    // If red flags are empty, treat as caution (never "safe")
+                    if (count($redFlags) === 0) {
+                        $redFlags = ['No red flags were returned (confidence should be treated as limited)'];
+                    }
+
+                    // Severity mapping (conservative)
                     if (is_numeric($score)) {
-                        $severityClass =
-                            $score >= 70 ? 'danger' :
-                            ($score >= 40 ? 'sus' : 'safe');
+                        $severityClass = ($score >= 70) ? 'danger' : 'sus';
                     } else {
-                        $v = strtolower($verdict);
-                        $severityClass =
-                            str_contains($v,'scam') ? 'danger' :
-                            (str_contains($v,'suspicious') || str_contains($v,'unclear') ? 'sus' : 'safe');
+                        $severityClass = 'sus';
                     }
                 }
+
+                // If controller sent meta forced_unclear, make sure UI shows caution.
+                $forcedUnclear = isset($meta) && is_array($meta) && ($meta['forced_unclear'] ?? false) === true;
+                $forcedReason = $forcedUnclear ? ($meta['reason'] ?? 'This analysis could not be completed reliably.') : null;
+
+                if ($forcedUnclear) {
+                    $severityClass = 'sus';
+                    $verdict = 'Unclear';
+                }
             @endphp
+
+            @if($forcedUnclear)
+                <div class="result-box sus" style="margin-bottom:20px; border-left-width:6px;">
+                    <strong style="display:block; margin-bottom:6px;">⚠ Confidence downgraded</strong>
+                    <span style="opacity:0.95;">
+                        {{ $forcedReason }}
+                    </span>
+                </div>
+            @endif
+
+            @if(!$isJson)
+                <div class="result-box sus" style="margin-bottom:20px; border-left-width:6px;">
+                    <strong style="display:block; margin-bottom:6px;">⚠ Analysis output issue</strong>
+                    <span style="opacity:0.95;">
+                        The analysis returned an unexpected format. Treat this result as <strong>Unclear</strong>.
+                    </span>
+
+                    <details style="margin-top:10px;">
+                        <summary style="cursor:pointer; opacity:0.9;">Show technical details</summary>
+                        <pre style="white-space:pre-wrap; margin-top:10px;">{{ $raw }}</pre>
+                    </details>
+                </div>
+            @endif
 
             <div class="result-box {{ $severityClass }}">
                 <p>
@@ -198,9 +246,10 @@
                 </a>
             </div>
         </div>
+
         @endif
 
-    </div>
+    </div> <!-- /1100px wrapper -->
 
     <!-- DRAG & DROP OVERLAY -->
     <div id="drop-overlay">
@@ -209,6 +258,7 @@
             <p>Drop file to scan</p>
         </div>
     </div>
+
 </div>
 @endsection
 
