@@ -9,7 +9,7 @@
         <p class="page-description">Prototype: suggest make, then model, using AI.</p>
     </div>
 
-    <div class="card">
+    <div class="card" style="color: #0A2A4D;">
         <div class="card-header">
             <h2 class="card-title">Create Vehicle (AI Assist)</h2>
             <p class="card-subtitle">Select a region, start typing a make, then pick a model.</p>
@@ -29,14 +29,14 @@
             <div class="form-group">
                 <label class="form-label">Make</label>
                 <input id="aiMakeInput" class="form-control" type="text" placeholder="Start typing a make (e.g., Toyota)">
-                <div id="aiMakeStatus" class="form-hint"></div>
+                <div id="aiMakeStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiMakeList" class="ai-list"></div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Model</label>
                 <input id="aiModelInput" class="form-control" type="text" placeholder="Start typing a model">
-                <div id="aiModelStatus" class="form-hint"></div>
+                <div id="aiModelStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiModelList" class="ai-list"></div>
             </div>
         </div>
@@ -54,7 +54,7 @@
 .ai-chip {
     border: 1px solid rgba(44, 191, 174, 0.35);
     background: rgba(44, 191, 174, 0.08);
-    color: #EAF7F4;
+    color: #0A2A4D;
     padding: 6px 10px;
     border-radius: 999px;
     cursor: pointer;
