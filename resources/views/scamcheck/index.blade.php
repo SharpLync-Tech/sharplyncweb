@@ -49,14 +49,14 @@
                 @csrf
 
                 <textarea
-    id="scam-text"
-    name="message"
-    rows="10"
-    placeholder="1. Copy and Paste your email text
-2. Save and upload an email
-3. Drag & Drop your saved email file
-4. Copy and paste you TXT or WhatsApp message text"
->{{ $input ?? '' }}</textarea>
+                    id="scam-text"
+                    name="message"
+                    rows="10"
+                    placeholder="1. Copy and paste your email or message text
+2. Upload a saved email (.eml recommended, .msg supported)
+3. Upload or drag & drop a screenshot of the message (JPG or PNG)
+4. Paste SMS, WhatsApp, or other message text"
+                >{{ $input ?? '' }}</textarea>
 
                 <div id="attached-file" class="attached-file" style="display:none;">
                     <span class="file-icon">🛡️ File ready:</span>
@@ -64,26 +64,24 @@
                     <button type="button" class="remove-file" title="Remove file">✕</button>
                 </div>
 
-
-
-
                 <br><br>
+
                 <input type="file" name="file" id="file-input" hidden>
 
-                <button type="button" class="file-browse-btn" onclick="document.getElementById('file-input').click()">
+                <button type="button"
+                        class="file-browse-btn"
+                        onclick="document.getElementById('file-input').click()">
                     Browse…
                 </button>
 
-                <br><br>
+                <p style="margin-top:8px; font-size:0.9em; opacity:0.8;">
+                    📎 Supports email files (.eml, .msg) and screenshots (JPG, PNG)
+                </p>
 
-                <button type="submit" class="scam-btn" id="check-btn">Check Message</button>
+                <br>
 
-                <button type="button"
-                        id="clear-btn"
-                        class="scam-btn outline"
-                        style="display:none;"
-                        onclick="clearScamForm()">
-                    Clear
+                <button type="submit" class="scam-btn" id="check-btn">
+                    Check Message
                 </button>
             </form>
         </div>
@@ -105,10 +103,21 @@
         @if(isset($result))
 
         <script>
-            window.addEventListener('DOMContentLoaded', () => {
-                const btn = document.getElementById('clear-btn');
-                if (btn) btn.style.display = 'inline-block';
+            document.addEventListener("DOMContentLoaded", function () {
+                const result = document.querySelector('.result-container');
+                if (result) {
+                    setTimeout(() => {
+                        result.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }, 300);
+                }
             });
+
+            function startNewCheck() {
+                window.location.href = '/scam-checker';
+            }
         </script>
 
         <div class="result-container" style="margin-top:40px;">
@@ -160,25 +169,23 @@
                 <div class="section-title">Recommended Action</div>
                 <p>{!! nl2br(e($recommended)) !!}</p>
             </div>
+
+            <!-- ACTIONS -->
+            <div style="margin-top:30px; display:flex; gap:16px; flex-wrap:wrap;">
+                <button type="button"
+                        class="scam-btn"
+                        onclick="startNewCheck()">
+                    Check another message
+                </button>
+
+                <a href="/" class="scam-btn outline">
+                    Back to SharpLync
+                </a>
+            </div>
         </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const result = document.querySelector('.result-container');
-                if (result) {
-                    setTimeout(() => {
-                        result.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-                    }, 300);
-                }
-            });
-        </script>
-
         @endif
 
-    </div> <!-- /1100px wrapper -->
+    </div>
 
     <!-- DRAG & DROP OVERLAY -->
     <div id="drop-overlay">
@@ -187,7 +194,6 @@
             <p>Drop file to scan</p>
         </div>
     </div>
-
 </div>
 @endsection
 
