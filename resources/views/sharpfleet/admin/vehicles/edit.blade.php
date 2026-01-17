@@ -14,7 +14,7 @@
     $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
 @endphp
 
-<div class="container mt-4">
+<div class="container mt-4 sf-vehicle-edit">
     <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id) }}">
         @csrf
 
@@ -106,10 +106,10 @@
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
                         <div class="form-hint mb-2">
-                            Tip: Start typing a make and model, then pick a variant. We will suggest the best matching vehicle type.
+                            Tip: Start typing a make and model, then pick a variant to refine suggestions.
                         </div>
                         <div class="form-hint mb-3">
-                            AI is only used to suggest details; you can edit any field before saving.
+                            AI suggests details only; you can edit any field before saving.
                         </div>
 
                         <div class="form-row">
@@ -286,7 +286,7 @@
                     <div class="card-body">
                         <h3 class="section-title">Service status</h3>
                         <p class="text-muted mb-3">
-                            If a vehicle is out of service, drivers cannot book it or use it for trips.
+                            Out-of-service vehicles cannot be booked or used for trips.
                         </p>
 
                         @php
@@ -328,7 +328,7 @@
                     <div class="card-body">
                         <h3 class="section-title">Permanent allocation</h3>
                         <p class="text-muted mb-3">
-                            Permanently assigned vehicles cannot be booked and can only be used by the assigned driver.
+                            Permanently assigned vehicles can only be used by the assigned driver.
                         </p>
 
                         @php
@@ -381,6 +381,34 @@
 </div>
 
 <style>
+.sf-vehicle-edit .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sf-vehicle-edit .form-group {
+    margin-bottom: 12px;
+}
+
+.sf-vehicle-edit .form-row {
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.sf-vehicle-edit .form-row > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.sf-vehicle-edit .section-title {
+    margin-bottom: 6px;
+}
+
+.sf-vehicle-edit .form-hint {
+    margin-top: 4px;
+}
+
 .ai-input-wrap {
     position: relative;
 }
