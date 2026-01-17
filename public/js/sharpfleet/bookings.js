@@ -260,13 +260,39 @@ document.addEventListener('DOMContentLoaded', function() {
         rangeStartMs: null,
         rangeEndMs: null,
     };
-    let dayFullscreen = false;
+    let viewFullscreen = false;
+    let lastView = state.view;
 
     function expandIconSvg(isExpanded) {
         if (isExpanded) {
-            return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 10V4h6v2H6v4H4zm10-6h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 4v-4h2v6h-6v-2h4z"/></svg>';
+            return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 4v2H6v3H4V4h5zm11 0v5h-2V6h-3V4h5zM4 15h2v3h3v2H4v-5zm13 3v-3h2v5h-5v-2h3z"/></svg>';
         }
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm0-4h2V7h3V5H5v5zm10 7h-3v2h5v-5h-2v3zm2-12h-5v2h3v3h2V5z"/></svg>';
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9V4h5v2H6v3H4zm11-5h5v5h-2V6h-3V4zM6 18h3v2H4v-5h2v3zm12-3h2v5h-5v-2h3v-3z"/></svg>';
+    }
+
+    function renderWithExpand(contentEl) {
+        if (!els.cal) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'sf-bk-view-wrap' + (viewFullscreen ? ' is-fullscreen' : '');
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sf-bk-expand-btn';
+        btn.setAttribute('aria-label', viewFullscreen ? 'Collapse view' : 'Expand view');
+        btn.setAttribute('data-tip', viewFullscreen ? 'Collapse' : 'Expand');
+        btn.innerHTML = expandIconSvg(viewFullscreen);
+        btn.addEventListener('click', () => {
+            viewFullscreen = !viewFullscreen;
+            wrap.classList.toggle('is-fullscreen', viewFullscreen);
+            document.body.classList.toggle('sf-bk-fullscreen-open', viewFullscreen);
+            btn.setAttribute('aria-label', viewFullscreen ? 'Collapse view' : 'Expand view');
+            btn.setAttribute('data-tip', viewFullscreen ? 'Collapse' : 'Expand');
+            btn.innerHTML = expandIconSvg(viewFullscreen);
+        });
+
+        wrap.appendChild(btn);
+        wrap.appendChild(contentEl);
+        els.cal.appendChild(wrap);
     }
 
     function setActiveViewButtons() {
@@ -515,17 +541,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         table.appendChild(tbody);
-        els.cal.appendChild(table);
+        renderWithExpand(table);
     }
 
     function renderTimeline() {
         clearCalendar();
         if (!els.cal) return;
-        if (state.view !== 'day') {
-            dayFullscreen = false;
-            document.body.classList.remove('sf-bk-fullscreen-open');
-        }
-
         // Locked grid: hour-based columns, teal hour dividers and thicker teal day separators.
         const pxPerHour = (state.view === 'day') ? 92 : 72;
         const pxPerMin = pxPerHour / 60;
@@ -696,29 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lane.appendChild(block);
         });
 
-        if (state.view === 'day') {
-            const wrap = document.createElement('div');
-            wrap.className = 'sf-bk-day-wrap' + (dayFullscreen ? ' is-fullscreen' : '');
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'sf-bk-expand-btn';
-            btn.setAttribute('aria-label', dayFullscreen ? 'Exit full screen' : 'Expand day view');
-            btn.innerHTML = expandIconSvg(dayFullscreen);
-            btn.addEventListener('click', () => {
-                dayFullscreen = !dayFullscreen;
-                wrap.classList.toggle('is-fullscreen', dayFullscreen);
-                document.body.classList.toggle('sf-bk-fullscreen-open', dayFullscreen);
-                btn.setAttribute('aria-label', dayFullscreen ? 'Exit full screen' : 'Expand day view');
-                btn.innerHTML = expandIconSvg(dayFullscreen);
-            });
-
-            wrap.appendChild(btn);
-            wrap.appendChild(scroll);
-            els.cal.appendChild(wrap);
-        } else {
-            els.cal.appendChild(scroll);
-        }
+        renderWithExpand(scroll);
 
         // Default visible range: scroll to the earliest booking (so overnight bookings aren't "missing").
         // Falls back to 06:00 if there are no bookings.
@@ -909,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        els.cal.appendChild(scroll);
+        renderWithExpand(scroll);
     }
 
     function renderWeekV1() {
@@ -1129,10 +1128,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        els.cal.appendChild(wrap);
+        renderWithExpand(wrap);
     }
 
     function render() {
+        if (state.view !== lastView) {
+            viewFullscreen = false;
+            lastView = state.view;
+            document.body.classList.remove('sf-bk-fullscreen-open');
+        }
         if (state.view === 'month') {
             renderMonth();
             return;

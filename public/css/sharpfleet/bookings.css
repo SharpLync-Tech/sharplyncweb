@@ -40,13 +40,16 @@
 }
 /* SharpFleet bookings calendar (locked NAVY/TEAL spec) */ 
 .sf-bk-scroll{position:relative;overflow-x:auto;overflow-y:auto;max-width:100%;max-height:70vh;border:1px solid var(--sl-border,#e5e7eb);border-radius:12px;background:#fff}
-.sf-bk-day-wrap{position:relative;}
-.sf-bk-day-wrap.is-fullscreen{position:fixed;inset:12px;z-index:9998;background:#fff;border-radius:16px;box-shadow:0 18px 40px rgba(10,42,77,.22);padding:12px;}
-.sf-bk-day-wrap.is-fullscreen .sf-bk-scroll{max-height:calc(100vh - 120px);height:calc(100vh - 120px);border-radius:12px;}
+.sf-bk-view-wrap{position:relative;}
+.sf-bk-view-wrap.is-fullscreen{position:fixed;inset:12px;z-index:9998;background:#fff;border-radius:16px;box-shadow:0 18px 40px rgba(10,42,77,.22);padding:12px;overflow:auto;}
+.sf-bk-view-wrap.is-fullscreen .sf-bk-scroll,
+.sf-bk-view-wrap.is-fullscreen .sf-wk-v1-scroll{max-height:calc(100vh - 120px);height:calc(100vh - 120px);border-radius:12px;}
 body.sf-bk-fullscreen-open{overflow:hidden;}
-.sf-bk-expand-btn{position:absolute;top:10px;right:10px;z-index:30;border:1px solid rgba(10,42,77,.12);background:#fff;border-radius:10px;padding:6px 8px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px rgba(10,42,77,.12);color:var(--sl-navy,#0A2A4D);cursor:pointer;}
+.sf-bk-expand-btn{position:absolute;top:10px;right:10px;z-index:30;border:1px solid rgba(44,191,174,.55);background:#fff;border-radius:10px;padding:6px 8px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px rgba(10,42,77,.12);color:var(--sl-teal,#2CBFAE);cursor:pointer;}
 .sf-bk-expand-btn:hover{border-color:rgba(44,191,174,.5);box-shadow:0 10px 18px rgba(10,42,77,.18);}
 .sf-bk-expand-btn svg{width:18px;height:18px;display:block;}
+.sf-bk-expand-btn[data-tip]:hover::after{content:attr(data-tip);position:absolute;top:-34px;right:0;background:var(--sl-navy,#0A2A4D);color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 18px rgba(10,42,77,.18);}
+.sf-bk-expand-btn[data-tip]:hover::before{content:'';position:absolute;top:-10px;right:12px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--sl-navy,#0A2A4D);}
 .sf-bk-header{position:sticky;top:0;z-index:5;background:#fff}
 .sf-bk-left{width:240px;min-width:240px;max-width:240px;flex:0 0 240px;position:-webkit-sticky;position:sticky;left:0;z-index:20;background:#fff;border-right:1px solid rgba(10,42,77,.06);box-shadow:10px 0 18px rgba(10,42,77,.06)}
 /* Fallback for environments/layouts where CSS sticky is broken by an ancestor overflow/transform.

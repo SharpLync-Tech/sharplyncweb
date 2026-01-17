@@ -58,6 +58,7 @@
                             'Support for shared and pool vehicles',
                             'Optional safety checks and reminders',
                             'Private vehicle trips for real-world exceptions',
+                            'Can be used to track hours on equipment, machinery, and plant',
                             'Flat, affordable pricing per vehicle',
                             'Designed for small and growing fleets',
                         ];
@@ -70,6 +71,11 @@
                         </li>
                     @endforeach
                 </ul>
+
+                <p style="margin-top: 0.75rem;">
+                    This makes SharpFleet suitable not just for vehicles, but also for tracking usage hours
+                    on equipment where time-based records matter more than distance.
+                </p>
             </div>
         </details>
 
@@ -162,8 +168,8 @@
                     trips linked to customers, jobs, or work activities without slowing teams down.
                 </p>
                 <p>
-                    It supports real-world working conditions, including shared vehicles and offline use,
-                    while producing audit-friendly records when needed.
+                    It supports real-world working conditions, including shared vehicles, equipment usage,
+                    and offline use, while producing audit-friendly records when needed.
                 </p>
             </div>
         </details>
