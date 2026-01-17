@@ -27,6 +27,22 @@
             Simple answers to the most common questions about why businesses choose SharpFleet.
             No fluff. No surprises. Just straightforward fleet management.
         </p>
+
+        {{-- ===============================
+             Feature Snapshot
+        ================================ --}}
+        <ul class="sf-feature-list">
+            <li>Simple trip logging for vehicles and drivers</li>
+            <li>Clear, audit-friendly reporting</li>
+            <li>No GPS tracking or driver surveillance</li>
+            <li>Works online and offline</li>
+            <li>No hardware or vehicle installations</li>
+            <li>Support for shared and pool vehicles</li>
+            <li>Optional safety checks and reminders</li>
+            <li>Private vehicle trips for real-world exceptions</li>
+            <li>Flat, affordable pricing per vehicle</li>
+            <li>Designed for small and growing fleets</li>
+        </ul>
     </div>
 
     {{-- ===============================
@@ -102,7 +118,6 @@
             </div>
         </details>
 
-        {{-- 🔹 Private vehicle FAQ --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>What if a driver needs to use their own vehicle?</span>
@@ -125,7 +140,6 @@
             </div>
         </details>
 
-        {{-- 🔹 Replaced industry-specific section --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why does SharpFleet work for service-based businesses?</span>

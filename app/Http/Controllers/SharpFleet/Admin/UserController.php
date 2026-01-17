@@ -242,7 +242,7 @@ class UserController extends Controller
 
             $distance = (float) $query->clone()
                 ->where(function ($q) {
-                    $q->whereNull('trips.tracking_mode')->orWhere('trips.tracking_mode', '!=', 'hours');
+                    $q->whereNull('vehicles.tracking_mode')->orWhere('vehicles.tracking_mode', '!=', 'hours');
                 })
                 ->whereNotNull('trips.start_km')
                 ->whereNotNull('trips.end_km')
@@ -250,7 +250,7 @@ class UserController extends Controller
                 ->value('total');
 
             $hours = (float) $query->clone()
-                ->where('trips.tracking_mode', 'hours')
+                ->where('vehicles.tracking_mode', 'hours')
                 ->whereNotNull('trips.start_km')
                 ->whereNotNull('trips.end_km')
                 ->selectRaw('SUM(CASE WHEN end_km >= start_km THEN end_km - start_km ELSE 0 END) as total')
