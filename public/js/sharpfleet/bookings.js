@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prev: document.getElementById('sfBkPrev'),
         next: document.getElementById('sfBkNext'),
         today: document.getElementById('sfBkToday'),
+        createBtn: document.getElementById('sfBkCreateBtn'),
         range: document.getElementById('sfBkRangeLabel'),
         cal: document.getElementById('sfBkCalendar'),
         loading: document.getElementById('sfBkLoading'),
@@ -1445,6 +1446,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         loadBookingsForRange();
     });
+    if (els.createBtn) {
+        els.createBtn.addEventListener('click', () => {
+            const dayStart = state.anchorMs || parseYmd(sf.today);
+            const startMs = dayStart + 9 * 3600000;
+            const endMs = startMs + 60 * 60000;
+            openCreateModal({ vehicleId: null, startMs, endMs });
+        });
+    }
 
     // Create modal wiring
     if (els.createClose) els.createClose.addEventListener('click', closeCreateModal);
