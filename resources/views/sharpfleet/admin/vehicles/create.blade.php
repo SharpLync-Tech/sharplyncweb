@@ -198,21 +198,21 @@
                     @error('registration_number')
                         <div class="text-error mb-2">{{ $message }}</div>
                     @enderror
-                </div>
 
-                <div class="form-row">
-                    <div>
-                        <label class="form-label">Registration expiry date (optional)</label>
-                        <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
-                        @error('registration_expiry')
-                            <div class="text-error mb-2">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label">Registration expiry date (optional)</label>
+                            <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
+                            @error('registration_expiry')
+                                <div class="text-error mb-2">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label class="form-label">&nbsp;</label>
-                        <div class="form-hint">
-                            Tip: use the vehicle Notes field for reminders.
+                        <div>
+                            <label class="form-label">&nbsp;</label>
+                            <div class="form-hint">
+                                Tip: use the vehicle Notes field for reminders.
+                            </div>
                         </div>
                     </div>
                 </div>
