@@ -4,7 +4,9 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
+use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -184,6 +186,135 @@ class UserController extends Controller
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,
             'selectedBranchIds' => $selectedBranchIds,
+        ]);
+    }
+
+    public function details(Request $request, int $userId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
+
+        $user = DB::connection('sharpfleet')
+            ->table('users')
+            ->select('id', 'first_name', 'last_name', 'email', 'role', 'is_driver')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        $settings = new CompanySettingsService($organisationId);
+        $timezone = $settings->timezone();
+        $dateFormat = $settings->dateFormat();
+        $distanceUnit = $settings->distanceUnit();
+
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        $branchRestricted = count($actorBranchIds) > 0 && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
+        $tripBase = DB::connection('sharpfleet')
+            ->table('trips')
+            ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+            ->where('trips.organisation_id', $organisationId)
+            ->where('trips.user_id', $userId)
+            ->whereNotNull('trips.started_at')
+            ->when($branchRestricted, fn ($q) => $q->whereIn('vehicles.branch_id', $actorBranchIds));
+
+        $totalTrips = (clone $tripBase)->count();
+
+        $sumTotals = function (?string $start, ?string $end) use ($tripBase) {
+            $query = clone $tripBase;
+            if ($start) {
+                $query->where('trips.started_at', '>=', $start);
+            }
+            if ($end) {
+                $query->where('trips.started_at', '<=', $end);
+            }
+
+            $distance = (float) $query->clone()
+                ->where(function ($q) {
+                    $q->whereNull('trips.tracking_mode')->orWhere('trips.tracking_mode', '!=', 'hours');
+                })
+                ->whereNotNull('trips.start_km')
+                ->whereNotNull('trips.end_km')
+                ->selectRaw('SUM(CASE WHEN end_km >= start_km THEN end_km - start_km ELSE 0 END) as total')
+                ->value('total');
+
+            $hours = (float) $query->clone()
+                ->where('trips.tracking_mode', 'hours')
+                ->whereNotNull('trips.start_km')
+                ->whereNotNull('trips.end_km')
+                ->selectRaw('SUM(CASE WHEN end_km >= start_km THEN end_km - start_km ELSE 0 END) as total')
+                ->value('total');
+
+            return [$distance, $hours];
+        };
+
+        $now = Carbon::now($timezone);
+        $weekStart = $now->copy()->startOfWeek();
+        $monthStart = $now->copy()->startOfMonth();
+        $yearStart = $now->copy()->startOfYear();
+
+        [$totalDistance, $totalHours] = $sumTotals(null, null);
+        [$weekDistance, $weekHours] = $sumTotals($weekStart->toDateTimeString(), $now->toDateTimeString());
+        [$monthDistance, $monthHours] = $sumTotals($monthStart->toDateTimeString(), $now->toDateTimeString());
+        [$yearDistance, $yearHours] = $sumTotals($yearStart->toDateTimeString(), $now->toDateTimeString());
+
+        $convertDistance = function (float $value) use ($distanceUnit) {
+            if ($distanceUnit === 'mi') {
+                return $value * 0.621371;
+            }
+            return $value;
+        };
+
+        $lastTrip = (clone $tripBase)
+            ->select(
+                'trips.id',
+                'trips.started_at',
+                'trips.ended_at',
+                'trips.start_km',
+                'trips.end_km',
+                'trips.tracking_mode',
+                'vehicles.id as vehicle_id',
+                'vehicles.name as vehicle_name',
+                'vehicles.registration_number'
+            )
+            ->orderByDesc('trips.started_at')
+            ->first();
+
+        $topVehicles = (clone $tripBase)
+            ->selectRaw('vehicles.id, vehicles.name, vehicles.registration_number, COUNT(*) as trip_count')
+            ->groupBy('vehicles.id', 'vehicles.name', 'vehicles.registration_number')
+            ->orderByDesc('trip_count')
+            ->limit(5)
+            ->get();
+
+        return view('sharpfleet.admin.users.details', [
+            'user' => $user,
+            'dateFormat' => $dateFormat,
+            'distanceUnit' => $distanceUnit,
+            'totalTrips' => $totalTrips,
+            'totals' => [
+                'distance' => $convertDistance($totalDistance),
+                'hours' => $totalHours,
+                'week_distance' => $convertDistance($weekDistance),
+                'week_hours' => $weekHours,
+                'month_distance' => $convertDistance($monthDistance),
+                'month_hours' => $monthHours,
+                'year_distance' => $convertDistance($yearDistance),
+                'year_hours' => $yearHours,
+            ],
+            'lastTrip' => $lastTrip,
+            'topVehicles' => $topVehicles,
         ]);
     }
 

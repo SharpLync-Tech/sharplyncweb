@@ -104,7 +104,11 @@
                                                 value="{{ $user->id }}">
                                         @endif
                                     </td>
-                                    <td>{{ trim($user->first_name.' '.$user->last_name) }}</td>
+                                    <td>
+                                        <a href="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/details') }}">
+                                            {{ trim($user->first_name.' '.$user->last_name) }}
+                                        </a>
+                                    </td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->role }}</td>
                                     <td>
