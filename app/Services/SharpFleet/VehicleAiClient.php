@@ -25,19 +25,22 @@ class VehicleAiClient
 
     public function suggestMakes(string $query, string $location): array
     {
-        $prompt = "Return up to 12 vehicle makes popular in {$location} that start with: \"{$query}\".";
+        $prompt = "Return up to 12 makes/brands popular in {$location} that start with: \"{$query}\". " .
+            "Include cars, trucks, heavy equipment (dozers, excavators, loaders), tractors, boats, jet skis, and ride-on mowers.";
         return $this->askList($prompt);
     }
 
     public function suggestModels(string $make, string $query, string $location): array
     {
-        $prompt = "Return up to 12 models for the make \"{$make}\" popular in {$location} that start with: \"{$query}\".";
+        $prompt = "Return up to 12 models for the make \"{$make}\" popular in {$location} that start with: \"{$query}\". " .
+            "If the make is a heavy equipment or machinery brand, include relevant machine model lines.";
         return $this->askList($prompt);
     }
 
     public function suggestTrims(string $make, string $model, string $query, string $location): array
     {
-        $prompt = "Return up to 12 trim levels or variants for the {$make} {$model} popular in {$location} that start with: \"{$query}\".";
+        $prompt = "Return up to 12 trim levels or variants for the {$make} {$model} popular in {$location} that start with: \"{$query}\". " .
+            "For heavy equipment or machinery, return common series/variant names instead of passenger car trims.";
         return $this->askList($prompt);
     }
 
