@@ -14,7 +14,7 @@
     <div class="hero">
         <h1>
             Fleet Management:<br>
-            <span class="highlight">Streamlined from Start to Finish</span>
+            <span class="highlight">Sorted from Start to Finish</span>
         </h1>
 
         {{-- =========================

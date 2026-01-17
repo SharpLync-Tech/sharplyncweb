@@ -60,7 +60,7 @@
 
             @if($branchesEnabled)
                 <label class="form-label mt-2">Branch</label>
-                <select name="branch_id" class="form-control">
+                <select name="branch_id" id="branch_id" class="form-control">
                     @foreach($branches as $b)
                         <option value="{{ (int) $b->id }}" {{ (int) old('branch_id', $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
                             {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
@@ -169,22 +169,40 @@
                 <div class="text-error mb-2">{{ $message }}</div>
             @enderror
 
-            {{-- Make / Model --}}
-                 <div class="form-row">
+            <hr class="my-3">
+            <h3 class="section-title">AI assist</h3>
+            <div class="form-hint mb-2">Tip: Start typing and we'll do the rest.</div>
+
+            {{-- Make / Model (AI-assisted) --}}
+            <div class="form-row">
                 <div>
-                      <label class="form-label">Make</label>
-                    <input type="text"
-                           name="make"
-                           value="{{ old('make') }}"
-                          class="form-control">
+                    <label class="form-label">Make</label>
+                    <div class="ai-input-wrap">
+                        <input id="aiMakeInput"
+                               type="text"
+                               name="make"
+                               value="{{ old('make') }}"
+                               placeholder="Start typing a make"
+                               class="form-control">
+                        <button type="button" class="ai-clear-btn" data-clear="make" aria-label="Clear make">x</button>
+                    </div>
+                    <div id="aiMakeStatus" class="form-hint"></div>
+                    <div id="aiMakeList" class="ai-list"></div>
                 </div>
 
                 <div>
-                      <label class="form-label">Model</label>
-                    <input type="text"
-                           name="model"
-                           value="{{ old('model') }}"
-                          class="form-control">
+                    <label class="form-label">Model</label>
+                    <div class="ai-input-wrap">
+                        <input id="aiModelInput"
+                               type="text"
+                               name="model"
+                               value="{{ old('model') }}"
+                               placeholder="Start typing a model"
+                               class="form-control">
+                        <button type="button" class="ai-clear-btn" data-clear="model" aria-label="Clear model">x</button>
+                    </div>
+                    <div id="aiModelStatus" class="form-hint"></div>
+                    <div id="aiModelList" class="ai-list"></div>
                 </div>
             </div>
 
@@ -325,6 +343,58 @@
 
 </div>
 
+<style>
+.ai-input-wrap {
+    position: relative;
+}
+
+.ai-input-wrap .form-control {
+    padding-right: 38px;
+}
+
+.ai-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(10, 42, 77, 0.08);
+    color: #0A2A4D;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.ai-clear-btn:hover {
+    background: rgba(10, 42, 77, 0.18);
+}
+
+.ai-list {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ai-chip {
+    border: 1px solid rgba(44, 191, 174, 0.35);
+    background: rgba(44, 191, 174, 0.08);
+    color: #0A2A4D;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.ai-chip:hover {
+    background: rgba(44, 191, 174, 0.18);
+}
+</style>
+
 <script>
     const companyDistanceUnit = @json($companyDistanceUnit);
 
@@ -381,6 +451,156 @@
         trackingMode.addEventListener('change', updateServiceDueKmLabel);
     }
     updateServiceDueKmLabel();
+
+    const makeInput = document.getElementById('aiMakeInput');
+    const modelInput = document.getElementById('aiModelInput');
+    const makeList = document.getElementById('aiMakeList');
+    const modelList = document.getElementById('aiModelList');
+    const makeStatus = document.getElementById('aiMakeStatus');
+    const modelStatus = document.getElementById('aiModelStatus');
+    const branchSelect = document.getElementById('branch_id');
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    if (makeInput && modelInput) {
+        let currentMake = makeInput.value.trim();
+
+        function setStatus(el, text) {
+            if (!el) return;
+            el.textContent = text;
+        }
+
+        function clearList(el) {
+            if (el) el.innerHTML = '';
+        }
+
+        function clearModels() {
+            modelInput.value = '';
+            clearList(modelList);
+            setStatus(modelStatus, '');
+        }
+
+        function clearAll() {
+            makeInput.value = '';
+            currentMake = '';
+            clearList(makeList);
+            setStatus(makeStatus, '');
+            clearModels();
+        }
+
+        function renderList(el, items, onPick) {
+            clearList(el);
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'ai-chip';
+                btn.textContent = item;
+                btn.addEventListener('click', () => onPick(item));
+                el.appendChild(btn);
+            });
+        }
+
+        async function postJson(url, payload) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) return { items: [] };
+            return res.json();
+        }
+
+        function getBranchId() {
+            if (!branchSelect) {
+                return 0;
+            }
+            const value = parseInt(branchSelect.value || '0', 10);
+            return Number.isFinite(value) ? value : 0;
+        }
+
+        async function fetchMakes() {
+            const query = (makeInput.value || '').trim();
+            if (query.length < 2) {
+                clearList(makeList);
+                setStatus(makeStatus, 'Type at least 2 characters.');
+                return;
+            }
+            setStatus(makeStatus, 'Loading makes...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/makes', {
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(makeStatus, data.items.length ? 'Pick a make.' : 'No makes found.');
+            renderList(makeList, data.items, (item) => {
+                currentMake = item;
+                makeInput.value = item;
+                clearList(makeList);
+                setStatus(makeStatus, 'Make selected.');
+                clearModels();
+                modelInput.focus();
+                fetchModels();
+            });
+        }
+
+        async function fetchModels() {
+            const query = (modelInput.value || '').trim();
+            if (!currentMake) {
+                clearList(modelList);
+                setStatus(modelStatus, 'Select a make first.');
+                return;
+            }
+            setStatus(modelStatus, 'Loading models...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/models', {
+                make: currentMake,
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(modelStatus, data.items.length ? 'Pick a model.' : 'No models found.');
+            renderList(modelList, data.items, (item) => {
+                modelInput.value = item;
+                clearList(modelList);
+                setStatus(modelStatus, 'Model selected.');
+            });
+        }
+
+        function debounce(fn, delay, timerRef) {
+            return function () {
+                clearTimeout(timerRef.value);
+                timerRef.value = setTimeout(fn, delay);
+            };
+        }
+
+        const makeTimerRef = { value: null };
+        const modelTimerRef = { value: null };
+
+        makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
+        modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
+
+        makeInput.addEventListener('change', () => {
+            currentMake = makeInput.value.trim();
+            clearModels();
+        });
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', () => {
+                clearAll();
+            });
+        }
+
+        document.querySelectorAll('.ai-clear-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-clear');
+                if (target === 'make') {
+                    clearAll();
+                } else if (target === 'model') {
+                    clearModels();
+                }
+            });
+        });
+    }
 
 </script>
 
