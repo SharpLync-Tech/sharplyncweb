@@ -165,6 +165,14 @@
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     let currentMake = '';
+
+    const tipLine = document.querySelector('.card-header .form-hint');
+    if (tipLine) {
+        tipLine.textContent = "Tip: Start typing and we'll do the rest";
+    }
+    document.querySelectorAll('.ai-clear-btn').forEach(btn => {
+        btn.innerHTML = '&times;';
+    });
     let locationTimer = null;
     let makeTimer = null;
     let modelTimer = null;
@@ -281,6 +289,9 @@
             trimInput.value = data.variant;
             clearList(trimList);
             setStatus(trimStatus, 'Variant selected.');
+        } else if (currentMake && modelInput.value.trim()) {
+            trimInput.value = '';
+            fetchTrims(true);
         }
 
         setStatus(freeTextStatus, 'Filled from quick entry.');
@@ -342,7 +353,7 @@
         });
     }
 
-    async function fetchTrims() {
+    async function fetchTrims(autoPickFirst = false) {
         const query = (trimInput.value || '').trim();
         if (!currentMake || !modelInput.value.trim()) {
             clearList(trimList);
@@ -362,6 +373,12 @@
             clearList(trimList);
             setStatus(trimStatus, 'Variant selected.');
         });
+
+        if (autoPickFirst && data.items.length > 0) {
+            trimInput.value = data.items[0];
+            clearList(trimList);
+            setStatus(trimStatus, 'Variant suggested.');
+        }
     }
 
     function debounce(fn, delay, timerRef) {
