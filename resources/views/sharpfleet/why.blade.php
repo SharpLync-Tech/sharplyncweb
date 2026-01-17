@@ -34,6 +34,7 @@
     ================================ --}}
     <section class="sf-accordion mb-4">
 
+        {{-- WHY USE --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why use SharpFleet?</span>
@@ -47,50 +48,32 @@
                 </p>
 
                 <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Simple trip logging for vehicles and drivers</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Clear, audit-friendly reporting</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>No GPS tracking or driver surveillance</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Works online and offline</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>No hardware or vehicle installations</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Support for shared and pool vehicles</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Optional safety checks and reminders</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Private vehicle trips for real-world exceptions</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                        <span>✔</span>
-                        <span>Flat, affordable pricing per vehicle</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.6rem;">
-                        <span>✔</span>
-                        <span>Designed for small and growing fleets</span>
-                    </li>
+                    @php
+                        $features = [
+                            'Simple trip logging for vehicles and drivers',
+                            'Clear, audit-friendly reporting',
+                            'No GPS tracking or driver surveillance',
+                            'Works online and offline',
+                            'No hardware or vehicle installations',
+                            'Support for shared and pool vehicles',
+                            'Optional safety checks and reminders',
+                            'Private vehicle trips for real-world exceptions',
+                            'Flat, affordable pricing per vehicle',
+                            'Designed for small and growing fleets',
+                        ];
+                    @endphp
+
+                    @foreach ($features as $feature)
+                        <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
+                            <span aria-hidden="true">✔</span>
+                            <span>{{ $feature }}</span>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </details>
 
+        {{-- DIFFERENT --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet different from other fleet systems?</span>
@@ -108,6 +91,7 @@
             </div>
         </details>
 
+        {{-- AFFORDABLE --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why is SharpFleet so affordable?</span>
@@ -125,6 +109,7 @@
             </div>
         </details>
 
+        {{-- GPS --}}
         <details class="sf-accordion-item">
             <summary>
                 <span>Why doesn’t SharpFleet use GPS tracking?</span>
@@ -138,6 +123,115 @@
                 <p>
                     You still get accurate, compliant trip records — without raising privacy concerns
                     or creating unnecessary tension with staff.
+                </p>
+            </div>
+        </details>
+
+        {{-- PRIVATE VEHICLE --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>What if a driver needs to use their own vehicle?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    Sometimes fleet vehicles aren’t available. SharpFleet supports this by allowing
+                    organisations to record trips made using personal vehicles — when enabled by an admin.
+                </p>
+                <p>
+                    Personal vehicle trips are designed for occasional, real-world exceptions and are
+                    recorded for reporting and reimbursement purposes, without adding personal cars
+                    as fleet assets.
+                </p>
+                <p>
+                    To keep things fair, private vehicle usage is limited in proportion to your subscribed
+                    fleet size and is not intended to replace fleet vehicles or avoid subscriptions.
+                </p>
+            </div>
+        </details>
+
+        {{-- SERVICE BUSINESSES --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why does SharpFleet work for service-based businesses?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    Clear records matter in any service-based operation. SharpFleet makes it easy to log
+                    trips linked to customers, jobs, or work activities without slowing teams down.
+                </p>
+                <p>
+                    It supports real-world working conditions, including shared vehicles and offline use,
+                    while producing audit-friendly records when needed.
+                </p>
+            </div>
+        </details>
+
+        {{-- OFFLINE --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why does SharpFleet work offline?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    Not all work happens in areas with reliable mobile coverage.
+                    SharpFleet is built to handle rural, regional, and job-site conditions.
+                </p>
+                <p>
+                    Trips can be recorded offline and automatically synced once connectivity
+                    is restored — no data lost.
+                </p>
+            </div>
+        </details>
+
+        {{-- HARDWARE --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why don’t I need extra hardware?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    SharpFleet works on devices you already own — phones, tablets, and computers.
+                </p>
+                <p>
+                    There’s no need for trackers, installations, or vehicle downtime to get started.
+                </p>
+            </div>
+        </details>
+
+        {{-- DRIVERS --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why is SharpFleet easy for drivers to use?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    The system is designed to be quick and intuitive. Starting or ending a trip
+                    takes seconds, not training sessions.
+                </p>
+                <p>
+                    Less friction means better data and fewer missed entries.
+                </p>
+            </div>
+        </details>
+
+        {{-- EVERYTHING INCLUDED --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why is everything included with SharpFleet?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+            <div class="sf-accordion-content">
+                <p>
+                    SharpFleet keeps pricing honest. Reporting, reminders, safety checks,
+                    branches, and offline use are all part of the same subscription.
+                </p>
+                <p>
+                    What you see is what you get — no feature lockouts and no upsell pressure.
                 </p>
             </div>
         </details>
