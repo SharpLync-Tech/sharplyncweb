@@ -49,6 +49,7 @@ class VehicleService
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
         $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
+        $hasVariant = Schema::connection('sharpfleet')->hasColumn('vehicles', 'variant');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -76,6 +77,7 @@ class VehicleService
                 'tracking_mode'         => $data['tracking_mode'] ?? 'distance',
                 'make'                 => $data['make'] ?? null,
                 'model'                => $data['model'] ?? null,
+                'variant'              => $hasVariant ? ($data['variant'] ?? null) : null,
                 'vehicle_type'         => $data['vehicle_type'],
                 'vehicle_class'        => $data['vehicle_class'] ?? null,
                 'wheelchair_accessible'=> !empty($data['wheelchair_accessible']) ? 1 : 0,
@@ -104,6 +106,7 @@ class VehicleService
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
         $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
+        $hasVariant = Schema::connection('sharpfleet')->hasColumn('vehicles', 'variant');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -123,6 +126,10 @@ class VehicleService
             'notes'                 => $data['notes'] ?? null,
             'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
         ];
+
+        if ($hasVariant && array_key_exists('variant', $data)) {
+            $update['variant'] = $data['variant'] ?? null;
+        }
 
         if ($hasFirstRegistrationYear && array_key_exists('first_registration_year', $data)) {
             $update['first_registration_year'] = $data['first_registration_year'] ?? null;

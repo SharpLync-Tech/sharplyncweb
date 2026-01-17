@@ -24,6 +24,9 @@
             <div>
                 <h1 class="page-title">{{ $vehicle->name ?? 'Vehicle' }}</h1>
                 <p class="page-description">Registration: {{ $vehicle->registration_number ?: 'Not set' }}</p>
+                @if(!empty($vehicle->variant))
+                    <div class="text-muted">Variant: {{ $vehicle->variant }}</div>
+                @endif
             </div>
             <div class="btn-group">
                 <a href="{{ url('/app/sharpfleet/admin/vehicles/' . (int) $vehicle->id . '/edit') }}" class="btn btn-primary">Edit Vehicle</a>

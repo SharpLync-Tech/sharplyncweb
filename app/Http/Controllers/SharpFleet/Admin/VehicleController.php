@@ -746,6 +746,7 @@ class VehicleController extends Controller
 
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
+            'variant' => ['nullable', 'string', 'max:100'],
             'first_registration_year' => ['nullable', 'integer', 'min:1900', 'max:2100'],
 
             'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
@@ -835,13 +836,13 @@ class VehicleController extends Controller
         }
 
         if (
-            array_key_exists('first_registration_year', $validated) &&
-            $validated['first_registration_year'] !== null &&
-            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year')
+            array_key_exists('variant', $validated) &&
+            $validated['variant'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'variant')
         ) {
             return back()
                 ->withErrors([
-                    'first_registration_year' => "First registration year can't be saved yet because the database is missing column vehicles.first_registration_year. Run: ALTER TABLE vehicles ADD COLUMN first_registration_year SMALLINT UNSIGNED NULL;",
+                    'variant' => "Variant can't be saved yet because the database is missing column vehicles.variant. Run: ALTER TABLE vehicles ADD COLUMN variant VARCHAR(100) NULL;",
                 ])
                 ->withInput();
         }
@@ -1275,6 +1276,7 @@ class VehicleController extends Controller
             'branch_id' => ['nullable', 'integer'],
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
+            'variant' => ['nullable', 'string', 'max:100'],
             'first_registration_year' => ['nullable', 'integer', 'min:1900', 'max:2100'],
             'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
             'vehicle_class' => ['nullable', 'string', 'max:100'],

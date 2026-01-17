@@ -150,7 +150,7 @@
                                 <input id="aiTrimInput"
                                        type="text"
                                        name="variant"
-                                       value="{{ old('variant') }}"
+                                       value="{{ old('variant', $vehicle->variant ?? '') }}"
                                        class="form-control">
                                 <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">x</button>
                             </div>
