@@ -28,21 +28,30 @@
 
             <div class="form-group">
                 <label class="form-label">Make</label>
-                <input id="aiMakeInput" class="form-control" type="text" placeholder="Start typing a make (e.g., Toyota)">
+                <div class="ai-input-wrap">
+                    <input id="aiMakeInput" class="form-control" type="text" placeholder="Start typing a make (e.g., Toyota)">
+                    <button type="button" class="ai-clear-btn" data-clear="make" aria-label="Clear make">×</button>
+                </div>
                 <div id="aiMakeStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiMakeList" class="ai-list"></div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Model</label>
-                <input id="aiModelInput" class="form-control" type="text" placeholder="Start typing a model">
+                <div class="ai-input-wrap">
+                    <input id="aiModelInput" class="form-control" type="text" placeholder="Start typing a model">
+                    <button type="button" class="ai-clear-btn" data-clear="model" aria-label="Clear model">×</button>
+                </div>
                 <div id="aiModelStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiModelList" class="ai-list"></div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Variant</label>
-                <input id="aiTrimInput" class="form-control" type="text" placeholder="Start typing a variant">
+                <div class="ai-input-wrap">
+                    <input id="aiTrimInput" class="form-control" type="text" placeholder="Start typing a variant">
+                    <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">×</button>
+                </div>
                 <div id="aiTrimStatus" class="form-hint" style="color: #6b7280;"></div>
                 <div id="aiTrimList" class="ai-list"></div>
             </div>
@@ -56,6 +65,34 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.ai-input-wrap {
+    position: relative;
+}
+
+.ai-input-wrap .form-control {
+    padding-right: 38px;
+}
+
+.ai-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: rgba(10, 42, 77, 0.08);
+    color: #0A2A4D;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.ai-clear-btn:hover {
+    background: rgba(10, 42, 77, 0.18);
 }
 
 .ai-chip {
@@ -99,6 +136,23 @@
 
     function clearList(el) {
         if (el) el.innerHTML = '';
+    }
+
+    function clearModels() {
+        modelInput.value = '';
+        trimInput.value = '';
+        clearList(modelList);
+        clearList(trimList);
+        setStatus(modelStatus, '');
+        setStatus(trimStatus, '');
+    }
+
+    function clearAll() {
+        makeInput.value = '';
+        currentMake = '';
+        clearList(makeList);
+        setStatus(makeStatus, '');
+        clearModels();
     }
 
     function renderList(el, items, onPick) {
@@ -145,6 +199,7 @@
             makeInput.value = item;
             clearList(makeList);
             setStatus(makeStatus, 'Make selected.');
+            clearModels();
             modelInput.focus();
             fetchModels();
         });
@@ -168,6 +223,9 @@
             modelInput.value = item;
             clearList(modelList);
             setStatus(modelStatus, 'Model selected.');
+            trimInput.value = '';
+            clearList(trimList);
+            setStatus(trimStatus, '');
             trimInput.focus();
             fetchTrims();
         });
@@ -211,15 +269,30 @@
     trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
 
     locationSelect.addEventListener('change', () => {
-        clearList(makeList);
-        clearList(modelList);
-        clearList(trimList);
-        setStatus(makeStatus, '');
-        setStatus(modelStatus, '');
-        setStatus(trimStatus, '');
+        clearAll();
         if (makeInput.value.trim().length >= 2) {
             fetchMakes();
         }
+    });
+
+    makeInput.addEventListener('change', () => {
+        currentMake = makeInput.value.trim();
+        clearModels();
+    });
+
+    document.querySelectorAll('.ai-clear-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-clear');
+            if (target === 'make') {
+                clearAll();
+            } else if (target === 'model') {
+                clearModels();
+            } else if (target === 'trim') {
+                trimInput.value = '';
+                clearList(trimList);
+                setStatus(trimStatus, '');
+            }
+        });
     });
 })();
 </script>
