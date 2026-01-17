@@ -188,6 +188,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return Date.UTC(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
     }
 
+    function setDateInputValue(input, ymd) {
+        if (!input) return;
+        if (input._flatpickr) {
+            if (!ymd) {
+                input._flatpickr.clear();
+            } else {
+                input._flatpickr.setDate(ymd, true, 'Y-m-d');
+            }
+            return;
+        }
+        input.value = ymd || '';
+    }
+
     function formatYmd(ms) {
         const dt = new Date(ms);
         return dt.getUTCFullYear() + '-' + pad2(dt.getUTCMonth() + 1) + '-' + pad2(dt.getUTCDate());
@@ -1261,10 +1274,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const start = new Date(startMs);
         const end = new Date(endMs);
 
-        if (els.createStartDate) els.createStartDate.value = formatYmd(startMs);
+        if (els.createStartDate) setDateInputValue(els.createStartDate, formatYmd(startMs));
         if (els.createStartHour) els.createStartHour.value = pad2(start.getUTCHours());
         if (els.createStartMinute) els.createStartMinute.value = pad2(start.getUTCMinutes());
-        if (els.createEndDate) els.createEndDate.value = formatYmd(endMs);
+        if (els.createEndDate) setDateInputValue(els.createEndDate, formatYmd(endMs));
         if (els.createEndHour) els.createEndHour.value = pad2(end.getUTCHours());
         if (els.createEndMinute) els.createEndMinute.value = pad2(end.getUTCMinutes());
 
@@ -1332,11 +1345,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const start = new Date(startMs);
         const end = new Date(endMs);
 
-        if (els.editStartDate) els.editStartDate.value = formatYmd(startMs);
+        if (els.editStartDate) setDateInputValue(els.editStartDate, formatYmd(startMs));
         if (els.editStartHour) els.editStartHour.value = pad2(start.getUTCHours());
         if (els.editStartMinute) els.editStartMinute.value = pad2(start.getUTCMinutes());
 
-        if (els.editEndDate) els.editEndDate.value = formatYmd(endMs);
+        if (els.editEndDate) setDateInputValue(els.editEndDate, formatYmd(endMs));
         if (els.editEndHour) els.editEndHour.value = pad2(end.getUTCHours());
         if (els.editEndMinute) els.editEndMinute.value = pad2(end.getUTCMinutes());
 

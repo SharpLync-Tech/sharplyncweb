@@ -16,6 +16,10 @@
         }
     };
     $distanceLabel = $distanceUnit === 'mi' ? 'mi' : 'km';
+    $hasMachineHours = (float) ($totals['hours'] ?? 0) > 0
+        || (float) ($totals['week_hours'] ?? 0) > 0
+        || (float) ($totals['month_hours'] ?? 0) > 0
+        || (float) ($totals['year_hours'] ?? 0) > 0;
 @endphp
 
 <div class="container">
@@ -32,19 +36,21 @@
         </div>
     </div>
 
-    <div class="grid grid-3 gap-4 mb-4">
+    <div class="grid grid-{{ $hasMachineHours ? '3' : '2' }} gap-4 mb-4">
         <div class="card">
             <div class="card-body">
                 <div class="text-muted small">Total trips</div>
                 <div class="stats-number">{{ (int) $totalTrips }}</div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="text-muted small">Total hours</div>
-                <div class="stats-number">{{ number_format((float) ($totals['hours'] ?? 0), 1) }}</div>
+        @if($hasMachineHours)
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-muted small">Machine hours</div>
+                    <div class="stats-number">{{ number_format((float) ($totals['hours'] ?? 0), 1) }}</div>
+                </div>
             </div>
-        </div>
+        @endif
         <div class="card">
             <div class="card-body">
                 <div class="text-muted small">Total distance</div>
@@ -110,24 +116,32 @@
                         <tr>
                             <th></th>
                             <th>Distance ({{ $distanceLabel }})</th>
-                            <th>Hours</th>
+                            @if($hasMachineHours)
+                                <th>Machine hours</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>This week</td>
                             <td>{{ number_format((float) ($totals['week_distance'] ?? 0), 1) }}</td>
-                            <td>{{ number_format((float) ($totals['week_hours'] ?? 0), 1) }}</td>
+                            @if($hasMachineHours)
+                                <td>{{ number_format((float) ($totals['week_hours'] ?? 0), 1) }}</td>
+                            @endif
                         </tr>
                         <tr>
                             <td>This month</td>
                             <td>{{ number_format((float) ($totals['month_distance'] ?? 0), 1) }}</td>
-                            <td>{{ number_format((float) ($totals['month_hours'] ?? 0), 1) }}</td>
+                            @if($hasMachineHours)
+                                <td>{{ number_format((float) ($totals['month_hours'] ?? 0), 1) }}</td>
+                            @endif
                         </tr>
                         <tr>
                             <td>This year</td>
                             <td>{{ number_format((float) ($totals['year_distance'] ?? 0), 1) }}</td>
-                            <td>{{ number_format((float) ($totals['year_hours'] ?? 0), 1) }}</td>
+                            @if($hasMachineHours)
+                                <td>{{ number_format((float) ($totals['year_hours'] ?? 0), 1) }}</td>
+                            @endif
                         </tr>
                     </tbody>
                 </table>

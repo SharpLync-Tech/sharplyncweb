@@ -179,7 +179,7 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkCreateStartDate" type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
+                        <input id="sfBkCreateStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
                     </div>
 
                     <div class="form-group">
@@ -214,7 +214,7 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input id="sfBkCreateEndDate" type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
+                        <input id="sfBkCreateEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
                     </div>
 
                     <div class="form-group">
@@ -342,7 +342,7 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkEditStartDate" type="date" name="planned_start_date" class="form-control" required min="{{ $today }}">
+                        <input id="sfBkEditStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Start time</label>
@@ -369,7 +369,7 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input id="sfBkEditEndDate" type="date" name="planned_end_date" class="form-control" required min="{{ $today }}">
+                        <input id="sfBkEditEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">End time</label>
@@ -437,6 +437,7 @@
 @if($bookingsTableExists)
 
 @push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ secure_asset('css/sharpfleet/bookings.css') }}?v={{ @filemtime(public_path('css/sharpfleet/bookings.css')) ?: time() }}">
 @endpush
 
@@ -453,6 +454,19 @@
             branches: @json($branchesForJs),
             customersEnabled: @json((bool) ($customersTableExists ?? false)),
         };
+    </script>
+    <script src="https://unpkg.com/flatpickr"></script>
+    <script>
+        (function () {
+            if (typeof flatpickr === 'undefined') return;
+            flatpickr('.sf-date', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: true,
+                minDate: @json($today),
+            });
+        })();
     </script>
     <script src="{{ secure_asset('js/sharpfleet/bookings.js') }}?v={{ @filemtime(public_path('js/sharpfleet/bookings.js')) ?: time() }}"></script>
 @endpush

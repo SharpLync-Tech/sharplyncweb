@@ -29,20 +29,20 @@
         </p>
 
         {{-- ===============================
-             Feature Snapshot
+             Feature Snapshot (FIXED)
         ================================ --}}
-        <ul class="sf-feature-list">
-            <li>Simple trip logging for vehicles and drivers</li>
-            <li>Clear, audit-friendly reporting</li>
-            <li>No GPS tracking or driver surveillance</li>
-            <li>Works online and offline</li>
-            <li>No hardware or vehicle installations</li>
-            <li>Support for shared and pool vehicles</li>
-            <li>Optional safety checks and reminders</li>
-            <li>Private vehicle trips for real-world exceptions</li>
-            <li>Flat, affordable pricing per vehicle</li>
-            <li>Designed for small and growing fleets</li>
-        </ul>
+        <div class="sf-feature-list">
+            <p>Simple trip logging for vehicles and drivers</p>
+            <p>Clear, audit-friendly reporting</p>
+            <p>No GPS tracking or driver surveillance</p>
+            <p>Works online and offline</p>
+            <p>No hardware or vehicle installations</p>
+            <p>Support for shared and pool vehicles</p>
+            <p>Optional safety checks and reminders</p>
+            <p>Private vehicle trips for real-world exceptions</p>
+            <p>Flat, affordable pricing per vehicle</p>
+            <p>Designed for small and growing fleets</p>
+        </div>
     </div>
 
     {{-- ===============================
@@ -151,89 +151,8 @@
                     trips linked to customers, jobs, or work activities without slowing teams down.
                 </p>
                 <p>
-                    It supports real-world working conditions, including regional operations, shared
-                    vehicles, and offline use, while producing audit-friendly records when needed.
-                </p>
-            </div>
-        </details>
-
-        <details class="sf-accordion-item">
-            <summary>
-                <span>Why is SharpFleet perfect for sole traders and small fleets?</span>
-                <span class="sf-accordion-icon">+</span>
-            </summary>
-            <div class="sf-accordion-content">
-                <p>
-                    SharpFleet scales with you. Whether you run one vehicle or twenty,
-                    the experience stays simple and consistent.
-                </p>
-                <p>
-                    You’re not paying for enterprise features you don’t need — just practical
-                    tools that support day-to-day operations.
-                </p>
-            </div>
-        </details>
-
-        <details class="sf-accordion-item">
-            <summary>
-                <span>Why does SharpFleet work offline?</span>
-                <span class="sf-accordion-icon">+</span>
-            </summary>
-            <div class="sf-accordion-content">
-                <p>
-                    Not all work happens in areas with reliable mobile coverage.
-                    SharpFleet is built to handle rural, regional, and job-site conditions.
-                </p>
-                <p>
-                    Trips can be recorded offline and automatically synced once connectivity
-                    is restored — no data lost.
-                </p>
-            </div>
-        </details>
-
-        <details class="sf-accordion-item">
-            <summary>
-                <span>Why don’t I need extra hardware?</span>
-                <span class="sf-accordion-icon">+</span>
-            </summary>
-            <div class="sf-accordion-content">
-                <p>
-                    SharpFleet works on devices you already own — phones, tablets, and computers.
-                </p>
-                <p>
-                    There’s no need for trackers, installations, or vehicle downtime to get started.
-                </p>
-            </div>
-        </details>
-
-        <details class="sf-accordion-item">
-            <summary>
-                <span>Why is SharpFleet easy for drivers to use?</span>
-                <span class="sf-accordion-icon">+</span>
-            </summary>
-            <div class="sf-accordion-content">
-                <p>
-                    The system is designed to be quick and intuitive. Starting or ending a trip
-                    takes seconds, not training sessions.
-                </p>
-                <p>
-                    Less friction means better data and fewer missed entries.
-                </p>
-            </div>
-        </details>
-
-        <details class="sf-accordion-item">
-            <summary>
-                <span>Why is everything included with SharpFleet?</span>
-                <span class="sf-accordion-icon">+</span>
-            </summary>
-            <div class="sf-accordion-content">
-                <p>
-                    SharpFleet keeps pricing honest. Reporting, reminders, safety checks,
-                    branches, and offline use are all part of the same subscription.
-                </p>
-                <p>
-                    What you see is what you get — no feature lockouts and no upsell pressure.
+                    It supports real-world working conditions, including shared vehicles and offline use,
+                    while producing audit-friendly records when needed.
                 </p>
             </div>
         </details>

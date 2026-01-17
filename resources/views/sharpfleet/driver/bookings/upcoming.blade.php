@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label class="form-label">Start date</label>
                             @php($startDateVal = old('planned_start_date') !== null ? old('planned_start_date') : ($editBooking ? ($editBooking['planned_start_date'] ?? '') : ''))
-                            <input type="date" name="planned_start_date" class="form-control" required min="{{ $today }}" value="{{ $startDateVal }}">
+                            <input type="text" name="planned_start_date" class="form-control sf-date" required value="{{ $startDateVal }}">
                             @error('planned_start_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
@@ -105,7 +105,7 @@
                         <div class="form-group">
                             <label class="form-label">End date</label>
                             @php($endDateVal = old('planned_end_date') !== null ? old('planned_end_date') : ($editBooking ? ($editBooking['planned_end_date'] ?? '') : ''))
-                            <input type="date" name="planned_end_date" class="form-control" required min="{{ $today }}" value="{{ $endDateVal }}">
+                            <input type="text" name="planned_end_date" class="form-control sf-date" required value="{{ $endDateVal }}">
                             @error('planned_end_date')
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
@@ -441,3 +441,23 @@
 </div>
 
 @endsection
+
+@push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+@endpush
+
+@push('scripts')
+    <script src="https://unpkg.com/flatpickr"></script>
+    <script>
+        (function () {
+            if (typeof flatpickr === 'undefined') return;
+            flatpickr('.sf-date', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: true,
+                minDate: @json($today),
+            });
+        })();
+    </script>
+@endpush
