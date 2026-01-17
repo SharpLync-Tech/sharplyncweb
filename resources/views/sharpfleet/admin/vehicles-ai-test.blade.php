@@ -11,8 +11,18 @@
 
     <div class="card" style="color: #0A2A4D;">
         <div class="card-header">
-            <h2 class="card-title">Create Vehicle (AI Assist)</h2>
-            <p class="card-subtitle">Select a region, start typing a make, then pick a model.</p>
+            <h2 class="card-title">
+                Create Vehicle
+                <span class="ai-badge" aria-label="AI">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3l1.6 4.8L18 9.4l-4.4 1.6L12 16l-1.6-5L6 9.4l4.4-1.6L12 3z"></path>
+                        <path d="M6 16l.9 2.6L9.5 20l-2.6.9L6 23l-.9-2.6L2.5 20l2.6-.9L6 16z"></path>
+                        <path d="M18 14l.7 2L20 17l-2 .7L17 20l-.7-2L14 17l2-.7L18 14z"></path>
+                    </svg>
+                </span>
+            </h2>
+            <p class="card-subtitle">Select a country, start typing a make, then pick a model.</p>
+            <p class="form-hint" style="color: #6b7280; margin-top: 8px;">💡 Tip: Start typing and we’ll do the rest</p>
         </div>
         <div class="card-body">
             <div class="form-group">
@@ -59,6 +69,24 @@
 </div>
 
 <style>
+.ai-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: rgba(44, 191, 174, 0.12);
+    border: 1px solid rgba(44, 191, 174, 0.35);
+}
+
+.ai-badge svg {
+    width: 16px;
+    height: 16px;
+    fill: #2CBFAE;
+}
+
 .ai-list {
     margin-top: 10px;
     display: flex;
