@@ -49,7 +49,6 @@ class VehicleService
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
         $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
-        $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -104,6 +103,7 @@ class VehicleService
         $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
         $hasServiceDueDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_date');
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
+        $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
