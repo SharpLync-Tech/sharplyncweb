@@ -121,45 +121,34 @@
             <h3 class="scam-result-title">Scam Analysis Result</h3>
 
             @php
-                // Defensive defaults: never allow "unknown" states to look safe.
                 $raw = $result;
                 $json = json_decode($raw, true);
                 $isJson = json_last_error() === JSON_ERROR_NONE && is_array($json);
 
-                // Defaults
+                // Defensive defaults
                 $verdict = 'Unclear';
                 $score = 50;
                 $summary = 'The analysis could not be displayed reliably.';
                 $redFlags = ['Insufficient or degraded analysis output'];
-                $recommended = 'Independently verify the message. Avoid clicking links or making payments until verified.';
+                $recommended = 'Independently verify the message before taking any action.';
                 $severityClass = 'sus';
 
                 if ($isJson) {
                     $verdict = ucfirst($json['verdict'] ?? 'Unclear');
                     $score = $json['risk_score'] ?? 50;
                     $summary = $json['summary'] ?? '';
-                    $redFlags = $json['red_flags'] ?? [];
-                    $recommended = $json['recommended_action'] ?? '';
+                    $redFlags = is_array($json['red_flags'] ?? null) ? $json['red_flags'] : [];
+                    $recommended = $json['recommended_action'] ?? $recommended;
 
-                    // Ensure types
-                    if (!is_array($redFlags)) {
-                        $redFlags = ['Analysis returned an unexpected format for red flags'];
-                    }
-
-                    // If red flags are empty, treat as caution (never "safe")
                     if (count($redFlags) === 0) {
                         $redFlags = ['No red flags were returned (confidence should be treated as limited)'];
                     }
 
-                    // Severity mapping (conservative)
                     if (is_numeric($score)) {
                         $severityClass = ($score >= 70) ? 'danger' : 'sus';
-                    } else {
-                        $severityClass = 'sus';
                     }
                 }
 
-                // If controller sent meta forced_unclear, make sure UI shows caution.
                 $forcedUnclear = isset($meta) && is_array($meta) && ($meta['forced_unclear'] ?? false) === true;
                 $forcedReason = $forcedUnclear ? ($meta['reason'] ?? 'This analysis could not be completed reliably.') : null;
 
@@ -172,23 +161,7 @@
             @if($forcedUnclear)
                 <div class="result-box sus" style="margin-bottom:20px; border-left-width:6px;">
                     <strong style="display:block; margin-bottom:6px;">⚠ Confidence downgraded</strong>
-                    <span style="opacity:0.95;">
-                        {{ $forcedReason }}
-                    </span>
-                </div>
-            @endif
-
-            @if(!$isJson)
-                <div class="result-box sus" style="margin-bottom:20px; border-left-width:6px;">
-                    <strong style="display:block; margin-bottom:6px;">⚠ Analysis output issue</strong>
-                    <span style="opacity:0.95;">
-                        The analysis returned an unexpected format. Treat this result as <strong>Unclear</strong>.
-                    </span>
-
-                    <details style="margin-top:10px;">
-                        <summary style="cursor:pointer; opacity:0.9;">Show technical details</summary>
-                        <pre style="white-space:pre-wrap; margin-top:10px;">{{ $raw }}</pre>
-                    </details>
+                    <span>{{ $forcedReason }}</span>
                 </div>
             @endif
 
@@ -215,21 +188,26 @@
                 <p>{!! nl2br(e($recommended)) !!}</p>
             </div>
 
-            <!-- IMPORTANT NOTICE -->
+            <!-- IMPORTANT NOTICE (UPDATED WORDING) -->
             <div class="result-box safe"
                  style="margin-top:24px; border-left-width:6px; color:#0a2a4d;">
                 <strong>Important notice</strong>
                 <p style="margin-top:8px;">
-                    SharpLync ThreatCheck provides an <strong>informational analysis only</strong>.
-                    Results are <strong>not guaranteed to be accurate or complete</strong>.
+                    This result is based on an automated analysis of the message content and technical signals only.
+                    It does <strong>not verify the identity of the sender</strong>.
                 </p>
                 <p>
-                    Always <strong>independently verify</strong> messages before clicking links,
-                    making payments, or sharing information.
+                    Always <strong>verify the sender independently</strong> before taking action — especially if your
+                    email provider marked the message as spam or suspicious, or if business or contact details
+                    cannot be confirmed.
+                </p>
+                <p>
+                    When in doubt, <strong>contact the sender using a trusted phone number or official website</strong>,
+                    not the contact details provided in the message.
                 </p>
                 <p style="margin-bottom:0;">
-                    SharpLync accepts <strong>no liability for any loss or damage</strong>
-                    resulting from reliance on this analysis.
+                    SharpLync ThreatCheck is an informational tool only and cannot guarantee accuracy.
+                    SharpLync accepts <strong>no liability</strong> for actions taken based on this analysis.
                 </p>
             </div>
 
@@ -246,10 +224,9 @@
                 </a>
             </div>
         </div>
-
         @endif
 
-    </div> <!-- /1100px wrapper -->
+    </div>
 
     <!-- DRAG & DROP OVERLAY -->
     <div id="drop-overlay">
@@ -258,7 +235,6 @@
             <p>Drop file to scan</p>
         </div>
     </div>
-
 </div>
 @endsection
 
