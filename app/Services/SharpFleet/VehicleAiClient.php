@@ -50,6 +50,26 @@ class VehicleAiClient
         return $this->askList($prompt);
     }
 
+    public function parseFreeText(string $text): array
+    {
+        $prompt = "Extract vehicle details from this text and return JSON only.\n" .
+            "Required JSON format:\n" .
+            "{\n" .
+            "  \"country\": \"\",\n" .
+            "  \"make\": \"\",\n" .
+            "  \"model\": \"\",\n" .
+            "  \"variant\": \"\",\n" .
+            "  \"year\": \"\"\n" .
+            "}\n" .
+            "Rules:\n" .
+            "- Use empty strings for unknown fields.\n" .
+            "- Country should be a short country name if present.\n" .
+            "- Do not add extra keys.\n" .
+            "Text:\n" . $text;
+
+        return $this->askObject($prompt);
+    }
+
     protected function askList(string $prompt): array
     {
         if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {
@@ -106,6 +126,89 @@ class VehicleAiClient
             return array_slice($items, 0, 12);
         } catch (\Throwable $e) {
             return [];
+        }
+    }
+
+    protected function askObject(string $prompt): array
+    {
+        if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {
+            return [
+                'country' => '',
+                'make' => '',
+                'model' => '',
+                'variant' => '',
+                'year' => '',
+            ];
+        }
+
+        try {
+            $response = $this->client->post(
+                "/openai/deployments/{$this->deployment}/chat/completions",
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'api-key' => $this->apiKey,
+                    ],
+                    'query' => [
+                        'api-version' => '2024-10-01-preview',
+                    ],
+                    'json' => [
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' =>
+                                    "You extract vehicle details.\n" .
+                                    "Always return valid JSON only.\n" .
+                                    "Format:\n" .
+                                    "{\n" .
+                                    "  \"country\": \"\",\n" .
+                                    "  \"make\": \"\",\n" .
+                                    "  \"model\": \"\",\n" .
+                                    "  \"variant\": \"\",\n" .
+                                    "  \"year\": \"\"\n" .
+                                    "}\n" .
+                                    "No extra keys. Empty string if unknown.\n",
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => $prompt,
+                            ],
+                        ],
+                        'temperature' => 0.2,
+                        'max_tokens' => 200,
+                    ],
+                ]
+            );
+
+            $data = json_decode($response->getBody()->getContents(), true);
+            $content = $data['choices'][0]['message']['content'] ?? '';
+            $json = json_decode($content, true);
+
+            if (!is_array($json)) {
+                return [
+                    'country' => '',
+                    'make' => '',
+                    'model' => '',
+                    'variant' => '',
+                    'year' => '',
+                ];
+            }
+
+            return [
+                'country' => (string) ($json['country'] ?? ''),
+                'make' => (string) ($json['make'] ?? ''),
+                'model' => (string) ($json['model'] ?? ''),
+                'variant' => (string) ($json['variant'] ?? ''),
+                'year' => (string) ($json['year'] ?? ''),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'country' => '',
+                'make' => '',
+                'model' => '',
+                'variant' => '',
+                'year' => '',
+            ];
         }
     }
 }

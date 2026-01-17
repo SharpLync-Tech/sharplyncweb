@@ -81,4 +81,15 @@ class VehicleAiTestController extends Controller
             'items' => $items,
         ]);
     }
+
+    public function parse(Request $request, VehicleAiClient $client): JsonResponse
+    {
+        $validated = $request->validate([
+            'text' => ['required', 'string', 'max:200'],
+        ]);
+
+        $data = $client->parseFreeText(trim($validated['text']));
+
+        return response()->json($data);
+    }
 }

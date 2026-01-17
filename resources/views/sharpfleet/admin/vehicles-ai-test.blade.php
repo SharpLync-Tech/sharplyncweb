@@ -26,6 +26,15 @@
         </div>
         <div class="card-body">
             <div class="form-group">
+                <label class="form-label">Quick entry</label>
+                <div class="ai-input-wrap">
+                    <input id="aiFreeTextInput" class="form-control" type="text" placeholder="e.g. Toyota Camry 2020 GL">
+                    <button type="button" class="ai-clear-btn" data-clear="free" aria-label="Clear quick entry">×</button>
+                </div>
+                <div id="aiFreeTextStatus" class="form-hint" style="color: #6b7280;"></div>
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Country</label>
                 <div class="ai-input-wrap">
                     <input id="aiLocationInput" class="form-control" type="text" placeholder="Start typing a country">
@@ -142,11 +151,13 @@
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
     const trimInput = document.getElementById('aiTrimInput');
+    const freeTextInput = document.getElementById('aiFreeTextInput');
     const locationInput = document.getElementById('aiLocationInput');
     const locationList = document.getElementById('aiLocationList');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
     const trimList = document.getElementById('aiTrimList');
+    const freeTextStatus = document.getElementById('aiFreeTextStatus');
     const locationStatus = document.getElementById('aiLocationStatus');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
@@ -239,6 +250,42 @@
         });
     }
 
+    async function parseFreeText() {
+        const text = (freeTextInput.value || '').trim();
+        if (text.length < 3) {
+            setStatus(freeTextStatus, 'Type at least 3 characters.');
+            return;
+        }
+        setStatus(freeTextStatus, 'Parsing...');
+        const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/parse', {
+            text,
+        });
+
+        if (data.country) {
+            locationInput.value = data.country;
+            clearList(locationList);
+            setStatus(locationStatus, 'Country selected.');
+        }
+        if (data.make) {
+            currentMake = data.make;
+            makeInput.value = data.make;
+            clearList(makeList);
+            setStatus(makeStatus, 'Make selected.');
+        }
+        if (data.model) {
+            modelInput.value = data.model;
+            clearList(modelList);
+            setStatus(modelStatus, 'Model selected.');
+        }
+        if (data.variant) {
+            trimInput.value = data.variant;
+            clearList(trimList);
+            setStatus(trimStatus, 'Variant selected.');
+        }
+
+        setStatus(freeTextStatus, 'Filled from quick entry.');
+    }
+
     async function fetchMakes() {
         const query = (makeInput.value || '').trim();
         const location = getLocation();
@@ -329,6 +376,8 @@
     const modelTimerRef = { value: null };
     const trimTimerRef = { value: null };
 
+    freeTextInput.addEventListener('change', parseFreeText);
+    freeTextInput.addEventListener('blur', parseFreeText);
     locationInput.addEventListener('input', debounce(fetchCountries, 300, locationTimerRef));
     makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
     modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
@@ -359,6 +408,9 @@
                 clearList(locationList);
                 setStatus(locationStatus, '');
                 clearAll();
+            } else if (target === 'free') {
+                freeTextInput.value = '';
+                setStatus(freeTextStatus, '');
             }
         });
     });
