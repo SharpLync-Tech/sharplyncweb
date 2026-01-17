@@ -51,9 +51,11 @@
                         @if($branchesEnabled)
                             <div class="form-group">
                                 <label class="form-label">Branch</label>
-                                <select name="branch_id" class="form-control">
+                                <select name="branch_id" id="branch_id" class="form-control">
                                     @foreach($branches as $b)
-                                        <option value="{{ (int) $b->id }}" {{ (int) old('branch_id', $vehicle->branch_id ?? $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
+                                        <option value="{{ (int) $b->id }}"
+                                                data-timezone="{{ (string) ($b->timezone ?? '') }}"
+                                                {{ (int) old('branch_id', $vehicle->branch_id ?? $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
                                             {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
                                         </option>
                                     @endforeach
@@ -110,7 +112,7 @@
                             <div>
                                 <label class="form-label">Vehicle type</label>
                                 @php $vt = old('vehicle_type', $vehicle->vehicle_type); @endphp
-                                <select name="vehicle_type" required class="form-control">
+                                <select name="vehicle_type" id="vehicle_type" required class="form-control">
                                     <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
                                     <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Pickup / Light Truck</option>
                                     <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
@@ -350,6 +352,43 @@
 
         toggle.addEventListener('change', sync);
         sync();
+    })();
+
+    (function () {
+        const branchSelect = document.getElementById('branch_id');
+        const vehicleTypeSelect = document.getElementById('vehicle_type');
+
+        function resolvePickupLabelFromTimezone(tz) {
+            const value = (tz || '').toLowerCase();
+            if (value.startsWith('australia/') || value.startsWith('pacific/auckland')) {
+                return 'Ute';
+            }
+            if (value.startsWith('africa/') || value.includes('johannesburg')) {
+                return 'Bakkie';
+            }
+            if (value.startsWith('america/') || value.startsWith('us/')) {
+                return 'Pickup / Light Truck';
+            }
+            return 'Pickup / Light Truck';
+        }
+
+        function updatePickupLabel() {
+            if (!vehicleTypeSelect) return;
+            const option = vehicleTypeSelect.querySelector('option[value="ute"]');
+            if (!option) return;
+            if (!branchSelect) {
+                option.textContent = 'Pickup / Light Truck';
+                return;
+            }
+            const tz = branchSelect.selectedOptions[0]?.getAttribute('data-timezone') || '';
+            option.textContent = resolvePickupLabelFromTimezone(tz);
+        }
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', updatePickupLabel);
+        }
+
+        updatePickupLabel();
     })();
 </script>
 
