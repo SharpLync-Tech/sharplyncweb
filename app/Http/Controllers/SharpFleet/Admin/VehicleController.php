@@ -762,6 +762,8 @@ class VehicleController extends Controller
             'registration_expiry' => ['nullable', 'date'],
             'service_due_date' => ['nullable', 'date'],
             'service_due_km' => ['nullable', 'integer', 'min:0'],
+            'last_service_date' => ['nullable', 'date'],
+            'last_service_km' => ['nullable', 'integer', 'min:0'],
 
             // Service status (optional; requires DB columns)
             'is_in_service' => ['nullable', 'boolean'],
@@ -831,6 +833,54 @@ class VehicleController extends Controller
             return back()
                 ->withErrors([
                     'starting_km' => "Starting reading can't be saved yet because the database is missing column vehicles.starting_km. Run: ALTER TABLE vehicles ADD COLUMN starting_km INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
+        if (
+            array_key_exists('last_service_km', $validated) &&
+            $validated['last_service_km'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_km')
+        ) {
+            return back()
+                ->withErrors([
+                    'last_service_km' => "Last service reading can't be saved yet because the database is missing column vehicles.last_service_km. Run: ALTER TABLE vehicles ADD COLUMN last_service_km INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
+        if (
+            array_key_exists('last_service_date', $validated) &&
+            $validated['last_service_date'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_date')
+        ) {
+            return back()
+                ->withErrors([
+                    'last_service_date' => "Last service date can't be saved yet because the database is missing column vehicles.last_service_date. Run: ALTER TABLE vehicles ADD COLUMN last_service_date DATE NULL;",
+                ])
+                ->withInput();
+        }
+
+        if (
+            array_key_exists('last_service_km', $validated) &&
+            $validated['last_service_km'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_km')
+        ) {
+            return back()
+                ->withErrors([
+                    'last_service_km' => "Last service reading can't be saved yet because the database is missing column vehicles.last_service_km. Run: ALTER TABLE vehicles ADD COLUMN last_service_km INT UNSIGNED NULL;",
+                ])
+                ->withInput();
+        }
+
+        if (
+            array_key_exists('last_service_date', $validated) &&
+            $validated['last_service_date'] !== null &&
+            !Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_date')
+        ) {
+            return back()
+                ->withErrors([
+                    'last_service_date' => "Last service date can't be saved yet because the database is missing column vehicles.last_service_date. Run: ALTER TABLE vehicles ADD COLUMN last_service_date DATE NULL;",
                 ])
                 ->withInput();
         }
@@ -1165,6 +1215,8 @@ class VehicleController extends Controller
             'dateFormat' => $dateFormat,
             'serviceDueDate' => $record->service_due_date ?? null,
             'serviceDueReading' => $record->service_due_km ?? null,
+            'lastServiceDate' => $record->last_service_date ?? null,
+            'lastServiceReading' => $record->last_service_km ?? null,
         ]);
     }
 
@@ -1290,6 +1342,8 @@ class VehicleController extends Controller
             'registration_expiry' => ['nullable', 'date'],
             'service_due_date' => ['nullable', 'date'],
             'service_due_km' => ['nullable', 'integer', 'min:0'],
+            'last_service_date' => ['nullable', 'date'],
+            'last_service_km' => ['nullable', 'integer', 'min:0'],
 
             // Service status (optional; requires DB columns)
             'is_in_service' => ['nullable', 'boolean'],

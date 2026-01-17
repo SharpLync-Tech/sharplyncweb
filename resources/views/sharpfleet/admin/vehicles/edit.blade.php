@@ -233,6 +233,29 @@
                             <h3 class="section-title">Servicing</h3>
                             <div class="form-row">
                                 <div>
+                                    <label class="form-label">Last service date (optional)</label>
+                                    <input type="date"
+                                           name="last_service_date"
+                                           value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
+                                           class="form-control">
+                                    @error('last_service_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div>
+                                    <label id="last_service_km_label" class="form-label">Last service reading ({{ $companyDistanceUnit }}) (optional)</label>
+                                    <input type="number"
+                                           name="last_service_km"
+                                           value="{{ old('last_service_km', $vehicle->last_service_km ?? '') }}"
+                                           class="form-control"
+                                           inputmode="numeric"
+                                           min="0"
+                                           placeholder="e.g. 120000">
+                                    @error('last_service_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
                                     <label class="form-label">Next service due date (optional)</label>
                                     <input type="date"
                                            name="service_due_date"

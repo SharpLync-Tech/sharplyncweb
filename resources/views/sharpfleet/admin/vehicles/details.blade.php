@@ -58,7 +58,18 @@
         <div class="card">
             <div class="card-body">
                 <h3 class="section-title">Servicing</h3>
-                <div class="mb-2"><strong>Last service reading:</strong> {{ $formatReading($lastReading) }} {{ $unitLabel }}</div>
+                <div class="mb-2">
+                    <strong>Last service:</strong>
+                    @if(!empty($lastServiceReading))
+                        {{ $formatReading((float) $lastServiceReading) }} {{ $unitLabel }}
+                    @else
+                        N/A
+                    @endif
+                </div>
+                <div class="mb-2">
+                    <strong>Last service date:</strong>
+                    {{ $lastServiceDate ? $formatDate($lastServiceDate) : 'N/A' }}
+                </div>
                 <div class="mb-2">
                     <strong>Next service due:</strong>
                     @if(!empty($serviceDueReading))

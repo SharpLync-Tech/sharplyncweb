@@ -50,6 +50,8 @@ class VehicleService
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
         $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
         $hasVariant = Schema::connection('sharpfleet')->hasColumn('vehicles', 'variant');
+        $hasLastServiceDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_date');
+        $hasLastServiceKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_km');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -83,6 +85,8 @@ class VehicleService
                 'wheelchair_accessible'=> !empty($data['wheelchair_accessible']) ? 1 : 0,
                 'registration_expiry'   => $hasRegistrationExpiry ? ($data['registration_expiry'] ?? null) : null,
                 'first_registration_year' => $hasFirstRegistrationYear ? ($data['first_registration_year'] ?? null) : null,
+                'last_service_date'     => $hasLastServiceDate ? ($data['last_service_date'] ?? null) : null,
+                'last_service_km'       => $hasLastServiceKm ? ($data['last_service_km'] ?? null) : null,
                 'service_due_date'      => $hasServiceDueDate ? ($data['service_due_date'] ?? null) : null,
                 'service_due_km'        => $hasServiceDueKm ? ($data['service_due_km'] ?? null) : null,
                 'notes'                => $data['notes'] ?? null,
@@ -107,6 +111,8 @@ class VehicleService
         $hasServiceDueKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'service_due_km');
         $hasFirstRegistrationYear = Schema::connection('sharpfleet')->hasColumn('vehicles', 'first_registration_year');
         $hasVariant = Schema::connection('sharpfleet')->hasColumn('vehicles', 'variant');
+        $hasLastServiceDate = Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_date');
+        $hasLastServiceKm = Schema::connection('sharpfleet')->hasColumn('vehicles', 'last_service_km');
 
         $hasIsInService = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service');
         $hasOutOfServiceReason = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_reason');
@@ -129,6 +135,14 @@ class VehicleService
 
         if ($hasVariant && array_key_exists('variant', $data)) {
             $update['variant'] = $data['variant'] ?? null;
+        }
+
+        if ($hasLastServiceDate && array_key_exists('last_service_date', $data)) {
+            $update['last_service_date'] = $data['last_service_date'] ?? null;
+        }
+
+        if ($hasLastServiceKm && array_key_exists('last_service_km', $data)) {
+            $update['last_service_km'] = $data['last_service_km'] ?? null;
         }
 
         if ($hasFirstRegistrationYear && array_key_exists('first_registration_year', $data)) {
