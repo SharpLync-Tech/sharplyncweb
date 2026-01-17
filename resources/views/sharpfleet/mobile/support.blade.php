@@ -9,14 +9,14 @@
 @endphp
 
 <section class="sf-mobile-dashboard">
-    <h1 class="sf-mobile-title">Support</h1>
+    <h1 class="sf-mobile-title">Feedback &Support</h1>
     <p class="sf-mobile-subtitle" style="margin-top: -6px; margin-bottom: 14px;">
-        Tell us what happened and we will help.
+        Tell us what happened or share feedback, it helps us improve SharpFleet.
     </p>
 
     @if (session('success'))
         <div id="sfSupportSuccess" class="sf-mobile-card" style="margin-bottom: 16px;">
-            <div class="sf-mobile-card-title">Request sent</div>
+            <div class="sf-mobile-card-title">Thanks, your message has been sent.</div>
             <div class="sf-mobile-card-text">{{ session('success') }}</div>
         </div>
     @endif
@@ -44,7 +44,7 @@
         @csrf
 
         <div class="form-group sf-support-group">
-            <label class="form-label">Support request</label>
+            <label class="form-label">Send Feedback or Get Support</label>
             <textarea
                 id="sfSupportMessage"
                 name="message"
@@ -52,7 +52,7 @@
                 rows="13"
                 maxlength="500"
                 required
-                placeholder="Describe the issue, what you were trying to do, and any error you saw."
+                placeholder="Tell us what happened or share feedback. Include any error you saw."
             >{{ old('message') }}</textarea>
             <div class="hint-text" id="sfSupportCounter">0 / 500</div>
         </div>
