@@ -112,10 +112,13 @@
                                 @php $vt = old('vehicle_type', $vehicle->vehicle_type); @endphp
                                 <select name="vehicle_type" required class="form-control">
                                     <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
+                                    <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Pickup / Light Truck</option>
                                     <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
                                     <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
                                     <option value="van" {{ $vt === 'van' ? 'selected' : '' }}>Van</option>
                                     <option value="bus" {{ $vt === 'bus' ? 'selected' : '' }}>Bus</option>
+                                    <option value="ex" {{ $vt === 'ex' ? 'selected' : '' }}>Excavator</option>
+                                    <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
                                     <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                                 @error('vehicle_type') <div class="text-error mb-2">{{ $message }}</div> @enderror

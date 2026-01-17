@@ -50,6 +50,15 @@ class VehicleAiClient
         return $this->askList($prompt);
     }
 
+    public function suggestVehicleType(string $make, string $model, ?string $variant, string $location): string
+    {
+        $variantText = $variant && trim($variant) !== '' ? " Variant: \"{$variant}\"." : '';
+        $prompt = "Determine the most appropriate vehicle category for {$make} {$model} in {$location}.{$variantText} " .
+            "Return one of: sedan, hatch, suv, van, bus, pickup, excavator, bulldozer, other. " .
+            "Use pickup for light trucks/utes/bakkies. Use excavator/bulldozer for heavy equipment.";
+        return $this->askType($prompt);
+    }
+
 
     protected function askList(string $prompt): array
     {
@@ -110,4 +119,59 @@ class VehicleAiClient
         }
     }
 
+    protected function askType(string $prompt): string
+    {
+        if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {
+            return 'other';
+        }
+
+        try {
+            $response = $this->client->post(
+                "/openai/deployments/{$this->deployment}/chat/completions",
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'api-key' => $this->apiKey,
+                    ],
+                    'query' => [
+                        'api-version' => '2024-10-01-preview',
+                    ],
+                    'json' => [
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' =>
+                                    "You are a vehicle categorization assistant.\n" .
+                                    "Always respond with valid JSON only. No prose.\n" .
+                                    "JSON format:\n" .
+                                    "{\n" .
+                                    "  \"type\": \"sedan\"\n" .
+                                    "}\n" .
+                                    "Rules:\n" .
+                                    "- type must be one of: sedan, hatch, suv, van, bus, pickup, excavator, bulldozer, other.\n",
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => $prompt,
+                            ],
+                        ],
+                        'temperature' => 0.1,
+                        'max_tokens' => 80,
+                    ],
+                ]
+            );
+
+            $data = json_decode($response->getBody()->getContents(), true);
+            $content = $data['choices'][0]['message']['content'] ?? '';
+            $json = json_decode($content, true);
+            $type = is_array($json) ? (string) ($json['type'] ?? '') : '';
+
+            $allowed = ['sedan', 'hatch', 'suv', 'van', 'bus', 'pickup', 'excavator', 'bulldozer', 'other'];
+            $type = strtolower(trim($type));
+
+            return in_array($type, $allowed, true) ? $type : 'other';
+        } catch (\Throwable $e) {
+            return 'other';
+        }
+    }
 }

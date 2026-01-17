@@ -113,6 +113,32 @@ class VehicleAiTestController extends Controller
         ]);
     }
 
+    public function type(Request $request, VehicleAiClient $client): JsonResponse
+    {
+        $validated = $request->validate([
+            'make' => ['required', 'string', 'max:40'],
+            'model' => ['required', 'string', 'max:40'],
+            'variant' => ['nullable', 'string', 'max:60'],
+            'branch_id' => ['nullable', 'integer'],
+        ]);
+
+        $location = $this->resolveLocationFromBranch(
+            $request,
+            (int) ($validated['branch_id'] ?? 0)
+        );
+
+        $type = $client->suggestVehicleType(
+            trim($validated['make']),
+            trim($validated['model']),
+            trim((string) ($validated['variant'] ?? '')),
+            $location
+        );
+
+        return response()->json([
+            'type' => $type,
+        ]);
+    }
+
     public function countries(Request $request, VehicleAiClient $client): JsonResponse
     {
         $validated = $request->validate([

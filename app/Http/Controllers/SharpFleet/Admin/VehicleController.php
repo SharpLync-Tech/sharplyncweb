@@ -747,7 +747,7 @@ class VehicleController extends Controller
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
 
-            'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,other'],
+            'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
             'vehicle_class' => ['nullable', 'string', 'max:100'],
 
             'wheelchair_accessible' => ['nullable', 'boolean'],
@@ -1017,7 +1017,7 @@ class VehicleController extends Controller
             'branch_id' => ['nullable', 'integer'],
             'make' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
-            'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,other'],
+            'vehicle_type' => ['nullable', 'in:sedan,hatch,suv,van,bus,ute,ex,dozer,other'],
             'vehicle_class' => ['nullable', 'string', 'max:100'],
             'wheelchair_accessible' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],

@@ -206,15 +206,31 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Variant</label>
+                <div class="ai-input-wrap">
+                    <input id="aiTrimInput"
+                           type="text"
+                           name="variant"
+                           value="{{ old('variant') }}"
+                           placeholder="Start typing a variant"
+                           class="form-control">
+                    <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">x</button>
+                </div>
+                <div id="aiTrimStatus" class="form-hint"></div>
+                <div id="aiTrimList" class="ai-list"></div>
+            </div>
+
             {{-- Vehicle type / classification --}}
-                <div class="form-row">
+            <div class="form-row">
                 <div>
                     <label class="form-label">Vehicle type</label>
                     @php $vt = old('vehicle_type', 'sedan'); @endphp
                     <select name="vehicle_type"
+                        id="vehicle_type"
                         class="form-control">
                         <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
-                        <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Ute</option>
+                        <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Pickup / Light Truck</option>
                         <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
                         <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
                         <option value="van" {{ $vt === 'van' ? 'selected' : '' }}>Van</option>
@@ -223,6 +239,7 @@
                         <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
                         <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
                     </select>
+                    <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
                 </div>
 
                 <div>
@@ -454,14 +471,19 @@
 
     const makeInput = document.getElementById('aiMakeInput');
     const modelInput = document.getElementById('aiModelInput');
+    const trimInput = document.getElementById('aiTrimInput');
     const makeList = document.getElementById('aiMakeList');
     const modelList = document.getElementById('aiModelList');
+    const trimList = document.getElementById('aiTrimList');
     const makeStatus = document.getElementById('aiMakeStatus');
     const modelStatus = document.getElementById('aiModelStatus');
+    const trimStatus = document.getElementById('aiTrimStatus');
     const branchSelect = document.getElementById('branch_id');
+    const vehicleTypeSelect = document.getElementById('vehicle_type');
+    const vehicleTypeStatus = document.getElementById('vehicleTypeStatus');
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-    if (makeInput && modelInput) {
+    if (makeInput && modelInput && trimInput) {
         let currentMake = makeInput.value.trim();
 
         function setStatus(el, text) {
@@ -475,8 +497,11 @@
 
         function clearModels() {
             modelInput.value = '';
+            trimInput.value = '';
             clearList(modelList);
+            clearList(trimList);
             setStatus(modelStatus, '');
+            setStatus(trimStatus, '');
         }
 
         function clearAll() {
@@ -485,6 +510,9 @@
             clearList(makeList);
             setStatus(makeStatus, '');
             clearModels();
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Auto-suggested from make, model, and variant.';
+            }
         }
 
         function renderList(el, items, onPick) {
@@ -563,7 +591,70 @@
                 modelInput.value = item;
                 clearList(modelList);
                 setStatus(modelStatus, 'Model selected.');
+                trimInput.focus();
+                fetchTrims();
+                fetchVehicleType();
             });
+        }
+
+        async function fetchTrims() {
+            const query = (trimInput.value || '').trim();
+            if (!currentMake || !modelInput.value.trim()) {
+                clearList(trimList);
+                setStatus(trimStatus, 'Select a make and model first.');
+                return;
+            }
+            setStatus(trimStatus, 'Loading variants...');
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/trims', {
+                make: currentMake,
+                model: modelInput.value.trim(),
+                query,
+                branch_id: getBranchId(),
+            });
+            setStatus(trimStatus, data.items.length ? 'Pick a variant.' : 'No variants found.');
+            renderList(trimList, data.items, (item) => {
+                trimInput.value = item;
+                clearList(trimList);
+                setStatus(trimStatus, 'Variant selected.');
+                fetchVehicleType();
+            });
+        }
+
+        function normalizeVehicleType(type) {
+            const raw = (type || '').toLowerCase().trim();
+            if (raw === 'pickup' || raw === 'truck' || raw === 'light_truck') {
+                return 'ute';
+            }
+            if (raw === 'excavator') {
+                return 'ex';
+            }
+            if (raw === 'bulldozer') {
+                return 'dozer';
+            }
+            const allowed = new Set(['sedan', 'hatch', 'suv', 'van', 'bus', 'ute', 'ex', 'dozer', 'other']);
+            return allowed.has(raw) ? raw : 'other';
+        }
+
+        async function fetchVehicleType() {
+            const make = currentMake.trim();
+            const model = modelInput.value.trim();
+            if (!make || !model || !vehicleTypeSelect) {
+                return;
+            }
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Suggesting vehicle type...';
+            }
+            const data = await postJson('/app/sharpfleet/admin/vehicles-ai-test/type', {
+                make,
+                model,
+                variant: trimInput.value.trim(),
+                branch_id: getBranchId(),
+            });
+            const selected = normalizeVehicleType(data.type);
+            vehicleTypeSelect.value = selected;
+            if (vehicleTypeStatus) {
+                vehicleTypeStatus.textContent = 'Auto-suggested from make, model, and variant.';
+            }
         }
 
         function debounce(fn, delay, timerRef) {
@@ -575,13 +666,20 @@
 
         const makeTimerRef = { value: null };
         const modelTimerRef = { value: null };
+        const trimTimerRef = { value: null };
+        const typeTimerRef = { value: null };
 
         makeInput.addEventListener('input', debounce(fetchMakes, 300, makeTimerRef));
         modelInput.addEventListener('input', debounce(fetchModels, 300, modelTimerRef));
+        trimInput.addEventListener('input', debounce(fetchTrims, 300, trimTimerRef));
+        trimInput.addEventListener('input', debounce(fetchVehicleType, 500, typeTimerRef));
 
         makeInput.addEventListener('change', () => {
             currentMake = makeInput.value.trim();
             clearModels();
+        });
+        modelInput.addEventListener('change', () => {
+            fetchVehicleType();
         });
 
         if (branchSelect) {
@@ -597,6 +695,11 @@
                     clearAll();
                 } else if (target === 'model') {
                     clearModels();
+                } else if (target === 'trim') {
+                    trimInput.value = '';
+                    clearList(trimList);
+                    setStatus(trimStatus, '');
+                    fetchVehicleType();
                 }
             });
         });
