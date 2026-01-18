@@ -7,6 +7,73 @@ use Illuminate\Support\Facades\Schema;
 
 class VehicleService
 {
+    private ?array $vehicleTypeAllowedCache = null;
+
+    private function getVehicleTypeAllowedValues(): ?array
+    {
+        if ($this->vehicleTypeAllowedCache !== null) {
+            return $this->vehicleTypeAllowedCache;
+        }
+
+        try {
+            $row = DB::connection('sharpfleet')->selectOne(
+                "select column_type from information_schema.columns where table_schema = database() and table_name = 'vehicles' and column_name = 'vehicle_type'"
+            );
+            $columnType = isset($row->column_type) ? (string) $row->column_type : '';
+            if (!str_starts_with($columnType, 'enum(')) {
+                $this->vehicleTypeAllowedCache = null;
+                return null;
+            }
+            preg_match_all("/'((?:\\\\'|[^'])*)'/", $columnType, $matches);
+            $values = array_map(
+                static fn ($val) => str_replace("\\'", "'", (string) $val),
+                $matches[1] ?? []
+            );
+            $this->vehicleTypeAllowedCache = $values ?: null;
+            return $this->vehicleTypeAllowedCache;
+        } catch (\Throwable $e) {
+            $this->vehicleTypeAllowedCache = null;
+            return null;
+        }
+    }
+
+    private function normalizeVehicleType(?string $value): ?string
+    {
+        $raw = strtolower(trim((string) $value));
+        if ($raw === '') {
+            return null;
+        }
+
+        $allowed = $this->getVehicleTypeAllowedValues();
+        if ($allowed === null) {
+            return $raw;
+        }
+
+        if (in_array($raw, $allowed, true)) {
+            return $raw;
+        }
+
+        $aliasMap = [
+            'ute' => ['ute', 'pickup', 'light_truck', 'truck', 'bakkie', 'other'],
+            'pickup' => ['pickup', 'ute', 'light_truck', 'truck', 'bakkie', 'other'],
+            'light_truck' => ['light_truck', 'pickup', 'ute', 'truck', 'bakkie', 'other'],
+            'bakkie' => ['bakkie', 'ute', 'pickup', 'light_truck', 'truck', 'other'],
+        ];
+
+        if (isset($aliasMap[$raw])) {
+            foreach ($aliasMap[$raw] as $candidate) {
+                if (in_array($candidate, $allowed, true)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        if (in_array('other', $allowed, true)) {
+            return 'other';
+        }
+
+        return $allowed[0] ?? null;
+    }
     /**
      * Get all active vehicles for an organisation
      */
@@ -68,6 +135,8 @@ class VehicleService
             $outOfServiceNote = null;
         }
 
+        $vehicleType = $this->normalizeVehicleType($data['vehicle_type'] ?? null);
+
         return (int) DB::connection('sharpfleet')
             ->table('vehicles')
             ->insertGetId([
@@ -80,7 +149,7 @@ class VehicleService
                 'make'                 => $data['make'] ?? null,
                 'model'                => $data['model'] ?? null,
                 'variant'              => $hasVariant ? ($data['variant'] ?? null) : null,
-                'vehicle_type'         => $data['vehicle_type'],
+                'vehicle_type'         => $vehicleType,
                 'vehicle_class'        => $data['vehicle_class'] ?? null,
                 'wheelchair_accessible'=> !empty($data['wheelchair_accessible']) ? 1 : 0,
                 'registration_expiry'   => $hasRegistrationExpiry ? ($data['registration_expiry'] ?? null) : null,
@@ -122,11 +191,13 @@ class VehicleService
         $hasAssignmentType = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type');
         $hasAssignedDriverId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id');
 
+        $vehicleType = $this->normalizeVehicleType($data['vehicle_type'] ?? null);
+
         $update = [
             'name'                  => $data['name'],
             'make'                  => $data['make'] ?? null,
             'model'                 => $data['model'] ?? null,
-            'vehicle_type'          => $data['vehicle_type'],
+            'vehicle_type'          => $vehicleType,
             'vehicle_class'         => $data['vehicle_class'] ?? null,
             'wheelchair_accessible' => !empty($data['wheelchair_accessible']) ? 1 : 0,
             'notes'                 => $data['notes'] ?? null,
