@@ -1031,6 +1031,8 @@
             updateStartKm();
             refreshSelectedVehicleLastKm();
         });
+        vehicleSelect.addEventListener('focus', refreshVehicleOptionsFromServer);
+        vehicleSelect.addEventListener('click', refreshVehicleOptionsFromServer);
         if (vehicleSearchInput) {
             vehicleSearchInput.addEventListener('input', filterVehicles);
         }
