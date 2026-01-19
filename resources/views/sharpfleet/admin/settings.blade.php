@@ -149,7 +149,14 @@
                     <label class="checkbox-label">
                         <input type="checkbox" name="enable_private_vehicle_slots" value="1"
                                {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Enable private vehicle slot limits (concurrent use)</strong>
+                        <strong>Allow private vehicle use when fleet vehicles are unavailable</strong>
+                        <span
+                            title="What does this setting do?\n\nEnable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.\n\nThis ensures all trips are still logged correctly against jobs, customers, and drivers, even when a fleet vehicle cannot be used.\n\nPrivate vehicle use is intended for occasional, real-world situations and is limited to prevent it from replacing fleet vehicles. Once the allowed number of private vehicle uses is reached, additional private vehicle trips cannot be started until an existing trip is completed."
+                            aria-label="What does this setting do?"
+                            style="display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; margin-left:6px; border-radius:50%; border:1px solid #1ba5a5; color:#1ba5a5; font-size:11px; line-height:1; cursor:help;"
+                        >
+                            ⓘ
+                        </span>
                     </label>
 
                     <label class="checkbox-label">

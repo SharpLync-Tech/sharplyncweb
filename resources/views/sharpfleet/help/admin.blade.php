@@ -370,7 +370,23 @@
         <ul class="mb-0" style="margin-top: 10px;">
             <li><strong>Start reading required:</strong> driver must enter a starting odometer/hours reading.</li>
             <li><strong>Overrides allowed:</strong> if off, drivers can’t change the suggested reading.</li>
-            <li><strong>Private trips:</strong> lets drivers mark trips as private (if your company allows it).</li>
+            <li><strong>Private trips:</strong> lets drivers mark trips as private when a fleet vehicle is used for personal use (if enabled).</li>
+            <li>
+                <strong>How does private vehicle use work in practice?</strong>
+                <div class="text-muted" style="margin-top: 6px;">
+                    Private vehicle use is designed for occasional, real-world situations when fleet vehicles are not available.
+                </div>
+                <ul class="mb-0" style="margin: 8px 0 0 18px;">
+                    <li>Drivers will see an option to use a private vehicle only when this is enabled by an admin.</li>
+                    <li>Private vehicle trips are logged against the job, customer, and driver - not against a fleet vehicle.</li>
+                    <li>Odometer or hour readings are recorded on the trip for reporting and reimbursement purposes.</li>
+                    <li>Private vehicle use is limited across the company to prevent it replacing fleet vehicles.</li>
+                    <li>If all private vehicle usage slots are in use, drivers will be prompted to wait or contact an admin.</li>
+                </ul>
+                <div class="text-muted" style="margin-top: 6px;">
+                    <strong>Good to know:</strong> Private vehicle trips do not affect fleet vehicle servicing, maintenance, or usage totals.
+                </div>
+            </li>
             <li><strong>Manual times:</strong> lets you require start/end times to be entered (useful for backdated trips).</li>
         </ul>
     </details>
