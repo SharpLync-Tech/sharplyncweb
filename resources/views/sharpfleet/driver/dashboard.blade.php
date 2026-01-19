@@ -486,7 +486,7 @@
                     </div>
                 @endif
 
-                <button type="submit" class="btn btn-primary btn-full">Start Trip</button>
+                <button type="submit" id="startTripBtn" class="btn btn-primary btn-full">Start Trip</button>
             </form>
         </div>
     </div>
@@ -1046,6 +1046,13 @@
             refreshSelectedVehicleLastKm();
             refreshVehicleOptionsFromServer();
         });
+        window.addEventListener('online', () => {
+            refreshVehicleOptionsFromServer();
+        });
+        setInterval(() => {
+            if (document.visibilityState !== 'visible') return;
+            refreshVehicleOptionsFromServer();
+        }, 30000);
 
         function updateBusinessOnlyBlocksVisibility() {
             const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
@@ -1091,6 +1098,7 @@
 
         // Offline trip capture (start/end + readings)
         const startTripForm = document.getElementById('startTripForm');
+        const startTripBtn = document.getElementById('startTripBtn');
         const offlineEndTripForm = document.getElementById('offlineEndTripForm');
         const offlineEndKm = document.getElementById('offlineEndKm');
         const offlineEndedAt = document.getElementById('offlineEndedAt');
@@ -1117,6 +1125,16 @@
         }
 
         if (startTripForm) {
+            startTripForm.addEventListener('focusin', () => {
+                refreshVehicleOptionsFromServer();
+            }, { once: true });
+
+            if (startTripBtn) {
+                startTripBtn.addEventListener('click', () => {
+                    refreshVehicleOptionsFromServer();
+                });
+            }
+
             startTripForm.addEventListener('submit', (e) => {
                 if (navigator.onLine) return; // let server handle it
 

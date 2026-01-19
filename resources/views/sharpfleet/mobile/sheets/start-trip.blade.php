@@ -667,6 +667,7 @@
     document.querySelectorAll('[data-sheet-open="start-trip"]').forEach((trigger) => {
         trigger.addEventListener('click', refreshVehicleOptionsFromServer);
     });
+    window.addEventListener('online', refreshVehicleOptionsFromServer);
 
     document.querySelectorAll('[data-status-target]').forEach(btn => {
         btn.addEventListener('click', () => {
