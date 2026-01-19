@@ -52,6 +52,7 @@ class CompanySettingsService
             'trip_type_enabled'                => true,
             'trip_type_required'               => true,
             'allow_private_trips'               => false,
+            'private_vehicle_slots_enabled'     => false,
             'require_manual_start_end_times'   => false,
             // Optional text field captured by drivers on business trips.
             'purpose_of_travel_enabled'        => false,
@@ -239,6 +240,14 @@ class CompanySettingsService
         );
     }
 
+    public function privateVehicleSlotsEnabled(): bool
+    {
+        return (bool) filter_var(
+            $this->settings['trip']['private_vehicle_slots_enabled'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+    }
+
     public function purposeOfTravelEnabled(): bool
     {
         return (bool) filter_var(
@@ -358,6 +367,7 @@ class CompanySettingsService
     public function saveFromRequest(Request $request): void
     {
         $settings = $this->settings;
+        $previousPrivateSlotsEnabled = (bool) ($settings['trip']['private_vehicle_slots_enabled'] ?? false);
 
         // ---- Trip rules ----
         $settings['trip']['odometer_required']
@@ -368,6 +378,9 @@ class CompanySettingsService
 
         $settings['trip']['allow_private_trips']
             = $request->boolean('allow_private_trips');
+
+        $settings['trip']['private_vehicle_slots_enabled']
+            = $request->boolean('enable_private_vehicle_slots');
 
         $settings['trip']['require_manual_start_end_times']
             = $request->boolean('require_manual_start_end_times');
@@ -438,6 +451,11 @@ class CompanySettingsService
                     'settings_json'   => json_encode($settings),
                 ]
             );
+
+        $privateSlotsEnabled = (bool) ($settings['trip']['private_vehicle_slots_enabled'] ?? false);
+        if (!$previousPrivateSlotsEnabled && $privateSlotsEnabled) {
+            (new PrivateVehicleSlotService())->ensureSlotsInitialized($this->organisationId);
+        }
 
         // Update in-memory cache
         $this->settings = $settings;

@@ -110,7 +110,7 @@ class DriverMobileController extends Controller
 
         $activeTrip = DB::connection('sharpfleet')
             ->table('trips')
-            ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+            ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->select(
                 'trips.*',
                 'vehicles.name as vehicle_name',
@@ -122,7 +122,10 @@ class DriverMobileController extends Controller
             ->where('trips.organisation_id', $user['organisation_id'])
             ->when(
                 $branchAccessEnabled,
-                fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+                fn ($q) => $q->where(function ($sub) use ($accessibleBranchIds) {
+                    $sub->whereNull('trips.vehicle_id')
+                        ->orWhereIn('vehicles.branch_id', $accessibleBranchIds);
+                })
             )
             ->whereNotNull('trips.started_at')
             ->whereNull('trips.ended_at')

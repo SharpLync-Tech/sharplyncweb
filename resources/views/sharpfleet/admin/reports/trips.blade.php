@@ -143,7 +143,7 @@
                 </div>
                 <div>
                     <strong>{{ $privateTrips }}</strong><br>
-                    <span class="text-muted small">Private</span>
+                    <span class="text-muted small">Private vehicle</span>
                 </div>
                 <div>
                     <strong>{{ $displayStartDate }} → {{ $displayEndDate }}</strong><br>
@@ -167,7 +167,7 @@
                             <tr>
                                 <th>Vehicle</th>
                                 <th>Driver</th>
-                                <th>Business / Private</th>
+                                <th>Business / Private vehicle</th>
                                 <th>{{ $clientPresenceLabel }}</th>
                                 @if($purposeOfTravelEnabled)
                                     <th>Purpose of travel</th>
@@ -184,7 +184,7 @@
                                         <small class="text-muted">{{ $t->registration_number }}</small>
                                     </td>
                                     <td>{{ $t->driver_name }}</td>
-                                    <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}</td>
+                                    <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private vehicle' : 'Business' }}</td>
                                     <td>{{ $t->customer_name_display ?: '—' }}</td>
 
                                     @if($purposeOfTravelEnabled)

@@ -49,7 +49,7 @@
             {{-- ===============================
                  Vehicle
             ================================ --}}
-            <div class="form-group" style="margin-bottom: 24px;">
+            <div class="form-group" id="vehicleBlock" style="margin-bottom: 24px;">
                 <label class="form-label">Vehicle</label>
 
                 @if($vehicles->count() > 10)
@@ -267,7 +267,7 @@
                 </label>
                 <label class="radio-label">
                     <input type="radio" name="trip_mode" value="private" form="startTripForm">
-                    Private
+                    Private vehicle
                 </label>
             </div>
         @else
@@ -555,6 +555,7 @@
     const customerSelect = document.getElementById('customerSelect');
     const customerNameInput = document.getElementById('customerNameInput');
     const purposeOfTravelBlock = document.getElementById('purposeOfTravelBlock');
+    const vehicleBlock = document.getElementById('vehicleBlock');
 
     const tripModeRadios = document.querySelectorAll('input[name=\"trip_mode\"][type=\"radio\"]');
     const tripModeHidden = document.querySelector('input[name=\"trip_mode\"][type=\"hidden\"]');
@@ -562,17 +563,29 @@
     function updateBusinessOnlyBlocksVisibility() {
         const selected = document.querySelector('input[name=\"trip_mode\"][type=\"radio\"]:checked');
         const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
-        const isBusinessTrip = mode !== 'private';
+        const isPrivateVehicleTrip = mode === 'private';
 
-        if (customerBlock) {
-            customerBlock.style.display = isBusinessTrip ? '' : 'none';
+        if (vehicleBlock) {
+            vehicleBlock.style.display = isPrivateVehicleTrip ? 'none' : '';
         }
-        if (clientPresenceBlock) {
-            clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+        if (vehicleSelect) {
+            vehicleSelect.required = !isPrivateVehicleTrip;
+            vehicleSelect.disabled = isPrivateVehicleTrip;
         }
-        if (purposeOfTravelBlock) {
-            purposeOfTravelBlock.style.display = isBusinessTrip ? '' : 'none';
+        if (lastKmHint) {
+            lastKmHint.classList.toggle('d-none', isPrivateVehicleTrip);
         }
+
+        if (!isPrivateVehicleTrip) {
+            updateStartKm();
+        } else if (startKmInput) {
+            startKmInput.value = '';
+            lastAutoFilledReading = null;
+        }
+
+        if (customerBlock) customerBlock.style.display = '';
+        if (clientPresenceBlock) clientPresenceBlock.style.display = '';
+        if (purposeOfTravelBlock) purposeOfTravelBlock.style.display = '';
     }
 
     if (customerSelect && customerNameInput) {

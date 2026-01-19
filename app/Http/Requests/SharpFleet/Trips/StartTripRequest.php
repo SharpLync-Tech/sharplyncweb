@@ -33,7 +33,7 @@ class StartTripRequest extends FormRequest
         $customerName = $customerEnabled ? $this->input('customer_name') : null;
         $clientPresent = $clientPresenceEnabled ? $this->input('client_present') : null;
         $clientAddress = ($clientPresenceEnabled && $clientAddressesEnabled) ? $this->input('client_address') : null;
-        $purposeOfTravel = ($purposeOfTravelEnabled && $tripMode !== 'private') ? $this->input('purpose_of_travel') : null;
+        $purposeOfTravel = $purposeOfTravelEnabled ? $this->input('purpose_of_travel') : null;
 
         $startedAt = $manualTimesRequired ? $this->input('started_at') : null;
 
@@ -77,14 +77,13 @@ class StartTripRequest extends FormRequest
 
         $clientPresentRule = ['nullable', 'in:0,1'];
         if ($clientPresenceEnabled && $clientPresenceRequired) {
-            // Required for business trips, never for private trips.
-            $clientPresentRule = ['required_unless:trip_mode,private', 'in:0,1'];
+            $clientPresentRule = ['required', 'in:0,1'];
         } elseif ($clientPresenceEnabled) {
             $clientPresentRule = ['nullable', 'in:0,1'];
         }
 
         return [
-            'vehicle_id' => ['required', 'integer'],
+            'vehicle_id' => ['nullable', 'integer', 'required_unless:trip_mode,private'],
             'trip_mode'  => ['required', 'string'],
             'start_km'   => $startKmRule,
             'started_at' => $manualTimesRequired ? ['required', 'date'] : ['nullable', 'date'],

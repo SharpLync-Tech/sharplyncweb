@@ -35,15 +35,6 @@ body {
     padding: 0 1rem;
 }
 
-.policy-section h3 {
-    color: var(--sl-text);
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-    opacity: 0.9; /* boosts visibility on dark cards */
-}
-
-
 /* Card */
 .policy-container {
     flex: 1;
@@ -62,6 +53,7 @@ body {
     margin-bottom: 0.5rem;
     text-align: center;
 }
+
 .policy-version {
     text-align: center;
     font-size: 0.9rem;
@@ -83,12 +75,13 @@ body {
     transform: translateY(15px);
     transition: all 0.5s ease;
 }
+
 .policy-section.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Heading anchor behavior */
+/* Section headings */
 .policy-section h2 {
     font-size: 1.4rem;
     font-weight: 600;
@@ -97,8 +90,19 @@ body {
     scroll-margin-top: 90px;
     cursor: pointer;
 }
+
 .policy-section h2:hover {
     color: var(--sl-accent);
+}
+
+/* Sub-headings */
+.policy-section h3 {
+    color: var(--sl-text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 1.6rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.9;
 }
 
 /* Divider */
@@ -108,17 +112,40 @@ body {
     margin: 2.5rem 0;
 }
 
-/* Text */
-.policy-section p,
-.policy-section li {
+/* Text spacing */
+.policy-section p {
     font-size: 1rem;
     line-height: 1.65rem;
     color: var(--sl-text);
-}
-.policy-section ul {
-    padding-left: 1.2rem;
+    margin-bottom: 1rem;
 }
 
+.policy-section li {
+    font-size: 1rem;
+    line-height: 1.6rem;
+    color: var(--sl-text);
+    margin-bottom: 0.6rem;
+}
+
+.policy-section ul {
+    padding-left: 1.25rem;
+    margin: 0.5rem 0 1.25rem;
+}
+
+/* Policy links (no default underline / blue) */
+.policy-section a {
+    color: var(--sl-accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.policy-section a:hover {
+    color: var(--sl-accent);
+    text-decoration: underline;
+}
+
+/* Warning / icon lists */
 .sl-warning-list {
     list-style: none;
     padding-left: 0;
@@ -134,17 +161,18 @@ body {
 }
 
 .sl-icon-bad {
-    color: #ff4d6d; /* red */
+    color: #ffff4d6d;
     font-size: 1.2rem;
     line-height: 1;
 }
 
 .sl-icon-good {
-    color: #2cbfae; /* SharpLync teal */
+    color: #2cbfae;
     font-size: 1.2rem;
     line-height: 1;
 }
 
+/* Back button */
 .policy-back-wrapper {
     margin-bottom: 1rem;
 }
@@ -165,25 +193,21 @@ body {
     transform: translateX(-3px);
 }
 
-
-
-
-
 /* ============================================================
    Sticky TOC
 ============================================================ */
+
 .policy-toc {
     position: sticky;
     top: 120px;
     min-width: 230px;
-    max-width: 230px;   /* <-- stops the wobble */
+    max-width: 230px;
     background: var(--sl-card);
     padding: 1.5rem;
     border-radius: 16px;
     height: max-content;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
-
 
 .policy-toc h3 {
     margin-bottom: 1rem;
@@ -196,6 +220,7 @@ body {
     padding: 0;
     margin: 0;
 }
+
 .policy-toc li {
     margin-bottom: 0.7rem;
 }
@@ -206,10 +231,12 @@ body {
     font-size: 0.95rem;
     transition: 0.2s;
 }
+
 .policy-toc a.active {
     color: var(--sl-accent);
     font-weight: 600;
 }
+
 .policy-toc a:hover {
     color: var(--sl-accent);
 }
@@ -219,6 +246,7 @@ body {
     .policy-wrapper {
         flex-direction: column;
     }
+
     .policy-toc {
         display: none;
     }

@@ -94,9 +94,9 @@ class TripController extends Controller
 
         $validated = $request->validate([
             'trips' => ['required', 'array', 'min:1'],
-            'trips.*.vehicle_id' => ['required', 'integer'],
+            'trips.*.vehicle_id' => ['nullable', 'integer'],
             'trips.*.trip_mode' => ['required', 'string'],
-            'trips.*.start_km' => ['required', 'integer', 'min:0'],
+            'trips.*.start_km' => ['nullable', 'integer', 'min:0'],
             'trips.*.end_km' => ['required', 'integer', 'min:0'],
             'trips.*.started_at' => ['required', 'date'],
             'trips.*.ended_at' => ['required', 'date'],

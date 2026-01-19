@@ -15,10 +15,13 @@
 
 <div class="policy-section">
     <h2>Introduction</h2>
+
     <p>
-        These Terms &amp; Conditions (“Terms”) govern your access to and use of SharpFleet, a software-as-a-service (SaaS)
-        platform operated by SharpLync Pty Ltd (“SharpLync”, “we”, “us”, “our”).
+        These Terms &amp; Conditions (“Terms”) govern your access to and use of SharpFleet,
+        a software-as-a-service (SaaS) platform operated by SharpLync Pty Ltd (“SharpLync”,
+        “we”, “us”, “our”).
     </p>
+
     <p>
         By accessing or using SharpFleet, you agree to be bound by these Terms.
         If you do not agree, you must not use the platform.
@@ -31,7 +34,8 @@
     <h2>1. The SharpFleet Service</h2>
 
     <p>
-        SharpFleet is a cloud-based fleet and driver logbook platform designed to assist businesses with record-keeping and reporting.
+        SharpFleet is a cloud-based fleet and driver logbook platform designed to assist
+        businesses with record-keeping and reporting.
     </p>
 
     <p><strong>SharpFleet:</strong></p>
@@ -45,10 +49,21 @@
 
     <p><strong>Data recording &amp; tracking clarification:</strong></p>
     <ul>
-        <li>SharpFleet records information that users or companies choose to enter, such as trip times, readings, vehicles, customers, and notes</li>
-        <li>SharpFleet may record timestamps, system events, and audit logs to support reporting, security, troubleshooting, and system integrity</li>
-        <li>SharpFleet does not automatically track vehicle location, movement, or driver behaviour</li>
-        <li>SharpFleet does not use GPS, telematics devices, or vehicle-installed hardware</li>
+        <li>
+            SharpFleet records information that users or companies choose to enter,
+            such as trip times, odometer readings, vehicles, customers, and notes
+        </li>
+        <li>
+            SharpFleet may record timestamps, system events, and audit logs to support
+            reporting, security, troubleshooting, and system integrity
+        </li>
+        <li>
+            SharpFleet does not automatically track vehicle location, movement,
+            or driver behaviour
+        </li>
+        <li>
+            SharpFleet does not use GPS, telematics devices, or vehicle-installed hardware
+        </li>
     </ul>
 
     <p><strong>SharpFleet is a record-keeping tool only.</strong></p>
@@ -67,7 +82,8 @@
     </ul>
 
     <p>
-        You are solely responsible for all activity performed under your account, including actions taken by employees, contractors, or drivers.
+        You are solely responsible for all activity performed under your account,
+        including actions taken by employees, contractors, or drivers.
     </p>
 </div>
 
@@ -78,23 +94,35 @@
 
     <p><strong>You acknowledge and agree that:</strong></p>
     <ul>
-        <li>You are responsible for ensuring SharpFleet is used in compliance with all applicable local, state, and federal laws</li>
+        <li>You are responsible for ensuring SharpFleet is used in compliance with all applicable laws</li>
         <li>This includes road rules, workplace safety obligations, and mobile phone usage laws</li>
         <li>SharpFleet does not monitor or enforce lawful use</li>
     </ul>
 
     <h3>Mobile Phone Use While Driving</h3>
+
     <p>
-        The business owner and each driver are solely responsible for complying with local laws relating to mobile phone use while operating a vehicle.
+        SharpFleet is designed for record-keeping and administrative purposes only and is
+        <strong>not intended to be used while a vehicle is in motion</strong>.
     </p>
 
     <p>
-        (SharpLync promotes safe driving practices and does not endorse the use of the SharpFleet application while driving.
-        Best practice is to start trip logs before driving and to safely park the vehicle before stopping or ending a trip log.)
+        In some countries, states, or jurisdictions, the use of a mobile phone while driving
+        may be illegal or subject to restrictions. Drivers are solely responsible for
+        understanding and complying with all applicable road rules, transport regulations,
+        and local laws.
     </p>
 
     <p>
-        SharpLync accepts no responsibility for fines, penalties, incidents, or legal consequences arising from misuse of the platform.
+        SharpFleet does not monitor vehicle movement in real time and does not determine
+        when it is safe or lawful to use a mobile device. Responsibility for safe driving
+        practices and legal compliance remains entirely with the driver and, where applicable,
+        their employer or organisation.
+    </p>
+
+    <p>
+        SharpLync Pty Ltd accepts no responsibility or liability for any fines, penalties,
+        incidents, accidents, or damages arising from the use of a mobile device while driving.
     </p>
 </div>
 
@@ -105,11 +133,13 @@
 
     <p>
         SharpFleet is not a surveillance, monitoring, or workforce management system.
-        Use of SharpFleet does not create an employment, agency, or supervisory relationship between SharpLync and any driver.
+        Use of SharpFleet does not create an employment, agency, or supervisory relationship
+        between SharpLync and any driver.
     </p>
 
     <p>
-        Any monitoring, supervision, or enforcement of driver conduct is the sole responsibility of the business using the platform.
+        Any monitoring, supervision, or enforcement of driver conduct is the sole
+        responsibility of the business using the platform.
     </p>
 </div>
 
@@ -127,7 +157,8 @@
     </ul>
 
     <p>
-        We reserve the right to suspend or terminate access where misuse, abuse, or risk is identified.
+        SharpLync reserves the right to suspend or terminate access where misuse,
+        abuse, or risk is identified.
     </p>
 </div>
 
@@ -137,8 +168,9 @@
     <h2>4A. Private Vehicle Usage &amp; Fair Use</h2>
 
     <p>
-        SharpFleet may allow organisations to record trips made using personal or non-fleet vehicles (“Private Vehicle Trips”)
-        where this feature is explicitly enabled by an administrator.
+        SharpFleet may allow organisations to record trips made using personal or non-fleet
+        vehicles (“Private Vehicle Trips”) where this feature is explicitly enabled
+        by an administrator.
     </p>
 
     <p>
@@ -147,13 +179,14 @@
     </p>
 
     <p>
-        Use of Private Vehicle Trips is subject to <strong>fair use</strong> and is not intended to replace,
-        substitute, or materially reduce the number of fleet vehicles subscribed within SharpFleet.
+        Use of Private Vehicle Trips is subject to <strong>fair use</strong> and is not intended
+        to replace, substitute, or materially reduce the number of fleet vehicles subscribed
+        within SharpFleet.
     </p>
 
     <p>
-        SharpLync reserves the right to apply limits, restrictions, or review access where usage appears
-        inconsistent with fair use or these Terms.
+        SharpLync reserves the right to apply limits, restrictions, or review access where
+        usage appears inconsistent with fair use or these Terms.
     </p>
 </div>
 
@@ -175,30 +208,29 @@
     </ul>
 
     <p>
-        Any reports, summaries, or exports generated by SharpFleet are derived solely from user-entered data
-        and system-recorded timestamps. SharpLync does not independently verify, validate, or audit the
-        accuracy of recorded trips or usage.
+        Any reports, summaries, or exports generated by SharpFleet are derived solely from
+        user-entered data and system-recorded timestamps. SharpLync does not independently
+        verify, validate, or audit the accuracy of recorded trips or usage.
     </p>
 
     <h3>Limited Use of Artificial Intelligence</h3>
-    <p>
-        SharpFleet uses artificial intelligence technology solely to assist with the initial population
-        of vehicle details during vehicle setup (such as make, model, and basic specifications).
-    </p>
 
     <p>
-        This artificial intelligence functionality:
+        SharpFleet uses artificial intelligence technology solely to assist with the
+        initial population of vehicle details during vehicle setup (such as make, model,
+        and basic specifications).
     </p>
+
     <ul>
-        <li>Is operated using Australian-based infrastructure and services</li>
-        <li>Is limited to vehicle setup and configuration only</li>
+        <li>Operated using Australian-based infrastructure and services</li>
+        <li>Limited to vehicle setup and configuration only</li>
         <li>Does not analyse trip data, driver behaviour, or usage patterns</li>
         <li>Does not make decisions, recommendations, or automated actions</li>
-        <li>Is not used for monitoring, profiling, or surveillance purposes</li>
+        <li>Not used for monitoring, profiling, or surveillance purposes</li>
     </ul>
 
     <p>
-        SharpFleet does not use artificial intelligence or machine learning systems for any other purpose
+        SharpFleet does not use artificial intelligence or machine learning systems
         beyond vehicle detail population as described above.
     </p>
 </div>
@@ -210,11 +242,12 @@
 
     <p>
         We take reasonable technical and organisational steps to protect your data.
-        However, you acknowledge that no online system can be guaranteed to be completely secure.
+        However, no online system can be guaranteed to be completely secure.
     </p>
 
     <p>
-        Further details are available in our <a href="/policies/privacy">Privacy Policy</a>.
+        Further details are available in our
+        <a href="/policies/privacy">Privacy Policy</a>.
     </p>
 </div>
 
@@ -228,7 +261,8 @@
     </p>
 
     <p>
-        By subscribing, you acknowledge that payments are non-refundable once a billing period has commenced.
+        By subscribing, you acknowledge that payments are non-refundable once a billing
+        period has commenced.
     </p>
 </div>
 
@@ -238,7 +272,7 @@
     <h2>8. Availability &amp; Service Changes</h2>
 
     <p>
-        We aim to provide reliable access to SharpFleet, however availability is not guaranteed.
+        We aim to provide reliable access to SharpFleet; however, availability is not guaranteed.
     </p>
 </div>
 
@@ -258,7 +292,8 @@
     <h2>10. Indemnity</h2>
 
     <p>
-        You agree to indemnify and hold harmless SharpLync Pty Ltd from any claims arising from use of SharpFleet.
+        You agree to indemnify and hold harmless SharpLync Pty Ltd from any claims
+        arising from use of SharpFleet.
     </p>
 </div>
 
@@ -268,7 +303,8 @@
     <h2>11. Intellectual Property</h2>
 
     <p>
-        All SharpFleet software and branding remain the intellectual property of SharpLync Pty Ltd.
+        All SharpFleet software and branding remain the intellectual property
+        of SharpLync Pty Ltd.
     </p>
 </div>
 
@@ -308,7 +344,8 @@
     <h2>15. Contact</h2>
 
     <p>
-        For questions regarding these Terms, please contact us via the SharpFleet or SharpLync website.
+        For questions regarding these Terms, please contact us via the
+        SharpFleet or SharpLync website.
     </p>
 </div>
 

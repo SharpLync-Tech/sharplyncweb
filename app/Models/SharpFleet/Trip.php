@@ -20,6 +20,8 @@ class Trip extends Model
         'customer_id',
         'customer_name',
         'trip_mode',
+        'is_private_vehicle',
+        'private_vehicle_slot_id',
 
         'start_km',
         'end_km',
@@ -46,5 +48,6 @@ class Trip extends Model
         'ended_at'   => 'datetime',
         'safety_check_confirmed' => 'boolean',
         'safety_check_confirmed_at' => 'datetime',
+        'is_private_vehicle' => 'boolean',
     ];
 }

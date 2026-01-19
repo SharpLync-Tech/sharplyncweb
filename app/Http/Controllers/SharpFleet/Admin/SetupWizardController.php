@@ -185,13 +185,20 @@ class SetupWizardController extends Controller
     {
         $organisationId = $this->requireAdminOrganisationId($request);
         $settings = $this->loadSettings($organisationId);
+        $previousPrivateSlotsEnabled = (bool) ($settings['trip']['private_vehicle_slots_enabled'] ?? false);
 
         $settings['trip']['odometer_required'] = $request->boolean('require_odometer_start');
         $settings['trip']['odometer_allow_override'] = $request->boolean('allow_odometer_override');
         $settings['trip']['allow_private_trips'] = $request->boolean('allow_private_trips');
+        $settings['trip']['private_vehicle_slots_enabled'] = $request->boolean('enable_private_vehicle_slots');
         $settings['trip']['require_manual_start_end_times'] = $request->boolean('require_manual_start_end_times');
 
         $this->persistSettings($organisationId, $settings);
+
+        $privateSlotsEnabled = (bool) ($settings['trip']['private_vehicle_slots_enabled'] ?? false);
+        if (!$previousPrivateSlotsEnabled && $privateSlotsEnabled) {
+            (new \App\Services\SharpFleet\PrivateVehicleSlotService())->ensureSlotsInitialized($organisationId);
+        }
 
         return redirect('/app/sharpfleet/admin/setup/settings/vehicle-tracking')
             ->with('success', 'Step 4 saved. Next: vehicle tracking.');

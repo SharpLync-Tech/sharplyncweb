@@ -91,6 +91,7 @@ class ReportingService
         }
 
         $hasVehicleBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+        $hasPrivateVehicleFlag = Schema::connection('sharpfleet')->hasColumn('trips', 'is_private_vehicle');
 
         $branchesForUi = collect();
         $showBranchFilter = false;
@@ -199,15 +200,21 @@ class ReportingService
 
         $query = DB::connection('sharpfleet')
             ->table('trips')
-            ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+            ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
             ->join('users', 'trips.user_id', '=', 'users.id');
 
         if ($branchAccessEnabled) {
-            $query->whereIn('vehicles.branch_id', $accessibleBranchIds);
+            $query->where(function ($sub) use ($accessibleBranchIds) {
+                $sub->whereNull('trips.vehicle_id')
+                    ->orWhereIn('vehicles.branch_id', $accessibleBranchIds);
+            });
         }
 
         if ($showBranchFilter && count($selectedBranchIds) > 0) {
-            $query->whereIn('vehicles.branch_id', $selectedBranchIds);
+            $query->where(function ($sub) use ($selectedBranchIds) {
+                $sub->whereNull('trips.vehicle_id')
+                    ->orWhereIn('vehicles.branch_id', $selectedBranchIds);
+            });
         }
 
         if ($customerLinkingEnabled) {
@@ -216,9 +223,9 @@ class ReportingService
 
         $query->select(
             'trips.*',
-            'vehicles.name as vehicle_name',
-            'vehicles.registration_number',
-            'vehicles.tracking_mode',
+            DB::raw("COALESCE(vehicles.name, 'Private vehicle') as vehicle_name"),
+            DB::raw("COALESCE(vehicles.registration_number, '') as registration_number"),
+            DB::raw("COALESCE(vehicles.tracking_mode, 'distance') as tracking_mode"),
             $hasVehicleBranchId ? 'vehicles.branch_id as vehicle_branch_id' : DB::raw('NULL as vehicle_branch_id'),
             Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
                 ? 'vehicles.assignment_type as vehicle_assignment_type'
@@ -233,8 +240,17 @@ class ReportingService
 
         // Settings-driven: private trips included/excluded.
         if (!$includePrivateTrips) {
-            $query->where(function ($q) {
-                $q->whereNull('trips.trip_mode')->orWhere('trips.trip_mode', '!=', 'private');
+            $query->where(function ($q) use ($hasPrivateVehicleFlag) {
+                $q->where(function ($sub) {
+                    $sub->whereNull('trips.trip_mode')
+                        ->orWhere('trips.trip_mode', '!=', 'private');
+                });
+                if ($hasPrivateVehicleFlag) {
+                    $q->where(function ($sub) {
+                        $sub->whereNull('trips.is_private_vehicle')
+                            ->orWhere('trips.is_private_vehicle', 0);
+                    });
+                }
             });
         }
 

@@ -172,8 +172,24 @@ class TripService
 
         $settings = new CompanySettingsService($organisationId);
 
-        $vehicleId = (int) ($data['vehicle_id'] ?? 0);
-        if ($vehicleId <= 0) {
+        $requestedMode = strtolower(trim((string) ($data['trip_mode'] ?? 'business')));
+        if ($requestedMode === 'private' && !$settings->allowPrivateTrips()) {
+            throw ValidationException::withMessages([
+                'trip_mode' => 'Private vehicle trips are not enabled for your company.',
+            ]);
+        }
+
+        $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
+        $isPrivateVehicle = $tripMode === 'private';
+
+        if ($isPrivateVehicle && !$settings->privateVehicleSlotsEnabled()) {
+            throw ValidationException::withMessages([
+                'trip_mode' => 'Private vehicle trips are not available yet.',
+            ]);
+        }
+
+        $vehicleId = $isPrivateVehicle ? null : (int) ($data['vehicle_id'] ?? 0);
+        if (!$isPrivateVehicle && $vehicleId <= 0) {
             throw ValidationException::withMessages([
                 'vehicle_id' => 'Vehicle is required.',
             ]);
@@ -182,19 +198,21 @@ class TripService
         // Enforce branch access (server-side). Vehicle determines branch.
         $branches = $this->branchService();
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
-        if (
-            !$bypassBranchRestrictions
-            && $branches->branchesEnabled()
-            && $branches->vehiclesHaveBranchSupport()
-            && $branches->userBranchAccessEnabled()
-        ) {
-            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
-            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
-                abort(403, 'You do not have access to this branch.');
+        if (!$isPrivateVehicle) {
+            if (
+                !$bypassBranchRestrictions
+                && $branches->branchesEnabled()
+                && $branches->vehiclesHaveBranchSupport()
+                && $branches->userBranchAccessEnabled()
+            ) {
+                $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+                if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                    abort(403, 'You do not have access to this branch.');
+                }
             }
         }
 
-        $tripTimezone = $branches->branchesEnabled()
+        $tripTimezone = !$isPrivateVehicle && $branches->branchesEnabled()
             ? $branches->getTimezoneForVehicle($organisationId, $vehicleId)
             : $settings->timezone();
 
@@ -251,21 +269,21 @@ class TripService
             }
         }
 
-        $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
+        if (!$isPrivateVehicle) {
+            // Permanent vehicle assignment rules (booking is not required for the assigned driver).
+            $this->bookingService->assertVehicleAssignmentAllowsTrip(
+                $organisationId,
+                $vehicleId,
+                (int) $user['id']
+            );
 
-        // Permanent vehicle assignment rules (booking is not required for the assigned driver).
-        $this->bookingService->assertVehicleAssignmentAllowsTrip(
-            $organisationId,
-            $vehicleId,
-            (int) $user['id']
-        );
-
-        $this->bookingService->assertVehicleCanStartTrip(
-            $organisationId,
-            $vehicleId,
-            (int) $user['id'],
-            $now
-        );
+            $this->bookingService->assertVehicleCanStartTrip(
+                $organisationId,
+                $vehicleId,
+                (int) $user['id'],
+                $now
+            );
+        }
 
         $customerId = null;
         $customerName = null;
@@ -279,116 +297,129 @@ class TripService
         $clientAddressesEnabled = $settings->clientAddressesEnabled();
         $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
-        if ($tripMode !== 'private') {
-            $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
-                ? (int) $data['customer_id']
-                : null;
+        $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
+            ? (int) $data['customer_id']
+            : null;
 
-            $customerName = isset($data['customer_name'])
-                ? trim((string) $data['customer_name'])
-                : '';
+        $customerName = isset($data['customer_name'])
+            ? trim((string) $data['customer_name'])
+            : '';
 
-            if ($customerName === '') {
-                $customerName = null;
-            }
+        if ($customerName === '') {
+            $customerName = null;
+        }
 
-            // If the driver selected from the admin list, store the canonical name.
-            // If not found (or table not present), do not block trip start.
-            if ($customerId) {
-                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-                if ($resolved) {
-                    $customerName = $resolved;
-                } else {
-                    $customerId = null;
-                }
-            }
-
-            if ($customerName !== null && mb_strlen($customerName) > 150) {
-                $customerName = mb_substr($customerName, 0, 150);
-            }
-
-            if (!$customerCaptureEnabled) {
-                $customerId = null;
-                $customerName = null;
-            }
-
-            if ($clientPresenceEnabled) {
-                $clientPresent = $data['client_present'] ?? null;
-
-                if ($clientPresenceRequired && ($clientPresent === null || $clientPresent === '')) {
-                    throw ValidationException::withMessages([
-                        'client_present' => 'Client presence is required to start a business trip.',
-                    ]);
-                }
-
-                $clientAddress = $clientAddressesEnabled ? ($data['client_address'] ?? null) : null;
+        // If the driver selected from the admin list, store the canonical name.
+        // If not found (or table not present), do not block trip start.
+        if ($customerId) {
+            $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+            if ($resolved) {
+                $customerName = $resolved;
             } else {
-                $clientPresent = null;
-                $clientAddress = null;
+                $customerId = null;
+            }
+        }
+
+        if ($customerName !== null && mb_strlen($customerName) > 150) {
+            $customerName = mb_substr($customerName, 0, 150);
+        }
+
+        if (!$customerCaptureEnabled) {
+            $customerId = null;
+            $customerName = null;
+        }
+
+        if ($clientPresenceEnabled) {
+            $clientPresent = $data['client_present'] ?? null;
+
+            if ($clientPresenceRequired && ($clientPresent === null || $clientPresent === '')) {
+                throw ValidationException::withMessages([
+                    'client_present' => 'Client presence is required to start a trip.',
+                ]);
             }
 
-            if ($purposeOfTravelEnabled) {
-                $purposeOfTravel = isset($data['purpose_of_travel']) ? trim((string) $data['purpose_of_travel']) : '';
-                if ($purposeOfTravel === '') {
-                    $purposeOfTravel = null;
-                } elseif (mb_strlen($purposeOfTravel) > 255) {
-                    $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
-                }
+            $clientAddress = $clientAddressesEnabled ? ($data['client_address'] ?? null) : null;
+        } else {
+            $clientPresent = null;
+            $clientAddress = null;
+        }
+
+        if ($purposeOfTravelEnabled) {
+            $purposeOfTravel = isset($data['purpose_of_travel']) ? trim((string) $data['purpose_of_travel']) : '';
+            if ($purposeOfTravel === '') {
+                $purposeOfTravel = null;
+            } elseif (mb_strlen($purposeOfTravel) > 255) {
+                $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
             }
         }
 
         $startKmRaw = $data['start_km'] ?? null;
         $startKm = $startKmRaw === null || $startKmRaw === '' ? null : (int) $startKmRaw;
 
-        // If there is a previous reading, do not allow starting below it.
-        $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
-            ->where('organisation_id', $organisationId)
-            ->whereNotNull('end_km')
-            ->orderByDesc('ended_at')
-            ->first();
-
-        $vehicle = DB::connection('sharpfleet')
-            ->table('vehicles')
-            ->select('starting_km')
-            ->where('organisation_id', $organisationId)
-            ->where('id', (int) $data['vehicle_id'])
-            ->first();
-
-        $baselineReading = null;
-        if ($lastTrip && $lastTrip->end_km !== null) {
-            $baselineReading = (int) $lastTrip->end_km;
-        } elseif ($vehicle && property_exists($vehicle, 'starting_km') && $vehicle->starting_km !== null) {
-            $baselineReading = (int) $vehicle->starting_km;
-        }
-
-        // If odometer is not required, allow empty start_km but autofill from baseline when possible.
-        if ($startKm === null) {
-            if ($settings->odometerRequired()) {
+        if ($isPrivateVehicle) {
+            if ($startKm === null && $settings->odometerRequired()) {
                 throw ValidationException::withMessages([
                     'start_km' => 'Starting reading is required.',
                 ]);
             }
+        } else {
+            // If there is a previous reading, do not allow starting below it.
+            $lastTrip = Trip::where('vehicle_id', $data['vehicle_id'])
+                ->where('organisation_id', $organisationId)
+                ->whereNotNull('end_km')
+                ->orderByDesc('ended_at')
+                ->first();
 
-            if ($settings->odometerAutofillEnabled() && $baselineReading !== null) {
-                $startKm = $baselineReading;
-            } else {
+            $vehicle = DB::connection('sharpfleet')
+                ->table('vehicles')
+                ->select('starting_km')
+                ->where('organisation_id', $organisationId)
+                ->where('id', (int) $data['vehicle_id'])
+                ->first();
+
+            $baselineReading = null;
+            if ($lastTrip && $lastTrip->end_km !== null) {
+                $baselineReading = (int) $lastTrip->end_km;
+            } elseif ($vehicle && property_exists($vehicle, 'starting_km') && $vehicle->starting_km !== null) {
+                $baselineReading = (int) $vehicle->starting_km;
+            }
+
+            // If odometer is not required, allow empty start_km but autofill from baseline when possible.
+            if ($startKm === null) {
+                if ($settings->odometerRequired()) {
+                    throw ValidationException::withMessages([
+                        'start_km' => 'Starting reading is required.',
+                    ]);
+                }
+
+                if ($settings->odometerAutofillEnabled() && $baselineReading !== null) {
+                    $startKm = $baselineReading;
+                } else {
+                    throw ValidationException::withMessages([
+                        'start_km' => 'Starting reading is required for this vehicle because no previous reading is available.',
+                    ]);
+                }
+            }
+
+            // If override is disabled and we know the baseline, enforce equality.
+            if (!$settings->odometerAllowOverride() && $baselineReading !== null && $startKm !== $baselineReading) {
                 throw ValidationException::withMessages([
-                    'start_km' => 'Starting reading is required for this vehicle because no previous reading is available.',
+                    'start_km' => 'Starting reading cannot be changed. It must match the last recorded reading.',
+                ]);
+            }
+
+            if ($baselineReading !== null && $startKm < (int) $baselineReading) {
+                throw ValidationException::withMessages([
+                    'start_km' => 'Starting reading must be the same as or greater than the last recorded reading.',
                 ]);
             }
         }
 
-        // If override is disabled and we know the baseline, enforce equality.
-        if (!$settings->odometerAllowOverride() && $baselineReading !== null && $startKm !== $baselineReading) {
-            throw ValidationException::withMessages([
-                'start_km' => 'Starting reading cannot be changed. It must match the last recorded reading.',
-            ]);
-        }
-
-        if ($baselineReading !== null && $startKm < (int) $baselineReading) {
-            throw ValidationException::withMessages([
-                'start_km' => 'Starting reading must be the same as or greater than the last recorded reading.',
-            ]);
+        $privateSlotId = null;
+        if ($isPrivateVehicle) {
+            $slotService = new PrivateVehicleSlotService();
+            $slotService->ensureSlotsInitialized($organisationId);
+            $privateSlotId = $slotService->acquireSlot($organisationId, $now);
         }
 
         $tripModeToStore = $this->tripModeForStorage($tripMode, $data);
@@ -413,14 +444,33 @@ class TripService
             'safety_check_confirmed_at' => $safetyCheckConfirmedAt,
         ];
 
-        if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
+        if (!$isPrivateVehicle && $branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
             $create['branch_id'] = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
         }
         if ($branches->tripsHaveTimezoneSupport()) {
             $create['timezone'] = $tripTimezone;
         }
 
-        return Trip::create($create);
+        if (Schema::connection('sharpfleet')->hasColumn('trips', 'is_private_vehicle')) {
+            $create['is_private_vehicle'] = $isPrivateVehicle ? 1 : 0;
+        }
+        if ($isPrivateVehicle && $privateSlotId && Schema::connection('sharpfleet')->hasColumn('trips', 'private_vehicle_slot_id')) {
+            $create['private_vehicle_slot_id'] = $privateSlotId;
+        }
+        try {
+            $trip = Trip::create($create);
+        } catch (\Throwable $e) {
+            if ($isPrivateVehicle && $privateSlotId) {
+                (new PrivateVehicleSlotService())->releaseSlot($privateSlotId, $now);
+            }
+            throw $e;
+        }
+
+        if ($isPrivateVehicle && $privateSlotId) {
+            (new PrivateVehicleSlotService())->assignTripToSlot($privateSlotId, (int) $trip->id);
+        }
+
+        return $trip;
     }
 
     /**
@@ -432,6 +482,7 @@ class TripService
     {
         $organisationId = (int) ($user['organisation_id'] ?? 0);
         $userId = (int) ($user['id'] ?? 0);
+        $settings = new CompanySettingsService($organisationId);
 
         if ($organisationId <= 0 || $userId <= 0) {
             abort(401, 'Not authenticated');
@@ -444,9 +495,11 @@ class TripService
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
 
         foreach ($trips as $t) {
-            $vehicleId = (int) ($t['vehicle_id'] ?? 0);
             $tripMode = $this->normalizeTripMode($organisationId, isset($t['trip_mode']) ? (string) $t['trip_mode'] : null);
-            $startKm = (int) ($t['start_km'] ?? 0);
+            $isPrivateVehicle = $tripMode === 'private';
+            $vehicleId = $isPrivateVehicle ? null : (int) ($t['vehicle_id'] ?? 0);
+            $startKmRaw = $t['start_km'] ?? null;
+            $startKm = $startKmRaw === null || $startKmRaw === '' ? null : (int) $startKmRaw;
             $endKm = (int) ($t['end_km'] ?? 0);
 
             // Offline UI sends ISO strings; treat them as UTC.
@@ -497,35 +550,50 @@ class TripService
                 }
             }
 
-            if ($vehicleId <= 0) {
+            if ($isPrivateVehicle) {
+                if (!$settings->allowPrivateTrips() || !$settings->privateVehicleSlotsEnabled()) {
+                    throw ValidationException::withMessages(['trip_mode' => 'Private vehicle trips are not enabled.']);
+                }
+            } elseif ($vehicleId <= 0) {
                 throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
             }
 
             // Enforce branch access (server-side).
-            if (
-                !$bypassBranchRestrictions
-                && $branches->branchesEnabled()
-                && $branches->vehiclesHaveBranchSupport()
-                && $branches->userBranchAccessEnabled()
-            ) {
-                $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
-                if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, $userId, (int) $vehicleBranchId)) {
-                    abort(403, 'You do not have access to this branch.');
+            if (!$isPrivateVehicle) {
+                if (
+                    !$bypassBranchRestrictions
+                    && $branches->branchesEnabled()
+                    && $branches->vehiclesHaveBranchSupport()
+                    && $branches->userBranchAccessEnabled()
+                ) {
+                    $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+                    if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, $userId, (int) $vehicleBranchId)) {
+                        abort(403, 'You do not have access to this branch.');
+                    }
                 }
             }
             if ($endedAt->lessThanOrEqualTo($startedAt)) {
                 throw ValidationException::withMessages(['ended_at' => 'End time must be after start time.']);
             }
-            if ($endKm < $startKm) {
+            if ($startKm !== null && $endKm < $startKm) {
                 throw ValidationException::withMessages(['end_km' => 'Ending reading must be the same as or greater than the starting reading.']);
             }
 
             // De-dup: if we already have a trip with the exact same started_at for this driver/vehicle, skip it.
             $existing = Trip::where('organisation_id', $organisationId)
                 ->where('user_id', $userId)
-                ->where('vehicle_id', $vehicleId)
                 ->where('started_at', $startedAt->toDateTimeString())
-                ->first();
+                ->when(
+                    $isPrivateVehicle,
+                    fn ($q) => $q->whereNull('vehicle_id'),
+                    fn ($q) => $q->where('vehicle_id', $vehicleId)
+                );
+
+            if (Schema::connection('sharpfleet')->hasColumn('trips', 'is_private_vehicle')) {
+                $existing->where('is_private_vehicle', $isPrivateVehicle ? 1 : 0);
+            }
+
+            $existing = $existing->first();
 
             if ($existing) {
                 $skipped[] = (int) $existing->id;
@@ -533,18 +601,26 @@ class TripService
             }
 
             // Enforce booking lock at the time the trip started (best-effort).
-            $this->bookingService->assertVehicleCanStartTrip($organisationId, $vehicleId, $userId, $startedAt);
+            if (!$isPrivateVehicle) {
+                $this->bookingService->assertVehicleCanStartTrip($organisationId, $vehicleId, $userId, $startedAt);
+            }
 
             // Validate against last recorded reading for this vehicle.
-            $lastTrip = Trip::where('vehicle_id', $vehicleId)
-                ->where('organisation_id', $organisationId)
-                ->whereNotNull('end_km')
-                ->orderByDesc('ended_at')
-                ->first();
+            if (!$isPrivateVehicle) {
+                $lastTrip = Trip::where('vehicle_id', $vehicleId)
+                    ->where('organisation_id', $organisationId)
+                    ->whereNotNull('end_km')
+                    ->orderByDesc('ended_at')
+                    ->first();
 
-            if ($lastTrip && $lastTrip->end_km !== null && $startKm < (int) $lastTrip->end_km) {
+                if ($lastTrip && $lastTrip->end_km !== null && $startKm !== null && $startKm < (int) $lastTrip->end_km) {
+                    throw ValidationException::withMessages([
+                        'start_km' => 'Starting reading must be the same as or greater than the last recorded reading.',
+                    ]);
+                }
+            } elseif ($startKm === null && $settings->odometerRequired()) {
                 throw ValidationException::withMessages([
-                    'start_km' => 'Starting reading must be the same as or greater than the last recorded reading.',
+                    'start_km' => 'Starting reading is required.',
                 ]);
             }
 
@@ -557,37 +633,35 @@ class TripService
             $settings = new CompanySettingsService($organisationId);
             $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
-            if ($tripMode !== 'private') {
-                $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
-                    ? (int) $t['customer_id']
-                    : null;
+            $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
+                ? (int) $t['customer_id']
+                : null;
 
-                $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
-                if ($customerName === '') {
-                    $customerName = null;
+            $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
+            if ($customerName === '') {
+                $customerName = null;
+            }
+            if ($customerId) {
+                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+                if ($resolved) {
+                    $customerName = $resolved;
+                } else {
+                    $customerId = null;
                 }
-                if ($customerId) {
-                    $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-                    if ($resolved) {
-                        $customerName = $resolved;
-                    } else {
-                        $customerId = null;
-                    }
-                }
-                if ($customerName !== null && mb_strlen($customerName) > 150) {
-                    $customerName = mb_substr($customerName, 0, 150);
-                }
+            }
+            if ($customerName !== null && mb_strlen($customerName) > 150) {
+                $customerName = mb_substr($customerName, 0, 150);
+            }
 
-                $clientPresent = $t['client_present'] ?? null;
-                $clientAddress = $t['client_address'] ?? null;
+            $clientPresent = $t['client_present'] ?? null;
+            $clientAddress = $t['client_address'] ?? null;
 
-                if ($purposeOfTravelEnabled) {
-                    $purposeOfTravel = isset($t['purpose_of_travel']) ? trim((string) $t['purpose_of_travel']) : '';
-                    if ($purposeOfTravel === '') {
-                        $purposeOfTravel = null;
-                    } elseif (mb_strlen($purposeOfTravel) > 255) {
-                        $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
-                    }
+            if ($purposeOfTravelEnabled) {
+                $purposeOfTravel = isset($t['purpose_of_travel']) ? trim((string) $t['purpose_of_travel']) : '';
+                if ($purposeOfTravel === '') {
+                    $purposeOfTravel = null;
+                } elseif (mb_strlen($purposeOfTravel) > 255) {
+                    $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
                 }
             }
 
@@ -595,7 +669,7 @@ class TripService
                 'client_present' => $clientPresent,
             ]);
 
-            $tripTimezone = $branches->branchesEnabled()
+            $tripTimezone = !$isPrivateVehicle && $branches->branchesEnabled()
                 ? $branches->getTimezoneForVehicle($organisationId, $vehicleId)
                 : (new CompanySettingsService($organisationId))->timezone();
 
@@ -620,11 +694,15 @@ class TripService
                 'safety_check_confirmed_at' => $safetyCheckConfirmedAt,
             ];
 
-            if ($branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
+            if (!$isPrivateVehicle && $branches->branchesEnabled() && $branches->tripsHaveBranchSupport()) {
                 $create['branch_id'] = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
             }
             if ($branches->tripsHaveTimezoneSupport()) {
                 $create['timezone'] = $tripTimezone;
+            }
+
+            if (Schema::connection('sharpfleet')->hasColumn('trips', 'is_private_vehicle')) {
+                $create['is_private_vehicle'] = $isPrivateVehicle ? 1 : 0;
             }
 
             $trip = Trip::create($create);
@@ -708,6 +786,15 @@ class TripService
             'ended_at' => $now,
             'end_time' => $now,
         ]);
+
+        if (
+            Schema::connection('sharpfleet')->hasColumn('trips', 'is_private_vehicle')
+            && (int) ($trip->is_private_vehicle ?? 0) === 1
+            && isset($trip->private_vehicle_slot_id)
+            && $trip->private_vehicle_slot_id
+        ) {
+            (new PrivateVehicleSlotService())->releaseSlot((int) $trip->private_vehicle_slot_id, $now);
+        }
 
         return $trip;
     }

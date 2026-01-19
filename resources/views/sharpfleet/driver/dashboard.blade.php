@@ -98,13 +98,16 @@
     // Check for active trip
     $activeTrip = DB::connection('sharpfleet')
         ->table('trips')
-        ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+        ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
         ->select('trips.*', 'vehicles.name as vehicle_name', 'vehicles.registration_number', 'vehicles.tracking_mode')
         ->where('trips.user_id', $user['id'])
         ->where('trips.organisation_id', $user['organisation_id'])
         ->when(
             $branchAccessEnabled,
-            fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            fn ($q) => $q->where(function ($sub) use ($accessibleBranchIds) {
+                $sub->whereNull('trips.vehicle_id')
+                    ->orWhereIn('vehicles.branch_id', $accessibleBranchIds);
+            })
         )
         ->whereNotNull('trips.started_at')
         ->whereNull('trips.ended_at')
@@ -138,7 +141,12 @@
         <div class="card-body">
             <div class="trip-info">
                 <div class="info-row">
-                    <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
+                    <strong>Vehicle:</strong>
+                    @if($activeTrip->vehicle_name)
+                        {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
+                    @else
+                        Private vehicle
+                    @endif
                 </div>
                 <div class="info-row">
                     @php
@@ -163,7 +171,7 @@
                 @php
                     // Backwards compatible: legacy values ('client' / 'no_client') are treated as Business.
                     $tripMode = (string) ($activeTrip->trip_mode ?? 'business');
-                    $tripTypeLabel = $tripMode === 'private' ? 'Private' : 'Business';
+                    $tripTypeLabel = $tripMode === 'private' ? 'Private vehicle' : 'Business';
                     $isBusinessTrip = $tripMode !== 'private';
                 @endphp
 
@@ -283,7 +291,7 @@
                 @csrf
 
                 {{-- Vehicle --}}
-                <div class="form-group">
+                <div class="form-group" id="vehicleBlock">
                     <label class="form-label">Vehicle</label>
                     @if($vehicles->count() > 10)
                         <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Start typing to search (e.g. black toyota / camry / ABC123)">
@@ -313,7 +321,7 @@
                     </div>
                 @endif
 
-                {{-- Trip Type (Business / Private) --}}
+                {{-- Trip Type (Business / Private vehicle) --}}
                 <div class="form-group">
                     <label class="form-label">Trip Type</label>
                     @if($allowPrivateTrips)
@@ -324,7 +332,7 @@
                             </label>
                             <label class="radio-label">
                                 <input type="radio" name="trip_mode" value="private">
-                                Private
+                                Private vehicle
                             </label>
                         </div>
                     @else
@@ -531,8 +539,10 @@
     @php
         $serverActiveTripPayload = $activeTrip ? [
             'trip_id' => (int) $activeTrip->id,
-            'vehicle_id' => (int) $activeTrip->vehicle_id,
-            'vehicle_text' => trim(($activeTrip->vehicle_name ?? '') . ' (' . ($activeTrip->registration_number ?? '') . ')'),
+            'vehicle_id' => $activeTrip->vehicle_id ? (int) $activeTrip->vehicle_id : null,
+            'vehicle_text' => $activeTrip->vehicle_name
+                ? trim(($activeTrip->vehicle_name ?? '') . ' (' . ($activeTrip->registration_number ?? '') . ')')
+                : 'Private vehicle',
             'started_at' => $activeTrip->started_at ?? null,
             'start_km' => isset($activeTrip->start_km) ? (int) $activeTrip->start_km : null,
             'trip_mode' => $activeTrip->trip_mode ?? 'business',
@@ -660,6 +670,9 @@
             const skm = document.getElementById('offlineTripStartKm');
 
             if (v) v.textContent = t.vehicle_text || '—';
+            if (t.trip_mode === 'private' && v && (!t.vehicle_text || t.vehicle_text === '-' || t.vehicle_text === '—')) {
+                v.textContent = 'Private vehicle';
+            }
             if (s) {
                 try {
                     s.textContent = new Date(t.started_at).toLocaleString(undefined, { timeZone: COMPANY_TIMEZONE });
@@ -773,6 +786,7 @@
         const customerSelect = document.getElementById('customerSelect');
         const customerNameInput = document.getElementById('customerNameInput');
         const purposeOfTravelBlock = document.getElementById('purposeOfTravelBlock');
+        const vehicleBlock = document.getElementById('vehicleBlock');
 
         const tripModeRadios = document.querySelectorAll('input[name="trip_mode"][type="radio"]');
         const tripModeHidden = document.querySelector('input[name="trip_mode"][type="hidden"]');
@@ -926,17 +940,29 @@
         function updateBusinessOnlyBlocksVisibility() {
             const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
             const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
-            const isBusinessTrip = mode !== 'private';
+            const isPrivateVehicleTrip = mode === 'private';
 
-            if (customerBlock) {
-                customerBlock.style.display = isBusinessTrip ? '' : 'none';
+            if (vehicleBlock) {
+                vehicleBlock.style.display = isPrivateVehicleTrip ? 'none' : '';
             }
-            if (clientPresenceBlock) {
-                clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+            if (vehicleSelect) {
+                vehicleSelect.required = !isPrivateVehicleTrip;
+                vehicleSelect.disabled = isPrivateVehicleTrip;
             }
-            if (purposeOfTravelBlock) {
-                purposeOfTravelBlock.style.display = isBusinessTrip ? '' : 'none';
+            if (lastKmHint) {
+                lastKmHint.classList.toggle('d-none', isPrivateVehicleTrip);
             }
+
+            if (!isPrivateVehicleTrip) {
+                updateStartKm();
+            } else if (startKmInput) {
+                startKmInput.value = '';
+                lastAutoFilledReading = null;
+            }
+
+            if (customerBlock) customerBlock.style.display = '';
+            if (clientPresenceBlock) clientPresenceBlock.style.display = '';
+            if (purposeOfTravelBlock) purposeOfTravelBlock.style.display = '';
         }
 
         if (customerSelect && customerNameInput) {
@@ -973,7 +999,7 @@
             const mode = payload.trip_mode ? String(payload.trip_mode) : 'business';
             // Keep only what we need to create a trip later.
             return {
-                vehicle_id: Number(payload.vehicle_id),
+                vehicle_id: mode === 'private' ? null : Number(payload.vehicle_id),
                 trip_mode: mode,
                 start_km: Number(payload.start_km),
                 started_at: payload.started_at ? String(payload.started_at) : null,
@@ -997,7 +1023,7 @@
                 }
 
                 const payload = buildOfflineStartPayload(startTripForm);
-                if (!payload.vehicle_id || Number.isNaN(payload.vehicle_id)) {
+                if (payload.trip_mode !== 'private' && (!payload.vehicle_id || Number.isNaN(payload.vehicle_id))) {
                     showOfflineMessage('Select a vehicle before starting.');
                     return;
                 }
@@ -1011,7 +1037,9 @@
                 }
 
                 const selectedOpt = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
-                const vehicleText = selectedOpt ? selectedOpt.textContent : '';
+                const vehicleText = payload.trip_mode === 'private'
+                    ? 'Private vehicle'
+                    : (selectedOpt ? selectedOpt.textContent : '');
 
                 setOfflineActiveTrip({
                     ...payload,

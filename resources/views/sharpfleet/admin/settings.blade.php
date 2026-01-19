@@ -143,7 +143,13 @@
                     <label class="checkbox-label">
                         <input type="checkbox" name="allow_private_trips" value="1"
                                {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Allow your drivers to use the vehicle for private use</strong>
+                        <strong>Allow private vehicle trips</strong>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enable_private_vehicle_slots" value="1"
+                               {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                        <strong>Enable private vehicle slot limits (concurrent use)</strong>
                     </label>
 
                     <label class="checkbox-label">

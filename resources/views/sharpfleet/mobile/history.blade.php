@@ -39,7 +39,7 @@
 
     $activeTrip = DB::connection('sharpfleet')
         ->table('trips')
-        ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+        ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
         ->select(
             'trips.*',
             'vehicles.name as vehicle_name',
@@ -51,7 +51,10 @@
         ->where('trips.organisation_id', $user['organisation_id'])
         ->when(
             $branchAccessEnabled,
-            fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            fn ($q) => $q->where(function ($sub) use ($accessibleBranchIds) {
+                $sub->whereNull('trips.vehicle_id')
+                    ->orWhereIn('vehicles.branch_id', $accessibleBranchIds);
+            })
         )
         ->whereNotNull('trips.started_at')
         ->whereNull('trips.ended_at')
@@ -59,7 +62,7 @@
 
     $tripQuery = DB::connection('sharpfleet')
         ->table('trips')
-        ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+        ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
         ->when(
             $customerLinkingEnabled,
             fn ($q) => $q->leftJoin('customers', 'trips.customer_id', '=', 'customers.id')
@@ -78,7 +81,10 @@
         ->where('trips.organisation_id', $user['organisation_id'])
         ->when(
             $branchAccessEnabled,
-            fn ($q) => $q->whereIn('vehicles.branch_id', $accessibleBranchIds)
+            fn ($q) => $q->where(function ($sub) use ($accessibleBranchIds) {
+                $sub->whereNull('trips.vehicle_id')
+                    ->orWhereIn('vehicles.branch_id', $accessibleBranchIds);
+            })
         )
         ->whereNotNull('trips.started_at')
         ->whereNotNull('trips.ended_at')
@@ -106,7 +112,12 @@
         <div class="sf-mobile-card">
             <div class="sf-mobile-card-title">Trip in Progress</div>
             <div class="hint-text" style="margin-top: 6px;">
-                <strong>Vehicle:</strong> {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
+                <strong>Vehicle:</strong>
+                @if($activeTrip->vehicle_name)
+                    {{ $activeTrip->vehicle_name }} ({{ $activeTrip->registration_number }})
+                @else
+                    Private vehicle
+                @endif
             </div>
             <div class="hint-text" style="margin-top: 6px;">
                 @php
@@ -155,7 +166,7 @@
 
                 $tripMode = (string) ($trip->trip_mode ?? 'business');
                 $isBusinessTrip = $tripMode !== 'private';
-                $tripTypeLabel = $tripMode === 'private' ? 'Private' : 'Business';
+                $tripTypeLabel = $tripMode === 'private' ? 'Private vehicle' : 'Business';
 
                 $customerName = trim((string) ($trip->customer_name_display ?? ''));
                 $formattedDelta = $delta !== null
@@ -165,7 +176,11 @@
 
             <div class="sf-mobile-card">
                 <div class="sf-mobile-card-title">
-                    {{ $trip->vehicle_name }} ({{ $trip->registration_number }})
+                    @if($trip->vehicle_name)
+                        {{ $trip->vehicle_name }} ({{ $trip->registration_number }})
+                    @else
+                        Private vehicle
+                    @endif
                 </div>
                 <div class="hint-text" style="margin-top: 6px;">
                     <strong>Trip Type:</strong> {{ $tripTypeLabel }}
