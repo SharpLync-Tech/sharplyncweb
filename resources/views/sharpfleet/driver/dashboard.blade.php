@@ -270,6 +270,11 @@
             <h3 class="card-title">Start a Trip</h3>
         </div>
         <div class="card-body">
+            <div class="alert alert-info">
+                <strong>⚠️ Safety reminder</strong><br>
+                Please don't use your phone while driving. Start and end your trip when it's safe.
+            </div>
+
             <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm">
                 @csrf
 

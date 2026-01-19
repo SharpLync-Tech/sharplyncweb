@@ -35,6 +35,13 @@
         <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm" novalidate>
             @csrf
 
+            <div class="sf-mobile-card" style="margin-bottom: 16px;">
+                <div class="sf-mobile-card-title">⚠️ Safety reminder</div>
+                <div class="hint-text" style="margin-top: 6px;">
+                    Please don't use your phone while driving. Start and end your trip when it's safe.
+                </div>
+            </div>
+
             {{-- ===============================
                  Vehicle
             ================================ --}}
