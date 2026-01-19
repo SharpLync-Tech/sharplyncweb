@@ -68,6 +68,11 @@
                     class="form-control"
                     required
                 >
+                    @if($settingsService->privateVehicleSlotsEnabled())
+                        <option value="private_vehicle" data-tracking-mode="distance" data-distance-unit="{{ $settingsService->distanceUnit() }}" data-last-km="">
+                            Private vehicle
+                        </option>
+                    @endif
                     @foreach ($vehicles as $vehicle)
                         @php
                             $vehicleBranchId = property_exists($vehicle, 'branch_id')
@@ -267,7 +272,7 @@
                 </label>
                 <label class="radio-label">
                     <input type="radio" name="trip_mode" value="private" form="startTripForm">
-                    Private vehicle
+                    Private
                 </label>
             </div>
         @else
@@ -526,6 +531,17 @@
             }
         }
 
+        if (selected.value === 'private_vehicle') {
+            if (lastKmHint) {
+                lastKmHint.classList.add('d-none');
+            }
+            if (startKmInput) {
+                startKmInput.value = '';
+            }
+            lastAutoFilledReading = null;
+            return;
+        }
+
         const currentVal = (startKmInput.value || '').trim();
         const canAutofill = currentVal === '' ||
             (lastAutoFilledReading !== null && currentVal === String(lastAutoFilledReading));
@@ -555,7 +571,6 @@
     const customerSelect = document.getElementById('customerSelect');
     const customerNameInput = document.getElementById('customerNameInput');
     const purposeOfTravelBlock = document.getElementById('purposeOfTravelBlock');
-    const vehicleBlock = document.getElementById('vehicleBlock');
 
     const tripModeRadios = document.querySelectorAll('input[name=\"trip_mode\"][type=\"radio\"]');
     const tripModeHidden = document.querySelector('input[name=\"trip_mode\"][type=\"hidden\"]');
@@ -563,29 +578,18 @@
     function updateBusinessOnlyBlocksVisibility() {
         const selected = document.querySelector('input[name=\"trip_mode\"][type=\"radio\"]:checked');
         const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
-        const isPrivateVehicleTrip = mode === 'private';
+        const isBusinessTrip = mode !== 'private';
 
-        if (vehicleBlock) {
-            vehicleBlock.style.display = isPrivateVehicleTrip ? 'none' : '';
-        }
         if (vehicleSelect) {
-            vehicleSelect.required = !isPrivateVehicleTrip;
-            vehicleSelect.disabled = isPrivateVehicleTrip;
-        }
-        if (lastKmHint) {
-            lastKmHint.classList.toggle('d-none', isPrivateVehicleTrip);
+            vehicleSelect.required = true;
+            vehicleSelect.disabled = false;
         }
 
-        if (!isPrivateVehicleTrip) {
-            updateStartKm();
-        } else if (startKmInput) {
-            startKmInput.value = '';
-            lastAutoFilledReading = null;
-        }
+        updateStartKm();
 
-        if (customerBlock) customerBlock.style.display = '';
-        if (clientPresenceBlock) clientPresenceBlock.style.display = '';
-        if (purposeOfTravelBlock) purposeOfTravelBlock.style.display = '';
+        if (customerBlock) customerBlock.style.display = isBusinessTrip ? '' : 'none';
+        if (clientPresenceBlock) clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+        if (purposeOfTravelBlock) purposeOfTravelBlock.style.display = isBusinessTrip ? '' : 'none';
     }
 
     if (customerSelect && customerNameInput) {

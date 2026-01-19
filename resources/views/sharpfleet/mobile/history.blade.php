@@ -166,7 +166,7 @@
 
                 $tripMode = (string) ($trip->trip_mode ?? 'business');
                 $isBusinessTrip = $tripMode !== 'private';
-                $tripTypeLabel = $tripMode === 'private' ? 'Private vehicle' : 'Business';
+                $tripTypeLabel = $tripMode === 'private' ? 'Private' : 'Business';
 
                 $customerName = trim((string) ($trip->customer_name_display ?? ''));
                 $formattedDelta = $delta !== null

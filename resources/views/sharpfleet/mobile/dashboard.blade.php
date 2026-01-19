@@ -175,6 +175,7 @@
         'started_at' => $activeTrip->started_at ?? null,
         'start_km' => isset($activeTrip->start_km) ? (int) $activeTrip->start_km : null,
         'trip_mode' => $activeTrip->trip_mode ?? 'business',
+        'private_vehicle' => (int) ($activeTrip->is_private_vehicle ?? 0),
         'customer_id' => $activeTrip->customer_id ?? null,
         'customer_name' => $activeTrip->customer_name ?? null,
         'client_present' => $activeTrip->client_present ?? null,
@@ -306,7 +307,7 @@
             const skm = document.getElementById('offlineTripStartKm');
 
             if (v) v.textContent = t.vehicle_text || '-';
-            if (t.trip_mode === 'private' && v && (!t.vehicle_text || t.vehicle_text === '-' || t.vehicle_text === '—')) {
+            if (t.private_vehicle && v && (!t.vehicle_text || t.vehicle_text === '-' || t.vehicle_text === '—')) {
                 v.textContent = 'Private vehicle';
             }
             if (s) {
@@ -497,8 +498,10 @@
             const payload = Object.fromEntries(fd.entries());
 
             const mode = payload.trip_mode ? String(payload.trip_mode) : 'business';
+            const isPrivateVehicle = payload.vehicle_id === 'private_vehicle';
             return {
-                vehicle_id: mode === 'private' ? null : Number(payload.vehicle_id),
+                vehicle_id: isPrivateVehicle ? null : Number(payload.vehicle_id),
+                private_vehicle: isPrivateVehicle ? 1 : 0,
                 trip_mode: mode,
                 start_km: Number(payload.start_km),
                 started_at: payload.started_at ? String(payload.started_at) : null,
@@ -533,7 +536,7 @@
                 }
 
                 const payload = buildOfflineStartPayload(startTripForm);
-                if (payload.trip_mode !== 'private' && (!payload.vehicle_id || Number.isNaN(payload.vehicle_id))) {
+                if (!payload.private_vehicle && (!payload.vehicle_id || Number.isNaN(payload.vehicle_id))) {
                     showOfflineMessage('Select a vehicle before starting.');
                     return;
                 }
@@ -548,7 +551,7 @@
 
                 const vehicleSelect = document.getElementById('vehicleSelect');
                 const selectedOpt = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
-                const vehicleText = payload.trip_mode === 'private'
+                const vehicleText = payload.private_vehicle
                     ? 'Private vehicle'
                     : (selectedOpt ? selectedOpt.textContent : '');
 
@@ -556,6 +559,7 @@
                     ...payload,
                     started_at: MANUAL_TRIP_TIMES_REQUIRED ? new Date(String(payload.started_at)).toISOString() : new Date().toISOString(),
                     vehicle_text: vehicleText,
+                    private_vehicle: payload.private_vehicle ? 1 : 0,
                     source: 'offline',
                 });
 

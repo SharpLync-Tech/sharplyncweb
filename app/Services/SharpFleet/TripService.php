@@ -175,16 +175,16 @@ class TripService
         $requestedMode = strtolower(trim((string) ($data['trip_mode'] ?? 'business')));
         if ($requestedMode === 'private' && !$settings->allowPrivateTrips()) {
             throw ValidationException::withMessages([
-                'trip_mode' => 'Private vehicle trips are not enabled for your company.',
+                'trip_mode' => 'Private trips are not enabled for your company.',
             ]);
         }
 
         $tripMode = $this->normalizeTripMode($organisationId, $data['trip_mode'] ?? null);
-        $isPrivateVehicle = $tripMode === 'private';
+        $isPrivateVehicle = !empty($data['private_vehicle']);
 
         if ($isPrivateVehicle && !$settings->privateVehicleSlotsEnabled()) {
             throw ValidationException::withMessages([
-                'trip_mode' => 'Private vehicle trips are not available yet.',
+                'private_vehicle' => 'Private vehicle trips are not available yet.',
             ]);
         }
 
@@ -297,59 +297,61 @@ class TripService
         $clientAddressesEnabled = $settings->clientAddressesEnabled();
         $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
-        $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
-            ? (int) $data['customer_id']
-            : null;
+        if ($tripMode !== 'private') {
+            $customerId = isset($data['customer_id']) && $data['customer_id'] !== null && $data['customer_id'] !== ''
+                ? (int) $data['customer_id']
+                : null;
 
-        $customerName = isset($data['customer_name'])
-            ? trim((string) $data['customer_name'])
-            : '';
+            $customerName = isset($data['customer_name'])
+                ? trim((string) $data['customer_name'])
+                : '';
 
-        if ($customerName === '') {
-            $customerName = null;
-        }
+            if ($customerName === '') {
+                $customerName = null;
+            }
 
-        // If the driver selected from the admin list, store the canonical name.
-        // If not found (or table not present), do not block trip start.
-        if ($customerId) {
-            $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-            if ($resolved) {
-                $customerName = $resolved;
-            } else {
+            // If the driver selected from the admin list, store the canonical name.
+            // If not found (or table not present), do not block trip start.
+            if ($customerId) {
+                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+                if ($resolved) {
+                    $customerName = $resolved;
+                } else {
+                    $customerId = null;
+                }
+            }
+
+            if ($customerName !== null && mb_strlen($customerName) > 150) {
+                $customerName = mb_substr($customerName, 0, 150);
+            }
+
+            if (!$customerCaptureEnabled) {
                 $customerId = null;
-            }
-        }
-
-        if ($customerName !== null && mb_strlen($customerName) > 150) {
-            $customerName = mb_substr($customerName, 0, 150);
-        }
-
-        if (!$customerCaptureEnabled) {
-            $customerId = null;
-            $customerName = null;
-        }
-
-        if ($clientPresenceEnabled) {
-            $clientPresent = $data['client_present'] ?? null;
-
-            if ($clientPresenceRequired && ($clientPresent === null || $clientPresent === '')) {
-                throw ValidationException::withMessages([
-                    'client_present' => 'Client presence is required to start a trip.',
-                ]);
+                $customerName = null;
             }
 
-            $clientAddress = $clientAddressesEnabled ? ($data['client_address'] ?? null) : null;
-        } else {
-            $clientPresent = null;
-            $clientAddress = null;
-        }
+            if ($clientPresenceEnabled) {
+                $clientPresent = $data['client_present'] ?? null;
 
-        if ($purposeOfTravelEnabled) {
-            $purposeOfTravel = isset($data['purpose_of_travel']) ? trim((string) $data['purpose_of_travel']) : '';
-            if ($purposeOfTravel === '') {
-                $purposeOfTravel = null;
-            } elseif (mb_strlen($purposeOfTravel) > 255) {
-                $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                if ($clientPresenceRequired && ($clientPresent === null || $clientPresent === '')) {
+                    throw ValidationException::withMessages([
+                        'client_present' => 'Client presence is required to start a business trip.',
+                    ]);
+                }
+
+                $clientAddress = $clientAddressesEnabled ? ($data['client_address'] ?? null) : null;
+            } else {
+                $clientPresent = null;
+                $clientAddress = null;
+            }
+
+            if ($purposeOfTravelEnabled) {
+                $purposeOfTravel = isset($data['purpose_of_travel']) ? trim((string) $data['purpose_of_travel']) : '';
+                if ($purposeOfTravel === '') {
+                    $purposeOfTravel = null;
+                } elseif (mb_strlen($purposeOfTravel) > 255) {
+                    $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                }
             }
         }
 
@@ -496,7 +498,7 @@ class TripService
 
         foreach ($trips as $t) {
             $tripMode = $this->normalizeTripMode($organisationId, isset($t['trip_mode']) ? (string) $t['trip_mode'] : null);
-            $isPrivateVehicle = $tripMode === 'private';
+            $isPrivateVehicle = !empty($t['private_vehicle']) || ((empty($t['vehicle_id']) || (int) ($t['vehicle_id'] ?? 0) === 0) && $tripMode === 'private');
             $vehicleId = $isPrivateVehicle ? null : (int) ($t['vehicle_id'] ?? 0);
             $startKmRaw = $t['start_km'] ?? null;
             $startKm = $startKmRaw === null || $startKmRaw === '' ? null : (int) $startKmRaw;
@@ -551,8 +553,8 @@ class TripService
             }
 
             if ($isPrivateVehicle) {
-                if (!$settings->allowPrivateTrips() || !$settings->privateVehicleSlotsEnabled()) {
-                    throw ValidationException::withMessages(['trip_mode' => 'Private vehicle trips are not enabled.']);
+                if (!$settings->privateVehicleSlotsEnabled()) {
+                    throw ValidationException::withMessages(['private_vehicle' => 'Private vehicle trips are not enabled.']);
                 }
             } elseif ($vehicleId <= 0) {
                 throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
@@ -633,35 +635,37 @@ class TripService
             $settings = new CompanySettingsService($organisationId);
             $purposeOfTravelEnabled = $settings->purposeOfTravelEnabled();
 
-            $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
-                ? (int) $t['customer_id']
-                : null;
+            if ($tripMode !== 'private') {
+                $customerId = isset($t['customer_id']) && $t['customer_id'] !== null && $t['customer_id'] !== ''
+                    ? (int) $t['customer_id']
+                    : null;
 
-            $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
-            if ($customerName === '') {
-                $customerName = null;
-            }
-            if ($customerId) {
-                $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
-                if ($resolved) {
-                    $customerName = $resolved;
-                } else {
-                    $customerId = null;
+                $customerName = isset($t['customer_name']) ? trim((string) $t['customer_name']) : '';
+                if ($customerName === '') {
+                    $customerName = null;
                 }
-            }
-            if ($customerName !== null && mb_strlen($customerName) > 150) {
-                $customerName = mb_substr($customerName, 0, 150);
-            }
+                if ($customerId) {
+                    $resolved = $this->customerService->getCustomerNameById($organisationId, $customerId);
+                    if ($resolved) {
+                        $customerName = $resolved;
+                    } else {
+                        $customerId = null;
+                    }
+                }
+                if ($customerName !== null && mb_strlen($customerName) > 150) {
+                    $customerName = mb_substr($customerName, 0, 150);
+                }
 
-            $clientPresent = $t['client_present'] ?? null;
-            $clientAddress = $t['client_address'] ?? null;
+                $clientPresent = $t['client_present'] ?? null;
+                $clientAddress = $t['client_address'] ?? null;
 
-            if ($purposeOfTravelEnabled) {
-                $purposeOfTravel = isset($t['purpose_of_travel']) ? trim((string) $t['purpose_of_travel']) : '';
-                if ($purposeOfTravel === '') {
-                    $purposeOfTravel = null;
-                } elseif (mb_strlen($purposeOfTravel) > 255) {
-                    $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                if ($purposeOfTravelEnabled) {
+                    $purposeOfTravel = isset($t['purpose_of_travel']) ? trim((string) $t['purpose_of_travel']) : '';
+                    if ($purposeOfTravel === '') {
+                        $purposeOfTravel = null;
+                    } elseif (mb_strlen($purposeOfTravel) > 255) {
+                        $purposeOfTravel = mb_substr($purposeOfTravel, 0, 255);
+                    }
                 }
             }
 

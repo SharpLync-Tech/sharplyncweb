@@ -78,8 +78,8 @@
                     <label class="checkbox-label">
                         <input type="checkbox" name="allow_private_trips" value="1"
                                {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Allow private vehicle trips</strong>
-                        <div class="text-muted small ms-4">Enables drivers to log trips using their own vehicles.</div>
+                        <strong>Allow private use of fleet vehicles</strong>
+                        <div class="text-muted small ms-4">Enables a private trip type when a fleet vehicle is used for personal use.</div>
                     </label>
 
                     <label class="checkbox-label">

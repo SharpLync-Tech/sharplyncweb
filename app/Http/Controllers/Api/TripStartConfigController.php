@@ -35,6 +35,9 @@ class TripStartConfigController extends Controller
                 'allow_private' => $settingsService->allowPrivateTrips(),
                 'default' => 'business',
             ],
+            'private_vehicle' => [
+                'enabled' => $settingsService->privateVehicleSlotsEnabled(),
+            ],
 
             'odometer' => [
                 'tracking_mode' => 'distance',

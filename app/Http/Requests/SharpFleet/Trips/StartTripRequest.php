@@ -24,6 +24,7 @@ class StartTripRequest extends FormRequest
         $purposeOfTravelEnabled = $settingsService ? $settingsService->purposeOfTravelEnabled() : false;
 
         $tripMode = strtolower(trim((string) $this->input('trip_mode', 'business')));
+        $privateVehicle = $this->input('vehicle_id') === 'private_vehicle';
         $customerEnabled = (bool) ($settings['customer']['enabled'] ?? false);
         $clientPresenceEnabled = (bool) ($settings['client_presence']['enabled'] ?? false);
         $clientAddressesEnabled = (bool) ($settings['client_presence']['enable_addresses'] ?? false);
@@ -33,7 +34,7 @@ class StartTripRequest extends FormRequest
         $customerName = $customerEnabled ? $this->input('customer_name') : null;
         $clientPresent = $clientPresenceEnabled ? $this->input('client_present') : null;
         $clientAddress = ($clientPresenceEnabled && $clientAddressesEnabled) ? $this->input('client_address') : null;
-        $purposeOfTravel = $purposeOfTravelEnabled ? $this->input('purpose_of_travel') : null;
+        $purposeOfTravel = ($purposeOfTravelEnabled && $tripMode !== 'private') ? $this->input('purpose_of_travel') : null;
 
         $startedAt = $manualTimesRequired ? $this->input('started_at') : null;
 
@@ -49,6 +50,8 @@ class StartTripRequest extends FormRequest
 
             // Normalise legacy trip modes to 'business' so conditional rules work.
             'trip_mode' => in_array($tripMode, ['client', 'no_client', 'internal'], true) ? 'business' : $this->input('trip_mode'),
+            'private_vehicle' => $privateVehicle ? 1 : 0,
+            'vehicle_id' => $privateVehicle ? null : ($this->input('vehicle_id') === '' ? null : $this->input('vehicle_id')),
         ]);
     }
 
@@ -77,13 +80,15 @@ class StartTripRequest extends FormRequest
 
         $clientPresentRule = ['nullable', 'in:0,1'];
         if ($clientPresenceEnabled && $clientPresenceRequired) {
-            $clientPresentRule = ['required', 'in:0,1'];
+            // Required for business trips, never for private trips.
+            $clientPresentRule = ['required_unless:trip_mode,private', 'in:0,1'];
         } elseif ($clientPresenceEnabled) {
             $clientPresentRule = ['nullable', 'in:0,1'];
         }
 
         return [
-            'vehicle_id' => ['nullable', 'integer', 'required_unless:trip_mode,private'],
+            'vehicle_id' => ['nullable', 'integer', 'required_unless:private_vehicle,1'],
+            'private_vehicle' => ['nullable', 'boolean'],
             'trip_mode'  => ['required', 'string'],
             'start_km'   => $startKmRule,
             'started_at' => $manualTimesRequired ? ['required', 'date'] : ['nullable', 'date'],
