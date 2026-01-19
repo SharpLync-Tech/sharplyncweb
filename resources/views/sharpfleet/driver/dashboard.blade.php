@@ -1338,6 +1338,7 @@
             }
 
             startTripForm.addEventListener('submit', (e) => {
+                startTripSubmitting = true;
                 if (handoverRequired) {
                     e.preventDefault();
                     openHandoverModal();
