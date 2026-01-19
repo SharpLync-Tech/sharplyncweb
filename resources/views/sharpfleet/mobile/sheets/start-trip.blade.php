@@ -781,7 +781,7 @@
         if (!vehicleId || vehicleId === 'private_vehicle') {
             setHandoverRequired(false);
             handoverTrip = null;
-            return;
+            return false;
         }
         if (!navigator.onLine) return;
         if (!handoverModal) return;
@@ -803,7 +803,7 @@
                 handoverTrip = null;
                 setHandoverRequired(false);
                 vehicleSelect.disabled = false;
-                return;
+                return false;
             }
 
             handoverTrip = data.trip || null;
@@ -811,10 +811,14 @@
             populateHandoverModal(handoverTrip);
             vehicleSelect.disabled = true;
             openHandoverModal();
+            return true;
         } catch (e) {
             // ignore
+            return false;
         }
     }
+
+    window.sfCheckVehicleActiveForStart = checkActiveTripForVehicle;
 
     const customerBlock = document.getElementById('customerBlock');
     const clientPresenceBlock = document.getElementById('clientPresenceBlock');

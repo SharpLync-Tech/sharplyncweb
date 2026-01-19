@@ -897,6 +897,7 @@
         let handoverVehicleId = null;
         let handoverCheckToken = 0;
         let startTripSubmitting = false;
+        let startTripForceSubmit = false;
 
         const customerBlock = document.getElementById('customerBlock');
         const clientPresenceBlock = document.getElementById('clientPresenceBlock');
@@ -1150,7 +1151,7 @@
                 setHandoverRequired(false);
                 handoverTrip = null;
                 handoverVehicleId = null;
-                return;
+                return false;
             }
             if (!navigator.onLine) return;
             if (!handoverModal) return;
@@ -1173,7 +1174,7 @@
                     handoverVehicleId = null;
                     setHandoverRequired(false);
                     if (vehicleSelect) vehicleSelect.disabled = false;
-                    return;
+                    return false;
                 }
 
                 handoverTrip = data.trip || null;
@@ -1182,8 +1183,10 @@
                 populateHandoverModal(handoverTrip);
                 if (vehicleSelect) vehicleSelect.disabled = true;
                 openHandoverModal();
+                return true;
             } catch (e) {
                 // ignore
+                return false;
             }
         }
 
@@ -1335,7 +1338,12 @@
                 });
             }
 
-            startTripForm.addEventListener('submit', (e) => {
+            startTripForm.addEventListener('submit', async (e) => {
+                if (startTripForceSubmit) {
+                    startTripForceSubmit = false;
+                    return;
+                }
+
                 startTripSubmitting = true;
                 if (handoverRequired) {
                     e.preventDefault();
@@ -1344,7 +1352,22 @@
                     return;
                 }
 
-                if (navigator.onLine) return; // let server handle it
+                if (navigator.onLine) {
+                    e.preventDefault();
+
+                    const vehicleId = vehicleSelect ? vehicleSelect.value : '';
+                    if (vehicleId && vehicleId !== 'private_vehicle') {
+                        const isActive = await checkActiveTripForVehicle(vehicleId);
+                        if (isActive) {
+                            startTripSubmitting = false;
+                            return;
+                        }
+                    }
+
+                    startTripForceSubmit = true;
+                    startTripForm.submit();
+                    return;
+                }
 
                 e.preventDefault();
 

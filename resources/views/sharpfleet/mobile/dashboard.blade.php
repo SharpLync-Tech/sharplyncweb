@@ -535,6 +535,15 @@
                 }
 
                 if (navigator.onLine) {
+                    const vehicleSelect = document.getElementById('vehicleSelect');
+                    const vehicleId = vehicleSelect ? vehicleSelect.value : '';
+                    if (vehicleId && vehicleId !== 'private_vehicle' && typeof window.sfCheckVehicleActiveForStart === 'function') {
+                        const isActive = await window.sfCheckVehicleActiveForStart(vehicleId);
+                        if (isActive) {
+                            return;
+                        }
+                    }
+
                     if (window.sfStartTripState) {
                         window.sfStartTripState.submitting = true;
                     }
