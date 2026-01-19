@@ -35,7 +35,11 @@
         <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm" novalidate>
             @csrf
 
-            <div class="sf-mobile-card" style="margin-bottom: 16px;">
+            <div
+                id="sf-safety-banner"
+                class="sf-mobile-card"
+                style="margin-bottom: 16px; border: 1px solid #d84b4b; box-shadow: 0 0 0 2px rgba(216, 75, 75, 0.18), 0 0 10px rgba(216, 75, 75, 0.25); transition: opacity 250ms ease, transform 250ms ease;"
+            >
                 <div class="sf-mobile-card-title">⚠️ Safety reminder</div>
                 <div class="hint-text" style="margin-top: 6px;">
                     Please don't use your phone while driving. Start and end your trip when it's safe.
@@ -435,6 +439,17 @@
 
     const vehicleSelect = document.getElementById('vehicleSelect');
     if (!vehicleSelect) return;
+
+    const safetyBanner = document.getElementById('sf-safety-banner');
+    if (safetyBanner) {
+        setTimeout(() => {
+            safetyBanner.style.opacity = '0';
+            safetyBanner.style.transform = 'translateY(-8px)';
+            setTimeout(() => {
+                safetyBanner.style.display = 'none';
+            }, 260);
+        }, 4000);
+    }
 
     const vehicleSearchInput = document.getElementById('vehicleSearchInput');
     const vehicleSearchHint = document.getElementById('vehicleSearchHint');

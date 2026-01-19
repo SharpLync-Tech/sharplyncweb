@@ -270,7 +270,11 @@
             <h3 class="card-title">Start a Trip</h3>
         </div>
         <div class="card-body">
-            <div class="alert alert-info">
+            <div
+                id="sf-safety-banner"
+                class="alert alert-info"
+                style="border: 1px solid #d84b4b; box-shadow: 0 0 0 2px rgba(216, 75, 75, 0.18), 0 0 10px rgba(216, 75, 75, 0.25); transition: opacity 250ms ease, transform 250ms ease;"
+            >
                 <strong>⚠️ Safety reminder</strong><br>
                 Please don't use your phone while driving. Start and end your trip when it's safe.
             </div>
@@ -546,6 +550,16 @@
         const MANUAL_TRIP_TIMES_REQUIRED = @json((bool) $manualTripTimesRequired);
 
         const offlineTripAlert = document.getElementById('offlineTripAlert');
+        const safetyBanner = document.getElementById('sf-safety-banner');
+        if (safetyBanner) {
+            setTimeout(() => {
+                safetyBanner.style.opacity = '0';
+                safetyBanner.style.transform = 'translateY(-8px)';
+                setTimeout(() => {
+                    safetyBanner.style.display = 'none';
+                }, 260);
+            }, 4000);
+        }
 
         function showOfflineMessage(msg) {
             if (!offlineTripAlert) return;
