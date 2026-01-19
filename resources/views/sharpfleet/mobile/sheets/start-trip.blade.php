@@ -68,7 +68,7 @@
                     class="form-control"
                     required
                 >
-                    @if($settingsService->privateVehicleSlotsEnabled())
+                    @if($availableVehicleCount === 0 && $settingsService->privateVehicleSlotsEnabled())
                         <option value="private_vehicle" data-tracking-mode="distance" data-distance-unit="{{ $settingsService->distanceUnit() }}" data-last-km="">
                             Private vehicle
                         </option>

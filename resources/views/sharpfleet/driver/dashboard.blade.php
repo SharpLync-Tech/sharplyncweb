@@ -67,6 +67,40 @@
         ->orderBy('name')
         ->get();
 
+    $availableVehicleCount = $vehicles->count();
+    if ($availableVehicleCount > 0) {
+        $vehicleIds = $vehicles->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $blockedVehicleIds = DB::connection('sharpfleet')
+            ->table('trips')
+            ->where('organisation_id', $user['organisation_id'])
+            ->whereNotNull('started_at')
+            ->whereNull('ended_at')
+            ->whereNotNull('vehicle_id')
+            ->whereIn('vehicle_id', $vehicleIds)
+            ->pluck('vehicle_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        if (Schema::connection('sharpfleet')->hasTable('bookings')) {
+            $nowUtc = \Carbon\Carbon::now('UTC');
+            $bookingVehicleIds = DB::connection('sharpfleet')
+                ->table('bookings')
+                ->where('organisation_id', $user['organisation_id'])
+                ->whereIn('vehicle_id', $vehicleIds)
+                ->where('status', 'planned')
+                ->where('planned_start', '<=', $nowUtc->toDateTimeString())
+                ->where('planned_end', '>=', $nowUtc->toDateTimeString())
+                ->where('user_id', '!=', $user['id'])
+                ->pluck('vehicle_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            $blockedVehicleIds = array_values(array_unique(array_merge($blockedVehicleIds, $bookingVehicleIds)));
+        }
+
+        $availableVehicleCount = count(array_diff($vehicleIds, $blockedVehicleIds));
+    }
+
     $customers = collect();
     if (($settings['customer']['enabled'] ?? false) && Schema::connection('sharpfleet')->hasTable('customers')) {
         $customers = DB::connection('sharpfleet')
@@ -298,7 +332,7 @@
                         <div id="vehicleSearchHint" class="hint-text">Showing {{ $vehicles->count() }} vehicles</div>
                     @endif
                     <select id="vehicleSelect" name="vehicle_id" class="form-control" required>
-                        @if($settingsService->privateVehicleSlotsEnabled())
+                        @if($availableVehicleCount === 0 && $settingsService->privateVehicleSlotsEnabled())
                             <option value="private_vehicle" data-tracking-mode="distance" data-distance-unit="{{ $settingsService->distanceUnit() }}" data-last-km="">
                                 Private vehicle
                             </option>
