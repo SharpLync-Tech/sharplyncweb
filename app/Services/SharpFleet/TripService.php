@@ -283,6 +283,20 @@ class TripService
                 (int) $user['id'],
                 $now
             );
+
+            $activeTrip = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('organisation_id', $organisationId)
+                ->where('vehicle_id', $vehicleId)
+                ->whereNotNull('started_at')
+                ->whereNull('ended_at')
+                ->exists();
+
+            if ($activeTrip) {
+                throw ValidationException::withMessages([
+                    'vehicle_id' => 'This vehicle already has an active trip. End it before starting another.',
+                ]);
+            }
         }
 
         $customerId = null;

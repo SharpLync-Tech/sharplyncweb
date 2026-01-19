@@ -519,6 +519,14 @@
                     return;
                 }
 
+                if (window.sfHandoverState && window.sfHandoverState.required) {
+                    e.preventDefault();
+                    if (typeof window.sfHandoverState.open === 'function') {
+                        window.sfHandoverState.open();
+                    }
+                    return;
+                }
+
                 e.preventDefault();
 
                 if (getOfflineActiveTrip()) {

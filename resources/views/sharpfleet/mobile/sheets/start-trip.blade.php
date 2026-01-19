@@ -249,6 +249,59 @@
     </div>
 </div>
 
+<div
+    id="sf-mobile-handover-modal"
+    class="sf-mobile-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    hidden
+>
+    <div class="sf-mobile-modal-backdrop" data-handover-close></div>
+    <div class="sf-mobile-modal-card" role="document">
+        <div class="sf-mobile-modal-header">
+            <div class="sf-mobile-modal-title">Previous trip not ended</div>
+            <button type="button" class="sf-sheet-close" data-handover-close aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div class="hint-text" style="margin-bottom: 10px;">
+            This vehicle already has an active trip. If you are taking it now, end the previous trip first.
+        </div>
+
+        <div class="hint-text"><strong>Vehicle:</strong> <span id="sfMobileHandoverVehicle">-</span></div>
+        <div class="hint-text" style="margin-top:6px;"><strong>Previous driver:</strong> <span id="sfMobileHandoverDriver">-</span></div>
+        <div class="hint-text" style="margin-top:6px;"><strong>Trip started:</strong> <span id="sfMobileHandoverStarted">-</span></div>
+        <div class="hint-text" style="margin-top:6px;"><strong>Starting reading:</strong> <span id="sfMobileHandoverStartKm">-</span></div>
+
+        <div class="alert alert-info" style="margin-top: 12px;">
+            Make sure the previous trip is not still in progress before closing it.
+        </div>
+
+        <form id="sfMobileHandoverForm" style="margin-top: 12px;">
+            <input type="hidden" name="trip_id" id="sfMobileHandoverTripId">
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label class="form-label" id="sfMobileHandoverReadingLabel">Current odometer (km)</label>
+                <input type="number" name="end_km" id="sfMobileHandoverEndKm" class="form-control" inputmode="numeric" required min="0" placeholder="e.g. 124800">
+            </div>
+
+            <label class="checkbox-label" style="margin-bottom: 12px;">
+                <input type="checkbox" name="confirm_takeover" id="sfMobileHandoverConfirm" required>
+                I confirm I am taking <strong id="sfMobileHandoverVehicleInline">this vehicle</strong>.
+            </label>
+
+            <div id="sfMobileHandoverError" class="alert alert-error" style="display:none; margin-bottom:12px;"></div>
+
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button type="button" class="sf-mobile-secondary-btn" data-handover-close>Cancel</button>
+                <button type="submit" class="sf-mobile-primary-btn">End Previous Trip</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- =========================================================
      TRIP DETAILS SHEET
 ========================================================= --}}
@@ -442,6 +495,7 @@
 (function () {
     const CLIENT_PRESENCE_LABEL = @json($clientPresenceLabel);
     const COMPANY_DISTANCE_UNIT = @json($settingsService->distanceUnit());
+    const COMPANY_TIMEZONE = @json($companyTimezone ?? 'UTC');
 
     const vehicleSelect = document.getElementById('vehicleSelect');
     if (!vehicleSelect) return;
@@ -462,8 +516,28 @@
     const startKmInput = document.getElementById('startKmInput');
     const lastKmHint = document.getElementById('lastKmHint');
     const startReadingLabel = document.getElementById('startReadingLabel');
+    const handoverModal = document.getElementById('sf-mobile-handover-modal');
+    const handoverForm = document.getElementById('sfMobileHandoverForm');
+    const handoverTripId = document.getElementById('sfMobileHandoverTripId');
+    const handoverEndKm = document.getElementById('sfMobileHandoverEndKm');
+    const handoverConfirm = document.getElementById('sfMobileHandoverConfirm');
+    const handoverError = document.getElementById('sfMobileHandoverError');
+    const handoverVehicle = document.getElementById('sfMobileHandoverVehicle');
+    const handoverVehicleInline = document.getElementById('sfMobileHandoverVehicleInline');
+    const handoverDriver = document.getElementById('sfMobileHandoverDriver');
+    const handoverStarted = document.getElementById('sfMobileHandoverStarted');
+    const handoverStartKm = document.getElementById('sfMobileHandoverStartKm');
+    const handoverReadingLabel = document.getElementById('sfMobileHandoverReadingLabel');
 
     let lastAutoFilledReading = null;
+    let handoverRequired = false;
+    let handoverTrip = null;
+    let handoverCheckToken = 0;
+    const globalHandoverState = {
+        required: false,
+        open: () => openHandoverModal(),
+    };
+    window.sfHandoverState = globalHandoverState;
 
     let allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
         value: opt.value,
@@ -548,6 +622,7 @@
             const data = await res.json();
             if (!data || !Array.isArray(data.vehicles)) return;
             setVehicleOptionsFromServer(data.vehicles, !!data.private_vehicle_option);
+            checkActiveTripForVehicle(vehicleSelect.value);
         } catch (e) {
             // ignore
         }
@@ -624,6 +699,119 @@
         }
     }
 
+    function formatTripStart(iso, timezone) {
+        if (!iso) return '-';
+        const tz = timezone && String(timezone).trim() !== '' ? timezone : COMPANY_TIMEZONE;
+        try {
+            return new Date(iso).toLocaleString('en-AU', {
+                timeZone: tz,
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return String(iso);
+        }
+    }
+
+    function setHandoverRequired(required) {
+        handoverRequired = required;
+        globalHandoverState.required = required;
+    }
+
+    function openHandoverModal() {
+        if (!handoverModal) return;
+        handoverModal.classList.add('is-open');
+        handoverModal.setAttribute('aria-hidden', 'false');
+        handoverModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeHandoverModal(resetVehicle) {
+        if (!handoverModal) return;
+        handoverModal.classList.remove('is-open');
+        handoverModal.setAttribute('aria-hidden', 'true');
+        handoverModal.hidden = true;
+        document.body.style.overflow = '';
+        if (resetVehicle && vehicleSelect) {
+            vehicleSelect.value = '';
+            updateStartKm();
+        }
+    }
+
+    function populateHandoverModal(trip) {
+        if (!trip) return;
+        const selected = vehicleSelect && vehicleSelect.options[vehicleSelect.selectedIndex];
+        const vehicleLabel = selected ? selected.textContent : 'this vehicle';
+        const trackingMode = selected?.dataset?.trackingMode || 'distance';
+        const distanceUnit = selected?.dataset?.distanceUnit || COMPANY_DISTANCE_UNIT;
+
+        if (handoverVehicle) handoverVehicle.textContent = vehicleLabel;
+        if (handoverVehicleInline) handoverVehicleInline.textContent = vehicleLabel;
+        if (handoverDriver) handoverDriver.textContent = trip.driver_name || 'Unknown';
+        if (handoverStarted) handoverStarted.textContent = formatTripStart(trip.started_at, trip.timezone);
+        if (handoverStartKm) {
+            handoverStartKm.textContent = trip.start_km !== null ? Number(trip.start_km).toLocaleString() : 'Unknown';
+        }
+
+        if (handoverReadingLabel) {
+            handoverReadingLabel.textContent = trackingMode === 'hours'
+                ? 'Current hour meter (hours)'
+                : `Current odometer (${distanceUnit})`;
+        }
+
+        if (handoverTripId) handoverTripId.value = String(trip.trip_id || '');
+        if (handoverEndKm) {
+            const minVal = trip.start_km !== null ? Number(trip.start_km) : 0;
+            handoverEndKm.min = String(minVal);
+            handoverEndKm.value = '';
+        }
+        if (handoverConfirm) handoverConfirm.checked = false;
+        if (handoverError) {
+            handoverError.style.display = 'none';
+            handoverError.textContent = '';
+        }
+    }
+
+    async function checkActiveTripForVehicle(vehicleId) {
+        if (!vehicleId || vehicleId === 'private_vehicle') {
+            setHandoverRequired(false);
+            handoverTrip = null;
+            return;
+        }
+        if (!navigator.onLine) return;
+        if (!handoverModal) return;
+
+        const token = ++handoverCheckToken;
+        try {
+            const res = await fetch(`/app/sharpfleet/trips/active-for-vehicle?vehicle_id=${encodeURIComponent(vehicleId)}`, {
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store',
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (token !== handoverCheckToken) return;
+
+            if (!data || !data.active) {
+                handoverTrip = null;
+                setHandoverRequired(false);
+                vehicleSelect.disabled = false;
+                return;
+            }
+
+            handoverTrip = data.trip || null;
+            setHandoverRequired(true);
+            populateHandoverModal(handoverTrip);
+            vehicleSelect.disabled = true;
+            openHandoverModal();
+        } catch (e) {
+            // ignore
+        }
+    }
+
     const customerBlock = document.getElementById('customerBlock');
     const clientPresenceBlock = document.getElementById('clientPresenceBlock');
     const customerSelect = document.getElementById('customerSelect');
@@ -664,7 +852,10 @@
         });
     }
 
-    vehicleSelect.addEventListener('change', updateStartKm);
+    vehicleSelect.addEventListener('change', () => {
+        updateStartKm();
+        checkActiveTripForVehicle(vehicleSelect.value);
+    });
     vehicleSelect.addEventListener('focus', refreshVehicleOptionsFromServer);
     vehicleSelect.addEventListener('click', refreshVehicleOptionsFromServer);
     if (vehicleSearchInput) {
@@ -725,6 +916,89 @@
     document.querySelectorAll('[data-modal-close]').forEach(btn => {
         btn.addEventListener('click', closeValidationModal);
     });
+    document.querySelectorAll('[data-handover-close]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setHandoverRequired(false);
+            handoverTrip = null;
+            vehicleSelect.disabled = false;
+            closeHandoverModal(true);
+        });
+    });
+
+    if (handoverForm) {
+        handoverForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!handoverTrip || !handoverTrip.trip_id) {
+                return;
+            }
+
+            if (!handoverConfirm || !handoverConfirm.checked) {
+                if (handoverError) {
+                    handoverError.textContent = 'Please confirm you are taking the vehicle.';
+                    handoverError.style.display = '';
+                }
+                return;
+            }
+
+            const endKmVal = Number(handoverEndKm ? handoverEndKm.value : '');
+            if (Number.isNaN(endKmVal)) {
+                if (handoverError) {
+                    handoverError.textContent = 'Enter a valid current reading.';
+                    handoverError.style.display = '';
+                }
+                return;
+            }
+            if (handoverTrip.start_km !== null && endKmVal < Number(handoverTrip.start_km)) {
+                if (handoverError) {
+                    handoverError.textContent = 'Ending reading must be the same as or greater than the starting reading.';
+                    handoverError.style.display = '';
+                }
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('trip_id', String(handoverTrip.trip_id));
+            formData.append('end_km', String(endKmVal));
+            formData.append('confirm_takeover', '1');
+
+            try {
+                const res = await fetch('/app/sharpfleet/trips/end-handover', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]').getAttribute('content'),
+                    },
+                    body: formData,
+                });
+
+                if (!res.ok) {
+                    let msg = 'Unable to close the trip. Please try again.';
+                    try {
+                        const data = await res.json();
+                        if (data && data.message) msg = data.message;
+                    } catch (e) {}
+                    if (handoverError) {
+                        handoverError.textContent = msg;
+                        handoverError.style.display = '';
+                    }
+                    return;
+                }
+
+                handoverTrip = null;
+                setHandoverRequired(false);
+                vehicleSelect.disabled = false;
+                closeHandoverModal(false);
+                refreshVehicleOptionsFromServer();
+            } catch (e) {
+                if (handoverError) {
+                    handoverError.textContent = 'Network error. Please try again.';
+                    handoverError.style.display = '';
+                }
+            }
+        });
+    }
 
     function sectionHasInvalid(selectors) {
         return selectors.some(sel => {

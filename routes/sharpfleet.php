@@ -148,6 +148,8 @@ Route::prefix('app/sharpfleet')
         Route::post('/trips/offline-sync', [TripController::class, 'offlineSync']);
         Route::get('/trips/last-reading', [TripController::class, 'lastReading']);
         Route::get('/trips/available-vehicles', [TripController::class, 'availableVehicles']);
+        Route::get('/trips/active-for-vehicle', [TripController::class, 'activeForVehicle']);
+        Route::post('/trips/end-handover', [TripController::class, 'endHandover']);
 
         // Faults
         Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);

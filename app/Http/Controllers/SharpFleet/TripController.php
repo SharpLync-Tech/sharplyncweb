@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
 
 class TripController extends Controller
 {
@@ -186,6 +187,288 @@ class TripController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
+    }
+
+    /**
+     * Check if a vehicle has an active trip and return details for handover.
+     */
+    public function activeForVehicle(Request $request): JsonResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer'],
+        ]);
+
+        $vehicleId = (int) $validated['vehicle_id'];
+        $organisationId = (int) $user['organisation_id'];
+
+        // Enforce branch access (server-side).
+        $branches = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        if (
+            !$bypassBranchRestrictions
+            && $branches->branchesEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && $branches->userBranchAccessEnabled()
+        ) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, $vehicleId);
+            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+        }
+
+        $trip = DB::connection('sharpfleet')
+            ->table('trips')
+            ->leftJoin('users', 'trips.user_id', '=', 'users.id')
+            ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+            ->select(
+                'trips.id',
+                'trips.user_id',
+                'trips.started_at',
+                'trips.start_km',
+                'trips.timezone',
+                'vehicles.name as vehicle_name',
+                'vehicles.registration_number',
+                DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name")
+            )
+            ->where('trips.organisation_id', $organisationId)
+            ->where('trips.vehicle_id', $vehicleId)
+            ->whereNotNull('trips.started_at')
+            ->whereNull('trips.ended_at')
+            ->first();
+
+        if (!$trip) {
+            return response()->json(['active' => false]);
+        }
+
+        return response()->json([
+            'active' => true,
+            'trip' => [
+                'trip_id' => (int) $trip->id,
+                'driver_id' => (int) ($trip->user_id ?? 0),
+                'driver_name' => (string) ($trip->driver_name ?? ''),
+                'vehicle_name' => (string) ($trip->vehicle_name ?? ''),
+                'registration_number' => (string) ($trip->registration_number ?? ''),
+                'started_at' => $trip->started_at,
+                'start_km' => $trip->start_km !== null ? (int) $trip->start_km : null,
+                'timezone' => (string) ($trip->timezone ?? ''),
+            ],
+        ]);
+    }
+
+    /**
+     * End a trip during handover (driver-assisted closure).
+     */
+    public function endHandover(Request $request): JsonResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
+
+        $validated = $request->validate([
+            'trip_id' => ['required', 'integer'],
+            'end_km' => ['required', 'integer', 'min:0'],
+            'confirm_takeover' => ['accepted'],
+        ]);
+
+        $organisationId = (int) $user['organisation_id'];
+        $tripId = (int) $validated['trip_id'];
+        $endKm = (int) $validated['end_km'];
+
+        $trip = DB::connection('sharpfleet')
+            ->table('trips')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $tripId)
+            ->whereNotNull('started_at')
+            ->whereNull('ended_at')
+            ->first();
+
+        if (!$trip) {
+            return response()->json(['message' => 'Trip not found'], 404);
+        }
+
+        if (!isset($trip->vehicle_id) || !$trip->vehicle_id) {
+            return response()->json(['message' => 'Trip is not linked to a fleet vehicle'], 422);
+        }
+
+        // Enforce branch access (server-side) based on vehicle.
+        $branches = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        if (
+            !$bypassBranchRestrictions
+            && $branches->branchesEnabled()
+            && $branches->vehiclesHaveBranchSupport()
+            && $branches->userBranchAccessEnabled()
+        ) {
+            $vehicleBranchId = $branches->getBranchIdForVehicle($organisationId, (int) $trip->vehicle_id);
+            if ($vehicleBranchId && !$branches->userCanAccessBranch($organisationId, (int) $user['id'], (int) $vehicleBranchId)) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+        }
+
+        if ($trip->start_km !== null && $endKm < (int) $trip->start_km) {
+            return response()->json([
+                'message' => 'Ending reading must be the same as or greater than the starting reading.',
+            ], 422);
+        }
+
+        $now = now();
+        $endedByOther = (int) ($trip->user_id ?? 0) !== (int) $user['id'];
+
+        $update = [
+            'end_km' => $endKm,
+            'ended_at' => $now,
+            'end_time' => $now,
+        ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('trips', 'ended_by_other_driver')) {
+            $update['ended_by_other_driver'] = $endedByOther ? 1 : 0;
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('trips', 'ended_by_user_id')) {
+            $update['ended_by_user_id'] = (int) $user['id'];
+        }
+        if (Schema::connection('sharpfleet')->hasColumn('trips', 'ended_reason')) {
+            $update['ended_reason'] = 'handover';
+        }
+
+        DB::connection('sharpfleet')
+            ->table('trips')
+            ->where('id', $tripId)
+            ->update($update);
+
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('name', 'registration_number')
+            ->where('organisation_id', $organisationId)
+            ->where('id', (int) $trip->vehicle_id)
+            ->first();
+
+        $vehicleLabel = $vehicle
+            ? trim((string) $vehicle->name . ' (' . (string) ($vehicle->registration_number ?? '') . ')')
+            : 'Vehicle #' . (int) $trip->vehicle_id;
+
+        $this->sendHandoverNotifications($organisationId, $trip, $user, $vehicleLabel, $endKm, $endedByOther);
+
+        return response()->json([
+            'ok' => true,
+        ]);
+    }
+
+    private function sendHandoverNotifications(int $organisationId, object $trip, array $actingUser, string $vehicleLabel, int $endKm, bool $endedByOther): void
+    {
+        $previousDriver = null;
+        if (Schema::connection('sharpfleet')->hasTable('users')) {
+            $previousDriver = DB::connection('sharpfleet')
+                ->table('users')
+                ->select('id', 'email', 'first_name', 'last_name')
+                ->where('id', (int) ($trip->user_id ?? 0))
+                ->first();
+        }
+
+        $actorName = trim((string) (($actingUser['first_name'] ?? '') . ' ' . ($actingUser['last_name'] ?? '')));
+        if ($actorName === '') {
+            $actorName = 'A driver';
+        }
+
+        if ($endedByOther && $previousDriver && !empty($previousDriver->email)) {
+            $body = implode("\n", [
+                'Your trip was closed during a vehicle handover.',
+                '',
+                'Vehicle: ' . $vehicleLabel,
+                'Closed by: ' . $actorName,
+                'Closed at: ' . now()->toDateTimeString(),
+                'Ending reading: ' . $endKm,
+                '',
+                'If this was unexpected, please contact your admin.',
+            ]);
+
+            try {
+                Mail::raw($body, function ($message) use ($previousDriver, $vehicleLabel) {
+                    $message->to((string) $previousDriver->email)
+                        ->subject('SharpFleet: Trip closed during handover (' . $vehicleLabel . ')');
+                });
+            } catch (\Throwable $e) {
+                // Ignore email failures for now
+            }
+        }
+
+        $adminEmail = $this->resolveSubscriberAdminEmail($organisationId);
+        if ($adminEmail) {
+            $body = implode("\n", [
+                'A trip was closed during a vehicle handover.',
+                '',
+                'Vehicle: ' . $vehicleLabel,
+                'Closed by: ' . $actorName,
+                'Original driver ID: ' . (int) ($trip->user_id ?? 0),
+                'Closed at: ' . now()->toDateTimeString(),
+                'Ending reading: ' . $endKm,
+            ]);
+
+            try {
+                Mail::raw($body, function ($message) use ($adminEmail, $vehicleLabel) {
+                    $message->to($adminEmail)
+                        ->subject('SharpFleet: Trip closed during handover (' . $vehicleLabel . ')');
+                });
+            } catch (\Throwable $e) {
+                // Ignore email failures for now
+            }
+        }
+    }
+
+    private function resolveSubscriberAdminEmail(int $organisationId): ?string
+    {
+        try {
+            $orgColumns = Schema::connection('sharpfleet')->getColumnListing('organisations');
+        } catch (\Throwable $e) {
+            $orgColumns = [];
+        }
+
+        if (in_array('billing_email', $orgColumns, true)) {
+            $billing = DB::connection('sharpfleet')
+                ->table('organisations')
+                ->where('id', $organisationId)
+                ->value('billing_email');
+
+            $billing = is_string($billing) ? trim($billing) : '';
+            if ($billing !== '' && filter_var($billing, FILTER_VALIDATE_EMAIL)) {
+                return $billing;
+            }
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('users')) {
+            return null;
+        }
+
+        try {
+            $userColumns = Schema::connection('sharpfleet')->getColumnListing('users');
+        } catch (\Throwable $e) {
+            $userColumns = [];
+        }
+
+        if (!in_array('organisation_id', $userColumns, true) || !in_array('email', $userColumns, true) || !in_array('role', $userColumns, true)) {
+            return null;
+        }
+
+        $adminEmail = DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId)
+            ->where('role', 'admin')
+            ->orderBy('id')
+            ->value('email');
+
+        $adminEmail = is_string($adminEmail) ? trim($adminEmail) : '';
+        if ($adminEmail !== '' && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+            return $adminEmail;
+        }
+
+        return null;
     }
 
     /**
