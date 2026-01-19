@@ -161,6 +161,22 @@
     @include('sharpfleet.mobile.sheets.report-fault')
 @endif
 
+@php
+    $serverActiveTripPayload = $activeTrip ? [
+        'trip_id' => (int) $activeTrip->id,
+        'vehicle_id' => (int) $activeTrip->vehicle_id,
+        'vehicle_text' => trim(($activeTrip->vehicle_name ?? '') . ' (' . ($activeTrip->registration_number ?? '') . ')'),
+        'started_at' => $activeTrip->started_at ?? null,
+        'start_km' => isset($activeTrip->start_km) ? (int) $activeTrip->start_km : null,
+        'trip_mode' => $activeTrip->trip_mode ?? 'business',
+        'customer_id' => $activeTrip->customer_id ?? null,
+        'customer_name' => $activeTrip->customer_name ?? null,
+        'client_present' => $activeTrip->client_present ?? null,
+        'client_address' => $activeTrip->client_address ?? null,
+        'purpose_of_travel' => $activeTrip->purpose_of_travel ?? null,
+    ] : null;
+@endphp
+
 <script>
     (function () {
         const MANUAL_TRIP_TIMES_REQUIRED = @json((bool) $manualTripTimesRequired);
@@ -181,19 +197,7 @@
         const OFFLINE_FAULTS_KEY = 'sharpfleet_offline_fault_reports_v1';
         const OFFLINE_END_UPDATES_KEY = 'sharpfleet_offline_end_updates_v1';
 
-        const SERVER_ACTIVE_TRIP = @json($activeTrip ? [
-            'trip_id' => (int) $activeTrip->id,
-            'vehicle_id' => (int) $activeTrip->vehicle_id,
-            'vehicle_text' => trim(($activeTrip->vehicle_name ?? '') . ' (' . ($activeTrip->registration_number ?? '') . ')'),
-            'started_at' => $activeTrip->started_at ?? null,
-            'start_km' => isset($activeTrip->start_km) ? (int) $activeTrip->start_km : null,
-            'trip_mode' => $activeTrip->trip_mode ?? 'business',
-            'customer_id' => $activeTrip->customer_id ?? null,
-            'customer_name' => $activeTrip->customer_name ?? null,
-            'client_present' => $activeTrip->client_present ?? null,
-            'client_address' => $activeTrip->client_address ?? null,
-            'purpose_of_travel' => $activeTrip->purpose_of_travel ?? null,
-        ] : null);
+        const SERVER_ACTIVE_TRIP = @json($serverActiveTripPayload);
 
         function showOfflineMessage(msg) {
             if (!offlineTripAlert) return;
