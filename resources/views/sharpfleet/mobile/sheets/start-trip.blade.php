@@ -783,15 +783,6 @@
         }
     }
 
-    function syncHandoverConfirmValidity() {
-        if (!handoverConfirm) return;
-        if (!handoverConfirm.checked) {
-            handoverConfirm.setCustomValidity('Make sure the previous trip is not still in progress before closing it.');
-        } else {
-            handoverConfirm.setCustomValidity('');
-        }
-    }
-
     async function checkActiveTripForVehicle(vehicleId) {
         if (!vehicleId || vehicleId === 'private_vehicle') {
             setHandoverRequired(false);
@@ -957,12 +948,8 @@
             }
 
             if (!handoverConfirm || !handoverConfirm.checked) {
-                syncHandoverConfirmValidity();
-                if (handoverConfirm && handoverConfirm.reportValidity) {
-                    handoverConfirm.reportValidity();
-                }
                 if (handoverError) {
-                    handoverError.textContent = 'Please confirm you are taking the vehicle.';
+                    handoverError.textContent = 'Make sure the previous trip is not still in progress before closing it.';
                     handoverError.style.display = '';
                 }
                 return;
@@ -1028,7 +1015,12 @@
     }
 
     if (handoverConfirm) {
-        handoverConfirm.addEventListener('change', syncHandoverConfirmValidity);
+        handoverConfirm.addEventListener('change', () => {
+            if (handoverConfirm.checked && handoverError) {
+                handoverError.textContent = '';
+                handoverError.style.display = 'none';
+            }
+        });
     }
 
     function sectionHasInvalid(selectors) {

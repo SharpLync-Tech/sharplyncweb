@@ -78,6 +78,8 @@ class TripController extends Controller
         $redirectTo = str_contains($previousUrl, '/app/sharpfleet/mobile')
             ? '/app/sharpfleet/mobile'
             : '/app/sharpfleet/driver';
+        $separator = str_contains($redirectTo, '?') ? '&' : '?';
+        $redirectTo .= $separator . 'refresh=' . time();
 
         return redirect($redirectTo)
             ->with('success', 'Trip ended successfully');
