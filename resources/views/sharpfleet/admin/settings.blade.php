@@ -3,6 +3,51 @@
 @section('title', 'Company Settings')
 
 @section('sharpfleet-content')
+<style>
+    .sf-tooltip { position: relative; display: inline-flex; align-items: center; }
+    .sf-tooltip__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        margin-left: 6px;
+        border-radius: 50%;
+        border: 1px solid #1ba5a5;
+        color: #1ba5a5;
+        font-size: 12px;
+        line-height: 1;
+        cursor: help;
+        background: #f3fbfb;
+    }
+    .sf-tooltip__content {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 8px);
+        min-width: 280px;
+        max-width: 380px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #0f2f2f;
+        color: #e9f7f7;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        font-size: 13px;
+        line-height: 1.4;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
+        transition: opacity 120ms ease, transform 120ms ease;
+    }
+    .sf-tooltip__content strong { display: block; margin-bottom: 6px; color: #bff3f3; }
+    .sf-tooltip__content span { display: block; margin-top: 6px; }
+    .sf-tooltip:hover .sf-tooltip__content,
+    .sf-tooltip:focus-within .sf-tooltip__content {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+</style>
 
 @php
     // Safety defaults (nested shape – matches CompanySettingsService::all())
@@ -150,12 +195,14 @@
                         <input type="checkbox" name="enable_private_vehicle_slots" value="1"
                                {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                         <strong>Allow private vehicle use when fleet vehicles are unavailable</strong>
-                        <span
-                            title="What does this setting do?\n\nEnable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.\n\nThis ensures all trips are still logged correctly against jobs, customers, and drivers, even when a fleet vehicle cannot be used.\n\nPrivate vehicle use is intended for occasional, real-world situations and is limited to prevent it from replacing fleet vehicles. Once the allowed number of private vehicle uses is reached, additional private vehicle trips cannot be started until an existing trip is completed."
-                            aria-label="What does this setting do?"
-                            style="display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; margin-left:6px; border-radius:50%; border:1px solid #1ba5a5; color:#1ba5a5; font-size:11px; line-height:1; cursor:help;"
-                        >
-                            ⓘ
+                        <span class="sf-tooltip" aria-label="What does this setting do?">
+                            <span class="sf-tooltip__icon">ⓘ</span>
+                            <span class="sf-tooltip__content" role="tooltip">
+                                <strong>What does this setting do?</strong>
+                                <span>Enable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.</span>
+                                <span>This ensures all trips are still logged correctly against jobs, customers, and drivers, even when a fleet vehicle cannot be used.</span>
+                                <span>Private vehicle use is intended for occasional, real-world situations and is limited to prevent it from replacing fleet vehicles. Once the allowed number of private vehicle uses is reached, additional private vehicle trips cannot be started until an existing trip is completed.</span>
+                            </span>
                         </span>
                     </label>
 
