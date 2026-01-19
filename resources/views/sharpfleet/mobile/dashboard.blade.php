@@ -535,7 +535,13 @@
                 }
 
                 if (navigator.onLine) {
+                    if (window.sfStartTripState) {
+                        window.sfStartTripState.submitting = true;
+                    }
                     const result = await submitFormOnline(startTripForm);
+                    if (window.sfStartTripState) {
+                        window.sfStartTripState.submitting = false;
+                    }
                     if (result.ok) return;
                     if (!result.networkError) {
                         showOfflineMessage('Could not start the trip right now. Please try again.');

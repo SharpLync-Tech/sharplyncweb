@@ -533,6 +533,8 @@
     let handoverRequired = false;
     let handoverTrip = null;
     let handoverCheckToken = 0;
+    const globalStartTripState = window.sfStartTripState || { submitting: false };
+    window.sfStartTripState = globalStartTripState;
     const globalHandoverState = {
         required: false,
         open: () => openHandoverModal(),
@@ -611,6 +613,7 @@
     async function refreshVehicleOptionsFromServer() {
         if (!navigator.onLine) return;
         if (!vehicleSelect) return;
+        if (globalStartTripState.submitting) return;
 
         try {
             const res = await fetch('/app/sharpfleet/trips/available-vehicles', {
@@ -783,6 +786,7 @@
         }
         if (!navigator.onLine) return;
         if (!handoverModal) return;
+        if (globalStartTripState.submitting) return;
 
         const token = ++handoverCheckToken;
         try {
@@ -794,6 +798,7 @@
             if (!res.ok) return;
             const data = await res.json();
             if (token !== handoverCheckToken) return;
+            if (globalStartTripState.submitting) return;
 
             if (!data || !data.active) {
                 handoverTrip = null;

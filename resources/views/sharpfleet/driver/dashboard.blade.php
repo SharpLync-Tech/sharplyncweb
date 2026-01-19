@@ -896,6 +896,7 @@
         let handoverTrip = null;
         let handoverVehicleId = null;
         let handoverCheckToken = 0;
+        let startTripSubmitting = false;
 
         const customerBlock = document.getElementById('customerBlock');
         const clientPresenceBlock = document.getElementById('clientPresenceBlock');
@@ -983,6 +984,7 @@
         async function refreshVehicleOptionsFromServer() {
             if (!navigator.onLine) return;
             if (!vehicleSelect) return;
+            if (startTripSubmitting) return;
 
             try {
                 const res = await fetch('/app/sharpfleet/trips/available-vehicles', {
@@ -1153,6 +1155,7 @@
             }
             if (!navigator.onLine) return;
             if (!handoverModal) return;
+            if (startTripSubmitting) return;
 
             const token = ++handoverCheckToken;
             try {
@@ -1164,6 +1167,7 @@
                 if (!res.ok) return;
                 const data = await res.json();
                 if (token !== handoverCheckToken) return;
+                if (startTripSubmitting) return;
 
                 if (!data || !data.active) {
                     handoverTrip = null;
@@ -1328,6 +1332,7 @@
 
             if (startTripBtn) {
                 startTripBtn.addEventListener('click', () => {
+                    startTripSubmitting = true;
                     refreshVehicleOptionsFromServer();
                 });
             }
@@ -1336,6 +1341,7 @@
                 if (handoverRequired) {
                     e.preventDefault();
                     openHandoverModal();
+                    startTripSubmitting = false;
                     return;
                 }
 
@@ -1345,20 +1351,24 @@
 
                 if (getOfflineActiveTrip()) {
                     showOfflineMessage('A trip is already in progress offline. End it before starting another.');
+                    startTripSubmitting = false;
                     return;
                 }
 
                 const payload = buildOfflineStartPayload(startTripForm);
                 if (!payload.private_vehicle && (!payload.vehicle_id || Number.isNaN(payload.vehicle_id))) {
                     showOfflineMessage('Select a vehicle before starting.');
+                    startTripSubmitting = false;
                     return;
                 }
                 if (Number.isNaN(payload.start_km)) {
                     showOfflineMessage('Enter a valid starting reading.');
+                    startTripSubmitting = false;
                     return;
                 }
                 if (MANUAL_TRIP_TIMES_REQUIRED && (!payload.started_at || String(payload.started_at).trim() === '')) {
                     showOfflineMessage('Enter a start time before starting.');
+                    startTripSubmitting = false;
                     return;
                 }
 
@@ -1377,6 +1387,7 @@
 
                 showOfflineMessage('No signal: trip started offline. End it to sync later.');
                 renderOfflineActiveTrip();
+                startTripSubmitting = false;
             });
         }
 
