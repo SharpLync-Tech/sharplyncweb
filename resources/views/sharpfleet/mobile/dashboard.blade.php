@@ -595,6 +595,7 @@
                     return;
                 }
 
+                const endedAtLocal = endedAtVal;
                 let endedAtIso = '';
                 if (MANUAL_TRIP_TIMES_REQUIRED) {
                     try {
@@ -610,7 +611,7 @@
                     updates.push({
                         trip_id: active.trip_id,
                         end_km: endKmVal,
-                        ended_at: MANUAL_TRIP_TIMES_REQUIRED ? endedAtIso : new Date().toISOString(),
+                        ended_at: MANUAL_TRIP_TIMES_REQUIRED ? endedAtLocal : new Date().toISOString(),
                     });
                     setOfflineEndUpdates(updates);
                     setOfflineActiveTrip(null);
