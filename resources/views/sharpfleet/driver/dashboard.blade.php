@@ -996,7 +996,6 @@
                 const data = await res.json();
                 if (!data || !Array.isArray(data.vehicles)) return;
                 setVehicleOptionsFromServer(data.vehicles, !!data.private_vehicle_option);
-                checkActiveTripForVehicle(vehicleSelect.value);
             } catch (e) {
                 // ignore
             }
@@ -1333,7 +1332,6 @@
             if (startTripBtn) {
                 startTripBtn.addEventListener('click', () => {
                     startTripSubmitting = true;
-                    refreshVehicleOptionsFromServer();
                 });
             }
 
