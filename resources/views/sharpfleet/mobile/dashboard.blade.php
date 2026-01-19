@@ -356,7 +356,8 @@
 
                 if (res.ok) {
                     const target = res.url || window.location.href;
-                    window.location.href = target;
+                    const separator = target.includes('?') ? '&' : '?';
+                    window.location.replace(`${target}${separator}refresh=${Date.now()}`);
                     return { ok: true };
                 }
 

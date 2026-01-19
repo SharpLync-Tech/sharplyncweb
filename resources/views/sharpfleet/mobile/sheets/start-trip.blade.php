@@ -275,10 +275,6 @@
         <div class="hint-text" style="margin-top:6px;"><strong>Trip started:</strong> <span id="sfMobileHandoverStarted">-</span></div>
         <div class="hint-text" style="margin-top:6px;"><strong>Starting reading:</strong> <span id="sfMobileHandoverStartKm">-</span></div>
 
-        <div class="alert alert-info" style="margin-top: 12px;">
-            Make sure the previous trip is not still in progress before closing it.
-        </div>
-
         <form id="sfMobileHandoverForm" style="margin-top: 12px;">
             <input type="hidden" name="trip_id" id="sfMobileHandoverTripId">
 
@@ -701,11 +697,21 @@
         }
     }
 
+    function parseTripDate(raw) {
+        const value = String(raw || '').trim();
+        if (!value) return null;
+        const hasTz = /[zZ]|[+\-]\d{2}:?\d{2}$/.test(value);
+        const normalized = hasTz ? value : value.replace(' ', 'T') + 'Z';
+        const dt = new Date(normalized);
+        return Number.isNaN(dt.getTime()) ? null : dt;
+    }
+
     function formatTripStart(iso, timezone) {
-        if (!iso) return '-';
+        const dt = parseTripDate(iso);
+        if (!dt) return '-';
         const tz = timezone && String(timezone).trim() !== '' ? timezone : COMPANY_TIMEZONE;
         try {
-            return new Date(iso).toLocaleString('en-AU', {
+            return dt.toLocaleString('en-AU', {
                 timeZone: tz,
                 year: 'numeric',
                 month: 'short',
@@ -774,6 +780,15 @@
         if (handoverError) {
             handoverError.style.display = 'none';
             handoverError.textContent = '';
+        }
+    }
+
+    function syncHandoverConfirmValidity() {
+        if (!handoverConfirm) return;
+        if (!handoverConfirm.checked) {
+            handoverConfirm.setCustomValidity('Make sure the previous trip is not still in progress before closing it.');
+        } else {
+            handoverConfirm.setCustomValidity('');
         }
     }
 
@@ -942,6 +957,10 @@
             }
 
             if (!handoverConfirm || !handoverConfirm.checked) {
+                syncHandoverConfirmValidity();
+                if (handoverConfirm && handoverConfirm.reportValidity) {
+                    handoverConfirm.reportValidity();
+                }
                 if (handoverError) {
                     handoverError.textContent = 'Please confirm you are taking the vehicle.';
                     handoverError.style.display = '';
@@ -1006,6 +1025,10 @@
                 }
             }
         });
+    }
+
+    if (handoverConfirm) {
+        handoverConfirm.addEventListener('change', syncHandoverConfirmValidity);
     }
 
     function sectionHasInvalid(selectors) {
