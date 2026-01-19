@@ -4,7 +4,12 @@
 
 @section('sharpfleet-content')
 <style>
-    .sf-tooltip { position: relative; display: inline-flex; align-items: center; }
+    .sf-tooltip {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+
     .sf-tooltip__icon {
         display: inline-flex;
         align-items: center;
@@ -13,13 +18,32 @@
         height: 18px;
         margin-left: 6px;
         border-radius: 50%;
-        border: 1px solid #1ba5a5;
+        border: 1px solid rgba(27, 165, 165, 0.35);
+        background: rgba(27, 165, 165, 0.08);
         color: #1ba5a5;
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 600;
         line-height: 1;
         cursor: help;
-        background: #f3fbfb;
+        user-select: none;
+        transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 80ms ease;
     }
+
+    .sf-tooltip__icon:hover {
+        background: #1ba5a5;
+        border-color: #1ba5a5;
+        color: #ffffff;
+    }
+
+    .sf-tooltip__icon:active {
+        transform: scale(0.95);
+    }
+
+    .sf-tooltip__icon:focus-visible {
+        outline: 2px solid rgba(27, 165, 165, 0.45);
+        outline-offset: 2px;
+    }
+
     .sf-tooltip__content {
         position: absolute;
         left: 0;
@@ -32,20 +56,40 @@
         color: #e9f7f7;
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
         font-size: 13px;
-        line-height: 1.4;
+        line-height: 1.45;
         z-index: 20;
         opacity: 0;
         transform: translateY(-6px);
         pointer-events: none;
-        transition: opacity 120ms ease, transform 120ms ease;
+        transition: opacity 140ms ease, transform 140ms ease;
     }
-    .sf-tooltip__content strong { display: block; margin-bottom: 6px; color: #bff3f3; }
-    .sf-tooltip__content span { display: block; margin-top: 6px; }
+
+    .sf-tooltip__content strong {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #bff3f3;
+    }
+
+    .sf-tooltip__content span {
+        display: block;
+        margin-top: 6px;
+        color: #d9f1f1;
+    }
+
     .sf-tooltip:hover .sf-tooltip__content,
     .sf-tooltip:focus-within .sf-tooltip__content {
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
+    }
+
+    @media (max-width: 640px) {
+        .sf-tooltip__content {
+            left: auto;
+            right: 0;
+            max-width: min(92vw, 360px);
+        }
     }
 </style>
 

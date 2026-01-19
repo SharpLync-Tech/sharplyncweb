@@ -959,6 +959,8 @@
             }
             if (lastKmHint) {
                 lastKmHint.classList.add('d-none');
+                lastKmHint.textContent = '';
+                lastKmHint.style.display = 'none';
             }
             if (startKmInput) {
                 startKmInput.value = '';
@@ -979,12 +981,15 @@
                     ? `Last recorded hour meter: ${Number(lastKm).toLocaleString()} hours`
                     : `Last recorded odometer: ${Number(lastKm).toLocaleString()} ${distanceUnit}`;
                 lastKmHint.classList.remove('d-none');
+                lastKmHint.style.display = '';
             } else {
                 if (canAutofill) {
                     startKmInput.value = '';
                     lastAutoFilledReading = null;
                 }
                 lastKmHint.classList.add('d-none');
+                lastKmHint.textContent = '';
+                lastKmHint.style.display = 'none';
             }
         }
 
