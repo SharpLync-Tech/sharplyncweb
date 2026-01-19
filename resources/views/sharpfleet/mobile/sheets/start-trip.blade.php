@@ -441,6 +441,7 @@
 <script>
 (function () {
     const CLIENT_PRESENCE_LABEL = @json($clientPresenceLabel);
+    const COMPANY_DISTANCE_UNIT = @json($settingsService->distanceUnit());
 
     const vehicleSelect = document.getElementById('vehicleSelect');
     if (!vehicleSelect) return;
@@ -464,7 +465,7 @@
 
     let lastAutoFilledReading = null;
 
-    const allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
+    let allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
         value: opt.value,
         text: opt.text,
         trackingMode: opt.dataset.trackingMode || 'distance',
@@ -498,6 +499,58 @@
         const stillExists = filtered.some(v => v.value === currentValue);
         vehicleSelect.value = stillExists ? currentValue : filtered[0].value;
         updateStartKm();
+    }
+
+    function setVehicleOptionsFromServer(items, includePrivateVehicleOption) {
+        const mapped = items.map(v => ({
+            value: String(v.id),
+            text: `${v.name} (${v.registration_number})`,
+            trackingMode: v.tracking_mode || 'distance',
+            distanceUnit: v.distance_unit || 'km',
+            lastKm: v.last_km || ''
+        }));
+
+        if (includePrivateVehicleOption) {
+            mapped.unshift({
+                value: 'private_vehicle',
+                text: 'Private vehicle',
+                trackingMode: 'distance',
+                distanceUnit: COMPANY_DISTANCE_UNIT,
+                lastKm: ''
+            });
+        }
+
+        if (mapped.length === 0) {
+            mapped.push({
+                value: '',
+                text: 'No vehicles available',
+                trackingMode: 'distance',
+                distanceUnit: 'km',
+                lastKm: ''
+            });
+        }
+
+        allVehicleOptions = mapped;
+        rebuildVehicleOptions(allVehicleOptions);
+    }
+
+    async function refreshVehicleOptionsFromServer() {
+        if (!navigator.onLine) return;
+        if (!vehicleSelect) return;
+
+        try {
+            const res = await fetch('/app/sharpfleet/trips/available-vehicles', {
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store',
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data || !Array.isArray(data.vehicles)) return;
+            setVehicleOptionsFromServer(data.vehicles, !!data.private_vehicle_option);
+        } catch (e) {
+            // ignore
+        }
     }
 
     function filterVehicles() {
@@ -611,6 +664,9 @@
         vehicleSearchInput.addEventListener('input', filterVehicles);
     }
     tripModeRadios.forEach(r => r.addEventListener('change', updateBusinessOnlyBlocksVisibility));
+    document.querySelectorAll('[data-sheet-open="start-trip"]').forEach((trigger) => {
+        trigger.addEventListener('click', refreshVehicleOptionsFromServer);
+    });
 
     document.querySelectorAll('[data-status-target]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -628,6 +684,9 @@
             target.classList.add('sf-status-pulse');
         });
     });
+
+    // Initial load
+    refreshVehicleOptionsFromServer();
 
     const startTripForm = document.getElementById('startTripForm');
     const validationModal = document.getElementById('sf-mobile-validation-modal');

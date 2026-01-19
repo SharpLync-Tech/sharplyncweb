@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TripController extends Controller
 {
@@ -185,6 +186,137 @@ class TripController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
+    }
+
+    /**
+     * Fetch available vehicles for driver start-trip UI (includes private vehicle option flag).
+     */
+    public function availableVehicles(Request $request): JsonResponse
+    {
+        $user = session('sharpfleet.user');
+
+        if (!$user) {
+            abort(401, 'Not authenticated');
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+        $settingsService = new CompanySettingsService($organisationId);
+
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchAccessEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) $user['id'])
+            : [];
+
+        if ($branchAccessEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $vehicles = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'name', 'registration_number', 'tracking_mode', 'branch_id')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->when(
+                $branchAccessEnabled,
+                fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds)
+            )
+            ->when(
+                Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type')
+                && Schema::connection('sharpfleet')->hasColumn('vehicles', 'assigned_driver_id'),
+                fn ($q) => $q->where(function ($qq) use ($user) {
+                    $qq->whereNull('assignment_type')
+                        ->orWhere('assignment_type', 'none')
+                        ->orWhere(function ($qq2) use ($user) {
+                            $qq2
+                                ->where('assignment_type', 'permanent')
+                                ->where('assigned_driver_id', (int) $user['id']);
+                        });
+                })
+            )
+            ->when(
+                Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_in_service'),
+                fn ($q) => $q->where('is_in_service', 1)
+            )
+            ->orderBy('name')
+            ->get();
+
+        $vehicleIds = $vehicles->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $lastTrips = collect();
+        if (count($vehicleIds) > 0) {
+            $lastTrips = DB::connection('sharpfleet')
+                ->table('trips')
+                ->select('vehicle_id', 'end_km', 'ended_at')
+                ->where('organisation_id', $organisationId)
+                ->whereIn('vehicle_id', $vehicleIds)
+                ->whereNotNull('ended_at')
+                ->whereNotNull('end_km')
+                ->orderByDesc('ended_at')
+                ->get()
+                ->unique('vehicle_id')
+                ->keyBy('vehicle_id');
+        }
+
+        $availableVehicleCount = count($vehicleIds);
+        if ($availableVehicleCount > 0) {
+            $blockedVehicleIds = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('organisation_id', $organisationId)
+                ->whereNotNull('started_at')
+                ->whereNull('ended_at')
+                ->whereNotNull('vehicle_id')
+                ->whereIn('vehicle_id', $vehicleIds)
+                ->pluck('vehicle_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            if (Schema::connection('sharpfleet')->hasTable('bookings')) {
+                $nowUtc = \Carbon\Carbon::now('UTC');
+                $bookingVehicleIds = DB::connection('sharpfleet')
+                    ->table('bookings')
+                    ->where('organisation_id', $organisationId)
+                    ->whereIn('vehicle_id', $vehicleIds)
+                    ->where('status', 'planned')
+                    ->where('planned_start', '<=', $nowUtc->toDateTimeString())
+                    ->where('planned_end', '>=', $nowUtc->toDateTimeString())
+                    ->where('user_id', '!=', $user['id'])
+                    ->pluck('vehicle_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+
+                $blockedVehicleIds = array_values(array_unique(array_merge($blockedVehicleIds, $bookingVehicleIds)));
+            }
+
+            $availableVehicleCount = count(array_diff($vehicleIds, $blockedVehicleIds));
+        }
+
+        $includePrivateVehicleOption = $settingsService->privateVehicleSlotsEnabled()
+            && $availableVehicleCount === 0;
+
+        $vehiclesPayload = $vehicles->map(function ($vehicle) use ($settingsService, $lastTrips) {
+            $branchId = property_exists($vehicle, 'branch_id') ? (int) ($vehicle->branch_id ?? 0) : 0;
+            $distanceUnit = $settingsService->distanceUnitForBranch($branchId > 0 ? $branchId : null);
+            $lastKm = $lastTrips->get($vehicle->id)->end_km ?? null;
+
+            return [
+                'id' => (int) $vehicle->id,
+                'name' => (string) ($vehicle->name ?? ''),
+                'registration_number' => (string) ($vehicle->registration_number ?? ''),
+                'tracking_mode' => (string) ($vehicle->tracking_mode ?? 'distance'),
+                'distance_unit' => $distanceUnit,
+                'last_km' => $lastKm !== null ? (string) $lastKm : '',
+            ];
+        })->values();
+
+        return response()->json([
+            'vehicles' => $vehiclesPayload,
+            'available_vehicle_count' => $availableVehicleCount,
+            'private_vehicle_option' => $includePrivateVehicleOption,
+        ]);
     }
 
     public function edit($trip)

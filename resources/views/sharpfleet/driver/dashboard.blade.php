@@ -597,6 +597,7 @@
     {{-- Minimal JS for start trip form --}}
     <script>
         const COMPANY_TIMEZONE = @json($companyTimezone ?? 'UTC');
+        const COMPANY_DISTANCE_UNIT = @json($settingsService->distanceUnit());
         const MANUAL_TRIP_TIMES_REQUIRED = @json((bool) $manualTripTimesRequired);
 
         const offlineTripAlert = document.getElementById('offlineTripAlert');
@@ -830,10 +831,11 @@
         const tripModeRadios = document.querySelectorAll('input[name="trip_mode"][type="radio"]');
         const tripModeHidden = document.querySelector('input[name="trip_mode"][type="hidden"]');
 
-        const allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
+        let allVehicleOptions = Array.from(vehicleSelect.options).map(opt => ({
             value: opt.value,
             text: opt.text,
             trackingMode: opt.dataset.trackingMode || 'distance',
+            distanceUnit: opt.dataset.distanceUnit || 'km',
             lastKm: opt.dataset.lastKm || ''
         }));
 
@@ -842,12 +844,13 @@
             vehicleSelect.innerHTML = '';
 
             filtered.forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = v.value;
-                opt.textContent = v.text;
-                opt.dataset.trackingMode = v.trackingMode;
-                opt.dataset.lastKm = v.lastKm;
-                vehicleSelect.appendChild(opt);
+            const opt = document.createElement('option');
+            opt.value = v.value;
+            opt.textContent = v.text;
+            opt.dataset.trackingMode = v.trackingMode;
+            opt.dataset.distanceUnit = v.distanceUnit || 'km';
+            opt.dataset.lastKm = v.lastKm;
+            vehicleSelect.appendChild(opt);
             });
 
             if (filtered.length === 0) {
@@ -867,6 +870,58 @@
             }
 
             updateStartKm();
+        }
+
+        function setVehicleOptionsFromServer(items, includePrivateVehicleOption) {
+            const mapped = items.map(v => ({
+                value: String(v.id),
+                text: `${v.name} (${v.registration_number})`,
+                trackingMode: v.tracking_mode || 'distance',
+                distanceUnit: v.distance_unit || 'km',
+                lastKm: v.last_km || ''
+            }));
+
+            if (includePrivateVehicleOption) {
+                mapped.unshift({
+                    value: 'private_vehicle',
+                    text: 'Private vehicle',
+                    trackingMode: 'distance',
+                    distanceUnit: COMPANY_DISTANCE_UNIT,
+                    lastKm: ''
+                });
+            }
+
+            if (mapped.length === 0) {
+                mapped.push({
+                    value: '',
+                    text: 'No vehicles available',
+                    trackingMode: 'distance',
+                    distanceUnit: 'km',
+                    lastKm: ''
+                });
+            }
+
+            allVehicleOptions = mapped;
+            rebuildVehicleOptions(allVehicleOptions);
+        }
+
+        async function refreshVehicleOptionsFromServer() {
+            if (!navigator.onLine) return;
+            if (!vehicleSelect) return;
+
+            try {
+                const res = await fetch('/app/sharpfleet/trips/available-vehicles', {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store',
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data || !Array.isArray(data.vehicles)) return;
+                setVehicleOptionsFromServer(data.vehicles, !!data.private_vehicle_option);
+            } catch (e) {
+                // ignore
+            }
         }
 
         function filterVehicles() {
@@ -984,10 +1039,12 @@
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 refreshSelectedVehicleLastKm();
+                refreshVehicleOptionsFromServer();
             }
         });
         window.addEventListener('focus', () => {
             refreshSelectedVehicleLastKm();
+            refreshVehicleOptionsFromServer();
         });
 
         function updateBusinessOnlyBlocksVisibility() {
@@ -1029,6 +1086,7 @@
         // Initial load
         updateStartKm();
         refreshSelectedVehicleLastKm();
+        refreshVehicleOptionsFromServer();
         updateBusinessOnlyBlocksVisibility();
 
         // Offline trip capture (start/end + readings)
