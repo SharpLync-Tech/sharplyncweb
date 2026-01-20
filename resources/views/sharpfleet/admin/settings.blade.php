@@ -106,51 +106,42 @@
     .sf-tabs {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        padding: 16px 20px 0;
+        gap: 4px;
+        padding: 12px;
         border-bottom: 1px solid var(--border-color);
-        background: linear-gradient(180deg, rgba(10, 42, 77, 0.06), rgba(10, 42, 77, 0.02));
+        background: linear-gradient(135deg, #0a2a4d 0%, #2b7dbb 50%, #2cbfae 100%);
+        border-radius: 18px 18px 12px 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .sf-tab {
         appearance: none;
-        border: 1px solid transparent;
-        background: rgba(10, 42, 77, 0.08);
-        color: var(--secondary-color);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.12);
+        color: #e6f4ff;
         font-weight: 600;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-        font-size: 12px;
-        padding: 10px 16px 12px;
-        border-radius: 14px 14px 22px 22px;
+        letter-spacing: 0.01em;
+        text-transform: none;
+        font-size: 13px;
+        padding: 9px 18px 11px;
+        border-radius: 16px;
         cursor: pointer;
         position: relative;
-        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease;
+        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease, border-color 150ms ease;
     }
 
     .sf-tab:hover {
         transform: translateY(-1px);
-        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.14);
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.18);
+        border-color: rgba(255, 255, 255, 0.45);
     }
 
     .sf-tab.is-active {
-        background: var(--bg-white);
-        color: var(--primary-color);
-        border-color: var(--border-color);
-        box-shadow: 0 14px 24px rgba(10, 42, 77, 0.16);
+        background: #ffffff;
+        color: #2b4b6b;
+        border-color: rgba(10, 42, 77, 0.08);
+        box-shadow: 0 14px 22px rgba(10, 42, 77, 0.2);
         z-index: 2;
-    }
-
-    .sf-tab.is-active::after {
-        content: "";
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        bottom: -12px;
-        height: 14px;
-        background: var(--bg-white);
-        border-radius: 0 0 20px 20px;
-        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.12);
     }
 
     .sf-tab:focus-visible {
