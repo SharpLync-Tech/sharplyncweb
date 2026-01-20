@@ -27,7 +27,7 @@
          Drive Status
     ================================ --}}
     @if($activeTrip)
-        <div id="activeTripCard" class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px;">
+        <div id="activeTripCard" class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px; position:relative;">
             <div class="sf-mobile-card-title">Drive in Progress</div>
 
             <div class="hint-text" style="margin-top: 8px;">
@@ -66,6 +66,14 @@
                 </strong>
                 {{ number_format($activeTrip->start_km) }}
             </div>
+
+            <button type="button"
+                    title="Refresh"
+                    aria-label="Refresh"
+                    onclick="window.location.reload()"
+                    style="position:absolute; right:12px; bottom:12px; background:transparent; border:0; color:#2CBFAE; font-size:18px; line-height:1; cursor:pointer;">
+                ↻
+            </button>
         </div>
 
         <button

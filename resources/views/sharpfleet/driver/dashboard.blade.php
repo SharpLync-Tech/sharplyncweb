@@ -172,7 +172,7 @@
         <div class="card-header">
             <h3 class="card-title">Trip in Progress</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="position:relative;">
             <div class="trip-info">
                 <div class="info-row">
                     <strong>Vehicle:</strong>
@@ -226,7 +226,7 @@
                 @endif
             </div>
 
-                <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4" id="endTripForm">
+            <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4" id="endTripForm">
                 @csrf
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
 
@@ -250,6 +250,14 @@
 
                 <button type="submit" class="btn btn-primary btn-full">End Trip</button>
             </form>
+
+            <button type="button"
+                    title="Refresh"
+                    aria-label="Refresh"
+                    onclick="window.location.reload()"
+                    style="position:absolute; right:12px; bottom:12px; background:transparent; border:0; color:#2CBFAE; font-size:18px; line-height:1; cursor:pointer;">
+                ↻
+            </button>
         </div>
     </div>
 
