@@ -252,41 +252,6 @@
             </form>
         </div>
     </div>
-    <script>
-        (function () {
-            const endTripForm = document.getElementById('endTripForm');
-            if (!endTripForm) return;
-
-            endTripForm.addEventListener('submit', async (e) => {
-                if (!navigator.onLine) return;
-
-                e.preventDefault();
-                const action = endTripForm.getAttribute('action') || '/app/sharpfleet/trips/end';
-                const formData = new FormData(endTripForm);
-
-                try {
-                    const res = await fetch(action, {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'text/html',
-                        },
-                        body: formData,
-                    });
-
-                    if (res.ok) {
-                        window.location.replace(`/app/sharpfleet/driver?refresh=${Date.now()}`);
-                        return;
-                    }
-                } catch (e) {
-                    // fall back
-                }
-
-                endTripForm.submit();
-            });
-        })();
-    </script>
 
     @if($faultsEnabled)
         <details class="card" id="reportFaultFromTripCard">
@@ -1583,8 +1548,14 @@
                     });
 
                     if (res.ok) {
-                        const refreshUrl = `/app/sharpfleet/driver?refresh=${Date.now()}`;
-                        window.location.replace(refreshUrl);
+                        const activeCard = document.getElementById('serverActiveTripCard');
+                        const startCard = document.getElementById('startTripCard');
+                        if (activeCard) activeCard.style.display = 'none';
+                        if (startCard) startCard.style.display = '';
+
+                        setOfflineActiveTrip(null);
+                        renderOfflineActiveTrip();
+
                         return;
                     }
                 } catch (e) {

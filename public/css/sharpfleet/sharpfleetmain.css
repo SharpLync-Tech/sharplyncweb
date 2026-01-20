@@ -1772,6 +1772,7 @@ details.card[open] .incident-toggle-hint-closed {
 /* Handover modal input styling */
 .sf-handover-input{
     width: 100%;
+    max-width: 220px;
     padding: 10px 12px;
     border-radius: 8px;
     border: 1px solid rgba(27, 165, 165, 0.28);
