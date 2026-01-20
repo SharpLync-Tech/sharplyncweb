@@ -105,43 +105,87 @@
 
     .sf-tabs {
         display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 12px;
-        border-bottom: 1px solid var(--border-color);
-        background: linear-gradient(135deg, #0a2a4d 0%, #2b7dbb 50%, #2cbfae 100%);
-        border-radius: 18px 18px 12px 12px;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        flex-wrap: nowrap;
+        gap: 0;
+        padding: 16px 18px 0;
+        border-bottom: 1px solid #d7dde5;
+        background: transparent;
+        align-items: flex-end;
     }
 
     .sf-tab {
+        --sf-tab-radius: 14px;
+        --sf-tab-border: #d7dde5;
         appearance: none;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.12);
-        color: #e6f4ff;
+        border: 1px solid var(--sf-tab-border);
+        background: #ffffff;
+        color: #1f3a5a;
         font-weight: 600;
         letter-spacing: 0.01em;
         text-transform: none;
         font-size: 13px;
         padding: 9px 18px 11px;
-        border-radius: 16px;
+        border-top-left-radius: var(--sf-tab-radius);
+        border-top-right-radius: var(--sf-tab-radius);
         cursor: pointer;
         position: relative;
-        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease, border-color 150ms ease;
+        transition: color 150ms ease, border-color 150ms ease;
+        margin-left: -1px;
+        z-index: 1;
     }
 
     .sf-tab:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.18);
-        border-color: rgba(255, 255, 255, 0.45);
+        border-color: #b8c1cc;
+        color: #0a2a4d;
     }
 
     .sf-tab.is-active {
-        background: #ffffff;
-        color: #2b4b6b;
-        border-color: rgba(10, 42, 77, 0.08);
-        box-shadow: 0 14px 22px rgba(10, 42, 77, 0.2);
+        border-bottom-color: #ffffff;
+        color: #0a2a4d;
         z-index: 2;
+    }
+
+    .sf-tab::before,
+    .sf-tab::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        width: var(--sf-tab-radius);
+        height: var(--sf-tab-radius);
+        background: #ffffff;
+        border: 1px solid var(--sf-tab-border);
+        border-top: none;
+    }
+
+    .sf-tab::before {
+        left: calc(var(--sf-tab-radius) * -1);
+        border-right: none;
+        border-bottom-left-radius: var(--sf-tab-radius);
+    }
+
+    .sf-tab::after {
+        right: calc(var(--sf-tab-radius) * -1);
+        border-left: none;
+        border-bottom-right-radius: var(--sf-tab-radius);
+    }
+
+    .sf-tab:first-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        margin-left: 0;
+    }
+
+    .sf-tab:first-child::before {
+        display: none;
+    }
+
+    .sf-tab:last-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .sf-tab:last-child::after {
+        display: none;
     }
 
     .sf-tab:focus-visible {
@@ -167,7 +211,6 @@
 
     @media (max-width: 900px) {
         .sf-tabs {
-            gap: 8px;
             padding: 14px 16px 0;
         }
 
@@ -183,7 +226,6 @@
 
     @media (max-width: 640px) {
         .sf-tabs {
-            flex-wrap: nowrap;
             overflow-x: auto;
             padding-bottom: 12px;
         }
