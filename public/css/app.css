@@ -189,23 +189,84 @@ p {
 /* === Tabs === */
 .tabs {
   display: flex;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid #d7dde5;
   margin-bottom: 1rem;
+  align-items: flex-end;
 }
 
 .tab {
+  --tab-radius: 12px;
+  --tab-border: #d7dde5;
   padding: 0.7rem 1.2rem;
   cursor: pointer;
   font-weight: 500;
   color: #0A2A4D;
-  border-bottom: 2px solid transparent;
-  transition: all 0.25s;
+  background: #ffffff;
+  border: 1px solid var(--tab-border);
+  border-bottom: 1px solid var(--tab-border);
+  border-top-left-radius: var(--tab-radius);
+  border-top-right-radius: var(--tab-radius);
+  transition: color 0.25s, border-color 0.25s;
+  position: relative;
+  margin-left: -1px;
+  z-index: 1;
 }
 
 .tab.active {
-  border-bottom: 3px solid #2CBFAE;
-  color: #2CBFAE;
-  background-color: #eefaf8;
+  border-bottom-color: #ffffff;
+  color: #0A2A4D;
+  z-index: 2;
+}
+
+.tab::before,
+.tab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  width: var(--tab-radius);
+  height: var(--tab-radius);
+  background: #ffffff;
+  border: 1px solid var(--tab-border);
+  border-top: none;
+}
+
+.tab::before {
+  left: calc(var(--tab-radius) * -1);
+  border-right: none;
+  border-bottom-left-radius: var(--tab-radius);
+}
+
+.tab::after {
+  right: calc(var(--tab-radius) * -1);
+  border-left: none;
+  border-bottom-right-radius: var(--tab-radius);
+}
+
+.tab:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: 0;
+}
+
+.tab:first-child::before {
+  display: none;
+}
+
+.tab:first-child::after {
+  border-bottom-right-radius: var(--tab-radius);
+}
+
+.tab:last-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.tab:last-child::after {
+  display: none;
+}
+
+.tab:last-child::before {
+  border-bottom-left-radius: var(--tab-radius);
 }
 
 /* === Tables === */
