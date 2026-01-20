@@ -1,4 +1,4 @@
-@extends('layouts.sharpfleet')
+﻿@extends('layouts.sharpfleet')
 
 @section('title', 'Company Settings')
 
@@ -91,10 +91,120 @@
             max-width: min(92vw, 360px);
         }
     }
+
+    .sf-settings-card {
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid rgba(10, 42, 77, 0.08);
+        box-shadow: 0 18px 30px rgba(10, 42, 77, 0.12);
+    }
+
+    .sf-settings-tabs {
+        position: relative;
+    }
+
+    .sf-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px 20px 0;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(180deg, rgba(10, 42, 77, 0.06), rgba(10, 42, 77, 0.02));
+    }
+
+    .sf-tab {
+        appearance: none;
+        border: 1px solid transparent;
+        background: rgba(10, 42, 77, 0.08);
+        color: var(--secondary-color);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        font-size: 12px;
+        padding: 10px 16px 12px;
+        border-radius: 14px 14px 22px 22px;
+        cursor: pointer;
+        position: relative;
+        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease;
+    }
+
+    .sf-tab:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.14);
+    }
+
+    .sf-tab.is-active {
+        background: var(--bg-white);
+        color: var(--primary-color);
+        border-color: var(--border-color);
+        box-shadow: 0 14px 24px rgba(10, 42, 77, 0.16);
+        z-index: 2;
+    }
+
+    .sf-tab.is-active::after {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: -12px;
+        height: 14px;
+        background: var(--bg-white);
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.12);
+    }
+
+    .sf-tab:focus-visible {
+        outline: 2px solid rgba(44, 191, 174, 0.45);
+        outline-offset: 2px;
+    }
+
+    .sf-tab-panels {
+        padding: 24px 28px 28px;
+    }
+
+    .sf-tab-panel + .sf-tab-panel {
+        margin-top: 24px;
+    }
+
+    .sf-settings-tabs.is-js .sf-tab-panel {
+        display: none;
+    }
+
+    .sf-settings-tabs.is-js .sf-tab-panel.is-active {
+        display: block;
+    }
+
+    @media (max-width: 900px) {
+        .sf-tabs {
+            gap: 8px;
+            padding: 14px 16px 0;
+        }
+
+        .sf-tab {
+            font-size: 11px;
+            padding: 9px 12px 11px;
+        }
+
+        .sf-tab-panels {
+            padding: 20px 20px 24px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .sf-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 12px;
+        }
+
+        .sf-tab {
+            flex: 0 0 auto;
+        }
+    }
 </style>
 
 @php
-    // Safety defaults (nested shape – matches CompanySettingsService::all())
+    // Safety defaults (nested shape â€“ matches CompanySettingsService::all())
     $settings = array_replace_recursive([
         'trip' => [
             'odometer_required'       => true,
@@ -150,262 +260,254 @@
     <form method="POST" action="{{ url('/app/sharpfleet/admin/settings') }}">
         @csrf
 
-        {{-- Passenger / Client Presence --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Passenger / Client Presence</h2>
+        <div class="card sf-settings-card sf-settings-tabs">
+            <div class="sf-tabs" role="tablist" aria-label="Company settings sections">
+                <button type="button" class="sf-tab is-active" id="sf-tab-client-button" data-sf-tab="client" role="tab" aria-controls="sf-tab-client" aria-selected="true">
+                    Passenger/Client
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-trip-button" data-sf-tab="trip" role="tab" aria-controls="sf-tab-trip" aria-selected="false">
+                    Trip Rules
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-vehicles-button" data-sf-tab="vehicles" role="tab" aria-controls="sf-tab-vehicles" aria-selected="false">
+                    Vehicle Tracking
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-reminders-button" data-sf-tab="reminders" role="tab" aria-controls="sf-tab-reminders" aria-selected="false">
+                    Reminders
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-addresses-button" data-sf-tab="addresses" role="tab" aria-controls="sf-tab-addresses" aria-selected="false">
+                    Client Addresses
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-safety-button" data-sf-tab="safety" role="tab" aria-controls="sf-tab-safety" aria-selected="false">
+                    Safety Check
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-issues-button" data-sf-tab="issues" role="tab" aria-controls="sf-tab-issues" aria-selected="false">
+                    Incident Reporting
+                </button>
             </div>
-            <div class="card-body">
-                <p class="text-muted mb-3">
-                    Enable this if drivers need to record whether a passenger or client was present
-                    in the vehicle during a trip.
-                </p>
 
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_client_presence" value="1"
-                               {{ $settings['client_presence']['enabled'] ? 'checked' : '' }}>
-                        <strong>Enable passenger/client presence tracking</strong>
-                    </label>
-
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_client_presence" value="1"
-                               {{ $settings['client_presence']['required'] ? 'checked' : '' }}>
-                        <strong>Block trip start unless passenger/client presence is recorded</strong>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Label shown to drivers</label>
-                    <input type="text" name="client_label" value="{{ $settings['client_presence']['label'] }}" class="form-control">
-                </div>
-
-                <div class="mt-4">
-                    <h3 class="card-title">Customer / Client</h3>
+            <div class="card-body sf-tab-panels">
+                <section class="sf-tab-panel is-active" id="sf-tab-client" data-sf-panel="client" role="tabpanel" aria-labelledby="sf-tab-client-button">
+                    <h2 class="card-title">Passenger / Client Presence</h2>
                     <p class="text-muted mb-3">
-                        Optional customer capture. Drivers can select a customer from your list or type a new name.
-                        This will never block a trip from starting.
+                        Enable this if drivers need to record whether a passenger or client was present
+                        in the vehicle during a trip.
                     </p>
 
                     <div class="checkbox-group">
                         <label class="checkbox-label">
-                            <input type="checkbox" name="enable_customer_capture" value="1"
-                                   {{ $settings['customer']['enabled'] ? 'checked' : '' }}>
-                            <strong>Enable customer selection/entry on client trips</strong>
+                            <input type="checkbox" name="enable_client_presence" value="1"
+                                   {{ $settings['client_presence']['enabled'] ? 'checked' : '' }}>
+                            <strong>Enable passenger/client presence tracking</strong>
                         </label>
 
                         <label class="checkbox-label">
-                            <input type="checkbox" name="allow_customer_select" value="1"
-                                   {{ $settings['customer']['allow_select'] ? 'checked' : '' }}>
-                            <strong>Allow selecting from admin customer list</strong>
-                        </label>
-
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="allow_customer_manual" value="1"
-                                   {{ $settings['customer']['allow_manual'] ? 'checked' : '' }}>
-                            <strong>Allow manual customer name entry (not in list)</strong>
+                            <input type="checkbox" name="require_client_presence" value="1"
+                                   {{ $settings['client_presence']['required'] ? 'checked' : '' }}>
+                            <strong>Block trip start unless passenger/client presence is recorded</strong>
                         </label>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        {{-- Trip Rules --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Trip Rules</h2>
-            </div>
-            <div class="card-body">
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_odometer_start" value="1"
-                               {{ $settings['trip']['odometer_required'] ? 'checked' : '' }}>
-                        <strong>Require starting reading when starting a trip (km or hours)</strong>
-                    </label>
+                    <div class="form-group">
+                        <label class="form-label">Label shown to drivers</label>
+                        <input type="text" name="client_label" value="{{ $settings['client_presence']['label'] }}" class="form-control">
+                    </div>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="allow_odometer_override" value="1"
-                               {{ $settings['trip']['odometer_allow_override'] ? 'checked' : '' }}>
-                        <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
-                    </label>
+                    <div class="mt-4">
+                        <h3 class="card-title">Customer / Client</h3>
+                        <p class="text-muted mb-3">
+                            Optional customer capture. Drivers can select a customer from your list or type a new name.
+                            This will never block a trip from starting.
+                        </p>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="allow_private_trips" value="1"
-                               {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Allow private use of fleet vehicles</strong>
-                    </label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="enable_customer_capture" value="1"
+                                       {{ $settings['customer']['enabled'] ? 'checked' : '' }}>
+                                <strong>Enable customer selection/entry on client trips</strong>
+                            </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_private_vehicle_slots" value="1"
-                               {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Allow private vehicle use when fleet vehicles are unavailable</strong>
-                        <span class="sf-tooltip" aria-label="What does this setting do?">
-                            <span class="sf-tooltip__icon">ⓘ</span>
-                            <span class="sf-tooltip__content" role="tooltip">
-                                <strong>What does this setting do?</strong>
-                                <span>Enable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.</span>
-                                <span>This ensures all trips are still logged correctly against jobs, customers, and drivers, even when a fleet vehicle cannot be used.</span>
-                                <span>Private vehicle use is intended for occasional, real-world situations and is limited to prevent it from replacing fleet vehicles. Once the allowed number of private vehicle uses is reached, additional private vehicle trips cannot be started until an existing trip is completed.</span>
-                            </span>
-                        </span>
-                    </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="allow_customer_select" value="1"
+                                       {{ $settings['customer']['allow_select'] ? 'checked' : '' }}>
+                                <strong>Allow selecting from admin customer list</strong>
+                            </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_manual_start_end_times" value="1"
-                               {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                        <strong>Require drivers to enter a start time and end time for each trip</strong>
-                    </label>
-                    
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="allow_customer_manual" value="1"
+                                       {{ $settings['customer']['allow_manual'] ? 'checked' : '' }}>
+                                <strong>Allow manual customer name entry (not in list)</strong>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sf-tab-panel" id="sf-tab-trip" data-sf-panel="trip" role="tabpanel" aria-labelledby="sf-tab-trip-button">
+                    <h2 class="card-title">Trip Rules</h2>
+                    <div class="checkbox-group">
                         <label class="checkbox-label">
-                        <input type="checkbox" name="enable_purpose_of_travel" value="1"
-                               {{ filter_var(($settings['trip']['purpose_of_travel_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                            <input type="checkbox" name="require_odometer_start" value="1"
+                                   {{ $settings['trip']['odometer_required'] ? 'checked' : '' }}>
+                            <strong>Require starting reading when starting a trip (km or hours)</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_odometer_override" value="1"
+                                   {{ $settings['trip']['odometer_allow_override'] ? 'checked' : '' }}>
+                            <strong>Allow drivers to override the auto-filled reading (km or hours)</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_private_trips" value="1"
+                                   {{ filter_var(($settings['trip']['allow_private_trips'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                            <strong>Allow private use of fleet vehicles</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_private_vehicle_slots" value="1"
+                                   {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                            <strong>Allow private vehicle use when fleet vehicles are unavailable</strong>
+                            <span class="sf-tooltip" aria-label="What does this setting do?">
+                                <span class="sf-tooltip__icon">ƒ"~</span>
+                                <span class="sf-tooltip__content" role="tooltip">
+                                    <strong>What does this setting do?</strong>
+                                    <span>Enable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.</span>
+                                    <span>This ensures all trips are still logged correctly against jobs, customers, and drivers, even when a fleet vehicle cannot be used.</span>
+                                    <span>Private vehicle use is intended for occasional, real-world situations and is limited to prevent it from replacing fleet vehicles. Once the allowed number of private vehicle uses is reached, additional private vehicle trips cannot be started until an existing trip is completed.</span>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="require_manual_start_end_times" value="1"
+                                   {{ filter_var(($settings['trip']['require_manual_start_end_times'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
+                            <strong>Require drivers to enter a start time and end time for each trip</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_purpose_of_travel" value="1"
+                                   {{ filter_var(($settings['trip']['purpose_of_travel_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                             <strong>Enable Purpose of Travel (business trips)</strong>
                         </label>
-                </div>
-            </div>
-        </div>
+                    </div>
+                </section>
 
-        {{-- Vehicle Tracking --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Vehicle Tracking</h2>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-3">
-                    These settings control which extra admin-managed details can be captured per vehicle.
-                </p>
+                <section class="sf-tab-panel" id="sf-tab-vehicles" data-sf-panel="vehicles" role="tabpanel" aria-labelledby="sf-tab-vehicles-button">
+                    <h2 class="card-title">Vehicle Tracking</h2>
+                    <p class="text-muted mb-3">
+                        These settings control which extra admin-managed details can be captured per vehicle.
+                    </p>
 
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_vehicle_registration_tracking" value="1"
-                               {{ $settings['vehicles']['registration_tracking_enabled'] ? 'checked' : '' }}>
-                        <strong>Enable Vehicle Registration Tracking</strong>
-                    </label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_vehicle_registration_tracking" value="1"
+                                   {{ $settings['vehicles']['registration_tracking_enabled'] ? 'checked' : '' }}>
+                            <strong>Enable Vehicle Registration Tracking</strong>
+                        </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_vehicle_servicing_tracking" value="1"
-                               {{ $settings['vehicles']['servicing_tracking_enabled'] ? 'checked' : '' }}>
-                        <strong>Enable Vehicle Servicing Tracking</strong>
-                    </label>
-                </div>
-            </div>
-        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_vehicle_servicing_tracking" value="1"
+                                   {{ $settings['vehicles']['servicing_tracking_enabled'] ? 'checked' : '' }}>
+                            <strong>Enable Vehicle Servicing Tracking</strong>
+                        </label>
+                    </div>
+                </section>
 
-        {{-- Reminder Emails --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Reminder Emails</h2>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-3">
-                    These settings control when SharpFleet sends registration and servicing reminder emails.
-                    They apply at a company level (not per vehicle).
-                </p>
+                <section class="sf-tab-panel" id="sf-tab-reminders" data-sf-panel="reminders" role="tabpanel" aria-labelledby="sf-tab-reminders-button">
+                    <h2 class="card-title">Reminder Emails</h2>
+                    <p class="text-muted mb-3">
+                        These settings control when SharpFleet sends registration and servicing reminder emails.
+                        They apply at a company level (not per vehicle).
+                    </p>
 
-                <div class="form-group">
-                    <label class="form-label">Rego window (days)</label>
-                    <input type="number" min="1" step="1" name="reminder_registration_days"
-                           value="{{ (int) ($settings['reminders']['registration_days'] ?? 30) }}" class="form-control">
-                    <div class="text-muted small mt-1">Vehicles with rego expiring within this window will be marked as “Due soon”.</div>
-                </div>
+                    <div class="form-group">
+                        <label class="form-label">Rego window (days)</label>
+                        <input type="number" min="1" step="1" name="reminder_registration_days"
+                               value="{{ (int) ($settings['reminders']['registration_days'] ?? 30) }}" class="form-control">
+                        <div class="text-muted small mt-1">Vehicles with rego expiring within this window will be marked as ƒ?oDue soonƒ??.</div>
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label">Service (date) window (days)</label>
-                    <input type="number" min="1" step="1" name="reminder_service_days"
-                           value="{{ (int) ($settings['reminders']['service_days'] ?? 30) }}" class="form-control">
-                    <div class="text-muted small mt-1">Vehicles with service due dates within this window will be marked as “Due soon”.</div>
-                </div>
+                    <div class="form-group">
+                        <label class="form-label">Service (date) window (days)</label>
+                        <input type="number" min="1" step="1" name="reminder_service_days"
+                               value="{{ (int) ($settings['reminders']['service_days'] ?? 30) }}" class="form-control">
+                        <div class="text-muted small mt-1">Vehicles with service due dates within this window will be marked as ƒ?oDue soonƒ??.</div>
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label">Service (reading) threshold</label>
-                    <input type="number" min="0" step="1" name="reminder_service_reading_threshold"
-                           value="{{ (int) ($settings['reminders']['service_reading_threshold'] ?? 500) }}" class="form-control">
-                    <div class="text-muted small mt-1">If a vehicle is within this many km/hours of its due reading, it will be marked as “Due soon”.</div>
-                </div>
-            </div>
-        </div>
+                    <div class="form-group">
+                        <label class="form-label">Service (reading) threshold</label>
+                        <input type="number" min="0" step="1" name="reminder_service_reading_threshold"
+                               value="{{ (int) ($settings['reminders']['service_reading_threshold'] ?? 500) }}" class="form-control">
+                        <div class="text-muted small mt-1">If a vehicle is within this many km/hours of its due reading, it will be marked as ƒ?oDue soonƒ??.</div>
+                    </div>
+                </section>
 
-        {{-- Client Address Tracking --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Client Address Tracking</h2>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-3">
-                    Enable this if your business needs to record client addresses for billing or job tracking (e.g., tradies).
-                    Disabled by default for privacy.
-                </p>
-
-                <label class="checkbox-label">
-                    <input type="checkbox" name="enable_client_addresses" value="1"
-                           {{ $settings['client_presence']['enable_addresses'] ? 'checked' : '' }}>
-                    <strong>Allow recording client addresses</strong>
-                </label>
-            </div>
-        </div>
-
-        {{-- Safety Check --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Pre-Drive Safety Check</h2>
-            </div>
-            <div class="card-body">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="enable_safety_check" value="1"
-                           {{ $settings['safety_check']['enabled'] ? 'checked' : '' }}>
-                    <strong>Enable safety check before trips</strong>
-                </label>
-
-                @php
-                    $safetyItems = $settings['safety_check']['items'] ?? [];
-                    $safetyCount = is_array($safetyItems) ? count($safetyItems) : 0;
-                @endphp
-
-                <p class="text-muted ms-4">
-                    @if($safetyCount > 0)
-                        Checklist items configured: <strong>{{ $safetyCount }}</strong>.
-                        <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Edit checklist</a>
-                    @else
-                        No safety checklist has been configured yet.
-                        <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Configure checklist</a>
-                    @endif
-                </p>
-            </div>
-        </div>
-
-        {{-- Vehicle Issue / Accident Reporting --}}
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Vehicle Issue / Accident Reporting</h2>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-3">
-                    Enable this if drivers need to report vehicle issues or accidents against a vehicle.
-                    When enabled, drivers will see a “Report a Vehicle Issue / Accident” option in their portal.
-                </p>
-
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="enable_fault_reporting" value="1"
-                               {{ ($settings['faults']['enabled'] ?? false) ? 'checked' : '' }}>
-                           <strong>Enable vehicle issue/accident reporting</strong>
-                    </label>
+                <section class="sf-tab-panel" id="sf-tab-addresses" data-sf-panel="addresses" role="tabpanel" aria-labelledby="sf-tab-addresses-button">
+                    <h2 class="card-title">Client Address Tracking</h2>
+                    <p class="text-muted mb-3">
+                        Enable this if your business needs to record client addresses for billing or job tracking (e.g., tradies).
+                        Disabled by default for privacy.
+                    </p>
 
                     <label class="checkbox-label">
-                        <input type="checkbox" name="allow_fault_during_trip" value="1"
-                               {{ ($settings['faults']['allow_during_trip'] ?? true) ? 'checked' : '' }}>
-                           <strong>Allow drivers to report issues/accidents during a trip</strong>
+                        <input type="checkbox" name="enable_client_addresses" value="1"
+                               {{ $settings['client_presence']['enable_addresses'] ? 'checked' : '' }}>
+                        <strong>Allow recording client addresses</strong>
+                    </label>
+                </section>
+
+                <section class="sf-tab-panel" id="sf-tab-safety" data-sf-panel="safety" role="tabpanel" aria-labelledby="sf-tab-safety-button">
+                    <h2 class="card-title">Pre-Drive Safety Check</h2>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enable_safety_check" value="1"
+                               {{ $settings['safety_check']['enabled'] ? 'checked' : '' }}>
+                        <strong>Enable safety check before trips</strong>
                     </label>
 
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="require_end_of_trip_fault_check" value="1"
-                               {{ ($settings['faults']['require_end_of_trip_check'] ?? false) ? 'checked' : '' }}>
-                        <strong>Require a quick issue/accident check when ending a trip (coming soon)</strong>
-                    </label>
-                </div>
+                    @php
+                        $safetyItems = $settings['safety_check']['items'] ?? [];
+                        $safetyCount = is_array($safetyItems) ? count($safetyItems) : 0;
+                    @endphp
+
+                    <p class="text-muted ms-4">
+                        @if($safetyCount > 0)
+                            Checklist items configured: <strong>{{ $safetyCount }}</strong>.
+                            <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Edit checklist</a>
+                        @else
+                            No safety checklist has been configured yet.
+                            <a href="{{ url('/app/sharpfleet/admin/safety-checks') }}">Configure checklist</a>
+                        @endif
+                    </p>
+                </section>
+
+                <section class="sf-tab-panel" id="sf-tab-issues" data-sf-panel="issues" role="tabpanel" aria-labelledby="sf-tab-issues-button">
+                    <h2 class="card-title">Vehicle Issue / Accident Reporting</h2>
+                    <p class="text-muted mb-3">
+                        Enable this if drivers need to report vehicle issues or accidents against a vehicle.
+                        When enabled, drivers will see a ƒ?oReport a Vehicle Issue / Accidentƒ?? option in their portal.
+                    </p>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_fault_reporting" value="1"
+                                   {{ ($settings['faults']['enabled'] ?? false) ? 'checked' : '' }}>
+                               <strong>Enable vehicle issue/accident reporting</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_fault_during_trip" value="1"
+                                   {{ ($settings['faults']['allow_during_trip'] ?? true) ? 'checked' : '' }}>
+                               <strong>Allow drivers to report issues/accidents during a trip</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="require_end_of_trip_fault_check" value="1"
+                                   {{ ($settings['faults']['require_end_of_trip_check'] ?? false) ? 'checked' : '' }}>
+                            <strong>Require a quick issue/accident check when ending a trip (coming soon)</strong>
+                        </label>
+                    </div>
+                </section>
             </div>
         </div>
-
         {{-- Actions --}}
         <div class="btn-group">
             <button type="submit" name="save" value="1" class="btn btn-primary">Save settings</button>
@@ -419,4 +521,41 @@
     </form>
 </div>
 
+<script>
+    (function () {
+        const container = document.querySelector('.sf-settings-tabs');
+        if (!container) return;
+
+        const tabs = Array.from(container.querySelectorAll('[data-sf-tab]'));
+        const panels = Array.from(container.querySelectorAll('[data-sf-panel]'));
+        if (!tabs.length || !panels.length) return;
+
+        container.classList.add('is-js');
+
+        const activate = (name) => {
+            tabs.forEach((tab) => {
+                const isActive = tab.getAttribute('data-sf-tab') === name;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            panels.forEach((panel) => {
+                const isActive = panel.getAttribute('data-sf-panel') === name;
+                panel.classList.toggle('is-active', isActive);
+            });
+        };
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                activate(tab.getAttribute('data-sf-tab'));
+            });
+        });
+
+        const initial = container.querySelector('.sf-tab.is-active');
+        activate(initial ? initial.getAttribute('data-sf-tab') : tabs[0].getAttribute('data-sf-tab'));
+    })();
+</script>
+
 @endsection
+
+
