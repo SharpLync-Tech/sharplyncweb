@@ -280,11 +280,11 @@
 
             <div class="form-group" style="margin-bottom: 12px;">
                 <label class="form-label" id="sfMobileHandoverReadingLabel">Current odometer (km)</label>
-                <input type="number" name="end_km" id="sfMobileHandoverEndKm" class="form-control" inputmode="numeric" required min="0" placeholder="e.g. 124800">
+                <input type="number" name="end_km" id="sfMobileHandoverEndKm" class="form-control" inputmode="numeric" placeholder="e.g. 124800">
             </div>
 
             <label class="checkbox-label" style="margin-bottom: 12px;">
-                <input type="checkbox" name="confirm_takeover" id="sfMobileHandoverConfirm" required>
+                <input type="checkbox" name="confirm_takeover" id="sfMobileHandoverConfirm">
                 I confirm I am taking <strong id="sfMobileHandoverVehicleInline">this vehicle</strong>.
             </label>
 
@@ -773,7 +773,7 @@
         if (handoverTripId) handoverTripId.value = String(trip.trip_id || '');
         if (handoverEndKm) {
             const minVal = trip.start_km !== null ? Number(trip.start_km) : 0;
-            handoverEndKm.min = String(minVal);
+            handoverEndKm.dataset.minValue = String(minVal);
             handoverEndKm.value = '';
         }
         if (handoverConfirm) handoverConfirm.checked = false;
@@ -963,7 +963,10 @@
                 }
                 return;
             }
-            if (handoverTrip.start_km !== null && endKmVal < Number(handoverTrip.start_km)) {
+            const minVal = handoverEndKm && handoverEndKm.dataset.minValue
+                ? Number(handoverEndKm.dataset.minValue)
+                : (handoverTrip.start_km !== null ? Number(handoverTrip.start_km) : 0);
+            if (endKmVal < minVal) {
                 if (handoverError) {
                     handoverError.textContent = 'Ending reading must be the same as or greater than the starting reading.';
                     handoverError.style.display = '';

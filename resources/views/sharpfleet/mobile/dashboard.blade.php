@@ -355,9 +355,11 @@
                 clearTimeout(timeout);
 
                 if (res.ok) {
-                    const target = res.url || window.location.href;
-                    const separator = target.includes('?') ? '&' : '?';
-                    window.location.replace(`${target}${separator}refresh=${Date.now()}`);
+                    const path = window.location.pathname || '';
+                    const base = path.startsWith('/app/sharpfleet/mobile')
+                        ? '/app/sharpfleet/mobile'
+                        : '/app/sharpfleet/driver';
+                    window.location.replace(`${base}?refresh=${Date.now()}`);
                     return { ok: true };
                 }
 
