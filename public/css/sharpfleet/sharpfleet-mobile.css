@@ -541,3 +541,13 @@
     0%   { transform: scale(0.8); opacity: 0.6; }
     100% { transform: scale(1);   opacity: 1; }
 }
+
+/* Handover modal input styling */
+.sf-handover-input{
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(46, 196, 182, 0.35);
+    background: rgba(9, 35, 55, 0.6);
+    color: #e9f7f7;
+}

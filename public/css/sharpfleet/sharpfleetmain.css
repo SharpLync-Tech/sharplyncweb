@@ -1768,3 +1768,13 @@ details.card[open] .incident-toggle-hint-closed {
 #sfNoticeModal .card-body{
     position:relative;
 }
+
+/* Handover modal input styling */
+.sf-handover-input{
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(27, 165, 165, 0.28);
+    background: rgba(15, 45, 60, 0.25);
+    color: #e9f7f7;
+}

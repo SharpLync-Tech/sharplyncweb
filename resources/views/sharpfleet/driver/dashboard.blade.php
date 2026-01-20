@@ -226,7 +226,7 @@
                 @endif
             </div>
 
-            <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4" id="endTripForm">
+                <form method="POST" action="/app/sharpfleet/trips/end" class="mt-4" id="endTripForm">
                 @csrf
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">
 
@@ -252,6 +252,41 @@
             </form>
         </div>
     </div>
+    <script>
+        (function () {
+            const endTripForm = document.getElementById('endTripForm');
+            if (!endTripForm) return;
+
+            endTripForm.addEventListener('submit', async (e) => {
+                if (!navigator.onLine) return;
+
+                e.preventDefault();
+                const action = endTripForm.getAttribute('action') || '/app/sharpfleet/trips/end';
+                const formData = new FormData(endTripForm);
+
+                try {
+                    const res = await fetch(action, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'text/html',
+                        },
+                        body: formData,
+                    });
+
+                    if (res.ok) {
+                        window.location.replace(`/app/sharpfleet/driver?refresh=${Date.now()}`);
+                        return;
+                    }
+                } catch (e) {
+                    // fall back
+                }
+
+                endTripForm.submit();
+            });
+        })();
+    </script>
 
     @if($faultsEnabled)
         <details class="card" id="reportFaultFromTripCard">
@@ -523,7 +558,7 @@
 
                     <div class="form-group">
                         <label class="form-label" id="sfHandoverReadingLabel">Current odometer (km)</label>
-                        <input type="number" name="end_km" id="sfHandoverEndKm" class="form-control" inputmode="numeric" placeholder="e.g. 124800">
+                    <input type="number" name="end_km" id="sfHandoverEndKm" class="form-control sf-handover-input" inputmode="numeric" placeholder="e.g. 124800">
                     </div>
 
                     <label class="checkbox-label">
@@ -1436,10 +1471,21 @@
                     return;
                 }
 
-                const endKmVal = Number(handoverEndKm ? handoverEndKm.value : '');
-                if (Number.isNaN(endKmVal)) {
+                const endKmRaw = handoverEndKm ? String(handoverEndKm.value || '').trim() : '';
+                const endKmVal = endKmRaw === '' ? Number.NaN : Number(endKmRaw);
+                const needsConfirm = !handoverConfirm || !handoverConfirm.checked;
+                if (Number.isNaN(endKmVal) || endKmRaw === '') {
                     if (handoverError) {
-                        handoverError.textContent = 'Enter a valid current reading.';
+                        handoverError.textContent = needsConfirm
+                            ? 'Enter the current odometer reading and confirm you are taking the vehicle.'
+                            : 'Enter the current odometer reading.';
+                        handoverError.style.display = '';
+                    }
+                    return;
+                }
+                if (needsConfirm) {
+                    if (handoverError) {
+                        handoverError.textContent = 'Confirm you are taking this vehicle before ending the previous trip.';
                         handoverError.style.display = '';
                     }
                     return;
@@ -1503,6 +1549,14 @@
         if (handoverConfirm) {
             handoverConfirm.addEventListener('change', () => {
                 if (handoverConfirm.checked && handoverError) {
+                    handoverError.textContent = '';
+                    handoverError.style.display = 'none';
+                }
+            });
+        }
+        if (handoverEndKm) {
+            handoverEndKm.addEventListener('input', () => {
+                if (handoverError) {
                     handoverError.textContent = '';
                     handoverError.style.display = 'none';
                 }

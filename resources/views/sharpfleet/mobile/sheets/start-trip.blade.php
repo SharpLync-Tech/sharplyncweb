@@ -280,7 +280,7 @@
 
             <div class="form-group" style="margin-bottom: 12px;">
                 <label class="form-label" id="sfMobileHandoverReadingLabel">Current odometer (km)</label>
-                <input type="number" name="end_km" id="sfMobileHandoverEndKm" class="form-control" inputmode="numeric" placeholder="e.g. 124800">
+                <input type="number" name="end_km" id="sfMobileHandoverEndKm" class="form-control sf-handover-input" inputmode="numeric" placeholder="e.g. 124800">
             </div>
 
             <label class="checkbox-label" style="margin-bottom: 12px;">
@@ -955,10 +955,21 @@
                 return;
             }
 
-            const endKmVal = Number(handoverEndKm ? handoverEndKm.value : '');
-            if (Number.isNaN(endKmVal)) {
+            const endKmRaw = handoverEndKm ? String(handoverEndKm.value || '').trim() : '';
+            const endKmVal = endKmRaw === '' ? Number.NaN : Number(endKmRaw);
+            const needsConfirm = !handoverConfirm || !handoverConfirm.checked;
+            if (Number.isNaN(endKmVal) || endKmRaw === '') {
                 if (handoverError) {
-                    handoverError.textContent = 'Enter a valid current reading.';
+                    handoverError.textContent = needsConfirm
+                        ? 'Enter the current odometer reading and confirm you are taking the vehicle.'
+                        : 'Enter the current odometer reading.';
+                    handoverError.style.display = '';
+                }
+                return;
+            }
+            if (needsConfirm) {
+                if (handoverError) {
+                    handoverError.textContent = 'Confirm you are taking this vehicle before ending the previous trip.';
                     handoverError.style.display = '';
                 }
                 return;
@@ -1020,6 +1031,14 @@
     if (handoverConfirm) {
         handoverConfirm.addEventListener('change', () => {
             if (handoverConfirm.checked && handoverError) {
+                handoverError.textContent = '';
+                handoverError.style.display = 'none';
+            }
+        });
+    }
+    if (handoverEndKm) {
+        handoverEndKm.addEventListener('input', () => {
+            if (handoverError) {
                 handoverError.textContent = '';
                 handoverError.style.display = 'none';
             }

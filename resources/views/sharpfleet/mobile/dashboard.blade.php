@@ -27,7 +27,7 @@
          Drive Status
     ================================ --}}
     @if($activeTrip)
-        <div class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px;">
+        <div id="activeTripCard" class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px;">
             <div class="sf-mobile-card-title">Drive in Progress</div>
 
             <div class="hint-text" style="margin-top: 8px;">
@@ -69,6 +69,7 @@
         </div>
 
         <button
+            id="endDriveBtn"
             type="button"
             class="sf-mobile-primary-btn"
             data-sheet-open="end-trip"
@@ -339,6 +340,7 @@
         async function submitFormOnline(form) {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 8000);
+            const isEndTrip = form && form.id === 'endTripForm';
 
             try {
                 const res = await fetch(form.action, {
@@ -355,6 +357,18 @@
                 clearTimeout(timeout);
 
                 if (res.ok) {
+                    if (isEndTrip) {
+                        setOfflineActiveTrip(null);
+                        renderOfflineActiveTrip();
+                        closeSheets();
+
+                        const activeTripCard = document.getElementById('activeTripCard');
+                        const endDriveBtn = document.getElementById('endDriveBtn');
+                        if (activeTripCard) activeTripCard.style.display = 'none';
+                        if (endDriveBtn) endDriveBtn.style.display = 'none';
+                        if (noActiveTripCard) noActiveTripCard.style.display = '';
+                    }
+
                     const path = window.location.pathname || '';
                     const base = path.startsWith('/app/sharpfleet/mobile')
                         ? '/app/sharpfleet/mobile'
