@@ -543,6 +543,7 @@
 .sf-tab:hover {
     border-color: #9fb0c4;
     color: #0a2a4d;
+    box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
 }
 
 .sf-tab.is-active {
@@ -551,8 +552,12 @@
     border-bottom: none;
     border-top-color: #39b7aa;
     transform: translateY(-1px);
-    box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
+    box-shadow: 0 0 0 3px rgba(57, 183, 170, 0.2);
     z-index: 2;
+}
+
+.sf-tab.is-active + .sf-tab {
+    border-left-color: transparent;
 }
 
 .sf-tab:first-child {
