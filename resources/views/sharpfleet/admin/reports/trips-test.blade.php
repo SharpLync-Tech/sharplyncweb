@@ -1,4 +1,4 @@
-@extends('layouts.sharpfleet')
+@extends('layouts.sharpfleet-reports')
 
 @section('title', 'Trip Report – RAW')
 
