@@ -67,7 +67,8 @@
             <div class="sf-tab-panels">
                 <section class="sf-tab-panel is-active" id="sf-vehicle-tab-basics" data-sf-panel="basics" role="tabpanel" aria-labelledby="sf-vehicle-tab-basics-button">
                     <div class="grid gap-4">
-                        {{-- Row 1: Vehicle info --}}
+                        {{-- Row 1: Vehicle info | Vehicle details --}}
+                        <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle info</h3>
@@ -134,10 +135,12 @@
                 </div>
             </div>
         </div>
+        </div>
     </section>
 
     <section class="sf-tab-panel" id="sf-vehicle-tab-details" data-sf-panel="details" role="tabpanel" aria-labelledby="sf-vehicle-tab-details-button">
         <div class="grid gap-4">
+            <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
