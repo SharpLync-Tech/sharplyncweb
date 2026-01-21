@@ -1387,7 +1387,9 @@ class VehicleController extends Controller
             'insurance_notify_email' => ['nullable', 'email', 'max:255'],
             'insurance_notify_window_days' => ['nullable', 'integer', 'min:0', 'max:3650'],
             'insurance_documents' => ['nullable', 'array'],
-            'insurance_documents.*' => ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+            'insurance_documents.*' => ['file', 'max:3072', 'mimes:pdf,jpg,jpeg,png'],
+        ], [
+            'insurance_documents.*.max' => 'Each insurance document must be 3MB or smaller.',
         ]);
 
         $branchService = new BranchService();

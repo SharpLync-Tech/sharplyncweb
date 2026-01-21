@@ -416,20 +416,22 @@
                                 <div class="form-group">
                                     <label class="form-label">Insurance documents</label>
                                     <input type="file" name="insurance_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
-                                    <div class="form-hint">Up to 3 documents per vehicle.</div>
+                                    <div class="form-hint">Up to 3 documents per vehicle, max 3MB each.</div>
                                     @if($insuranceDocuments->isNotEmpty())
                                         <div class="form-hint">Uploaded documents:</div>
                                         <div class="mt-2">
                                             @foreach($insuranceDocuments as $doc)
-                                                <div class="mb-2">
+                                                <div class="insurance-doc-row">
+                                                    <button type="submit"
+                                                            class="insurance-doc-delete"
+                                                            title="Delete document"
+                                                            aria-label="Delete document"
+                                                            form="insurance-doc-delete-{{ (int) $doc->id }}">
+                                                        🗑
+                                                    </button>
                                                     <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/'.(int) $doc->id) }}">
                                                         {{ $doc->document_original_name ?: 'Insurance document' }}
                                                     </a>
-                                                    <button type="submit"
-                                                            class="btn btn-outline-secondary btn-sm ms-2"
-                                                            form="insurance-doc-delete-{{ (int) $doc->id }}">
-                                                        Delete
-                                                    </button>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -758,6 +760,35 @@
 
 .sf-vehicle-edit .form-hint {
     margin-top: 4px;
+}
+
+.insurance-doc-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.insurance-doc-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid rgba(220, 53, 69, 0.35);
+    background: rgba(220, 53, 69, 0.08);
+    color: #d9534f;
+    font-size: 14px;
+    cursor: pointer;
+    flex: 0 0 auto;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.insurance-doc-delete:hover {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.6);
+    color: #c12f2a;
 }
 
 .ai-input-wrap {
