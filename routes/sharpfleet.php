@@ -266,9 +266,7 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/reminders/vehicles', [ReminderController::class, 'vehicles']);
         Route::get('/admin/reports', fn () => redirect('/app/sharpfleet/admin/reports/trips'));
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
-
-        // 🔬 Test layout (safe, isolated)
-        Route::get('/admin/reports/trips-test', [ReportController::class, 'tripsTest']);
+        
 
         Route::get('/admin/setup/company', [SetupWizardController::class, 'company']);
         Route::post('/admin/setup/company', [SetupWizardController::class, 'storeCompany']);

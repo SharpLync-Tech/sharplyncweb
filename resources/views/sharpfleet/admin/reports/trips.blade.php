@@ -57,31 +57,10 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Report labels
+    | Branch awareness
     |--------------------------------------------------------------------------
     */
-    $reportLabels = [
-        'general' => [
-            'title' => 'Trip Report',
-            'badge' => 'GENERAL',
-            'desc'  => 'Internal and operational visibility',
-            'class' => 'badge-neutral',
-        ],
-        'tax' => [
-            'title' => 'Logbook Report',
-            'badge' => 'TAX',
-            'desc'  => 'Business travel suitable for tax reporting',
-            'class' => 'badge-primary',
-        ],
-        'care' => [
-            'title' => $clientPresenceLabel . ' Care Travel Report',
-            'badge' => 'CARE',
-            'desc'  => $clientPresenceLabel . '-linked travel evidence',
-            'class' => 'badge-success',
-        ],
-    ];
-
-    $activeReport = $reportLabels[$reportType] ?? $reportLabels['general'];
+    $branchesEnabled = isset($branches) && $branches->count() > 0;
 @endphp
 
 <div class="container">
@@ -109,23 +88,82 @@
         </div>
     </div>
 
-    {{-- ================= ACTIVE REPORT ================= --}}
+    {{-- ================= REPORT CONFIG ================= --}}
     <div class="card mb-3">
-        <div class="card-body flex-between">
-            <div>
-                <span class="badge {{ $activeReport['class'] }} me-2">
-                    {{ $activeReport['badge'] }}
-                </span>
-                <strong>{{ $activeReport['title'] }}</strong>
-                <div class="text-muted small">
-                    {{ $activeReport['desc'] }}
+        <div class="card-body">
+
+            <h3 class="mb-3">Reports</h3>
+
+            <div class="grid grid-3 gap-3">
+
+                {{-- Scope --}}
+                <div>
+                    <strong class="d-block mb-1">Scope</strong>
+
+                    <label class="d-block">
+                        <input type="radio" name="scope" checked>
+                        Company-wide
+                    </label>
+
+                    @if($branchesEnabled)
+                        <label class="d-block">
+                            <input type="radio" name="scope">
+                            Branch only
+                        </label>
+                    @endif
                 </div>
+
+                {{-- Filters --}}
+                <div>
+                    <strong class="d-block mb-1">Filter by</strong>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Drivers
+                    </label>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Vehicles
+                    </label>
+                </div>
+
+                {{-- Screen view options --}}
+                <div>
+                    <strong class="d-block mb-1">Show on screen</strong>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Registration number
+                    </label>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Purpose of travel
+                    </label>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Distance
+                    </label>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Duration
+                    </label>
+
+                    <label class="d-block">
+                        <input type="checkbox">
+                        Start & end times
+                    </label>
+                </div>
+
             </div>
 
-            <div class="text-muted small text-end">
-                Reporting period shown in local time<br>
-                Time zone: {{ $companyTimezone }}
+            <div class="text-muted small mt-3">
+                Screen options affect on-screen display only. CSV export always includes full data.
             </div>
+
         </div>
     </div>
 
@@ -156,6 +194,7 @@
     {{-- ================= RESULTS ================= --}}
     <div class="card">
         <div class="card-body">
+
             @if($trips->count() === 0)
                 <p class="text-muted fst-italic">
                     No trips found for the selected filters.
@@ -210,6 +249,7 @@
                     Distances and durations are shown using each vehicle’s configured unit (km, mi, or hours).
                 </div>
             @endif
+
         </div>
     </div>
 
