@@ -141,7 +141,7 @@
         </div>
         <p class="mb-2">Set your company name, time zone, and (optionally) industry. This affects how times show across trips, faults, bookings, and reports.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/company">Open Step 1</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/company">Open Step 1</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Why it matters</div>
@@ -159,7 +159,7 @@
         </div>
         <p class="mb-2">Choose whether drivers must record if a passenger/client was present, and (optionally) capture a customer name for billing/reporting.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/presence">Open Step 2</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/presence">Open Step 2</a>
         </div>
         <div class="sf-help__callout sf-help__callout--important">
             <div class="sf-help__calloutTitle">Important</div>
@@ -177,7 +177,7 @@
         </div>
         <p class="mb-2">Trip rules decide what shows on the driver screen. If something is required, drivers can’t start a trip until it’s filled in.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/trip-rules">Open Step 3</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/trip-rules">Open Step 3</a>
         </div>
         <div class="sf-help__callout sf-help__callout--recommended">
             <div class="sf-help__calloutTitle">Recommended</div>
@@ -195,7 +195,7 @@
         </div>
         <p class="mb-2">Turn on only what you plan to maintain (rego and servicing). These settings control which fields appear on vehicle profiles and which reminders can be used.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/vehicle-tracking">Open Step 4</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/vehicle-tracking">Open Step 4</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Tip</div>
@@ -213,7 +213,7 @@
         </div>
         <p class="mb-2">These thresholds control when vehicles are marked as due soon and when reminder emails are sent. They apply at a company level (not per vehicle).</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/reminders">Open Step 5</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/reminders">Open Step 5</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Example</div>
@@ -231,7 +231,7 @@
         </div>
         <p class="mb-2">Enable address capture only if you need it for billing or job tracking. Leaving it off reduces sensitive data captured by drivers.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/client-addresses">Open Step 6</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/client-addresses">Open Step 6</a>
         </div>
     </div>
 </section>
@@ -245,7 +245,7 @@
         </div>
         <p class="mb-2">If you enable safety checks, drivers will be prompted to complete them before starting a trip.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/safety-check">Open Step 7</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/safety-check">Open Step 7</a>
             <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/safety-checks">Manage checklist</a>
         </div>
         <div class="sf-help__callout">
@@ -264,7 +264,7 @@
         </div>
         <p class="mb-2">Enable this if drivers need to report vehicle issues or accidents. It adds a reporting option in the driver portal.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/settings/incident-reporting">Open Step 8</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/incident-reporting">Open Step 8</a>
         </div>
     </div>
 </section>
@@ -278,7 +278,7 @@
         </div>
         <p class="mb-2">Finish setup to unlock the rest of the admin area. You can change settings later under Company Settings.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/setup/finish">Open Step 9</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/finish">Open Step 9</a>
         </div>
     </div>
 </section>
@@ -292,7 +292,7 @@
         </div>
         <p class="mb-2">Add at least one vehicle before inviting drivers. Use clear names (example: “Hilux 1”).</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Tip</div>
@@ -310,7 +310,7 @@
         </div>
         <p class="mb-2">Send an invite so drivers can set a password and start using SharpFleet.</p>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/users">Open Users</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/users">Open Users</a>
             <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/users/invite">Invite a driver</a>
         </div>
         <div class="sf-help__callout">
@@ -357,7 +357,7 @@
             <li><strong>Optional features:</strong> safety checks and client/customer capture can be enabled per company.</li>
         </ul>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
         </div>
     </details>
 </section>
@@ -435,7 +435,7 @@
             <li><strong>Reminders:</strong> rego and service reminders depend on your Company Settings.</li>
         </ul>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
         </div>
     </details>
 </section>
@@ -452,7 +452,7 @@
             <li>Use Export CSV to download the same results you’re viewing.</li>
         </ol>
         <div class="sf-help__actions">
-            <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/reports/trips">Open Trip Reports</a>
+            <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/reports/trips">Open Trip Reports</a>
         </div>
     </details>
 </section>
