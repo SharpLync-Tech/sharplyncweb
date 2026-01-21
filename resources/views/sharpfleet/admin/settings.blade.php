@@ -173,6 +173,17 @@
         overflow: visible;
     }
 
+    .sf-settings-note {
+        margin: 18px 0 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #d9e2ec;
+        border-left: 3px solid #39b7aa;
+        background: #f7fbfb;
+        color: #334e68;
+        font-size: 13px;
+    }
+
     .sf-tab-panel + .sf-tab-panel {
         margin-top: 24px;
     }
@@ -517,14 +528,14 @@
                 </section>
             </div>
         </div>
+
+        <div class="sf-settings-note">
+            These settings apply to all drivers in your organisation and take effect immediately.
+        </div>
         {{-- Actions --}}
         <div class="btn-group">
             <button type="submit" name="save" value="1" class="btn btn-primary">Save settings</button>
             <button type="submit" name="save_and_return" value="1" class="btn btn-secondary">Save & return to Company</button>
-        </div>
-
-        <div class="mt-5 text-muted small">
-            These settings apply to all drivers in your organisation and take effect immediately.
         </div>
 
     </form>

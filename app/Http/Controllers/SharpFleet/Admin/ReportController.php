@@ -20,6 +20,11 @@ class ReportController extends Controller
         $this->reportingService = $reportingService;
     }
 
+    /**
+     * --------------------------------------------------------------------------
+     * Standard Trip Report (production)
+     * --------------------------------------------------------------------------
+     */
     public function trips(Request $request)
     {
         $user = $request->session()->get('sharpfleet.user');
@@ -29,18 +34,18 @@ class ReportController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Company settings (SINGLE SOURCE OF TRUTH)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $companySettings = new CompanySettingsService(
             (int) $user['organisation_id']
         );
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Report type handling
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $reportType = $request->input('report_type', 'general');
 
@@ -59,9 +64,9 @@ class ReportController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Branch access enforcement
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $branchesService = new BranchService();
         $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
@@ -84,9 +89,9 @@ class ReportController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | CSV export (inherits report rules)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         if ($request->export === 'csv') {
             return $this->reportingService->streamTripReportCsv(
@@ -97,9 +102,9 @@ class ReportController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Build report data
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $result = $this->reportingService->buildTripReport(
             (int) $user['organisation_id'],
@@ -108,9 +113,9 @@ class ReportController extends Controller
         );
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Vehicles (respect branch scope)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $vehicles = DB::connection('sharpfleet')
             ->table('vehicles')
@@ -125,9 +130,9 @@ class ReportController extends Controller
             ->get();
 
         /*
-        |--------------------------------------------------------------------------
-        | Render view
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Render production report view
+        |----------------------------------------------------------------------
         */
         return view('sharpfleet.admin.reports.trips', [
             'trips' => $result['trips'],
@@ -144,7 +149,42 @@ class ReportController extends Controller
             'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
             'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
 
-            // 🔑 LABEL RESOLVED ONCE — SAME AS START TRIP
+            // 🔑 Label resolved ONCE — same as start trip
+            'clientPresenceLabel' => $companySettings->clientLabel(),
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Trip Report – TEST LAYOUT (desktop-first experiment)
+     * --------------------------------------------------------------------------
+     * No filters, no CSV, no branching logic changes.
+     * Uses the SAME reporting dataset as production.
+     * --------------------------------------------------------------------------
+     */
+    public function tripsTest(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::canViewReports($user)) {
+            abort(403);
+        }
+
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        $result = $this->reportingService->buildTripReport(
+            (int) $user['organisation_id'],
+            $request,
+            $user
+        );
+
+        return view('sharpfleet.admin.reports.trips-test', [
+            'trips' => $result['trips'],
+            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
+
+            // 🔑 SAME label source
             'clientPresenceLabel' => $companySettings->clientLabel(),
         ]);
     }
