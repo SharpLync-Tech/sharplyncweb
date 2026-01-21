@@ -1581,6 +1581,12 @@ class VehicleController extends Controller
             }
         }
 
+        if ($request->hasFile('insurance_documents') && !Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents')) {
+            return back()
+                ->withErrors(['insurance_documents' => 'Insurance documents table is missing. Please add vehicle_insurance_documents in the database.'])
+                ->withInput();
+        }
+
         if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents') && $request->hasFile('insurance_documents')) {
             $existingDocCount = DB::connection('sharpfleet')
                 ->table('vehicle_insurance_documents')
