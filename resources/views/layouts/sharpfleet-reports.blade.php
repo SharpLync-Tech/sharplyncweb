@@ -6,20 +6,21 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Core SharpFleet branding --}}
+    {{-- Core SharpFleet base styles (fonts, colours, nav) --}}
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet.css') }}">
 
-    {{-- Reports-only stylesheet --}}
+    {{-- Reports-only overrides --}}
     <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
 
     @stack('styles')
 </head>
+
 <body class="sf-reports-body">
 
-    {{-- KEEP existing top nav for consistency --}}
-    @include('layouts.sharpfleet')
+    {{-- NAV ONLY – no layout, no containers, no footer --}}
+    @include('layouts.sharpfleet-nav')
 
-    {{-- REPORT CONTENT (no containers, no constraints) --}}
+    {{-- REPORT CONTENT – starts immediately after nav --}}
     <main class="sf-reports-main">
         @yield('content')
     </main>
