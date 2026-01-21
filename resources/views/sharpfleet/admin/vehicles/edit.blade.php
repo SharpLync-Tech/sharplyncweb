@@ -66,10 +66,6 @@
 
             <div class="sf-tab-panels">
                 <section class="sf-tab-panel is-active" id="sf-vehicle-tab-basics" data-sf-panel="basics" role="tabpanel" aria-labelledby="sf-vehicle-tab-basics-button">
-                    @php
-                        $currentOdometer = $vehicle->last_odometer_reading ?? $vehicle->odometer_reading ?? $vehicle->starting_km ?? null;
-                        $lastDriverName = $vehicle->last_driver_name ?? null;
-                    @endphp
                     <div class="grid gap-4">
                         {{-- Row 1: Vehicle info | Vehicle details --}}
                         <div class="grid grid-2 gap-4">
@@ -135,15 +131,6 @@
                             @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Current odometer reading</label>
-                            <input type="text" class="form-control" value="{{ $currentOdometer !== null ? $currentOdometer : 'N/A' }}" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Last driver</label>
-                            <input type="text" class="form-control" value="{{ $lastDriverName ?: 'N/A' }}" disabled>
-                        </div>
                     </div>
                 </div>
             </div>
