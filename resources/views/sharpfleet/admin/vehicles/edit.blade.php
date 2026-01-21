@@ -135,7 +135,6 @@
                 </div>
             </div>
         </div>
-        </div>
     </section>
 
     <section class="sf-tab-panel" id="sf-vehicle-tab-details" data-sf-panel="details" role="tabpanel" aria-labelledby="sf-vehicle-tab-details-button">
@@ -238,8 +237,6 @@
                     </div>
                 </div>
             </div>
-
-                        </div>
                     </div>
                 </section>
 
