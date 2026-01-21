@@ -31,6 +31,7 @@
 <p><strong>Timezone:</strong> {{ $companyTimezone }}</p>
 <p><strong>{{ $clientPresenceLabel }} column label in use</strong></p>
 
+<div align="left">
 <table border="1" cellpadding="6" cellspacing="0" width="2000">
     <thead>
         <tr>
@@ -75,5 +76,5 @@
         @endforeach
     </tbody>
 </table>
-
+</div>
 @endsection
