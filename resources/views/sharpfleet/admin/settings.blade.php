@@ -46,8 +46,8 @@
 
     .sf-tooltip__content {
         position: absolute;
-        left: 0;
-        top: calc(100% + 8px);
+        left: calc(100% + 10px);
+        top: 50%;
         min-width: 280px;
         max-width: 380px;
         padding: 12px 14px;
@@ -59,7 +59,7 @@
         line-height: 1.45;
         z-index: 20;
         opacity: 0;
-        transform: translateY(-6px);
+        transform: translateY(-50%);
         pointer-events: none;
         transition: opacity 140ms ease, transform 140ms ease;
     }
@@ -80,15 +80,21 @@
     .sf-tooltip:hover .sf-tooltip__content,
     .sf-tooltip:focus-within .sf-tooltip__content {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(-50%);
         pointer-events: auto;
     }
 
     @media (max-width: 640px) {
         .sf-tooltip__content {
-            left: auto;
-            right: 0;
+            left: 0;
+            top: calc(100% + 8px);
             max-width: min(92vw, 360px);
+            transform: translateY(-6px);
+        }
+
+        .sf-tooltip:hover .sf-tooltip__content,
+        .sf-tooltip:focus-within .sf-tooltip__content {
+            transform: translateY(0);
         }
     }
 
