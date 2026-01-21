@@ -25,8 +25,6 @@
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate   = $ui['end_date'] ?? request('end_date');
 
-    $reportType = request('report_type', 'general');
-
     /*
     |--------------------------------------------------------------------------
     | Totals
@@ -55,11 +53,6 @@
         ? Carbon::parse($uiEndDate)->timezone($companyTimezone)->format($dateFormat)
         : '—';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Branch awareness
-    |--------------------------------------------------------------------------
-    */
     $branchesEnabled = isset($branches) && $branches->count() > 0;
 @endphp
 
@@ -80,7 +73,6 @@
                 <input type="hidden" name="vehicle_id" value="{{ $uiVehicleId }}">
                 <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                 <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
-                <input type="hidden" name="report_type" value="{{ $reportType }}">
                 <button type="submit" class="btn btn-primary">
                     Export Report (CSV)
                 </button>
@@ -88,84 +80,92 @@
         </div>
     </div>
 
-    {{-- ================= REPORT CONFIG ================= --}}
-    <div class="card mb-3">
-        <div class="card-body">
+    {{-- ================= REPORT OPTIONS ================= --}}
+    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
+        <div class="card mb-3">
+            <div class="card-body">
 
-            <h3 class="mb-3">Reports</h3>
+                <h3 class="mb-4">Reports</h3>
 
-            <div class="grid grid-3 gap-3">
+                <div class="grid grid-3 gap-4">
 
-                {{-- Scope --}}
-                <div>
-                    <strong class="d-block mb-1">Scope</strong>
+                    {{-- Scope --}}
+                    <div>
+                        <h5 class="mb-2">Scope</h5>
 
-                    <label class="d-block">
-                        <input type="radio" name="scope" checked>
-                        Company-wide
-                    </label>
-
-                    @if($branchesEnabled)
-                        <label class="d-block">
-                            <input type="radio" name="scope">
-                            Branch only
+                        <label class="d-block mb-1">
+                            <input type="radio" name="scope" value="company" checked>
+                            Company-wide
                         </label>
-                    @endif
+
+                        @if($branchesEnabled)
+                            <label class="d-block">
+                                <input type="radio" name="scope" value="branch">
+                                Branch only
+                            </label>
+                        @endif
+                    </div>
+
+                    {{-- Filters --}}
+                    <div>
+                        <h5 class="mb-2">Filter by</h5>
+
+                        <label class="d-block mb-1">
+                            <input type="checkbox" name="filter_drivers">
+                            Drivers
+                        </label>
+
+                        <label class="d-block">
+                            <input type="checkbox" name="filter_vehicles">
+                            Vehicles
+                        </label>
+                    </div>
+
+                    {{-- Screen columns --}}
+                    <div>
+                        <h5 class="mb-2">Show on screen</h5>
+
+                        <label class="d-block mb-1">
+                            <input type="checkbox" name="show_registration">
+                            Registration number
+                        </label>
+
+                        <label class="d-block mb-1">
+                            <input type="checkbox" name="show_purpose">
+                            Purpose of travel
+                        </label>
+
+                        <label class="d-block mb-1">
+                            <input type="checkbox" name="show_distance">
+                            Distance
+                        </label>
+
+                        <label class="d-block mb-1">
+                            <input type="checkbox" name="show_duration">
+                            Duration
+                        </label>
+
+                        <label class="d-block">
+                            <input type="checkbox" name="show_times">
+                            Start & end times
+                        </label>
+                    </div>
+
                 </div>
 
-                {{-- Filters --}}
-                <div>
-                    <strong class="d-block mb-1">Filter by</strong>
+                <div class="flex-between mt-4">
+                    <div class="text-muted small">
+                        Screen options affect on-screen display only. CSV export always includes full data.
+                    </div>
 
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Drivers
-                    </label>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Vehicles
-                    </label>
-                </div>
-
-                {{-- Screen view options --}}
-                <div>
-                    <strong class="d-block mb-1">Show on screen</strong>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Registration number
-                    </label>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Purpose of travel
-                    </label>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Distance
-                    </label>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Duration
-                    </label>
-
-                    <label class="d-block">
-                        <input type="checkbox">
-                        Start & end times
-                    </label>
+                    <button type="submit" class="btn btn-secondary">
+                        Update Report
+                    </button>
                 </div>
 
             </div>
-
-            <div class="text-muted small mt-3">
-                Screen options affect on-screen display only. CSV export always includes full data.
-            </div>
-
         </div>
-    </div>
+    </form>
 
     {{-- ================= SUMMARY ================= --}}
     <div class="card mb-3">
@@ -208,9 +208,6 @@
                                 <th>Driver</th>
                                 <th>Business / Private</th>
                                 <th>{{ $clientPresenceLabel }}</th>
-                                @if($purposeOfTravelEnabled)
-                                    <th>Purpose of travel</th>
-                                @endif
                                 <th>Started</th>
                                 <th>Ended</th>
                             </tr>
@@ -225,11 +222,6 @@
                                     <td>{{ $t->driver_name }}</td>
                                     <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}</td>
                                     <td>{{ $t->customer_name_display ?: '—' }}</td>
-
-                                    @if($purposeOfTravelEnabled)
-                                        <td>{{ $t->purpose_of_travel ?: '—' }}</td>
-                                    @endif
-
                                     <td>
                                         {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
                                     </td>
@@ -243,10 +235,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-
-                <div class="mt-2 text-muted small">
-                    Distances and durations are shown using each vehicle’s configured unit (km, mi, or hours).
                 </div>
             @endif
 
