@@ -94,7 +94,7 @@
 
     .sf-settings-card {
         padding: 0;
-        overflow: hidden;
+        overflow: visible;
         border: 1px solid rgba(10, 42, 77, 0.08);
         box-shadow: 0 18px 30px rgba(10, 42, 77, 0.12);
     }
@@ -163,6 +163,8 @@
 
     .sf-tab-panels {
         padding: 24px 28px 28px;
+        position: relative;
+        overflow: visible;
     }
 
     .sf-tab-panel + .sf-tab-panel {
