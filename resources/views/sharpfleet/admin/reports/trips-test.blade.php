@@ -4,70 +4,58 @@
 
 @section('sharpfleet-content')
 
-<link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
-
 @php
     use Carbon\Carbon;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Inputs resolved by controller
-    |--------------------------------------------------------------------------
-    */
     $companyTimezone     = $companyTimezone ?? config('app.timezone');
     $clientPresenceLabel = trim((string) ($clientPresenceLabel ?? 'Client'));
     $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Date format
-    |--------------------------------------------------------------------------
-    */
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y H:i'
         : 'd/m/Y H:i';
 @endphp
 
+{{-- Reports stylesheet (already exists) --}}
+<link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
+
 <div class="sf-report-wrapper">
 
-    {{-- ================= HEADER ================= --}}
     <div class="page-header mb-4">
-        <div>
-            <h1 class="page-title">Trip Report (Test)</h1>
-            <p class="page-description">
-                Desktop-first test layout for detailed trip reporting.
-            </p>
-        </div>
+        <h1 class="page-title">Trip Report (Test)</h1>
+        <p class="page-description">
+            Desktop-first test layout for detailed trip reporting.
+        </p>
     </div>
 
-    {{-- ================= RESULTS ================= --}}
     <div class="sf-report-surface">
 
         @if($trips->count() === 0)
-            <p class="text-muted fst-italic">No trips available.</p>
+            <p class="text-muted fst-italic">
+                No trips available.
+            </p>
         @else
             <div class="sf-report-scroll">
-                <table class="sf-report-table table table-sm align-middle">
+                <table class="sf-report-table">
                     <thead>
                         <tr>
-                            <th>Vehicle</th>
-                            <th>Driver</th>
-                            <th>Type</th>
-                            <th>{{ $clientPresenceLabel }}</th>
-                            <th class="text-end">Start</th>
-                            <th class="text-end">End</th>
-                            <th class="text-end">Total</th>
-                            <th>Started</th>
-                            <th>Ended</th>
-                            <th class="text-end">Duration</th>
+                            <th class="sf-col-vehicle">Vehicle</th>
+                            <th class="sf-col-driver">Driver</th>
+                            <th class="sf-col-type">Type</th>
+                            <th class="sf-col-customer">{{ $clientPresenceLabel }}</th>
+                            <th class="sf-col-start">Start</th>
+                            <th class="sf-col-end">End</th>
+                            <th class="sf-col-total">Total</th>
+                            <th class="sf-col-started">Started</th>
+                            <th class="sf-col-ended">Ended</th>
+                            <th class="sf-col-duration">Duration</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($trips as $t)
-
                             @php
-                                $startReading = $t->display_start ?? null;
-                                $endReading   = $t->display_end ?? null;
+                                $startReading = $t->display_start;
+                                $endReading   = $t->display_end;
                                 $unit         = $t->display_unit ?? 'km';
 
                                 $distanceTotal = (
@@ -86,84 +74,76 @@
                                     ? Carbon::parse($t->end_time)
                                     : null;
 
-                                $duration = (
-                                    $startedAt && $endedAt
-                                )
-                                    ? $startedAt->diff($endedAt)->format('%h:%I')
+                                $duration = ($startedAt && $endedAt)
+                                    ? $startedAt->diffForHumans($endedAt, [
+                                        'parts' => 2,
+                                        'short' => true,
+                                        'syntax' => Carbon::DIFF_ABSOLUTE,
+                                    ])
                                     : null;
                             @endphp
 
                             <tr>
-                                {{-- Vehicle --}}
-                                <td>
-                                    <div class="sf-report-vehicle">{{ $t->vehicle_name }}</div>
+                                <td class="sf-col-vehicle">
+                                    <span class="sf-report-vehicle">{{ $t->vehicle_name }}</span>
                                     <div class="sf-report-sub">{{ $t->registration_number }}</div>
                                 </td>
 
-                                {{-- Driver --}}
-                                <td>{{ $t->driver_name }}</td>
+                                <td class="sf-col-driver">
+                                    {{ $t->driver_name }}
+                                </td>
 
-                                {{-- Type --}}
-                                <td class="sf-trip-type">
+                                <td class="sf-col-type sf-trip-type">
                                     {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
                                 </td>
 
-                                {{-- Customer / Client --}}
-                                <td>{{ $t->customer_name_display ?: '—' }}</td>
+                                <td class="sf-col-customer">
+                                    {{ $t->customer_name_display ?: '—' }}
+                                </td>
 
-                                {{-- Start --}}
-                                <td class="text-end">
-                                    {{ is_numeric($startReading) ? $startReading : '—' }}
+                                <td class="sf-col-start text-end">
                                     @if(is_numeric($startReading))
-                                        <span class="sf-report-unit">{{ $unit }}</span>
+                                        {{ $startReading }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
                                     @endif
                                 </td>
 
-                                {{-- End --}}
-                                <td class="text-end">
-                                    {{ is_numeric($endReading) ? $endReading : '—' }}
+                                <td class="sf-col-end text-end">
                                     @if(is_numeric($endReading))
-                                        <span class="sf-report-unit">{{ $unit }}</span>
+                                        {{ $endReading }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
                                     @endif
                                 </td>
 
-                                {{-- Total --}}
-                                <td class="text-end sf-report-total">
-                                    {{ $distanceTotal ?? '—' }}
+                                <td class="sf-col-total text-end sf-report-total">
                                     @if($distanceTotal !== null)
-                                        <span class="sf-report-unit">{{ $unit }}</span>
+                                        {{ $distanceTotal }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
                                     @endif
                                 </td>
 
-                                {{-- Started --}}
-                                <td>
-                                    {{ $startedAt
-                                        ? $startedAt->timezone($companyTimezone)->format($dateFormat)
-                                        : '—'
-                                    }}
+                                <td class="sf-col-started">
+                                    {{ $startedAt ? $startedAt->timezone($companyTimezone)->format($dateFormat) : '—' }}
                                 </td>
 
-                                {{-- Ended --}}
-                                <td>
-                                    {{ $endedAt
-                                        ? $endedAt->timezone($companyTimezone)->format($dateFormat)
-                                        : '—'
-                                    }}
+                                <td class="sf-col-ended">
+                                    {{ $endedAt ? $endedAt->timezone($companyTimezone)->format($dateFormat) : '—' }}
                                 </td>
 
-                                {{-- Duration --}}
-                                <td class="text-end sf-report-duration">
-                                    {{ $duration ? $duration . ' hrs' : '—' }}
+                                <td class="sf-col-duration text-end sf-report-duration">
+                                    {{ $duration ?? '—' }}
                                 </td>
                             </tr>
-
                         @endforeach
                     </tbody>
                 </table>
             </div>
 
             <div class="mt-3 text-muted small">
-                Distance units (km / mi / hours) are resolved per vehicle or branch.
+                Distances and durations respect vehicle and branch units (km, mi, hours).
             </div>
         @endif
 
