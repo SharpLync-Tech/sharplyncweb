@@ -145,27 +145,47 @@
 
     .sf-tab:hover {
         border-color: #9fb0c4;
-        color: #0a2a4d;
+        color: #39b7aa;
+        box-shadow: 0 0 0 1px rgba(57, 183, 170, 0.12);
     }
 
     .sf-tab.is-active {
-        color: #0a2a4d;
+        color: #39b7aa;
         border-color: #39b7aa;
         border-bottom: none;
         border-top-color: #39b7aa;
         transform: translateY(-1px);
-        box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
+        box-shadow: none;
         z-index: 2;
+    }
+
+    .sf-tab.is-active::before {
+        content: "";
+        position: absolute;
+        left: -1px;
+        right: -1px;
+        top: -1px;
+        bottom: 0;
+        border: 2px solid rgba(57, 183, 170, 0.2);
+        border-bottom: none;
+        border-top-left-radius: var(--sf-tab-radius);
+        border-top-right-radius: var(--sf-tab-radius);
+        pointer-events: none;
     }
 
     .sf-tab.is-active::after {
         content: "";
         position: absolute;
-        left: -1px;
-        right: -1px;
-        bottom: -1px;
-        height: 4px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        height: 6px;
         background: #ffffff;
+        pointer-events: none;
+    }
+
+    .sf-tab.is-active + .sf-tab {
+        border-left-color: transparent;
     }
 
     .sf-tab:first-child {
@@ -178,7 +198,7 @@
     }
 
     .sf-tab-panels {
-        padding: 24px 28px 28px;
+        padding: 5px 28px;
         position: relative;
         overflow: visible;
     }
@@ -195,7 +215,7 @@
     }
 
     .sf-tab-panel + .sf-tab-panel {
-        margin-top: 24px;
+        margin-top: 2px;
     }
 
     .sf-settings-tabs.is-js .sf-tab-panel {
