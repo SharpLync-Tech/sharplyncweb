@@ -947,8 +947,18 @@ details.card[open] .incident-toggle-hint-closed {
 .btn-full { width: 100%; }
 
 .btn-sm {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 0.4rem 1.1rem;   /* proportional scale-down */
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.2;    
+}
+
+.btn-secondary.btn-sm {
+    background-color: rgba(44, 191, 174, 0.90);
+}
+
+.btn-secondary.btn-sm:hover {
+    background-color: rgba(44, 191, 174, 0.95);
 }
 
 .btn-group {
