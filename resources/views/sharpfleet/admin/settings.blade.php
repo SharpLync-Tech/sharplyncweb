@@ -47,9 +47,9 @@
     .sf-tooltip__content {
         position: absolute;
         left: calc(100% + 10px);
-        top: 50%;
+        top: 10%;
         min-width: 280px;
-        max-width: 380px;
+        max-width: 580px;
         padding: 12px 14px;
         border-radius: 10px;
         background: #0f2f2f;
@@ -57,7 +57,7 @@
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
         font-size: 13px;
         line-height: 1.45;
-        z-index: 20;
+        z-index: 60;
         opacity: 0;
         transform: translateY(-50%);
         pointer-events: none;
@@ -155,7 +155,7 @@
         border-bottom: none;
         border-top-color: #39b7aa;
         transform: translateY(-1px);
-        box-shadow: none;
+        box-shadow: 0 0 0 1.5px rgba(57, 183, 170, 0.2);
         z-index: 2;
     }
 
@@ -176,12 +176,11 @@
     .sf-tab.is-active::after {
         content: "";
         position: absolute;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        height: 6px;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 2px;
         background: #ffffff;
-        pointer-events: none;
     }
 
     .sf-tab.is-active + .sf-tab {
@@ -251,6 +250,7 @@
             flex: 0 0 auto;
         }
     }
+
 </style>
 
 @php
