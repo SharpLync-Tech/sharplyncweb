@@ -404,6 +404,9 @@
                 </div>
             </div>
         </div>
+                </section>
+            </div>
+        </div>
 
         <div class="btn-group mb-4">
             <button type="submit" class="btn btn-primary">Save</button>
@@ -414,6 +417,116 @@
 </div>
 
 <style>
+.sf-vehicle-tabs {
+    padding: 0;
+    overflow: visible;
+    border: 1px solid rgba(10, 42, 77, 0.08);
+    border-top: 1px solid rgba(10, 42, 77, 0.08);
+    box-shadow: 0 18px 30px rgba(10, 42, 77, 0.12);
+}
+
+.sf-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 16px 18px 0;
+    border-bottom: none;
+    background: transparent;
+    align-items: flex-end;
+    position: relative;
+}
+
+.sf-tab {
+    --sf-tab-radius: 14px;
+    --sf-tab-border: #d9e2ec;
+    appearance: none;
+    border: 1px solid var(--sf-tab-border);
+    border-bottom: 1px solid var(--sf-tab-border);
+    background: #ffffff;
+    color: #52657a;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    font-size: 13px;
+    padding: 9px 18px 11px;
+    border-top-left-radius: var(--sf-tab-radius);
+    border-top-right-radius: var(--sf-tab-radius);
+    cursor: pointer;
+    position: relative;
+    transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
+    margin-left: -1px;
+    margin-bottom: -1px;
+    z-index: 1;
+}
+
+.sf-tab:hover {
+    border-color: #9fb0c4;
+    color: #0a2a4d;
+}
+
+.sf-tab.is-active {
+    color: #0a2a4d;
+    border-color: #39b7aa;
+    border-bottom: none;
+    border-top-color: #39b7aa;
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
+    z-index: 2;
+}
+
+.sf-tab:first-child {
+    margin-left: 0;
+}
+
+.sf-tab:focus-visible {
+    outline: 2px solid rgba(44, 191, 174, 0.45);
+    outline-offset: 2px;
+}
+
+.sf-tab-panels {
+    padding: 24px 28px 28px;
+    position: relative;
+    overflow: visible;
+}
+
+.sf-tab-panel + .sf-tab-panel {
+    margin-top: 24px;
+}
+
+.sf-vehicle-tabs.is-js .sf-tab-panel {
+    display: none;
+}
+
+.sf-vehicle-tabs.is-js .sf-tab-panel.is-active {
+    display: block;
+}
+
+@media (max-width: 900px) {
+    .sf-tabs {
+        padding: 14px 16px 0;
+    }
+
+    .sf-tab {
+        font-size: 11px;
+        padding: 9px 12px 11px;
+    }
+
+    .sf-tab-panels {
+        padding: 20px 20px 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .sf-tabs {
+        overflow-x: auto;
+        padding-bottom: 12px;
+    }
+
+    .sf-tab {
+        flex: 0 0 auto;
+    }
+}
+
 .sf-vehicle-edit .card-body {
     display: flex;
     flex-direction: column;
@@ -498,6 +611,45 @@
 
 <script src="https://unpkg.com/flatpickr"></script>
 <script>
+    (function () {
+        const container = document.querySelector('.sf-vehicle-tabs');
+        if (!container) return;
+
+        const tabs = Array.from(container.querySelectorAll('[data-sf-tab]'));
+        const panels = Array.from(container.querySelectorAll('[data-sf-panel]'));
+        if (!tabs.length || !panels.length) return;
+
+        container.classList.add('is-js');
+
+        const activate = (name) => {
+            tabs.forEach((tab) => {
+                const isActive = tab.getAttribute('data-sf-tab') === name;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            panels.forEach((panel) => {
+                const isActive = panel.getAttribute('data-sf-panel') === name;
+                panel.classList.toggle('is-active', isActive);
+            });
+        };
+
+        const errorPanel = panels.find((panel) => panel.querySelector('.text-error, .alert-error'));
+        const initialTab = errorPanel
+            ? tabs.find((tab) => tab.getAttribute('data-sf-tab') === errorPanel.getAttribute('data-sf-panel'))
+            : tabs[0];
+
+        if (initialTab) {
+            activate(initialTab.getAttribute('data-sf-tab'));
+        }
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                activate(tab.getAttribute('data-sf-tab'));
+            });
+        });
+    })();
+
     (function () {
         if (typeof flatpickr === 'undefined') return;
         flatpickr('.sf-date', {

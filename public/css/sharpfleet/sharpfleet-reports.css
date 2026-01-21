@@ -1,0 +1,112 @@
+/* =========================================================
+   SharpFleet – Reports Stylesheet
+   Desktop-first, wide-layout reporting
+   Applies ONLY to report pages
+========================================================= */
+
+/* ------------------------------
+   Layout
+------------------------------ */
+
+.sf-report-wrapper {
+    max-width: 2400px; /* intentionally wide for desktop reports */
+    margin: 0 auto;
+    padding: 0 2.5rem 3rem;
+}
+
+.sf-report-surface {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.75rem 1.75rem 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ------------------------------
+   Table behaviour
+------------------------------ */
+
+.sf-report-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    white-space: nowrap; /* key: keep everything on one line */
+}
+
+.sf-report-table thead th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #0f172a;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem 0.75rem;
+    vertical-align: middle;
+}
+
+.sf-report-table tbody td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+.sf-report-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ------------------------------
+   Alignment helpers
+------------------------------ */
+
+.sf-report-table th.text-end,
+.sf-report-table td.text-end {
+    text-align: right;
+}
+
+.sf-report-table th.text-center,
+.sf-report-table td.text-center {
+    text-align: center;
+}
+
+/* ------------------------------
+   Semantic helpers
+------------------------------ */
+
+.sf-report-vehicle {
+    font-weight: 600;
+}
+
+.sf-report-sub {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.sf-report-unit {
+    color: #64748b;
+    font-size: 0.85em;
+    margin-left: 0.15rem;
+}
+
+.sf-report-total {
+    font-weight: 600;
+}
+
+/* ------------------------------
+   Type badges (future-ready)
+------------------------------ */
+
+.sf-trip-business {
+    color: #0f766e;
+    font-weight: 500;
+}
+
+.sf-trip-private {
+    color: #7c2d12;
+    font-weight: 500;
+}
+
+/* ------------------------------
+   Scroll safety (just in case)
+------------------------------ */
+
+.sf-report-scroll {
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+}

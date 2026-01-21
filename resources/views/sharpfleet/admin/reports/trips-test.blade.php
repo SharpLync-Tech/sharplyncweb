@@ -4,6 +4,9 @@
 
 @section('sharpfleet-content')
 
+{{-- Reports stylesheet --}}
+<link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
+
 @php
     use Carbon\Carbon;
 
@@ -28,11 +31,10 @@
     }
 @endphp
 
-{{-- TRUE FULL-WIDTH REPORT --}}
 <div class="sf-report-wrapper">
 
     {{-- ================= HEADER ================= --}}
-    <div class="page-header mb-3">
+    <div class="page-header mb-4">
         <div>
             <h1 class="page-title">Trip Report (Test)</h1>
             <p class="page-description">
@@ -42,130 +44,126 @@
     </div>
 
     {{-- ================= RESULTS ================= --}}
-    <div class="card">
-        <div class="card-body">
+    <div class="sf-report-surface">
 
-            @if($trips->count() === 0)
-                <p class="text-muted fst-italic">
-                    No trips available.
-                </p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle sf-report-table">
-                        <thead>
+        @if($trips->count() === 0)
+            <p class="text-muted fst-italic">
+                No trips available.
+            </p>
+        @else
+            <div class="sf-report-scroll">
+                <table class="table table-sm sf-report-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Driver</th>
+                            <th>Type</th>
+                            <th>{{ $clientPresenceLabel }}</th>
+                            <th class="text-end">Start</th>
+                            <th class="text-end">End</th>
+                            <th class="text-end">Total</th>
+                            <th>Started</th>
+                            <th>Ended</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($trips as $t)
+
+                            @php
+                                $startReading = $t->display_start ?? null;
+                                $endReading   = $t->display_end ?? null;
+                                $unit         = $t->display_unit ?? 'km';
+
+                                $total = (
+                                    is_numeric($startReading)
+                                    && is_numeric($endReading)
+                                    && $endReading >= $startReading
+                                )
+                                    ? number_format($endReading - $startReading, 2)
+                                    : null;
+                            @endphp
+
                             <tr>
-                                <th>Vehicle</th>
-                                <th>Driver</th>
-                                <th>Type</th>
-                                <th>{{ $clientPresenceLabel }}</th>
-                                <th class="text-end">Start</th>
-                                <th class="text-end">End</th>
-                                <th class="text-end">Total</th>
-                                <th>Started</th>
-                                <th>Ended</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($trips as $t)
-
-                                @php
-                                    $startReading = $t->display_start ?? null;
-                                    $endReading   = $t->display_end ?? null;
-                                    $unit         = $t->display_unit ?? 'km';
-
-                                    $total = (
-                                        is_numeric($startReading)
-                                        && is_numeric($endReading)
-                                        && $endReading >= $startReading
-                                    )
-                                        ? number_format($endReading - $startReading, 2)
-                                        : null;
-                                @endphp
-
-                                <tr>
-                                    {{-- Vehicle --}}
-                                    <td class="fw-semibold">
+                                {{-- Vehicle --}}
+                                <td>
+                                    <div class="sf-report-vehicle">
                                         {{ $t->vehicle_name }}
-                                        <span class="text-muted small ms-1">
-                                            ({{ $t->registration_number }})
-                                        </span>
-                                    </td>
+                                    </div>
+                                    <div class="sf-report-sub">
+                                        {{ $t->registration_number }}
+                                    </div>
+                                </td>
 
-                                    {{-- Driver --}}
-                                    <td>{{ $t->driver_name }}</td>
+                                {{-- Driver --}}
+                                <td>{{ $t->driver_name }}</td>
 
-                                    {{-- Type --}}
-                                    <td>
-                                        {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
-                                    </td>
+                                {{-- Type --}}
+                                <td>
+                                    @if(strtolower($t->trip_mode) === 'private')
+                                        <span class="sf-trip-private">Private</span>
+                                    @else
+                                        <span class="sf-trip-business">Business</span>
+                                    @endif
+                                </td>
 
-                                    {{-- Customer / Client --}}
-                                    <td>
-                                        {{ $t->customer_name_display ?: '—' }}
-                                    </td>
+                                {{-- Customer / Client --}}
+                                <td>{{ $t->customer_name_display ?: '—' }}</td>
 
-                                    {{-- Start reading --}}
-                                    <td class="text-end">
-                                        {{ is_numeric($startReading) ? $startReading . ' ' . $unit : '—' }}
-                                    </td>
+                                {{-- Start reading --}}
+                                <td class="text-end">
+                                    @if(is_numeric($startReading))
+                                        {{ $startReading }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
 
-                                    {{-- End reading --}}
-                                    <td class="text-end">
-                                        {{ is_numeric($endReading) ? $endReading . ' ' . $unit : '—' }}
-                                    </td>
+                                {{-- End reading --}}
+                                <td class="text-end">
+                                    @if(is_numeric($endReading))
+                                        {{ $endReading }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
 
-                                    {{-- Total --}}
-                                    <td class="text-end fw-semibold">
-                                        {{ $total !== null ? $total . ' ' . $unit : '—' }}
-                                    </td>
+                                {{-- Total --}}
+                                <td class="text-end sf-report-total">
+                                    @if($total !== null)
+                                        {{ $total }}<span class="sf-report-unit">{{ $unit }}</span>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
 
-                                    {{-- Started --}}
-                                    <td>
-                                        {{ $t->started_at
-                                            ? Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat)
-                                            : '—'
-                                        }}
-                                    </td>
+                                {{-- Started --}}
+                                <td>
+                                    {{ $t->started_at
+                                        ? Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat)
+                                        : '—'
+                                    }}
+                                </td>
 
-                                    {{-- Ended --}}
-                                    <td>
-                                        {{ $t->end_time
-                                            ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)
-                                            : '—'
-                                        }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                {{-- Ended --}}
+                                <td>
+                                    {{ $t->end_time
+                                        ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)
+                                        : '—'
+                                    }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mt-2 text-muted small">
-                    Distances and totals respect vehicle / branch units (km, mi, or hours).
-                </div>
-            @endif
+            <div class="mt-3 text-muted small">
+                Distances and totals respect vehicle / branch units (km, mi, or hours).
+            </div>
+        @endif
 
-        </div>
     </div>
 
 </div>
-
-{{-- PAGE-LOCAL STYLES (TEST ONLY) --}}
-<style>
-    .sf-report-wrapper {
-        max-width: 2000px;
-        margin: 0 auto;
-        padding: 0 2rem 2rem;
-    }
-
-    .sf-report-table {
-        white-space: nowrap;
-    }
-
-    .sf-report-table td,
-    .sf-report-table th {
-        vertical-align: middle;
-    }
-</style>
 
 @endsection
