@@ -140,8 +140,8 @@
                 </div>
 
                 <div class="col-12 d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Save Changes</button>
-                    <a class="btn btn-outline-secondary" href="{{ route('admin.sharpfleet.organisations.show', $organisation->id) }}">Cancel</a>
+                    <button class="btn btn-secondary btn-sm" type="submit">Save Changes</button>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.sharpfleet.organisations.show', $organisation->id) }}">Cancel</a>
                 </div>
             </form>
         </div>
