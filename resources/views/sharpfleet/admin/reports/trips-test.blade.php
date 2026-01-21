@@ -29,14 +29,13 @@
         <thead>
             <tr>
                 <th>Vehicle</th>
-                <th>Registration</th>
                 <th>Driver</th>
                 <th>Type</th>
                 <th>{{ $clientPresenceLabel }}</th>
                 <th>Start Reading</th>
                 <th>End Reading</th>
-                <th>Unit</th>
                 <th>Total</th>
+                <th>Unit</th>
                 <th>Started At</th>
                 <th>Ended At</th>
                 <th>Duration</th>
@@ -59,11 +58,11 @@
                         : null;
 
                     $startedAt = $t->started_at
-                        ? Carbon::parse($t->started_at)
+                        ? Carbon::parse($t->started_at)->timezone($companyTimezone)
                         : null;
 
                     $endedAt = $t->end_time
-                        ? Carbon::parse($t->end_time)
+                        ? Carbon::parse($t->end_time)->timezone($companyTimezone)
                         : null;
 
                     $duration = ($startedAt && $endedAt)
@@ -76,27 +75,36 @@
                 @endphp
 
                 <tr>
-                    <td>{{ $t->vehicle_name }}</td>
-                    <td>{{ $t->registration_number }}</td>
+                    {{-- Vehicle + reg on ONE line --}}
+                    <td>
+                        {{ $t->vehicle_name }}
+                        ({{ $t->registration_number }})
+                    </td>
+
+                    {{-- Driver on ONE line --}}
                     <td>{{ $t->driver_name }}</td>
+
+                    {{-- Type --}}
                     <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}</td>
+
+                    {{-- Customer / Client --}}
                     <td>{{ $t->customer_name_display ?: '—' }}</td>
+
+                    {{-- Readings --}}
                     <td>{{ is_numeric($startReading) ? $startReading : '—' }}</td>
                     <td>{{ is_numeric($endReading) ? $endReading : '—' }}</td>
-                    <td>{{ $unit }}</td>
+
+                    {{-- Total --}}
                     <td>{{ $total !== null ? $total : '—' }}</td>
-                    <td>
-                        {{ $startedAt
-                            ? $startedAt->timezone($companyTimezone)->format($dateFormat)
-                            : '—'
-                        }}
-                    </td>
-                    <td>
-                        {{ $endedAt
-                            ? $endedAt->timezone($companyTimezone)->format($dateFormat)
-                            : '—'
-                        }}
-                    </td>
+
+                    {{-- Unit --}}
+                    <td>{{ $unit }}</td>
+
+                    {{-- Dates ONE line --}}
+                    <td>{{ $startedAt ? $startedAt->format($dateFormat) : '—' }}</td>
+                    <td>{{ $endedAt ? $endedAt->format($dateFormat) : '—' }}</td>
+
+                    {{-- Duration --}}
                     <td>{{ $duration ?: '—' }}</td>
                 </tr>
             @endforeach
