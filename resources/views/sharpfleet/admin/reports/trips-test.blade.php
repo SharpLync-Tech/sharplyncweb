@@ -28,7 +28,8 @@
     }
 @endphp
 
-<div class="container container-xl">
+{{-- FULL-WIDTH DESKTOP REPORT WRAPPER --}}
+<div class="sf-report-wrapper">
 
     {{-- ================= HEADER ================= --}}
     <div class="page-header mb-3">
@@ -50,7 +51,7 @@
                 </p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-sm align-middle">
+                    <table class="table table-sm align-middle text-nowrap">
                         <thead>
                             <tr>
                                 <th>Vehicle</th>
@@ -99,7 +100,9 @@
                                     </td>
 
                                     {{-- Customer / Client --}}
-                                    <td>{{ $t->customer_name_display ?: '—' }}</td>
+                                    <td>
+                                        {{ $t->customer_name_display ?: '—' }}
+                                    </td>
 
                                     {{-- Start reading --}}
                                     <td class="text-end">
@@ -146,5 +149,14 @@
     </div>
 
 </div>
+
+{{-- PAGE-LOCAL STYLES (TEST ONLY) --}}
+<style>
+    .sf-report-wrapper {
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 0 1.5rem 2rem;
+    }
+</style>
 
 @endsection

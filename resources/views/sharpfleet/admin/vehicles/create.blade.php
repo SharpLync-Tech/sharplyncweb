@@ -37,244 +37,263 @@
     <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles') }}">
         @csrf
 
-        <div class="card">
-
-            @if($branchesEnabled)
-                <label class="form-label mt-2">Branch</label>
-                <select name="branch_id" id="branch_id" class="form-control">
-                    @foreach($branches as $b)
-                        <option value="{{ (int) $b->id }}"
-                                data-timezone="{{ (string) ($b->timezone ?? '') }}"
-                                {{ (int) old('branch_id', $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
-                            {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
-                        </option>
-                    @endforeach
-                </select>
-                <div class="form-hint">Booking and trip times will use this branch timezone.</div>
-                @error('branch_id')
-                    <div class="text-error mb-2">{{ $message }}</div>
-                @enderror
-            @endif
-
-            <label class="form-label mt-3">
-                Asset name / identifier
-            </label>
-            <input type="text"
-                   name="name"
-                   value="{{ old('name') }}"
-                   required
-                   placeholder="e.g. White Camry, Tractor 3, Forklift A"
-                   class="form-control">
-
-            <div class="form-hint">
-                This is how drivers and reports will identify this asset.
+        <div class="card sf-vehicle-tabs">
+            <div class="sf-tabs" role="tablist" aria-label="Vehicle form sections">
+                <button type="button" class="sf-tab is-active" id="sf-vehicle-tab-basics-button" data-sf-tab="basics" role="tab" aria-controls="sf-vehicle-tab-basics" aria-selected="true">
+                    Basics
+                </button>
+                @if($vehicleRegistrationTrackingEnabled)
+                    <button type="button" class="sf-tab" id="sf-vehicle-tab-registration-button" data-sf-tab="registration" role="tab" aria-controls="sf-vehicle-tab-registration" aria-selected="false">
+                        Registration
+                    </button>
+                @endif
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-usage-button" data-sf-tab="usage" role="tab" aria-controls="sf-vehicle-tab-usage" aria-selected="false">
+                    Usage
+                </button>
             </div>
 
-            @error('name')
-                <div class="text-error mb-2">{{ $message }}</div>
-            @enderror
+            <div class="sf-tab-panels">
+                <section class="sf-tab-panel is-active" id="sf-vehicle-tab-basics" data-sf-panel="basics" role="tabpanel" aria-labelledby="sf-vehicle-tab-basics-button">
+                    @if($branchesEnabled)
+                        <label class="form-label mt-2">Branch</label>
+                        <select name="branch_id" id="branch_id" class="form-control">
+                            @foreach($branches as $b)
+                                <option value="{{ (int) $b->id }}"
+                                        data-timezone="{{ (string) ($b->timezone ?? '') }}"
+                                        {{ (int) old('branch_id', $defaultBranchId) === (int) $b->id ? 'selected' : '' }}>
+                                    {{ (string) ($b->name ?? '') }} ({{ (string) ($b->timezone ?? '') }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="form-hint">Booking and trip times will use this branch timezone.</div>
+                        @error('branch_id')
+                            <div class="text-error mb-2">{{ $message }}</div>
+                        @enderror
+                    @endif
 
-            <div class="form-hint mt-3">
-                Tip: Start typing a make and model, then pick a variant. We will suggest the best matching vehicle type.
-            </div>
-            <div class="form-hint mb-2">
-                AI is only used to suggest details; you can edit any field before saving.
-            </div>
-
-            {{-- Make / Model (AI-assisted) --}}
-            <div class="form-row">
-                <div>
-                    <label class="form-label">Make</label>
-                    <div class="ai-input-wrap">
-                        <input id="aiMakeInput"
-                               type="text"
-                               name="make"
-                               value="{{ old('make') }}"
-                               placeholder="Start typing a make"
-                               class="form-control">
-                        <button type="button" class="ai-clear-btn" data-clear="make" aria-label="Clear make">x</button>
-                    </div>
-                    <div id="aiMakeStatus" class="form-hint"></div>
-                    <div id="aiMakeList" class="ai-list"></div>
-                </div>
-
-                <div>
-                    <label class="form-label">Model</label>
-                    <div class="ai-input-wrap">
-                        <input id="aiModelInput"
-                               type="text"
-                               name="model"
-                               value="{{ old('model') }}"
-                               placeholder="Start typing a model"
-                               class="form-control">
-                        <button type="button" class="ai-clear-btn" data-clear="model" aria-label="Clear model">x</button>
-                    </div>
-                    <div id="aiModelStatus" class="form-hint"></div>
-                    <div id="aiModelList" class="ai-list"></div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Variant</label>
-                <div class="ai-input-wrap">
-                    <input id="aiTrimInput"
-                           type="text"
-                           name="variant"
-                           value="{{ old('variant') }}"
-                           placeholder="Start typing a variant"
-                           class="form-control">
-                    <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">x</button>
-                </div>
-                <div id="aiTrimStatus" class="form-hint"></div>
-                <div id="aiTrimList" class="ai-list"></div>
-            </div>
-
-            {{-- Vehicle type / classification --}}
-            <div class="form-row">
-                <div>
-                    <label class="form-label">Vehicle type</label>
-                    @php $vt = old('vehicle_type', 'sedan'); @endphp
-                    <select name="vehicle_type"
-                        id="vehicle_type"
-                        class="form-control">
-                        <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
-                        <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Pickup / Light Truck</option>
-                        <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
-                        <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
-                        <option value="van" {{ $vt === 'van' ? 'selected' : '' }}>Van</option>
-                        <option value="bus" {{ $vt === 'bus' ? 'selected' : '' }}>Bus</option>
-                        <option value="ex" {{ $vt === 'ex' ? 'selected' : '' }}>Excavator</option>
-                        <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
-                        <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
-                    </select>
-                    <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
-                </div>
-
-                <div>
-                    <label class="form-label">
-                        Vehicle classification (optional)
+                    <label class="form-label mt-3">
+                        Asset name / identifier
                     </label>
                     <input type="text"
-                           name="vehicle_class"
-                           value="{{ old('vehicle_class') }}"
+                           name="name"
+                           value="{{ old('name') }}"
+                           required
+                           placeholder="e.g. White Camry, Tractor 3, Forklift A"
                            class="form-control">
+
                     <div class="form-hint">
-                        Examples: Light Vehicle, Heavy Vehicle, Machinery, Asset
+                        This is how drivers and reports will identify this asset.
                     </div>
-                </div>
-            </div>
 
-            {{-- Registration Tracking (Company Setting) --}}
-            @if($vehicleRegistrationTrackingEnabled)
-                @php $road = old('is_road_registered', 1); @endphp
-
-                {{-- IMPORTANT: always submit a value --}}
-                <input type="hidden" name="is_road_registered" value="0">
-
-                <label class="checkbox-label mb-2">
-                    <input type="checkbox"
-                           id="is_road_registered"
-                           name="is_road_registered"
-                           value="1"
-                           {{ $road == 1 ? 'checked' : '' }}>
-                    <strong>This asset is road registered</strong>
-                </label>
-
-                <div class="form-hint">
-                    Road-registered assets require a registration number and will display it to drivers.
-                </div>
-
-                {{-- Registration number --}}
-                <div id="rego-wrapper">
-                    <label class="form-label">
-                        Registration number
-                    </label>
-                    <input type="text"
-                           name="registration_number"
-                           value="{{ old('registration_number') }}"
-                           placeholder="e.g. ABC-123"
-                           class="form-control">
-
-                    @error('registration_number')
+                    @error('name')
                         <div class="text-error mb-2">{{ $message }}</div>
                     @enderror
 
+                    <div class="form-hint mt-3">
+                        Tip: Start typing a make and model, then pick a variant. We will suggest the best matching vehicle type.
+                    </div>
+                    <div class="form-hint mb-2">
+                        AI is only used to suggest details; you can edit any field before saving.
+                    </div>
+
+                    {{-- Make / Model (AI-assisted) --}}
                     <div class="form-row">
                         <div>
-                            <label class="form-label">Registration expiry date (optional)</label>
-                            <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
-                            @error('registration_expiry')
-                                <div class="text-error mb-2">{{ $message }}</div>
-                            @enderror
+                            <label class="form-label">Make</label>
+                            <div class="ai-input-wrap">
+                                <input id="aiMakeInput"
+                                       type="text"
+                                       name="make"
+                                       value="{{ old('make') }}"
+                                       placeholder="Start typing a make"
+                                       class="form-control">
+                                <button type="button" class="ai-clear-btn" data-clear="make" aria-label="Clear make">x</button>
+                            </div>
+                            <div id="aiMakeStatus" class="form-hint"></div>
+                            <div id="aiMakeList" class="ai-list"></div>
                         </div>
 
                         <div>
-                            <label class="form-label">&nbsp;</label>
+                            <label class="form-label">Model</label>
+                            <div class="ai-input-wrap">
+                                <input id="aiModelInput"
+                                       type="text"
+                                       name="model"
+                                       value="{{ old('model') }}"
+                                       placeholder="Start typing a model"
+                                       class="form-control">
+                                <button type="button" class="ai-clear-btn" data-clear="model" aria-label="Clear model">x</button>
+                            </div>
+                            <div id="aiModelStatus" class="form-hint"></div>
+                            <div id="aiModelList" class="ai-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Variant</label>
+                        <div class="ai-input-wrap">
+                            <input id="aiTrimInput"
+                                   type="text"
+                                   name="variant"
+                                   value="{{ old('variant') }}"
+                                   placeholder="Start typing a variant"
+                                   class="form-control">
+                            <button type="button" class="ai-clear-btn" data-clear="trim" aria-label="Clear variant">x</button>
+                        </div>
+                        <div id="aiTrimStatus" class="form-hint"></div>
+                        <div id="aiTrimList" class="ai-list"></div>
+                    </div>
+
+                    {{-- Vehicle type / classification --}}
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label">Vehicle type</label>
+                            @php $vt = old('vehicle_type', 'sedan'); @endphp
+                            <select name="vehicle_type"
+                                id="vehicle_type"
+                                class="form-control">
+                                <option value="sedan" {{ $vt === 'sedan' ? 'selected' : '' }}>Sedan</option>
+                                <option value="ute" {{ $vt === 'ute' ? 'selected' : '' }}>Pickup / Light Truck</option>
+                                <option value="hatch" {{ $vt === 'hatch' ? 'selected' : '' }}>Hatch</option>
+                                <option value="suv" {{ $vt === 'suv' ? 'selected' : '' }}>SUV</option>
+                                <option value="van" {{ $vt === 'van' ? 'selected' : '' }}>Van</option>
+                                <option value="bus" {{ $vt === 'bus' ? 'selected' : '' }}>Bus</option>
+                                <option value="ex" {{ $vt === 'ex' ? 'selected' : '' }}>Excavator</option>
+                                <option value="dozer" {{ $vt === 'dozer' ? 'selected' : '' }}>Bulldozer</option>
+                                <option value="other" {{ $vt === 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            <div id="vehicleTypeStatus" class="form-hint">Auto-suggested from make, model, and variant.</div>
+                        </div>
+
+                        <div>
+                            <label class="form-label">
+                                Vehicle classification (optional)
+                            </label>
+                            <input type="text"
+                                   name="vehicle_class"
+                                   value="{{ old('vehicle_class') }}"
+                                   class="form-control">
                             <div class="form-hint">
-                                Tip: use the vehicle Notes field for reminders.
+                                Examples: Light Vehicle, Heavy Vehicle, Machinery, Asset
                             </div>
                         </div>
                     </div>
-                </div>
-            @endif
+                </section>
 
-            {{-- Usage tracking --}}
-            @php $tm = old('tracking_mode', 'distance'); @endphp
-            <label class="form-label mt-2">
-                Usage tracking
-            </label>
+                @if($vehicleRegistrationTrackingEnabled)
+                    <section class="sf-tab-panel" id="sf-vehicle-tab-registration" data-sf-panel="registration" role="tabpanel" aria-labelledby="sf-vehicle-tab-registration-button">
+                        @php $road = old('is_road_registered', 1); @endphp
 
-            <select name="tracking_mode"
-                    id="tracking_mode"
-                    class="form-control">
-                <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
-                    Distance ({{ $companyDistanceUnit }})
-                </option>
-                <option value="hours" {{ $tm === 'hours' ? 'selected' : '' }}>
-                    Hours (machine hour meter)
-                </option>
-                <option value="none" {{ $tm === 'none' ? 'selected' : '' }}>
-                    No usage tracking
-                </option>
-            </select>
+                        {{-- IMPORTANT: always submit a value --}}
+                        <input type="hidden" name="is_road_registered" value="0">
 
-            <div class="form-hint">
-                This controls what drivers are required to record when using this asset.
+                        <label class="checkbox-label mb-2">
+                            <input type="checkbox"
+                                   id="is_road_registered"
+                                   name="is_road_registered"
+                                   value="1"
+                                   {{ $road == 1 ? 'checked' : '' }}>
+                            <strong>This asset is road registered</strong>
+                        </label>
+
+                        <div class="form-hint">
+                            Road-registered assets require a registration number and will display it to drivers.
+                        </div>
+
+                        {{-- Registration number --}}
+                        <div id="rego-wrapper">
+                            <label class="form-label">
+                                Registration number
+                            </label>
+                            <input type="text"
+                                   name="registration_number"
+                                   value="{{ old('registration_number') }}"
+                                   placeholder="e.g. ABC-123"
+                                   class="form-control">
+
+                            @error('registration_number')
+                                <div class="text-error mb-2">{{ $message }}</div>
+                            @enderror
+
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">Registration expiry date (optional)</label>
+                                    <input type="date" name="registration_expiry" value="{{ old('registration_expiry') }}" class="form-control">
+                                    @error('registration_expiry')
+                                        <div class="text-error mb-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label class="form-label">&nbsp;</label>
+                                    <div class="form-hint">
+                                        Tip: use the vehicle Notes field for reminders.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+                <section class="sf-tab-panel" id="sf-vehicle-tab-usage" data-sf-panel="usage" role="tabpanel" aria-labelledby="sf-vehicle-tab-usage-button">
+                    {{-- Usage tracking --}}
+                    @php $tm = old('tracking_mode', 'distance'); @endphp
+                    <label class="form-label mt-2">
+                        Usage tracking
+                    </label>
+
+                    <select name="tracking_mode"
+                            id="tracking_mode"
+                            class="form-control">
+                        <option value="distance" {{ $tm === 'distance' ? 'selected' : '' }}>
+                            Distance ({{ $companyDistanceUnit }})
+                        </option>
+                        <option value="hours" {{ $tm === 'hours' ? 'selected' : '' }}>
+                            Hours (machine hour meter)
+                        </option>
+                        <option value="none" {{ $tm === 'none' ? 'selected' : '' }}>
+                            No usage tracking
+                        </option>
+                    </select>
+
+                    <div class="form-hint">
+                        This controls what drivers are required to record when using this asset.
+                    </div>
+
+                    {{-- Starting reading (optional; distance unit or hours depending on tracking mode) --}}
+                    <label id="starting_reading_label" class="form-label mt-2">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
+                    <input type="number"
+                           name="starting_km"
+                           value="{{ old('starting_km') }}"
+                           id="starting_km"
+                           class="form-control"
+                           inputmode="numeric"
+                           min="0"
+                           placeholder="e.g. 124500">
+                    <div class="form-hint">
+                        If set, this will be used to prefill the first trip's starting reading for this vehicle.
+                    </div>
+
+                    @error('starting_km')
+                        <div class="text-error mb-2">{{ $message }}</div>
+                    @enderror
+
+                    {{-- Accessibility --}}
+                    <label class="checkbox-label mb-2">
+                        <input type="checkbox"
+                               name="wheelchair_accessible"
+                               value="1"
+                               {{ old('wheelchair_accessible') ? 'checked' : '' }}>
+                        <strong>Wheelchair accessible</strong>
+                    </label>
+
+                    {{-- Notes --}}
+                    <label class="form-label">Notes (optional)</label>
+                    <textarea name="notes"
+                              rows="3"
+                              class="form-control">{{ old('notes') }}</textarea>
+                </section>
             </div>
-
-            {{-- Starting reading (optional; distance unit or hours depending on tracking mode) --}}
-            <label id="starting_reading_label" class="form-label mt-2">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
-            <input type="number"
-                   name="starting_km"
-                   value="{{ old('starting_km') }}"
-                   id="starting_km"
-                   class="form-control"
-                   inputmode="numeric"
-                   min="0"
-                   placeholder="e.g. 124500">
-            <div class="form-hint">
-                If set, this will be used to prefill the first trip's starting reading for this vehicle.
-            </div>
-
-            @error('starting_km')
-                <div class="text-error mb-2">{{ $message }}</div>
-            @enderror
-
-            {{-- Accessibility --}}
-            <label class="checkbox-label mb-2">
-                <input type="checkbox"
-                       name="wheelchair_accessible"
-                       value="1"
-                       {{ old('wheelchair_accessible') ? 'checked' : '' }}>
-                <strong>Wheelchair accessible</strong>
-            </label>
-
-            {{-- Notes --}}
-            <label class="form-label">Notes (optional)</label>
-            <textarea name="notes"
-                      rows="3"
-                      class="form-control">{{ old('notes') }}</textarea>
-
         </div>
 
         <div class="btn-group">
@@ -293,6 +312,116 @@
 </div>
 
 <style>
+.sf-vehicle-tabs {
+    padding: 0;
+    overflow: visible;
+    border: 1px solid rgba(10, 42, 77, 0.08);
+    border-top: 1px solid rgba(10, 42, 77, 0.08);
+    box-shadow: 0 18px 30px rgba(10, 42, 77, 0.12);
+}
+
+.sf-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 16px 18px 0;
+    border-bottom: none;
+    background: transparent;
+    align-items: flex-end;
+    position: relative;
+}
+
+.sf-tab {
+    --sf-tab-radius: 14px;
+    --sf-tab-border: #d9e2ec;
+    appearance: none;
+    border: 1px solid var(--sf-tab-border);
+    border-bottom: 1px solid var(--sf-tab-border);
+    background: #ffffff;
+    color: #52657a;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    font-size: 13px;
+    padding: 9px 18px 11px;
+    border-top-left-radius: var(--sf-tab-radius);
+    border-top-right-radius: var(--sf-tab-radius);
+    cursor: pointer;
+    position: relative;
+    transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
+    margin-left: -1px;
+    margin-bottom: -1px;
+    z-index: 1;
+}
+
+.sf-tab:hover {
+    border-color: #9fb0c4;
+    color: #0a2a4d;
+}
+
+.sf-tab.is-active {
+    color: #0a2a4d;
+    border-color: #39b7aa;
+    border-bottom: none;
+    border-top-color: #39b7aa;
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
+    z-index: 2;
+}
+
+.sf-tab:first-child {
+    margin-left: 0;
+}
+
+.sf-tab:focus-visible {
+    outline: 2px solid rgba(44, 191, 174, 0.45);
+    outline-offset: 2px;
+}
+
+.sf-tab-panels {
+    padding: 24px 28px 28px;
+    position: relative;
+    overflow: visible;
+}
+
+.sf-tab-panel + .sf-tab-panel {
+    margin-top: 24px;
+}
+
+.sf-vehicle-tabs.is-js .sf-tab-panel {
+    display: none;
+}
+
+.sf-vehicle-tabs.is-js .sf-tab-panel.is-active {
+    display: block;
+}
+
+@media (max-width: 900px) {
+    .sf-tabs {
+        padding: 14px 16px 0;
+    }
+
+    .sf-tab {
+        font-size: 11px;
+        padding: 9px 12px 11px;
+    }
+
+    .sf-tab-panels {
+        padding: 20px 20px 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .sf-tabs {
+        overflow-x: auto;
+        padding-bottom: 12px;
+    }
+
+    .sf-tab {
+        flex: 0 0 auto;
+    }
+}
+
 .ai-input-wrap {
     position: relative;
 }
@@ -345,6 +474,45 @@
 </style>
 
 <script>
+    (function () {
+        const container = document.querySelector('.sf-vehicle-tabs');
+        if (!container) return;
+
+        const tabs = Array.from(container.querySelectorAll('[data-sf-tab]'));
+        const panels = Array.from(container.querySelectorAll('[data-sf-panel]'));
+        if (!tabs.length || !panels.length) return;
+
+        container.classList.add('is-js');
+
+        const activate = (name) => {
+            tabs.forEach((tab) => {
+                const isActive = tab.getAttribute('data-sf-tab') === name;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            panels.forEach((panel) => {
+                const isActive = panel.getAttribute('data-sf-panel') === name;
+                panel.classList.toggle('is-active', isActive);
+            });
+        };
+
+        const errorPanel = panels.find((panel) => panel.querySelector('.text-error, .alert-error'));
+        const initialTab = errorPanel
+            ? tabs.find((tab) => tab.getAttribute('data-sf-tab') === errorPanel.getAttribute('data-sf-panel'))
+            : tabs[0];
+
+        if (initialTab) {
+            activate(initialTab.getAttribute('data-sf-tab'));
+        }
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                activate(tab.getAttribute('data-sf-tab'));
+            });
+        });
+    })();
+
     const companyDistanceUnit = @json($companyDistanceUnit);
 
     const roadCheckbox = document.getElementById('is_road_registered');
