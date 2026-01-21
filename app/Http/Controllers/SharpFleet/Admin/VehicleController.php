@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
 {
@@ -1286,6 +1287,14 @@ class VehicleController extends Controller
             ->orderBy('last_name')
             ->get();
 
+        $insurance = null;
+        if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
+            $insurance = DB::connection('sharpfleet')
+                ->table('vehicle_insurance')
+                ->where('vehicle_id', $vehicleId)
+                ->first();
+        }
+
         return view('sharpfleet.admin.vehicles.edit', [
             'vehicle' => $record,
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
@@ -1295,6 +1304,7 @@ class VehicleController extends Controller
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,
             'defaultBranchId' => $defaultBranchId,
+            'insurance' => $insurance,
         ]);
     }
 
@@ -1353,6 +1363,15 @@ class VehicleController extends Controller
             // Permanent assignment (optional; requires DB columns)
             'permanent_assignment' => ['nullable', 'boolean'],
             'assigned_driver_id' => ['nullable', 'integer'],
+
+            // Insurance (stored on vehicle_insurance table)
+            'insurance_company' => ['nullable', 'string', 'max:150'],
+            'insurance_policy_number' => ['nullable', 'string', 'max:100'],
+            'insurance_type' => ['nullable', 'in:comprehensive,third_party,third_party_fire_theft,uninsured'],
+            'insurance_expiry_date' => ['nullable', 'date'],
+            'insurance_notify_email' => ['nullable', 'email', 'max:255'],
+            'insurance_notify_window_days' => ['nullable', 'integer', 'min:0', 'max:3650'],
+            'insurance_document' => ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
         ]);
 
         $branchService = new BranchService();
@@ -1498,11 +1517,69 @@ class VehicleController extends Controller
             $validated['service_due_km'] = null;
         }
 
+        $insurancePayload = [
+            'insurance_company' => $validated['insurance_company'] ?? null,
+            'policy_number' => $validated['insurance_policy_number'] ?? null,
+            'policy_type' => $validated['insurance_type'] ?? null,
+            'expiry_date' => $validated['insurance_expiry_date'] ?? null,
+            'notify_email' => $validated['insurance_notify_email'] ?? null,
+            'notify_window_days' => $validated['insurance_notify_window_days'] ?? null,
+        ];
+
+        unset(
+            $validated['insurance_company'],
+            $validated['insurance_policy_number'],
+            $validated['insurance_type'],
+            $validated['insurance_expiry_date'],
+            $validated['insurance_notify_email'],
+            $validated['insurance_notify_window_days'],
+            $validated['insurance_document']
+        );
+
         $this->vehicleService->updateVehicle(
             $organisationId,
             $vehicleId,
             $validated
         );
+
+        if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
+            $existingInsurance = DB::connection('sharpfleet')
+                ->table('vehicle_insurance')
+                ->where('vehicle_id', $vehicleId)
+                ->first();
+
+            if ($request->hasFile('insurance_document')) {
+                $file = $request->file('insurance_document');
+
+                if ($existingInsurance && !empty($existingInsurance->policy_document_path)) {
+                    if (Storage::disk('local')->exists($existingInsurance->policy_document_path)) {
+                        Storage::disk('local')->delete($existingInsurance->policy_document_path);
+                    }
+                }
+
+                $path = $file->store("sharpfleet/vehicle-insurance/{$vehicleId}", 'local');
+
+                $insurancePayload['policy_document_path'] = $path;
+                $insurancePayload['policy_document_original_name'] = $file->getClientOriginalName();
+                $insurancePayload['policy_document_mime'] = $file->getClientMimeType();
+            }
+
+            $insurancePayload['updated_at'] = now();
+
+            if ($existingInsurance) {
+                DB::connection('sharpfleet')
+                    ->table('vehicle_insurance')
+                    ->where('vehicle_id', $vehicleId)
+                    ->update($insurancePayload);
+            } else {
+                $insurancePayload['vehicle_id'] = $vehicleId;
+                $insurancePayload['created_at'] = now();
+
+                DB::connection('sharpfleet')
+                    ->table('vehicle_insurance')
+                    ->insert($insurancePayload);
+            }
+        }
 
         return redirect('/app/sharpfleet/admin/vehicles')
             ->with('success', 'Vehicle updated.');

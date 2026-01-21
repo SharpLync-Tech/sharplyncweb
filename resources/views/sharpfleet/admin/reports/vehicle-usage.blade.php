@@ -30,23 +30,14 @@
         ? 'm/d/Y'
         : 'd/m/Y';
 
-    $displayStartDate = $uiStartDate
-        ? Carbon::parse($uiStartDate)->timezone($companyTimezone)->format($dateFormat)
-        : '—';
-
-    $displayEndDate = $uiEndDate
-        ? Carbon::parse($uiEndDate)->timezone($companyTimezone)->format($dateFormat)
-        : '—';
-
     /*
     |--------------------------------------------------------------------------
-    | Totals (already aggregated in controller)
+    | Summary (from controller)
     |--------------------------------------------------------------------------
     */
     $totalVehicles = $summary['vehicles'] ?? 0;
     $totalTrips    = $summary['trips'] ?? 0;
-    $totalDistance = $summary['distance'] ?? 0;
-    $totalDuration = $summary['duration'] ?? '0h';
+    $totalDistance = $summary['distance'] ?? '0 km';
 @endphp
 
 <div class="container">
@@ -57,28 +48,22 @@
             <div>
                 <h1 class="page-title">Vehicle Usage Report</h1>
                 <p class="page-description">
-                    Understand how often vehicles are used, how far they travel, and which assets are over or under-utilised.
+                    See how often vehicles are used, how far they travel, and which assets may be over- or under-utilised.
                 </p>
             </div>
 
-            {{-- CSV export (always full data) --}}
-            <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
-                <input type="hidden" name="export" value="csv">
-                <input type="hidden" name="report" value="vehicle-usage">
-                <input type="hidden" name="scope" value="{{ $uiScope }}">
-                <input type="hidden" name="branch_id" value="{{ $uiBranchId }}">
-                <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
-                <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
-
-                <button type="submit" class="btn btn-primary">
-                    Export Report (CSV)
-                </button>
-            </form>
+            {{-- CSV export (to be wired properly later) --}}
+            <button class="btn btn-outline-secondary" disabled
+                    title="CSV export for vehicle usage will be added next">
+                Export Report (CSV)
+            </button>
         </div>
     </div>
 
-    {{-- ================= CONTROLS ================= --}}
-    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}" class="card mb-3">
+    {{-- ================= FILTERS ================= --}}
+    <form method="GET"
+          action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"
+          class="card mb-3">
         <div class="card-body">
 
             <div class="grid grid-4 align-end">
@@ -86,6 +71,7 @@
                 {{-- Scope --}}
                 <div>
                     <label class="form-label">Scope</label>
+
                     <div class="form-check">
                         <input class="form-check-input"
                                type="radio"
@@ -107,7 +93,7 @@
                     @endif
                 </div>
 
-                {{-- Branch selector --}}
+                {{-- Branch --}}
                 <div>
                     <label class="form-label">Branch</label>
                     <select name="branch_id"
@@ -116,14 +102,14 @@
                         <option value="">All branches</option>
                         @foreach($branches as $branch)
                             <option value="{{ $branch->id }}"
-                                {{ (string)$uiBranchId === (string)$branch->id ? 'selected' : '' }}>
+                                {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
                                 {{ $branch->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                {{-- Date range --}}
+                {{-- Dates --}}
                 <div>
                     <label class="form-label">Start date</label>
                     <input type="date"
@@ -149,7 +135,8 @@
             </div>
 
             <div class="text-muted small mt-2">
-                On-screen report shows aggregated vehicle usage. CSV export always includes full trip-level data.
+                This on-screen report shows aggregated vehicle usage.
+                CSV export will include full trip-level data.
             </div>
 
         </div>
@@ -158,7 +145,7 @@
     {{-- ================= SUMMARY ================= --}}
     <div class="card mb-3">
         <div class="card-body">
-            <div class="grid grid-4 text-center">
+            <div class="grid grid-3 text-center">
                 <div>
                     <strong>{{ $totalVehicles }}</strong><br>
                     <span class="text-muted small">Vehicles used</span>
@@ -170,10 +157,6 @@
                 <div>
                     <strong>{{ $totalDistance }}</strong><br>
                     <span class="text-muted small">Total distance</span>
-                </div>
-                <div>
-                    <strong>{{ $totalDuration }}</strong><br>
-                    <span class="text-muted small">Total driving time</span>
                 </div>
             </div>
         </div>
@@ -208,9 +191,9 @@
                                         <small class="text-muted">{{ $v->registration_number }}</small>
                                     </td>
                                     <td class="text-end">{{ $v->trip_count }}</td>
-                                    <td class="text-end">{{ $v->total_distance }}</td>
+                                    <td class="text-end">{{ $v->total_distance_km }} km</td>
                                     <td class="text-end">{{ $v->total_duration }}</td>
-                                    <td class="text-end">{{ $v->average_distance }}</td>
+                                    <td class="text-end">{{ $v->average_distance_km }} km</td>
                                     <td>
                                         {{ $v->last_used_at
                                             ? Carbon::parse($v->last_used_at)->timezone($companyTimezone)->format($dateFormat)
@@ -222,7 +205,6 @@
                         </tbody>
                     </table>
                 </div>
-
             @endif
 
         </div>

@@ -159,20 +159,6 @@
         z-index: 2;
     }
 
-    .sf-tab.is-active::before {
-        content: "";
-        position: absolute;
-        left: -1px;
-        right: -1px;
-        top: -1px;
-        bottom: 3px;
-        border: 2px solid rgba(57, 183, 170, 0.2);
-        border-bottom: none;
-        border-top-left-radius: var(--sf-tab-radius);
-        border-top-right-radius: var(--sf-tab-radius);
-        pointer-events: none;
-    }
-
     .sf-tab.is-active::after {
         content: "";
         position: absolute;
@@ -607,5 +593,4 @@
 </script>
 
 @endsection
-
 

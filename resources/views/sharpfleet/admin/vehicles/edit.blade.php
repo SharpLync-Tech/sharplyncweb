@@ -12,10 +12,11 @@
     $branches = $branches ?? collect();
     $defaultBranchId = $defaultBranchId ?? null;
     $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
+    $insurance = $insurance ?? null;
 @endphp
 
 <div class="container mt-4 sf-vehicle-edit">
-    <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id) }}">
+    <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id) }}" enctype="multipart/form-data">
         @csrf
 
         <div class="flex-between" style="margin-bottom: 10px;">
@@ -53,6 +54,9 @@
                         Servicing
                     </button>
                 @endif
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-insurance-button" data-sf-tab="insurance" role="tab" aria-controls="sf-vehicle-tab-insurance" aria-selected="false">
+                    Insurance
+                </button>
                 <button type="button" class="sf-tab" id="sf-vehicle-tab-status-button" data-sf-tab="status" role="tab" aria-controls="sf-vehicle-tab-status" aria-selected="false">
                     Status
                 </button>
@@ -350,6 +354,76 @@
                         </div>
                     </section>
                 @endif
+
+                <section class="sf-tab-panel" id="sf-vehicle-tab-insurance" data-sf-panel="insurance" role="tabpanel" aria-labelledby="sf-vehicle-tab-insurance-button">
+                    <div class="grid gap-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="section-title">Insurance details</h3>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Insurance company</label>
+                                        <input type="text" name="insurance_company" value="{{ old('insurance_company', $insurance->insurance_company ?? '') }}" class="form-control">
+                                        @error('insurance_company') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Policy number</label>
+                                        <input type="text" name="insurance_policy_number" value="{{ old('insurance_policy_number', $insurance->policy_number ?? '') }}" class="form-control">
+                                        @error('insurance_policy_number') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Cover type</label>
+                                        @php
+                                            $insuranceType = old('insurance_type', $insurance->policy_type ?? '');
+                                        @endphp
+                                        <select name="insurance_type" class="form-control">
+                                            <option value="">Select cover type</option>
+                                            <option value="comprehensive" {{ $insuranceType === 'comprehensive' ? 'selected' : '' }}>Comprehensive</option>
+                                            <option value="third_party" {{ $insuranceType === 'third_party' ? 'selected' : '' }}>Third party</option>
+                                            <option value="third_party_fire_theft" {{ $insuranceType === 'third_party_fire_theft' ? 'selected' : '' }}>Third party fire & theft</option>
+                                            <option value="uninsured" {{ $insuranceType === 'uninsured' ? 'selected' : '' }}>Uninsured</option>
+                                        </select>
+                                        @error('insurance_type') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Policy expiry date</label>
+                                        <input type="text" name="insurance_expiry_date" value="{{ old('insurance_expiry_date', $insurance->expiry_date ?? '') }}" class="form-control sf-date" placeholder="yyyy-mm-dd">
+                                        @error('insurance_expiry_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Notify email address</label>
+                                        <input type="email" name="insurance_notify_email" value="{{ old('insurance_notify_email', $insurance->notify_email ?? '') }}" class="form-control" placeholder="e.g. ops@company.com">
+                                        @error('insurance_notify_email') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Notify window (days before expiry)</label>
+                                        <input type="number" name="insurance_notify_window_days" min="0" step="1" value="{{ old('insurance_notify_window_days', $insurance->notify_window_days ?? '') }}" class="form-control" placeholder="e.g. 30">
+                                        @error('insurance_notify_window_days') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Insurance policy document</label>
+                                    <input type="file" name="insurance_document" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                    @if(!empty($insurance->policy_document_original_name))
+                                        <div class="form-hint">Current file: {{ $insurance->policy_document_original_name }}</div>
+                                    @endif
+                                    @error('insurance_document') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <section class="sf-tab-panel" id="sf-vehicle-tab-status" data-sf-panel="status" role="tabpanel" aria-labelledby="sf-vehicle-tab-status-button">
                     <div class="grid gap-4">

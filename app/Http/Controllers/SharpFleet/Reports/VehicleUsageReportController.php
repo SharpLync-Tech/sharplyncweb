@@ -13,11 +13,22 @@ class VehicleUsageReportController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
+        | SharpFleet session auth (SINGLE SOURCE OF TRUTH)
+        |--------------------------------------------------------------------------
+        */
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !isset($user['organisation_id'])) {
+            abort(403);
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+
+        /*
+        |--------------------------------------------------------------------------
         | Inputs
         |--------------------------------------------------------------------------
         */
-        $companyId = auth()->user()->company_id;
-
         $scope     = $request->input('scope', 'company'); // company | branch
         $branchId  = $request->input('branch_id');
         $startDate = $request->input('start_date');
@@ -25,34 +36,36 @@ class VehicleUsageReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Base query (trip-level)
+        | Base trip query (organisation-scoped)
         |--------------------------------------------------------------------------
         */
-        $tripQuery = DB::table('sharpfleet_trips')
-            ->where('company_id', $companyId)
-            ->whereNotNull('started_at')
-            ->whereNotNull('end_time');
+        $tripQuery = DB::connection('sharpfleet')
+            ->table('trips')
+            ->join('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
+            ->where('trips.organisation_id', $organisationId)
+            ->whereNotNull('trips.started_at')
+            ->whereNotNull('trips.end_time');
 
         /*
         |--------------------------------------------------------------------------
-        | Scope filtering
+        | Branch filter
         |--------------------------------------------------------------------------
         */
-        if ($scope === 'branch' && $branchId) {
-            $tripQuery->where('branch_id', $branchId);
+        if ($scope === 'branch' && is_numeric($branchId)) {
+            $tripQuery->where('trips.branch_id', (int) $branchId);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Date filtering
+        | Date filtering (based on trip start)
         |--------------------------------------------------------------------------
         */
         if ($startDate) {
-            $tripQuery->whereDate('started_at', '>=', $startDate);
+            $tripQuery->whereDate('trips.started_at', '>=', $startDate);
         }
 
         if ($endDate) {
-            $tripQuery->whereDate('started_at', '<=', $endDate);
+            $tripQuery->whereDate('trips.started_at', '<=', $endDate);
         }
 
         /*
@@ -62,35 +75,39 @@ class VehicleUsageReportController extends Controller
         */
         $vehicles = $tripQuery
             ->select([
-                'vehicle_id',
-                'vehicle_name',
-                'registration_number',
+                'vehicles.id as vehicle_id',
+                'vehicles.name as vehicle_name',
+                'vehicles.registration_number',
 
-                DB::raw('COUNT(*) AS trip_count'),
+                DB::raw('COUNT(trips.id) AS trip_count'),
 
                 DB::raw('SUM(
                     CASE
-                        WHEN display_start IS NOT NULL
-                         AND display_end IS NOT NULL
-                         AND display_end >= display_start
-                        THEN (display_end - display_start)
+                        WHEN trips.start_km IS NOT NULL
+                         AND trips.end_km IS NOT NULL
+                         AND trips.end_km >= trips.start_km
+                        THEN (trips.end_km - trips.start_km)
                         ELSE 0
                     END
-                ) AS total_distance'),
+                ) AS total_distance_km'),
 
                 DB::raw('SUM(
-                    TIMESTAMPDIFF(SECOND, started_at, end_time)
+                    TIMESTAMPDIFF(SECOND, trips.started_at, trips.end_time)
                 ) AS total_seconds'),
 
-                DB::raw('MAX(started_at) AS last_used_at'),
+                DB::raw('MAX(trips.started_at) AS last_used_at'),
             ])
-            ->groupBy('vehicle_id', 'vehicle_name', 'registration_number')
+            ->groupBy(
+                'vehicles.id',
+                'vehicles.name',
+                'vehicles.registration_number'
+            )
             ->orderByDesc('trip_count')
             ->get();
 
         /*
         |--------------------------------------------------------------------------
-        | Post-processing (formatting for UI)
+        | Post-processing (UI-friendly values)
         |--------------------------------------------------------------------------
         */
         $vehicles = $vehicles->map(function ($v) {
@@ -98,17 +115,20 @@ class VehicleUsageReportController extends Controller
             $minutes = floor(($v->total_seconds % 3600) / 60);
 
             return (object) [
-                'vehicle_id'         => $v->vehicle_id,
-                'vehicle_name'       => $v->vehicle_name,
-                'registration_number'=> $v->registration_number,
+                'vehicle_id'           => $v->vehicle_id,
+                'vehicle_name'         => $v->vehicle_name,
+                'registration_number'  => $v->registration_number,
 
-                'trip_count'         => (int) $v->trip_count,
-                'total_distance'     => number_format($v->total_distance, 0) . ' km',
-                'total_duration'     => $hours . 'h ' . $minutes . 'm',
-                'average_distance'   => $v->trip_count > 0
-                    ? number_format($v->total_distance / $v->trip_count, 1) . ' km'
-                    : '—',
-                'last_used_at'       => $v->last_used_at,
+                'trip_count'           => (int) $v->trip_count,
+                'total_distance_km'    => (int) $v->total_distance_km,
+                'average_distance_km'  => $v->trip_count > 0
+                    ? round($v->total_distance_km / $v->trip_count, 1)
+                    : 0,
+
+                'total_duration'       => $hours . 'h ' . $minutes . 'm',
+                'last_used_at'         => $v->last_used_at
+                    ? Carbon::parse($v->last_used_at)->toDateString()
+                    : null,
             ];
         });
 
@@ -120,27 +140,17 @@ class VehicleUsageReportController extends Controller
         $summary = [
             'vehicles' => $vehicles->count(),
             'trips'    => $vehicles->sum('trip_count'),
-            'distance' => number_format(
-                $vehicles->sum(fn ($v) => (int) filter_var($v->total_distance, FILTER_SANITIZE_NUMBER_INT)),
-                0
-            ) . ' km',
-            'duration' => $vehicles->reduce(function ($carry, $v) {
-                preg_match('/(\d+)h\s*(\d+)m/', $v->total_duration, $m);
-                return $carry + (($m[1] ?? 0) * 3600) + (($m[2] ?? 0) * 60);
-            }, 0),
+            'distance' => $vehicles->sum('total_distance_km') . ' km',
         ];
-
-        $summary['duration'] =
-            floor($summary['duration'] / 3600) . 'h ' .
-            floor(($summary['duration'] % 3600) / 60) . 'm';
 
         /*
         |--------------------------------------------------------------------------
         | Branch list (for selector)
         |--------------------------------------------------------------------------
         */
-        $branches = DB::table('sharpfleet_branches')
-            ->where('company_id', $companyId)
+        $branches = DB::connection('sharpfleet')
+            ->table('branches')
+            ->where('organisation_id', $organisationId)
             ->orderBy('name')
             ->get();
 
@@ -153,7 +163,7 @@ class VehicleUsageReportController extends Controller
             'vehicles'        => $vehicles,
             'summary'         => $summary,
             'branches'        => $branches,
-            'companyTimezone' => auth()->user()->company_timezone,
+            'companyTimezone' => $user['timezone'] ?? config('app.timezone'),
         ]);
     }
 }
