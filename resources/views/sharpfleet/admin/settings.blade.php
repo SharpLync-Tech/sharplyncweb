@@ -116,12 +116,12 @@
 
     .sf-tab {
         --sf-tab-radius: 14px;
-        --sf-tab-border: #d7dde5;
+        --sf-tab-border: #d9e2ec;
         appearance: none;
         border: 1px solid var(--sf-tab-border);
-        border-bottom: none;
+        border-bottom: 1px solid var(--sf-tab-border);
         background: #ffffff;
-        color: #1f3a5a;
+        color: #52657a;
         font-weight: 600;
         letter-spacing: 0.01em;
         text-transform: none;
@@ -131,19 +131,23 @@
         border-top-right-radius: var(--sf-tab-radius);
         cursor: pointer;
         position: relative;
-        transition: color 150ms ease, border-color 150ms ease;
+        transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
         margin-left: -1px;
         margin-bottom: -1px;
         z-index: 1;
     }
 
     .sf-tab:hover {
-        border-color: #b8c1cc;
+        border-color: #9fb0c4;
         color: #0a2a4d;
     }
 
     .sf-tab.is-active {
         color: #0a2a4d;
+        border-color: #39b7aa;
+        border-bottom: none;
+        border-top-color: #39b7aa;
+        transform: translateY(-1px);
         z-index: 2;
     }
 
