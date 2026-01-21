@@ -570,6 +570,13 @@
     padding: 24px 28px 28px;
     position: relative;
     overflow: visible;
+    background: #f8fafc;
+    border-radius: 0 0 12px 12px;
+}
+
+.sf-tab-panels .card {
+    border: 1px solid #e7edf4;
+    box-shadow: 0 10px 24px rgba(10, 42, 77, 0.06);
 }
 
 .sf-tab-panel + .sf-tab-panel {

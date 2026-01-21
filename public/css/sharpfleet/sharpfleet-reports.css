@@ -7,46 +7,53 @@
 .sf-report-wrapper {
     max-width: none;              /* remove Bootstrap cap */
     width: 100%;
-    padding: 0 3rem 3rem;         /* breathing room */
+    padding: 0 4rem 3rem;         /* MORE breathing room */
 }
 
 /* Keep content readable but wide */
 .sf-report-surface {
-    max-width: 2400px;            /* BIG desktop friendly */
+    max-width: 2600px;            /* ultrawide-safe */
     margin: 0 auto;
     background: #ffffff;
     border-radius: 12px;
-    padding: 1.75rem;
+    padding: 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ===============================
-   Table
+   Table container
 ================================ */
 
 .sf-report-scroll {
     overflow-x: auto;
 }
 
+/* ===============================
+   Table
+================================ */
+
 .sf-report-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    white-space: nowrap;          /* keep rows single-line */
+    white-space: nowrap;          /* desktop-first */
+    font-variant-numeric: tabular-nums;
 }
 
 .sf-report-table thead th {
     background: #f8fafc;
     font-weight: 600;
+    font-size: 0.9rem;
     color: #0f172a;
     border-bottom: 1px solid #e5e7eb;
-    padding: 0.75rem 0.9rem;
+    padding: 0.75rem 1rem;
 }
 
 .sf-report-table tbody td {
-    padding: 0.65rem 0.9rem;
+    padding: 0.7rem 1rem;
     border-bottom: 1px solid #e5e7eb;
     color: #0f172a;
+    font-size: 0.95rem;
 }
 
 .sf-report-table tbody tr:last-child td {
@@ -54,15 +61,26 @@
 }
 
 /* ===============================
-   Alignment helpers
+   Column sizing (prevents clipping)
 ================================ */
 
-.text-end {
-    text-align: right;
-}
+.sf-col-vehicle   { min-width: 220px; }
+.sf-col-driver    { min-width: 160px; }
+.sf-col-type      { min-width: 110px; }
+.sf-col-customer  { min-width: 220px; }
 
-.text-center {
-    text-align: center;
+.sf-col-start     { min-width: 120px; text-align: right; }
+.sf-col-end       { min-width: 120px; text-align: right; }
+.sf-col-total     { min-width: 120px; text-align: right; }
+
+.sf-col-started   { min-width: 170px; }
+.sf-col-ended     { min-width: 170px; }
+.sf-col-duration  { min-width: 140px; text-align: right; }
+
+/* Allow wrapping where useful */
+.sf-col-vehicle,
+.sf-col-customer {
+    white-space: normal;
 }
 
 /* ===============================
@@ -80,13 +98,13 @@
 
 /* Units must look NORMAL */
 .sf-report-unit {
-    margin-left: 0.2rem;
+    margin-left: 0.25rem;
     font-weight: inherit;
     font-size: inherit;
     color: inherit;
 }
 
-/* Totals stand out, not colours */
+/* Totals stand out via weight only */
 .sf-report-total {
     font-weight: 600;
 }
@@ -96,8 +114,30 @@
     font-weight: 500;
 }
 
-/* Business / Private should NOT be teal */
+/* Business / Private = neutral */
 .sf-trip-type {
     font-weight: 500;
     color: inherit;
+}
+
+/* ===============================
+   Alignment helpers
+================================ */
+
+.text-end {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ===============================
+   Safety for smaller screens
+================================ */
+
+@media (max-width: 1400px) {
+    .sf-report-wrapper {
+        padding: 0 2rem 2rem;
+    }
 }
