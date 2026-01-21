@@ -16,9 +16,10 @@
         : 'd/m/Y H:i';
 @endphp
 
-{{-- Reports stylesheet (already exists) --}}
+{{-- ✅ Explicitly load reports stylesheet --}}
 <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
 
+{{-- ❌ NO BOOTSTRAP CONTAINER --}}
 <div class="sf-report-wrapper">
 
     <div class="page-header mb-4">
@@ -89,9 +90,7 @@
                                     <div class="sf-report-sub">{{ $t->registration_number }}</div>
                                 </td>
 
-                                <td class="sf-col-driver">
-                                    {{ $t->driver_name }}
-                                </td>
+                                <td class="sf-col-driver">{{ $t->driver_name }}</td>
 
                                 <td class="sf-col-type sf-trip-type">
                                     {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
@@ -102,27 +101,18 @@
                                 </td>
 
                                 <td class="sf-col-start text-end">
-                                    @if(is_numeric($startReading))
-                                        {{ $startReading }}<span class="sf-report-unit">{{ $unit }}</span>
-                                    @else
-                                        —
-                                    @endif
+                                    {{ is_numeric($startReading) ? $startReading : '—' }}
+                                    <span class="sf-report-unit">{{ is_numeric($startReading) ? $unit : '' }}</span>
                                 </td>
 
                                 <td class="sf-col-end text-end">
-                                    @if(is_numeric($endReading))
-                                        {{ $endReading }}<span class="sf-report-unit">{{ $unit }}</span>
-                                    @else
-                                        —
-                                    @endif
+                                    {{ is_numeric($endReading) ? $endReading : '—' }}
+                                    <span class="sf-report-unit">{{ is_numeric($endReading) ? $unit : '' }}</span>
                                 </td>
 
                                 <td class="sf-col-total text-end sf-report-total">
-                                    @if($distanceTotal !== null)
-                                        {{ $distanceTotal }}<span class="sf-report-unit">{{ $unit }}</span>
-                                    @else
-                                        —
-                                    @endif
+                                    {{ $distanceTotal ?? '—' }}
+                                    <span class="sf-report-unit">{{ $distanceTotal ? $unit : '' }}</span>
                                 </td>
 
                                 <td class="sf-col-started">
