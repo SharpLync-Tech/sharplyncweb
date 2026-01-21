@@ -193,7 +193,7 @@
             SharpFleet is designed for real-world operations — tradies, service companies,
             small fleets, and growing teams who want clarity without complexity.
         </p>
-        <a href="/app/sharpfleet/admin/register" class="btn">
+        <a href="/app/sharpfleet/admin/register" class="sf-cta">
             Start Your Free Trial
         </a>
     </div>
