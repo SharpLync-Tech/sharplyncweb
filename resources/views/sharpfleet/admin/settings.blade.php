@@ -108,7 +108,7 @@
         flex-wrap: nowrap;
         gap: 0;
         padding: 16px 18px 0;
-        border-bottom: 1px solid #d7dde5;
+        border-bottom: none;
         background: transparent;
         align-items: flex-end;
         position: relative;
@@ -119,6 +119,7 @@
         --sf-tab-border: #d7dde5;
         appearance: none;
         border: 1px solid var(--sf-tab-border);
+        border-bottom: none;
         background: #ffffff;
         color: #1f3a5a;
         font-weight: 600;
@@ -142,52 +143,12 @@
     }
 
     .sf-tab.is-active {
-        border-bottom-color: #ffffff;
         color: #0a2a4d;
         z-index: 2;
     }
 
-    .sf-tab::before,
-    .sf-tab::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        width: var(--sf-tab-radius);
-        height: var(--sf-tab-radius);
-        background: #ffffff;
-        border: 1px solid var(--sf-tab-border);
-        border-top: none;
-    }
-
-    .sf-tab::before {
-        left: calc(var(--sf-tab-radius) * -1);
-        border-right: none;
-        border-bottom-left-radius: var(--sf-tab-radius);
-    }
-
-    .sf-tab::after {
-        right: calc(var(--sf-tab-radius) * -1);
-        border-left: none;
-        border-bottom-right-radius: var(--sf-tab-radius);
-    }
-
     .sf-tab:first-child {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
         margin-left: 0;
-    }
-
-    .sf-tab:first-child::before {
-        display: none;
-    }
-
-    .sf-tab:last-child {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
-
-    .sf-tab:last-child::after {
-        display: none;
     }
 
     .sf-tab:focus-visible {
