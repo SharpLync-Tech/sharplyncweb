@@ -25,6 +25,7 @@
         }
     };
     $insurance = $insurance ?? null;
+    $insuranceDocuments = $insuranceDocuments ?? collect();
 @endphp
 
 <div class="container">
@@ -164,8 +165,18 @@
                 <div class="mb-2"><strong>Notify email:</strong> {{ $insurance->notify_email ?: 'N/A' }}</div>
                 <div class="mb-2"><strong>Notify window:</strong> {{ $insurance->notify_window_days !== null ? ((int) $insurance->notify_window_days . ' days') : 'N/A' }}</div>
                 <div>
-                    <strong>Document:</strong>
-                    @if(!empty($insurance->policy_document_original_name))
+                    <strong>Documents:</strong>
+                    @if($insuranceDocuments->isNotEmpty())
+                        <div class="mt-1">
+                            @foreach($insuranceDocuments as $doc)
+                                <div>
+                                    <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/'.(int) $doc->id) }}">
+                                        {{ $doc->document_original_name ?: 'Insurance document' }}
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @elseif(!empty($insurance->policy_document_original_name))
                         <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document') }}">{{ $insurance->policy_document_original_name }}</a>
                     @else
                         N/A

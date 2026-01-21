@@ -13,6 +13,7 @@
     $defaultBranchId = $defaultBranchId ?? null;
     $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
     $insurance = $insurance ?? null;
+    $insuranceDocuments = $insuranceDocuments ?? collect();
 @endphp
 
 <div class="container mt-4 sf-vehicle-edit">
@@ -412,20 +413,30 @@
                                     </div>
                                 </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label">Insurance policy document</label>
-                                        <input type="file" name="insurance_document" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                                        @if(!empty($insurance->policy_document_original_name))
-                                            <div class="form-hint">
-                                                Current file: {{ $insurance->policy_document_original_name }}
-                                                <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document') }}" class="ms-2">View</a>
-                                            </div>
-                                            <div class="mt-2">
-                                                <button type="submit" class="btn btn-outline-secondary btn-sm" form="insurance-delete-form">Delete document</button>
-                                            </div>
-                                        @endif
-                                        @error('insurance_document') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                    </div>
+                                <div class="form-group">
+                                    <label class="form-label">Insurance documents</label>
+                                    <input type="file" name="insurance_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                                    <div class="form-hint">Up to 3 documents per vehicle.</div>
+                                    @if($insuranceDocuments->isNotEmpty())
+                                        <div class="form-hint">Uploaded documents:</div>
+                                        <div class="mt-2">
+                                            @foreach($insuranceDocuments as $doc)
+                                                <div class="mb-2">
+                                                    <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/'.(int) $doc->id) }}">
+                                                        {{ $doc->document_original_name ?: 'Insurance document' }}
+                                                    </a>
+                                                    <button type="submit"
+                                                            class="btn btn-outline-secondary btn-sm ms-2"
+                                                            form="insurance-doc-delete-{{ (int) $doc->id }}">
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    @error('insurance_documents') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    @error('insurance_documents.*') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -575,9 +586,15 @@
         </div>
 
     </form>
-    <form id="insurance-delete-form" method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/delete') }}">
-        @csrf
-    </form>
+    @if(!empty($insuranceDocuments) && $insuranceDocuments->isNotEmpty())
+        @foreach($insuranceDocuments as $doc)
+            <form id="insurance-doc-delete-{{ (int) $doc->id }}"
+                  method="POST"
+                  action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/'.(int) $doc->id.'/delete') }}">
+                @csrf
+            </form>
+        @endforeach
+    @endif
 </div>
 
 <style>

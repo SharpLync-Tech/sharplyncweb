@@ -1216,6 +1216,9 @@ class VehicleController extends Controller
             'insurance' => Schema::connection('sharpfleet')->hasTable('vehicle_insurance')
                 ? DB::connection('sharpfleet')->table('vehicle_insurance')->where('vehicle_id', $vehicleId)->first()
                 : null,
+            'insuranceDocuments' => Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents')
+                ? DB::connection('sharpfleet')->table('vehicle_insurance_documents')->where('vehicle_id', $vehicleId)->orderByDesc('created_at')->get()
+                : collect(),
             'dateFormat' => $dateFormat,
             'serviceDueDate' => $record->service_due_date ?? null,
             'serviceDueReading' => $record->service_due_km ?? null,
@@ -1291,11 +1294,19 @@ class VehicleController extends Controller
             ->get();
 
         $insurance = null;
+        $insuranceDocuments = collect();
         if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
             $insurance = DB::connection('sharpfleet')
                 ->table('vehicle_insurance')
                 ->where('vehicle_id', $vehicleId)
                 ->first();
+        }
+        if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents')) {
+            $insuranceDocuments = DB::connection('sharpfleet')
+                ->table('vehicle_insurance_documents')
+                ->where('vehicle_id', $vehicleId)
+                ->orderByDesc('created_at')
+                ->get();
         }
 
         return view('sharpfleet.admin.vehicles.edit', [
@@ -1308,6 +1319,7 @@ class VehicleController extends Controller
             'branches' => $branches,
             'defaultBranchId' => $defaultBranchId,
             'insurance' => $insurance,
+            'insuranceDocuments' => $insuranceDocuments,
         ]);
     }
 
@@ -1374,7 +1386,8 @@ class VehicleController extends Controller
             'insurance_expiry_date' => ['nullable', 'date'],
             'insurance_notify_email' => ['nullable', 'email', 'max:255'],
             'insurance_notify_window_days' => ['nullable', 'integer', 'min:0', 'max:3650'],
-            'insurance_document' => ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+            'insurance_documents' => ['nullable', 'array'],
+            'insurance_documents.*' => ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
         ]);
 
         $branchService = new BranchService();
@@ -1536,7 +1549,7 @@ class VehicleController extends Controller
             $validated['insurance_expiry_date'],
             $validated['insurance_notify_email'],
             $validated['insurance_notify_window_days'],
-            $validated['insurance_document']
+            $validated['insurance_documents']
         );
 
         $this->vehicleService->updateVehicle(
@@ -1550,22 +1563,6 @@ class VehicleController extends Controller
                 ->table('vehicle_insurance')
                 ->where('vehicle_id', $vehicleId)
                 ->first();
-
-            if ($request->hasFile('insurance_document')) {
-                $file = $request->file('insurance_document');
-
-                if ($existingInsurance && !empty($existingInsurance->policy_document_path)) {
-                    if (Storage::disk('local')->exists($existingInsurance->policy_document_path)) {
-                        Storage::disk('local')->delete($existingInsurance->policy_document_path);
-                    }
-                }
-
-                $path = $file->store("sharpfleet/vehicle-insurance/{$vehicleId}", 'local');
-
-                $insurancePayload['policy_document_path'] = $path;
-                $insurancePayload['policy_document_original_name'] = $file->getClientOriginalName();
-                $insurancePayload['policy_document_mime'] = $file->getClientMimeType();
-            }
 
             $insurancePayload['updated_at'] = now();
 
@@ -1584,11 +1581,45 @@ class VehicleController extends Controller
             }
         }
 
+        if (Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents') && $request->hasFile('insurance_documents')) {
+            $existingDocCount = DB::connection('sharpfleet')
+                ->table('vehicle_insurance_documents')
+                ->where('vehicle_id', $vehicleId)
+                ->count();
+            $incomingFiles = array_values(array_filter((array) $request->file('insurance_documents')));
+            $incomingCount = count($incomingFiles);
+
+            if ($existingDocCount + $incomingCount > 3) {
+                return back()
+                    ->withErrors(['insurance_documents' => 'Maximum of 3 insurance documents per vehicle.'])
+                    ->withInput();
+            }
+
+            foreach ($incomingFiles as $file) {
+                if (!$file || !$file->isValid()) {
+                    continue;
+                }
+
+                $path = $file->store("sharpfleet/vehicle-insurance/{$vehicleId}", 'local');
+
+                DB::connection('sharpfleet')
+                    ->table('vehicle_insurance_documents')
+                    ->insert([
+                        'vehicle_id' => $vehicleId,
+                        'document_path' => $path,
+                        'document_original_name' => $file->getClientOriginalName(),
+                        'document_mime' => $file->getClientMimeType(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+            }
+        }
+
         return redirect('/app/sharpfleet/admin/vehicles')
             ->with('success', 'Vehicle updated.');
     }
 
-    public function insuranceDocument(Request $request, $vehicle)
+    public function insuranceDocument(Request $request, $vehicle, $documentId = null)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
 
@@ -1604,6 +1635,26 @@ class VehicleController extends Controller
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
+        }
+
+        if ($documentId !== null && Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents')) {
+            $document = DB::connection('sharpfleet')
+                ->table('vehicle_insurance_documents')
+                ->where('id', (int) $documentId)
+                ->where('vehicle_id', $vehicleId)
+                ->first();
+
+            if (!$document || empty($document->document_path)) {
+                abort(404, 'Insurance document not found.');
+            }
+
+            if (!Storage::disk('local')->exists($document->document_path)) {
+                abort(404, 'Insurance document not found.');
+            }
+
+            $downloadName = $document->document_original_name ?: 'insurance-document';
+
+            return Storage::disk('local')->download($document->document_path, $downloadName);
         }
 
         if (!Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
@@ -1628,7 +1679,7 @@ class VehicleController extends Controller
         return Storage::disk('local')->download($insurance->policy_document_path, $downloadName);
     }
 
-    public function deleteInsuranceDocument(Request $request, $vehicle)
+    public function deleteInsuranceDocument(Request $request, $vehicle, $documentId = null)
     {
         $fleetUser = $request->session()->get('sharpfleet.user');
 
@@ -1644,6 +1695,29 @@ class VehicleController extends Controller
 
         if (!$record) {
             abort(404, 'Vehicle not found.');
+        }
+
+        if ($documentId !== null && Schema::connection('sharpfleet')->hasTable('vehicle_insurance_documents')) {
+            $document = DB::connection('sharpfleet')
+                ->table('vehicle_insurance_documents')
+                ->where('id', (int) $documentId)
+                ->where('vehicle_id', $vehicleId)
+                ->first();
+
+            if (!$document || empty($document->document_path)) {
+                return back()->withErrors(['insurance_document' => 'No insurance document to delete.']);
+            }
+
+            if (Storage::disk('local')->exists($document->document_path)) {
+                Storage::disk('local')->delete($document->document_path);
+            }
+
+            DB::connection('sharpfleet')
+                ->table('vehicle_insurance_documents')
+                ->where('id', (int) $documentId)
+                ->delete();
+
+            return back()->with('success', 'Insurance document deleted.');
         }
 
         if (!Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
