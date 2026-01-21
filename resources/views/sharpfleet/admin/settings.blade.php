@@ -148,6 +148,7 @@
         border-bottom: none;
         border-top-color: #39b7aa;
         transform: translateY(-1px);
+        box-shadow: 0 0 0 2px rgba(57, 183, 170, 0.12);
         z-index: 2;
     }
 
