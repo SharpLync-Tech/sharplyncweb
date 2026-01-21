@@ -412,14 +412,20 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">Insurance policy document</label>
-                                    <input type="file" name="insurance_document" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                                    @if(!empty($insurance->policy_document_original_name))
-                                        <div class="form-hint">Current file: {{ $insurance->policy_document_original_name }}</div>
-                                    @endif
-                                    @error('insurance_document') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Insurance policy document</label>
+                                        <input type="file" name="insurance_document" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                        @if(!empty($insurance->policy_document_original_name))
+                                            <div class="form-hint">
+                                                Current file: {{ $insurance->policy_document_original_name }}
+                                                <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document') }}" class="ms-2">View</a>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm" form="insurance-delete-form">Delete document</button>
+                                            </div>
+                                        @endif
+                                        @error('insurance_document') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -568,6 +574,9 @@
             <a href="{{ url('/app/sharpfleet/admin/vehicles') }}" class="btn btn-secondary">Cancel</a>
         </div>
 
+    </form>
+    <form id="insurance-delete-form" method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document/delete') }}">
+        @csrf
     </form>
 </div>
 

@@ -24,6 +24,7 @@
             return 'N/A';
         }
     };
+    $insurance = $insurance ?? null;
 @endphp
 
 <div class="container">
@@ -135,6 +136,42 @@
                 <h3 class="section-title">Assignment</h3>
                 <div>{{ $assignment ?: 'Not available' }}</div>
             </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3 class="section-title">Insurance</h3>
+            @if(!$insurance)
+                <div class="text-muted">No insurance details added.</div>
+            @else
+                <div class="mb-2"><strong>Company:</strong> {{ $insurance->insurance_company ?: 'N/A' }}</div>
+                <div class="mb-2"><strong>Policy number:</strong> {{ $insurance->policy_number ?: 'N/A' }}</div>
+                <div class="mb-2">
+                    <strong>Cover type:</strong>
+                    @php
+                        $policyTypeMap = [
+                            'comprehensive' => 'Comprehensive',
+                            'third_party' => 'Third party',
+                            'third_party_fire_theft' => 'Third party fire & theft',
+                            'uninsured' => 'Uninsured',
+                        ];
+                        $policyType = $insurance->policy_type ?? '';
+                    @endphp
+                    {{ $policyTypeMap[$policyType] ?? 'N/A' }}
+                </div>
+                <div class="mb-2"><strong>Expiry date:</strong> {{ $insurance->expiry_date ? $formatDate($insurance->expiry_date) : 'N/A' }}</div>
+                <div class="mb-2"><strong>Notify email:</strong> {{ $insurance->notify_email ?: 'N/A' }}</div>
+                <div class="mb-2"><strong>Notify window:</strong> {{ $insurance->notify_window_days !== null ? ((int) $insurance->notify_window_days . ' days') : 'N/A' }}</div>
+                <div>
+                    <strong>Document:</strong>
+                    @if(!empty($insurance->policy_document_original_name))
+                        <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$vehicle->id.'/insurance-document') }}">{{ $insurance->policy_document_original_name }}</a>
+                    @else
+                        N/A
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 

@@ -1213,6 +1213,9 @@ class VehicleController extends Controller
             'age' => $age,
             'faults' => $faults,
             'assignment' => $assignment,
+            'insurance' => Schema::connection('sharpfleet')->hasTable('vehicle_insurance')
+                ? DB::connection('sharpfleet')->table('vehicle_insurance')->where('vehicle_id', $vehicleId)->first()
+                : null,
             'dateFormat' => $dateFormat,
             'serviceDueDate' => $record->service_due_date ?? null,
             'serviceDueReading' => $record->service_due_km ?? null,
@@ -1583,6 +1586,94 @@ class VehicleController extends Controller
 
         return redirect('/app/sharpfleet/admin/vehicles')
             ->with('success', 'Vehicle updated.');
+    }
+
+    public function insuranceDocument(Request $request, $vehicle)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
+            abort(404, 'Insurance data not available.');
+        }
+
+        $insurance = DB::connection('sharpfleet')
+            ->table('vehicle_insurance')
+            ->where('vehicle_id', $vehicleId)
+            ->first();
+
+        if (!$insurance || empty($insurance->policy_document_path)) {
+            abort(404, 'Insurance document not found.');
+        }
+
+        if (!Storage::disk('local')->exists($insurance->policy_document_path)) {
+            abort(404, 'Insurance document not found.');
+        }
+
+        $downloadName = $insurance->policy_document_original_name ?: 'insurance-document';
+
+        return Storage::disk('local')->download($insurance->policy_document_path, $downloadName);
+    }
+
+    public function deleteInsuranceDocument(Request $request, $vehicle)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('vehicle_insurance')) {
+            return back()->withErrors(['insurance_document' => 'Insurance data not available.']);
+        }
+
+        $insurance = DB::connection('sharpfleet')
+            ->table('vehicle_insurance')
+            ->where('vehicle_id', $vehicleId)
+            ->first();
+
+        if (!$insurance || empty($insurance->policy_document_path)) {
+            return back()->withErrors(['insurance_document' => 'No insurance document to delete.']);
+        }
+
+        if (Storage::disk('local')->exists($insurance->policy_document_path)) {
+            Storage::disk('local')->delete($insurance->policy_document_path);
+        }
+
+        DB::connection('sharpfleet')
+            ->table('vehicle_insurance')
+            ->where('vehicle_id', $vehicleId)
+            ->update([
+                'policy_document_path' => null,
+                'policy_document_original_name' => null,
+                'policy_document_mime' => null,
+                'updated_at' => now(),
+            ]);
+
+        return back()->with('success', 'Insurance document deleted.');
     }
 
     /**

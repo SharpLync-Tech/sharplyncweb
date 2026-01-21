@@ -233,6 +233,8 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/vehicles/{vehicle}/details', [VehicleController::class, 'details']);
         Route::get('/admin/vehicles/{vehicle}/edit', [VehicleController::class, 'edit']);
         Route::post('/admin/vehicles/{vehicle}', [VehicleController::class, 'update']);
+        Route::get('/admin/vehicles/{vehicle}/insurance-document', [VehicleController::class, 'insuranceDocument']);
+        Route::post('/admin/vehicles/{vehicle}/insurance-document/delete', [VehicleController::class, 'deleteInsuranceDocument']);
         Route::get('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchive']);
         Route::post('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchiveStore']);
         Route::post('/admin/vehicles/{vehicle}/archive/cancel', [VehicleController::class, 'cancelArchive']);
