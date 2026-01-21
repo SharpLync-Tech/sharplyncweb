@@ -572,11 +572,6 @@
     overflow: visible;
 }
 
-.sf-tab-panels .card {
-    border: none;
-    box-shadow: none;
-}
-
 .sf-tab-panel + .sf-tab-panel {
     margin-top: 24px;
 }
