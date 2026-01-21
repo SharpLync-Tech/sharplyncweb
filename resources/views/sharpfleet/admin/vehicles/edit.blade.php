@@ -40,6 +40,9 @@
                 <button type="button" class="sf-tab is-active" id="sf-vehicle-tab-basics-button" data-sf-tab="basics" role="tab" aria-controls="sf-vehicle-tab-basics" aria-selected="true">
                     Basics
                 </button>
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-details-button" data-sf-tab="details" role="tab" aria-controls="sf-vehicle-tab-details" aria-selected="false">
+                    Vehicle Details
+                </button>
                 @if($vehicleRegistrationTrackingEnabled)
                     <button type="button" class="sf-tab" id="sf-vehicle-tab-registration-button" data-sf-tab="registration" role="tab" aria-controls="sf-vehicle-tab-registration" aria-selected="false">
                         Registration
@@ -143,7 +146,13 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
 
+    <section class="sf-tab-panel" id="sf-vehicle-tab-details" data-sf-panel="details" role="tabpanel" aria-labelledby="sf-vehicle-tab-details-button">
+        <div class="grid gap-4">
+            <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle details</h3>
