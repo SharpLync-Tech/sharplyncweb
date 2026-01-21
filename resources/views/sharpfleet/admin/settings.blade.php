@@ -165,7 +165,7 @@
         left: -1px;
         right: -1px;
         top: -1px;
-        bottom: 0;
+        bottom: 3px;
         border: 2px solid rgba(57, 183, 170, 0.2);
         border-bottom: none;
         border-top-left-radius: var(--sf-tab-radius);
