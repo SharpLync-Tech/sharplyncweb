@@ -3,17 +3,28 @@
 @section('title', 'Access Denied')
 
 @section('sharpfleet-content')
-<div class="auth-container">
-    <div class="auth-card max-w-700">
-        <div class="auth-header">
-            <h1 class="auth-title">Access Denied</h1>
-            <p class="auth-subtitle">You do not have permission to access this page.</p>
+
+<div class="sf-access-wrapper">
+    <div class="sf-access-card">
+
+        {{-- Header --}}
+        <div class="sf-access-header">
+            <h1>Access Denied</h1>
+            <p>You do not have permission to access this page.</p>
         </div>
 
-        <div class="auth-content text-center">
-            <p class="text-muted mb-3">If you believe this is an error, please contact your administrator.</p>
-            <a href="/app/sharpfleet/login" class="btn btn-primary">Return to Dashboard</a>
+        {{-- Body --}}
+        <div class="sf-access-body">
+            <p class="sf-access-note">
+                If you believe this is an error, please contact your administrator.
+            </p>
+
+            <a href="/app/sharpfleet/login" class="btn btn-secondary">
+                Return to Dashboard
+            </a>
         </div>
+
     </div>
 </div>
+
 @endsection
