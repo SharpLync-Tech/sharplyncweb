@@ -161,10 +161,10 @@
     .sf-tab.is-active::after {
         content: "";
         position: absolute;
-        left: 0;
-        right: 0;
+        left: -1px;
+        right: -1px;
         bottom: -1px;
-        height: 2px;
+        height: 4px;
         background: #ffffff;
     }
 
