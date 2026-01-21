@@ -1,6 +1,6 @@
 @extends('layouts.sharpfleet')
 
-@section('title', 'Trip Report – Raw Test')
+@section('title', 'Trip Report – RAW')
 
 @section('sharpfleet-content')
 
@@ -14,140 +14,115 @@
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y H:i'
         : 'd/m/Y H:i';
+
+    $formatTotal = function ($val) {
+        if ($val === null || $val === '') return '';
+        if (!is_numeric($val)) return '';
+        $num = (float) $val;
+        // If it's effectively an integer, show no decimals; else show 2
+        return (abs($num - round($num)) < 0.00001) ? (string) (int) round($num) : number_format($num, 2, '.', '');
+    };
+
+    $formatDuration = function (?string $startedAt, ?string $endedAt) use ($companyTimezone) {
+        if (!$startedAt || !$endedAt) return '';
+
+        try {
+            $s = Carbon::parse($startedAt, $companyTimezone);
+            $e = Carbon::parse($endedAt, $companyTimezone);
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        $seconds = $s->diffInSeconds($e, false);
+        if ($seconds <= 0) return '';
+
+        $hours = intdiv($seconds, 3600);
+        $seconds = $seconds % 3600;
+
+        $mins = intdiv($seconds, 60);
+        $secs = $seconds % 60;
+
+        $parts = [];
+        if ($hours > 0) $parts[] = $hours . 'h';
+        if ($mins > 0) $parts[] = $mins . 'm';
+        if ($hours === 0 && $secs > 0) $parts[] = $secs . 's'; // only show seconds when < 1h
+
+        return implode(' ', $parts);
+    };
 @endphp
 
-{{-- RAW VIEW: minimal CSS, only to force single-line cells --}}
-<style>
-    .sf-raw-wrap {
-        padding: 18px;
-    }
+<h1>Trip Report – RAW DATA VIEW</h1>
+<p><strong>Timezone:</strong> {{ $companyTimezone }}</p>
+<p><strong>{{ $clientPresenceLabel }} column label in use</strong></p>
 
-    .sf-raw-table-wrap {
-        overflow-x: auto;
-        border: 1px solid #999;
-        background: #fff;
-    }
+@if($trips->count() === 0)
+    <p>No trips available.</p>
+@else
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>Registration</th>
+                <th>Driver</th>
+                <th>Type</th>
+                <th>{{ $clientPresenceLabel }}</th>
+                <th>Start Reading</th>
+                <th>End Reading</th>
+                <th>Total</th>
+                <th>Unit</th>
+                <th>Started At</th>
+                <th>Ended At</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($trips as $t)
+                @php
+                    $startReading = $t->display_start ?? $t->start_km ?? null;
+                    $endReading   = $t->display_end ?? $t->end_km ?? null;
+                    $unit         = $t->display_unit ?? ((($t->tracking_mode ?? 'distance') === 'hours') ? 'hours' : 'km');
 
-    table.sf-raw-table {
-        border-collapse: collapse;
-        width: max-content;     /* key: table uses natural width */
-        min-width: 100%;        /* but never smaller than container */
-    }
+                    $total = (
+                        is_numeric($startReading)
+                        && is_numeric($endReading)
+                        && (float)$endReading >= (float)$startReading
+                    )
+                        ? ((float)$endReading - (float)$startReading)
+                        : null;
 
-    table.sf-raw-table th,
-    table.sf-raw-table td {
-        border: 1px solid #999;
-        padding: 8px 10px;
-        white-space: nowrap;    /* key: prevent wrapping everywhere */
-        vertical-align: top;
-        font-family: inherit;
-        font-size: 14px;
-    }
+                    $startedAtRaw = $t->started_at ?? null;
+                    $endedAtRaw   = $t->end_time ?? $t->ended_at ?? null;
 
-    table.sf-raw-table th {
-        font-weight: 700;
-        background: #f2f2f2;
-    }
+                    $startedAtText = $startedAtRaw
+                        ? Carbon::parse($startedAtRaw)->timezone($companyTimezone)->format($dateFormat)
+                        : '';
 
-    .sf-raw-right { text-align: right; }
-    .sf-raw-center { text-align: center; }
-</style>
+                    $endedAtText = $endedAtRaw
+                        ? Carbon::parse($endedAtRaw)->timezone($companyTimezone)->format($dateFormat)
+                        : '';
 
-<div class="sf-raw-wrap">
-    <h1>Trip Report – RAW DATA VIEW</h1>
+                    $durationText = $formatDuration($startedAtRaw, $endedAtRaw);
+                @endphp
 
-    <p><strong>Timezone:</strong> {{ $companyTimezone }}</p>
-    <p><strong>{{ $clientPresenceLabel }} column label in use</strong></p>
+                <tr>
+                    <td>{{ $t->vehicle_name ?? '' }}</td>
+                    <td>{{ $t->registration_number ?? '' }}</td>
+                    <td>{{ $t->driver_name ?? '' }}</td>
+                    <td>{{ strtolower((string)($t->trip_mode ?? '')) === 'private' ? 'Private' : 'Business' }}</td>
+                    <td>{{ $t->customer_name_display ?? $t->customer_name ?? '' }}</td>
 
-    <hr>
+                    <td>{{ is_numeric($startReading) ? $formatTotal($startReading) : '' }}</td>
+                    <td>{{ is_numeric($endReading) ? $formatTotal($endReading) : '' }}</td>
+                    <td>{{ $total !== null ? $formatTotal($total) : '' }}</td>
+                    <td>{{ $unit }}</td>
 
-    @if($trips->count() === 0)
-        <p>No trips found.</p>
-    @else
-        <div class="sf-raw-table-wrap">
-            <table class="sf-raw-table">
-                <thead>
-                    <tr>
-                        <th>Vehicle</th>
-                        <th>Registration</th>
-                        <th>Driver</th>
-                        <th>Type</th>
-                        <th>{{ $clientPresenceLabel }}</th>
-                        <th class="sf-raw-right">Start Reading</th>
-                        <th class="sf-raw-right">End Reading</th>
-                        <th class="sf-raw-right">Total</th>
-                        <th class="sf-raw-center">Unit</th>
-                        <th>Started At</th>
-                        <th>Ended At</th>
-                        <th class="sf-raw-right">Duration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($trips as $t)
-                        @php
-                            $startReading = $t->display_start ?? null;
-                            $endReading   = $t->display_end ?? null;
-                            $unit         = $t->display_unit ?? 'km';
-
-                            $total = (
-                                is_numeric($startReading)
-                                && is_numeric($endReading)
-                                && $endReading >= $startReading
-                            )
-                                ? ($endReading - $startReading)
-                                : null;
-
-                            $startedAt = $t->started_at
-                                ? Carbon::parse($t->started_at)->timezone($companyTimezone)
-                                : null;
-
-                            $endedAt = $t->end_time
-                                ? Carbon::parse($t->end_time)->timezone($companyTimezone)
-                                : null;
-
-                            $duration = ($startedAt && $endedAt)
-                                ? $startedAt->diffForHumans($endedAt, [
-                                    'parts' => 2,
-                                    'short' => true,
-                                    'syntax' => Carbon::DIFF_ABSOLUTE,
-                                ])
-                                : null;
-
-                            // Force single-line date/time even if the browser *really* wants to wrap
-                            $startedText = $startedAt ? str_replace(' ', "\u{00A0}", $startedAt->format($dateFormat)) : '—';
-                            $endedText   = $endedAt ? str_replace(' ', "\u{00A0}", $endedAt->format($dateFormat)) : '—';
-
-                            // Force single-line names (Jannie Brits)
-                            $driverText = trim((string) ($t->driver_name ?? ''));
-                            $driverText = $driverText !== '' ? str_replace(' ', "\u{00A0}", $driverText) : '—';
-
-                            $vehicleText = trim((string) ($t->vehicle_name ?? ''));
-                            $regoText = trim((string) ($t->registration_number ?? ''));
-                        @endphp
-
-                        <tr>
-                            <td>{{ $vehicleText !== '' ? $vehicleText : '—' }}</td>
-                            <td>{{ $regoText !== '' ? $regoText : '—' }}</td>
-                            <td>{!! e($driverText) !!}</td>
-                            <td>{{ strtolower((string) ($t->trip_mode ?? '')) === 'private' ? 'Private' : 'Business' }}</td>
-                            <td>{{ $t->customer_name_display ?: '—' }}</td>
-
-                            <td class="sf-raw-right">{{ is_numeric($startReading) ? $startReading : '—' }}</td>
-                            <td class="sf-raw-right">{{ is_numeric($endReading) ? $endReading : '—' }}</td>
-
-                            <td class="sf-raw-right">{{ $total !== null ? $total : '—' }}</td>
-                            <td class="sf-raw-center">{{ $unit }}</td>
-
-                            <td>{!! e($startedText) !!}</td>
-                            <td>{!! e($endedText) !!}</td>
-
-                            <td class="sf-raw-right">{{ $duration ?: '—' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-</div>
+                    <td>{{ $startedAtText }}</td>
+                    <td>{{ $endedAtText }}</td>
+                    <td>{{ $durationText }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
 
 @endsection
