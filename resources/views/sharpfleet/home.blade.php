@@ -64,7 +64,7 @@
             <p>Client visits or job runs? <strong class="text-primary">Covered.</strong></p>
         </div>
 
-        <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
+        <a href="/app/sharpfleet/admin/register" class="sf-cta">
             Get Started
         </a>
 
