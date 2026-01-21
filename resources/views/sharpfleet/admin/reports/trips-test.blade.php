@@ -1,6 +1,6 @@
 @extends('layouts.sharpfleet')
 
-@section('title', 'Trip Report – Test Layout')
+@section('title', 'Trip Report – Raw Test')
 
 @section('sharpfleet-content')
 
@@ -16,129 +16,92 @@
         : 'd/m/Y H:i';
 @endphp
 
-{{-- ✅ Explicitly load reports stylesheet --}}
-<link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-reports.css') }}">
+<h1>Trip Report – RAW DATA VIEW</h1>
+<p><strong>Timezone:</strong> {{ $companyTimezone }}</p>
+<p><strong>{{ $clientPresenceLabel }} column label in use</strong></p>
 
-{{-- ❌ NO BOOTSTRAP CONTAINER --}}
-<div class="sf-report-wrapper">
+<hr>
 
-    <div class="page-header mb-4">
-        <h1 class="page-title">Trip Report (Test)</h1>
-        <p class="page-description">
-            Desktop-first test layout for detailed trip reporting.
-        </p>
-    </div>
+@if($trips->count() === 0)
+    <p>No trips found.</p>
+@else
+    <table border="1" cellpadding="6" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>Registration</th>
+                <th>Driver</th>
+                <th>Type</th>
+                <th>{{ $clientPresenceLabel }}</th>
+                <th>Start Reading</th>
+                <th>End Reading</th>
+                <th>Unit</th>
+                <th>Total</th>
+                <th>Started At</th>
+                <th>Ended At</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($trips as $t)
 
-    <div class="sf-report-surface">
+                @php
+                    $startReading = $t->display_start;
+                    $endReading   = $t->display_end;
+                    $unit         = $t->display_unit ?? 'km';
 
-        @if($trips->count() === 0)
-            <p class="text-muted fst-italic">
-                No trips available.
-            </p>
-        @else
-            <div class="sf-report-scroll">
-                <table class="sf-report-table">
-                    <thead>
-                        <tr>
-                            <th class="sf-col-vehicle">Vehicle</th>
-                            <th class="sf-col-driver">Driver</th>
-                            <th class="sf-col-type">Type</th>
-                            <th class="sf-col-customer">{{ $clientPresenceLabel }}</th>
-                            <th class="sf-col-start">Start</th>
-                            <th class="sf-col-end">End</th>
-                            <th class="sf-col-total">Total</th>
-                            <th class="sf-col-started">Started</th>
-                            <th class="sf-col-ended">Ended</th>
-                            <th class="sf-col-duration">Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($trips as $t)
-                            @php
-                                $startReading = $t->display_start;
-                                $endReading   = $t->display_end;
-                                $unit         = $t->display_unit ?? 'km';
+                    $total = (
+                        is_numeric($startReading)
+                        && is_numeric($endReading)
+                        && $endReading >= $startReading
+                    )
+                        ? ($endReading - $startReading)
+                        : null;
 
-                                $distanceTotal = (
-                                    is_numeric($startReading)
-                                    && is_numeric($endReading)
-                                    && $endReading >= $startReading
-                                )
-                                    ? number_format($endReading - $startReading, 2)
-                                    : null;
+                    $startedAt = $t->started_at
+                        ? Carbon::parse($t->started_at)
+                        : null;
 
-                                $startedAt = $t->started_at
-                                    ? Carbon::parse($t->started_at)
-                                    : null;
+                    $endedAt = $t->end_time
+                        ? Carbon::parse($t->end_time)
+                        : null;
 
-                                $endedAt = $t->end_time
-                                    ? Carbon::parse($t->end_time)
-                                    : null;
+                    $duration = ($startedAt && $endedAt)
+                        ? $startedAt->diffForHumans($endedAt, [
+                            'parts' => 2,
+                            'short' => true,
+                            'syntax' => Carbon::DIFF_ABSOLUTE,
+                        ])
+                        : null;
+                @endphp
 
-                                $duration = ($startedAt && $endedAt)
-                                    ? $startedAt->diffForHumans($endedAt, [
-                                        'parts' => 2,
-                                        'short' => true,
-                                        'syntax' => Carbon::DIFF_ABSOLUTE,
-                                    ])
-                                    : null;
-                            @endphp
-
-                            <tr>
-                                <td class="sf-col-vehicle">
-                                    <span class="sf-report-vehicle">{{ $t->vehicle_name }}</span>
-                                    <div class="sf-report-sub">{{ $t->registration_number }}</div>
-                                </td>
-
-                                <td class="sf-col-driver">{{ $t->driver_name }}</td>
-
-                                <td class="sf-col-type sf-trip-type">
-                                    {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
-                                </td>
-
-                                <td class="sf-col-customer">
-                                    {{ $t->customer_name_display ?: '—' }}
-                                </td>
-
-                                <td class="sf-col-start text-end">
-                                    {{ is_numeric($startReading) ? $startReading : '—' }}
-                                    <span class="sf-report-unit">{{ is_numeric($startReading) ? $unit : '' }}</span>
-                                </td>
-
-                                <td class="sf-col-end text-end">
-                                    {{ is_numeric($endReading) ? $endReading : '—' }}
-                                    <span class="sf-report-unit">{{ is_numeric($endReading) ? $unit : '' }}</span>
-                                </td>
-
-                                <td class="sf-col-total text-end sf-report-total">
-                                    {{ $distanceTotal ?? '—' }}
-                                    <span class="sf-report-unit">{{ $distanceTotal ? $unit : '' }}</span>
-                                </td>
-
-                                <td class="sf-col-started">
-                                    {{ $startedAt ? $startedAt->timezone($companyTimezone)->format($dateFormat) : '—' }}
-                                </td>
-
-                                <td class="sf-col-ended">
-                                    {{ $endedAt ? $endedAt->timezone($companyTimezone)->format($dateFormat) : '—' }}
-                                </td>
-
-                                <td class="sf-col-duration text-end sf-report-duration">
-                                    {{ $duration ?? '—' }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-3 text-muted small">
-                Distances and durations respect vehicle and branch units (km, mi, hours).
-            </div>
-        @endif
-
-    </div>
-
-</div>
+                <tr>
+                    <td>{{ $t->vehicle_name }}</td>
+                    <td>{{ $t->registration_number }}</td>
+                    <td>{{ $t->driver_name }}</td>
+                    <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}</td>
+                    <td>{{ $t->customer_name_display ?: '—' }}</td>
+                    <td>{{ is_numeric($startReading) ? $startReading : '—' }}</td>
+                    <td>{{ is_numeric($endReading) ? $endReading : '—' }}</td>
+                    <td>{{ $unit }}</td>
+                    <td>{{ $total !== null ? $total : '—' }}</td>
+                    <td>
+                        {{ $startedAt
+                            ? $startedAt->timezone($companyTimezone)->format($dateFormat)
+                            : '—'
+                        }}
+                    </td>
+                    <td>
+                        {{ $endedAt
+                            ? $endedAt->timezone($companyTimezone)->format($dateFormat)
+                            : '—'
+                        }}
+                    </td>
+                    <td>{{ $duration ?: '—' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
 
 @endsection
