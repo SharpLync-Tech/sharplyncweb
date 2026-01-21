@@ -28,7 +28,7 @@
     }
 @endphp
 
-{{-- FULL-WIDTH DESKTOP REPORT WRAPPER --}}
+{{-- TRUE FULL-WIDTH REPORT --}}
 <div class="sf-report-wrapper">
 
     {{-- ================= HEADER ================= --}}
@@ -51,7 +51,7 @@
                 </p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-sm align-middle text-nowrap">
+                    <table class="table table-sm align-middle sf-report-table">
                         <thead>
                             <tr>
                                 <th>Vehicle</th>
@@ -86,9 +86,9 @@
                                     {{-- Vehicle --}}
                                     <td class="fw-semibold">
                                         {{ $t->vehicle_name }}
-                                        <div class="text-muted small">
-                                            {{ $t->registration_number }}
-                                        </div>
+                                        <span class="text-muted small ms-1">
+                                            ({{ $t->registration_number }})
+                                        </span>
                                     </td>
 
                                     {{-- Driver --}}
@@ -153,9 +153,18 @@
 {{-- PAGE-LOCAL STYLES (TEST ONLY) --}}
 <style>
     .sf-report-wrapper {
-        max-width: 1800px;
+        max-width: 2000px;
         margin: 0 auto;
-        padding: 0 1.5rem 2rem;
+        padding: 0 2rem 2rem;
+    }
+
+    .sf-report-table {
+        white-space: nowrap;
+    }
+
+    .sf-report-table td,
+    .sf-report-table th {
+        vertical-align: middle;
     }
 </style>
 

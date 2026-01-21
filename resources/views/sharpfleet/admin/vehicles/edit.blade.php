@@ -35,9 +35,26 @@
             </div>
         @endif
 
-        <div class="grid gap-4 mb-3">
-            {{-- Row 1: Vehicle info | Vehicle details --}}
-            <div class="grid grid-2 gap-4">
+        <div class="card sf-vehicle-tabs mb-3">
+            <div class="sf-tabs" role="tablist" aria-label="Vehicle form sections">
+                <button type="button" class="sf-tab is-active" id="sf-vehicle-tab-basics-button" data-sf-tab="basics" role="tab" aria-controls="sf-vehicle-tab-basics" aria-selected="true">
+                    Basics
+                </button>
+                @if($vehicleRegistrationTrackingEnabled || $vehicleServicingTrackingEnabled)
+                    <button type="button" class="sf-tab" id="sf-vehicle-tab-maintenance-button" data-sf-tab="maintenance" role="tab" aria-controls="sf-vehicle-tab-maintenance" aria-selected="false">
+                        Registration &amp; Servicing
+                    </button>
+                @endif
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-status-button" data-sf-tab="status" role="tab" aria-controls="sf-vehicle-tab-status" aria-selected="false">
+                    Status &amp; Allocation
+                </button>
+            </div>
+
+            <div class="sf-tab-panels">
+                <section class="sf-tab-panel is-active" id="sf-vehicle-tab-basics" data-sf-panel="basics" role="tabpanel" aria-labelledby="sf-vehicle-tab-basics-button">
+                    <div class="grid gap-4">
+                        {{-- Row 1: Vehicle info | Vehicle details --}}
+                        <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Vehicle info</h3>
@@ -200,8 +217,15 @@
                 </div>
             </div>
 
-            {{-- Row 2: Registration | Servicing --}}
-            <div class="grid grid-2 gap-4">
+                        </div>
+                    </div>
+                </section>
+
+                @if($vehicleRegistrationTrackingEnabled || $vehicleServicingTrackingEnabled)
+                    <section class="sf-tab-panel" id="sf-vehicle-tab-maintenance" data-sf-panel="maintenance" role="tabpanel" aria-labelledby="sf-vehicle-tab-maintenance-button">
+                        <div class="grid gap-4">
+                            {{-- Row 2: Registration | Servicing --}}
+                            <div class="grid grid-2 gap-4">
                 @if($vehicleRegistrationTrackingEnabled)
                     <div class="card">
                         <div class="card-body">
@@ -282,8 +306,15 @@
                 @endif
             </div>
 
-            {{-- Row 3: Service status | Permanent allocation --}}
-            <div class="grid grid-2 gap-4">
+                            </div>
+                        </div>
+                    </section>
+                @endif
+
+                <section class="sf-tab-panel" id="sf-vehicle-tab-status" data-sf-panel="status" role="tabpanel" aria-labelledby="sf-vehicle-tab-status-button">
+                    <div class="grid gap-4">
+                        {{-- Row 3: Service status | Permanent allocation --}}
+                        <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Service status</h3>
