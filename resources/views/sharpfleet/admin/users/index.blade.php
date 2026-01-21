@@ -36,7 +36,7 @@
     @if($sfCanManageUsers)
         <div class="mb-3">
             <div class="d-flex flex-wrap gap-2 align-items-center">
-                <a class="btn btn-primary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
+                <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/add">Add Driver</a>
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
             </div>
