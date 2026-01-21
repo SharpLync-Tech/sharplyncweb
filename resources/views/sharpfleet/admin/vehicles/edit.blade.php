@@ -35,7 +35,7 @@
             </div>
         @endif
 
-        <div class="card sf-vehicle-tabs mb-3">
+        <div class="card sf-vehicle-tabs mb-3 is-js">
             <div class="sf-tabs" role="tablist" aria-label="Vehicle form sections">
                 <button type="button" class="sf-tab is-active" id="sf-vehicle-tab-basics-button" data-sf-tab="basics" role="tab" aria-controls="sf-vehicle-tab-basics" aria-selected="true">
                     Basics
@@ -574,12 +574,20 @@
     margin-top: 24px;
 }
 
-.sf-vehicle-tabs.is-js .sf-tab-panel {
+.sf-vehicle-tabs .sf-tab-panel {
     display: none;
 }
 
-.sf-vehicle-tabs.is-js .sf-tab-panel.is-active {
+.sf-vehicle-tabs .sf-tab-panel.is-active {
     display: block;
+}
+
+.sf-tab-panels .grid.grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.sf-tab-panels .card {
+    box-shadow: 0 12px 24px rgba(57, 183, 170, 0.18);
 }
 
 @media (max-width: 900px) {
