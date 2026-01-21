@@ -18,7 +18,7 @@
 <body class="sf-reports-body">
 
     {{-- NAV ONLY – no layout, no containers, no footer --}}
-    @include('layouts.sharpfleet-nav')
+    {{-- @include('layouts.sharpfleet-nav') --}}
 
     {{-- REPORT CONTENT – starts immediately after nav --}}
     <main class="sf-reports-main">
