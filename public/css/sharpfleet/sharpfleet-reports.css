@@ -1,35 +1,34 @@
 /* =========================================================
    SharpFleet – Reports Stylesheet
    Desktop-first, wide-layout reporting
-   Applies ONLY to report pages
 ========================================================= */
 
-/* ------------------------------
-   Layout
------------------------------- */
-
 .sf-report-wrapper {
-    max-width: 2400px; /* intentionally wide for desktop reports */
+    max-width: 2600px; /* wide enough for all columns */
     margin: 0 auto;
     padding: 0 2.5rem 3rem;
 }
 
 .sf-report-surface {
     background: #ffffff;
-    border-radius: 10px;
-    padding: 1.75rem 1.75rem 1rem;
+    border-radius: 12px;
+    padding: 1.75rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* ------------------------------
-   Table behaviour
------------------------------- */
+/* ===============================
+   Table
+================================ */
+
+.sf-report-scroll {
+    overflow-x: auto;
+}
 
 .sf-report-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    white-space: nowrap; /* key: keep everything on one line */
+    white-space: nowrap;
 }
 
 .sf-report-table thead th {
@@ -37,37 +36,34 @@
     font-weight: 600;
     color: #0f172a;
     border-bottom: 1px solid #e5e7eb;
-    padding: 0.75rem 0.75rem;
-    vertical-align: middle;
+    padding: 0.75rem;
 }
 
 .sf-report-table tbody td {
     padding: 0.65rem 0.75rem;
     border-bottom: 1px solid #e5e7eb;
-    vertical-align: middle;
+    color: #0f172a;
 }
 
 .sf-report-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* ------------------------------
-   Alignment helpers
------------------------------- */
+/* ===============================
+   Alignment
+================================ */
 
-.sf-report-table th.text-end,
-.sf-report-table td.text-end {
+.text-end {
     text-align: right;
 }
 
-.sf-report-table th.text-center,
-.sf-report-table td.text-center {
+.text-center {
     text-align: center;
 }
 
-/* ------------------------------
+/* ===============================
    Semantic helpers
------------------------------- */
+================================ */
 
 .sf-report-vehicle {
     font-weight: 600;
@@ -78,35 +74,26 @@
     color: #64748b;
 }
 
+/* Units should NOT look different */
 .sf-report-unit {
-    color: #64748b;
-    font-size: 0.85em;
-    margin-left: 0.15rem;
+    margin-left: 0.2rem;
+    font-weight: inherit;
+    font-size: inherit;
+    color: inherit;
 }
 
+/* Totals */
 .sf-report-total {
     font-weight: 600;
 }
 
-/* ------------------------------
-   Type badges (future-ready)
------------------------------- */
-
-.sf-trip-business {
-    color: #0f766e;
+/* Duration */
+.sf-report-duration {
     font-weight: 500;
 }
 
-.sf-trip-private {
-    color: #7c2d12;
+/* Trip type – no colour tricks */
+.sf-trip-type {
     font-weight: 500;
-}
-
-/* ------------------------------
-   Scroll safety (just in case)
------------------------------- */
-
-.sf-report-scroll {
-    overflow-x: auto;
-    padding-bottom: 0.25rem;
+    color: inherit;
 }

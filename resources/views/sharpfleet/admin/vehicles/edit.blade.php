@@ -40,18 +40,33 @@
                 <button type="button" class="sf-tab is-active" id="sf-vehicle-tab-basics-button" data-sf-tab="basics" role="tab" aria-controls="sf-vehicle-tab-basics" aria-selected="true">
                     Basics
                 </button>
-                @if($vehicleRegistrationTrackingEnabled || $vehicleServicingTrackingEnabled)
-                    <button type="button" class="sf-tab" id="sf-vehicle-tab-maintenance-button" data-sf-tab="maintenance" role="tab" aria-controls="sf-vehicle-tab-maintenance" aria-selected="false">
-                        Registration &amp; Servicing
+                @if($vehicleRegistrationTrackingEnabled)
+                    <button type="button" class="sf-tab" id="sf-vehicle-tab-registration-button" data-sf-tab="registration" role="tab" aria-controls="sf-vehicle-tab-registration" aria-selected="false">
+                        Registration
+                    </button>
+                @endif
+                @if($vehicleServicingTrackingEnabled)
+                    <button type="button" class="sf-tab" id="sf-vehicle-tab-servicing-button" data-sf-tab="servicing" role="tab" aria-controls="sf-vehicle-tab-servicing" aria-selected="false">
+                        Servicing
                     </button>
                 @endif
                 <button type="button" class="sf-tab" id="sf-vehicle-tab-status-button" data-sf-tab="status" role="tab" aria-controls="sf-vehicle-tab-status" aria-selected="false">
-                    Status &amp; Allocation
+                    Status
+                </button>
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-allocation-button" data-sf-tab="allocation" role="tab" aria-controls="sf-vehicle-tab-allocation" aria-selected="false">
+                    Allocation
+                </button>
+                <button type="button" class="sf-tab" id="sf-vehicle-tab-faults-button" data-sf-tab="faults" role="tab" aria-controls="sf-vehicle-tab-faults" aria-selected="false">
+                    Faults
                 </button>
             </div>
 
             <div class="sf-tab-panels">
                 <section class="sf-tab-panel is-active" id="sf-vehicle-tab-basics" data-sf-panel="basics" role="tabpanel" aria-labelledby="sf-vehicle-tab-basics-button">
+                    @php
+                        $currentOdometer = $vehicle->last_odometer_reading ?? $vehicle->odometer_reading ?? $vehicle->starting_km ?? null;
+                        $lastDriverName = $vehicle->last_driver_name ?? null;
+                    @endphp
                     <div class="grid gap-4">
                         {{-- Row 1: Vehicle info | Vehicle details --}}
                         <div class="grid grid-2 gap-4">
@@ -115,6 +130,16 @@
                                 If set, this will be used to prefill the first trip's starting reading for this vehicle.
                             </div>
                             @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Current odometer reading</label>
+                            <input type="text" class="form-control" value="{{ $currentOdometer !== null ? $currentOdometer : 'N/A' }}" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Last driver</label>
+                            <input type="text" class="form-control" value="{{ $lastDriverName ?: 'N/A' }}" disabled>
                         </div>
                     </div>
                 </div>
@@ -221,91 +246,112 @@
                     </div>
                 </section>
 
-                @if($vehicleRegistrationTrackingEnabled || $vehicleServicingTrackingEnabled)
-                    <section class="sf-tab-panel" id="sf-vehicle-tab-maintenance" data-sf-panel="maintenance" role="tabpanel" aria-labelledby="sf-vehicle-tab-maintenance-button">
-                        <div class="grid gap-4">
-                            {{-- Row 2: Registration | Servicing --}}
-                            <div class="grid grid-2 gap-4">
                 @if($vehicleRegistrationTrackingEnabled)
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="section-title">Registration</h3>
-                        <div class="form-row">
-                            <div>
-                                <label class="form-label">Registration expiry date (optional)</label>
-                                <input type="text"
-                                       class="form-control sf-date"
-                                       placeholder="dd / mm / yyyy"
-                                       name="registration_expiry"
-                                       value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
-                                       inputmode="numeric">
-                                @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                    <section class="sf-tab-panel" id="sf-vehicle-tab-registration" data-sf-panel="registration" role="tabpanel" aria-labelledby="sf-vehicle-tab-registration-button">
+                        <div class="grid gap-4">
+                            <div class="grid grid-2 gap-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="section-title">Registration details</h3>
+                                        <div class="form-row">
+                                            <div>
+                                                <label class="form-label">Registration expiry date (optional)</label>
+                                                <input type="text"
+                                                       class="form-control sf-date"
+                                                       placeholder="dd / mm / yyyy"
+                                                       name="registration_expiry"
+                                                       value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
+                                                       inputmode="numeric">
+                                                @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Reminder email (optional)</label>
+                                            <input type="email"
+                                                   name="registration_reminder_email"
+                                                   value="{{ old('registration_reminder_email', $vehicle->registration_reminder_email ?? '') }}"
+                                                   class="form-control"
+                                                   placeholder="e.g. ops@company.com">
+                                        </div>
+                                        <div class="form-hint">
+                                            Reminder window is managed in Company Settings.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-hint">
-                            Tip: use Notes for reminder details.
-                        </div>
-                        </div>
-                    </div>
+                    </section>
                 @endif
 
                 @if($vehicleServicingTrackingEnabled)
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="section-title">Servicing</h3>
-                            <div class="form-row">
-                                <div>
-                                    <label class="form-label">Last service date (optional)</label>
-                                    <input type="text"
-                                           class="form-control sf-date"
-                                           placeholder="dd / mm / yyyy"
-                                           name="last_service_date"
-                                           value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
-                                           inputmode="numeric">
-                                    @error('last_service_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
+                    <section class="sf-tab-panel" id="sf-vehicle-tab-servicing" data-sf-panel="servicing" role="tabpanel" aria-labelledby="sf-vehicle-tab-servicing-button">
+                        <div class="grid gap-4">
+                            <div class="grid grid-2 gap-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="section-title">Service details</h3>
+                                        <div class="form-row">
+                                            <div>
+                                                <label class="form-label">Last service date (optional)</label>
+                                                <input type="text"
+                                                       class="form-control sf-date"
+                                                       placeholder="dd / mm / yyyy"
+                                                       name="last_service_date"
+                                                       value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
+                                                       inputmode="numeric">
+                                                @error('last_service_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                            </div>
 
-                                <div>
-                                    <label id="last_service_km_label" class="form-label">Last service reading ({{ $companyDistanceUnit }}) (optional)</label>
-                                    <input type="number"
-                                           name="last_service_km"
-                                           value="{{ old('last_service_km', $vehicle->last_service_km ?? '') }}"
-                                           class="form-control"
-                                           inputmode="numeric"
-                                           min="0"
-                                           placeholder="e.g. 120000">
-                                    @error('last_service_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
+                                            <div>
+                                                <label id="last_service_km_label" class="form-label">Last service reading ({{ $companyDistanceUnit }}) (optional)</label>
+                                                <input type="number"
+                                                       name="last_service_km"
+                                                       value="{{ old('last_service_km', $vehicle->last_service_km ?? '') }}"
+                                                       class="form-control"
+                                                       inputmode="numeric"
+                                                       min="0"
+                                                       placeholder="e.g. 120000">
+                                                @error('last_service_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                            </div>
+                                        </div>
 
-                            <div class="form-row">
-                                <div>
-                                    <label class="form-label">Next service due date (optional)</label>
-                                    <input type="text"
-                                           class="form-control sf-date"
-                                           placeholder="dd / mm / yyyy"
-                                           name="service_due_date"
-                                           value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
-                                           inputmode="numeric">
-                                    @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
+                                        <div class="form-row">
+                                            <div>
+                                                <label class="form-label">Next service due date (optional)</label>
+                                                <input type="text"
+                                                       class="form-control sf-date"
+                                                       placeholder="dd / mm / yyyy"
+                                                       name="service_due_date"
+                                                       value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
+                                                       inputmode="numeric">
+                                                @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                            </div>
 
-                                <div>
-                                    <label id="service_due_km_label" class="form-label">Next service due reading ({{ $companyDistanceUnit }}) (optional)</label>
-                                    <input type="number"
-                                           name="service_due_km"
-                                           value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
-                                           class="form-control"
-                                           inputmode="numeric"
-                                           min="0">
-                                    @error('service_due_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
+                                            <div>
+                                                <label id="service_due_km_label" class="form-label">Next service due reading ({{ $companyDistanceUnit }}) (optional)</label>
+                                                <input type="number"
+                                                       name="service_due_km"
+                                                       value="{{ old('service_due_km', $vehicle->service_due_km ?? '') }}"
+                                                       class="form-control"
+                                                       inputmode="numeric"
+                                                       min="0">
+                                                @error('service_due_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                                            </div>
+                                        </div>
 
+                                        <div class="form-group">
+                                            <label class="form-label">Reminder email (optional)</label>
+                                            <input type="email"
+                                                   name="service_reminder_email"
+                                                   value="{{ old('service_reminder_email', $vehicle->service_reminder_email ?? '') }}"
+                                                   class="form-control"
+                                                   placeholder="e.g. ops@company.com">
+                                        </div>
+                                        <div class="form-hint">
+                                            Reminder window is managed in Company Settings.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -313,7 +359,7 @@
 
                 <section class="sf-tab-panel" id="sf-vehicle-tab-status" data-sf-panel="status" role="tabpanel" aria-labelledby="sf-vehicle-tab-status-button">
                     <div class="grid gap-4">
-                        {{-- Row 3: Service status | Permanent allocation --}}
+                        {{-- Row 3: Service status --}}
                         <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
@@ -356,7 +402,13 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
 
+    <section class="sf-tab-panel" id="sf-vehicle-tab-allocation" data-sf-panel="allocation" role="tabpanel" aria-labelledby="sf-vehicle-tab-allocation-button">
+        <div class="grid gap-4">
+            <div class="grid grid-2 gap-4">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="section-title">Permanent allocation</h3>
@@ -404,6 +456,41 @@
                 </div>
             </div>
         </div>
+                </section>
+
+                <section class="sf-tab-panel" id="sf-vehicle-tab-faults" data-sf-panel="faults" role="tabpanel" aria-labelledby="sf-vehicle-tab-faults-button">
+                    @php
+                        $vehicleFaults = $vehicleFaults ?? [];
+                    @endphp
+                    <div class="grid gap-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="section-title">Recent faults</h3>
+                                @if(count($vehicleFaults))
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Fault</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($vehicleFaults as $fault)
+                                                <tr>
+                                                    <td>{{ $fault->reported_at ?? $fault->created_at ?? '' }}</td>
+                                                    <td>{{ $fault->title ?? $fault->summary ?? $fault->fault_type ?? 'Fault' }}</td>
+                                                    <td>{{ $fault->status ?? 'Unknown' }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <p class="text-muted mb-0">No faults recorded for this vehicle yet.</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
