@@ -370,7 +370,7 @@
                                    {{ filter_var(($settings['trip']['private_vehicle_slots_enabled'] ?? false), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                             <strong>Allow private vehicle use when fleet vehicles are unavailable</strong>
                             <span class="sf-tooltip" aria-label="What does this setting do?">
-                                <span class="sf-tooltip__icon">ƒ"~</span>
+                                <span class="sf-tooltip__icon">i</span>
                                 <span class="sf-tooltip__content" role="tooltip">
                                     <strong>What does this setting do?</strong>
                                     <span>Enable this setting to allow drivers to record trips using their own private vehicles when no fleet vehicles are available due to active trips, servicing, or repairs.</span>
