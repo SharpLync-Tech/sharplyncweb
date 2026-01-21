@@ -2,7 +2,7 @@
 
 @section('title', 'Trip Report – RAW')
 
-@section('sharpfleet-content')
+@section('content')
 
 @php
     use Carbon\Carbon;
