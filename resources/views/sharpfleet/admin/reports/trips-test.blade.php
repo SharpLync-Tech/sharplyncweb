@@ -1,5 +1,3 @@
-@extends('layouts.sharpfleet')
-
 @section('title', 'Trip Report – RAW')
 
 @section('sharpfleet-content')
