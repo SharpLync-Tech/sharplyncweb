@@ -111,6 +111,7 @@
         border-bottom: 1px solid #d7dde5;
         background: transparent;
         align-items: flex-end;
+        position: relative;
     }
 
     .sf-tab {
@@ -131,6 +132,7 @@
         position: relative;
         transition: color 150ms ease, border-color 150ms ease;
         margin-left: -1px;
+        margin-bottom: -1px;
         z-index: 1;
     }
 
@@ -149,7 +151,7 @@
     .sf-tab::after {
         content: "";
         position: absolute;
-        bottom: -1px;
+        bottom: 0;
         width: var(--sf-tab-radius);
         height: var(--sf-tab-radius);
         background: #ffffff;
