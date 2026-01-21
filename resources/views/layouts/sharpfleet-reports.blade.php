@@ -17,7 +17,7 @@
 <body class="sf-reports-body">
 
     {{-- KEEP existing top nav for consistency --}}
-    @include('layouts.sharpfleet-header')
+    @include('layouts.sharpfleet')
 
     {{-- REPORT CONTENT (no containers, no constraints) --}}
     <main class="sf-reports-main">

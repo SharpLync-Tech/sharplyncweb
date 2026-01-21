@@ -556,6 +556,16 @@
     z-index: 2;
 }
 
+.sf-tab.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: #ffffff;
+}
+
 .sf-tab.is-active + .sf-tab {
     border-left-color: transparent;
 }
