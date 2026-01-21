@@ -42,7 +42,7 @@
     padding: 0.9rem 2.2rem;
 
     /* Glass base */
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(44, 191, 174, 0.14);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 
@@ -50,11 +50,11 @@
     font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
-
+   
     border-radius: 12px;
 
     /* Glass edge */
-    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-block-color: #2cbfae;
 
     /* Depth */
     box-shadow:
@@ -69,11 +69,14 @@
 
 /* Hover */
 .sf-cta:hover {
-    background: rgba(255, 255, 255, 0.26);
+    background: rgba(44, 191, 174, 0.14);
     transform: translateY(-1px);
+    border-block-color: #2cbfae;
     box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        0 12px 30px rgba(0, 0, 0, 0.35),          /* lift */
+        0 0 0 1px rgba(44, 191, 174, 0.45),       /* crisp teal edge */
+        0 0 14px rgba(44, 191, 174, 0.45),        /* teal glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.35); /* glass highlight */
 }
 
 /* Active */
@@ -83,4 +86,3 @@
         0 6px 16px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
-
