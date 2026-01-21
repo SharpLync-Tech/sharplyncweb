@@ -154,41 +154,7 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * --------------------------------------------------------------------------
-     * Trip Report – TEST LAYOUT (desktop-first experiment)
-     * --------------------------------------------------------------------------
-     * No filters, no CSV, no branching logic changes.
-     * Uses the SAME reporting dataset as production.
-     * --------------------------------------------------------------------------
-     */
-    public function tripsTest(Request $request)
-    {
-        $user = $request->session()->get('sharpfleet.user');
-
-        if (!$user || !Roles::canViewReports($user)) {
-            abort(403);
-        }
-
-        $companySettings = new CompanySettingsService(
-            (int) $user['organisation_id']
-        );
-
-        $result = $this->reportingService->buildTripReport(
-            (int) $user['organisation_id'],
-            $request,
-            $user
-        );
-
-        return view('sharpfleet.admin.reports.trips-test', [
-            'trips' => $result['trips'],
-            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
-
-            // 🔑 SAME label source
-            'clientPresenceLabel' => $companySettings->clientLabel(),
-        ]);
-    }
-
+    
     public function vehicles()
     {
         // to be implemented later
