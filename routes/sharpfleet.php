@@ -32,6 +32,7 @@ use App\Http\Controllers\SharpFleet\Admin\VehicleAiTestController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
+use App\Http\Controllers\SharpFleet\Reports\VehicleUsageReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -266,6 +267,11 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/reminders/vehicles', [ReminderController::class, 'vehicles']);
         Route::get('/admin/reports', fn () => redirect('/app/sharpfleet/admin/reports/trips'));
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
+       
+        Route::get(
+            '/admin/reports/vehicle-usage',
+            [VehicleUsageReportController::class, 'index']
+        )->name('sharpfleet.reports.vehicle-usage');
         
 
         Route::get('/admin/setup/company', [SetupWizardController::class, 'company']);
