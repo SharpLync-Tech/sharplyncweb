@@ -28,11 +28,11 @@
         </div>
     @endif
 
-    <div class="card" style="max-width: 720px;">
-        <div class="card-body">
-            <form method="POST" action="/app/sharpfleet/admin/users/add">
-                @csrf
+    <form method="POST" action="/app/sharpfleet/admin/users/add">
+        @csrf
 
+        <div class="card" style="max-width: 720px;">
+            <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label">Organisation</label>
                     <input class="form-control" value="{{ $organisation->name ?? '' }}" disabled>
@@ -53,14 +53,14 @@
                     <label class="form-label">Driver email address</label>
                     <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
                 </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-secondary btn-sm">Add driver</button>
-                    <a href="/app/sharpfleet/admin/users" class="btn btn-secondary btn-sm">Cancel</a>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <div class="d-flex gap-2 mt-3" style="max-width: 720px;">
+            <button type="submit" class="btn btn-secondary btn-sm">Add driver</button>
+            <a href="/app/sharpfleet/admin/users" class="btn btn-secondary btn-sm">Cancel</a>
+        </div>
+    </form>
 </div>
 
 @endsection

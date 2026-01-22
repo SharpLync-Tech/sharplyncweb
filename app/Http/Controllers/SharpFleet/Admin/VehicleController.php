@@ -1314,6 +1314,7 @@ class VehicleController extends Controller
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
             'vehicleServicingTrackingEnabled' => $settingsService->vehicleServicingTrackingEnabled(),
             'companyDistanceUnit' => $settingsService->distanceUnit(),
+            'companyTimezone' => $settingsService->timezone(),
             'drivers' => $drivers,
             'branchesEnabled' => $branchesEnabled,
             'branches' => $branches,
@@ -1374,6 +1375,8 @@ class VehicleController extends Controller
             'is_in_service' => ['nullable', 'boolean'],
             'out_of_service_reason' => ['nullable', 'string', 'max:50'],
             'out_of_service_note' => ['nullable', 'string', 'max:255'],
+            'out_of_service_from' => ['nullable', 'date'],
+            'out_of_service_to' => ['nullable', 'date', 'after_or_equal:out_of_service_from'],
 
             // Permanent assignment (optional; requires DB columns)
             'permanent_assignment' => ['nullable', 'boolean'],
@@ -1521,6 +1524,37 @@ class VehicleController extends Controller
                     'starting_km' => "Starting reading can't be saved yet because the database is missing column vehicles.starting_km. Run: ALTER TABLE vehicles ADD COLUMN starting_km INT UNSIGNED NULL;",
                 ])
                 ->withInput();
+        }
+
+        $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
+        $hasOutOfServiceUntil = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_until');
+        $outOfServiceFrom = $validated['out_of_service_from'] ?? null;
+        $outOfServiceTo = $validated['out_of_service_to'] ?? null;
+
+        unset($validated['out_of_service_from'], $validated['out_of_service_to']);
+
+        if ($outOfServiceFrom && !$hasOutOfServiceAt) {
+            return back()
+                ->withErrors([
+                    'out_of_service_from' => "Out-of-service from date can't be saved yet because the database is missing column vehicles.out_of_service_at.",
+                ])
+                ->withInput();
+        }
+
+        if ($outOfServiceTo && !$hasOutOfServiceUntil) {
+            return back()
+                ->withErrors([
+                    'out_of_service_to' => "Return-to-service date can't be saved yet because the database is missing column vehicles.out_of_service_until. Run SQL: ALTER TABLE vehicles ADD COLUMN out_of_service_until DATE NULL;",
+                ])
+                ->withInput();
+        }
+
+        if ($outOfServiceFrom && $hasOutOfServiceAt) {
+            $validated['out_of_service_at'] = $outOfServiceFrom;
+        }
+
+        if ($hasOutOfServiceUntil) {
+            $validated['out_of_service_until'] = $outOfServiceTo;
         }
 
         $validated['wheelchair_accessible'] =

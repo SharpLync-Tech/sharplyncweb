@@ -272,8 +272,8 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-secondary" id="sfBkCreateCancelBtn">Cancel</button>
-                    <button id="sfBkCreateSubmit" type="submit" class="btn btn-primary" disabled>Create Booking</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkCreateCancelBtn">Cancel</button>
+                    <button id="sfBkCreateSubmit" type="submit" class="btn btn-primary btn-sm" disabled>Create Booking</button>
                 </div>
             </form>
         </div>
@@ -422,10 +422,10 @@
                 </div>
 
                 <div class="d-flex justify-content-between gap-2">
-                    <button type="button" class="btn btn-secondary" id="sfBkEditCancelBooking">Cancel booking</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkEditCancelBooking">Cancel booking</button>
                     <div class="d-flex gap-2" id="sfBkEditActions">
-                        <button type="button" class="btn btn-secondary" id="sfBkEditCloseBtn">Close</button>
-                        <button type="submit" class="btn btn-primary" id="sfBkEditSubmit">Save changes</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkEditCloseBtn">Close</button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="sfBkEditSubmit">Save changes</button>
                     </div>
                 </div>
             </form>

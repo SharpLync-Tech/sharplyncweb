@@ -12,6 +12,7 @@
     $branches = $branches ?? collect();
     $defaultBranchId = $defaultBranchId ?? null;
     $companyDistanceUnit = (string) ($companyDistanceUnit ?? 'km');
+    $companyTimezone = (string) ($companyTimezone ?? 'Australia/Brisbane');
     $insurance = $insurance ?? null;
     $insuranceDocuments = $insuranceDocuments ?? collect();
 @endphp
@@ -459,6 +460,8 @@
                             $isInService = old('is_in_service', isset($vehicle->is_in_service) ? (int) $vehicle->is_in_service : 1);
                             $reason = old('out_of_service_reason', $vehicle->out_of_service_reason ?? '');
                             $note = old('out_of_service_note', $vehicle->out_of_service_note ?? '');
+                            $outOfServiceFrom = old('out_of_service_from', $vehicle->out_of_service_at ?? '');
+                            $outOfServiceTo = old('out_of_service_to', $vehicle->out_of_service_until ?? '');
                         @endphp
 
                         <input type="hidden" name="is_in_service" value="1">
@@ -485,6 +488,19 @@
                                 <label class="form-label">Location / note (optional)</label>
                                 <input type="text" name="out_of_service_note" value="{{ $note }}" class="form-control" maxlength="255" placeholder="e.g. This vehicle is with Da's Auto for service">
                                 @error('out_of_service_note') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-2">
+                            <div>
+                                <label class="form-label">Out of service from (optional)</label>
+                                <input type="text" name="out_of_service_from" value="{{ $outOfServiceFrom }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                @error('out_of_service_from') <div class="text-error mb-2">{{ $message }}</div> @enderror
+                            </div>
+                            <div>
+                                <label class="form-label">Return to service date (optional)</label>
+                                <input type="text" name="out_of_service_to" value="{{ $outOfServiceTo }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                @error('out_of_service_to') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
                     </div>
@@ -887,10 +903,14 @@
 
     (function () {
         if (typeof flatpickr === 'undefined') return;
+        const companyTimezone = @json($companyTimezone);
+        const usesDayFirst = typeof companyTimezone === 'string' && companyTimezone.startsWith('Australia/');
+        const displayFormat = usesDayFirst ? 'd/m/Y' : 'm/d/Y';
+
         flatpickr('.sf-date', {
             dateFormat: 'Y-m-d',
             altInput: true,
-            altFormat: 'd/m/Y',
+            altFormat: displayFormat,
             allowInput: true,
         });
     })();

@@ -136,7 +136,7 @@
 
                 <button
                     type="submit"
-                    class="btn btn-secondary"
+                    class="btn btn-secondary btn-sm"
                     {{ !$customersTableExists ? 'disabled' : '' }}
                 >
                     Import CSV
