@@ -91,9 +91,9 @@
             type="button"
             class="sf-mobile-card"
             data-sheet-open="start-trip"
-            style="margin-bottom: 20px; text-align: left; width: 100%;"
+            style="margin-bottom: 20px; text-align: left; width: 100%; color: #EAF7F4;"
         >
-            <div class="sf-mobile-card-title">No Active Trip</div>
+            <div class="sf-mobile-card-title" style="color: #EAF7F4;">No Active Trip</div>
             <div class="hint-text" style="margin-top: 6px;">
                 Ready when you are.
             </div>
