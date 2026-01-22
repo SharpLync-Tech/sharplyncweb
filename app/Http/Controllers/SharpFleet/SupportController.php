@@ -69,35 +69,24 @@ class SupportController extends Controller
             $adminEmail = trim((string) ($admin->email ?? ''));
         }
 
-        $bodyLines = [
-            'SharpFleet Support Request',
-            '--------------------------',
-            'Name: ' . ($name !== '' ? $name : 'Unknown'),
-            'Email: ' . ($email !== '' ? $email : 'Unknown'),
-            'Organisation ID: ' . ($organisationId ?: 'Unknown'),
-            'Organisation Name: ' . ($organisationName !== '' ? $organisationName : 'Unknown'),
-            'Company Admin: ' . ($adminName !== '' ? $adminName : 'Unknown'),
-            'Company Admin Email: ' . ($adminEmail !== '' ? $adminEmail : 'Unknown'),
-            'Platform: ' . ($validated['platform'] ?? 'Unknown'),
-            'Usage mode: ' . ($validated['usage_mode'] ?? 'Unknown'),
-            'Client Timezone: ' . ($validated['client_timezone'] ?? 'Unknown'),
-            'Company Timezone: ' . ($companyTimezone !== '' ? $companyTimezone : 'Unknown'),
-            'Submitted: ' . now()->toDateTimeString(),
-            '',
-            'Message:',
-            $validated['message'],
-            '',
+        $viewData = [
+            'name' => $name !== '' ? $name : 'Unknown',
+            'email' => $email !== '' ? $email : 'Unknown',
+            'organisationId' => $organisationId ?: 'Unknown',
+            'organisationName' => $organisationName !== '' ? $organisationName : 'Unknown',
+            'adminName' => $adminName !== '' ? $adminName : 'Unknown',
+            'adminEmail' => $adminEmail !== '' ? $adminEmail : 'Unknown',
+            'platform' => $validated['platform'] ?? 'Unknown',
+            'usageMode' => $validated['usage_mode'] ?? 'Unknown',
+            'clientTimezone' => $validated['client_timezone'] ?? 'Unknown',
+            'companyTimezone' => $companyTimezone !== '' ? $companyTimezone : 'Unknown',
+            'submittedAt' => now()->toDateTimeString(),
+            'messageText' => $validated['message'],
+            'logs' => $validated['logs'] ?? '',
         ];
 
-        if (!empty($validated['logs'])) {
-            $bodyLines[] = 'Device Logs (warnings/errors, last 3 days / 100 entries):';
-            $bodyLines[] = $validated['logs'];
-        }
-
-        $body = implode("\n", $bodyLines);
-
         try {
-            Mail::raw($body, function ($message) use ($email, $name) {
+            Mail::send('emails.sharpfleet.support-request', $viewData, function ($message) use ($email, $name) {
                 $message->to('info@sharplync.com.au')
                     ->subject('SharpFleet Support Request');
 
