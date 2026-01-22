@@ -91,7 +91,7 @@
                     businesses never use.
                 </p>
                 <p>
-                    SharpFleet takes a simpler approach — focusing on the tools businesses actually need,
+                    SharpFleet takes a simpler approach: focusing on the tools businesses actually need,
                     without GPS surveillance, expensive hardware, or rigid workflows.
                 </p>
             </div>
@@ -138,7 +138,7 @@
             <div class="sf-accordion-content">
                 <p>
                     Pricing is simple and transparent. You pay a flat, affordable rate per vehicle,
-                    per month — and everything is included.
+                    per month, and everything is included.
                 </p>
                 <p>
                     There are no feature tiers, no add-ons, and no surprise upgrades as your business grows.
@@ -159,7 +159,7 @@
                     and vehicles aren’t turned into monitoring devices.
                 </p>
                 <p>
-                    You still get accurate, compliant trip records — without raising privacy concerns
+                    You still get accurate, compliant trip records, without raising privacy concerns
                     or creating unnecessary tension with staff.
                 </p>
             </div>
@@ -174,7 +174,7 @@
             <div class="sf-accordion-content">
                 <p>
                     Sometimes fleet vehicles aren’t available. SharpFleet supports this by allowing
-                    organisations to record trips made using personal vehicles — when enabled by an admin.
+                    organisations to record trips made using personal vehicles, when enabled by an admin.
                 </p>
                 <p>
                     Personal vehicle trips are designed for occasional, real-world exceptions and are
@@ -219,7 +219,7 @@
                 </p>
                 <p>
                     Trips can be recorded offline and automatically synced once connectivity
-                    is restored — no data lost.
+                    is restored, no data lost.
                 </p>
             </div>
         </details>
@@ -232,7 +232,7 @@
             </summary>
             <div class="sf-accordion-content">
                 <p>
-                    SharpFleet works on devices you already own — phones, tablets, and computers.
+                    SharpFleet works on devices you already own;phones, tablets, and computers.
                 </p>
                 <p>
                     There’s no need for trackers, installations, or vehicle downtime to get started.
@@ -269,7 +269,7 @@
                     branches, and offline use are all part of the same subscription.
                 </p>
                 <p>
-                    What you see is what you get — no feature lockouts and no upsell pressure.
+                    What you see is what you get, no feature lockouts and no upsell pressure.
                 </p>
             </div>
         </details>
