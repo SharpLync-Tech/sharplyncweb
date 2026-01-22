@@ -555,7 +555,15 @@ class DriverMobileController extends Controller
                 ]);
             });
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Could not email receipt.'], 500);
+            \Log::error('Fuel receipt email failed', [
+                'organisation_id' => $organisationId,
+                'vehicle_id' => $vehicleId,
+                'driver_id' => (int) ($user['id'] ?? 0),
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'message' => 'Could not email receipt: ' . $e->getMessage(),
+            ], 500);
         }
 
         DB::connection('sharpfleet')

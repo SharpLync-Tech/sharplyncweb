@@ -50,9 +50,9 @@
             <div class="form-group">
                 <label class="form-label">Receipt</label>
                 <div style="margin-bottom: 10px;">
-                    <video id="sfFuelVideo" autoplay playsinline style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;"></video>
+                    <video id="sfFuelVideo" autoplay playsinline style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;"></video>
                     <canvas id="sfFuelCanvas" style="display: none;"></canvas>
-                    <img id="sfFuelPreview" alt="Receipt preview" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;">
+                    <img id="sfFuelPreview" alt="Receipt preview" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;">
                 </div>
 
                 <div class="btn-group" style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -67,11 +67,7 @@
                     </button>
                 </div>
 
-                <div class="hint-text" style="margin-top: 8px;">
-                    Tip: Use good lighting and keep the receipt flat for best results.
-                </div>
-
-                <input type="file" name="receipt_file" id="sfFuelFileInput" class="form-control" accept="image/*" capture="environment" style="margin-top: 10px;">
+                <input type="file" name="receipt_file" id="sfFuelFileInput" class="form-control" accept="image/*" capture="environment" style="display: none;">
             </div>
 
             <button type="submit" class="sf-mobile-primary-btn" id="sfFuelSubmitBtn" style="margin-top: 12px;" disabled>
