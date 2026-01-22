@@ -134,7 +134,7 @@
             type="button"
             class="sf-mobile-card"
             data-sheet-open="fuel-entry"
-            style="text-align: left; width: 100%; color: #EAF7F4;"
+            style="text-align: left; width: 100%; color: #EAF7F4; margin-bottom: 8px;"
         >
             <div class="sf-mobile-card-title" style="color: #EAF7F4;">⛽ Add Fuel</div>
             <div class="sf-mobile-card-text" style="color: #EAF7F4;">Log a fuel receipt for a vehicle.</div>
