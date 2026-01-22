@@ -93,10 +93,7 @@
             data-sheet-open="start-trip"
             style="margin-bottom: 20px; text-align: left; width: 100%; color: #EAF7F4;"
         >
-            <div class="sf-mobile-card-title" style="color: #EAF7F4;">
-                <img src="/images/sharpfleet/boots_small.png"
-                     alt=""
-                     style="width:26px;height:26px;vertical-align:-2px;margin-right:6px;">
+            <div class="sf-mobile-card-title" style="color: #EAF7F4;">                
                 No Active Trip
             </div>
 

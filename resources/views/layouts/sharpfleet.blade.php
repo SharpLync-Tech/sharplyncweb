@@ -170,8 +170,8 @@
                 <div class="mt-3"></div>
 
                 <div class="d-flex gap-2 justify-content-end">
-                    <button type="button" class="btn btn-secondary" id="sfConfirmCancel">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="sfConfirmOk">Confirm</button>
+                    <button type="button" class="btn" id="sfConfirmOk" style="background:#2CBFAE; color:#ffffff; border-color:#2CBFAE;">Confirm</button>
+                    <button type="button" class="btn" id="sfConfirmCancel" style="background:#2CBFAE; color:#ffffff; border-color:#2CBFAE;">Cancel</button>
                 </div>
             </div>
         </div>
