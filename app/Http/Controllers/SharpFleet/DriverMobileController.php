@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
@@ -546,11 +547,12 @@ class DriverMobileController extends Controller
         ];
 
         try {
-            \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $path, $file) {
+            $fileContents = Storage::get($path);
+            \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $file, $fileContents) {
                 $message->to($recipient)
                     ->subject('SharpFleet Fuel Receipt');
 
-                $message->attachFromStorage($path, $file->getClientOriginalName(), [
+                $message->attachData($fileContents, $file->getClientOriginalName(), [
                     'mime' => $file->getClientMimeType(),
                 ]);
             });

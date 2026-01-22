@@ -1184,6 +1184,17 @@ class VehicleController extends Controller
                 ->get();
         }
 
+        $fuelReceipts = collect();
+        if (Schema::connection('sharpfleet')->hasTable('sf_fuel_entries')) {
+            $fuelReceipts = DB::connection('sharpfleet')
+                ->table('sf_fuel_entries')
+                ->where('organisation_id', $organisationId)
+                ->where('vehicle_id', $vehicleId)
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+        }
+
         $assignment = null;
         if (
             Schema::connection('sharpfleet')->hasColumn('vehicles', 'assignment_type') &&
@@ -1212,6 +1223,7 @@ class VehicleController extends Controller
             'customers' => $customers,
             'age' => $age,
             'faults' => $faults,
+            'fuelReceipts' => $fuelReceipts,
             'assignment' => $assignment,
             'insurance' => Schema::connection('sharpfleet')->hasTable('vehicle_insurance')
                 ? DB::connection('sharpfleet')->table('vehicle_insurance')->where('vehicle_id', $vehicleId)->first()
@@ -1790,6 +1802,103 @@ class VehicleController extends Controller
             ]);
 
         return back()->with('success', 'Insurance document deleted.');
+    }
+
+    public function fuelReceiptImage(Request $request, $vehicle, $entryId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('sf_fuel_entries')) {
+            abort(404, 'Fuel receipts not available.');
+        }
+
+        $entry = DB::connection('sharpfleet')
+            ->table('sf_fuel_entries')
+            ->where('id', (int) $entryId)
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $vehicleId)
+            ->first();
+
+        if (!$entry || empty($entry->receipt_path)) {
+            abort(404, 'Fuel receipt not found.');
+        }
+
+        if (!Storage::disk('local')->exists($entry->receipt_path)) {
+            abort(404, 'Fuel receipt not found.');
+        }
+
+        return response()->file(Storage::disk('local')->path($entry->receipt_path));
+    }
+
+    public function deleteFuelReceipt(Request $request, $vehicle, $entryId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $vehicleId = (int) $vehicle;
+
+        $record = $this->vehicleService
+            ->getVehicleForOrganisation($organisationId, $vehicleId);
+
+        if (!$record) {
+            abort(404, 'Vehicle not found.');
+        }
+
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+        if ($branchScopeEnabled) {
+            $this->assertVehicleRecordInBranches($record, $accessibleBranchIds);
+        }
+
+        if (!Schema::connection('sharpfleet')->hasTable('sf_fuel_entries')) {
+            return back()->withErrors(['fuel_receipt' => 'Fuel receipts not available.']);
+        }
+
+        $entry = DB::connection('sharpfleet')
+            ->table('sf_fuel_entries')
+            ->where('id', (int) $entryId)
+            ->where('organisation_id', $organisationId)
+            ->where('vehicle_id', $vehicleId)
+            ->first();
+
+        if (!$entry) {
+            return back()->withErrors(['fuel_receipt' => 'Fuel receipt not found.']);
+        }
+
+        if (!empty($entry->receipt_path) && Storage::disk('local')->exists($entry->receipt_path)) {
+            Storage::disk('local')->delete($entry->receipt_path);
+        }
+
+        DB::connection('sharpfleet')
+            ->table('sf_fuel_entries')
+            ->where('id', (int) $entryId)
+            ->delete();
+
+        return back()->with('success', 'Fuel receipt deleted.');
     }
 
     /**

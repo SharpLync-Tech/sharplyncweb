@@ -186,6 +186,43 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3 class="section-title">Fuel receipts (latest 5)</h3>
+            @if(($fuelReceipts ?? collect())->isEmpty())
+                <div class="text-muted">No fuel receipts uploaded.</div>
+            @else
+                <div class="d-flex flex-column gap-2">
+                    @foreach($fuelReceipts as $receipt)
+                        <div class="d-flex align-items-center gap-2" style="flex-wrap: wrap;">
+                            <form method="POST" action="{{ url('/app/sharpfleet/admin/vehicles/' . (int) $vehicle->id . '/fuel-receipts/' . (int) $receipt->id . '/delete') }}" data-sf-confirm data-sf-confirm-title="Delete receipt?" data-sf-confirm-message="This will delete the receipt image. Continue?" style="margin:0;">
+                                @csrf
+                                <button type="submit" class="btn btn-link" style="padding: 4px; color: #d84b4b; text-decoration: none;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM7 9h2v9H7V9z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                            <a href="{{ url('/app/sharpfleet/admin/vehicles/' . (int) $vehicle->id . '/fuel-receipts/' . (int) $receipt->id . '/image') }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+                                <img
+                                    src="{{ url('/app/sharpfleet/admin/vehicles/' . (int) $vehicle->id . '/fuel-receipts/' . (int) $receipt->id . '/image') }}"
+                                    alt="Fuel receipt"
+                                    style="width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(10, 42, 77, 0.12);"
+                                >
+                                <div class="text-muted small">
+                                    {{ $formatDate($receipt->created_at ?? null) }}
+                                    @if(!empty($receipt->odometer_reading))
+                                        <div>Odometer: {{ number_format((int) $receipt->odometer_reading) }}</div>
+                                    @endif
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </div>
+
     <div class="card mb-4">
         <div class="card-body">
             <h3 class="section-title">Last 5 faults</h3>

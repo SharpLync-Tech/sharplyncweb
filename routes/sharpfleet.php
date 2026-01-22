@@ -251,6 +251,10 @@ Route::prefix('app/sharpfleet')
             ->whereNumber('documentId');
         Route::post('/admin/vehicles/{vehicle}/insurance-document/{documentId?}/delete', [VehicleController::class, 'deleteInsuranceDocument'])
             ->whereNumber('documentId');
+        Route::get('/admin/vehicles/{vehicle}/fuel-receipts/{entryId}/image', [VehicleController::class, 'fuelReceiptImage'])
+            ->whereNumber('entryId');
+        Route::post('/admin/vehicles/{vehicle}/fuel-receipts/{entryId}/delete', [VehicleController::class, 'deleteFuelReceipt'])
+            ->whereNumber('entryId');
         Route::get('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchive']);
         Route::post('/admin/vehicles/{vehicle}/archive/confirm', [VehicleController::class, 'confirmArchiveStore']);
         Route::post('/admin/vehicles/{vehicle}/archive/cancel', [VehicleController::class, 'cancelArchive']);
