@@ -147,6 +147,18 @@
         </ul>
     </div>
 
+    @if(($settings['vehicles']['fuel_receipts_enabled'] ?? false) === true)
+        <button
+            type="button"
+            class="sf-mobile-card"
+            data-sheet-open="fuel-entry"
+            style="text-align: left; width: 100%;"
+        >
+            <div class="sf-mobile-card-title">⛽ Add Fuel</div>
+            <div class="sf-mobile-card-text">Log a fuel receipt for a vehicle.</div>
+        </button>
+    @endif
+
     {{-- ===============================
          Secondary Action
     ================================ --}}
@@ -172,6 +184,11 @@
 {{-- Report Fault Sheet --}}
 @if($faultsEnabled)
     @include('sharpfleet.mobile.sheets.report-fault')
+@endif
+
+{{-- Fuel Entry Sheet --}}
+@if(($settings['vehicles']['fuel_receipts_enabled'] ?? false) === true)
+    @include('sharpfleet.mobile.sheets.fuel-entry')
 @endif
 
 @php
