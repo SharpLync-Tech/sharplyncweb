@@ -7,7 +7,7 @@
     $redirectUrl = $redirectUrl ?? '/app/sharpfleet/driver';
 @endphp
 
-<div class="card" style="max-width: 820px; margin: 0 auto;">
+<div class="card" style="max-width: 820px; margin: 0 auto; border: 1px solid #2CBFAE; box-shadow: 0 0 0 2px rgba(44, 191, 174, 0.18), 0 0 14px rgba(44, 191, 174, 0.28);">
     <div class="card-header">
         <h2 class="card-title">Feedback & Support</h2>
         <div class="hint-text">Tell us what happened or share feedback. It helps us improve SharpFleet.</div>
@@ -60,13 +60,12 @@
             <input type="hidden" name="client_timezone" id="sfSupportClientTimezone">
             <input type="hidden" name="logs" id="sfSupportLogs">
 
-            <div class="hint-text" style="margin-bottom: 12px;">
-                We will include device warnings/errors from the last 3 days to help debugging.
-            </div>
-
-            <button type="submit" class="btn btn-primary">Send Support Request</button>
         </form>
     </div>
+</div>
+
+<div style="max-width: 820px; margin: 12px auto 0; text-align: right;">
+    <button type="submit" form="sfSupportForm" class="btn btn-primary">Send Support Request</button>
 </div>
 
 <script>
