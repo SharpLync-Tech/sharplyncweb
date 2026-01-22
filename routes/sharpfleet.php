@@ -144,6 +144,9 @@ Route::prefix('app/sharpfleet')
         Route::post('/mobile/support', [DriverMobileController::class, 'supportSend'])
             ->name('sharpfleet.mobile.support.send');
 
+        Route::post('/mobile/fuel', [DriverMobileController::class, 'fuelStore'])
+            ->name('sharpfleet.mobile.fuel.store');
+
         Route::get('/mobile/help', [DriverMobileController::class, 'help'])
             ->name('sharpfleet.mobile.help');
 

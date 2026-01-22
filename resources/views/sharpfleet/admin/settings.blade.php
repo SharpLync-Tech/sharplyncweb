@@ -267,6 +267,7 @@
             'registration_tracking_enabled' => true,
             'servicing_tracking_enabled'    => false,
             'fuel_receipts_enabled'         => false,
+            'fuel_receipts_email'           => '',
         ],
 
         'reminders' => [
@@ -559,6 +560,18 @@
                                    {{ ($settings['vehicles']['fuel_receipts_enabled'] ?? false) ? 'checked' : '' }}>
                             <strong>Enable fuel receipt uploads</strong>
                         </label>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label">Fuel receipts email</label>
+                        <input
+                            type="email"
+                            name="fuel_receipts_email"
+                            class="form-control"
+                            value="{{ $settings['vehicles']['fuel_receipts_email'] ?? '' }}"
+                            placeholder="accounts@example.com"
+                        >
+                        <div class="text-muted small mt-1">Receipts will be emailed here after upload.</div>
                     </div>
                 </section>
             </div>

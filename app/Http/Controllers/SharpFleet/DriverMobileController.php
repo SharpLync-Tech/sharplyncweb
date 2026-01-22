@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
+use Illuminate\Support\Str;
 
 class DriverMobileController extends Controller
 {
@@ -452,6 +453,125 @@ class DriverMobileController extends Controller
         }
 
         return back()->with('success', 'Support request sent. We will get back to you shortly.');
+    }
+
+    public function fuelStore(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($user['organisation_id'] ?? 0);
+        $settingsService = new CompanySettingsService($organisationId);
+        $settings = $settingsService->all();
+
+        if (!($settings['vehicles']['fuel_receipts_enabled'] ?? false)) {
+            return response()->json(['message' => 'Fuel receipts are disabled.'], 403);
+        }
+
+        $recipient = trim((string) ($settings['vehicles']['fuel_receipts_email'] ?? ''));
+        if ($recipient === '') {
+            return response()->json(['message' => 'Fuel receipt email not configured.'], 422);
+        }
+
+        $validated = $request->validate([
+            'vehicle_id' => ['required', 'integer', 'min:1'],
+            'odometer_reading' => ['nullable', 'integer', 'min:0'],
+            'receipt' => ['required', 'image', 'max:5120'],
+        ]);
+
+        $vehicleId = (int) $validated['vehicle_id'];
+        $vehicle = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'name', 'registration_number', 'organisation_id')
+            ->where('id', $vehicleId)
+            ->where('organisation_id', $organisationId)
+            ->first();
+
+        if (!$vehicle) {
+            return response()->json(['message' => 'Vehicle not found.'], 404);
+        }
+
+        $file = $request->file('receipt');
+        if (!$file) {
+            return response()->json(['message' => 'Receipt upload missing.'], 422);
+        }
+
+        $filename = now()->format('Ymd_His') . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs(
+            'sharpfleet/fuel-receipts/' . $organisationId,
+            $filename
+        );
+
+        $entryId = DB::connection('sharpfleet')
+            ->table('sf_fuel_entries')
+            ->insertGetId([
+                'organisation_id' => $organisationId,
+                'vehicle_id' => $vehicleId,
+                'driver_id' => (int) ($user['id'] ?? 0),
+                'trip_id' => null,
+                'odometer_reading' => isset($validated['odometer_reading']) ? (int) $validated['odometer_reading'] : 0,
+                'receipt_path' => $path,
+                'receipt_original_name' => $file->getClientOriginalName(),
+                'receipt_mime' => $file->getClientMimeType(),
+                'receipt_size_bytes' => $file->getSize(),
+                'notes' => null,
+                'emailed_to' => null,
+                'emailed_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        $organisationName = (string) (DB::connection('sharpfleet')
+            ->table('organisations')
+            ->where('id', $organisationId)
+            ->value('name') ?? '');
+
+        $driverName = trim((string) (($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')));
+        $driverEmail = trim((string) ($user['email'] ?? ''));
+        $vehicleLabel = trim((string) (($vehicle->name ?? '') . ' (' . ($vehicle->registration_number ?? '') . ')'));
+        $odometerReading = isset($validated['odometer_reading'])
+            ? (int) $validated['odometer_reading']
+            : 0;
+
+        $mailData = [
+            'organisationName' => $organisationName !== '' ? $organisationName : 'Organisation',
+            'vehicleLabel' => $vehicleLabel !== '' ? $vehicleLabel : 'Vehicle',
+            'driverName' => $driverName !== '' ? $driverName : 'Driver',
+            'driverEmail' => $driverEmail !== '' ? $driverEmail : 'Unknown',
+            'odometerReading' => $odometerReading,
+            'submittedAt' => now()->toDateTimeString(),
+        ];
+
+        try {
+            $attachmentPath = storage_path('app/' . $path);
+            \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $attachmentPath, $file) {
+                $message->to($recipient)
+                    ->subject('SharpFleet Fuel Receipt');
+
+                if (is_file($attachmentPath)) {
+                    $message->attach($attachmentPath, [
+                        'as' => $file->getClientOriginalName(),
+                        'mime' => $file->getClientMimeType(),
+                    ]);
+                }
+            });
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Could not email receipt.'], 500);
+        }
+
+        DB::connection('sharpfleet')
+            ->table('sf_fuel_entries')
+            ->where('id', $entryId)
+            ->update([
+                'emailed_to' => $recipient,
+                'emailed_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        return response()->json(['ok' => true]);
     }
 
     public function help(Request $request)

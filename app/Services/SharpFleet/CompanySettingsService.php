@@ -35,6 +35,7 @@ class CompanySettingsService
             'registration_tracking_enabled' => true,
             'servicing_tracking_enabled'    => false,
             'fuel_receipts_enabled'         => false,
+            'fuel_receipts_email'           => '',
         ],
 
         // Vehicle reminder thresholds (company-level)
@@ -435,6 +436,9 @@ class CompanySettingsService
 
         $settings['vehicles']['fuel_receipts_enabled']
             = $request->boolean('enable_vehicle_fuel_receipts');
+
+        $settings['vehicles']['fuel_receipts_email']
+            = trim((string) $request->input('fuel_receipts_email', ''));
 
         // ---- Reminder thresholds (company-level) ----
         $registrationDays = (int) $request->input('reminder_registration_days', $this->reminderRegistrationDays());
