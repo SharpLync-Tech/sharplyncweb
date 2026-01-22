@@ -20,10 +20,19 @@
 
 <h1>SharpFleet – Current State</h1>
 <p class="muted">
-  Generated: 2025-12-31<br />
+  Generated: 2026-01-22<br />
   Repo: SharpLync (Laravel / PHP / Blade)<br />
   Scope: Customer SharpFleet portal (<code>/app/sharpfleet</code>) + internal platform admin (<code>/admin/sharpfleet</code>)
 </p>
+
+<h2>0. Updates (Jan 22, 2026)</h2>
+<ul>
+  <li><strong>Fuel receipts (mobile + admin):</strong> added a Fuel tab in Company Settings with a toggle and a destination email. Drivers can capture fuel receipts in-app (camera + review/retake) and submit from the PWA dashboard; receipts are saved to <code>sf_fuel_entries</code>, emailed to the configured address, and visible on vehicle details as the latest 5 receipts with delete actions.</li>
+  <li><strong>Support page for logged-in SharpFleet users:</strong> added a desktop support page under <code>/app/sharpfleet/support</code> (Help -> Support). Uses the same validation and logging fields as the mobile support flow, but sends a styled SharpFleet email template for web submissions.</li>
+  <li><strong>Admin vehicle details improvements:</strong> added a fuel receipts section on <code>/app/sharpfleet/admin/vehicles/{id}/details</code> with thumbnails and delete controls; images open in a new tab for quick review.</li>
+  <li><strong>PWA dashboard enhancements:</strong> added an "Add Fuel" card (when enabled) and made the "No Active Trip" card tappable to open the Start Trip sheet.</li>
+  <li><strong>Company Settings tabs:</strong> reorganized admin settings into tabbed sections for faster navigation (Client, Trip Rules, Vehicle Tracking, Reminders, Client Addresses, Safety, Incident Reporting, Fuel).</li>
+</ul>
 
 <h2>0. Updates (Dec 31, 2025)</h2>
 <ul>
@@ -114,6 +123,7 @@
   <li>Customer capture: enabled, allow select/manual.</li>
   <li>Safety checks: enabled, required, checklist items.</li>
   <li>Vehicle tracking: registration tracking, servicing tracking.</li>
+  <li>Fuel receipts: enable uploads and configure the destination email address.</li>
 </ul>
 
 <h3>2.6 PWA / Offline Driver Trips</h3>
@@ -122,6 +132,7 @@
   <li>Manifest: <code>public/app/sharpfleet.webmanifest</code> (start_url points at <code>/app/sharpfleet/driver</code>).</li>
   <li>Offline fallback: <code>public/app/sharpfleet-offline.html</code>.</li>
   <li>Driver dashboard supports offline trip capture using <code>localStorage</code> and syncs to <code>POST /app/sharpfleet/trips/offline-sync</code> when online.</li>
+  <li>Driver dashboard now includes an optional Fuel receipt capture flow (camera + review) when enabled in settings.</li>
   <li>To avoid stale authenticated pages in PWA/app shells, SharpFleet sets explicit <code>Cache-Control: no-store</code> headers for SharpFleet HTML GET responses via <code>App\Http\Middleware\SharpFleetNoStore</code>.</li>
 </ul>
 
@@ -290,7 +301,7 @@
     <td><code>GET/POST /app/sharpfleet/admin/settings</code></td>
     <td><code>resources/views/sharpfleet/admin/settings.blade.php</code></td>
     <td><code>CompanySettingsController@index/@update</code></td>
-    <td>Toggles feature flags (client presence, customers, private trips, rego/service tracking, etc.).</td>
+    <td>Tabbed settings UI with feature toggles (client presence, customers, private trips, rego/service tracking, fuel receipts, etc.).</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/safety-checks</code></td>
@@ -315,6 +326,12 @@
     <td><code>resources/views/sharpfleet/admin/vehicles/edit.blade.php</code></td>
     <td><code>VehicleController@edit/@update</code></td>
     <td>Rego is intentionally not updated in service layer. When enabled by schema, supports setting vehicle in/out of service (reason + note) and clears out-of-service fields when returned to service.</td>
+  </tr>
+  <tr>
+    <td><code>GET /app/sharpfleet/admin/vehicles/{id}/details</code></td>
+    <td><code>resources/views/sharpfleet/admin/vehicles/details.blade.php</code></td>
+    <td><code>VehicleController@details</code></td>
+    <td>Usage summary, servicing, faults, and latest fuel receipts (thumbnails + delete).</td>
   </tr>
   <tr>
     <td><code>GET/POST /app/sharpfleet/admin/customers</code></td>
@@ -545,6 +562,7 @@
   <li><code>sharpfleet/admin/vehicles/index.blade.php</code></li>
   <li><code>sharpfleet/admin/vehicles/create.blade.php</code></li>
   <li><code>sharpfleet/admin/vehicles/edit.blade.php</code></li>
+  <li><code>sharpfleet/admin/vehicles/details.blade.php</code></li>
   <li><code>sharpfleet/admin/customers/index.blade.php</code></li>
   <li><code>sharpfleet/admin/bookings/index.blade.php</code></li>
   <li><code>sharpfleet/admin/reports/trips.blade.php</code></li>
@@ -557,6 +575,9 @@
   <li><code>sharpfleet/admin/activate-driver.blade.php</code></li>
   <li><code>sharpfleet/admin/trial-expired.blade.php</code></li>
   <li><code>sharpfleet/admin/login.blade.php</code> (present; usage unclear/possibly legacy)</li>
+  <li><code>sharpfleet/support.blade.php</code></li>
+  <li><code>sharpfleet/mobile/sheets/fuel-entry.blade.php</code></li>
+  <li><code>emails/sharpfleet/fuel-receipt.blade.php</code></li>
 </ul>
 
 <p class="muted">Internal platform admin views (<code>resources/views/admin/sharpfleet/**</code>):</p>

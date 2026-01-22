@@ -148,7 +148,7 @@
         $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
         $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
     @endphp
-    <div class="sf-mobile-card" style="margin-bottom: 20px;">
+    <div class="sf-mobile-card" style="margin-top: 12px; margin-bottom: 20px;">
         <div class="sf-mobile-card-title">
             Before each trip, your company requires:
         </div>
