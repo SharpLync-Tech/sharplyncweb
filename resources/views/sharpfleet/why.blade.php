@@ -106,7 +106,7 @@
 
             <div class="sf-accordion-content">
                 <p>
-                    Fuel is one of the most common fleet expenses — and one of the easiest to lose track of.
+                    Fuel is one of the most common fleet expenses, and one of the easiest to lose track of.
                     SharpFleet allows drivers to capture a fuel receipt at the time of purchase,
                     directly from their phone.
                 </p>
@@ -123,7 +123,7 @@
 
                 <p>
                     Like the rest of SharpFleet, fuel receipt capture is designed to be quick for drivers
-                    and useful for the business — without turning into an expense management system.
+                    and useful for the business, without turning into an expense management system.
                 </p>
             </div>
         </details>
