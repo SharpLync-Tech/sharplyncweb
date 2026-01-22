@@ -97,7 +97,7 @@
 
                 <div class="d-flex align-items-center gap-2">
                     @if($sfCanEditBookings)
-                        <button type="button" class="btn btn-primary btn-sm" id="sfBkCreateBtn">Create Booking</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkCreateBtn">Create Booking</button>
                     @endif
                     <button type="button" class="btn btn-secondary btn-sm" id="sfBkPrev">Prev</button>
                     <button type="button" class="btn btn-secondary btn-sm" id="sfBkToday">Today</button>
