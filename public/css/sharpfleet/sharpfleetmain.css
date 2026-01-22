@@ -1850,3 +1850,86 @@ details.card[open] .incident-toggle-hint-closed {
     background: rgba(15, 45, 60, 0.25);
     color: #e9f7f7;
 }
+
+/* ============================================================
+   SharpFleet Spotlight Button
+   High-visibility CTA (Subscribe / Upgrade)
+   Designed for white backgrounds
+============================================================ */
+
+.sf-btn-spotlight {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+
+    color: #ffffff;
+    background: linear-gradient(
+        135deg,
+        #2CBFAE 0%,
+        #1ea89a 100%
+    );
+
+    border: none;
+    border-radius: 0.65rem;
+
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+
+    box-shadow:
+        0 8px 24px rgba(44, 191, 174, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+/* Hover – subtle lift + stronger glow */
+.sf-btn-spotlight:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 14px 34px rgba(44, 191, 174, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+    background: linear-gradient(
+        135deg,
+        #36d5c4 0%,
+        #22c1b2 100%
+    );
+}
+
+/* Active – pressed */
+.sf-btn-spotlight:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 6px 16px rgba(44, 191, 174, 0.4),
+        inset 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+/* Keyboard focus */
+.sf-btn-spotlight:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(44, 191, 174, 0.35),
+        0 10px 28px rgba(44, 191, 174, 0.5);
+}
+
+/* Disabled */
+.sf-btn-spotlight:disabled,
+.sf-btn-spotlight[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+

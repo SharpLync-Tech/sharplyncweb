@@ -119,8 +119,15 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary btn-sm" type="button" id="sf-show-subscribe-step">Subscribe</button>
-            </div>
+                <button
+                    type="button"
+                    id="sf-show-subscribe-step"
+                    class="btn btn-sm sf-btn-spotlight"
+                    >
+                        💳 Subscribe
+                </button>
+
+            </div> 
 
             @if($trialEndsAt)
                 <div class="text-muted small mb-3">Trial ends: {{ $trialEndsAt->format('d M Y, H:i') }}</div>
