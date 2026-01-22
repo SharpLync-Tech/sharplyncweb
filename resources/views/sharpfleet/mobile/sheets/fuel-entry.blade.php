@@ -46,18 +46,8 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Litres</label>
-                <input type="number" step="0.01" name="litres" class="form-control" inputmode="decimal" placeholder="e.g. 45.2">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Total cost</label>
-                <input type="number" step="0.01" name="total_cost" class="form-control" inputmode="decimal" placeholder="e.g. 98.50">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Notes</label>
-                <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes"></textarea>
+                <label class="form-label">Receipt (camera)</label>
+                <input type="file" name="receipt" class="form-control" accept="image/*" capture="environment">
             </div>
         </form>
     </div>
