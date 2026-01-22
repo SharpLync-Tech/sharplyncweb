@@ -45,7 +45,7 @@
             $overrideUntilLocal = $billingSummary['access_override_until_local'] ?? null;
 
             // Ensure pricing breakdown never renders broken UTF-8 characters
-            $safePriceBreakdown = str_replace('×', 'x', $monthlyPriceBreakdown ?? '');
+            $safePriceBreakdown = str_replace(['Ã—', '×'], '×', $monthlyPriceBreakdown ?? '');
         @endphp
 
         @if($effectiveMode === 'stripe')
@@ -73,8 +73,8 @@
             </div>
 
             <div class="text-muted small mt-2">
-                Pricing: AU$3.50 per vehicle/month for vehicles 1–10, then AU$2.50 per vehicle/month for vehicles 11+
-                ({{ $safePriceBreakdown }}).
+                Pricing: AU$3.50 per vehicle/month for vehicles 1-10, then AU$2.50 per vehicle/month for vehicles 11+
+                AU$ ({{ $safePriceBreakdown }}).
                 @if($requiresContactForPricing)
                     <div class="mt-1">
                         Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.
@@ -163,8 +163,8 @@
                 </div>
 
                 <div class="text-muted small mt-2">
-                    AU$3.50 per vehicle/month for vehicles 1–10, then AU$2.50 per vehicle/month for vehicles 11–20
-                    ({{ $safePriceBreakdown }}).
+                    AU$3.50 per vehicle/month for vehicles 1-10, then AU$2.50 per vehicle/month for vehicles 11-20
+                    AU$ ({{ $safePriceBreakdown }}).
                     @if($requiresContactForPricing)
                         <div class="mt-1">
                             Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.
@@ -217,7 +217,7 @@
             @endif
 
             <div class="text-muted small mt-3">
-                Pricing when subscribed: AU$3.50 per vehicle per month for vehicles 1–10, then AU$2.50 per vehicle per month for vehicles 11–20. Over 20 vehicles: contact us for pricing.
+                Pricing when subscribed: AU$3.50 per vehicle per month for vehicles 1-10, then AU$2.50 per vehicle per month for vehicles 11-20. Over 20 vehicles: contact us for pricing.
             </div>
         @endif
     </div>
