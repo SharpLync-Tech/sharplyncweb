@@ -119,7 +119,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" type="button" id="sf-show-subscribe-step">Subscribe</button>
+                <button class="btn btn-primary btn-sm" type="button" id="sf-show-subscribe-step">Subscribe</button>
             </div>
 
             @if($trialEndsAt)

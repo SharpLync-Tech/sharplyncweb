@@ -129,11 +129,6 @@
             @endif
 
             <div class="mt-4"></div>
-
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
-            </div>
         </form>
 
         @if(($user->role ?? '') === 'driver')
@@ -150,6 +145,11 @@
                 </button>
             </div>
         @endif
+    </div>
+
+    <div class="btn-group mt-3">
+        <button type="submit" class="btn btn-primary" form="sfUserEditForm">Save</button>
+        <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Cancel</a>
     </div>
 </div>
 
