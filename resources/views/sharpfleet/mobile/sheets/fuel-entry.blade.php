@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="btn-group" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" class="sf-mobile-secondary-btn" id="sfFuelStartBtn" style="flex: 1; min-width: 140px;">
+                    <button type="button" class="sf-mobile-primary-btn" id="sfFuelStartBtn" style="flex: 1; min-width: 140px;">
                         Open Camera
                     </button>
                     <button type="button" class="sf-mobile-primary-btn" id="sfFuelCaptureBtn" style="flex: 1; min-width: 140px; display: none;">
