@@ -1,6 +1,6 @@
 @extends('layouts.sharpfleet')
 
-@section('title', 'How SharpFleet Started')
+@section('title', 'About SharpFleet')
 
 @push('styles')
     <link rel="stylesheet" href="{{ secure_asset('css/sharpfleet/sharpfleet-about.css') }}?v={{ @filemtime(public_path('css/sharpfleet/sharpfleet-about.css')) ?: time() }}">
@@ -16,8 +16,8 @@
         ========================== --}}
         <header class="sf-about-hero">
             <h1 class="sf-about-title">
-                <span>How SharpFleet</span><br>
-                <span>Started</span>
+                <span>About</span><br>
+                <span>SharpFleet</span>
             </h1>
             <span class="sf-about-underline"></span>
         </header>
@@ -28,46 +28,40 @@
         <div class="sf-about-story">
 
             <p>
-                I started SharpFleet for a simple reason; I needed a better way to log business trips.
+                SharpFleet was built to solve a very real, very common problem:
+                keeping accurate vehicle and trip records without slowing people down.
             </p>
 
             <p>
-                I was running my own business and using more than one vehicle.<br>
-                Switching cars meant switching logbooks, and half the time the one I needed wasn’t there.
+                For many businesses, logging trips sounds simple, until it isn’t.<br>
+                Multiple vehicles, shared drivers, paper logbooks left in the wrong car,
+                and details filled in days later (or not at all).
             </p>
 
             <p>
-                And even when it was, writing things down later never worked.<br>
-                Trips were forgotten, details were missed, and something that should have been simple became frustrating.
+                What should be a quick task turns into a chore.<br>
+                Trips are forgotten, records become unreliable, and compliance feels harder than it needs to be.
             </p>
 
             <p>
-                So I built my own logbook — on my phone.
+                SharpFleet takes a different approach.
             </p>
 
             <p>
-                Something I always had with me.<br>
-                Something I could use in the moment, without thinking about it.
+                It’s designed to work where the work happens. On the driver’s phone.<br>
+                Always available. Easy to use. No extra hardware.
             </p>
 
             <p>
-                It started as a basic tool, built purely to solve my own problem.<br>
-                Then, as real life demanded it, I added more.
+                Trips can be logged in the moment, not guessed later.<br>
+                Vehicles, fuel receipts, servicing, registration, and reminders live in one place,
+                instead of being scattered across paperwork and spreadsheets.
+
             </p>
 
             <p>
-                Vehicles.<br>
-                Rego.<br>
-                Servicing.<br>
-                Reminders.
-            </p>
-
-            <p>
-                Small improvements that made day-to-day work easier.
-            </p>
-
-            <p>
-                As SharpFleet grew, one idea became clear:
+                Over time, SharpFleet grew into a complete fleet logbook system,
+                built around flexibility rather than rigid rules.
             </p>
 
             <p class="sf-about-key">
@@ -75,38 +69,34 @@
             </p>
 
             <p>
-                Too many systems force rigid rules, unnecessary hardware, or constant monitoring.<br>
-                That’s not how most businesses actually work.
+                Too many fleet systems assume every business operates the same way.<br>
+                Mandatory tracking, expensive hardware, or features that feel more like surveillance than support.
             </p>
 
             <p>
-                SharpFleet was built to give business owners control.<br>
-                You decide what needs to be tracked.<br>
-                You decide how strict the rules are.
+                SharpFleet gives you control.<br>
+                You choose what to track.<br>
+                You decide how strict the rules need to be.
             </p>
 
             <p>
-                The system supports you, it doesn’t police your drivers.
+                The system supports your business, it doesn’t get in the way.
             </p>
 
             <p>
-                There was no grand plan.<br>
-                No pitch deck.<br>
-                No “startup idea”.
-            </p>
-
-            <p>
-                Just a real problem, solved properly.
+                There was no grand roadmap or one-size-fits-all solution.<br>
+                Just a focus on building something practical, reliable,
+                and suited to real-world work.
             </p>
 
             <p class="sf-about-close">
-                Today, SharpFleet helps businesses keep accurate records without the stress.<br>
-                Clear, flexible, and built for real-world work.
+                Today, SharpFleet helps businesses stay organised,
+                compliant, and in control, without unnecessary complexity.
             </p>
 
             <p class="sf-about-close">
                 Set the rules that make sense for your business,<br>
-                and let your drivers get on with the job 🚗
+                and let your drivers get on with the job.
             </p>
 
         </div>
