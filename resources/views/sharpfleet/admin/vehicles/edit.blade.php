@@ -464,7 +464,7 @@
                                                     <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
                                                 </svg>
                                             </span>
-                                            <input type="text" name="insurance_expiry_date" value="{{ old('insurance_expiry_date', $insurance->expiry_date ?? '') }}" class="form-control sf-date" placeholder="yyyy-mm-dd">
+                                            <input type="text" name="insurance_expiry_date" value="{{ old('insurance_expiry_date', $insurance->expiry_date ?? '') }}" class="form-control sf-date" placeholder="dd / mm / yyyy">
                                         </div>
                                         @error('insurance_expiry_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                     </div>
@@ -990,12 +990,18 @@
         const companyTimezone = @json($companyTimezone);
         const usesDayFirst = typeof companyTimezone === 'string' && companyTimezone.startsWith('Australia/');
         const displayFormat = usesDayFirst ? 'd/m/Y' : 'm/d/Y';
+        const displayPlaceholder = usesDayFirst ? 'dd / mm / yyyy' : 'mm / dd / yyyy';
 
         flatpickr('.sf-date', {
             dateFormat: 'Y-m-d',
             altInput: true,
             altFormat: displayFormat,
             allowInput: true,
+            onReady: function (selectedDates, dateStr, instance) {
+                if (instance && instance.altInput) {
+                    instance.altInput.placeholder = displayPlaceholder;
+                }
+            },
         });
     })();
     (function () {
