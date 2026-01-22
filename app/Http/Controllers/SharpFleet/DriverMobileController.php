@@ -546,17 +546,13 @@ class DriverMobileController extends Controller
         ];
 
         try {
-            $attachmentPath = storage_path('app/' . $path);
-            \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $attachmentPath, $file) {
+            \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $path, $file) {
                 $message->to($recipient)
                     ->subject('SharpFleet Fuel Receipt');
 
-                if (is_file($attachmentPath)) {
-                    $message->attach($attachmentPath, [
-                        'as' => $file->getClientOriginalName(),
-                        'mime' => $file->getClientMimeType(),
-                    ]);
-                }
+                $message->attachFromStorage($path, $file->getClientOriginalName(), [
+                    'mime' => $file->getClientMimeType(),
+                ]);
             });
         } catch (\Throwable $e) {
             return response()->json(['message' => 'Could not email receipt.'], 500);

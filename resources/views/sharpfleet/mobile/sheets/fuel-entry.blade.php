@@ -50,9 +50,9 @@
             <div class="form-group">
                 <label class="form-label">Receipt</label>
                 <div style="margin-bottom: 10px;">
-                    <video id="sfFuelVideo" autoplay playsinline style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;"></video>
+                    <video id="sfFuelVideo" autoplay playsinline style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;"></video>
                     <canvas id="sfFuelCanvas" style="display: none;"></canvas>
-                    <img id="sfFuelPreview" alt="Receipt preview" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;">
+                    <img id="sfFuelPreview" alt="Receipt preview" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); display: none;">
                 </div>
 
                 <div class="btn-group" style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -177,16 +177,18 @@
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, targetW, targetH);
 
+        const previewUrl = canvas.toDataURL('image/jpeg', 0.82);
+        if (preview) {
+            preview.src = previewUrl;
+            preview.style.display = '';
+        }
+
         canvas.toBlob((blob) => {
             if (!blob) {
                 setStatus('Could not capture photo. Try again.', true);
                 return;
             }
             capturedBlob = blob;
-            if (preview) {
-                preview.src = URL.createObjectURL(blob);
-                preview.style.display = '';
-            }
             stopCamera();
             if (captureBtn) captureBtn.style.display = 'none';
             if (retakeBtn) retakeBtn.style.display = '';
