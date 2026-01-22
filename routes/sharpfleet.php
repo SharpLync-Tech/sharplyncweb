@@ -32,6 +32,7 @@ use App\Http\Controllers\SharpFleet\Admin\VehicleAiTestController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
 use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
+use App\Http\Controllers\SharpFleet\SupportController;
 use App\Http\Controllers\SharpFleet\Reports\VehicleUsageReportController;
 
 /*
@@ -93,6 +94,16 @@ Route::prefix('app/sharpfleet')
 
     Route::get('/admin/trial-expired', fn () => view('sharpfleet.admin.trial-expired'))
         ->middleware(\App\Http\Middleware\SharpFleetAdminAuth::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Support (Logged-in users)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/support', [SupportController::class, 'show'])
+        ->name('sharpfleet.support');
+    Route::post('/support', [SupportController::class, 'send'])
+        ->name('sharpfleet.support.send');
 
     /*
     |--------------------------------------------------------------------------
