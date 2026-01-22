@@ -52,6 +52,7 @@
                         $features = [
                             'Simple trip logging for vehicles and drivers',
                             'Clear, audit-friendly reporting',
+                            'Fuel receipt capture with photo uploads, linked directly to vehicles',
                             'No GPS tracking or driver surveillance',
                             'Works online and offline',
                             'No hardware or vehicle installations',
@@ -61,15 +62,16 @@
                             'Can be used to track hours on equipment, machinery, and plant',
                             'Flat, affordable pricing per vehicle',
                             'Designed for small and growing fleets',
-                            'Fuel receipt capture with photo uploads, linked directly to vehicles',
+                            
                         ];
                     @endphp
 
                     @foreach ($features as $feature)
                         <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                            <span aria-hidden="true">✔</span>
+                            <span aria-hidden="true" style="color:#2CBFAE;">✔</span>
                             <span>{{ $feature }}</span>
                         </li>
+
                     @endforeach
                 </ul>
 
