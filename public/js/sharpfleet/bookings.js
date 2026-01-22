@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         Object.entries(map).forEach(([k, btn]) => {
             if (!btn) return;
-            btn.className = (k === state.view) ? 'btn btn-primary' : 'btn btn-secondary';
+            btn.className = 'btn btn-secondary btn-sm' + (k === state.view ? ' is-active' : '');
         });
     }
 
