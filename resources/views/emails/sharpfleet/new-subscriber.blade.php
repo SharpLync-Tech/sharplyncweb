@@ -1,5 +1,5 @@
 {{-- resources/views/emails/sharpfleet/new-subscriber.blade.php --}}
-<x-email-layout :title="'New SharpFleet Subscriber'">
+<x-sharpfleet-email-layout :title="'New SharpFleet Subscriber'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         New SharpFleet Subscriber
@@ -24,4 +24,4 @@
         You may want to follow up with this subscriber to ensure they have everything they need to get started.
     </p>
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

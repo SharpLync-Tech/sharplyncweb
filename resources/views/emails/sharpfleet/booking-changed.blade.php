@@ -1,3 +1,4 @@
+<x-sharpfleet-email-layout :title="'Booking update'">
 @php
     $oldVehicle = trim($vehicleOldName . ($vehicleOldReg ? ' (' . $vehicleOldReg . ')' : ''));
     $newVehicle = trim($vehicleNewName . ($vehicleNewReg ? ' (' . $vehicleNewReg . ')' : ''));
@@ -35,3 +36,4 @@
 @endif
 
 <p>If you have questions, please contact your administrator.</p>
+</x-sharpfleet-email-layout>

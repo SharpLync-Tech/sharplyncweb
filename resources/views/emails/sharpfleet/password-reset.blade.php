@@ -1,5 +1,5 @@
 {{-- resources/views/emails/sharpfleet/password-reset.blade.php --}}
-<x-email-layout :title="'Reset your SharpFleet password'">
+<x-sharpfleet-email-layout :title="'Reset your SharpFleet password'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         Hi {{ $name ?? 'there' }},
@@ -27,4 +27,4 @@
         If you didn’t request a password reset, you can safely ignore this email.
     </p>
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

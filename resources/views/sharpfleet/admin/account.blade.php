@@ -124,7 +124,7 @@
                     id="sf-show-subscribe-step"
                     class="btn btn-sm sf-btn-spotlight"
                     >
-                        💳 Subscribe
+                        Subscribe
                 </button>
 
             </div> 
@@ -158,13 +158,13 @@
                 <div class="mt-3">
                     <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
                         <input type="checkbox" id="sf-accept-terms">
-                        <span class="small">I agree to the <a href="/policies/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a></span>
+                        <span class="small">I agree to the <a href="policies/sharpfleet-terms" target="_blank" rel="noopener">Terms &amp; Conditions</a></span>
                     </label>
                 </div>
 
                 <form method="POST" action="/app/sharpfleet/admin/account/subscribe" class="mt-3">
                     @csrf
-                    <button class="btn btn-primary" type="submit" id="sf-confirm-subscribe" disabled>Confirm &amp; Subscribe</button>
+                    <button class="btn btn-primary" type="submit" id="sf-btn-spotlight" disabled>Confirm &amp; Subscribe</button>
                 </form>
             </div>
 

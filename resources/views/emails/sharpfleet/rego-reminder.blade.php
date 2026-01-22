@@ -1,5 +1,5 @@
 {{-- resources/views/emails/sharpfleet/rego-reminder.blade.php --}}
-<x-email-layout :title="'SharpFleet registration reminders'">
+<x-sharpfleet-email-layout :title="'SharpFleet registration reminders'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         Registration reminders
@@ -45,4 +45,4 @@
         </p>
     @endif
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

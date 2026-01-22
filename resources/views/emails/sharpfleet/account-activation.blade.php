@@ -1,5 +1,5 @@
 {{-- resources/views/emails/sharpfleet/account-activation.blade.php --}}
-<x-email-layout :title="'Activate Your SharpFleet Account'">
+<x-sharpfleet-email-layout :title="'Activate Your SharpFleet Account'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         Welcome, {{ $name ?? 'there' }}!
@@ -30,4 +30,4 @@
         This activation link will expire for your security.
     </p>
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

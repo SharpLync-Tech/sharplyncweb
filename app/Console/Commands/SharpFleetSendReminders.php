@@ -4,10 +4,12 @@ namespace App\Console\Commands;
 
 use App\Mail\SharpFleet\RegoReminderDigest;
 use App\Mail\SharpFleet\ServiceReminderDigest;
+use App\Mail\SharpFleet\TrialEndingSoon;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\VehicleReminderService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -105,6 +107,7 @@ class SharpFleetSendReminders extends Command
             $todayOrg = Carbon::now($tz)->toDateString();
 
             $recipient = $this->resolveSubscriberAdminEmail($organisationId);
+            $trialContact = $this->resolveSubscriberAdminContact($organisationId);
 
             $counts = [
                 'rego_overdue' => count($digest['registration']['overdue'] ?? []),
@@ -132,6 +135,15 @@ class SharpFleetSendReminders extends Command
                     'organisation_id' => $organisationId,
                     'organisation_name' => $org->name ?? null,
                 ]);
+
+                $this->maybeSendTrialEndingSoon(
+                    organisationId: $organisationId,
+                    organisationName: (string) ($org->name ?? ''),
+                    timezone: $tz,
+                    dryRun: $dryRun,
+                    contact: $trialContact
+                );
+
                 continue;
             }
 
@@ -234,6 +246,14 @@ class SharpFleetSendReminders extends Command
                 $this->logReminderItems($organisationId, $tz, $serviceReadingOverdue, 'service_reading_overdue');
                 $this->logReminderItems($organisationId, $tz, $serviceReadingDueSoon, 'service_reading_due_soon');
             }
+
+            $this->maybeSendTrialEndingSoon(
+                organisationId: $organisationId,
+                organisationName: (string) ($org->name ?? ''),
+                timezone: $tz,
+                dryRun: $dryRun,
+                contact: $trialContact
+            );
         }
 
         $this->info('SharpFleet reminders run completed (dry-run logging).');
@@ -276,6 +296,16 @@ class SharpFleetSendReminders extends Command
 
     private function resolveSubscriberAdminEmail(int $organisationId): ?string
     {
+        return $this->resolveSubscriberAdminContact($organisationId)['email'] ?? null;
+    }
+
+    private function resolveSubscriberAdminContact(int $organisationId): array
+    {
+        $contact = [
+            'email' => null,
+            'name' => 'there',
+        ];
+
         try {
             $orgColumns = Schema::connection('sharpfleet')->getColumnListing('organisations');
         } catch (\Throwable $e) {
@@ -291,14 +321,15 @@ class SharpFleetSendReminders extends Command
 
             $billing = is_string($billing) ? trim($billing) : '';
             if ($billing !== '' && filter_var($billing, FILTER_VALIDATE_EMAIL)) {
-                return $billing;
+                $contact['email'] = $billing;
+                return $contact;
             }
         }
 
         // Fallback: first admin user email for the organisation
         $hasUsersTable = Schema::connection('sharpfleet')->hasTable('users');
         if (!$hasUsersTable) {
-            return null;
+            return $contact;
         }
 
         try {
@@ -308,22 +339,113 @@ class SharpFleetSendReminders extends Command
         }
 
         if (!in_array('organisation_id', $userColumns, true) || !in_array('email', $userColumns, true) || !in_array('role', $userColumns, true)) {
-            return null;
+            return $contact;
         }
 
-        $adminEmail = DB::connection('sharpfleet')
+        $adminUser = DB::connection('sharpfleet')
             ->table('users')
             ->where('organisation_id', $organisationId)
             ->where('role', 'admin')
             ->orderBy('id')
-            ->value('email');
+            ->first(['email', 'first_name', 'last_name']);
 
-        $adminEmail = is_string($adminEmail) ? trim($adminEmail) : '';
+        $adminEmail = is_string($adminUser->email ?? null) ? trim((string) $adminUser->email) : '';
         if ($adminEmail !== '' && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
-            return $adminEmail;
+            $contact['email'] = $adminEmail;
+            $name = trim((string) (($adminUser->first_name ?? '') . ' ' . ($adminUser->last_name ?? '')));
+            if ($name !== '') {
+                $contact['name'] = $name;
+            }
         }
 
-        return null;
+        return $contact;
+    }
+
+    private function maybeSendTrialEndingSoon(
+        int $organisationId,
+        string $organisationName,
+        string $timezone,
+        bool $dryRun,
+        array $contact
+    ): void {
+        if (empty($contact['email']) || !filter_var((string) $contact['email'], FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $org = DB::connection('sharpfleet')
+            ->table('organisations')
+            ->select('trial_ends_at', 'settings')
+            ->where('id', $organisationId)
+            ->first();
+
+        if (!$org || empty($org->trial_ends_at)) {
+            return;
+        }
+
+        $settings = [];
+        if (!empty($org->settings)) {
+            $decoded = json_decode((string) $org->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
+            }
+        }
+
+        if (($settings['subscription_status'] ?? null) === 'active') {
+            return;
+        }
+
+        if (!empty($settings['trial_cancel_requested_at'] ?? null)) {
+            return;
+        }
+
+        $trialEndsLocal = Carbon::parse((string) $org->trial_ends_at)->timezone($timezone)->startOfDay();
+        $todayLocal = Carbon::now($timezone)->startOfDay();
+        $daysRemaining = (int) $todayLocal->diffInDays($trialEndsLocal, false);
+
+        if (!in_array($daysRemaining, [3, 1], true)) {
+            return;
+        }
+
+        $cacheKey = 'sharpfleet:trial-ending:' . $organisationId . ':' . $daysRemaining . ':' . $todayLocal->toDateString();
+        if (!Cache::add($cacheKey, 1, now()->addDays(2))) {
+            return;
+        }
+
+        $accountUrl = url('/app/sharpfleet/admin/account');
+        $name = trim((string) ($contact['name'] ?? ''));
+        if ($name === '') {
+            $name = $organisationName !== '' ? $organisationName : 'there';
+        }
+
+        if ($dryRun) {
+            Log::info('[SharpFleet Trial Reminder] Would send trial ending soon email', [
+                'organisation_id' => $organisationId,
+                'recipient' => $contact['email'],
+                'days_remaining' => $daysRemaining,
+                'trial_ends_at' => $trialEndsLocal->toDateString(),
+            ]);
+            return;
+        }
+
+        try {
+            Mail::to((string) $contact['email'])->send(new TrialEndingSoon(
+                name: $name,
+                daysRemaining: $daysRemaining,
+                accountUrl: $accountUrl
+            ));
+
+            Log::info('[SharpFleet Trial Reminder] Trial ending soon email sent', [
+                'organisation_id' => $organisationId,
+                'recipient' => $contact['email'],
+                'days_remaining' => $daysRemaining,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[SharpFleet Trial Reminder] Failed sending trial ending soon email', [
+                'organisation_id' => $organisationId,
+                'recipient' => $contact['email'],
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function filterItemsToSend(int $organisationId, string $timezone, array $items, string $type, bool $hasReminderLog): array

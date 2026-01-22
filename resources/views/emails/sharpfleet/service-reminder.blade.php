@@ -1,5 +1,5 @@
 {{-- resources/views/emails/sharpfleet/service-reminder.blade.php --}}
-<x-email-layout :title="'SharpFleet servicing reminders'">
+<x-sharpfleet-email-layout :title="'SharpFleet servicing reminders'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         Servicing reminders
@@ -71,4 +71,4 @@
         </p>
     @endif
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

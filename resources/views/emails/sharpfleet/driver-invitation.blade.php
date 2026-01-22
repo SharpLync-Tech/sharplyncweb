@@ -1,4 +1,4 @@
-<x-email-layout :title="'SharpFleet Invitation'">
+<x-sharpfleet-email-layout :title="'SharpFleet Invitation'">
 
     <h1 style="margin:0 0 15px 0; font-size:22px; color:#0A2A4D; font-weight:600;">
         You're invited to SharpFleet
@@ -27,4 +27,4 @@
         This invitation link expires for your security. If you weren\'t expecting this email, you can safely ignore it.
     </p>
 
-</x-email-layout>
+</x-sharpfleet-email-layout>

@@ -16,10 +16,22 @@
         .features li { padding: 8px 0; padding-left: 20px; position: relative; }
         .features li:before { content: "✓"; color: #2CBFAE; font-weight: bold; position: absolute; left: 0; }
     </style>
+    <style>
+        body { color: #0A2A4D; }
+        .header { background: #0A2A4D; }
+        .content { background: #ffffff; }
+        .button { background: #2CBFAE; border-radius: 6px; }
+        .footer { color: #6b7a89; border-top: 1px solid #e0e7ef; }
+        .features ul { list-style: disc; padding-left: 18px; }
+        .features li { padding: 6px 0; }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div style="margin-bottom:8px;">
+                <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet Logo" style="max-width:180px;">
+            </div>
             <h1>Welcome to SharpFleet!</h1>
             <p>Your 30-day free trial has started</p>
         </div>
@@ -31,6 +43,30 @@
 
             <p>Here's what you can do to get started:</p>
 
+            <div class="features">
+                <h3>Set up your fleet</h3>
+                <ul>
+                    <li>Add your vehicles to the system</li>
+                    <li>Configure vehicle types and details</li>
+                    <li>Set up maintenance schedules</li>
+                </ul>
+
+                <h3>Manage your team</h3>
+                <ul>
+                    <li>Add drivers and staff members</li>
+                    <li>Assign roles and permissions</li>
+                    <li>Set up user profiles</li>
+                </ul>
+
+                <h3>Start tracking</h3>
+                <ul>
+                    <li>Log trips and mileage</li>
+                    <li>Record fuel consumption</li>
+                    <li>Track maintenance and repairs</li>
+                </ul>
+            </div>
+
+            <!--
             <div class="features">
                 <h3>🚗 Set up your fleet</h3>
                 <ul>
@@ -53,6 +89,7 @@
                     <li>Track maintenance and repairs</li>
                 </ul>
             </div>
+            -->
 
             <div style="text-align: center;">
                 <a href="{{ url('/app/sharpfleet/admin') }}" class="button">Access Your Dashboard</a>
@@ -67,9 +104,15 @@
         </div>
 
         <div class="footer">
+            <p>SharpFleet is <a href="https://sharplync.com.au" style="color:#2CBFAE; text-decoration:none;">SharpLync</a> Product.</p>
+        </div>
+
+        <!--
+        <div class="footer">
             <p>© {{ date('Y') }} SharpFleet. All rights reserved.</p>
             <p>This email was sent to you because you registered for a SharpFleet account.</p>
         </div>
+        -->
     </div>
 </body>
 </html>
