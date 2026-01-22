@@ -61,6 +61,7 @@
                             'Can be used to track hours on equipment, machinery, and plant',
                             'Flat, affordable pricing per vehicle',
                             'Designed for small and growing fleets',
+                            'Fuel receipt capture with photo uploads, linked directly to vehicles',
                         ];
                     @endphp
 
