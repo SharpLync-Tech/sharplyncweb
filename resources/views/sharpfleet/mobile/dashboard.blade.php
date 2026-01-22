@@ -96,7 +96,7 @@
             <div class="sf-mobile-card-title" style="color: #EAF7F4;">
                 <img src="/images/sharpfleet/boots_small.png"
                      alt=""
-                     style="width:16px;height:16px;vertical-align:-2px;margin-right:6px;">
+                     style="width:26px;height:26px;vertical-align:-2px;margin-right:6px;">
                 No Active Trip
             </div>
 
