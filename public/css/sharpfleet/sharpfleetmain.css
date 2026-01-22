@@ -1933,3 +1933,14 @@ details.card[open] .incident-toggle-hint-closed {
     box-shadow: none;
 }
 
+.trial-summary ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.trial-summary li {
+    margin-bottom: 0.4rem;
+}
+
+

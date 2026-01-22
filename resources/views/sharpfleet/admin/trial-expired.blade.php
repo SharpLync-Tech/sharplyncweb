@@ -78,7 +78,7 @@
             </div>
 
             <div class="btn-group justify-center mt-4">
-                <a href="/app/sharpfleet/admin/reports" class="btn btn-secondary">
+                <a href="/app/sharpfleet/admin/reports" class="btn sf-btn-spotlight">
                     View Trip Reports
                 </a>
                 <form method="POST" action="/app/sharpfleet/admin/logout">
