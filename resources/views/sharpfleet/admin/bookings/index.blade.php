@@ -77,9 +77,9 @@
             <div class="d-flex justify-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <div class="btn-group" role="group" aria-label="Calendar view">
-                        <button type="button" class="btn btn-secondary" id="sfBkViewDay">Day</button>
-                        <button type="button" class="btn btn-secondary" id="sfBkViewWeek">Week</button>
-                        <button type="button" class="btn btn-secondary" id="sfBkViewMonth">Month</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewDay">Day</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewWeek">Week</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewMonth">Month</button>
                     </div>
 
                     @if($branchesEnabled && $branches->count() > 1)
@@ -97,11 +97,11 @@
 
                 <div class="d-flex align-items-center gap-2">
                     @if($sfCanEditBookings)
-                        <button type="button" class="btn btn-primary" id="sfBkCreateBtn">Create Booking</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="sfBkCreateBtn">Create Booking</button>
                     @endif
-                    <button type="button" class="btn btn-secondary" id="sfBkPrev">Prev</button>
-                    <button type="button" class="btn btn-secondary" id="sfBkToday">Today</button>
-                    <button type="button" class="btn btn-secondary" id="sfBkNext">Next</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkPrev">Prev</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkToday">Today</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkNext">Next</button>
                 </div>
             </div>
             <div class="text-muted small mt-2" id="sfBkRangeLabel"></div>

@@ -92,7 +92,7 @@
 
                 <button
                     type="submit"
-                    class="btn btn-primary"
+                    class="btn btn-secondary btn-sm"
                     {{ !$customersTableExists ? 'disabled' : '' }}
                 >
                     Add Customer

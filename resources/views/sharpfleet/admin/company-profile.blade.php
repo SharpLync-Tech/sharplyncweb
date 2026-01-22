@@ -18,10 +18,11 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ url('/app/sharpfleet/admin/company/profile') }}" class="card">
+    <form method="POST" action="{{ url('/app/sharpfleet/admin/company/profile') }}">
         @csrf
 
-        <div class="mb-3">
+        <div class="card">
+            <div class="mb-3">
 
             <label class="form-label">Company name</label>
             <input type="text" name="name" value="{{ old('name', $organisation->name) }}" required class="form-control mb-2">
@@ -41,9 +42,10 @@
                 @php($selectedTimezone = (string) old('timezone', (string) ($timezone ?? 'Australia/Brisbane')))
                 @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
             </select>
+            </div>
         </div>
 
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3 mt-3">
             <button type="submit" class="btn btn-primary">
                 Save
             </button>

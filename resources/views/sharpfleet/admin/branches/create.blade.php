@@ -52,13 +52,11 @@
             </select>
             <div class="form-hint">Use this if different branches operate in different distance units.</div>
             @error('distance_unit') <div class="text-error mb-2">{{ $message }}</div> @enderror
+        </div>
 
-            <hr class="my-3">
-
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a href="{{ url('/app/sharpfleet/admin/branches') }}" class="btn btn-secondary">Cancel</a>
-            </div>
+        <div class="btn-group mt-3">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{ url('/app/sharpfleet/admin/branches') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>

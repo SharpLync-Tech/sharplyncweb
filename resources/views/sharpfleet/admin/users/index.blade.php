@@ -38,6 +38,11 @@
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/invite">Invite Driver</a>
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/add">Add Driver</a>
+                @if($sfCanManageUsers)
+                    <button class="btn btn-primary" type="submit" form="sf-users-invites" formaction="/app/sharpfleet/admin/users/send-invites">
+                        Send invites (selected)
+                    </button>
+                @endif
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
             </div>
         </div>
@@ -45,15 +50,7 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div class="d-flex gap-2">
-                    @if($sfCanManageUsers)
-                        <button class="btn btn-primary" type="submit" form="sf-users-invites" formaction="/app/sharpfleet/admin/users/send-invites">
-                            Send invites (selected)
-                        </button>
-                    @endif
-                </div>
-
+            <div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-3">
                 <div>
                     <form method="GET" action="/app/sharpfleet/admin/users" id="sf-users-filter" class="d-flex gap-2 align-items-center">
                         <label class="text-muted small" for="status" style="margin-bottom:0;">Show</label>
