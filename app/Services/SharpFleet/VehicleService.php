@@ -126,6 +126,7 @@ class VehicleService
         $hasOutOfServiceAt = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_at');
         $hasOutOfServiceUntil = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_until');
         $hasOutOfServiceUntil = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_until');
+        $hasOutOfServiceUntil = Schema::connection('sharpfleet')->hasColumn('vehicles', 'out_of_service_until');
 
         $isInService = isset($data['is_in_service']) ? (int) ($data['is_in_service'] ? 1 : 0) : 1;
         $outOfServiceReason = isset($data['out_of_service_reason']) ? trim((string) $data['out_of_service_reason']) : null;
