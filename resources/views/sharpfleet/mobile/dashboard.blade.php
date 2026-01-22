@@ -123,6 +123,18 @@
         End Drive
     </button>
 
+    @if(($settings['vehicles']['fuel_receipts_enabled'] ?? false) === true)
+        <button
+            type="button"
+            class="sf-mobile-card"
+            data-sheet-open="fuel-entry"
+            style="text-align: left; width: 100%; color: #EAF7F4;"
+        >
+            <div class="sf-mobile-card-title" style="color: #EAF7F4;">⛽ Add Fuel</div>
+            <div class="sf-mobile-card-text" style="color: #EAF7F4;">Log a fuel receipt for a vehicle.</div>
+        </button>
+    @endif
+
     {{-- ===============================
          Trip Requirements
     ================================ --}}
@@ -146,18 +158,6 @@
             @endif
         </ul>
     </div>
-
-    @if(($settings['vehicles']['fuel_receipts_enabled'] ?? false) === true)
-        <button
-            type="button"
-            class="sf-mobile-card"
-            data-sheet-open="fuel-entry"
-            style="text-align: left; width: 100%;"
-        >
-            <div class="sf-mobile-card-title">⛽ Add Fuel</div>
-            <div class="sf-mobile-card-text">Log a fuel receipt for a vehicle.</div>
-        </button>
-    @endif
 
     {{-- ===============================
          Secondary Action
