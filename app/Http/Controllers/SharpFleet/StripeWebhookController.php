@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SharpFleet\SubscriptionWelcome;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 
 class StripeWebhookController extends Controller
 {
@@ -104,6 +107,21 @@ class StripeWebhookController extends Controller
                         'settings' => json_encode($settings),
                         'updated_at' => now(),
                     ]);
+
+                $contact = $this->resolveSubscriptionContact($organisationId, $organisation);
+                if ($contact['email']) {
+                    try {
+                        Mail::to($contact['email'])->send(new SubscriptionWelcome(
+                            firstName: $contact['first_name'] ?: 'there'
+                        ));
+                    } catch (\Throwable $e) {
+                        Log::warning('Stripe webhook: failed sending subscription welcome email', [
+                            'organisation_id' => $organisationId,
+                            'recipient' => $contact['email'],
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
             });
         } catch (\Throwable $e) {
             Log::error('Stripe webhook: failed processing checkout.session.completed', [
@@ -114,5 +132,44 @@ class StripeWebhookController extends Controller
         }
 
         return response()->json(['received' => true]);
+    }
+
+    private function resolveSubscriptionContact(int $organisationId, object $organisation): array
+    {
+        $contact = [
+            'email' => null,
+            'first_name' => '',
+        ];
+
+        $settings = [];
+        if (!empty($organisation->settings)) {
+            $decoded = json_decode((string) $organisation->settings, true);
+            if (is_array($decoded)) {
+                $settings = $decoded;
+            }
+        }
+
+        if (!empty($organisation->billing_email) && filter_var((string) $organisation->billing_email, FILTER_VALIDATE_EMAIL)) {
+            $contact['email'] = (string) $organisation->billing_email;
+        } elseif (Schema::connection('sharpfleet')->hasTable('users')) {
+            $admin = DB::connection('sharpfleet')
+                ->table('users')
+                ->where('organisation_id', $organisationId)
+                ->orderByRaw("CASE WHEN role = 'admin' THEN 0 WHEN role = 'company_admin' THEN 1 ELSE 2 END")
+                ->orderBy('id')
+                ->first(['email', 'first_name']);
+
+            $email = is_string($admin->email ?? null) ? trim((string) $admin->email) : '';
+            if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $contact['email'] = $email;
+                $contact['first_name'] = (string) ($admin->first_name ?? '');
+            }
+        }
+
+        if (empty($contact['first_name']) && !empty($organisation->name)) {
+            $contact['first_name'] = (string) $organisation->name;
+        }
+
+        return $contact;
     }
 }
