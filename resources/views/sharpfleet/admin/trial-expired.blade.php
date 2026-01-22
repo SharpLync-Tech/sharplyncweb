@@ -23,7 +23,7 @@
                         <div class="fw-bold mb-1">Trial ended</div>
                         <div class="small">Subscribe to regain full access. You can still view trip reports.</div>
                     </div>
-                    <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/account">Go to Account</a>
+                    <a class="btn btn-sm sf-btn-spotlight" href="/app/sharpfleet/admin/account">Go to Account</a>
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                             <div class="fw-bold">Based on your vehicles</div>
                             <div class="text-muted small">Per-vehicle pricing scale (monthly)</div>
                         </div>
-                        <a class="btn btn-primary btn-sm" href="/app/sharpfleet/admin/account">Subscribe</a>
+                        <a class="btn btn-sm sf-btn-spotlight" href="/app/sharpfleet/admin/account">Subscribe</a>
                     </div>
 
                     <div class="grid grid-2" style="gap: 16px;">

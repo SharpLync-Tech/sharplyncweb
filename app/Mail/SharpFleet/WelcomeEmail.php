@@ -38,7 +38,7 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.sharpfleet.welcome',
+            view: 'emails.sharpfleet.welcome-v2',
             with: [
                 'firstName' => $this->firstName,
             ],
