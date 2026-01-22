@@ -97,6 +97,38 @@
             </div>
         </details>
 
+        {{-- FUEL RECEIPTS --}}
+        <details class="sf-accordion-item">
+            <summary>
+                <span>Why does SharpFleet support fuel receipt capture?</span>
+                <span class="sf-accordion-icon">+</span>
+            </summary>
+
+            <div class="sf-accordion-content">
+                <p>
+                    Fuel is one of the most common fleet expenses — and one of the easiest to lose track of.
+                    SharpFleet allows drivers to capture a fuel receipt at the time of purchase,
+                    directly from their phone.
+                </p>
+
+                <p>
+                    Each receipt is stored with the vehicle, date, and odometer reading,
+                    creating a clear audit trail without extra paperwork or manual follow-ups.
+                </p>
+
+                <p>
+                    Receipts can also be automatically emailed to accounts,
+                    reducing lost receipts and end-of-month chasing.
+                </p>
+
+                <p>
+                    Like the rest of SharpFleet, fuel receipt capture is designed to be quick for drivers
+                    and useful for the business — without turning into an expense management system.
+                </p>
+            </div>
+        </details>
+
+
         {{-- AFFORDABLE --}}
         <details class="sf-accordion-item">
             <summary>
