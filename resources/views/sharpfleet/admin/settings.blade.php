@@ -319,6 +319,9 @@
                 <button type="button" class="sf-tab" id="sf-tab-issues-button" data-sf-tab="issues" role="tab" aria-controls="sf-tab-issues" aria-selected="false">
                     Incident Reporting
                 </button>
+                <button type="button" class="sf-tab" id="sf-tab-fuel-button" data-sf-tab="fuel" role="tab" aria-controls="sf-tab-fuel" aria-selected="false">
+                    Fuel
+                </button>
             </div>
 
             <div class="card-body sf-tab-panels">
@@ -542,6 +545,13 @@
                         </label>
                     </div>
                 </section>
+
+                <section class="sf-tab-panel" id="sf-tab-fuel" data-sf-panel="fuel" role="tabpanel" aria-labelledby="sf-tab-fuel-button">
+                    <h2 class="card-title">Fuel</h2>
+                    <p class="text-muted mb-3">
+                        Fuel settings will appear here once enabled.
+                    </p>
+                </section>
             </div>
         </div>
 
@@ -593,4 +603,3 @@
 </script>
 
 @endsection
-
