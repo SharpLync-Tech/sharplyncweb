@@ -4,6 +4,28 @@
 
 @section('sharpfleet-content')
 
+<style>
+    .sf-date-field {
+        position: relative;
+    }
+
+    .sf-date-field .sf-date-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2CBFAE;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
+
+    .sf-date-field .form-control.sf-date {
+        padding-left: 38px;
+    }
+</style>
+
 @php
     $vehicleRegistrationTrackingEnabled = (bool) ($vehicleRegistrationTrackingEnabled ?? false);
     $vehicleServicingTrackingEnabled = (bool) ($vehicleServicingTrackingEnabled ?? false);
@@ -276,12 +298,19 @@
                                         <div class="form-row">
                                             <div>
                                                 <label class="form-label">Registration expiry date (optional)</label>
-                                                <input type="text"
-                                                       class="form-control sf-date"
-                                                       placeholder="dd / mm / yyyy"
-                                                       name="registration_expiry"
-                                                       value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
-                                                       inputmode="numeric">
+                                                <div class="sf-date-field">
+                                                    <span class="sf-date-icon" aria-hidden="true">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                                            <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                                        </svg>
+                                                    </span>
+                                                    <input type="text"
+                                                           class="form-control sf-date"
+                                                           placeholder="dd / mm / yyyy"
+                                                           name="registration_expiry"
+                                                           value="{{ old('registration_expiry', $vehicle->registration_expiry ?? '') }}"
+                                                           inputmode="numeric">
+                                                </div>
                                                 @error('registration_expiry') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                             </div>
                                         </div>
@@ -313,12 +342,19 @@
                                         <div class="form-row">
                                             <div>
                                                 <label class="form-label">Last service date (optional)</label>
-                                                <input type="text"
-                                                       class="form-control sf-date"
-                                                       placeholder="dd / mm / yyyy"
-                                                       name="last_service_date"
-                                                       value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
-                                                       inputmode="numeric">
+                                                <div class="sf-date-field">
+                                                    <span class="sf-date-icon" aria-hidden="true">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                                            <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                                        </svg>
+                                                    </span>
+                                                    <input type="text"
+                                                           class="form-control sf-date"
+                                                           placeholder="dd / mm / yyyy"
+                                                           name="last_service_date"
+                                                           value="{{ old('last_service_date', $vehicle->last_service_date ?? '') }}"
+                                                           inputmode="numeric">
+                                                </div>
                                                 @error('last_service_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                             </div>
 
@@ -338,12 +374,19 @@
                                         <div class="form-row">
                                             <div>
                                                 <label class="form-label">Next service due date (optional)</label>
-                                                <input type="text"
-                                                       class="form-control sf-date"
-                                                       placeholder="dd / mm / yyyy"
-                                                       name="service_due_date"
-                                                       value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
-                                                       inputmode="numeric">
+                                                <div class="sf-date-field">
+                                                    <span class="sf-date-icon" aria-hidden="true">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                                            <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                                        </svg>
+                                                    </span>
+                                                    <input type="text"
+                                                           class="form-control sf-date"
+                                                           placeholder="dd / mm / yyyy"
+                                                           name="service_due_date"
+                                                           value="{{ old('service_due_date', $vehicle->service_due_date ?? '') }}"
+                                                           inputmode="numeric">
+                                                </div>
                                                 @error('service_due_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                             </div>
 
@@ -415,7 +458,14 @@
 
                                     <div class="form-group">
                                         <label class="form-label">Policy expiry date</label>
-                                        <input type="text" name="insurance_expiry_date" value="{{ old('insurance_expiry_date', $insurance->expiry_date ?? '') }}" class="form-control sf-date" placeholder="yyyy-mm-dd">
+                                        <div class="sf-date-field">
+                                            <span class="sf-date-icon" aria-hidden="true">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                                    <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                                </svg>
+                                            </span>
+                                            <input type="text" name="insurance_expiry_date" value="{{ old('insurance_expiry_date', $insurance->expiry_date ?? '') }}" class="form-control sf-date" placeholder="yyyy-mm-dd">
+                                        </div>
                                         @error('insurance_expiry_date') <div class="text-error mb-2">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
@@ -514,12 +564,26 @@
                         <div class="form-row mt-2">
                             <div>
                                 <label class="form-label">Out of service from (optional)</label>
-                                <input type="text" name="out_of_service_from" value="{{ $outOfServiceFrom }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                <div class="sf-date-field">
+                                    <span class="sf-date-icon" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                            <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="out_of_service_from" value="{{ $outOfServiceFrom }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                </div>
                                 @error('out_of_service_from') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
                             <div>
                                 <label class="form-label">Return to service date (optional)</label>
-                                <input type="text" name="out_of_service_to" value="{{ $outOfServiceTo }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                <div class="sf-date-field">
+                                    <span class="sf-date-icon" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                            <path fill="currentColor" d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 7h-15v9.5c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V9Z"/>
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="out_of_service_to" value="{{ $outOfServiceTo }}" class="form-control sf-date" placeholder="dd/mm/yyyy">
+                                </div>
                                 @error('out_of_service_to') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
