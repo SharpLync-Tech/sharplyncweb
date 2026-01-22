@@ -69,7 +69,18 @@
                     </div>
 
                     <div class="text-muted small mt-2">
+                        @php
+                            $safePriceBreakdown = trim((string) ($monthlyPriceBreakdown ?? ''));
+                        @endphp
+                        $3.50 per vehicle/month for vehicles 1-10, then $2.50 per vehicle/month for vehicles 11-20
+                        @if($safePriceBreakdown !== '')
+                            ({{ $safePriceBreakdown }}).
+                        @else
+                            .
+                        @endif
+                        @if(false)
                         $3.50 per vehicle/month for vehicles 1–10, then $2.50 per vehicle/month for vehicles 11–20 ({{ $monthlyPriceBreakdown ?? '' }}).
+                        @endif
                         @if(($requiresContactForPricing ?? false))
                             <div class="mt-1">Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.</div>
                         @endif
