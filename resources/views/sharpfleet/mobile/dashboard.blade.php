@@ -86,15 +86,21 @@
             End Drive
         </button>
     @else
-        <div id="noActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px;">
+        <button
+            id="noActiveTripCard"
+            type="button"
+            class="sf-mobile-card"
+            data-sheet-open="start-trip"
+            style="margin-bottom: 20px; text-align: left; width: 100%;"
+        >
             <div class="sf-mobile-card-title">No Active Trip</div>
             <div class="hint-text" style="margin-top: 6px;">
                 Ready when you are.
             </div>
             <div class="hint-text" style="margin-top: 6px;">
-                Tap the Start icon in the footer to begin a trip.
+                Tap to start a trip.
             </div>
-        </div>
+        </button>
 
     <div id="offlineTripAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
     <div id="supportSentAlert" class="sf-mobile-card" style="display:none; margin-bottom: 20px;"></div>
