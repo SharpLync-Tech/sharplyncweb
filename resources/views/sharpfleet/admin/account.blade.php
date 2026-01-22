@@ -43,6 +43,9 @@
             $billingSummary = $billingSummary ?? [];
             $effectiveMode = (string) ($billingSummary['effective_mode'] ?? 'trial');
             $overrideUntilLocal = $billingSummary['access_override_until_local'] ?? null;
+
+            // Ensure pricing breakdown never renders broken UTF-8 characters
+            $safePriceBreakdown = str_replace('×', 'x', $monthlyPriceBreakdown ?? '');
         @endphp
 
         @if($effectiveMode === 'stripe')
@@ -64,13 +67,14 @@
                     <div class="stats-label">Active vehicles</div>
                 </div>
                 <div class="stats-card" style="margin:0;">
-                    <div class="stats-number">${{ number_format((float) $monthlyPrice, 2) }}</div>
+                    <div class="stats-number">AU${{ number_format((float) $monthlyPrice, 2) }}</div>
                     <div class="stats-label">Estimated monthly cost</div>
                 </div>
             </div>
 
             <div class="text-muted small mt-2">
-                Pricing: $3.50 per vehicle/month for vehicles 1–10, then $2.50 per vehicle/month for vehicles 11+ ({{ $monthlyPriceBreakdown }}).
+                Pricing: AU$3.50 per vehicle/month for vehicles 1–10, then AU$2.50 per vehicle/month for vehicles 11+
+                ({{ $safePriceBreakdown }}).
                 @if($requiresContactForPricing)
                     <div class="mt-1">
                         Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.
@@ -153,13 +157,14 @@
                         <div class="stats-label">Active vehicles</div>
                     </div>
                     <div class="stats-card" style="margin:0;">
-                        <div class="stats-number">${{ number_format((float) $monthlyPrice, 2) }}</div>
+                        <div class="stats-number">AU${{ number_format((float) $monthlyPrice, 2) }}</div>
                         <div class="stats-label">Estimated monthly cost</div>
                     </div>
                 </div>
 
                 <div class="text-muted small mt-2">
-                    $3.50 per vehicle/month for vehicles 1–10, then $2.50 per vehicle/month for vehicles 11–20 ({{ $monthlyPriceBreakdown }}).
+                    AU$3.50 per vehicle/month for vehicles 1–10, then AU$2.50 per vehicle/month for vehicles 11–20
+                    ({{ $safePriceBreakdown }}).
                     @if($requiresContactForPricing)
                         <div class="mt-1">
                             Over 20 vehicles: please <a href="mailto:info@sharplync.com.au">contact us</a> for pricing.
@@ -172,7 +177,7 @@
                         <input type="checkbox" id="sf-accept-terms">
                         <span class="small">
                             I agree to the
-                            <a href="policies/sharpfleet-terms" target="_blank" rel="noopener">
+                            <a href="/policies/sharpfleet-terms" target="_blank" rel="noopener">
                                 Terms &amp; Conditions
                             </a>
                         </span>
@@ -212,7 +217,7 @@
             @endif
 
             <div class="text-muted small mt-3">
-                Pricing when subscribed: $3.50 per vehicle per month for vehicles 1–10, then $2.50 per vehicle per month for vehicles 11–20. Over 20 vehicles: contact us for pricing.
+                Pricing when subscribed: AU$3.50 per vehicle per month for vehicles 1–10, then AU$2.50 per vehicle per month for vehicles 11–20. Over 20 vehicles: contact us for pricing.
             </div>
         @endif
     </div>
