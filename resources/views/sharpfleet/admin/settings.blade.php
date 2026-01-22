@@ -266,6 +266,7 @@
         'vehicles' => [
             'registration_tracking_enabled' => true,
             'servicing_tracking_enabled'    => false,
+            'fuel_receipts_enabled'         => false,
         ],
 
         'reminders' => [
@@ -549,8 +550,16 @@
                 <section class="sf-tab-panel" id="sf-tab-fuel" data-sf-panel="fuel" role="tabpanel" aria-labelledby="sf-tab-fuel-button">
                     <h2 class="card-title">Fuel</h2>
                     <p class="text-muted mb-3">
-                        Fuel settings will appear here once enabled.
+                        Enable this to capture fuel receipts for vehicles.
                     </p>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="enable_vehicle_fuel_receipts" value="1"
+                                   {{ ($settings['vehicles']['fuel_receipts_enabled'] ?? false) ? 'checked' : '' }}>
+                            <strong>Enable fuel receipt uploads</strong>
+                        </label>
+                    </div>
                 </section>
             </div>
         </div>
