@@ -1321,6 +1321,31 @@ class VehicleController extends Controller
                 ->get();
         }
 
+        $hasTripsTable = Schema::connection('sharpfleet')->hasTable('trips');
+        $hasTripHistory = false;
+        $lastTripReading = null;
+        if ($hasTripsTable) {
+            $hasTripHistory = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('organisation_id', $organisationId)
+                ->where('vehicle_id', $vehicleId)
+                ->exists();
+
+            if (
+                Schema::connection('sharpfleet')->hasColumn('trips', 'end_km')
+                && Schema::connection('sharpfleet')->hasColumn('trips', 'ended_at')
+            ) {
+                $lastTripReading = DB::connection('sharpfleet')
+                    ->table('trips')
+                    ->where('organisation_id', $organisationId)
+                    ->where('vehicle_id', $vehicleId)
+                    ->whereNotNull('ended_at')
+                    ->whereNotNull('end_km')
+                    ->orderByDesc('ended_at')
+                    ->value('end_km');
+            }
+        }
+
         return view('sharpfleet.admin.vehicles.edit', [
             'vehicle' => $record,
             'vehicleRegistrationTrackingEnabled' => $settingsService->vehicleRegistrationTrackingEnabled(),
@@ -1333,6 +1358,8 @@ class VehicleController extends Controller
             'defaultBranchId' => $defaultBranchId,
             'insurance' => $insurance,
             'insuranceDocuments' => $insuranceDocuments,
+            'hasTripHistory' => $hasTripHistory,
+            'lastTripReading' => $lastTripReading,
         ]);
     }
 
@@ -1360,6 +1387,15 @@ class VehicleController extends Controller
         $settingsService = new CompanySettingsService($organisationId);
         $regoTrackingEnabled = $settingsService->vehicleRegistrationTrackingEnabled();
         $serviceTrackingEnabled = $settingsService->vehicleServicingTrackingEnabled();
+
+        $hasTripHistory = false;
+        if (Schema::connection('sharpfleet')->hasTable('trips')) {
+            $hasTripHistory = DB::connection('sharpfleet')
+                ->table('trips')
+                ->where('organisation_id', $organisationId)
+                ->where('vehicle_id', $vehicleId)
+                ->exists();
+        }
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
@@ -1406,6 +1442,10 @@ class VehicleController extends Controller
         ], [
             'insurance_documents.*.max' => 'Each insurance document must be 3MB or smaller.',
         ]);
+
+        if ($hasTripHistory) {
+            unset($validated['starting_km']);
+        }
 
         $branchService = new BranchService();
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->vehiclesHaveBranchSupport();

@@ -121,21 +121,41 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label id="starting_reading_label" class="form-label">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
-                            <input type="number"
-                                   name="starting_km"
-                                   value="{{ old('starting_km', $vehicle->starting_km ?? '') }}"
-                                   id="starting_km"
-                                   class="form-control"
-                                   inputmode="numeric"
-                                   min="0"
-                                   placeholder="e.g. 124500">
-                            <div class="form-hint">
-                                If set, this will be used to prefill the first trip's starting reading for this vehicle.
+                        @if(!($hasTripHistory ?? false))
+                            <div class="form-group">
+                                <label id="starting_reading_label" class="form-label">Starting odometer ({{ $companyDistanceUnit }}) (optional)</label>
+                                <input type="number"
+                                       name="starting_km"
+                                       value="{{ old('starting_km', $vehicle->starting_km ?? '') }}"
+                                       id="starting_km"
+                                       class="form-control"
+                                       inputmode="numeric"
+                                       min="0"
+                                       placeholder="e.g. 124500">
+                                <div class="form-hint">
+                                    If set, this will be used to prefill the first trip's starting reading for this vehicle.
+                                </div>
+                                @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
                             </div>
-                            @error('starting_km') <div class="text-error mb-2">{{ $message }}</div> @enderror
-                        </div>
+                        @else
+                            <div class="form-group">
+                                <label id="starting_reading_label" class="form-label">Starting odometer ({{ $companyDistanceUnit }})</label>
+                                <input type="number"
+                                       value="{{ old('starting_km', $vehicle->starting_km ?? ($lastTripReading ?? '')) }}"
+                                       id="starting_km"
+                                       class="form-control"
+                                       inputmode="numeric"
+                                       min="0"
+                                       placeholder="e.g. 124500"
+                                       disabled>
+                                <div class="form-hint">
+                                    Trips already exist for this vehicle. Starting odometer is locked.
+                                    @if(isset($lastTripReading))
+                                        Last recorded reading: {{ number_format((float) $lastTripReading, 0) }} {{ $companyDistanceUnit }}.
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
 
                     </div>
                 </div>

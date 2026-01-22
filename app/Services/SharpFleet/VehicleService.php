@@ -203,8 +203,11 @@ class VehicleService
             'vehicle_class'         => $data['vehicle_class'] ?? null,
             'wheelchair_accessible' => !empty($data['wheelchair_accessible']) ? 1 : 0,
             'notes'                 => $data['notes'] ?? null,
-            'starting_km'            => $hasStartingKm ? ($data['starting_km'] ?? null) : null,
         ];
+
+        if ($hasStartingKm && array_key_exists('starting_km', $data)) {
+            $update['starting_km'] = $data['starting_km'] ?? null;
+        }
 
         if ($hasVariant && array_key_exists('variant', $data)) {
             $update['variant'] = $data['variant'] ?? null;
