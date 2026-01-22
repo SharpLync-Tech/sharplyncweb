@@ -57,8 +57,8 @@
         </div>
 
         <div class="d-flex gap-2 mt-3" style="max-width: 720px;">
-            <button type="submit" class="btn btn-secondary btn-sm">Add driver</button>
-            <a href="/app/sharpfleet/admin/users" class="btn btn-secondary btn-sm">Cancel</a>
+            <button type="submit" class="btn btn-primary">Add driver</button>
+            <a href="/app/sharpfleet/admin/users" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
