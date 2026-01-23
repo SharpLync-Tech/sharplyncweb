@@ -6,11 +6,42 @@
         use App\Http\Controllers\Admin\LogViewerController;
         use App\Http\Controllers\SharpFleet\StripeWebhookController;
         
+        <?php
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SharpFleet – Domain Routing
+        |--------------------------------------------------------------------------
+        */
+
+        // ===============================
+        // Country / Marketing Domains
+        // ===============================
         Route::domain('sharpfleet.com.au')->group(function () {
-            Route::get('/', function () {
-                return redirect('/sharpfleet');
-            });
+            Route::get('/', fn () => redirect('/sharpfleet'));
         });
+
+        Route::domain('sharpfleet.au')->group(function () {
+            Route::get('/', fn () => redirect('/sharpfleet'));
+        });
+
+        Route::domain('sharpfleet.co.nz')->group(function () {
+            Route::get('/', fn () => redirect('/sharpfleet'));
+        });
+
+        Route::domain('sharpfleet.co.za')->group(function () {
+            Route::get('/', fn () => redirect('/sharpfleet'));
+        });
+
+        // ===============================
+        // App / Driver Domain
+        // ===============================
+        Route::domain('sharpfleet.app')->group(function () {
+            Route::get('/', fn () => redirect('/app/sharpfleet/mobile'));
+        });
+
         
         Route::domain('fleet.sharplync.com.au')->get('/', function () {
             return redirect('/sharpfleet');
