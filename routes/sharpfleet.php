@@ -34,6 +34,7 @@ use App\Support\SharpFleet\Roles;
 use App\Http\Controllers\SharpFleet\DriverMobileController;
 use App\Http\Controllers\SharpFleet\SupportController;
 use App\Http\Controllers\SharpFleet\Reports\VehicleUsageReportController;
+use App\Http\Controllers\SharpFleet\Reports\FleetManagerOperationalReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -291,13 +292,18 @@ Route::prefix('app/sharpfleet')
 
         Route::get('/admin/reminders', [ReminderController::class, 'index']);
         Route::get('/admin/reminders/vehicles', [ReminderController::class, 'vehicles']);
-        Route::get('/admin/reports', fn () => redirect('/app/sharpfleet/admin/reports/trips'));
+        Route::get('/admin/reports', [ReportController::class, 'home']);
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
        
         Route::get(
             '/admin/reports/vehicle-usage',
             [VehicleUsageReportController::class, 'index']
         )->name('sharpfleet.reports.vehicle-usage');
+
+        Route::get(
+            '/admin/reports/fleet-manager-operational',
+            [FleetManagerOperationalReportController::class, 'index']
+        )->name('sharpfleet.reports.fleet-manager-operational');
         
 
         Route::get('/admin/setup/company', [SetupWizardController::class, 'company']);

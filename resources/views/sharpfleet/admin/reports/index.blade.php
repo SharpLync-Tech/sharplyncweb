@@ -1,0 +1,116 @@
+@extends('layouts.sharpfleet')
+
+@section('title', 'Reports')
+
+@section('sharpfleet-content')
+
+<style>
+    .sf-report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+    }
+    .sf-report-card {
+        border: 1px solid rgba(10, 42, 77, 0.1);
+        border-radius: 14px;
+        padding: 18px;
+        background: #fff;
+        box-shadow: 0 12px 20px rgba(10, 42, 77, 0.08);
+        display: flex;
+        flex-direction: column;
+        min-height: 170px;
+    }
+    .sf-report-card h4 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        color: #0A2A4D;
+        font-weight: 600;
+    }
+    .sf-report-card p {
+        margin: 0 0 14px 0;
+        color: #4a5b6b;
+        font-size: 13px;
+        line-height: 1.5;
+        flex: 1 1 auto;
+    }
+    .sf-report-card .btn-group-inline {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .sf-report-section-title {
+        margin: 18px 0 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0A2A4D;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .sf-report-section-title span {
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+        color: #6b7c8d;
+        margin-left: 8px;
+    }
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Reports</h1>
+        <p class="page-description">Operational and compliance reporting for SharpFleet.</p>
+    </div>
+
+    <div class="sf-report-section-title">Operational Reports</div>
+    <div class="sf-report-grid">
+        <div class="sf-report-card">
+            <h4>Fleet Manager – Operational</h4>
+            <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
+            <div class="btn-group-inline">
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+            </div>
+        </div>
+
+        <div class="sf-report-card">
+            <h4>Vehicle Usage</h4>
+            <p>Usage frequency, distance totals, and last active dates by vehicle.</p>
+            <div class="btn-group-inline">
+                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn btn-primary btn-sm">View report</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-report-section-title">Compliance &amp; Trip Reports</div>
+    <div class="sf-report-grid">
+        <div class="sf-report-card">
+            <h4>Trips &amp; Compliance</h4>
+            <p>Compliance-ready trip reporting with export for audit and review.</p>
+            <div class="btn-group-inline">
+                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/trips?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-report-section-title">Future <span>(planned)</span></div>
+    <div class="sf-report-grid">
+        <div class="sf-report-card">
+            <h4>Faults by Vehicle</h4>
+            <p>Breakdown of reported vehicle faults by asset and severity.</p>
+            <div class="btn-group-inline">
+                <button type="button" class="btn btn-outline-secondary btn-sm" disabled>View report</button>
+            </div>
+        </div>
+
+        <div class="sf-report-card">
+            <h4>Open Safety Issues</h4>
+            <p>Active safety items that require attention or follow-up.</p>
+            <div class="btn-group-inline">
+                <button type="button" class="btn btn-outline-secondary btn-sm" disabled>View report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection

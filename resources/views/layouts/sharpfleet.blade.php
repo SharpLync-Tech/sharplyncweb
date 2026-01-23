@@ -74,7 +74,7 @@
                                     <div class="sharpfleet-nav-dropdown">
                                         <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/reports*') || request()->is('app/sharpfleet/admin/faults*') ? 'is-active' : '' }}">Reports</button>
                                         <div class="sharpfleet-nav-dropdown-menu">
-                                            <a href="/app/sharpfleet/admin/reports/trips" class="sharpfleet-nav-dropdown-item">Trip Reports</a>
+                                            <a href="/app/sharpfleet/admin/reports" class="sharpfleet-nav-dropdown-item">Reports Home</a>
                                             <a href="/app/sharpfleet/admin/faults" class="sharpfleet-nav-dropdown-item">Faults</a>
                                         </div>
                                     </div>

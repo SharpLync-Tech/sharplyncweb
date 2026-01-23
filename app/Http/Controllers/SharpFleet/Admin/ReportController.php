@@ -154,6 +154,22 @@ class ReportController extends Controller
         ]);
     }
 
+    /**
+     * --------------------------------------------------------------------------
+     * Reports Home (cards)
+     * --------------------------------------------------------------------------
+     */
+    public function home(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::canViewReports($user)) {
+            abort(403);
+        }
+
+        return view('sharpfleet.admin.reports.index');
+    }
+
     
     public function vehicles()
     {
