@@ -6,9 +6,6 @@
         use App\Http\Controllers\Admin\LogViewerController;
         use App\Http\Controllers\SharpFleet\StripeWebhookController;
         
-        <?php
-
-
 
         /*
         |--------------------------------------------------------------------------
