@@ -11,11 +11,11 @@
         gap: 18px;
     }
     .sf-report-card {
-        border: 1px solid rgba(10, 42, 77, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.16);
         border-radius: 14px;
         padding: 18px;
-        background: #fff;
-        box-shadow: 0 12px 20px rgba(10, 42, 77, 0.08);
+        background: rgba(10, 42, 77, 0.85);
+        box-shadow: 0 12px 20px rgba(10, 42, 77, 0.15);
         display: flex;
         flex-direction: column;
         min-height: 170px;
@@ -23,12 +23,12 @@
     .sf-report-card h4 {
         margin: 0 0 8px 0;
         font-size: 16px;
-        color: #0A2A4D;
+        color: #ffffff;
         font-weight: 600;
     }
     .sf-report-card p {
         margin: 0 0 14px 0;
-        color: #4a5b6b;
+        color: rgba(255, 255, 255, 0.82);
         font-size: 13px;
         line-height: 1.5;
         flex: 1 1 auto;
@@ -42,7 +42,7 @@
         margin: 18px 0 12px;
         font-size: 14px;
         font-weight: 700;
-        color: #0A2A4D;
+        color: #ffffff;
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
@@ -50,7 +50,7 @@
         font-weight: 600;
         text-transform: none;
         letter-spacing: 0;
-        color: #6b7c8d;
+        color: rgba(255, 255, 255, 0.7);
         margin-left: 8px;
     }
 </style>
@@ -67,7 +67,7 @@
             <h4>Fleet Manager – Operational</h4>
             <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-secondary btn-sm">View report</a>
                 <a href="/app/sharpfleet/admin/reports/fleet-manager-operational?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
             </div>
         </div>
@@ -76,7 +76,7 @@
             <h4>Vehicle Usage</h4>
             <p>Usage frequency, distance totals, and last active dates by vehicle.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn btn-secondary btn-sm">View report</a>
             </div>
         </div>
     </div>
@@ -87,7 +87,7 @@
             <h4>Trips &amp; Compliance</h4>
             <p>Compliance-ready trip reporting with export for audit and review.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-secondary btn-sm">View report</a>
                 <a href="/app/sharpfleet/admin/reports/trips?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
             </div>
         </div>
