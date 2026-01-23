@@ -31,7 +31,7 @@
          Sheet Body
     ================================ --}}
     <div class="sf-sheet-body">
-        <form method="POST" action="/app/sharpfleet/faults/standalone" id="reportFaultForm">
+        <form method="POST" action="/app/sharpfleet/faults/standalone" id="reportFaultForm" data-mobile-token-form>
             @csrf
 
             <div class="form-group">

@@ -147,7 +147,7 @@
                                     <div class="hint-text" style="margin-top: 4px;"><strong>Customer:</strong> {{ $b->customer_name_display }}</div>
                                 @endif
                                 @if($canCancel)
-                                    <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;">
+                                    <form method="POST" action="{{ url('/app/sharpfleet/bookings/' . (int) $b->id . '/cancel') }}" style="margin-top: 6px;" data-mobile-token-form>
                                         @csrf
                                         <button type="submit" class="sf-mobile-secondary-btn" style="padding: 10px;" data-offline-action="booking">
                                             Cancel Booking
@@ -234,7 +234,7 @@
         @if(!$bookingsTableExists)
             <div class="hint-text">Bookings are unavailable until the database table is created.</div>
         @else
-            <form method="POST" action="/app/sharpfleet/bookings" id="mobileBookingForm">
+            <form method="POST" action="/app/sharpfleet/bookings" id="mobileBookingForm" data-mobile-token-form>
                 @csrf
 
                 @if($branchesEnabled && $branches->count() > 1)

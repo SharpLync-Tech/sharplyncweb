@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet;
 
 use App\Http\Controllers\Controller;
 use App\Support\SharpFleet\Roles;
+use App\Services\SharpFleet\MobileTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -80,6 +81,8 @@ class AuthController extends Controller
         }
 
         $this->startSession($request, $user);
+
+        $this->maybeIssueMobileToken($request, $user);
 
         // Remember this device
         if ($request->boolean('remember') && Schema::connection('sharpfleet')->hasColumn('users', 'remember_token')) {
@@ -197,6 +200,35 @@ class AuthController extends Controller
             ->table('users')
             ->where('remember_token', hash('sha256', $token))
             ->first();
+    }
+
+    private function maybeIssueMobileToken(Request $request, $user): void
+    {
+        $isDriver = (int) ($user->is_driver ?? 0) === 1;
+        if (!$isDriver) {
+            return;
+        }
+
+        $deviceId = trim((string) $request->header('X-Device-Id', ''));
+        if ($deviceId === '') {
+            $deviceId = trim((string) $request->input('device_id', ''));
+        }
+
+        if ($deviceId === '') {
+            return;
+        }
+
+        $service = new MobileTokenService();
+        $token = $service->issueToken(
+            organisationId: (int) $user->organisation_id,
+            userId: (int) $user->id,
+            deviceId: $deviceId,
+            userAgent: (string) $request->header('User-Agent', ''),
+            ip: $request->ip()
+        );
+
+        $request->session()->flash('sharpfleet.mobile_token', $token);
+        $request->session()->flash('sharpfleet.mobile_device_id', $deviceId);
     }
 
     private function isArchived($user): bool

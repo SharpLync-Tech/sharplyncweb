@@ -32,7 +32,7 @@
     ================================ --}}
     <div class="sf-sheet-body">
 
-        <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm" novalidate>
+        <form method="POST" action="/app/sharpfleet/trips/start" id="startTripForm" novalidate data-mobile-token-form>
             @csrf
 
             <div

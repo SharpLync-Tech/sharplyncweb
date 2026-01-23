@@ -20,7 +20,7 @@
     </div>
 
     <div class="sf-sheet-body">
-        <form method="POST" action="/app/sharpfleet/trips/end" id="endTripForm">
+        <form method="POST" action="/app/sharpfleet/trips/end" id="endTripForm" data-mobile-token-form>
             @csrf
             @if($activeTrip)
                 <input type="hidden" name="trip_id" value="{{ $activeTrip->id }}">

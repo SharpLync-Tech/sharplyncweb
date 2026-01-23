@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
+use App\Services\SharpFleet\MobileTokenService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
@@ -362,6 +363,7 @@ class UserController extends Controller
             'role' => ['nullable', 'string', 'max:50'],
             'branch_ids' => ['nullable', 'array'],
             'branch_ids.*' => ['integer'],
+            'revoke_mobile_tokens' => ['nullable', 'in:0,1'],
         ]);
 
         // The form submits a hidden 0 plus a checkbox 1 when checked.
@@ -479,6 +481,11 @@ class UserController extends Controller
             abort(404);
         }
 
+        if ($isDriver === 0 || $request->boolean('revoke_mobile_tokens')) {
+            $reason = $isDriver === 0 ? 'driver_disabled' : 'manual_revoke';
+            (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, $reason);
+        }
+
         // If the admin edited their own driver access, update the session so it takes effect immediately.
         if ((int) ($fleetUser['id'] ?? 0) === (int) $userId) {
             $request->session()->put('sharpfleet.user.is_driver', $isDriver);
@@ -563,6 +570,8 @@ class UserController extends Controller
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
             ->update($updates);
+
+        (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, 'archived');
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'Driver archived.');

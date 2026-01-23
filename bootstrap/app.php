@@ -24,6 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'app/sharpfleet/stripe/webhook',
         ]);
 
+        // Replace the default CSRF middleware with our SharpFleet-aware version.
+        $middleware->replace(
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+            \App\Http\Middleware\VerifyCsrfToken::class
+        );
+
         /**
          * ------------------------------------------------------------
          * Global middleware

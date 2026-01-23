@@ -107,23 +107,15 @@ Route::prefix('app/sharpfleet')
 
     /*
     |--------------------------------------------------------------------------
-    | Driver Routes (DRIVER ONLY)
+    | Driver Mobile Routes (PWA - token auth)
     |--------------------------------------------------------------------------
     */
     Route::middleware([
-        \App\Http\Middleware\SharpFleetDriverAuth::class,
+        \App\Http\Middleware\MobileDriverTokenAuth::class,
         \App\Http\Middleware\SharpFleetTrialCheck::class,
         \App\Http\Middleware\SharpFleetAuditLog::class,
     ])->group(function () {
 
-        // Desktop driver
-        Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));
-
-        /*
-        |--------------------------------------------------------------------------
-        | Driver Mobile (PWA)
-        |--------------------------------------------------------------------------
-        */
         Route::get('/mobile', [DriverMobileController::class, 'dashboard'])
             ->name('sharpfleet.mobile.dashboard');
 
@@ -153,10 +145,6 @@ Route::prefix('app/sharpfleet')
         Route::get('/mobile/about', [DriverMobileController::class, 'about'])
             ->name('sharpfleet.mobile.about');
 
-        // Driver help / about
-        Route::get('/driver/help', [HelpController::class, 'driver']);
-        Route::get('/driver/about', fn () => view('sharpfleet.about'));
-
         // Trips
         Route::post('/trips/start', [TripController::class, 'start']);
         Route::post('/trips/end', [TripController::class, 'end']);
@@ -170,13 +158,28 @@ Route::prefix('app/sharpfleet')
         Route::post('/faults/from-trip', [FaultController::class, 'storeFromTrip']);
         Route::post('/faults/standalone', [FaultController::class, 'storeStandalone']);
 
-        // Bookings
+        // Bookings (shared endpoints)
         Route::get('/bookings', [BookingController::class, 'upcoming']);
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::post('/bookings/{booking}', [BookingController::class, 'update'])->whereNumber('booking');
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
         Route::get('/bookings/available-vehicles', [BookingController::class, 'availableVehicles']);
         Route::post('/bookings/start-trip', [BookingController::class, 'startTrip']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Driver Desktop Routes (session auth)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware([
+        \App\Http\Middleware\SharpFleetDriverAuth::class,
+        \App\Http\Middleware\SharpFleetTrialCheck::class,
+        \App\Http\Middleware\SharpFleetAuditLog::class,
+    ])->group(function () {
+        Route::get('/driver', fn () => view('sharpfleet.driver.dashboard'));
+        Route::get('/driver/help', [HelpController::class, 'driver']);
+        Route::get('/driver/about', fn () => view('sharpfleet.about'));
     });
 
     /*

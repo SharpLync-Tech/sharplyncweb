@@ -40,7 +40,7 @@
         <div class="sf-mobile-card-text">Queued, will send when online.</div>
     </div>
 
-    <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form">
+    <form method="POST" action="/app/sharpfleet/mobile/support" id="sfSupportForm" class="sf-support-form" data-mobile-token-form>
         @csrf
 
         <div class="form-group sf-support-group">

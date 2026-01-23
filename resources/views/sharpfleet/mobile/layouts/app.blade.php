@@ -54,6 +54,160 @@
 @include('sharpfleet.mobile.partials.overlays.backdrop')
 
 {{-- ===============================
+     Mobile Token Bootstrap
+================================ --}}
+<script>
+(function () {
+    const DEVICE_ID_KEY = 'sf_device_id';
+    const TOKEN_KEY = 'sf_device_token';
+
+    function getDeviceId() {
+        try {
+            return localStorage.getItem(DEVICE_ID_KEY) || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function setDeviceId(value) {
+        if (!value) return;
+        try {
+            localStorage.setItem(DEVICE_ID_KEY, value);
+        } catch (e) {
+            // ignore storage errors
+        }
+    }
+
+    function getToken() {
+        try {
+            return localStorage.getItem(TOKEN_KEY) || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function setToken(value) {
+        if (!value) return;
+        try {
+            localStorage.setItem(TOKEN_KEY, value);
+        } catch (e) {
+            // ignore storage errors
+        }
+    }
+
+    let deviceId = getDeviceId();
+    if (!deviceId) {
+        deviceId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : 'sf-' + Math.random().toString(16).slice(2) + Date.now().toString(16);
+        setDeviceId(deviceId);
+    }
+
+    const serverToken = '{{ (string) session('sharpfleet.mobile_token', '') }}';
+    const serverDeviceId = '{{ (string) session('sharpfleet.mobile_device_id', '') }}';
+    if (serverDeviceId && serverDeviceId !== deviceId) {
+        setDeviceId(serverDeviceId);
+        deviceId = serverDeviceId;
+    }
+    if (serverToken) {
+        setToken(serverToken);
+    }
+
+    window.SharpFleetMobileAuth = {
+        getToken,
+        getDeviceId,
+    };
+
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+        const req = typeof input === 'string' ? { url: input } : { url: input.url || '' };
+        const url = req.url || '';
+        const isSameOrigin = url.startsWith('/') || url.startsWith(window.location.origin);
+        const isSharpFleet = url.includes('/app/sharpfleet/');
+        const token = getToken();
+        const device = getDeviceId();
+
+        if (isSameOrigin && isSharpFleet) {
+            init = init || {};
+            init.headers = init.headers || {};
+            if (init.headers instanceof Headers) {
+                if (token && !init.headers.has('Authorization')) {
+                    init.headers.set('Authorization', 'Bearer ' + token);
+                }
+                if (!init.headers.has('X-Device-Id') && device) {
+                    init.headers.set('X-Device-Id', device);
+                }
+                if (!token && !init.headers.has('X-Device-Token')) {
+                    init.headers.set('X-Device-Token', 'missing');
+                }
+            } else {
+                if (token && !('Authorization' in init.headers)) {
+                    init.headers['Authorization'] = 'Bearer ' + token;
+                }
+                if (!('X-Device-Id' in init.headers) && device) {
+                    init.headers['X-Device-Id'] = device;
+                }
+                if (!token && !('X-Device-Token' in init.headers)) {
+                    init.headers['X-Device-Token'] = 'missing';
+                }
+            }
+        }
+
+        return originalFetch(input, init);
+    };
+
+    document.addEventListener('submit', async (event) => {
+        const form = event.target;
+        if (!form || !form.matches('[data-mobile-token-form]')) return;
+
+        const token = getToken();
+        const device = getDeviceId();
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        if (device) {
+            formData.set('device_id', device);
+        }
+
+        try {
+            const res = await fetch(form.action, {
+                method: form.method || 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    ...(token ? { 'Authorization': 'Bearer ' + token } : { 'X-Device-Token': 'missing' }),
+                    'X-Device-Id': device || '',
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            if (res.status === 202) {
+                const alert = document.getElementById('offlineTripAlert');
+                if (alert) {
+                    alert.textContent = 'Trip saved offline and will sync when you are back online.';
+                    alert.style.display = '';
+                }
+                return;
+            }
+
+            if (res.redirected) {
+                window.location.href = res.url;
+                return;
+            }
+
+            window.location.reload();
+        } catch (e) {
+            const alert = document.getElementById('offlineTripAlert');
+            if (alert) {
+                alert.textContent = 'Network error. Trip saved offline and will sync when you are back online.';
+                alert.style.display = '';
+            }
+        }
+    });
+})();
+</script>
+
+{{-- ===============================
      Sheet Controller (GLOBAL)
 ================================ --}}
 <script>

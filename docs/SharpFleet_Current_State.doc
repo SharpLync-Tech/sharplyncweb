@@ -84,6 +84,15 @@
   <li>Customer portal routes: <code>routes/sharpfleet.php</code></li>
   <li>Internal platform admin routes: <code>routes/admin.php</code> (under <code>/admin/sharpfleet</code>)</li>
 </ul>
+<p class="muted">Domain routing (from <code>routes/web.php</code>):</p>
+<ul>
+  <li><code>sharpfleet.com.au</code> â†’ redirects to <code>/sharpfleet</code></li>
+  <li><code>sharpfleet.au</code> â†’ redirects to <code>/sharpfleet</code></li>
+  <li><code>sharpfleet.co.nz</code> â†’ redirects to <code>/sharpfleet</code></li>
+  <li><code>sharpfleet.co.za</code> â†’ redirects to <code>/sharpfleet</code></li>
+  <li><code>sharpfleet.app</code> â†’ redirects to <code>/app/sharpfleet/mobile</code></li>
+  <li><code>fleet.sharplync.com.au</code> â†’ redirects to <code>/sharpfleet</code></li>
+</ul>
 
 <h3>2.2 Authentication & Session Model</h3>
 <ul>
