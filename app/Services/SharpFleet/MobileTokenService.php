@@ -7,43 +7,58 @@ use Illuminate\Support\Facades\Schema;
 
 class MobileTokenService
 {
-    public function issueToken(int $organisationId, int $userId, string $deviceId, ?string $userAgent = null, ?string $ip = null): string
+    public function issueToken(int $organisationId, int $userId, string $deviceId, ?string $userAgent = null, ?string $ip = null): array
     {
         $rawToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $rawToken);
 
-        $payload = [
-            'organisation_id' => $organisationId,
-            'user_id' => $userId,
-            'device_id' => $deviceId,
-            'token_hash' => $tokenHash,
+        $revokedInfo = ['count' => 0, 'device_ids' => []];
+
+        DB::connection('sharpfleet')->transaction(function () use (
+            $organisationId,
+            $userId,
+            $deviceId,
+            $userAgent,
+            $ip,
+            $tokenHash,
+            &$revokedInfo
+        ) {
+            // Revoke any existing tokens for this user + device (rotation).
+            $revokedInfo = $this->revokeTokensForDevice($organisationId, $userId, $deviceId, 'rotated_on_login');
+
+            $payload = [
+                'organisation_id' => $organisationId,
+                'user_id' => $userId,
+                'device_id' => $deviceId,
+                'token_hash' => $tokenHash,
+            ];
+
+            $now = now();
+            if ($this->hasColumn('sharpfleet_mobile_tokens', 'created_at')) {
+                $payload['created_at'] = $now;
+            }
+            if ($this->hasColumn('sharpfleet_mobile_tokens', 'updated_at')) {
+                $payload['updated_at'] = $now;
+            }
+            if ($this->hasColumn('sharpfleet_mobile_tokens', 'last_used_at')) {
+                $payload['last_used_at'] = $now;
+            }
+            if ($this->hasColumn('sharpfleet_mobile_tokens', 'user_agent_hash') && $userAgent !== null) {
+                $payload['user_agent_hash'] = hash('sha256', $userAgent);
+            }
+            if ($this->hasColumn('sharpfleet_mobile_tokens', 'ip_last') && $ip !== null) {
+                $payload['ip_last'] = $ip;
+            }
+
+            DB::connection('sharpfleet')
+                ->table('sharpfleet_mobile_tokens')
+                ->insert($payload);
+        });
+
+        return [
+            'token' => $rawToken,
+            'revoked' => $revokedInfo,
         ];
-
-        $now = now();
-        if ($this->hasColumn('sharpfleet_mobile_tokens', 'created_at')) {
-            $payload['created_at'] = $now;
-        }
-        if ($this->hasColumn('sharpfleet_mobile_tokens', 'updated_at')) {
-            $payload['updated_at'] = $now;
-        }
-        if ($this->hasColumn('sharpfleet_mobile_tokens', 'last_used_at')) {
-            $payload['last_used_at'] = $now;
-        }
-        if ($this->hasColumn('sharpfleet_mobile_tokens', 'user_agent_hash') && $userAgent !== null) {
-            $payload['user_agent_hash'] = hash('sha256', $userAgent);
-        }
-        if ($this->hasColumn('sharpfleet_mobile_tokens', 'ip_last') && $ip !== null) {
-            $payload['ip_last'] = $ip;
-        }
-
-        // Revoke any existing tokens for this user + device (single active token per device).
-        $this->revokeTokensForDevice($organisationId, $userId, $deviceId, 'replaced');
-
-        DB::connection('sharpfleet')
-            ->table('sharpfleet_mobile_tokens')
-            ->insert($payload);
-
-        return $rawToken;
     }
 
     public function validateToken(string $token, string $deviceId): ?object
@@ -120,8 +135,18 @@ class MobileTokenService
         }
     }
 
-    public function revokeTokensForUser(int $organisationId, int $userId, string $reason = 'revoked'): void
+    public function revokeTokensForUser(int $organisationId, int $userId, string $reason = 'revoked'): array
     {
+        $tokens = DB::connection('sharpfleet')
+            ->table('sharpfleet_mobile_tokens')
+            ->select('device_id')
+            ->where('organisation_id', $organisationId)
+            ->where('user_id', $userId)
+            ->whereNull('revoked_at')
+            ->get();
+
+        $deviceIds = $tokens->pluck('device_id')->filter()->unique()->values()->all();
+
         $updates = ['revoked_at' => now()];
         if ($this->hasColumn('sharpfleet_mobile_tokens', 'revoked_reason')) {
             $updates['revoked_reason'] = $reason;
@@ -130,16 +155,32 @@ class MobileTokenService
             $updates['updated_at'] = now();
         }
 
-        DB::connection('sharpfleet')
+        $count = DB::connection('sharpfleet')
             ->table('sharpfleet_mobile_tokens')
             ->where('organisation_id', $organisationId)
             ->where('user_id', $userId)
             ->whereNull('revoked_at')
             ->update($updates);
+
+        return [
+            'count' => (int) $count,
+            'device_ids' => $deviceIds,
+        ];
     }
 
-    public function revokeTokensForDevice(int $organisationId, int $userId, string $deviceId, string $reason = 'revoked'): void
+    public function revokeTokensForDevice(int $organisationId, int $userId, string $deviceId, string $reason = 'revoked'): array
     {
+        $tokens = DB::connection('sharpfleet')
+            ->table('sharpfleet_mobile_tokens')
+            ->select('device_id')
+            ->where('organisation_id', $organisationId)
+            ->where('user_id', $userId)
+            ->where('device_id', $deviceId)
+            ->whereNull('revoked_at')
+            ->get();
+
+        $deviceIds = $tokens->pluck('device_id')->filter()->unique()->values()->all();
+
         $updates = ['revoked_at' => now()];
         if ($this->hasColumn('sharpfleet_mobile_tokens', 'revoked_reason')) {
             $updates['revoked_reason'] = $reason;
@@ -148,13 +189,18 @@ class MobileTokenService
             $updates['updated_at'] = now();
         }
 
-        DB::connection('sharpfleet')
+        $count = DB::connection('sharpfleet')
             ->table('sharpfleet_mobile_tokens')
             ->where('organisation_id', $organisationId)
             ->where('user_id', $userId)
             ->where('device_id', $deviceId)
             ->whereNull('revoked_at')
             ->update($updates);
+
+        return [
+            'count' => (int) $count,
+            'device_ids' => $deviceIds,
+        ];
     }
 
     private function hasColumn(string $table, string $column): bool

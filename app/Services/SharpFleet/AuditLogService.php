@@ -69,6 +69,28 @@ class AuditLogService
     }
 
     /**
+     * Log a system action against a subscriber (organisation and/or user).
+     */
+    public function logSystem(Request $request, int $organisationId, string $action, array $context = []): void
+    {
+        $this->write([
+            'organisation_id' => (int) $organisationId,
+            'actor_type' => 'system',
+            'actor_id' => null,
+            'actor_email' => '',
+            'actor_name' => 'system',
+            'action' => $action,
+            'ip' => (string) $request->ip(),
+            'user_agent' => (string) $request->userAgent(),
+            'method' => (string) $request->method(),
+            'path' => '/' . ltrim((string) $request->path(), '/'),
+            'status_code' => null,
+            'context_json' => $this->encodeContext($context),
+            'created_at' => now(),
+        ]);
+    }
+
+    /**
      * Log a request-level event (typically via middleware).
      */
     public function logSubscriberRequest(Request $request, string $action, int $statusCode, float $durationMs, array $context = []): void

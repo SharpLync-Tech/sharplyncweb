@@ -15,6 +15,7 @@
         <form method="POST" action="/app/sharpfleet/login" class="auth-form" id="sharpfleetLoginForm">
             @csrf
             <input type="hidden" name="device_id" id="sharpfleetDeviceId" value="">
+            <input type="hidden" name="mobile_login" id="sharpfleetMobileLogin" value="0">
 
             @if (session('status'))
                 <div class="alert alert-success mb-3">
@@ -62,6 +63,7 @@
     (function () {
         const field = document.getElementById('sharpfleetDeviceId');
         if (!field) return;
+        const mobileField = document.getElementById('sharpfleetMobileLogin');
 
         const key = 'sf_device_id';
         let deviceId = '';
@@ -83,6 +85,13 @@
         }
 
         field.value = deviceId;
+
+        const ua = navigator.userAgent || '';
+        const isMobileUa = /iphone|ipad|ipod|android|mobile|windows phone/i.test(ua);
+        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+        if (mobileField) {
+            mobileField.value = (isMobileUa || isStandalone) ? '1' : '0';
+        }
     })();
 </script>
 @endsection

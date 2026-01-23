@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\MobileTokenService;
+use App\Services\SharpFleet\AuditLogService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
@@ -482,8 +483,9 @@ class UserController extends Controller
         }
 
         if ($isDriver === 0 || $request->boolean('revoke_mobile_tokens')) {
-            $reason = $isDriver === 0 ? 'driver_disabled' : 'manual_revoke';
-            (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, $reason);
+            $reason = $isDriver === 0 ? 'disable' : 'manual';
+            $revoked = (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, $reason === 'disable' ? 'driver_disabled' : 'manual_revoke');
+            $this->logMobileTokenRevoked($request, $organisationId, $userId, $reason, $revoked);
         }
 
         // If the admin edited their own driver access, update the session so it takes effect immediately.
@@ -571,7 +573,8 @@ class UserController extends Controller
             ->where('id', $userId)
             ->update($updates);
 
-        (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, 'archived');
+        $revoked = (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, 'archived');
+        $this->logMobileTokenRevoked($request, $organisationId, $userId, 'archive', $revoked);
 
         return redirect('/app/sharpfleet/admin/users')
             ->with('success', 'Driver archived.');
@@ -628,5 +631,55 @@ class UserController extends Controller
 
         return redirect('/app/sharpfleet/admin/users?status=archived')
             ->with('success', 'User re-enabled successfully.');
+    }
+
+    public function revokeMobileTokens(Request $request, int $userId)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canManageUsers($fleetUser)) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $branchService = new BranchService();
+        $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
+
+        $target = DB::connection('sharpfleet')
+            ->table('users')
+            ->select('id', 'is_driver', 'archived_at')
+            ->where('organisation_id', $organisationId)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$target) {
+            abort(404);
+        }
+
+        if ((int) ($target->is_driver ?? 0) !== 1 || !empty($target->archived_at)) {
+            return redirect('/app/sharpfleet/admin/users/' . $userId . '/edit')
+                ->withErrors(['error' => 'Mobile sessions can only be revoked for active driver-capable users.']);
+        }
+
+        $revoked = (new MobileTokenService())->revokeTokensForUser($organisationId, $userId, 'manual_revoke');
+        $this->logMobileTokenRevoked($request, $organisationId, $userId, 'manual', $revoked);
+
+        return redirect('/app/sharpfleet/admin/users/' . $userId . '/edit')
+            ->with('success', 'Mobile sessions revoked.');
+    }
+
+    private function logMobileTokenRevoked(Request $request, int $organisationId, int $userId, string $reason, array $revoked): void
+    {
+        $count = (int) ($revoked['count'] ?? 0);
+        if ($count <= 0) {
+            return;
+        }
+
+        (new AuditLogService())->logSubscriber($request, 'mobile_token_revoked', [
+            'target_user_id' => $userId,
+            'revoke_reason' => $reason,
+            'token_count_revoked' => $count,
+            'device_ids' => $revoked['device_ids'] ?? [],
+        ]);
     }
 }

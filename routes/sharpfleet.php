@@ -229,6 +229,7 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/users/{userId}/details', [UserController::class, 'details'])->whereNumber('userId');
         Route::get('/admin/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
         Route::post('/admin/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');
+        Route::post('/admin/users/{userId}/revoke-mobile-tokens', [UserController::class, 'revokeMobileTokens'])->whereNumber('userId');
         Route::post('/admin/users/{userId}/delete', [UserController::class, 'destroy'])->whereNumber('userId');
         Route::post('/admin/users/{userId}/unarchive', [UserController::class, 'unarchive'])->whereNumber('userId');
 

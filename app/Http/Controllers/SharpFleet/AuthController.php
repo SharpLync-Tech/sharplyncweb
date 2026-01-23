@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SharpFleet;
 use App\Http\Controllers\Controller;
 use App\Support\SharpFleet\Roles;
 use App\Services\SharpFleet\MobileTokenService;
+use App\Services\SharpFleet\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -209,6 +210,10 @@ class AuthController extends Controller
             return;
         }
 
+        if (!$request->boolean('mobile_login')) {
+            return;
+        }
+
         $deviceId = trim((string) $request->header('X-Device-Id', ''));
         if ($deviceId === '') {
             $deviceId = trim((string) $request->input('device_id', ''));
@@ -219,13 +224,25 @@ class AuthController extends Controller
         }
 
         $service = new MobileTokenService();
-        $token = $service->issueToken(
+        $result = $service->issueToken(
             organisationId: (int) $user->organisation_id,
             userId: (int) $user->id,
             deviceId: $deviceId,
             userAgent: (string) $request->header('User-Agent', ''),
             ip: $request->ip()
         );
+
+        $token = (string) ($result['token'] ?? '');
+        $revoked = $result['revoked'] ?? ['count' => 0, 'device_ids' => []];
+
+        if ((int) ($revoked['count'] ?? 0) > 0) {
+            (new AuditLogService())->logSystem($request, (int) $user->organisation_id, 'mobile_token_revoked', [
+                'target_user_id' => (int) $user->id,
+                'revoke_reason' => 'rotation',
+                'token_count_revoked' => (int) ($revoked['count'] ?? 0),
+                'device_ids' => $revoked['device_ids'] ?? [],
+            ]);
+        }
 
         $request->session()->flash('sharpfleet.mobile_token', $token);
         $request->session()->flash('sharpfleet.mobile_device_id', $deviceId);

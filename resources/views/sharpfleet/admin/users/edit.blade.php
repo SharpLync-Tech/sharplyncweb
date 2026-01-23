@@ -131,6 +131,22 @@
             <div class="mt-4"></div>
         </form>
 
+        @if((int) ($user->is_driver ?? 0) === 1 && empty($user->archived_at))
+            <div class="mt-4"></div>
+
+            <div>
+                <h3 class="section-title">Mobile sessions</h3>
+                <p class="text-muted small mb-3">
+                    Revokes all active mobile device tokens for this driver. Admin and desktop sessions are unaffected.
+                </p>
+
+                <form method="POST" action="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/revoke-mobile-tokens') }}" onsubmit="return confirm('Revoke all mobile sessions for this driver?');">
+                    @csrf
+                    <button type="submit" class="btn btn-warning">Revoke all mobile sessions</button>
+                </form>
+            </div>
+        @endif
+
         @if(($user->role ?? '') === 'driver')
             <div class="mt-4"></div>
 

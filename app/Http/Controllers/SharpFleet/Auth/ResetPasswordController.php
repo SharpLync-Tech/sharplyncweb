@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules\Password;
 use App\Services\SharpFleet\MobileTokenService;
+use App\Services\SharpFleet\AuditLogService;
 
 class ResetPasswordController extends Controller
 {
@@ -113,11 +114,20 @@ class ResetPasswordController extends Controller
             DB::connection('sharpfleet')->commit();
 
             if (isset($user->organisation_id)) {
-                (new MobileTokenService())->revokeTokensForUser(
+                $revoked = (new MobileTokenService())->revokeTokensForUser(
                     (int) $user->organisation_id,
                     (int) $user->id,
                     'password_reset'
                 );
+
+                if ((int) ($revoked['count'] ?? 0) > 0) {
+                    (new AuditLogService())->logSystem($request, (int) $user->organisation_id, 'mobile_token_revoked', [
+                        'target_user_id' => (int) $user->id,
+                        'revoke_reason' => 'password_reset',
+                        'token_count_revoked' => (int) ($revoked['count'] ?? 0),
+                        'device_ids' => $revoked['device_ids'] ?? [],
+                    ]);
+                }
             }
 
             $this->logPasswordResetEvent('PASSWORD RESET SUCCESS → email=' . $email . ' user_id=' . $user->id);
