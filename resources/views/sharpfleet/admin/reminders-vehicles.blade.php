@@ -17,7 +17,7 @@
 
     @if (!$regoEnabled && !$serviceEnabled)
         <div class="alert alert-warning">
-            Reminders are currently disabled in Settings (rego + servicing tracking are both off).
+            Reminders are currently disabled in Settings (registration + servicing tracking are both off).
         </div>
     @endif
 

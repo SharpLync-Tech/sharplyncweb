@@ -60,10 +60,10 @@
                 </p>
 
                 <div class="form-group">
-                    <label class="form-label">Rego window (days)</label>
+                    <label class="form-label">Registration window (days)</label>
                     <input type="number" min="1" step="1" name="reminder_registration_days"
                            value="{{ old('reminder_registration_days', (int) ($settings['reminders']['registration_days'] ?? 30)) }}" class="form-control">
-                    <div class="text-muted small mt-1">Example: 30 means “Due soon” starts 30 days before rego expires.</div>
+                    <div class="text-muted small mt-1">Example: 30 means “Due soon” starts 30 days before registration expires.</div>
                 </div>
 
                 <div class="form-group">
@@ -91,3 +91,4 @@
 </div>
 
 @endsection
+

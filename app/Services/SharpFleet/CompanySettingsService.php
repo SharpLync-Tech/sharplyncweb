@@ -45,6 +45,8 @@ class CompanySettingsService
             'registration_days' => 30,
             'service_days' => 30,
             'service_reading_threshold' => 500,
+            'registration_recipients' => '',
+            'service_recipients' => '',
         ],
 
         'trip' => [
@@ -85,6 +87,7 @@ class CompanySettingsService
             'enabled'                  => false,
             'allow_during_trip'         => true,
             'require_end_of_trip_check' => false,
+            'during_trip_recipients'    => '',
         ],
 
         // Reporting preferences (used by SharpFleet admin reports)
@@ -307,6 +310,18 @@ class CompanySettingsService
         return max(0, (int) $value);
     }
 
+    public function reminderRegistrationRecipients(): array
+    {
+        $raw = (string) ($this->settings['reminders']['registration_recipients'] ?? '');
+        return $this->parseRecipientList($raw);
+    }
+
+    public function reminderServiceRecipients(): array
+    {
+        $raw = (string) ($this->settings['reminders']['service_recipients'] ?? '');
+        return $this->parseRecipientList($raw);
+    }
+
     // ---- Client presence ----
 
     public function clientPresenceEnabled(): bool
@@ -351,6 +366,12 @@ class CompanySettingsService
     public function allowFaultsDuringTrip(): bool
     {
         return (bool) $this->settings['faults']['allow_during_trip'];
+    }
+
+    public function faultDuringTripRecipients(): array
+    {
+        $raw = (string) ($this->settings['faults']['during_trip_recipients'] ?? '');
+        return $this->parseRecipientList($raw);
     }
 
     public function faultsEnabled(): bool
@@ -448,6 +469,10 @@ class CompanySettingsService
         $settings['reminders']['registration_days'] = max(1, $registrationDays);
         $settings['reminders']['service_days'] = max(1, $serviceDays);
         $settings['reminders']['service_reading_threshold'] = max(0, $serviceReadingThreshold);
+        $settings['reminders']['registration_recipients'] = trim((string) $request->input('reminder_registration_recipients', ''));
+        $settings['reminders']['service_recipients'] = trim((string) $request->input('reminder_service_recipients', ''));
+
+        $settings['faults']['during_trip_recipients'] = trim((string) $request->input('fault_during_trip_recipients', ''));
 
         // Persist to DB
         DB::connection('sharpfleet')
@@ -491,7 +516,37 @@ class CompanySettingsService
         if (!array_key_exists('service_reading_threshold', $settings['reminders'])) {
             $settings['reminders']['service_reading_threshold'] = $settings['vehicles']['reminders']['service_reading_threshold'] ?? 500;
         }
+        if (!array_key_exists('registration_recipients', $settings['reminders'])) {
+            $settings['reminders']['registration_recipients'] = '';
+        }
+        if (!array_key_exists('service_recipients', $settings['reminders'])) {
+            $settings['reminders']['service_recipients'] = '';
+        }
+
+        if (!isset($settings['faults']) || !is_array($settings['faults'])) {
+            $settings['faults'] = [];
+        }
+        if (!array_key_exists('during_trip_recipients', $settings['faults'])) {
+            $settings['faults']['during_trip_recipients'] = '';
+        }
 
         return $settings;
+    }
+
+    private function parseRecipientList(string $raw): array
+    {
+        $emails = array_filter(array_map(
+            static fn ($value) => trim($value),
+            preg_split('/,/', $raw) ?: []
+        ));
+
+        $valid = [];
+        foreach ($emails as $email) {
+            if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $valid[strtolower($email)] = $email;
+            }
+        }
+
+        return array_values($valid);
     }
 }

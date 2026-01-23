@@ -193,13 +193,13 @@
             <div class="fw-bold">Choose what admin-managed vehicle details you track</div>
             <span class="sf-help__badge">Setup Wizard</span>
         </div>
-        <p class="mb-2">Turn on only what you plan to maintain (rego and servicing). These settings control which fields appear on vehicle profiles and which reminders can be used.</p>
+        <p class="mb-2">Turn on only what you plan to maintain (registration and servicing). These settings control which fields appear on vehicle profiles and which reminders can be used.</p>
         <div class="sf-help__actions">
             <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/setup/settings/vehicle-tracking">Open Step 4</a>
         </div>
         <div class="sf-help__callout">
             <div class="sf-help__calloutTitle">Tip</div>
-            <div>If you enable rego tracking, you’ll see rego fields when creating/editing vehicles.</div>
+            <div>If you enable registration tracking, you’ll see registration fields when creating/editing vehicles.</div>
         </div>
     </div>
 </section>
@@ -432,7 +432,7 @@
         <ul class="mb-0" style="margin-top: 10px;">
             <li><strong>Out of service:</strong> blocks bookings and trip starts. Use for service/repair/inspection.</li>
             <li><strong>Archive:</strong> hides the vehicle from day-to-day use, but keeps history.</li>
-            <li><strong>Reminders:</strong> rego and service reminders depend on your Company Settings.</li>
+            <li><strong>Reminders:</strong> registration and service reminders depend on your Company Settings.</li>
         </ul>
         <div class="sf-help__actions">
             <a class="btn btn-secondary btn-sm" href="/app/sharpfleet/admin/vehicles">Open Vehicles</a>
@@ -486,3 +486,4 @@
 </section>
 
 @endsection
+

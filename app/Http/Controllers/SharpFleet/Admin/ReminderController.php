@@ -51,7 +51,9 @@ class ReminderController extends Controller
         $serviceDays = $settingsService->reminderServiceDays();
         $serviceReadingThreshold = $settingsService->reminderServiceReadingThreshold();
 
-        $recipient = $this->resolveSubscriberAdminEmail($organisationId);
+        $fallbackRecipient = $this->resolveSubscriberAdminEmail($organisationId);
+        $registrationRecipients = $settingsService->reminderRegistrationRecipients();
+        $serviceRecipients = $settingsService->reminderServiceRecipients();
 
         $digest = [
             'registration' => ['overdue' => [], 'due_soon' => []],
@@ -89,7 +91,9 @@ class ReminderController extends Controller
             'dateFormat' => $dateFormat,
             'regoEnabled' => $regoEnabled,
             'serviceEnabled' => $serviceEnabled,
-            'recipient' => $recipient,
+            'fallbackRecipient' => $fallbackRecipient,
+            'registrationRecipients' => $registrationRecipients,
+            'serviceRecipients' => $serviceRecipients,
             'digest' => $digest,
         ]);
     }

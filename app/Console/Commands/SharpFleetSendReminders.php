@@ -106,8 +106,16 @@ class SharpFleetSendReminders extends Command
 
             $todayOrg = Carbon::now($tz)->toDateString();
 
-            $recipient = $this->resolveSubscriberAdminEmail($organisationId);
+            $fallbackRecipient = $this->resolveSubscriberAdminEmail($organisationId);
             $trialContact = $this->resolveSubscriberAdminContact($organisationId);
+            $registrationRecipients = $this->resolveReminderRecipients(
+                $settings->reminderRegistrationRecipients(),
+                $fallbackRecipient
+            );
+            $serviceRecipients = $this->resolveReminderRecipients(
+                $settings->reminderServiceRecipients(),
+                $fallbackRecipient
+            );
 
             $counts = [
                 'rego_overdue' => count($digest['registration']['overdue'] ?? []),
@@ -124,14 +132,17 @@ class SharpFleetSendReminders extends Command
                 'timezone' => $tz,
                 'today' => $todayOrg,
                 'dry_run' => $dryRun,
-                'recipient' => $recipient,
+                'recipients' => [
+                    'registration' => $registrationRecipients,
+                    'service' => $serviceRecipients,
+                ],
                 'counts' => $counts,
                 'settings' => $digest['settings'] ?? [],
                 'dedupe_table_present' => $hasReminderLog,
             ]);
 
-            if (!$recipient) {
-                Log::warning('[SharpFleet Reminders] No subscriber admin email found; skipping email send', [
+            if (empty($registrationRecipients) && empty($serviceRecipients)) {
+                Log::warning('[SharpFleet Reminders] No reminder recipients found; skipping reminder emails', [
                     'organisation_id' => $organisationId,
                     'organisation_name' => $org->name ?? null,
                 ]);
@@ -157,10 +168,14 @@ class SharpFleetSendReminders extends Command
 
             // Email: registration
             if (!empty($regoOverdue) || !empty($regoDueSoon)) {
-                if ($dryRun) {
+                if (empty($registrationRecipients)) {
+                    Log::warning('[SharpFleet Reminders] Registration recipients missing; skipping registration email', [
+                        'organisation_id' => $organisationId,
+                    ]);
+                } elseif ($dryRun) {
                     Log::info('[SharpFleet Reminders] Would email rego digest', [
                         'organisation_id' => $organisationId,
-                        'recipient' => $recipient,
+                        'recipients' => $registrationRecipients,
                         'counts' => [
                             'overdue' => count($regoOverdue),
                             'due_soon' => count($regoDueSoon),
@@ -168,7 +183,7 @@ class SharpFleetSendReminders extends Command
                     ]);
                 } else {
                     try {
-                        Mail::to($recipient)->send(new RegoReminderDigest(
+                        Mail::to($registrationRecipients)->send(new RegoReminderDigest(
                             organisationName: (string) ($org->name ?? ''),
                             overdue: $regoOverdue,
                             dueSoon: $regoDueSoon
@@ -176,7 +191,7 @@ class SharpFleetSendReminders extends Command
 
                         Log::info('[SharpFleet Reminders] Rego digest emailed', [
                             'organisation_id' => $organisationId,
-                            'recipient' => $recipient,
+                            'recipients' => $registrationRecipients,
                         ]);
 
                         if ($hasReminderLog) {
@@ -195,10 +210,14 @@ class SharpFleetSendReminders extends Command
 
             // Email: servicing
             if (!empty($serviceDateOverdue) || !empty($serviceDateDueSoon) || !empty($serviceReadingOverdue) || !empty($serviceReadingDueSoon)) {
-                if ($dryRun) {
+                if (empty($serviceRecipients)) {
+                    Log::warning('[SharpFleet Reminders] Service recipients missing; skipping service email', [
+                        'organisation_id' => $organisationId,
+                    ]);
+                } elseif ($dryRun) {
                     Log::info('[SharpFleet Reminders] Would email service digest', [
                         'organisation_id' => $organisationId,
-                        'recipient' => $recipient,
+                        'recipients' => $serviceRecipients,
                         'counts' => [
                             'date_overdue' => count($serviceDateOverdue),
                             'date_due_soon' => count($serviceDateDueSoon),
@@ -208,7 +227,7 @@ class SharpFleetSendReminders extends Command
                     ]);
                 } else {
                     try {
-                        Mail::to($recipient)->send(new ServiceReminderDigest(
+                        Mail::to($serviceRecipients)->send(new ServiceReminderDigest(
                             organisationName: (string) ($org->name ?? ''),
                             serviceDateOverdue: $serviceDateOverdue,
                             serviceDateDueSoon: $serviceDateDueSoon,
@@ -218,7 +237,7 @@ class SharpFleetSendReminders extends Command
 
                         Log::info('[SharpFleet Reminders] Service digest emailed', [
                             'organisation_id' => $organisationId,
-                            'recipient' => $recipient,
+                            'recipients' => $serviceRecipients,
                         ]);
 
                         if ($hasReminderLog) {
@@ -297,6 +316,19 @@ class SharpFleetSendReminders extends Command
     private function resolveSubscriberAdminEmail(int $organisationId): ?string
     {
         return $this->resolveSubscriberAdminContact($organisationId)['email'] ?? null;
+    }
+
+    private function resolveReminderRecipients(array $configured, ?string $fallback): array
+    {
+        if (!empty($configured)) {
+            return $configured;
+        }
+
+        if (!empty($fallback) && filter_var($fallback, FILTER_VALIDATE_EMAIL)) {
+            return [$fallback];
+        }
+
+        return [];
     }
 
     private function resolveSubscriberAdminContact(int $organisationId): array

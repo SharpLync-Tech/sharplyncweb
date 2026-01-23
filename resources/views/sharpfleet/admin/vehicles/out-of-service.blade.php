@@ -37,7 +37,7 @@
                         <thead>
                             <tr>
                                 <th>Vehicle</th>
-                                <th>Rego</th>
+                                <th>Registration</th>
                                 @if(($branchesEnabled ?? false))
                                     <th>Branch</th>
                                 @endif

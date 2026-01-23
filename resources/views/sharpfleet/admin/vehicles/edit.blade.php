@@ -139,7 +139,7 @@
                             <label class="form-label">Registration number (locked)</label>
                             <input type="text" value="{{ $vehicle->registration_number }}" disabled class="form-control">
                             <div class="form-hint">
-                                If the rego is incorrect, archive this vehicle and add it again.
+                                If the registration is incorrect, archive this vehicle and add it again.
                             </div>
                         </div>
 
@@ -1330,3 +1330,4 @@
 </script>
 
 @endsection
+

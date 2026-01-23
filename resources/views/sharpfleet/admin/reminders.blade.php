@@ -32,19 +32,23 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="mb-2">
-                <strong>Email recipient:</strong>
-                {{ $recipient ?: 'Not set' }}
+                <strong>Registration recipients:</strong>
+                {{ !empty($registrationRecipients) ? implode(', ', $registrationRecipients) : 'Not set' }}
+            </div>
+            <div class="mb-2">
+                <strong>Service recipients:</strong>
+                {{ !empty($serviceRecipients) ? implode(', ', $serviceRecipients) : 'Not set' }}
             </div>
             <div class="text-muted">
                 Timezone: {{ $timezone }}
-                | Rego window: {{ (int) ($settings['registration_days'] ?? 30) }} days
+                | Registration window: {{ (int) ($settings['registration_days'] ?? 30) }} days
                 | Service (date) window: {{ (int) ($settings['service_days'] ?? 30) }} days
                 | Service (reading) threshold: {{ (int) ($settings['service_reading_threshold'] ?? 500) }}
             </div>
 
-            @if (!$recipient)
+            @if (empty($registrationRecipients) && empty($serviceRecipients) && !empty($fallbackRecipient))
                 <div class="alert alert-warning mt-3">
-                    No email recipient could be found. This uses your organisation billing email (if set), otherwise the first admin user email.
+                    Reminder recipients are not set. SharpFleet will fall back to {{ $fallbackRecipient }} when sending reminder emails.
                 </div>
             @endif
         </div>
@@ -52,14 +56,14 @@
 
     @if (!$regoEnabled && !$serviceEnabled)
         <div class="alert alert-warning">
-            Reminders are currently disabled in Settings (rego + servicing tracking are both off).
+            Reminders are currently disabled in Settings (registration + servicing tracking are both off).
         </div>
     @endif
 
     @if ($regoEnabled)
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Registration (Rego)</h2>
+                <h2 class="card-title" style="font-size:18px; margin-bottom:10px;">Registration</h2>
 
                 @php
                     $regoOverdue = $digest['registration']['overdue'] ?? [];
@@ -75,7 +79,7 @@
                                 <tr>
                                     <th>Status</th>
                                     <th>Vehicle</th>
-                                    <th>Rego</th>
+                                    <th>Registration</th>
                                     <th>Expiry</th>
                                     <th>Days</th>
                                 </tr>

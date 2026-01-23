@@ -37,7 +37,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Rego</th>
+                                <th>Registration</th>
                                 <th>Status</th>
                                 <th>Active Trip</th>
                                 <th>Type</th>

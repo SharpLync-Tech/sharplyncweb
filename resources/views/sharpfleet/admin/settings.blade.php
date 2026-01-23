@@ -274,6 +274,14 @@
             'registration_days' => 30,
             'service_days' => 30,
             'service_reading_threshold' => 500,
+            'registration_recipients' => '',
+            'service_recipients' => '',
+        ],
+        'faults' => [
+            'enabled' => false,
+            'allow_during_trip' => true,
+            'require_end_of_trip_check' => false,
+            'during_trip_recipients' => '',
         ],
     ], $settings ?? []);
 
@@ -461,10 +469,10 @@
                     </p>
 
                     <div class="form-group">
-                        <label class="form-label">Rego window (days)</label>
+                        <label class="form-label">Registration window (days)</label>
                         <input type="number" min="1" step="1" name="reminder_registration_days"
                                value="{{ (int) ($settings['reminders']['registration_days'] ?? 30) }}" class="form-control">
-                        <div class="text-muted small mt-1">Vehicles with rego expiring within this window will be marked as ƒ?oDue soonƒ??.</div>
+                        <div class="text-muted small mt-1">Vehicles with registration expiring within this window will be marked as ƒ?oDue soonƒ??.</div>
                     </div>
 
                     <div class="form-group">
@@ -479,6 +487,22 @@
                         <input type="number" min="0" step="1" name="reminder_service_reading_threshold"
                                value="{{ (int) ($settings['reminders']['service_reading_threshold'] ?? 500) }}" class="form-control">
                         <div class="text-muted small mt-1">If a vehicle is within this many km/hours of its due reading, it will be marked as ƒ?oDue soonƒ??.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Registration reminder recipients</label>
+                        <input type="text" name="reminder_registration_recipients"
+                               value="{{ $settings['reminders']['registration_recipients'] ?? '' }}" class="form-control"
+                               placeholder="fleet@example.com, accounts@example.com">
+                        <div class="text-muted small mt-1">Comma-separated email addresses.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Service reminder recipients</label>
+                        <input type="text" name="reminder_service_recipients"
+                               value="{{ $settings['reminders']['service_recipients'] ?? '' }}" class="form-control"
+                               placeholder="service@example.com, ops@example.com">
+                        <div class="text-muted small mt-1">Comma-separated email addresses.</div>
                     </div>
                 </section>
 
@@ -539,6 +563,14 @@
                                    {{ ($settings['faults']['allow_during_trip'] ?? true) ? 'checked' : '' }}>
                                <strong>Allow drivers to report issues/accidents during a trip</strong>
                         </label>
+
+                        <div class="form-group" style="margin-top: 12px;">
+                            <label class="form-label">Issue/accident report recipients (during trips)</label>
+                            <input type="text" name="fault_during_trip_recipients"
+                                   value="{{ $settings['faults']['during_trip_recipients'] ?? '' }}" class="form-control"
+                                   placeholder="safety@example.com, fleet@example.com">
+                            <div class="text-muted small mt-1">Comma-separated email addresses for in-trip reports.</div>
+                        </div>
 
                         <label class="checkbox-label">
                             <input type="checkbox" name="require_end_of_trip_fault_check" value="1"

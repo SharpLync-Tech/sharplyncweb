@@ -63,7 +63,7 @@
                         <input type="checkbox" name="enable_vehicle_registration_tracking" value="1"
                                {{ ($settings['vehicles']['registration_tracking_enabled'] ?? true) ? 'checked' : '' }}>
                         <strong>Enable Vehicle Registration Tracking</strong>
-                        <div class="text-muted small ms-4">Adds registration fields (rego number, expiry date) on vehicle profiles and can drive reminder emails.</div>
+                        <div class="text-muted small ms-4">Adds registration fields (registration number, expiry date) on vehicle profiles and can drive reminder emails.</div>
                     </label>
 
                     <label class="checkbox-label">
@@ -85,3 +85,4 @@
 </div>
 
 @endsection
+
