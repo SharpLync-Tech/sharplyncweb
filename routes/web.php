@@ -6,6 +6,12 @@
         use App\Http\Controllers\Admin\LogViewerController;
         use App\Http\Controllers\SharpFleet\StripeWebhookController;
         
+        Route::domain('sharpfleet.com.au')->group(function () {
+            Route::get('/', function () {
+                return redirect('/sharpfleet');
+            });
+        });
+        
         Route::domain('fleet.sharplync.com.au')->get('/', function () {
             return redirect('/sharpfleet');
         });

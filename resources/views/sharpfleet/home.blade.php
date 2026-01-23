@@ -136,7 +136,7 @@
                     </div>
                     <p>
                         Optionally tie trips to clients or jobs — ideal for sole traders,
-                        contractors, and service businesses needing cleaner records.
+                        contractors, and service businesses needing clear records.
                     </p>
                 </div>
 
