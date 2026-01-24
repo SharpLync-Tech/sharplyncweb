@@ -9,6 +9,7 @@ use App\Services\SharpFleet\ReportAiClient;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -1222,7 +1223,7 @@ class AiReportBuilderController extends Controller
         ?Carbon $toDate,
         ?bool $clientPresent,
         ?bool $hasRegistration
-    ): Response {
+    ): Response|StreamedResponse {
         $result = $this->buildReport(
             $organisationId,
             $user,
