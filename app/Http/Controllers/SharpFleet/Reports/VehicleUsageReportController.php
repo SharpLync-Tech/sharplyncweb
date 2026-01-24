@@ -148,6 +148,15 @@ class VehicleUsageReportController extends Controller
 
         /*
         |----------------------------------------------------------------------
+        | CSV export (matches on-screen data)
+        |----------------------------------------------------------------------
+        */
+        if ($request->input('export') === 'csv') {
+            return $this->streamCsv($vehicles, $startDate, $endDate);
+        }
+
+        /*
+        |----------------------------------------------------------------------
         | Summary totals
         |----------------------------------------------------------------------
         */
@@ -178,6 +187,49 @@ class VehicleUsageReportController extends Controller
             'summary'         => $summary,
             'branches'        => $branches,
             'companyTimezone' => $companyTimezone,
+        ]);
+    }
+
+    private function streamCsv($vehicles, ?string $startDate, ?string $endDate)
+    {
+        $startLabel = $startDate ?: 'all';
+        $endLabel = $endDate ?: 'all';
+        $filename = 'vehicle-usage-' . $startLabel . '-to-' . $endLabel . '.csv';
+
+        return response()->streamDownload(function () use ($vehicles) {
+            $out = fopen('php://output', 'w');
+
+            fputcsv($out, [
+                'Vehicle',
+                'Registration',
+                'Status',
+                'Trips',
+                'Total Distance',
+                'Total Driving Time',
+                'Average Distance / Trip',
+                'Last Used',
+            ]);
+
+            foreach ($vehicles as $v) {
+                $status = $v->trip_count === 0
+                    ? 'Idle'
+                    : ($v->trip_count >= 10 ? 'High' : 'Low');
+
+                fputcsv($out, [
+                    $v->vehicle_name,
+                    $v->registration_number,
+                    $status,
+                    $v->trip_count,
+                    $v->total_distance_km . ' km',
+                    $v->total_duration,
+                    $v->average_distance_km . ' km',
+                    $v->last_used_at ?: 'N/A',
+                ]);
+            }
+
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 }

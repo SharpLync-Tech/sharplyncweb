@@ -57,10 +57,13 @@
                 </p>
             </div>
 
-            <button class="btn btn-primary" disabled
-                    title="CSV export for vehicle usage will be added next">
+            @php
+                $exportQuery = array_merge(request()->query(), ['export' => 'csv']);
+                $exportUrl = url('/app/sharpfleet/admin/reports/vehicle-usage') . '?' . http_build_query($exportQuery);
+            @endphp
+            <a class="btn btn-primary" href="{{ $exportUrl }}">
                 Export Report (CSV)
-            </button>
+            </a>
         </div>
     </div>
 
