@@ -106,8 +106,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-3 align-end mt-3">
-                <div>
+            <div class="grid grid-3 align-end mt-3 sf-period-row">
+                <div class="sf-date-col">
                     <label class="form-label" id="sfPeriodLabel">Select period</label>
                     <div class="sf-date-field">
                         <span class="sf-date-icon" aria-hidden="true">
@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="sf-availability-col">
                     <label class="form-label">Availability</label>
                     <div class="sf-report-select">
                         <select name="availability_preset" class="form-select" id="sfAvailabilityPreset">
@@ -145,7 +145,7 @@
                     </div>
                 </div>
 
-                <div class="sf-advanced-wrap">
+                <div class="sf-advanced-wrap sf-advanced-inline">
                     <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">Advanced availability</button>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                 </div>
             </div>
 
-            <div class="mt-3 text-end">
+            <div class="mt-3 sf-apply-row">
                 <button type="submit" class="btn-sf-navy">Apply</button>
             </div>
         </div>
@@ -461,6 +461,27 @@
 
     .sf-period-toggle input {
         accent-color: #2CBFAE;
+    }
+
+    .sf-period-row {
+        align-items: flex-start;
+    }
+
+    .sf-date-col {
+        max-width: 360px;
+    }
+
+    .sf-availability-col {
+        padding-top: 22px;
+    }
+
+    .sf-advanced-inline {
+        padding-top: 28px;
+    }
+
+    .sf-apply-row {
+        display: flex;
+        justify-content: flex-start;
     }
 
     .sf-advanced-wrap {

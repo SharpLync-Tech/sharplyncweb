@@ -99,4 +99,21 @@
     .sf-accordion-icon {
         font-size: 1.3rem;
     }
+
+    /* =====================================================
+   SharpFleet Tick Icon – Consistent Teal (Desktop + Mobile)
+    ===================================================== */
+
+    .sf-tick {
+        color: #2CBFAE;
+        font-weight: 700;               /* thicker glyph */
+        opacity: 1;                     /* kill inherited fade */
+        line-height: 1;
+        display: inline-block;
+
+        /* Mobile Safari / Android clarity */
+        -webkit-text-fill-color: #2CBFAE;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+    }
 }
