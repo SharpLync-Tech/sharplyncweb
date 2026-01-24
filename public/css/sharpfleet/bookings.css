@@ -156,3 +156,49 @@ body.sf-bk-fullscreen-open{overflow:hidden;}
 #sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
 
 /* Modal close button styling is defined globally in sharpfleetmain.css (.sf-modal-close). */
+/* =====================================================
+   MONTH VIEW – Neutral Day Tiles (override btn-sf-navy)
+   Scope: Month view ONLY
+===================================================== */
+
+.sf-bk-month-cell button.btn-sf-navy {
+    /* Kill brand button styling */
+    background: #efeff2 !important;
+    color: #1f2937 !important;
+
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 10px;
+
+    box-shadow: none !important;
+
+    padding: 10px 12px !important;
+    text-align: left;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        transform 0.12s ease;
+}
+
+/* Hover – calm planner interaction */
+.sf-bk-month-cell button.btn-sf-navy:hover {
+    background: #f4f6f9 !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-1px);
+}
+
+/* Today */
+.sf-bk-month-cell button.btn-sf-navy.is-today {
+    background: #e6f0ec !important;   /* soft sage */
+    border-color: #8fb3a6 !important;
+}
+
+/* Outside current month */
+.sf-bk-month-cell button.btn-sf-navy.is-outside {
+    background: #e3e6ea !important;
+    color: #6b7280 !important;
+    font-weight: 500;
+}
