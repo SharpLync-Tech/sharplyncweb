@@ -288,7 +288,7 @@
             SharpFleet is designed for tradies, service teams, and growing fleets
             who want clarity without complexity.
         </p>
-        <a href="/app/sharpfleet/admin/register" class="btn btn-secondary">
+        <a href="/app/sharpfleet/admin/register" class="sf-cta">
             Get Started
         </a>
     </div>
