@@ -108,62 +108,100 @@
             <div class="card-body">
                 <div class="sf-ai-result">
                     <h3>{{ $result['title'] ?? 'AI Report' }}</h3>
-                    <div class="sf-ai-meta mb-2">{{ $result['subtitle'] ?? '' }}</div>
-                    <div class="sf-ai-meta mb-3">Date range: {{ $result['date_range'] ?? '—' }}</div>
+                    @if(!empty($result['subtitle']))
+                        <div class="sf-ai-meta mb-2">{{ $result['subtitle'] }}</div>
+                    @endif
+                    @if(!empty($result['date_range']))
+                        <div class="sf-ai-meta mb-3">Date range: {{ $result['date_range'] }}</div>
+                    @endif
 
-                    <h4>Summary</h4>
-                    <ul>
-                        <li>Total trips: {{ $result['totals']['total_trips'] ?? 0 }}</li>
-                        <li>Total distance: {{ $result['totals']['total_distance'] ?? '0' }}</li>
-                        <li>Total drive time: {{ $result['totals']['total_drive_time'] ?? '0h 0m' }}</li>
-                        <li>Vehicle used most: {{ $result['vehicle_used_most'] ?? '—' }}</li>
-                        <li>Purpose: {{ $result['purpose'] ?? '—' }}</li>
-                        <li>Top customer visited: {{ $result['top_customer'] ?? '—' }}</li>
-                    </ul>
+                    @if(!empty($result['summary']))
+                        <h4>Summary</h4>
+                        <ul>
+                            @foreach($result['summary'] as $item)
+                                <li>{{ $item['label'] ?? '' }}: {{ $item['value'] ?? '' }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
 
-                    <h4>Vehicles used</h4>
                     @if(!empty($result['vehicles_used']))
+                        <h4>Vehicles used</h4>
                         <ul>
                             @foreach($result['vehicles_used'] as $vehicle)
                                 <li>{{ $vehicle }}</li>
                             @endforeach
                         </ul>
-                    @else
-                        <div class="sf-ai-meta">No vehicles found.</div>
                     @endif
 
-                    <h4>Trips</h4>
-                    @if(!empty($result['trips']))
+                    <h4>Results</h4>
+                    @if(!empty($result['rows']) && !empty($result['columns']))
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Started</th>
-                                        <th>Ended</th>
-                                        <th>Vehicle</th>
-                                        <th class="text-end">Distance</th>
-                                        <th class="text-end">Duration</th>
-                                        <th>Purpose</th>
-                                        <th>Customer</th>
+                                        @foreach($result['columns'] as $column)
+                                            <th class="{{ $column['align'] ?? '' }}">{{ $column['label'] ?? '' }}</th>
+                                        @endforeach
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($result['trips'] as $trip)
+                                    @foreach($result['rows'] as $row)
                                         <tr>
-                                            <td>{{ $trip['started_at'] ?? '—' }}</td>
-                                            <td>{{ $trip['ended_at'] ?? '—' }}</td>
-                                            <td>{{ $trip['vehicle'] ?? '—' }}</td>
-                                            <td class="text-end">{{ $trip['distance'] ?? '—' }}</td>
-                                            <td class="text-end">{{ $trip['duration'] ?? '—' }}</td>
-                                            <td>{{ $trip['purpose'] ?? '' }}</td>
-                                            <td>{{ $trip['customer'] ?? '' }}</td>
+                                            @foreach($result['columns'] as $column)
+                                                @php
+                                                    $key = $column['key'] ?? null;
+                                                    $value = $key ? ($row[$key] ?? '') : '';
+                                                @endphp
+                                                <td class="{{ $column['align'] ?? '' }}">{{ $value !== '' ? $value : '�' }}</td>
+                                            @endforeach
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
                     @else
-                        <div class="sf-ai-meta">No trips found for the selected target.</div>
+                        <div class="sf-ai-meta">No results found for the selected request.</div>
+                    @endif
+
+                    @php
+                        $paginator = $result['paginator'] ?? null;
+                        $perPage = $paginator ? $paginator->perPage() : 10;
+                    @endphp
+
+                    @if($paginator && $paginator->lastPage() > 1)
+                        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mt-3">
+                            <form method="POST" action="{{ url('/app/sharpfleet/admin/reports/ai-report-builder') }}">
+                                @csrf
+                                <input type="hidden" name="prompt" value="{{ $prompt ?? '' }}">
+                                <label class="form-label mb-0 me-2">Rows per page</label>
+                                <select name="per_page" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+                                    @foreach([10, 25, 50, 100] as $size)
+                                        <option value="{{ $size }}" @if($perPage == $size) selected @endif>{{ $size }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+
+                            <div class="d-flex gap-2">
+                                @if($paginator->currentPage() > 1)
+                                    <form method="POST" action="{{ url('/app/sharpfleet/admin/reports/ai-report-builder') }}">
+                                        @csrf
+                                        <input type="hidden" name="prompt" value="{{ $prompt ?? '' }}">
+                                        <input type="hidden" name="per_page" value="{{ $perPage }}">
+                                        <input type="hidden" name="page" value="{{ $paginator->currentPage() - 1 }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Previous</button>
+                                    </form>
+                                @endif
+                                @if($paginator->currentPage() < $paginator->lastPage())
+                                    <form method="POST" action="{{ url('/app/sharpfleet/admin/reports/ai-report-builder') }}">
+                                        @csrf
+                                        <input type="hidden" name="prompt" value="{{ $prompt ?? '' }}">
+                                        <input type="hidden" name="per_page" value="{{ $perPage }}">
+                                        <input type="hidden" name="page" value="{{ $paginator->currentPage() + 1 }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Next</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -172,3 +210,4 @@
 </div>
 
 @endsection
+
