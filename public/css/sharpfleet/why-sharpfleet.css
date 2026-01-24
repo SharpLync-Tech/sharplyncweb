@@ -104,20 +104,12 @@
     SharpFleet Tick Icon – Brand Teal (Desktop + Mobile)
     ===================================================== */
 
-    .sf-tick {
-        color: #2CBFAE !important;   /* win against parent styles */
-        font-weight: 700;
+    @media (max-width: 768px) {
+    section.why-features span[aria-hidden="true"] {
+        color: #2CBFAE !important;
         opacity: 1 !important;
-
-        display: inline-flex;
-        align-items: center;
-
-        line-height: 1;
-    }
-
-    /* Explicitly undo WebKit overrides */
-    .sf-tick {
+        font-weight: 700;
         -webkit-text-fill-color: currentColor;
     }
-
+    }
 }
