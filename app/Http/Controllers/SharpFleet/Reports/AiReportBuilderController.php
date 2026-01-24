@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class AiReportBuilderController extends Controller
 {
@@ -29,7 +30,7 @@ class AiReportBuilderController extends Controller
         ]);
     }
 
-    public function generate(Request $request, ReportAiClient $client): View
+    public function generate(Request $request, ReportAiClient $client): View|RedirectResponse
     {
         $user = $request->session()->get('sharpfleet.user');
 
@@ -127,12 +128,17 @@ class AiReportBuilderController extends Controller
                     continue;
                 }
 
+                $nameVariants = $this->customerNameVariants($name);
                 $customer = DB::connection('sharpfleet')
                     ->table('customers')
                     ->where('organisation_id', $organisationId)
                     ->where('is_active', 1)
-                    ->when($name !== '', function ($q) use ($name) {
-                        $q->where('name', 'like', '%' . $name . '%');
+                    ->when($name !== '', function ($q) use ($nameVariants) {
+                        $q->where(function ($sub) use ($nameVariants) {
+                            foreach ($nameVariants as $variant) {
+                                $sub->orWhere('name', 'like', '%' . $variant . '%');
+                            }
+                        });
                     })
                     ->orderBy('name')
                     ->first();
@@ -569,5 +575,28 @@ class AiReportBuilderController extends Controller
         arsort($items);
         $keys = array_keys($items);
         return $keys[0] ?? null;
+    }
+
+    private function customerNameVariants(string $name): array
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return [];
+        }
+
+        $variants = [$name];
+        $normalized = preg_replace('/\s+/', ' ', $name);
+        if (is_string($normalized) && $normalized !== $name) {
+            $variants[] = $normalized;
+        }
+
+        if (str_contains($name, ' and ')) {
+            $variants[] = str_replace(' and ', ' & ', $name);
+        }
+        if (str_contains($name, ' & ')) {
+            $variants[] = str_replace(' & ', ' and ', $name);
+        }
+
+        return array_values(array_unique(array_filter($variants)));
     }
 }
