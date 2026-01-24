@@ -36,6 +36,7 @@
                 ['id' => 'admin-ref-client-customer', 'title' => 'Client / customer capture'],
                 ['id' => 'admin-ref-safety', 'title' => 'Safety checks'],
                 ['id' => 'admin-ref-vehicles', 'title' => 'Vehicles & maintenance'],
+                ['id' => 'admin-ref-fuel-receipts', 'title' => 'Fuel receipts'],
                 ['id' => 'admin-ref-reports', 'title' => 'Reports & exports'],
             ],
         ],
@@ -440,6 +441,22 @@
     </details>
 </section>
 
+<section id="admin-ref-fuel-receipts" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Fuel receipts</h3>
+    <details class="sf-help__details">
+        <summary>How do we capture fuel receipts?</summary>
+        <div class="text-muted" style="margin-top: 8px;">Drivers can submit fuel receipts from the mobile app when fuel receipts are enabled.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li><strong>Enable:</strong> Company Settings > Vehicles > Fuel receipts.</li>
+            <li><strong>Recipient:</strong> Set the fuel receipts email address.</li>
+            <li><strong>Capture:</strong> Drivers upload the receipt image and details on mobile.</li>
+        </ul>
+        <div class="sf-help__actions">
+            <a class="btn-sf-navy btn-sm" href="/app/sharpfleet/admin/settings">Open Company Settings</a>
+        </div>
+    </details>
+</section>
+
 <section id="admin-ref-reports" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Reports & exports</h3>
     <details class="sf-help__details">
@@ -486,4 +503,3 @@
 </section>
 
 @endsection
-

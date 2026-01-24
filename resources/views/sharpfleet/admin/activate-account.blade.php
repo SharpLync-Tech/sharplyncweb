@@ -63,7 +63,7 @@
                 />
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full">
+            <button type="submit" class="btn-sf-navy btn-full">
                 Complete Registration
             </button>
         </form>
@@ -72,6 +72,6 @@
             <p>The activation link will expire in 24 hours.</p>
         </div>
     </div>
-</div>
+</div> 
 
 @endsection

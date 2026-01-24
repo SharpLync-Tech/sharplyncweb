@@ -25,8 +25,9 @@
                 ['id' => 'driver-ref-trip-rules', 'title' => 'Trip rules in plain English'],
                 ['id' => 'driver-ref-offline', 'title' => 'Offline trips & syncing'],
                 ['id' => 'driver-ref-safety', 'title' => 'Safety checks'],
+                ['id' => 'driver-ref-fuel-receipts', 'title' => 'Fuel receipts'],
                 ['id' => 'driver-ref-bookings', 'title' => 'Bookings (if enabled)'],
-                ['id' => 'driver-ref-what-you-can-change', 'title' => 'What drivers can and can’t change'],
+                ['id' => 'driver-ref-what-you-can-change', 'title' => 'What drivers can and can't change'],
             ],
         ],
         [
@@ -41,7 +42,7 @@
 <section id="driver-getting-started" data-sf-help-section class="sf-help__section">
     <div class="sf-help__kicker sf-help__muted">Primary</div>
     <h2 class="sf-help__sectionTitle">Getting Started</h2>
-    <p class="sf-help__lead">You don’t need to learn everything. Start a trip, end a trip, and you’re good. If something is required, SharpFleet will tell you.</p>
+    <p class="sf-help__lead">You donâ€™t need to learn everything. Start a trip, end a trip, and youâ€™re good. If something is required, SharpFleet will tell you.</p>
 
     <div class="sf-help__callout sf-help__callout--recommended">
         <div class="sf-help__calloutTitle">Recommended</div>
@@ -74,7 +75,7 @@
             <li>Enter your email address.</li>
             <li>Follow the reset link in your email.</li>
         </ol>
-        <div class="text-muted" style="margin-top: 8px;">If the email doesn’t arrive, check Junk/Spam.</div>
+        <div class="text-muted" style="margin-top: 8px;">If the email doesnâ€™t arrive, check Junk/Spam.</div>
     </details>
 </section>
 
@@ -94,7 +95,7 @@
         </ol>
         <div class="sf-help__callout sf-help__callout--important">
             <div class="sf-help__calloutTitle">Important</div>
-            <div>If you can’t find a vehicle in the list, it may be out of service or archived. Contact your admin.</div>
+            <div>If you canâ€™t find a vehicle in the list, it may be out of service or archived. Contact your admin.</div>
         </div>
     </div>
 </section>
@@ -119,10 +120,10 @@
     </div>
 
     <details class="sf-help__details">
-        <summary>If you can’t end a trip</summary>
+        <summary>If you canâ€™t end a trip</summary>
         <ul class="mb-0" style="margin-top: 10px;">
             <li>Check if an end reading or end time is required.</li>
-            <li>If you’re offline, it may sync later when you’re back online.</li>
+            <li>If youâ€™re offline, it may sync later when youâ€™re back online.</li>
             <li>Refresh once you have signal again.</li>
         </ul>
     </details>
@@ -142,7 +143,7 @@
         </div>
         <div class="sf-help__card">
             <div class="fw-bold mb-1">Why it changes</div>
-            <div class="text-muted">Your company decides what is required. If a field is required, SharpFleet will block the trip until it’s completed.</div>
+            <div class="text-muted">Your company decides what is required. If a field is required, SharpFleet will block the trip until itâ€™s completed.</div>
         </div>
     </div>
 </section>
@@ -155,9 +156,9 @@
             <span class="sf-help__badge">Limited features</span>
         </div>
         <ul class="mb-0">
-            <li>If you’re offline, you may see an offline message.</li>
+            <li>If youâ€™re offline, you may see an offline message.</li>
             <li>You can still capture trips with limited features.</li>
-            <li>When you’re back online, keep the page open briefly so it can sync.</li>
+            <li>When youâ€™re back online, keep the page open briefly so it can sync.</li>
         </ul>
     </div>
 </section>
@@ -184,10 +185,10 @@
 <section id="driver-ref-offline" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Offline trips & syncing</h3>
     <details class="sf-help__details">
-        <summary>What should I do when I’m back online?</summary>
+        <summary>What should I do when I'm back online?</summary>
         <ul class="mb-0" style="margin-top: 10px;">
             <li>Keep the page open for a moment.</li>
-            <li>Refresh once if something doesn’t appear.</li>
+            <li>Refresh once if something doesn't appear.</li>
         </ul>
         <div class="sf-help__callout" style="margin-top: 12px;">
             <div class="sf-help__calloutTitle">Tip</div>
@@ -201,9 +202,23 @@
     <details class="sf-help__details">
         <summary>Why do I have to do a checklist?</summary>
         <div class="text-muted" style="margin-top: 8px;">Your company may require a quick safety check before starting a trip.</div>
-        <div style="margin-top: 10px;">If it’s required, you can’t start until it’s completed.</div>
+        <div style="margin-top: 10px;">If it's required, you can't start until it's completed.</div>
     </details>
 </section>
+
+<section id="driver-ref-fuel-receipts" data-sf-help-section class="sf-help__section">
+    <h3 class="sf-help__sectionTitle">Fuel receipts</h3>
+    <details class="sf-help__details">
+        <summary>How do I submit a fuel receipt?</summary>
+        <div class="text-muted" style="margin-top: 8px;">If your company has fuel receipts enabled, you can submit them from the mobile app.</div>
+        <ul class="mb-0" style="margin-top: 10px;">
+            <li>Open <strong>Fuel</strong> in the mobile menu.</li>
+            <li>Take a clear photo of the receipt.</li>
+            <li>Submit the amount and vehicle if prompted.</li>
+        </ul>
+    </details>
+</section>
+
 
 <section id="driver-ref-bookings" data-sf-help-section class="sf-help__section">
     <h3 class="sf-help__sectionTitle">Bookings (if enabled)</h3>
@@ -215,7 +230,7 @@
 </section>
 
 <section id="driver-ref-what-you-can-change" data-sf-help-section class="sf-help__section">
-    <h3 class="sf-help__sectionTitle">What drivers can and can’t change</h3>
+    <h3 class="sf-help__sectionTitle">What drivers can and can't change</h3>
     <div class="sf-help__twoCol">
         <div class="sf-help__card">
             <div class="fw-bold mb-1">You can usually</div>
@@ -226,7 +241,7 @@
             </ul>
         </div>
         <div class="sf-help__card">
-            <div class="fw-bold mb-1">You usually can’t</div>
+            <div class="fw-bold mb-1">You usually canâ€™t</div>
             <ul class="mb-0">
                 <li>Change company rules or settings</li>
                 <li>Add/edit vehicles or users</li>
@@ -240,13 +255,13 @@
     <h2 class="sf-help__sectionTitle">Common questions</h2>
 
     <details class="sf-help__details">
-        <summary>Why can’t I start a trip?</summary>
+        <summary>Why canâ€™t I start a trip?</summary>
         <div class="text-muted" style="margin-top: 8px;">A required field is missing.</div>
         <div style="margin-top: 10px;">Scroll up, find the message, fill in the missing field, then try again.</div>
     </details>
 
     <details class="sf-help__details">
-        <summary>Why can’t I find my vehicle in the list?</summary>
+        <summary>Why canâ€™t I find my vehicle in the list?</summary>
         <div class="text-muted" style="margin-top: 8px;">It may be out of service or archived.</div>
         <div style="margin-top: 10px;">Contact your admin to confirm which vehicle you should use.</div>
     </details>
@@ -259,20 +274,23 @@
 
     <details class="sf-help__details">
         <summary>Do I need GPS for this?</summary>
-        <div class="text-muted" style="margin-top: 8px;">No — SharpFleet does not assume GPS.</div>
-        <div style="margin-top: 10px;">Trips are based on what you enter and your company’s rules.</div>
+        <div class="text-muted" style="margin-top: 8px;">No â€” SharpFleet does not assume GPS.</div>
+        <div style="margin-top: 10px;">Trips are based on what you enter and your companyâ€™s rules.</div>
     </details>
 
     <details class="sf-help__details">
-        <summary>Why don’t I see customer fields?</summary>
+        <summary>Why donâ€™t I see customer fields?</summary>
         <div class="text-muted" style="margin-top: 8px;">Your company may have customer capture turned off, or it may only show for certain trip types.</div>
     </details>
 
     <details class="sf-help__details">
-        <summary>What if I’m offline?</summary>
+        <summary>What if Iâ€™m offline?</summary>
         <div class="text-muted" style="margin-top: 8px;">You can still capture trips with limited features.</div>
-        <div style="margin-top: 10px;">When you’re back online, keep the page open briefly so it can sync.</div>
+        <div style="margin-top: 10px;">When youâ€™re back online, keep the page open briefly so it can sync.</div>
     </details>
 </section>
 
 @endsection
+
+
+
