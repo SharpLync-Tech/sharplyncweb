@@ -38,51 +38,100 @@
 ========================================================= */
 
 .sf-cta {
-    display: inline-block;
-    padding: 0.9rem 2.2rem;
+  display: inline-block;
+  padding: 0.9rem 2.2rem;
 
-    /* Glass base */
-    background: rgba(44, 191, 174, 0.14);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+  /* Glass base */
+  background: rgba(44, 191, 174, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-   
-    border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
 
-    /* Glass edge */
-    border-block-color: #2cbfae;
+  border-radius: 12px;
 
-    /* Depth */
-    box-shadow:
-        0 10px 28px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  /* Glass edge */
+  border-block-color: #2cbfae;
 
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease;
+  /* Depth */
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
 /* Hover */
 .sf-cta:hover {
-    background: rgba(44, 191, 174, 0.14);
-    transform: translateY(-1px);
-    border-block-color: #2cbfae;
-    box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.35),          /* lift */
-        0 0 0 1px rgba(44, 191, 174, 0.45),       /* crisp teal edge */
-        0 0 14px rgba(44, 191, 174, 0.45),        /* teal glow */
-        inset 0 1px 0 rgba(255, 255, 255, 0.35); /* glass highlight */
+  background: rgba(44, 191, 174, 0.14);
+  transform: translateY(-1px);
+  border-block-color: #2cbfae;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(44, 191, 174, 0.45),
+    0 0 14px rgba(44, 191, 174, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* Active */
 .sf-cta:active {
-    transform: translateY(0);
-    box-shadow:
-        0 6px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(0);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================================
+   Mobile Optimisation
+   Applies ONLY to SharpFleet home page
+========================================================= */
+
+@media (max-width: 768px) {
+
+  /* Stack features vertically */
+  .sf-home-features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Reduce card padding so they don’t feel huge */
+  .sf-home-features-grid .card {
+    padding: 1rem;
+  }
+
+  .sf-home-features-grid .card-header h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .sf-home-features-grid .card p {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  /* Pricing card spacing */
+  .sf-home-pricing-row {
+    margin-top: 1rem;
+  }
+
+  .sf-home-pricing-card .card-body p {
+    margin-bottom: 0.75rem;
+  }
+
+  .sf-home-pricing-note {
+    font-size: 0.85rem;
+  }
+
+  /* CTA button: full width feels better on mobile */
+  .sf-cta {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem 1.25rem;
+  }
 }

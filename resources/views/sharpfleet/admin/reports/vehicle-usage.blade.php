@@ -5,8 +5,6 @@
 @section('sharpfleet-content')
 
 @php
-    use Carbon\Carbon;
-
     /*
     |--------------------------------------------------------------------------
     | Inputs (resolved by controller)
@@ -197,7 +195,6 @@
                         <tbody>
                             @foreach($vehicles as $v)
                                 @php
-                                    // Usage status using existing data only
                                     if ($v->trip_count === 0) {
                                         $usageStatus = 'Idle';
                                         $badgeClass = 'bg-secondary';
@@ -224,10 +221,7 @@
                                     <td class="text-end">{{ $v->total_duration }}</td>
                                     <td class="text-end">{{ $v->average_distance_km }} km</td>
                                     <td>
-                                        {{ $v->last_used_at
-                                            ? Carbon::parse($v->last_used_at)->timezone($companyTimezone)->format($dateFormat)
-                                            : '—'
-                                        }}
+                                        {{ $v->last_used_at ?? '—' }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -237,7 +231,7 @@
 
                 <div class="text-muted small mt-2">
                     <strong>Usage status guide:</strong>
-                    High = frequent use during the period,
+                    High = frequent use,
                     Low = occasional use,
                     Idle = no recorded trips.
                 </div>
@@ -247,103 +241,5 @@
     </div>
 
 </div>
-
-@push('styles')
-<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
-<style>
-    /* Match Fleet Manager – Operational visual style */
-    .sf-report-card {
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 14px;
-        background: #EEF3F8;
-        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
-    }
-
-    .sf-report-select {
-        position: relative;
-    }
-    .sf-report-select::after {
-        content: "";
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        width: 8px;
-        height: 8px;
-        border-right: 2px solid rgba(10, 42, 77, 0.6);
-        border-bottom: 2px solid rgba(10, 42, 77, 0.6);
-        transform: translateY(-50%) rotate(45deg);
-        pointer-events: none;
-    }
-    .sf-report-select .form-select {
-        appearance: none;
-        border-radius: 10px;
-        border: 1px solid rgba(10, 42, 77, 0.2);
-        padding: 10px 36px 10px 12px;
-        background: #f7fafc;
-        font-weight: 600;
-        color: #0A2A4D;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-        transition: border-color 150ms ease, box-shadow 150ms ease;
-    }
-    .sf-report-select .form-select:focus {
-        border-color: rgba(57, 183, 170, 0.6);
-        box-shadow: 0 0 0 3px rgba(57, 183, 170, 0.18);
-    }
-    .sf-report-select .form-select:disabled {
-        background: #eef2f6;
-        color: rgba(10, 42, 77, 0.5);
-    }
-
-    .btn-primary:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-    }
-
-    /* Subtle visual cue for idle vehicles */
-    tr[data-trip-count="0"] {
-        opacity: 0.65;
-    }
-</style>
-@endpush
-
-@push('scripts')
-<script src="https://unpkg.com/flatpickr"></script>
-<script>
-    (function () {
-        if (typeof flatpickr === 'undefined') return;
-        const displayFormat = @json($dateFormat);
-        const displayPlaceholder = @json($datePlaceholder);
-
-        flatpickr('.sf-date', {
-            dateFormat: 'Y-m-d',
-            altInput: true,
-            altFormat: displayFormat,
-            allowInput: true,
-            onReady: function (selectedDates, dateStr, instance) {
-                if (instance && instance.altInput) {
-                    instance.altInput.placeholder = displayPlaceholder;
-                }
-            },
-        });
-    })();
-</script>
-
-<script>
-    (function () {
-        const form = document.querySelector(
-            'form[action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"]'
-        );
-        if (!form) return;
-
-        form.querySelectorAll('select[data-auto-submit="1"]').forEach((select) => {
-            select.addEventListener('change', () => form.submit());
-        });
-
-        form.querySelectorAll('input[type="radio"][name="scope"]').forEach((radio) => {
-            radio.addEventListener('change', () => form.submit());
-        });
-    })();
-</script>
-@endpush
 
 @endsection

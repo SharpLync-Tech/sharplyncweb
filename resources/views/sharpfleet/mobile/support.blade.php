@@ -60,6 +60,7 @@
         <input type="hidden" name="platform" id="sfSupportPlatform">
         <input type="hidden" name="usage_mode" id="sfSupportUsageMode">
         <input type="hidden" name="client_timezone" id="sfSupportClientTimezone">
+        <input type="hidden" name="page_url" id="sfSupportPageUrl">
         <input type="hidden" name="logs" id="sfSupportLogs">
 
         <div class="hint-text" style="margin-bottom: 12px;">
@@ -80,6 +81,7 @@
     const modeField = document.getElementById('sfSupportUsageMode');
     const logsField = document.getElementById('sfSupportLogs');
     const timezoneField = document.getElementById('sfSupportClientTimezone');
+    const pageUrlField = document.getElementById('sfSupportPageUrl');
     const queuedCard = document.getElementById('sfSupportQueued');
     const form = document.getElementById('sfSupportForm');
     const QUEUE_KEY = 'sf_support_queue_v1';
@@ -107,6 +109,14 @@
     function detectTimezone() {
         try {
             return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function detectPageUrl() {
+        try {
+            return window.location.href || '';
         } catch (e) {
             return '';
         }
@@ -152,6 +162,7 @@
             platform: platformField ? String(platformField.value || '') : detectPlatform(),
             usage_mode: modeField ? String(modeField.value || '') : detectUsageMode(),
             client_timezone: timezoneField ? String(timezoneField.value || '') : detectTimezone(),
+            page_url: pageUrlField ? String(pageUrlField.value || '') : detectPageUrl(),
             logs: serializeLogs(),
             queuedAt: new Date().toISOString(),
         };
@@ -178,6 +189,7 @@
     if (platformField) platformField.value = detectPlatform();
     if (modeField) modeField.value = detectUsageMode();
     if (timezoneField) timezoneField.value = detectTimezone();
+    if (pageUrlField) pageUrlField.value = detectPageUrl();
 
     if (message) {
         message.addEventListener('input', updateCounter);
@@ -209,6 +221,7 @@
             if (platformField) platformField.value = detectPlatform();
             if (modeField) modeField.value = detectUsageMode();
             if (timezoneField) timezoneField.value = detectTimezone();
+            if (pageUrlField) pageUrlField.value = detectPageUrl();
             showQueued();
             setTimeout(() => {
                 window.location.href = '/app/sharpfleet/mobile';

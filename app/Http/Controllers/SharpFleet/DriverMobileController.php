@@ -384,6 +384,7 @@ class DriverMobileController extends Controller
             'platform' => ['nullable', 'string', 'max:40'],
             'usage_mode' => ['nullable', 'string', 'max:40'],
             'client_timezone' => ['nullable', 'string', 'max:120'],
+            'page_url' => ['nullable', 'string', 'max:500'],
             'logs' => ['nullable', 'string', 'max:20000'],
         ]);
 
@@ -425,6 +426,7 @@ class DriverMobileController extends Controller
             'Platform: ' . ($validated['platform'] ?? 'Unknown'),
             'Usage mode: ' . ($validated['usage_mode'] ?? 'Unknown'),
             'Client Timezone: ' . ($validated['client_timezone'] ?? 'Unknown'),
+            'Page URL: ' . ($validated['page_url'] ?? 'Unknown'),
             'Company Timezone: ' . ($companyTimezone !== '' ? $companyTimezone : 'Unknown'),
             'Submitted: ' . now()->toDateTimeString(),
             '',
