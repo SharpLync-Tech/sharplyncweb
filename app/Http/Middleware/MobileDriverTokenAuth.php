@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\SharpFleet\MobileTokenService;
+use App\Services\SharpFleet\AuditLogService;
 use App\Support\SharpFleet\Roles;
 use Closure;
 use Illuminate\Http\Request;
@@ -55,15 +56,46 @@ class MobileDriverTokenAuth
         // Fall back to existing session auth for mobile routes (if present).
         $sessionUser = $request->session()->get('sharpfleet.user');
         if ($this->isValidSessionDriver($request, $sessionUser)) {
+            $authHeader = (string) $request->header('Authorization', '');
+            $authHeaderLower = strtolower($authHeader);
+            $hasAuthHeader = $authHeader !== '';
+            $hasBearer = $hasAuthHeader && str_starts_with($authHeaderLower, 'bearer ');
+            $hasXDeviceToken = trim((string) $request->header('X-Device-Token', '')) !== '';
+            $hasXDeviceId = trim((string) $request->header('X-Device-Id', '')) !== '';
+            $inputDeviceId = trim((string) $request->input('device_id', ''));
+            $deviceIdSource = $hasXDeviceId ? 'header' : ($inputDeviceId !== '' ? 'input' : 'none');
+            $tokenLength = $token !== '' ? strlen($token) : 0;
+
             \Log::warning('[SharpFleet Mobile] Token missing/invalid, falling back to session auth', [
                 'path' => '/' . ltrim($request->path(), '/'),
                 'host' => $request->getHost(),
                 'user_id' => (int) ($sessionUser['id'] ?? 0),
                 'organisation_id' => (int) ($sessionUser['organisation_id'] ?? 0),
                 'device_id' => $this->extractDeviceId($request) ?: null,
-                'has_token_header' => $this->extractToken($request) !== '',
+                'device_id_source' => $deviceIdSource,
+                'has_auth_header' => $hasAuthHeader,
+                'auth_header_prefix' => $hasAuthHeader ? strtok($authHeaderLower, ' ') : null,
+                'has_bearer' => $hasBearer,
+                'has_x_device_token' => $hasXDeviceToken,
+                'has_x_device_id' => $hasXDeviceId,
+                'token_length' => $tokenLength,
                 'user_agent' => (string) $request->header('User-Agent', ''),
             ]);
+
+            try {
+                (new AuditLogService())->logSubscriber($request, 'mobile_token_fallback', [
+                    'device_id' => $this->extractDeviceId($request) ?: null,
+                    'device_id_source' => $deviceIdSource,
+                    'has_auth_header' => $hasAuthHeader,
+                    'auth_header_prefix' => $hasAuthHeader ? strtok($authHeaderLower, ' ') : null,
+                    'has_bearer' => $hasBearer,
+                    'has_x_device_token' => $hasXDeviceToken,
+                    'has_x_device_id' => $hasXDeviceId,
+                    'token_length' => $tokenLength,
+                ]);
+            } catch (\Throwable $e) {
+                // Best-effort audit logging only.
+            }
             $this->setSharpFleetUserContext($request, $sessionUser);
             return $next($request);
         }
