@@ -16,6 +16,7 @@
         color: #ffffff;
         border-bottom: 0;
         border-radius: 14px 14px 0 0;
+        padding-left: 24px;
     }
     .sf-ai-report-card .card-header h2 {
         margin: 0;
@@ -61,13 +62,13 @@
                     Generate tailored fleet reports using AI-assisted analysis. Designed for advanced users to explore data beyond standard reports.
                 </p>
             </div>
-            <a href="/app/sharpfleet/admin/reports" class="btn btn-sf-secondary">Back to reports</a>
+            <a href="/app/sharpfleet/admin/reports" class="btn btn-primary">Back to reports</a>
         </div>
     </div>
 
     <div class="card sf-ai-report-card mb-3">
         <div class="card-header">
-            <h2>Describe the report you want</h2>
+            <h2>What would you like to report on?</h2>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ url('/app/sharpfleet/admin/reports/ai-report-builder') }}">
