@@ -55,6 +55,24 @@
                             <span>Single branch</span>
                         </label>
                     @endif
+
+                    <div class="mt-2">
+                        <label class="form-label">Period</label>
+                        <div class="sf-period-toggle">
+                            <label>
+                                <input type="radio" name="period" value="day" {{ $uiPeriod === 'day' ? 'checked' : '' }}>
+                                <span>Day</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="period" value="week" {{ $uiPeriod === 'week' ? 'checked' : '' }}>
+                                <span>Week</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="period" value="month" {{ $uiPeriod === 'month' ? 'checked' : '' }}>
+                                <span>Month</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -84,24 +102,6 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="form-label">Period</label>
-                    <div class="sf-period-toggle">
-                        <label>
-                            <input type="radio" name="period" value="day" {{ $uiPeriod === 'day' ? 'checked' : '' }}>
-                            <span>Day</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="period" value="week" {{ $uiPeriod === 'week' ? 'checked' : '' }}>
-                            <span>Week</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="period" value="month" {{ $uiPeriod === 'month' ? 'checked' : '' }}>
-                            <span>Month</span>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -178,11 +178,11 @@
                         <div class="sf-time-grid">
                             <div>
                                 <label class="form-label small">Start time</label>
-                                <input type="time" name="work_start" class="form-control" value="{{ $uiWorkStart }}">
+                                <input type="time" name="work_start" class="form-control sf-time" value="{{ $uiWorkStart }}">
                             </div>
                             <div>
                                 <label class="form-label small">End time</label>
-                                <input type="time" name="work_end" class="form-control" value="{{ $uiWorkEnd }}">
+                                <input type="time" name="work_end" class="form-control sf-time" value="{{ $uiWorkEnd }}">
                             </div>
                         </div>
                         <div class="text-muted small mt-2">
@@ -312,6 +312,21 @@
 
     .sf-report-select {
         position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .sf-report-select select,
+    .sf-report-select .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: none !important;
+        width: 100%;
+    }
+
+    .sf-report-select select::-ms-expand {
+        display: none;
     }
 
     .sf-report-select::after {
@@ -321,20 +336,49 @@
         top: 50%;
         width: 8px;
         height: 8px;
-        border-right: 2px solid rgba(10, 42, 77, 0.6);
-        border-bottom: 2px solid rgba(10, 42, 77, 0.6);
+        border-right: 2px solid #2CBFAE;
+        border-bottom: 2px solid #2CBFAE;
         transform: translateY(-50%) rotate(45deg);
         pointer-events: none;
     }
 
     .sf-report-select .form-select {
-        appearance: none;
-        border-radius: 10px;
-        border: 1px solid rgba(10, 42, 77, 0.2);
-        padding: 10px 36px 10px 12px;
-        background: #f7fafc;
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 44px 10px 14px;
+        background-color: #f8fcfb;
         font-weight: 600;
+        font-size: 0.95rem;
         color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-report-select .form-select:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-report-select .form-select:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .sf-report-select .form-select:disabled {
+        background-color: #eef2f6;
+        color: rgba(10, 42, 77, 0.5);
+        border-color: rgba(10, 42, 77, 0.15);
+        cursor: not-allowed;
     }
 
     .sf-date-field {
@@ -353,6 +397,44 @@
     .sf-date-field .form-control.sf-date,
     .sf-date-field .flatpickr-input.form-control {
         padding-left: 36px;
+    }
+
+    .sf-date.form-control,
+    .flatpickr-input.form-control,
+    .sf-time.form-control {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-date.form-control:hover,
+    .flatpickr-input.form-control:hover,
+    .sf-time.form-control:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-date.form-control:focus,
+    .flatpickr-input.form-control:focus,
+    .sf-time.form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .sf-period-toggle {
