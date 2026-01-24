@@ -7,6 +7,7 @@ use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -59,8 +60,17 @@ class UtilizationReportController extends Controller
 
         $availabilityPreset = $request->input('availability_preset', 'business_hours'); // business_hours | 24_7 | custom
         $availabilityDays = $request->input('availability_days', ['1', '2', '3', '4', '5']);
+        if (is_string($availabilityDays)) {
+            $availabilityDays = array_filter(array_map('trim', explode(',', $availabilityDays)));
+        }
         $workStart = $request->input('work_start', '07:00');
         $workEnd = $request->input('work_end', '17:00');
+        if (!preg_match('/^\d{2}:\d{2}$/', $workStart)) {
+            $workStart = '07:00';
+        }
+        if (!preg_match('/^\d{2}:\d{2}$/', $workEnd)) {
+            $workEnd = '17:00';
+        }
 
         $baseDate = $periodDate
             ? Carbon::parse($periodDate, $companyTimezone)->startOfDay()
@@ -79,6 +89,9 @@ class UtilizationReportController extends Controller
 
         $startDate = $rangeStart->toDateString();
         $endDate = $rangeEnd->toDateString();
+        if ($period === 'month' && !$periodDate) {
+            $periodDate = $startDate;
+        }
 
         $rangeSeconds = max(1, $rangeEnd->diffInSeconds($rangeStart));
 
@@ -138,6 +151,16 @@ class UtilizationReportController extends Controller
             $workStart,
             $workEnd
         );
+        if ($availabilitySeconds <= 0 && $availabilityPreset === 'business_hours') {
+            $availabilitySeconds = $this->calculateAvailabilitySeconds(
+                $rangeStart,
+                $rangeEnd,
+                'custom',
+                ['1', '2', '3', '4', '5'],
+                $workStart,
+                $workEnd
+            );
+        }
 
         $rows = $vehicles->map(function ($row) use ($companyTimezone, $dateFormat, $availabilitySeconds) {
             $totalSeconds = (int) ($row->total_seconds ?? 0);
@@ -257,7 +280,6 @@ class UtilizationReportController extends Controller
         string $workStart,
         string $workEnd
     ): int {
-        $sameDay = $rangeStart->isSameDay($rangeEnd);
         if ($preset === '24_7') {
             return $rangeEnd->diffInSeconds($rangeStart);
         }
@@ -282,61 +304,27 @@ class UtilizationReportController extends Controller
             return $rangeEnd->diffInSeconds($rangeStart);
         }
 
-        if ($sameDay) {
-            $dayIndex = $rangeStart->dayOfWeek; // 0 (Sun) - 6 (Sat)
+        $totalSeconds = 0;
+        $period = CarbonPeriod::create(
+            $rangeStart->copy()->startOfDay(),
+            $rangeEnd->copy()->startOfDay()
+        );
+
+        foreach ($period as $day) {
+            $dayIndex = $day->dayOfWeek; // 0 (Sun) - 6 (Sat)
             if (!in_array($dayIndex, $daySet, true)) {
-                return 0;
+                continue;
             }
 
-            $dayStart = $rangeStart->copy()->startOfDay()->addMinutes($startMinutes);
-            $dayEnd = $rangeStart->copy()->startOfDay()->addMinutes($endMinutes);
+            $dayStart = $day->copy()->startOfDay()->addMinutes($startMinutes);
+            $dayEnd = $day->copy()->startOfDay()->addMinutes($endMinutes);
 
             $windowStart = $dayStart->greaterThan($rangeStart) ? $dayStart : $rangeStart;
             $windowEnd = $dayEnd->lessThan($rangeEnd) ? $dayEnd : $rangeEnd;
 
-            return $windowEnd->greaterThan($windowStart)
-                ? $windowEnd->diffInSeconds($windowStart)
-                : 0;
-        }
-
-        $totalSeconds = 0;
-        $cursor = $rangeStart->copy()->startOfDay();
-        $endDay = $rangeEnd->copy()->startOfDay();
-
-        while ($cursor->lte($endDay)) {
-            $dayIndex = $cursor->dayOfWeek; // 0 (Sun) - 6 (Sat)
-
-            if (in_array($dayIndex, $daySet, true)) {
-                $dayStart = $cursor->copy()->addMinutes($startMinutes);
-                $dayEnd = $cursor->copy()->addMinutes($endMinutes);
-
-                $windowStart = $dayStart->greaterThan($rangeStart) ? $dayStart : $rangeStart;
-                $windowEnd = $dayEnd->lessThan($rangeEnd) ? $dayEnd : $rangeEnd;
-
-                if ($windowEnd->greaterThan($windowStart)) {
-                    $totalSeconds += $windowEnd->diffInSeconds($windowStart);
-                }
+            if ($windowEnd->greaterThan($windowStart)) {
+                $totalSeconds += $windowEnd->diffInSeconds($windowStart);
             }
-
-            $cursor->addDay();
-        }
-
-        if ($totalSeconds === 0 && $rangeEnd->greaterThan($rangeStart)) {
-            $dailySeconds = max(0, ($endMinutes - $startMinutes) * 60);
-            if ($dailySeconds === 0) {
-                return 0;
-            }
-
-            $days = 0;
-            $cursor = $rangeStart->copy()->startOfDay();
-            $endDay = $rangeEnd->copy()->startOfDay();
-            while ($cursor->lte($endDay)) {
-                if (in_array($cursor->dayOfWeek, $daySet, true)) {
-                    $days++;
-                }
-                $cursor->addDay();
-            }
-            return $days * $dailySeconds;
         }
 
         return $totalSeconds;
