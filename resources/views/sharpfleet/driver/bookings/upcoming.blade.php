@@ -169,10 +169,10 @@
                         @enderror
                     </div>
 
-                    <button id="createBookingBtn" type="submit" class="btn btn-primary btn-full" disabled>{{ $editBooking ? 'Save Changes' : 'Create Booking' }}</button>
+                    <button id="createBookingBtn" type="submit" class="btn-sf-navy btn-full" disabled>{{ $editBooking ? 'Save Changes' : 'Create Booking' }}</button>
                     @if($editBooking)
                         <div class="mt-2">
-                            <a href="{{ url('/app/sharpfleet/bookings') }}" class="btn btn-secondary btn-full">Cancel Edit</a>
+                            <a href="{{ url('/app/sharpfleet/bookings') }}" class="btn-sf-navy btn-full">Cancel Edit</a>
                         </div>
                     @endif
                 </form>

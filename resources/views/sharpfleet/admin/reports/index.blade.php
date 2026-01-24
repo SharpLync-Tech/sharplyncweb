@@ -5,22 +5,27 @@
 @section('sharpfleet-content')
 
 <style>
-        .sf-report-grid {
+    .sf-report-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 18px;
     }
     .sf-report-card {
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.28);
         border-radius: 14px;
         padding: 18px;
-        background: #FFFFFF;
-        box-shadow: 0 12px 20px rgba(10, 42, 77, 0.15);
+        background: rgba(240, 246, 252, 0.92);
+        box-shadow:
+            0 10px 18px rgba(10, 42, 77, 0.18),
+            inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(6px);
         display: flex;
         flex-direction: column;
         min-height: 170px;
         position: relative;
     }
+
+
 
     .sf-report-card:hover {
         border: 1px solid rgba(44, 191, 174, 1.5); /* SharpFleet teal */
