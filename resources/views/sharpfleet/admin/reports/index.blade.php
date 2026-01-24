@@ -67,8 +67,8 @@
             <h4>Fleet Manager – Operational</h4>
             <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-secondary btn-sm">View report</a>
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational?export=csv" class="btn btn-primary btn-sm">Export CSV</a>
             </div>
         </div>
 
@@ -76,7 +76,7 @@
             <h4>Vehicle Usage</h4>
             <p>Usage frequency, distance totals, and last active dates by vehicle.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn btn-secondary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn btn-primary btn-sm">View report</a>
             </div>
         </div>
     </div>
@@ -87,8 +87,8 @@
             <h4>Trips &amp; Compliance</h4>
             <p>Compliance-ready trip reporting with export for audit and review.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-secondary btn-sm">View report</a>
-                <a href="/app/sharpfleet/admin/reports/trips?export=csv" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-primary btn-sm">View report</a>
+                <a href="/app/sharpfleet/admin/reports/trips?export=csv" class="btn btn-primary btn-sm">Export CSV</a>
             </div>
         </div>
     </div>
@@ -99,7 +99,7 @@
             <h4>Faults by Vehicle</h4>
             <p>Breakdown of reported vehicle faults by asset and severity.</p>
             <div class="btn-group-inline">
-                <button type="button" class="btn btn-outline-secondary btn-sm" disabled>View report</button>
+                <button type="button" class="btn btn-primary btn-sm" disabled>View report</button>
             </div>
         </div>
 
@@ -107,7 +107,7 @@
             <h4>Open Safety Issues</h4>
             <p>Active safety items that require attention or follow-up.</p>
             <div class="btn-group-inline">
-                <button type="button" class="btn btn-outline-secondary btn-sm" disabled>View report</button>
+                <button type="button" class="btn btn-primary btn-sm" disabled>View report</button>
             </div>
         </div>
     </div>
