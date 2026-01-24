@@ -82,7 +82,7 @@
     </div>
 
     <div class="d-flex gap-2 mt-3">
-        <button type="submit" class="btn-sf-navy btn-sm" form="sfSetupCompanyForm">Next</button>
+        <button type="submit" class="btn btn-secondary" form="sfSetupCompanyForm">Next</button>
     </div>
 </div>
 </div>
