@@ -128,8 +128,10 @@
                             <a href="/app/sharpfleet/logout" class="sharpfleet-nav-link">Logout</a>
                         </div>
                     @else
+                        <a href="/sharpfleet" class="sharpfleet-nav-link {{ request()->is('sharpfleet') ? 'is-active' : '' }}">Home</a>
                         <a href="/sharpfleet/why" class="sharpfleet-nav-link">Why SharpFleet</a>
                         <a href="/sharpfleet/about" class="sharpfleet-nav-link">About</a>
+                        <a href="/app/sharpfleet/terms" class="sharpfleet-nav-link">Terms &amp; Conditions</a>
                         <a href="/app/sharpfleet/login" class="sharpfleet-nav-link">Login</a>
                     @endif
                 </div>
