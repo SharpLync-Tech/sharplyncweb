@@ -745,6 +745,72 @@ details.card[open] .incident-toggle-hint-closed {
         inset 0 1px 0 rgba(255, 255, 255, 0.35); /* glass highlight */
 }
 
+/* =====================================================
+   SharpFleet Navy Action Button
+   Distinct standalone button (no primary/secondary)
+===================================================== */
+
+.btn-sf-navy {
+    display: inline-block;
+    padding: 0.65rem 1.7rem;
+
+    /* SharpFleet navy base */
+    background: linear-gradient(
+        180deg,
+        #0f3a66 0%,
+        #0a2a4d 100%
+    );
+
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+
+    border-radius: 12px;
+    border: 1px solid rgba(44, 191, 174, 0.35);
+
+    /* 3D depth */
+    box-shadow:
+        0 10px 24px rgba(10, 42, 77, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.btn-sf-navy:hover {
+    transform: translateY(-1px);
+
+    background: linear-gradient(
+        180deg,
+        #11487d 0%,
+        #0a2a4d 100%
+    );
+
+    border-color: rgba(44, 191, 174, 0.65);
+
+    box-shadow:
+        0 14px 34px rgba(10, 42, 77, 0.55),        /* lift */
+        0 0 0 1px rgba(44, 191, 174, 0.45),        /* crisp teal edge */
+        0 0 16px rgba(44, 191, 174, 0.45),         /* teal glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);  /* highlight */
+}
+
+.btn-sf-navy:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 8px 18px rgba(10, 42, 77, 0.45),
+        inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+
 .btn-danger {
     background: #dc3545;
     color: var(--text-light);
