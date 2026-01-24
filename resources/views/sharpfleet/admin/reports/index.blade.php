@@ -164,7 +164,7 @@
 
         <div class="sf-report-card">
             <div class="sf-report-card__icon">
-                <img src="/images/sharpfleet/ai.png" alt="AI">
+                
             </div>
             <h4>AI Report Builder (Beta)</h4>
             <p>

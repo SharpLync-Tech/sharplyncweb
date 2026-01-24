@@ -101,19 +101,23 @@
     }
 
     /* =====================================================
-   SharpFleet Tick Icon – Consistent Teal (Desktop + Mobile)
+    SharpFleet Tick Icon – Brand Teal (Desktop + Mobile)
     ===================================================== */
 
     .sf-tick {
-        color: #2CBFAE;
-        font-weight: 700;               /* thicker glyph */
-        opacity: 1;                     /* kill inherited fade */
-        line-height: 1;
-        display: inline-block;
+        color: #2CBFAE !important;   /* win against parent styles */
+        font-weight: 700;
+        opacity: 1 !important;
 
-        /* Mobile Safari / Android clarity */
-        -webkit-text-fill-color: #2CBFAE;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: geometricPrecision;
+        display: inline-flex;
+        align-items: center;
+
+        line-height: 1;
     }
+
+    /* Explicitly undo WebKit overrides */
+    .sf-tick {
+        -webkit-text-fill-color: currentColor;
+    }
+
 }
