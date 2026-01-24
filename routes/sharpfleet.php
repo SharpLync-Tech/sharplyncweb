@@ -35,6 +35,7 @@ use App\Http\Controllers\SharpFleet\DriverMobileController;
 use App\Http\Controllers\SharpFleet\SupportController;
 use App\Http\Controllers\SharpFleet\Reports\VehicleUsageReportController;
 use App\Http\Controllers\SharpFleet\Reports\FleetManagerOperationalReportController;
+use App\Http\Controllers\SharpFleet\Reports\UtilizationReportController;
 use App\Http\Controllers\SharpFleet\Reports\AiReportBuilderController;
 
 /*
@@ -305,6 +306,11 @@ Route::prefix('app/sharpfleet')
             '/admin/reports/fleet-manager-operational',
             [FleetManagerOperationalReportController::class, 'index']
         )->name('sharpfleet.reports.fleet-manager-operational');
+
+        Route::get(
+            '/admin/reports/utilization',
+            [UtilizationReportController::class, 'index']
+        )->name('sharpfleet.reports.utilization');
 
         Route::get(
             '/admin/reports/ai-report-builder',

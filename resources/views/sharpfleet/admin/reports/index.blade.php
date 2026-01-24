@@ -122,6 +122,14 @@
                 <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn-sf-navy">View report</a>
             </div>
         </div>
+
+        <div class="sf-report-card">
+            <h4>Utilization Report</h4>
+            <p>Utilization percentages with visual bars to spot underused and overused vehicles.</p>
+            <div class="btn-group-inline">
+                <a href="/app/sharpfleet/admin/reports/utilization" class="btn-sf-navy">View report</a>
+            </div>
+        </div>
     </div>
 
     <div class="sf-report-section-title">Compliance &amp; Trip Reports</div>
