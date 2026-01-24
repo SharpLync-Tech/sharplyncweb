@@ -82,7 +82,7 @@
                         <div class="text-danger small mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Generate report</button>
+                <button type="submit" class="btn btn-secondary btn-sm">Generate report</button>
                 <div class="sf-ai-meta mt-2">
                     Beta features may change and are not recommended for formal reporting at this stage.
                 </div>
