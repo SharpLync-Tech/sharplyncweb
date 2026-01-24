@@ -55,6 +55,15 @@ class MobileDriverTokenAuth
         // Fall back to existing session auth for mobile routes (if present).
         $sessionUser = $request->session()->get('sharpfleet.user');
         if ($this->isValidSessionDriver($request, $sessionUser)) {
+            \Log::warning('[SharpFleet Mobile] Token missing/invalid, falling back to session auth', [
+                'path' => '/' . ltrim($request->path(), '/'),
+                'host' => $request->getHost(),
+                'user_id' => (int) ($sessionUser['id'] ?? 0),
+                'organisation_id' => (int) ($sessionUser['organisation_id'] ?? 0),
+                'device_id' => $this->extractDeviceId($request) ?: null,
+                'has_token_header' => $this->extractToken($request) !== '',
+                'user_agent' => (string) $request->header('User-Agent', ''),
+            ]);
             $this->setSharpFleetUserContext($request, $sessionUser);
             return $next($request);
         }
