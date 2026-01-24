@@ -55,7 +55,7 @@
         </p>
 
         <p class="hero-price">
-            All features included for only <strong>AU$3.50</strong> per vehicle, per month.
+            All features included for only <strong>AUD3.50</strong> per vehicle, per month.
         </p>
 
         <div class="hero-bam">
@@ -159,12 +159,12 @@
 
                     <div class="card-body">
                         <p>
-                            <strong>AU$3.50 per vehicle per month</strong><br>
+                            <strong>AUD3.50 per vehicle per month</strong><br>
                             Covers your first <strong>10 vehicles</strong>
                         </p>
 
                         <p>
-                            <strong>AU$2.50 per vehicle per month</strong><br>
+                            <strong>AUD2.50 per vehicle per month</strong><br>
                             For vehicles <strong>11–20</strong>
                         </p>
 

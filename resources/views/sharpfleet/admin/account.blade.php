@@ -177,7 +177,7 @@
                         <input type="checkbox" id="sf-accept-terms">
                         <span class="small">
                             I agree to the
-                            <a href="/policies/sharpfleet-terms" target="_blank" rel="noopener">
+                            <a href="/app/sharpfleet/terms" target="_blank" rel="noopener">
                                 Terms &amp; Conditions
                             </a>
                         </span>

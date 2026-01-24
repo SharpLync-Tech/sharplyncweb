@@ -48,7 +48,7 @@
                 <label class="checkbox-label" for="terms_agree">
                     <input type="checkbox" id="terms_agree" name="terms_agree" required>
                     I have read and agree to the
-                    <a href="https://sharplync.com.au/policies/sharpfleet-terms" target="_blank" rel="noopener">
+                    <a href="/app/sharpfleet/terms" target="_blank" rel="noopener">
                         Terms &amp; Conditions
                     </a>
                 </label>

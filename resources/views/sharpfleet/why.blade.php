@@ -145,7 +145,7 @@
                 </p>
                 <p>
                     There are no feature tiers, no add-ons, and no surprise upgrades as your business grows.
-                    For many customers, it works out to less than a coffee a day.
+                    For many customers, it works out to be less than a coffee a day.
                 </p>
             </div>
         </details>
@@ -177,7 +177,7 @@
             <div class="sf-accordion-content">
                 <p>
                     Sometimes fleet vehicles aren’t available. SharpFleet supports this by allowing
-                    organisations to record trips made using personal vehicles, when enabled by an admin.
+                    organisations to record trips made using personal vehicles, when enabled by a company administrator.
                 </p>
                 <p>
                     Personal vehicle trips are designed for occasional, real-world exceptions and are

@@ -70,6 +70,9 @@ Route::prefix('app/sharpfleet')
         return view('sharpfleet.home');
     });
 
+    Route::get('/terms', fn () => view('sharpfleet.terms'))
+        ->name('sharpfleet.terms');
+
     /*
     |--------------------------------------------------------------------------
     | Authentication
