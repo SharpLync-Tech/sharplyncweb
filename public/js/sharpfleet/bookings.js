@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         Object.entries(map).forEach(([k, btn]) => {
             if (!btn) return;
-            btn.className = 'btn btn-secondary btn-sm' + (k === state.view ? ' is-active' : '');
+            btn.className = 'btn-sf-navy btn-sm' + (k === state.view ? ' is-active' : '');
         });
     }
 
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'btn btn-secondary btn-sm';
+                btn.className = 'btn-sf-navy btn-sm';
                 btn.style.display = 'block';
                 btn.style.width = '100%';
                 btn.style.padding = '10px';
