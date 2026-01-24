@@ -54,7 +54,7 @@
             </div>
 
             {{-- CSV export (to be wired properly later) --}}
-            <button class="btn btn-outline-secondary" disabled
+            <button class="btn btn-secondary" disabled
                     title="CSV export for vehicle usage will be added next">
                 Export Report (CSV)
             </button>
