@@ -41,7 +41,7 @@
     {{-- ================= FILTERS ================= --}}
     <form method="GET"
           action="{{ url('/app/sharpfleet/admin/reports/fleet-manager-operational') }}"
-          class="card mb-3">
+          class="card mb-3" id="fleetManagerReportFilters">
         <div class="card-body">
             <div class="grid grid-4 align-end">
 
@@ -63,23 +63,27 @@
 
                 <div>
                     <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="all" {{ $uiStatus === 'all' ? 'selected' : '' }}>All vehicles</option>
-                        <option value="active" {{ $uiStatus === 'active' ? 'selected' : '' }}>Active only</option>
-                        <option value="inactive" {{ $uiStatus === 'inactive' ? 'selected' : '' }}>Inactive only</option>
-                    </select>
+                    <div class="sf-report-select">
+                        <select name="status" class="form-select" data-auto-submit="1">
+                            <option value="all" {{ $uiStatus === 'all' ? 'selected' : '' }}>All vehicles</option>
+                            <option value="active" {{ $uiStatus === 'active' ? 'selected' : '' }}>Active only</option>
+                            <option value="inactive" {{ $uiStatus === 'inactive' ? 'selected' : '' }}>Inactive only</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div>
                     <label class="form-label">Branch</label>
-                    <select name="branch_id" class="form-select" {{ !$hasBranches ? 'disabled' : '' }}>
-                        <option value="">All branches</option>
-                        @foreach($branches ?? [] as $b)
-                            <option value="{{ $b->id }}" {{ (string) $uiBranchId === (string) $b->id ? 'selected' : '' }}>
-                                {{ $b->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="sf-report-select">
+                        <select name="branch_id" class="form-select" data-auto-submit="1" {{ !$hasBranches ? 'disabled' : '' }}>
+                            <option value="">All branches</option>
+                            @foreach($branches ?? [] as $b)
+                                <option value="{{ $b->id }}" {{ (string) $uiBranchId === (string) $b->id ? 'selected' : '' }}>
+                                    {{ $b->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
             </div>
@@ -96,6 +100,57 @@
             </div>
         </div>
     </form>
+
+    @push('styles')
+    <style>
+        .sf-report-select {
+            position: relative;
+        }
+        .sf-report-select::after {
+            content: "";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid rgba(10, 42, 77, 0.6);
+            border-bottom: 2px solid rgba(10, 42, 77, 0.6);
+            transform: translateY(-50%) rotate(45deg);
+            pointer-events: none;
+        }
+        .sf-report-select .form-select {
+            appearance: none;
+            border-radius: 10px;
+            border: 1px solid rgba(10, 42, 77, 0.2);
+            padding: 10px 36px 10px 12px;
+            background: #f7fafc;
+            font-weight: 600;
+            color: #0A2A4D;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+        }
+        .sf-report-select .form-select:focus {
+            border-color: rgba(57, 183, 170, 0.6);
+            box-shadow: 0 0 0 3px rgba(57, 183, 170, 0.18);
+        }
+        .sf-report-select .form-select:disabled {
+            background: #eef2f6;
+            color: rgba(10, 42, 77, 0.5);
+        }
+    </style>
+    @endpush
+
+    @push('scripts')
+    <script>
+        (function () {
+            const form = document.getElementById('fleetManagerReportFilters');
+            if (!form) return;
+            form.querySelectorAll('select[data-auto-submit="1"]').forEach((select) => {
+                select.addEventListener('change', () => form.submit());
+            });
+        })();
+    </script>
+    @endpush
 
     {{-- ================= RESULTS ================= --}}
     <div class="card">
