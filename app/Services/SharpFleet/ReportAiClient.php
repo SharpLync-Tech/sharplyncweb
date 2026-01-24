@@ -214,8 +214,24 @@ class ReportAiClient
             $dateFrom = is_string($dateFrom) && trim($dateFrom) !== '' ? trim($dateFrom) : null;
             $dateTo = is_string($dateTo) && trim($dateTo) !== '' ? trim($dateTo) : null;
 
-            $unsupported = $json['unsupported'] ?? false;
-            $unsupported = is_bool($unsupported) ? $unsupported : true;
+            $unsupported = $json['unsupported'] ?? null;
+            $unsupported = is_bool($unsupported) ? $unsupported : null;
+
+            if ($driver === null && $customer === null && $vehicle === null) {
+                $fallback = $this->fallbackIntentFromPrompt($prompt);
+                if ($fallback !== null) {
+                    $driver = $fallback['driver'] ?? $driver;
+                    $customer = $fallback['customer'] ?? $customer;
+                    $vehicle = $fallback['vehicle'] ?? $vehicle;
+                }
+            }
+
+            $hasEntity = ($driver !== null || $customer !== null || $vehicle !== null);
+            $hasFilter = ($clientPresent !== null || $dateFrom !== null || $dateTo !== null);
+
+            if ($unsupported === null) {
+                $unsupported = !($hasEntity || $hasFilter);
+            }
 
             return [
                 'report_type' => 'trips',
@@ -236,6 +252,53 @@ class ReportAiClient
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    private function fallbackIntentFromPrompt(string $prompt): ?array
+    {
+        $text = trim($prompt);
+        if ($text === '') {
+            return null;
+        }
+
+        $result = [
+            'driver' => null,
+            'customer' => null,
+            'vehicle' => null,
+        ];
+
+        // Examples:
+        // "show all trips jannie made for Apple and Grape"
+        // "show all trips by Jannie for Apple and Grape"
+        if (preg_match('/trips?\s+(.*?)\s+made\s+for\s+(.+)$/i', $text, $m)) {
+            $result['driver'] = $this->cleanEntityName($m[1] ?? '');
+            $result['customer'] = $this->cleanEntityName($m[2] ?? '');
+        } elseif (preg_match('/trips?\s+by\s+(.*?)\s+for\s+(.+)$/i', $text, $m)) {
+            $result['driver'] = $this->cleanEntityName($m[1] ?? '');
+            $result['customer'] = $this->cleanEntityName($m[2] ?? '');
+        } elseif (preg_match('/trips?\s+for\s+(.+)$/i', $text, $m)) {
+            $result['customer'] = $this->cleanEntityName($m[1] ?? '');
+        }
+
+        if ($result['driver'] === '' || $result['driver'] === null) {
+            $result['driver'] = null;
+        }
+        if ($result['customer'] === '' || $result['customer'] === null) {
+            $result['customer'] = null;
+        }
+
+        if ($result['driver'] === null && $result['customer'] === null && $result['vehicle'] === null) {
+            return null;
+        }
+
+        return $result;
+    }
+
+    private function cleanEntityName(string $value): string
+    {
+        $name = trim($value);
+        $name = preg_replace('/[\\?\\.!]+$/', '', $name);
+        return trim((string) $name);
     }
 
     private function normaliseReport(array $json): ?array
