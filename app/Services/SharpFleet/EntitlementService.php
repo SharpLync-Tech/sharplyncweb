@@ -265,18 +265,6 @@ class EntitlementService
             $userId = (int) ($this->user['id'] ?? 0);
             $organisationId = (int) ($this->user['organisation_id'] ?? 0);
 
-            // Check user table for trial_ends_at
-            if ($userId > 0) {
-                $userRecord = DB::connection('sharpfleet')
-                    ->table('users')
-                    ->where('id', $userId)
-                    ->first();
-
-                if ($userRecord && $userRecord->trial_ends_at) {
-                    return Carbon::parse($userRecord->trial_ends_at);
-                }
-            }
-
             // Fallback to organisation trial end date
             if ($organisationId > 0) {
                 $orgRecord = DB::connection('sharpfleet')

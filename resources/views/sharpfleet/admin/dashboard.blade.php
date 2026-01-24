@@ -107,7 +107,7 @@
     <div class="stats-card text-left mb-4">
         <div class="d-flex justify-between align-items-center flex-wrap gap-2 mb-2">
             <div class="fw-bold">Vehicle reminders</div>
-            <a href="/app/sharpfleet/admin/reminders/vehicles" class="btn btn-secondary btn-sm">Review vehicles</a>
+            <a href="/app/sharpfleet/admin/reminders/vehicles" class="btn-sf-navy btn-sm">Review vehicles</a>
         </div>
 
         <div class="alert {{ $hasOverdue ? 'alert-error' : 'alert-warning' }} mb-0" style="align-items:flex-start;">
