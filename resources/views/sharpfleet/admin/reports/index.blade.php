@@ -107,8 +107,7 @@
             <h4>Fleet Manager – Operational</h4>
             <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-primary btn-sm">View report</a>
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational?export=csv" class="btn btn-primary btn-sm">Export CSV</a>
+                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn btn-primary btn-sm">View report</a>                
             </div>
         </div>
 
