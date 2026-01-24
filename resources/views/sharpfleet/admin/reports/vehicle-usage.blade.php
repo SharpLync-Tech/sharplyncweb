@@ -227,11 +227,9 @@
                                     <td class="text-end">{{ $v->total_duration }}</td>
                                     <td class="text-end">{{ $v->average_distance_km }} km</td>
                                     <td>
-                                        {{ $v->last_used_at
-                                            ? Carbon::parse($v->last_used_at)->timezone($companyTimezone)->format($dateFormat)
-                                            : '—'
-                                        }}
+                                        {{ $v->last_used_at ?: '—' }}
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
