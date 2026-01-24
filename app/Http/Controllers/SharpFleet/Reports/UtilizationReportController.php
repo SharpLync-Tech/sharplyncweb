@@ -161,6 +161,9 @@ class UtilizationReportController extends Controller
                 $workEnd
             );
         }
+        if ($availabilitySeconds <= 0) {
+            $availabilitySeconds = $rangeEnd->diffInSeconds($rangeStart);
+        }
 
         $rows = $vehicles->map(function ($row) use ($companyTimezone, $dateFormat, $availabilitySeconds) {
             $totalSeconds = (int) ($row->total_seconds ?? 0);
@@ -170,7 +173,9 @@ class UtilizationReportController extends Controller
             $minutes = (int) floor(($totalSeconds % 3600) / 60);
             $durationLabel = $totalSeconds > 0 ? ($hours . 'h ' . $minutes . 'm') : '0h 0m';
 
-            if ($availabilitySeconds <= 0) {
+            if ($availabilitySeconds <= 0 && $totalSeconds > 0) {
+                $utilization = 100.0;
+            } elseif ($availabilitySeconds <= 0) {
                 $utilization = 0.0;
             } else {
                 $utilization = round(($totalSeconds / $availabilitySeconds) * 100, 1);
