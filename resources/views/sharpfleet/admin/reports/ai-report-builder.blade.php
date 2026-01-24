@@ -61,7 +61,7 @@
                     Generate tailored fleet reports using AI-assisted analysis. Designed for advanced users to explore data beyond standard reports.
                 </p>
             </div>
-            <a href="/app/sharpfleet/admin/reports" class="btn btn-outline-secondary">Back to reports</a>
+            <a href="/app/sharpfleet/admin/reports" class="btn btn-secondary">Back to reports</a>
         </div>
     </div>
 
