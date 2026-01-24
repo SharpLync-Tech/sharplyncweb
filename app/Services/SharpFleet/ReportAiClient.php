@@ -114,18 +114,20 @@ class ReportAiClient
         }
 
         $system = implode("\n", [
-            'You are the SharpFleet report intent parser.',
-            'Return valid JSON only. No prose.',
-            'Schema:',
-            '{',
-            '  "entity_type": "driver|customer|vehicle|unknown",',
-            '  "name": "string"',
-            '}',
+            'You are the SharpFleet AI Report Intent Parser.',
+            '',
+            'You translate a user\'s request into a structured reporting intent.',
+            'You do NOT execute queries.',
+            'You do NOT generate SQL.',
+            'You do NOT invent data.',
+            '',
+            'Return VALID JSON ONLY that matches the provided schema.',
+            'If a request is ambiguous or unsupported, set unsupported to true.',
+            '',
             'Rules:',
-            '- entity_type must be one of: driver, customer, vehicle, unknown.',
-            '- name should be the most relevant person/vehicle/customer name from the request.',
-            '- If unclear, set entity_type to "unknown" and name to empty string.',
-            '- Do not include extra keys.',
+            '- Use only supported entities and filters.',
+            '- Never guess dates or names.',
+            '- Never output prose or explanations.',
         ]);
 
         try {
@@ -147,11 +149,32 @@ class ReportAiClient
                             ],
                             [
                                 'role' => 'user',
-                                'content' => trim($prompt),
+                                'content' => implode("\n", [
+                                    'Schema:',
+                                    '{',
+                                    '  "report_type": "trips",',
+                                    '  "entities": {',
+                                    '    "driver": string|null,',
+                                    '    "customer": string|null,',
+                                    '    "vehicle": string|null',
+                                    '  },',
+                                    '  "filters": {',
+                                    '    "client_present": boolean|null,',
+                                    '    "date_range": {',
+                                    '      "from": string|null,',
+                                    '      "to": string|null',
+                                    '    }',
+                                    '  },',
+                                    '  "unsupported": boolean',
+                                    '}',
+                                    '',
+                                    'User request:',
+                                    trim($prompt),
+                                ]),
                             ],
                         ],
                         'temperature' => 0.1,
-                        'max_tokens' => 120,
+                        'max_tokens' => 220,
                     ],
                 ]
             );
@@ -164,21 +187,51 @@ class ReportAiClient
                 return null;
             }
 
-            $type = strtolower(trim((string) ($json['entity_type'] ?? 'unknown')));
-            $name = trim((string) ($json['name'] ?? ''));
-
-            $allowed = ['driver', 'customer', 'vehicle', 'unknown'];
-            if (!in_array($type, $allowed, true)) {
-                $type = 'unknown';
+            $reportType = strtolower(trim((string) ($json['report_type'] ?? '')));
+            if ($reportType !== 'trips') {
+                return null;
             }
 
-            if ($type === 'unknown') {
-                $name = '';
+            $entities = is_array($json['entities'] ?? null) ? $json['entities'] : [];
+            $filters = is_array($json['filters'] ?? null) ? $json['filters'] : [];
+            $dateRange = is_array($filters['date_range'] ?? null) ? $filters['date_range'] : [];
+
+            $driver = array_key_exists('driver', $entities) ? $entities['driver'] : null;
+            $customer = array_key_exists('customer', $entities) ? $entities['customer'] : null;
+            $vehicle = array_key_exists('vehicle', $entities) ? $entities['vehicle'] : null;
+
+            $driver = is_string($driver) && trim($driver) !== '' ? trim($driver) : null;
+            $customer = is_string($customer) && trim($customer) !== '' ? trim($customer) : null;
+            $vehicle = is_string($vehicle) && trim($vehicle) !== '' ? trim($vehicle) : null;
+
+            $clientPresent = array_key_exists('client_present', $filters) ? $filters['client_present'] : null;
+            if (!is_bool($clientPresent)) {
+                $clientPresent = null;
             }
+
+            $dateFrom = array_key_exists('from', $dateRange) ? $dateRange['from'] : null;
+            $dateTo = array_key_exists('to', $dateRange) ? $dateRange['to'] : null;
+            $dateFrom = is_string($dateFrom) && trim($dateFrom) !== '' ? trim($dateFrom) : null;
+            $dateTo = is_string($dateTo) && trim($dateTo) !== '' ? trim($dateTo) : null;
+
+            $unsupported = $json['unsupported'] ?? false;
+            $unsupported = is_bool($unsupported) ? $unsupported : true;
 
             return [
-                'entity_type' => $type,
-                'name' => $name,
+                'report_type' => 'trips',
+                'entities' => [
+                    'driver' => $driver,
+                    'customer' => $customer,
+                    'vehicle' => $vehicle,
+                ],
+                'filters' => [
+                    'client_present' => $clientPresent,
+                    'date_range' => [
+                        'from' => $dateFrom,
+                        'to' => $dateTo,
+                    ],
+                ],
+                'unsupported' => $unsupported,
             ];
         } catch (\Throwable $e) {
             return null;
