@@ -77,12 +77,13 @@
     <section class="mb-4 hero-features">
         <div class="text-center mb-4">
             <h2 class="card-title" style="color: var(--text-light);">
-                Everything You Need — Nothing You Don’t
+                Everything You Need & Nothing You Don’t
             </h2>
             <p class="mb-0 max-w-700 mx-auto text-white">
-                :contentReference[oaicite:0]{index=0} is built around how vehicles are actually used day to day —
-                trips, drivers, bookings, and paperwork — without surveillance or complexity.
+                SharpFleet is built around how vehicles are actually used day to day —
+                trips, drivers, bookings, and paperwork, without surveillance or complexity.
             </p>
+
         </div>
 
         <div class="sf-home-features-wrap">
@@ -105,7 +106,7 @@
                     </div>
                     <p>
                         Assign drivers, manage permissions, and link them to vehicles or plant.
-                        Your rules, your workflows — SharpFleet adapts to you.
+                        Your rules, your workflows, SharpFleet adapts to you.
                     </p>
                 </div>
 
@@ -125,7 +126,7 @@
                     </div>
                     <p>
                         Capture fuel and expense receipts directly against vehicles and trips.
-                        No shoeboxes, no lost paperwork — everything stored with the right records.
+                        No shoeboxes, no lost paperwork, everything stored with the right records.
                     </p>
                 </div>
 

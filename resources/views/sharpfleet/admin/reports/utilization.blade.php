@@ -17,8 +17,7 @@
     $uiPeriodDate = request('period_date', $periodDate ?? '');
 
     $uiAvailabilityPreset = request('availability_preset', $availabilityPreset ?? 'business_hours');
-    $uiAvailabilityDays = collect(request('availability_days', $availabilityDays ?? ['1','2','3','4','5']))
-        ->map(fn ($d) => (string) $d)->all();
+    $uiAvailabilityDays = collect(request('availability_days', $availabilityDays ?? ['1','2','3','4','5']))->map(fn ($d) => (string) $d)->all();
     $uiWorkStart = request('work_start', $workStart ?? '07:00');
     $uiWorkEnd = request('work_end', $workEnd ?? '17:00');
 
@@ -27,8 +26,6 @@
 @endphp
 
 <div class="container">
-
-    {{-- ================= HEADER ================= --}}
     <div class="page-header mb-3">
         <div class="flex-between">
             <div>
@@ -40,17 +37,12 @@
         </div>
     </div>
 
-    {{-- ================= FILTERS ================= --}}
     <form method="GET"
           action="{{ url('/app/sharpfleet/admin/reports/utilization') }}"
           class="card sf-report-card mb-3">
 
         <div class="card-body">
-
-            {{-- ===== ROW 1: WHAT ===== --}}
-            <div class="grid grid-3 mb-3">
-
-                {{-- Scope --}}
+            <div class="grid grid-4 align-end">
                 <div>
                     <label class="form-label">Scope</label>
                     <label class="sf-radio">
@@ -65,7 +57,6 @@
                     @endif
                 </div>
 
-                {{-- Branch --}}
                 <div>
                     <label class="form-label">Branch</label>
                     <div class="sf-report-select">
@@ -73,7 +64,7 @@
                             <option value="">All branches</option>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}"
-                                    {{ (string)$uiBranchId === (string)$branch->id ? 'selected' : '' }}>
+                                    {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
                                     {{ $branch->name }}
                                 </option>
                             @endforeach
@@ -81,7 +72,6 @@
                     </div>
                 </div>
 
-                {{-- Vehicle --}}
                 <div>
                     <label class="form-label">Vehicle</label>
                     <div class="sf-report-select">
@@ -89,21 +79,14 @@
                             <option value="">All vehicles</option>
                             @foreach($vehicles as $vehicle)
                                 <option value="{{ $vehicle->id }}"
-                                    {{ (string)$uiVehicleId === (string)$vehicle->id ? 'selected' : '' }}>
-                                    {{ $vehicle->name }}
-                                    {{ $vehicle->registration_number ? '(' . $vehicle->registration_number . ')' : '' }}
+                                    {{ (string) $uiVehicleId === (string) $vehicle->id ? 'selected' : '' }}>
+                                    {{ $vehicle->name }} {{ $vehicle->registration_number ? '(' . $vehicle->registration_number . ')' : '' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                 </div>
 
-            </div>
-
-            {{-- ===== ROW 2: WHEN ===== --}}
-            <div class="grid grid-3 mb-3 align-end">
-
-                {{-- Period --}}
                 <div>
                     <label class="form-label">Period</label>
                     <div class="sf-period-toggle">
@@ -121,8 +104,9 @@
                         </label>
                     </div>
                 </div>
+            </div>
 
-                {{-- Date --}}
+            <div class="grid grid-3 align-end mt-3">
                 <div>
                     <label class="form-label" id="sfPeriodLabel">Select period</label>
                     <div class="sf-date-field">
@@ -141,17 +125,12 @@
                     </div>
                 </div>
 
-            </div>
-
-            {{-- ===== ROW 3: AVAILABILITY ===== --}}
-            <div class="grid grid-3 align-end">
-
                 <div>
                     <label class="form-label">Availability</label>
                     <div class="sf-report-select">
                         <select name="availability_preset" class="form-select" id="sfAvailabilityPreset">
                             <option value="business_hours" {{ $uiAvailabilityPreset === 'business_hours' ? 'selected' : '' }}>
-                                Business hours (Mon–Fri)
+                                Business hours (Mon-Fri)
                             </option>
                             <option value="24_7" {{ $uiAvailabilityPreset === '24_7' ? 'selected' : '' }}>
                                 24/7
@@ -162,38 +141,38 @@
                         </select>
                     </div>
                     <div class="text-muted small mt-1" id="sfAvailabilitySummary">
-                        7:00am – 5:00pm, Monday to Friday
+                        7:00am - 5:00pm, Monday to Friday
                     </div>
                 </div>
 
                 <div class="sf-advanced-wrap">
-                    <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">
-                        Advanced availability
-                    </button>
+                    <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">Advanced availability</button>
                 </div>
-
             </div>
 
-            {{-- ===== ADVANCED PANEL (UNCHANGED) ===== --}}
             <div class="sf-advanced-panel mt-3 {{ $uiAvailabilityPreset === 'custom' ? 'is-open' : '' }}" id="sfAdvancedPanel">
                 <div class="grid grid-2">
                     <div>
                         <label class="form-label">Working days</label>
                         <div class="sf-days">
                             @foreach([
-                                '1' => 'Mon','2' => 'Tue','3' => 'Wed','4' => 'Thu',
-                                '5' => 'Fri','6' => 'Sat','0' => 'Sun'
+                                '1' => 'Mon',
+                                '2' => 'Tue',
+                                '3' => 'Wed',
+                                '4' => 'Thu',
+                                '5' => 'Fri',
+                                '6' => 'Sat',
+                                '0' => 'Sun'
                             ] as $dayValue => $dayLabel)
                                 <label class="sf-check">
                                     <input type="checkbox" name="availability_days[]"
                                            value="{{ $dayValue }}"
-                                           {{ in_array((string)$dayValue, $uiAvailabilityDays, true) ? 'checked' : '' }}>
+                                           {{ in_array((string) $dayValue, $uiAvailabilityDays, true) ? 'checked' : '' }}>
                                     <span>{{ $dayLabel }}</span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
-
                     <div>
                         <label class="form-label">Working hours</label>
                         <div class="sf-time-grid">
@@ -213,15 +192,439 @@
                 </div>
             </div>
 
-            {{-- ===== APPLY ===== --}}
             <div class="mt-3 text-end">
                 <button type="submit" class="btn-sf-navy">Apply</button>
             </div>
-
         </div>
     </form>
 
-    {{-- ================= EVERYTHING BELOW UNCHANGED ================= --}}
-    {{-- Summary cards, export button, table, styles, scripts remain exactly as-is --}}
+    <div class="card sf-report-card mb-3">
+        <div class="card-body">
+            <div class="grid grid-4 text-center">
+                <div>
+                    <strong>{{ number_format($averageUtilization, 1) }}%</strong><br>
+                    <span class="text-muted small">Average utilization</span>
+                </div>
+                <div>
+                    <strong>{{ $underUtilisedCount }}</strong><br>
+                    <span class="text-muted small">Under-utilised vehicles</span>
+                </div>
+                <div>
+                    <strong>{{ $overUtilisedCount }}</strong><br>
+                    <span class="text-muted small">Over-utilised vehicles</span>
+                </div>
+                <div>
+                    <strong>{{ number_format($totalUsedHours, 1) }} h</strong><br>
+                    <span class="text-muted small">Total hours used</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mb-3">
+        @php
+            $exportQuery = array_merge(request()->query(), ['export' => 'csv']);
+            $exportUrl = url('/app/sharpfleet/admin/reports/utilization') . '?' . http_build_query($exportQuery);
+        @endphp
+        <a href="{{ $exportUrl }}" class="btn btn-primary">Export CSV</a>
+    </div>
+
+    <div class="card sf-report-card">
+        <div class="card-body">
+            @if($rows->count() === 0)
+                <p class="text-muted fst-italic">
+                    No utilization data found for the selected period.
+                </p>
+            @else
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Branch</th>
+                                <th class="text-end">Trips</th>
+                                <th class="text-end">Total driving time</th>
+                                <th class="text-end">Available time</th>
+                                <th>Utilization</th>
+                                <th class="text-end">Last used</th>
+                                <th>Status</th>
+                                <th>Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($rows as $row)
+                                @php
+                                    $statusLabel = $row->utilization_percent < 20
+                                        ? 'Low'
+                                        : ($row->utilization_percent >= 85 ? 'Overused' : 'Healthy');
+                                    $badgeClass = $row->utilization_percent < 20
+                                        ? 'bg-secondary'
+                                        : ($row->utilization_percent >= 85 ? 'bg-danger' : 'bg-success');
+                                    $recommendation = $row->utilization_percent < 20
+                                        ? 'Consider reassigning or reducing idle time'
+                                        : ($row->utilization_percent >= 85 ? 'Review load or allocate more vehicles' : 'Healthy usage');
+                                @endphp
+                                <tr>
+                                    <td class="fw-bold">
+                                        {{ $row->vehicle_name }}<br>
+                                        <small class="text-muted">{{ $row->registration_number }}</small>
+                                    </td>
+                                    <td>{{ $row->branch_name }}</td>
+                                    <td class="text-end">{{ $row->trip_count }}</td>
+                                    <td class="text-end">{{ $row->total_duration }}</td>
+                                    <td class="text-end">{{ number_format($row->available_hours, 1) }} h</td>
+                                    <td>
+                                        <div class="sf-util-row">
+                                            <div class="sf-util-bar">
+                                                <span style="width: {{ $row->utilization_percent }}%"></span>
+                                            </div>
+                                            <div class="sf-util-label">{{ number_format($row->utilization_percent, 1) }}%</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">{{ $row->last_used_at ?: '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+                                    </td>
+                                    <td>{{ $recommendation }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
 
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/plugins/monthSelect/style.css">
+
+<style>
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
+    .sf-report-select {
+        position: relative;
+    }
+
+    .sf-report-select::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid rgba(10, 42, 77, 0.6);
+        border-bottom: 2px solid rgba(10, 42, 77, 0.6);
+        transform: translateY(-50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .sf-report-select .form-select {
+        appearance: none;
+        border-radius: 10px;
+        border: 1px solid rgba(10, 42, 77, 0.2);
+        padding: 10px 36px 10px 12px;
+        background: #f7fafc;
+        font-weight: 600;
+        color: #0A2A4D;
+    }
+
+    .sf-date-field {
+        position: relative;
+    }
+
+    .sf-date-field .sf-date-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2CBFAE;
+        pointer-events: none;
+    }
+
+    .sf-date-field .form-control.sf-date,
+    .sf-date-field .flatpickr-input.form-control {
+        padding-left: 36px;
+    }
+
+    .sf-period-toggle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sf-period-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(10, 42, 77, 0.08);
+        font-weight: 600;
+        color: #0A2A4D;
+        cursor: pointer;
+    }
+
+    .sf-period-toggle input:checked + span {
+        color: #0A2A4D;
+    }
+
+    .sf-period-toggle input {
+        accent-color: #2CBFAE;
+    }
+
+    .sf-advanced-wrap {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+    .sf-advanced-panel {
+        border-top: 1px dashed rgba(10, 42, 77, 0.15);
+        padding-top: 14px;
+        display: none;
+    }
+
+    .sf-advanced-panel.is-open {
+        display: block;
+    }
+
+    .sf-days {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .sf-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(10, 42, 77, 0.08);
+        font-weight: 600;
+        color: #0A2A4D;
+    }
+
+    .sf-time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .sf-util-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+    }
+
+    .sf-util-bar {
+        flex: 1 1 auto;
+        height: 8px;
+        background: rgba(10, 42, 77, 0.12);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .sf-util-bar span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #2CBFAE 0%, #0A2A4D 100%);
+        border-radius: 999px;
+    }
+
+    .sf-util-label {
+        width: 54px;
+        text-align: right;
+        font-weight: 600;
+        color: #0A2A4D;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/flatpickr"></script>
+<script src="https://unpkg.com/flatpickr/dist/plugins/monthSelect/index.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/utilization"]');
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
+        const branchSelect = document.querySelector('select[name="branch_id"]');
+        const vehicleSelect = document.querySelector('select[name="vehicle_id"]');
+        const periodRadios = document.querySelectorAll('input[name="period"]');
+        const periodLabel = document.getElementById('sfPeriodLabel');
+        const advancedToggle = document.getElementById('sfAdvancedToggle');
+        const advancedPanel = document.getElementById('sfAdvancedPanel');
+        const availabilityPreset = document.getElementById('sfAvailabilityPreset');
+        const availabilitySummary = document.getElementById('sfAvailabilitySummary');
+        const workStart = document.querySelector('input[name="work_start"]');
+        const workEnd = document.querySelector('input[name="work_end"]');
+        const dayInputs = document.querySelectorAll('input[name="availability_days[]"]');
+        const dateInput = document.querySelector('input[name="period_date"]');
+        let periodPicker = null;
+
+        function submitForm() {
+            if (!form) return;
+            form.submit();
+        }
+
+        function updateBranchState(value) {
+            if (!branchSelect) return;
+            if (value === 'branch') {
+                branchSelect.disabled = false;
+            } else {
+                branchSelect.value = '';
+                branchSelect.disabled = true;
+            }
+        }
+
+        function selectedPeriod() {
+            const checked = document.querySelector('input[name="period"]:checked');
+            return checked ? checked.value : 'month';
+        }
+
+        function updatePeriodLabel() {
+            if (!periodLabel) return;
+            const period = selectedPeriod();
+            periodLabel.textContent = period === 'day'
+                ? 'Select day'
+                : (period === 'week' ? 'Select week' : 'Select month');
+        }
+
+        function updateAvailabilitySummary() {
+            if (!availabilitySummary) return;
+            const preset = availabilityPreset ? availabilityPreset.value : 'business_hours';
+            if (preset === '24_7') {
+                availabilitySummary.textContent = 'All days, 24 hours';
+                return;
+            }
+            if (preset === 'business_hours') {
+                availabilitySummary.textContent = '7:00am – 5:00pm, Monday to Friday';
+                return;
+            }
+            const days = Array.from(dayInputs)
+                .filter(input => input.checked)
+                .map(input => input.nextElementSibling ? input.nextElementSibling.textContent.trim() : '')
+                .filter(Boolean);
+            const dayLabel = days.length ? days.join(', ') : 'Mon-Fri';
+            availabilitySummary.textContent = `${workStart.value} - ${workEnd.value}, ${dayLabel}`;
+        }
+
+        if (scopeRadios.length) {
+            scopeRadios.forEach(function (radio) {
+                radio.addEventListener('change', function (e) {
+                    updateBranchState(e.target.value);
+                    submitForm();
+                });
+            });
+        }
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', submitForm);
+        }
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener('change', submitForm);
+        }
+
+        if (periodRadios.length) {
+            periodRadios.forEach(function (radio) {
+                radio.addEventListener('change', function () {
+                    updatePeriodLabel();
+                    initPeriodPicker();
+                    submitForm();
+                });
+            });
+        }
+
+        if (advancedToggle && advancedPanel) {
+            advancedToggle.addEventListener('click', function () {
+                advancedPanel.classList.toggle('is-open');
+            });
+        }
+
+        if (availabilityPreset) {
+            availabilityPreset.addEventListener('change', function () {
+                if (advancedPanel) {
+                    advancedPanel.classList.toggle('is-open', availabilityPreset.value === 'custom');
+                }
+                updateAvailabilitySummary();
+                submitForm();
+            });
+        }
+
+        if (workStart) workStart.addEventListener('change', updateAvailabilitySummary);
+        if (workEnd) workEnd.addEventListener('change', updateAvailabilitySummary);
+        dayInputs.forEach(function (input) {
+            input.addEventListener('change', updateAvailabilitySummary);
+        });
+
+        function initPeriodPicker() {
+            if (!dateInput || typeof flatpickr === 'undefined') return;
+
+            if (periodPicker) {
+                periodPicker.destroy();
+                periodPicker = null;
+            }
+
+            const period = selectedPeriod();
+            const baseOptions = {
+                allowInput: true,
+                defaultDate: dateInput.value || null,
+                onClose: function () {
+                    submitForm();
+                }
+            };
+
+            if (period === 'month' && typeof monthSelectPlugin !== 'undefined') {
+                periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, {
+                    plugins: [new monthSelectPlugin({
+                        shorthand: true,
+                        dateFormat: 'Y-m-01',
+                        altFormat: 'F Y'
+                    })]
+                }));
+                return;
+            }
+
+            const weekOptions = period === 'week'
+                ? {
+                    altInput: true,
+                    altFormat: '\\W\\e\\e\\k\\ \\o\\f {{ $dateFormat }}',
+                    dateFormat: 'Y-m-d',
+                    onChange: function (selectedDates) {
+                        if (!selectedDates || !selectedDates.length) return;
+                        const picked = selectedDates[0];
+                        const day = picked.getDay(); // 0 Sun - 6 Sat
+                        const diff = (day === 0 ? -6 : 1 - day);
+                        const weekStart = new Date(picked);
+                        weekStart.setDate(picked.getDate() + diff);
+                        periodPicker.setDate(weekStart, false);
+                    }
+                }
+                : {
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: '{{ $dateFormat }}'
+                };
+
+            periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, weekOptions));
+        }
+
+        const initialScope = document.querySelector('input[name="scope"]:checked');
+        updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
+        initPeriodPicker();
+        updatePeriodLabel();
+        updateAvailabilitySummary();
+    });
+</script>
+@endpush

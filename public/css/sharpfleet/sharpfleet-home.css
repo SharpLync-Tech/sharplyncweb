@@ -142,3 +142,32 @@
   }
 
 }
+
+  /* =========================================================
+    SharpFleet Home – Subtle Teal Feature Card Glow
+    Intentionally VERY light (premium, not flashy)
+  ========================================================= */
+
+  .sf-home-features-grid .card {
+    border: 1px solid rgba(44, 191, 174, 0.18); /* faint teal edge */
+
+    box-shadow:
+      0 0 0 1px rgba(44, 191, 174, 0.08),   /* soft outline glow */
+      0 8px 18px rgba(10, 42, 77, 0.10);   /* depth against navy */
+
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  /* Optional hover – still restrained */
+  .sf-home-features-grid .card:hover {
+    border-color: rgba(44, 191, 174, 0.32);
+
+    box-shadow:
+      0 0 0 2px rgba(44, 191, 174, 0.12),
+      0 12px 26px rgba(10, 42, 77, 0.16);
+
+    transform: translateY(-2px);
+  }
