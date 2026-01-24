@@ -33,7 +33,7 @@ class AiReportBuilderController extends Controller
         ]);
     }
 
-    public function generate(Request $request, ReportAiClient $client): View|RedirectResponse|Response
+    public function generate(Request $request, ReportAiClient $client): View|RedirectResponse|Response|StreamedResponse
     {
         $user = $request->session()->get('sharpfleet.user');
 
