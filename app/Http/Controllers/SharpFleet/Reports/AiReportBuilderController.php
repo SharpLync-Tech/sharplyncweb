@@ -8,6 +8,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\ReportAiClient;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
@@ -488,10 +489,10 @@ class AiReportBuilderController extends Controller
         }
 
         if ($startDate) {
-            $query->where('trips.started_at', '>=', $startDate->toDateTimeString());
+            $query->where('trips.started_at', '>=', $startDate->copy()->timezone('UTC')->toDateTimeString());
         }
         if ($endDate) {
-            $query->where('trips.started_at', '<=', $endDate->toDateTimeString());
+            $query->where('trips.started_at', '<=', $endDate->copy()->timezone('UTC')->toDateTimeString());
         }
 
         $driverTarget = $targets['driver'] ?? null;
@@ -613,7 +614,7 @@ class AiReportBuilderController extends Controller
                 ['label' => 'Total trips', 'value' => $totalTrips],
                 ['label' => 'Total distance', 'value' => $distanceLabel],
                 ['label' => 'Total drive time', 'value' => $this->formatDuration($totalSeconds)],
-                ['label' => 'Vehicle used most', 'value' => $topVehicle ?? '—'],
+                ['label' => 'Vehicle used most', 'value' => $topVehicle ?? 'â€”'],
                 ['label' => 'Purpose', 'value' => $purposeEnabled ? ($topPurpose ?: 'Not captured') : 'Not enabled'],
                 ['label' => 'Top customer visited', 'value' => $customerLinkingEnabled ? ($topCustomer ?: 'None') : 'Not enabled'],
             ],
@@ -682,18 +683,18 @@ class AiReportBuilderController extends Controller
         $mapped = $rows->map(function ($row) use ($dateFormat, $timezone, $hasRegistrationExpiry, $hasRoadRegistered) {
             $expiry = $hasRegistrationExpiry && !empty($row->registration_expiry)
                 ? $this->formatDate($row->registration_expiry, $timezone, $dateFormat)
-                : '—';
+                : 'â€”';
 
             $road = $hasRoadRegistered
                 ? ((int) ($row->is_road_registered ?? 0) === 1 ? 'Yes' : 'No')
-                : '—';
+                : 'â€”';
 
             return [
-                'vehicle' => (string) ($row->name ?? '—'),
-                'registration_number' => (string) ($row->registration_number ?? '—'),
+                'vehicle' => (string) ($row->name ?? 'â€”'),
+                'registration_number' => (string) ($row->registration_number ?? 'â€”'),
                 'registration_expiry' => $expiry,
                 'road_registered' => $road,
-                'branch' => (string) ($row->branch_name ?? '—'),
+                'branch' => (string) ($row->branch_name ?? 'â€”'),
             ];
         });
 
@@ -765,8 +766,8 @@ class AiReportBuilderController extends Controller
 
         $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
             return [
-                'customer' => (string) ($row->name ?? '—'),
-                'branch' => (string) ($row->branch_name ?? '—'),
+                'customer' => (string) ($row->name ?? 'â€”'),
+                'branch' => (string) ($row->branch_name ?? 'â€”'),
                 'created_at' => $this->formatDate($row->created_at, $timezone, $dateFormat),
             ];
         });
@@ -819,10 +820,10 @@ class AiReportBuilderController extends Controller
                 $join->on('t.customer_id', '=', 'c.id')
                     ->where('t.organisation_id', '=', $organisationId);
                 if ($fromDate) {
-                    $join->where('t.started_at', '>=', $fromDate->toDateTimeString());
+                    $join->where('t.started_at', '>=', $fromDate->copy()->timezone('UTC')->toDateTimeString());
                 }
                 if ($toDate) {
-                    $join->where('t.started_at', '<=', $toDate->toDateTimeString());
+                    $join->where('t.started_at', '<=', $toDate->copy()->timezone('UTC')->toDateTimeString());
                 }
             })
             ->leftJoin('vehicles as v', 't.vehicle_id', '=', 'v.id')
@@ -857,10 +858,10 @@ class AiReportBuilderController extends Controller
         $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
             $lastTrip = $row->last_trip_at
                 ? $this->formatDateTime($row->last_trip_at, $timezone, $dateFormat, 'H:i')
-                : '—';
+                : 'â€”';
 
             return [
-                'customer' => (string) ($row->name ?? '—'),
+                'customer' => (string) ($row->name ?? 'â€”'),
                 'trip_count' => (int) ($row->trip_count ?? 0),
                 'last_trip' => $lastTrip,
             ];
@@ -923,8 +924,8 @@ class AiReportBuilderController extends Controller
 
             return [
                 'user' => trim((string) ($row->first_name ?? '') . ' ' . (string) ($row->last_name ?? '')),
-                'email' => (string) ($row->email ?? '—'),
-                'role' => (string) ($row->role ?? '—'),
+                'email' => (string) ($row->email ?? 'â€”'),
+                'role' => (string) ($row->role ?? 'â€”'),
                 'driver' => (int) ($row->is_driver ?? 0) === 1 ? 'Yes' : 'No',
                 'status' => $status,
             ];
@@ -994,8 +995,8 @@ class AiReportBuilderController extends Controller
 
         $mapped = $rows->map(function ($row) {
             return [
-                'branch' => (string) ($row->name ?? '—'),
-                'timezone' => (string) ($row->timezone ?? '—'),
+                'branch' => (string) ($row->name ?? 'â€”'),
+                'timezone' => (string) ($row->timezone ?? 'â€”'),
                 'vehicles' => (int) ($row->vehicle_count ?? 0),
             ];
         });
@@ -1052,10 +1053,10 @@ class AiReportBuilderController extends Controller
         }
 
         if ($fromDate) {
-            $query->where('f.created_at', '>=', $fromDate->toDateTimeString());
+            $query->where('f.created_at', '>=', $fromDate->copy()->timezone('UTC')->toDateTimeString());
         }
         if ($toDate) {
-            $query->where('f.created_at', '<=', $toDate->toDateTimeString());
+            $query->where('f.created_at', '<=', $toDate->copy()->timezone('UTC')->toDateTimeString());
         }
 
         $rows = $query->select([
@@ -1081,11 +1082,11 @@ class AiReportBuilderController extends Controller
             return [
                 'created_at' => $this->formatDateTime($row->created_at, $timezone, $dateFormat, 'H:i'),
                 'vehicle' => trim((string) ($row->vehicle_name ?? '')),
-                'registration_number' => (string) ($row->vehicle_registration_number ?? '—'),
-                'driver' => (string) ($row->driver_name ?? '—'),
-                'severity' => (string) ($row->severity ?? '—'),
-                'status' => (string) ($row->status ?? '—'),
-                'type' => (string) ($row->report_type ?? '—'),
+                'registration_number' => (string) ($row->vehicle_registration_number ?? 'â€”'),
+                'driver' => (string) ($row->driver_name ?? 'â€”'),
+                'severity' => (string) ($row->severity ?? 'â€”'),
+                'status' => (string) ($row->status ?? 'â€”'),
+                'type' => (string) ($row->report_type ?? 'â€”'),
             ];
         });
 
@@ -1156,10 +1157,10 @@ class AiReportBuilderController extends Controller
         }
 
         if ($fromDate) {
-            $query->where('bookings.planned_start', '>=', $fromDate->toDateTimeString());
+            $query->where('bookings.planned_start', '>=', $fromDate->copy()->timezone('UTC')->toDateTimeString());
         }
         if ($toDate) {
-            $query->where('bookings.planned_start', '<=', $toDate->toDateTimeString());
+            $query->where('bookings.planned_start', '<=', $toDate->copy()->timezone('UTC')->toDateTimeString());
         }
 
         $rows = $query->select([
@@ -1185,10 +1186,10 @@ class AiReportBuilderController extends Controller
             return [
                 'planned_start' => $this->formatDateTime($row->planned_start, $timezone, $dateFormat, 'H:i'),
                 'planned_end' => $this->formatDateTime($row->planned_end, $timezone, $dateFormat, 'H:i'),
-                'vehicle' => (string) ($row->vehicle_name ?? '—'),
-                'registration_number' => (string) ($row->registration_number ?? '—'),
-                'driver' => (string) ($row->driver_name ?? '—'),
-                'customer' => (string) ($row->customer_name_display ?? '—'),
+                'vehicle' => (string) ($row->vehicle_name ?? 'â€”'),
+                'registration_number' => (string) ($row->registration_number ?? 'â€”'),
+                'driver' => (string) ($row->driver_name ?? 'â€”'),
+                'customer' => (string) ($row->customer_name_display ?? 'â€”'),
             ];
         });
 
@@ -1467,32 +1468,39 @@ class AiReportBuilderController extends Controller
         return number_format((float) $distanceTotals['km'], 1) . ' ' . $unit;
     }
 
-    private function formatDateTime(?string $value, string $timezone, string $dateFormat, string $timeFormat): string
+    private function formatDateTime(string|CarbonInterface|null $value, string $timezone, string $dateFormat, string $timeFormat): string
     {
         if (!$value) {
-            return '—';
+            return "-";
         }
 
         try {
-            return Carbon::parse($value)->timezone($timezone)->format($dateFormat . ' ' . $timeFormat);
+            if ($value instanceof CarbonInterface) {
+                return $value->copy()->timezone($timezone)->format($dateFormat . ' ' . $timeFormat);
+            }
+
+            return Carbon::parse($value, 'UTC')->timezone($timezone)->format($dateFormat . ' ' . $timeFormat);
         } catch (\Throwable $e) {
             return (string) $value;
         }
     }
 
-    private function formatDate(?string $value, string $timezone, string $dateFormat): string
+    private function formatDate(string|CarbonInterface|null $value, string $timezone, string $dateFormat): string
     {
         if (!$value) {
-            return 'â€”';
+            return "-";
         }
 
         try {
-            return Carbon::parse($value)->timezone($timezone)->format($dateFormat);
+            if ($value instanceof CarbonInterface) {
+                return $value->copy()->timezone($timezone)->format($dateFormat);
+            }
+
+            return Carbon::parse($value, 'UTC')->timezone($timezone)->format($dateFormat);
         } catch (\Throwable $e) {
             return (string) $value;
         }
     }
-
     private function maxKey(array $items): ?string
     {
         if (empty($items)) {
@@ -1527,3 +1535,5 @@ class AiReportBuilderController extends Controller
         return array_values(array_unique(array_filter($variants)));
     }
 }
+
+
