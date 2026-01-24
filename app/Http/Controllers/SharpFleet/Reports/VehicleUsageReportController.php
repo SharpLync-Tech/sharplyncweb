@@ -12,9 +12,9 @@ class VehicleUsageReportController extends Controller
     public function index(Request $request)
     {
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | SharpFleet session auth (SINGLE SOURCE OF TRUTH)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $user = $request->session()->get('sharpfleet.user');
 
@@ -23,11 +23,21 @@ class VehicleUsageReportController extends Controller
         }
 
         $organisationId = (int) $user['organisation_id'];
+        $companyTimezone = $user['timezone'] ?? config('app.timezone');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Regional date format (display only)
+        |----------------------------------------------------------------------
+        */
+        $dateFormat = str_starts_with($companyTimezone, 'America/')
+            ? 'm/d/Y'
+            : 'd/m/Y';
+
+        /*
+        |----------------------------------------------------------------------
         | Inputs
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $scope     = $request->input('scope', 'company'); // company | branch
         $branchId  = $request->input('branch_id');
@@ -35,9 +45,9 @@ class VehicleUsageReportController extends Controller
         $endDate   = $request->input('end_date');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Base trip query (organisation-scoped)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $tripQuery = DB::connection('sharpfleet')
             ->table('trips')
@@ -47,18 +57,18 @@ class VehicleUsageReportController extends Controller
             ->whereNotNull('trips.end_time');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Branch filter
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         if ($scope === 'branch' && is_numeric($branchId)) {
             $tripQuery->where('trips.branch_id', (int) $branchId);
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Date filtering (based on trip start)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Date filtering (based on trip start, UTC-safe)
+        |----------------------------------------------------------------------
         */
         if ($startDate) {
             $tripQuery->whereDate('trips.started_at', '>=', $startDate);
@@ -69,9 +79,9 @@ class VehicleUsageReportController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Vehicle usage aggregation
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $vehicles = $tripQuery
             ->select([
@@ -106,36 +116,40 @@ class VehicleUsageReportController extends Controller
             ->get();
 
         /*
-        |--------------------------------------------------------------------------
-        | Post-processing (UI-friendly values)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Post-processing (timezone + UI-safe values)
+        |----------------------------------------------------------------------
         */
-        $vehicles = $vehicles->map(function ($v) {
-            $hours   = floor($v->total_seconds / 3600);
-            $minutes = floor(($v->total_seconds % 3600) / 60);
+        $vehicles = $vehicles->map(function ($v) use ($companyTimezone, $dateFormat) {
+            $hours   = (int) floor($v->total_seconds / 3600);
+            $minutes = (int) floor(($v->total_seconds % 3600) / 60);
+
+            $lastUsedLocal = $v->last_used_at
+                ? Carbon::parse($v->last_used_at)
+                    ->timezone($companyTimezone)
+                    ->format($dateFormat)
+                : null;
 
             return (object) [
-                'vehicle_id'           => $v->vehicle_id,
-                'vehicle_name'         => $v->vehicle_name,
-                'registration_number'  => $v->registration_number,
+                'vehicle_id'          => (int) $v->vehicle_id,
+                'vehicle_name'        => $v->vehicle_name,
+                'registration_number' => $v->registration_number,
 
-                'trip_count'           => (int) $v->trip_count,
-                'total_distance_km'    => (int) $v->total_distance_km,
-                'average_distance_km'  => $v->trip_count > 0
+                'trip_count'          => (int) $v->trip_count,
+                'total_distance_km'   => (int) $v->total_distance_km,
+                'average_distance_km' => $v->trip_count > 0
                     ? round($v->total_distance_km / $v->trip_count, 1)
                     : 0,
 
-                'total_duration'       => $hours . 'h ' . $minutes . 'm',
-                'last_used_at'         => $v->last_used_at
-                    ? Carbon::parse($v->last_used_at)->toDateString()
-                    : null,
+                'total_duration'      => $hours . 'h ' . $minutes . 'm',
+                'last_used_at'        => $lastUsedLocal,
             ];
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Summary totals
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $summary = [
             'vehicles' => $vehicles->count(),
@@ -144,9 +158,9 @@ class VehicleUsageReportController extends Controller
         ];
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Branch list (for selector)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         $branches = DB::connection('sharpfleet')
             ->table('branches')
@@ -155,15 +169,15 @@ class VehicleUsageReportController extends Controller
             ->get();
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Render
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
         return view('sharpfleet.admin.reports.vehicle-usage', [
             'vehicles'        => $vehicles,
             'summary'         => $summary,
             'branches'        => $branches,
-            'companyTimezone' => $user['timezone'] ?? config('app.timezone'),
+            'companyTimezone' => $companyTimezone,
         ]);
     }
 }

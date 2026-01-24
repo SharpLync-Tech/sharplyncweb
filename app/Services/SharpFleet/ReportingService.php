@@ -553,6 +553,16 @@ class ReportingService
         /** @var Collection<int, object> $trips */
         $trips = $result['trips'];
 
+        $companyTimezone = (string) ($result['companyTimezone'] ?? (new CompanySettingsService($organisationId))->timezone());
+        $appTimezone = (string) (config('app.timezone') ?: 'UTC');
+
+        $dateFormat = str_starts_with($companyTimezone, 'America/')
+            ? 'm/d/Y'
+            : 'd/m/Y';
+
+        // CSV includes time; keep it consistent and accountant-friendly.
+        $dateTimeFormat = $dateFormat . ' H:i';
+
         $customerLinkingEnabled = (bool) ($result['customerLinkingEnabled'] ?? false);
         $purposeOfTravelEnabled = (new CompanySettingsService($organisationId))->purposeOfTravelEnabled();
 
@@ -572,7 +582,15 @@ class ReportingService
         ];
         $headers = array_values(array_filter($headers, fn ($h) => $h !== null));
 
-        $callback = function () use ($trips, $headers, $customerLinkingEnabled, $purposeOfTravelEnabled) {
+        $callback = function () use (
+            $trips,
+            $headers,
+            $customerLinkingEnabled,
+            $purposeOfTravelEnabled,
+            $companyTimezone,
+            $appTimezone,
+            $dateTimeFormat
+        ) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $headers);
 
@@ -604,13 +622,32 @@ class ReportingService
                     $row[] = $isBusiness ? ($trip->purpose_of_travel ?? '') : '';
                 }
 
+                $clientPresent = ($trip->client_present === null) ? '' : ($trip->client_present ? 'Yes' : 'No');
+                $clientAddress = $trip->client_address ?? 'N/A';
+
+                $startedAtText = '';
+                if (!empty($trip->started_at)) {
+                    $startedAtText = Carbon::parse($trip->started_at, $appTimezone)
+                        ->timezone($companyTimezone)
+                        ->format($dateTimeFormat);
+                }
+
+                // Prefer end_time (actual end), fall back to ended_at.
+                $endValue = $trip->end_time ?? $trip->ended_at ?? null;
+                $endedAtText = '';
+                if (!empty($endValue)) {
+                    $endedAtText = Carbon::parse($endValue, $appTimezone)
+                        ->timezone($companyTimezone)
+                        ->format($dateTimeFormat);
+                }
+
                 $row = array_merge($row, [
                     $startReadingText,
                     $endReadingText,
-                    $trip->client_present ? 'Yes' : 'No',
-                    $trip->client_address ?? 'N/A',
-                    $trip->started_at,
-                    $trip->ended_at,
+                    $clientPresent,
+                    $clientAddress,
+                    $startedAtText,
+                    $endedAtText,
                 ]);
 
                 fputcsv($file, $row);
@@ -619,9 +656,11 @@ class ReportingService
             fclose($file);
         };
 
+        $todayLocal = Carbon::now($companyTimezone)->format('Y-m-d');
+
         return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="trips_' . date('Y-m-d') . '.csv"',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="trips_' . $todayLocal . '.csv"',
         ]);
     }
 

@@ -109,7 +109,9 @@
                 <div class="sf-ai-result">
                     <h3>{{ $result['title'] ?? 'AI Report' }}</h3>
                     <div class="sf-ai-meta mb-2">{{ $result['subtitle'] ?? '' }}</div>
-                    <div class="sf-ai-meta mb-3">Date range: {{ $result['date_range'] ?? '—' }}</div>
+                    @if(!empty($result['date_range']))
+                        <div class="sf-ai-meta mb-3">Date range: {{ $result['date_range'] }}</div>
+                    @endif
 
                     <h4>Summary</h4>
                     <ul>

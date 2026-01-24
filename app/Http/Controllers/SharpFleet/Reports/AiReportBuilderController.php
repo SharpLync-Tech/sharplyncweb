@@ -8,6 +8,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Services\SharpFleet\ReportAiClient;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -30,7 +31,7 @@ class AiReportBuilderController extends Controller
         ]);
     }
 
-    public function generate(Request $request, ReportAiClient $client): View|RedirectResponse
+    public function generate(Request $request, ReportAiClient $client): View|RedirectResponse|Response
     {
         $user = $request->session()->get('sharpfleet.user');
 
@@ -65,11 +66,29 @@ class AiReportBuilderController extends Controller
         $driverName = is_string($entities['driver'] ?? null) ? trim((string) $entities['driver']) : '';
         $customerName = is_string($entities['customer'] ?? null) ? trim((string) $entities['customer']) : '';
         $vehicleName = is_string($entities['vehicle'] ?? null) ? trim((string) $entities['vehicle']) : '';
+        $userName = is_string($entities['user'] ?? null) ? trim((string) $entities['user']) : '';
+        $branchName = is_string($entities['branch'] ?? null) ? trim((string) $entities['branch']) : '';
+
+        $filters = is_array($intent['filters'] ?? null) ? $intent['filters'] : [];
+        $clientPresent = array_key_exists('client_present', $filters) && is_bool($filters['client_present'])
+            ? $filters['client_present']
+            : null;
+        $hasRegistration = array_key_exists('has_registration', $filters) && is_bool($filters['has_registration'])
+            ? $filters['has_registration']
+            : null;
+        $dateRange = is_array($filters['date_range'] ?? null) ? $filters['date_range'] : [];
+        [$fromDate, $toDate] = $this->parseDateRange(
+            $dateRange['from'] ?? null,
+            $dateRange['to'] ?? null,
+            $settings->timezone()
+        );
 
         $targets = [
             'driver' => null,
             'customer' => null,
             'vehicle' => null,
+            'user' => null,
+            'branch' => null,
         ];
 
         if ($driverName !== '') {
@@ -80,6 +99,12 @@ class AiReportBuilderController extends Controller
         }
         if ($vehicleName !== '') {
             $targets['vehicle'] = $this->resolveTarget($organisationId, 'vehicle', $vehicleName, $settings);
+        }
+        if ($userName !== '') {
+            $targets['user'] = $this->resolveTarget($organisationId, 'user', $userName, $settings);
+        }
+        if ($branchName !== '') {
+            $targets['branch'] = $this->resolveTarget($organisationId, 'branch', $branchName, $settings);
         }
 
         if ($driverName !== '' && $targets['driver'] === null) {
@@ -97,15 +122,49 @@ class AiReportBuilderController extends Controller
                 ->withErrors(['prompt' => 'No matching vehicle found for that request.'])
                 ->withInput();
         }
-
-        $fallbackTarget = $targets['driver'] ?? $targets['customer'] ?? $targets['vehicle'];
-        if ($fallbackTarget === null) {
+        if ($userName !== '' && $targets['user'] === null) {
             return back()
-                ->withErrors(['prompt' => 'No matching driver, customer, or vehicle found for that request.'])
+                ->withErrors(['prompt' => 'No matching user found for that request.'])
+                ->withInput();
+        }
+        if ($branchName !== '' && $targets['branch'] === null) {
+            return back()
+                ->withErrors(['prompt' => 'No matching branch found for that request.'])
                 ->withInput();
         }
 
-        $result = $this->buildReport($organisationId, $user, $fallbackTarget, $settings, $targets);
+        $fallbackTarget = $targets['driver'] ?? $targets['customer'] ?? $targets['vehicle'];
+
+        $reportType = strtolower(trim((string) ($intent['report_type'] ?? 'trips')));
+
+        if ($request->input('export') === 'csv') {
+            return $this->exportReportCsv(
+                $organisationId,
+                $user,
+                $reportType,
+                $fallbackTarget,
+                $settings,
+                $targets,
+                $fromDate,
+                $toDate,
+                $clientPresent,
+                $hasRegistration
+            );
+        }
+
+        $result = $this->buildReport(
+            $organisationId,
+            $user,
+            $reportType,
+            $fallbackTarget,
+            $settings,
+            $targets,
+            $fromDate,
+            $toDate,
+            $clientPresent,
+            $hasRegistration,
+            $this->resolvePerPage($request)
+        );
 
         return view('sharpfleet.admin.reports.ai-report-builder', [
             'prompt' => trim($validated['prompt']),
@@ -120,7 +179,7 @@ class AiReportBuilderController extends Controller
         CompanySettingsService $settings
     ): ?array {
         $name = trim($name);
-        $candidates = [$entityType, 'customer', 'vehicle', 'driver'];
+        $candidates = [$entityType, 'customer', 'vehicle', 'driver', 'user', 'branch'];
 
         foreach ($candidates as $type) {
             if ($type === 'customer') {
@@ -200,6 +259,51 @@ class AiReportBuilderController extends Controller
                     ];
                 }
             }
+
+            if ($type === 'user') {
+                $user = DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('organisation_id', $organisationId)
+                    ->when($name !== '', function ($q) use ($name) {
+                        $q->where(function ($sub) use ($name) {
+                            $sub->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $name . '%')
+                                ->orWhere('first_name', 'like', '%' . $name . '%')
+                                ->orWhere('last_name', 'like', '%' . $name . '%')
+                                ->orWhere('email', 'like', '%' . $name . '%');
+                        });
+                    })
+                    ->orderBy('first_name')
+                    ->first();
+
+                if ($user) {
+                    return [
+                        'type' => 'user',
+                        'id' => (int) $user->id,
+                        'label' => trim((string) $user->first_name . ' ' . (string) $user->last_name),
+                    ];
+                }
+            }
+
+            if ($type === 'branch') {
+                if (!Schema::connection('sharpfleet')->hasTable('branches')) {
+                    continue;
+                }
+
+                $branch = DB::connection('sharpfleet')
+                    ->table('branches')
+                    ->where('organisation_id', $organisationId)
+                    ->when($name !== '', fn ($q) => $q->where('name', 'like', '%' . $name . '%'))
+                    ->orderBy('name')
+                    ->first();
+
+                if ($branch) {
+                    return [
+                        'type' => 'branch',
+                        'id' => (int) $branch->id,
+                        'label' => (string) $branch->name,
+                    ];
+                }
+            }
         }
 
         return null;
@@ -208,17 +312,125 @@ class AiReportBuilderController extends Controller
     private function buildReport(
         int $organisationId,
         array $user,
-        array $target,
+        string $reportType,
+        ?array $target,
         CompanySettingsService $settings,
-        array $targets = []
+        array $targets = [],
+        ?Carbon $fromDate = null,
+        ?Carbon $toDate = null,
+        ?bool $clientPresent = null,
+        ?bool $hasRegistration = null,
+        int $perPage = 10
+    ): array {
+        $reportType = $reportType !== '' ? $reportType : 'trips';
+
+        if ($reportType === 'vehicles') {
+            return $this->buildVehiclesReport(
+                $organisationId,
+                $user,
+                $settings,
+                $targets,
+                $hasRegistration,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'customers_with_trips') {
+            return $this->buildCustomersWithTripsReport(
+                $organisationId,
+                $user,
+                $settings,
+                $fromDate,
+                $toDate,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'customers') {
+            return $this->buildCustomersReport(
+                $organisationId,
+                $user,
+                $settings,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'users') {
+            return $this->buildUsersReport(
+                $organisationId,
+                $user,
+                $settings,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'branches') {
+            return $this->buildBranchesReport(
+                $organisationId,
+                $user,
+                $settings,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'faults') {
+            return $this->buildFaultsReport(
+                $organisationId,
+                $user,
+                $settings,
+                $fromDate,
+                $toDate,
+                $perPage
+            );
+        }
+
+        if ($reportType === 'bookings') {
+            return $this->buildBookingsReport(
+                $organisationId,
+                $user,
+                $settings,
+                $fromDate,
+                $toDate,
+                $perPage
+            );
+        }
+
+        return $this->buildTripsReport(
+            $organisationId,
+            $user,
+            $target,
+            $settings,
+            $targets,
+            $fromDate,
+            $toDate,
+            $clientPresent,
+            $perPage
+        );
+    }
+
+    private function buildTripsReport(
+        int $organisationId,
+        array $user,
+        ?array $target,
+        CompanySettingsService $settings,
+        array $targets = [],
+        ?Carbon $fromDate = null,
+        ?Carbon $toDate = null,
+        ?bool $clientPresent = null,
+        int $perPage = 10
     ): array {
         $reporting = $settings->all()['reporting'] ?? [];
         $includePrivateTrips = (bool) ($reporting['include_private_trips'] ?? true);
 
-        [$startDate, $endDate] = $this->resolveDateRange(
-            $settings->timezone(),
-            (string) ($reporting['default_date_range'] ?? 'month_to_date')
-        );
+        if (!$fromDate && !$toDate) {
+            [$startDate, $endDate] = $this->resolveDateRange(
+                $settings->timezone(),
+                (string) ($reporting['default_date_range'] ?? 'month_to_date')
+            );
+        } else {
+            $startDate = $fromDate;
+            $endDate = $toDate;
+        }
 
         $branchesService = new BranchService();
         $branchesEnabled = $branchesService->branchesEnabled();
@@ -287,13 +499,13 @@ class AiReportBuilderController extends Controller
 
         if (is_array($driverTarget) && isset($driverTarget['id'])) {
             $query->where('trips.user_id', (int) $driverTarget['id']);
-        } elseif ($target['type'] === 'driver') {
+        } elseif (is_array($target) && ($target['type'] ?? '') === 'driver') {
             $query->where('trips.user_id', (int) $target['id']);
         }
 
         if (is_array($vehicleTarget) && isset($vehicleTarget['id'])) {
             $query->where('trips.vehicle_id', (int) $vehicleTarget['id']);
-        } elseif ($target['type'] === 'vehicle') {
+        } elseif (is_array($target) && ($target['type'] ?? '') === 'vehicle') {
             $query->where('trips.vehicle_id', (int) $target['id']);
         }
 
@@ -302,19 +514,24 @@ class AiReportBuilderController extends Controller
                 $sub->where('trips.customer_id', (int) $customerTarget['id'])
                     ->orWhere('trips.customer_name', (string) $customerTarget['label']);
             });
-        } elseif ($target['type'] === 'customer') {
+        } elseif (is_array($target) && ($target['type'] ?? '') === 'customer') {
             $query->where(function ($sub) use ($target) {
                 $sub->where('trips.customer_id', (int) $target['id'])
                     ->orWhere('trips.customer_name', (string) $target['label']);
             });
         }
 
+        if ($clientPresent !== null && Schema::connection('sharpfleet')->hasColumn('trips', 'client_present')) {
+            $query->where('trips.client_present', $clientPresent ? 1 : 0);
+        }
+
         $trips = $query
             ->orderByDesc('trips.started_at')
-            ->get();
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
 
         $displayTrips = [];
-        $totalTrips = $trips->count();
+        $totalTrips = $trips->total();
         $totalSeconds = 0;
         $distanceTotals = ['km' => 0.0, 'mi' => 0.0];
         $vehicleCounts = [];
@@ -381,20 +598,716 @@ class AiReportBuilderController extends Controller
                 . ' - ' . $endDate->copy()->timezone($settings->timezone())->format($dateFormat);
         }
 
+        $titleTarget = is_array($target) ? (string) ($target['label'] ?? 'All trips') : 'All trips';
+        $subtitle = is_array($target)
+            ? 'Based on ' . (string) ($target['type'] ?? 'trip') . ' matching "' . $titleTarget . '"'
+            : 'All trips';
+
         return [
-            'title' => 'Trips Report for ' . $target['label'],
-            'subtitle' => 'Based on ' . $target['type'] . ' matching "' . $target['label'] . '"',
+            'report_type' => 'trips',
+            'title' => 'Trips Report for ' . $titleTarget,
+            'subtitle' => $subtitle,
             'date_range' => $dateRangeLabel,
-            'totals' => [
-                'total_trips' => $totalTrips,
-                'total_distance' => $distanceLabel,
-                'total_drive_time' => $this->formatDuration($totalSeconds),
+            'summary' => [
+                ['label' => 'Total trips', 'value' => $totalTrips],
+                ['label' => 'Total distance', 'value' => $distanceLabel],
+                ['label' => 'Total drive time', 'value' => $this->formatDuration($totalSeconds)],
+                ['label' => 'Vehicle used most', 'value' => $topVehicle ?? '—'],
+                ['label' => 'Purpose', 'value' => $purposeEnabled ? ($topPurpose ?: 'Not captured') : 'Not enabled'],
+                ['label' => 'Top customer visited', 'value' => $customerLinkingEnabled ? ($topCustomer ?: 'None') : 'Not enabled'],
             ],
             'vehicles_used' => array_keys($vehicleCounts),
-            'vehicle_used_most' => $topVehicle,
-            'purpose' => $purposeEnabled ? ($topPurpose ?: 'Not captured') : 'Not enabled',
-            'top_customer' => $customerLinkingEnabled ? ($topCustomer ?: 'None') : 'Not enabled',
-            'trips' => $displayTrips,
+            'columns' => [
+                ['key' => 'started_at', 'label' => 'Started'],
+                ['key' => 'ended_at', 'label' => 'Ended'],
+                ['key' => 'vehicle', 'label' => 'Vehicle'],
+                ['key' => 'distance', 'label' => 'Distance'],
+                ['key' => 'duration', 'label' => 'Duration'],
+                ['key' => 'purpose', 'label' => 'Purpose'],
+                ['key' => 'customer', 'label' => 'Customer'],
+            ],
+            'rows' => $displayTrips,
+            'paginator' => $trips,
+        ];
+    }
+
+    private function buildVehiclesReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        array $targets,
+        ?bool $hasRegistration,
+        int $perPage
+    ): array {
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+
+        $hasBranches = Schema::connection('sharpfleet')->hasTable('branches');
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+        $hasRegistrationExpiry = Schema::connection('sharpfleet')->hasColumn('vehicles', 'registration_expiry');
+        $hasRoadRegistered = Schema::connection('sharpfleet')->hasColumn('vehicles', 'is_road_registered');
+
+        $query = DB::connection('sharpfleet')
+            ->table('vehicles as v')
+            ->leftJoin('branches as b', 'v.branch_id', '=', 'b.id')
+            ->where('v.organisation_id', $organisationId)
+            ->where('v.is_active', 1);
+
+        if ($branchScopeEnabled && $hasBranchId && count($accessibleBranchIds) > 0) {
+            $query->whereIn('v.branch_id', $accessibleBranchIds);
+        }
+
+        if ($hasRegistration === true) {
+            $query->whereNotNull('v.registration_number')
+                ->where('v.registration_number', '!=', '');
+        }
+
+        $rows = $query->select([
+            'v.id',
+            'v.name',
+            'v.registration_number',
+            $hasRegistrationExpiry ? 'v.registration_expiry' : DB::raw('NULL as registration_expiry'),
+            $hasRoadRegistered ? 'v.is_road_registered' : DB::raw('NULL as is_road_registered'),
+            $hasBranchId ? 'v.branch_id' : DB::raw('NULL as branch_id'),
+            $hasBranches ? DB::raw('COALESCE(b.name, "") as branch_name') : DB::raw('NULL as branch_name'),
+        ])
+            ->orderBy('v.name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $dateFormat = $settings->dateFormat();
+        $timezone = $settings->timezone();
+
+        $mapped = $rows->map(function ($row) use ($dateFormat, $timezone, $hasRegistrationExpiry, $hasRoadRegistered) {
+            $expiry = $hasRegistrationExpiry && !empty($row->registration_expiry)
+                ? $this->formatDate($row->registration_expiry, $timezone, $dateFormat)
+                : '—';
+
+            $road = $hasRoadRegistered
+                ? ((int) ($row->is_road_registered ?? 0) === 1 ? 'Yes' : 'No')
+                : '—';
+
+            return [
+                'vehicle' => (string) ($row->name ?? '—'),
+                'registration_number' => (string) ($row->registration_number ?? '—'),
+                'registration_expiry' => $expiry,
+                'road_registered' => $road,
+                'branch' => (string) ($row->branch_name ?? '—'),
+            ];
+        });
+
+        return [
+            'report_type' => 'vehicles',
+            'title' => 'Vehicle Report',
+            'subtitle' => $hasRegistration ? 'Vehicles with registration numbers.' : 'All active vehicles.',
+            'summary' => [
+                ['label' => 'Total vehicles', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'vehicle', 'label' => 'Vehicle'],
+                ['key' => 'registration_number', 'label' => 'Registration number'],
+                ['key' => 'registration_expiry', 'label' => 'Registration expiry'],
+                ['key' => 'road_registered', 'label' => 'Road registered'],
+                ['key' => 'branch', 'label' => 'Branch'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildCustomersReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        int $perPage
+    ): array {
+        if (!$this->customerLinkingEnabled($organisationId, $settings)) {
+            return [
+                'report_type' => 'customers',
+                'title' => 'Customers',
+                'subtitle' => 'Customer capture is not enabled for this organisation.',
+                'summary' => [],
+                'columns' => [],
+                'rows' => [],
+                'paginator' => null,
+            ];
+        }
+
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $hasBranches = Schema::connection('sharpfleet')->hasTable('branches');
+
+        $query = DB::connection('sharpfleet')
+            ->table('customers as c')
+            ->leftJoin('branches as b', 'c.branch_id', '=', 'b.id')
+            ->where('c.organisation_id', $organisationId)
+            ->where('c.is_active', 1);
+
+        if ($branchScopeEnabled && $hasBranchId && count($accessibleBranchIds) > 0) {
+            $query->whereIn('c.branch_id', $accessibleBranchIds);
+        }
+
+        $rows = $query->select([
+            'c.id',
+            'c.name',
+            $hasBranchId ? 'c.branch_id' : DB::raw('NULL as branch_id'),
+            $hasBranches ? DB::raw('COALESCE(b.name, "") as branch_name') : DB::raw('NULL as branch_name'),
+            'c.created_at',
+        ])
+            ->orderBy('c.name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $dateFormat = $settings->dateFormat();
+        $timezone = $settings->timezone();
+
+        $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
+            return [
+                'customer' => (string) ($row->name ?? '—'),
+                'branch' => (string) ($row->branch_name ?? '—'),
+                'created_at' => $this->formatDate($row->created_at, $timezone, $dateFormat),
+            ];
+        });
+
+        return [
+            'report_type' => 'customers',
+            'title' => 'Customer Report',
+            'subtitle' => 'All active customers.',
+            'summary' => [
+                ['label' => 'Total customers', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'customer', 'label' => 'Customer'],
+                ['key' => 'branch', 'label' => 'Branch'],
+                ['key' => 'created_at', 'label' => 'Created'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildCustomersWithTripsReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        ?Carbon $fromDate,
+        ?Carbon $toDate,
+        int $perPage
+    ): array {
+        if (!$this->customerLinkingEnabled($organisationId, $settings)) {
+            return [
+                'report_type' => 'customers_with_trips',
+                'title' => 'Customers & Trips',
+                'subtitle' => 'Customer capture is not enabled for this organisation.',
+                'summary' => [],
+                'columns' => [],
+                'rows' => [],
+                'paginator' => null,
+            ];
+        }
+
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $hasVehicleBranch = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
+        $query = DB::connection('sharpfleet')
+            ->table('customers as c')
+            ->leftJoin('trips as t', function ($join) use ($organisationId, $fromDate, $toDate) {
+                $join->on('t.customer_id', '=', 'c.id')
+                    ->where('t.organisation_id', '=', $organisationId);
+                if ($fromDate) {
+                    $join->where('t.started_at', '>=', $fromDate->toDateTimeString());
+                }
+                if ($toDate) {
+                    $join->where('t.started_at', '<=', $toDate->toDateTimeString());
+                }
+            })
+            ->leftJoin('vehicles as v', 't.vehicle_id', '=', 'v.id')
+            ->where('c.organisation_id', $organisationId)
+            ->where('c.is_active', 1);
+
+        if ($branchScopeEnabled && $hasBranchId && count($accessibleBranchIds) > 0) {
+            $query->whereIn('c.branch_id', $accessibleBranchIds);
+        }
+
+        if ($branchScopeEnabled && $hasVehicleBranch && count($accessibleBranchIds) > 0) {
+            $query->where(function ($sub) use ($accessibleBranchIds) {
+                $sub->whereNull('t.vehicle_id')
+                    ->orWhereIn('v.branch_id', $accessibleBranchIds);
+            });
+        }
+
+        $rows = $query->select([
+            'c.id',
+            'c.name',
+            DB::raw('COUNT(t.id) as trip_count'),
+            DB::raw('MAX(t.started_at) as last_trip_at'),
+        ])
+            ->groupBy('c.id', 'c.name')
+            ->orderBy('c.name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $dateFormat = $settings->dateFormat();
+        $timezone = $settings->timezone();
+
+        $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
+            $lastTrip = $row->last_trip_at
+                ? $this->formatDateTime($row->last_trip_at, $timezone, $dateFormat, 'H:i')
+                : '—';
+
+            return [
+                'customer' => (string) ($row->name ?? '—'),
+                'trip_count' => (int) ($row->trip_count ?? 0),
+                'last_trip' => $lastTrip,
+            ];
+        });
+
+        return [
+            'report_type' => 'customers_with_trips',
+            'title' => 'Customers & Trips',
+            'subtitle' => 'Customers with trips logged against them.',
+            'summary' => [
+                ['label' => 'Total customers', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'customer', 'label' => 'Customer'],
+                ['key' => 'trip_count', 'label' => 'Trips'],
+                ['key' => 'last_trip', 'label' => 'Last trip'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildUsersReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        int $perPage
+    ): array {
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('users', 'branch_id');
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+
+        $query = DB::connection('sharpfleet')
+            ->table('users')
+            ->where('organisation_id', $organisationId);
+
+        if ($branchScopeEnabled && $hasBranchId && count($accessibleBranchIds) > 0) {
+            $query->whereIn('branch_id', $accessibleBranchIds);
+        }
+
+        $rows = $query->select([
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'is_driver',
+            'is_active',
+            'archived_at',
+        ])
+            ->orderBy('first_name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $mapped = $rows->map(function ($row) {
+            $status = (int) ($row->is_active ?? 0) === 1 ? 'Active' : 'Inactive';
+            if (!empty($row->archived_at)) {
+                $status = 'Archived';
+            }
+
+            return [
+                'user' => trim((string) ($row->first_name ?? '') . ' ' . (string) ($row->last_name ?? '')),
+                'email' => (string) ($row->email ?? '—'),
+                'role' => (string) ($row->role ?? '—'),
+                'driver' => (int) ($row->is_driver ?? 0) === 1 ? 'Yes' : 'No',
+                'status' => $status,
+            ];
+        });
+
+        return [
+            'report_type' => 'users',
+            'title' => 'User Report',
+            'subtitle' => 'All users for this organisation.',
+            'summary' => [
+                ['label' => 'Total users', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'user', 'label' => 'User'],
+                ['key' => 'email', 'label' => 'Email'],
+                ['key' => 'role', 'label' => 'Role'],
+                ['key' => 'driver', 'label' => 'Driver'],
+                ['key' => 'status', 'label' => 'Status'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildBranchesReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        int $perPage
+    ): array {
+        if (!Schema::connection('sharpfleet')->hasTable('branches')) {
+            return [
+                'report_type' => 'branches',
+                'title' => 'Branches',
+                'subtitle' => 'Branches are not enabled for this organisation.',
+                'summary' => [],
+                'columns' => [],
+                'rows' => [],
+                'paginator' => null,
+            ];
+        }
+
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+
+        $query = DB::connection('sharpfleet')
+            ->table('branches as b')
+            ->leftJoin('vehicles as v', 'v.branch_id', '=', 'b.id')
+            ->where('b.organisation_id', $organisationId);
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) > 0) {
+            $query->whereIn('b.id', $accessibleBranchIds);
+        }
+
+        $rows = $query->select([
+            'b.id',
+            'b.name',
+            Schema::connection('sharpfleet')->hasColumn('branches', 'timezone')
+                ? 'b.timezone'
+                : DB::raw('NULL as timezone'),
+            DB::raw('COUNT(v.id) as vehicle_count'),
+        ])
+            ->groupBy('b.id', 'b.name', 'b.timezone')
+            ->orderBy('b.name')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $mapped = $rows->map(function ($row) {
+            return [
+                'branch' => (string) ($row->name ?? '—'),
+                'timezone' => (string) ($row->timezone ?? '—'),
+                'vehicles' => (int) ($row->vehicle_count ?? 0),
+            ];
+        });
+
+        return [
+            'report_type' => 'branches',
+            'title' => 'Branch Report',
+            'subtitle' => 'Branch summary and vehicle counts.',
+            'summary' => [
+                ['label' => 'Total branches', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'branch', 'label' => 'Branch'],
+                ['key' => 'timezone', 'label' => 'Timezone'],
+                ['key' => 'vehicles', 'label' => 'Vehicles'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildFaultsReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        ?Carbon $fromDate,
+        ?Carbon $toDate,
+        int $perPage
+    ): array {
+        if (!Schema::connection('sharpfleet')->hasTable('faults')) {
+            return [
+                'report_type' => 'faults',
+                'title' => 'Faults',
+                'subtitle' => 'Fault reporting is not available.',
+                'summary' => [],
+                'columns' => [],
+                'rows' => [],
+                'paginator' => null,
+            ];
+        }
+
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+        $hasVehicleBranch = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
+        $query = DB::connection('sharpfleet')
+            ->table('faults as f')
+            ->leftJoin('vehicles as v', 'f.vehicle_id', '=', 'v.id')
+            ->leftJoin('users as u', 'f.user_id', '=', 'u.id')
+            ->where('f.organisation_id', $organisationId);
+
+        if ($branchScopeEnabled && $hasVehicleBranch && count($accessibleBranchIds) > 0) {
+            $query->whereIn('v.branch_id', $accessibleBranchIds);
+        }
+
+        if ($fromDate) {
+            $query->where('f.created_at', '>=', $fromDate->toDateTimeString());
+        }
+        if ($toDate) {
+            $query->where('f.created_at', '<=', $toDate->toDateTimeString());
+        }
+
+        $rows = $query->select([
+            'f.id',
+            'f.status',
+            'f.severity',
+            Schema::connection('sharpfleet')->hasColumn('faults', 'report_type')
+                ? 'f.report_type'
+                : DB::raw('NULL as report_type'),
+            'f.created_at',
+            'v.name as vehicle_name',
+            'v.registration_number as vehicle_registration_number',
+            DB::raw("CONCAT(u.first_name, ' ', u.last_name) as driver_name"),
+        ])
+            ->orderByDesc('f.created_at')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $dateFormat = $settings->dateFormat();
+        $timezone = $settings->timezone();
+
+        $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
+            return [
+                'created_at' => $this->formatDateTime($row->created_at, $timezone, $dateFormat, 'H:i'),
+                'vehicle' => trim((string) ($row->vehicle_name ?? '')),
+                'registration_number' => (string) ($row->vehicle_registration_number ?? '—'),
+                'driver' => (string) ($row->driver_name ?? '—'),
+                'severity' => (string) ($row->severity ?? '—'),
+                'status' => (string) ($row->status ?? '—'),
+                'type' => (string) ($row->report_type ?? '—'),
+            ];
+        });
+
+        return [
+            'report_type' => 'faults',
+            'title' => 'Faults Report',
+            'subtitle' => 'Reported vehicle issues and accidents.',
+            'summary' => [
+                ['label' => 'Total faults', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'created_at', 'label' => 'Reported'],
+                ['key' => 'vehicle', 'label' => 'Vehicle'],
+                ['key' => 'registration_number', 'label' => 'Registration number'],
+                ['key' => 'driver', 'label' => 'Driver'],
+                ['key' => 'severity', 'label' => 'Severity'],
+                ['key' => 'status', 'label' => 'Status'],
+                ['key' => 'type', 'label' => 'Type'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function buildBookingsReport(
+        int $organisationId,
+        array $user,
+        CompanySettingsService $settings,
+        ?Carbon $fromDate,
+        ?Carbon $toDate,
+        int $perPage
+    ): array {
+        if (!Schema::connection('sharpfleet')->hasTable('bookings')) {
+            return [
+                'report_type' => 'bookings',
+                'title' => 'Bookings',
+                'subtitle' => 'Bookings are not available for this organisation.',
+                'summary' => [],
+                'columns' => [],
+                'rows' => [],
+                'paginator' => null,
+            ];
+        }
+
+        $branchScope = $this->resolveBranchScope($organisationId, $user);
+        [$branchScopeEnabled, $accessibleBranchIds] = $branchScope;
+        $hasBookingBranch = Schema::connection('sharpfleet')->hasColumn('bookings', 'branch_id');
+        $hasVehicleBranch = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+        $hasCustomers = Schema::connection('sharpfleet')->hasTable('customers');
+
+        $query = DB::connection('sharpfleet')
+            ->table('bookings')
+            ->leftJoin('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id')
+            ->leftJoin('users', 'bookings.user_id', '=', 'users.id');
+
+        if ($hasCustomers) {
+            $query->leftJoin('customers', 'bookings.customer_id', '=', 'customers.id');
+        }
+
+        $query->where('bookings.organisation_id', $organisationId);
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) > 0) {
+            if ($hasBookingBranch) {
+                $query->whereIn('bookings.branch_id', $accessibleBranchIds);
+            } elseif ($hasVehicleBranch) {
+                $query->whereIn('vehicles.branch_id', $accessibleBranchIds);
+            }
+        }
+
+        if ($fromDate) {
+            $query->where('bookings.planned_start', '>=', $fromDate->toDateTimeString());
+        }
+        if ($toDate) {
+            $query->where('bookings.planned_start', '<=', $toDate->toDateTimeString());
+        }
+
+        $rows = $query->select([
+            'bookings.id',
+            'bookings.planned_start',
+            'bookings.planned_end',
+            'bookings.created_at',
+            'vehicles.name as vehicle_name',
+            'vehicles.registration_number',
+            DB::raw("CONCAT(users.first_name, ' ', users.last_name) as driver_name"),
+            $hasCustomers
+                ? DB::raw('COALESCE(customers.name, bookings.customer_name) as customer_name_display')
+                : DB::raw('bookings.customer_name as customer_name_display'),
+        ])
+            ->orderByDesc('bookings.planned_start')
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
+
+        $dateFormat = $settings->dateFormat();
+        $timezone = $settings->timezone();
+
+        $mapped = $rows->map(function ($row) use ($dateFormat, $timezone) {
+            return [
+                'planned_start' => $this->formatDateTime($row->planned_start, $timezone, $dateFormat, 'H:i'),
+                'planned_end' => $this->formatDateTime($row->planned_end, $timezone, $dateFormat, 'H:i'),
+                'vehicle' => (string) ($row->vehicle_name ?? '—'),
+                'registration_number' => (string) ($row->registration_number ?? '—'),
+                'driver' => (string) ($row->driver_name ?? '—'),
+                'customer' => (string) ($row->customer_name_display ?? '—'),
+            ];
+        });
+
+        return [
+            'report_type' => 'bookings',
+            'title' => 'Bookings Report',
+            'subtitle' => 'Upcoming and historical bookings.',
+            'summary' => [
+                ['label' => 'Total bookings', 'value' => $rows->total()],
+            ],
+            'columns' => [
+                ['key' => 'planned_start', 'label' => 'Planned start'],
+                ['key' => 'planned_end', 'label' => 'Planned end'],
+                ['key' => 'vehicle', 'label' => 'Vehicle'],
+                ['key' => 'registration_number', 'label' => 'Registration number'],
+                ['key' => 'driver', 'label' => 'Driver'],
+                ['key' => 'customer', 'label' => 'Customer'],
+            ],
+            'rows' => $mapped->all(),
+            'paginator' => $rows,
+        ];
+    }
+
+    private function exportReportCsv(
+        int $organisationId,
+        array $user,
+        string $reportType,
+        ?array $target,
+        CompanySettingsService $settings,
+        array $targets,
+        ?Carbon $fromDate,
+        ?Carbon $toDate,
+        ?bool $clientPresent,
+        ?bool $hasRegistration
+    ): Response {
+        $result = $this->buildReport(
+            $organisationId,
+            $user,
+            $reportType,
+            $target,
+            $settings,
+            $targets,
+            $fromDate,
+            $toDate,
+            $clientPresent,
+            $hasRegistration,
+            10000
+        );
+
+        $columns = $result['columns'] ?? [];
+        $rows = $result['rows'] ?? [];
+        $filename = strtolower(str_replace(' ', '-', $result['title'] ?? 'report')) . '.csv';
+
+        return response()->streamDownload(function () use ($columns, $rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, array_map(fn ($c) => $c['label'] ?? '', $columns));
+            foreach ($rows as $row) {
+                $line = [];
+                foreach ($columns as $col) {
+                    $key = $col['key'] ?? '';
+                    $line[] = $key !== '' ? ($row[$key] ?? '') : '';
+                }
+                fputcsv($out, $line);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function resolveBranchScope(int $organisationId, array $user): array
+    {
+        $branchService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        $branchScopeEnabled = !$bypassBranchRestrictions
+            && $branchService->branchesEnabled()
+            && $branchService->vehiclesHaveBranchSupport()
+            && $branchService->userBranchAccessEnabled();
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchService->getAccessibleBranchIdsForUser($organisationId, (int) ($user['id'] ?? 0))
+            : [];
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        return [$branchScopeEnabled, $accessibleBranchIds];
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 10);
+        $allowed = [10, 25, 50, 100];
+        return in_array($perPage, $allowed, true) ? $perPage : 10;
+    }
+
+    private function parseDateRange(?string $from, ?string $to, string $timezone): array
+    {
+        $fromDate = null;
+        $toDate = null;
+
+        try {
+            if (is_string($from) && trim($from) !== '') {
+                $fromDate = Carbon::parse(trim($from), $timezone)->startOfDay();
+            }
+        } catch (\Throwable $e) {
+            $fromDate = null;
+        }
+
+        try {
+            if (is_string($to) && trim($to) !== '') {
+                $toDate = Carbon::parse(trim($to), $timezone)->endOfDay();
+            }
+        } catch (\Throwable $e) {
+            $toDate = null;
+        }
+
+        $appTz = (string) (config('app.timezone') ?: 'UTC');
+        return [
+            $fromDate ? $fromDate->copy()->setTimezone($appTz) : null,
+            $toDate ? $toDate->copy()->setTimezone($appTz) : null,
         ];
     }
 
@@ -561,6 +1474,19 @@ class AiReportBuilderController extends Controller
 
         try {
             return Carbon::parse($value)->timezone($timezone)->format($dateFormat . ' ' . $timeFormat);
+        } catch (\Throwable $e) {
+            return (string) $value;
+        }
+    }
+
+    private function formatDate(?string $value, string $timezone, string $dateFormat): string
+    {
+        if (!$value) {
+            return 'â€”';
+        }
+
+        try {
+            return Carbon::parse($value)->timezone($timezone)->format($dateFormat);
         } catch (\Throwable $e) {
             return (string) $value;
         }
