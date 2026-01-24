@@ -30,12 +30,12 @@
             <input type="text" name="name" value="{{ old('name') }}" required class="form-control" placeholder="e.g. Brisbane Depot">
             @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
-            <label class="form-label mt-2">Timezone (IANA)</label>
+            <label class="form-label mt-2">Timezone</label>
             <select name="timezone" required class="form-control">
                 @php($selectedTimezone = (string) old('timezone', $defaultTimezone))
                 @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
             </select>
-            <div class="form-hint">Use an IANA timezone for correct DST handling (e.g. Europe/London).</div>
+            <div class="form-hint"></div>
             @error('timezone') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
             <input type="hidden" name="is_default" value="0">
