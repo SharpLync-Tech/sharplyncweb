@@ -54,7 +54,31 @@ class AiReportBuilderController extends Controller
                 ->withInput();
         }
 
-        $target = $this->resolveTarget($organisationId, $intent['entity_type'], $intent['name'], $settings);
+        if (!empty($intent['unsupported'])) {
+            return back()
+                ->withErrors(['prompt' => 'That request is not supported yet. Try a driver, customer, or vehicle name.'])
+                ->withInput();
+        }
+
+        $entities = is_array($intent['entities'] ?? null) ? $intent['entities'] : [];
+        $driverName = is_string($entities['driver'] ?? null) ? trim((string) $entities['driver']) : '';
+        $customerName = is_string($entities['customer'] ?? null) ? trim((string) $entities['customer']) : '';
+        $vehicleName = is_string($entities['vehicle'] ?? null) ? trim((string) $entities['vehicle']) : '';
+
+        $entityType = 'unknown';
+        $entityName = '';
+        if ($driverName !== '') {
+            $entityType = 'driver';
+            $entityName = $driverName;
+        } elseif ($customerName !== '') {
+            $entityType = 'customer';
+            $entityName = $customerName;
+        } elseif ($vehicleName !== '') {
+            $entityType = 'vehicle';
+            $entityName = $vehicleName;
+        }
+
+        $target = $this->resolveTarget($organisationId, $entityType, $entityName, $settings);
         if ($target === null) {
             return back()
                 ->withErrors(['prompt' => 'No matching driver, customer, or vehicle found for that request.'])
