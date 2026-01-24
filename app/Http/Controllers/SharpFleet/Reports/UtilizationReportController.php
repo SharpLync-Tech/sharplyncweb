@@ -147,13 +147,18 @@ class UtilizationReportController extends Controller
             $minutes = (int) floor(($totalSeconds % 3600) / 60);
             $durationLabel = $totalSeconds > 0 ? ($hours . 'h ' . $minutes . 'm') : '0h 0m';
 
-            $denominator = max(1, (int) $availabilitySeconds);
-            $utilization = round(($totalSeconds / $denominator) * 100, 1);
+            if ($availabilitySeconds <= 0) {
+                $utilization = 0.0;
+            } else {
+                $utilization = round(($totalSeconds / $availabilitySeconds) * 100, 1);
+            }
             if ($utilization > 100) {
                 $utilization = 100.0;
             }
 
-            $availableHours = round($denominator / 3600, 1);
+            $availableHours = $availabilitySeconds > 0
+                ? round($availabilitySeconds / 3600, 1)
+                : 0.0;
             $usedHours = round($totalSeconds / 3600, 1);
 
             $lastUsed = $row->last_used_at
@@ -253,7 +258,7 @@ class UtilizationReportController extends Controller
         string $workEnd
     ): int {
         if ($preset === '24_7') {
-            return max(1, $rangeEnd->diffInSeconds($rangeStart));
+            return $rangeEnd->diffInSeconds($rangeStart);
         }
 
         $daySet = collect($days ?? [])
@@ -273,7 +278,7 @@ class UtilizationReportController extends Controller
         $endMinutes = ((int) ($endParts[0] ?? 0) * 60) + (int) ($endParts[1] ?? 0);
 
         if ($endMinutes <= $startMinutes) {
-            return max(1, $rangeEnd->diffInSeconds($rangeStart));
+            return $rangeEnd->diffInSeconds($rangeStart);
         }
 
         $totalSeconds = 0;
@@ -299,7 +304,7 @@ class UtilizationReportController extends Controller
             $cursor->addDay();
         }
 
-        return max(1, $totalSeconds);
+        return $totalSeconds;
     }
 
     private function streamCsv(
