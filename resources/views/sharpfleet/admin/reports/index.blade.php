@@ -125,8 +125,7 @@
             <h4>Trips &amp; Compliance</h4>
             <p>Compliance-ready trip reporting with export for audit and review.</p>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-secondary btn-sm">View report</a>
-                <a href="/app/sharpfleet/admin/reports/trips?export=csv" class="btn btn-secondary btn-sm">Export CSV</a>
+                <a href="/app/sharpfleet/admin/reports/trips" class="btn btn-secondary btn-sm">View report</a>                
             </div>
         </div>
     </div>
