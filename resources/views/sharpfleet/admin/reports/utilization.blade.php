@@ -145,9 +145,7 @@
                     </div>
                 </div>
 
-                <div class="sf-advanced-wrap sf-advanced-inline">
-                    <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">Advanced availability</button>
-                </div>
+                <div></div>
             </div>
 
             <div class="sf-advanced-panel mt-3 {{ $uiAvailabilityPreset === 'custom' ? 'is-open' : '' }}" id="sfAdvancedPanel">
@@ -194,6 +192,7 @@
 
             <div class="mt-3 sf-apply-row">
                 <button type="submit" class="btn-sf-navy">Apply</button>
+                <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">Advanced availability</button>
             </div>
         </div>
     </form>
@@ -472,15 +471,13 @@
     }
 
     .sf-availability-col {
-        padding-top: 22px;
-    }
-
-    .sf-advanced-inline {
-        padding-top: 28px;
+        padding-top: 0;
     }
 
     .sf-apply-row {
         display: flex;
+        align-items: center;
+        gap: 12px;
         justify-content: flex-start;
     }
 
