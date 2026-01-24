@@ -125,7 +125,6 @@
                     </div>
                 </div>
 
-                <div></div>
                 <div class="sf-availability-col">
                     <label class="form-label">Availability</label>
                     <div class="sf-report-select">
@@ -145,6 +144,7 @@
                         7:00am - 5:00pm, Monday to Friday
                     </div>
                 </div>
+                <div></div>
             </div>
 
             <div class="sf-advanced-panel mt-3 {{ $uiAvailabilityPreset === 'custom' ? 'is-open' : '' }}" id="sfAdvancedPanel">
