@@ -321,6 +321,24 @@ class UtilizationReportController extends Controller
             $cursor->addDay();
         }
 
+        if ($totalSeconds === 0 && $rangeEnd->greaterThan($rangeStart)) {
+            $dailySeconds = max(0, ($endMinutes - $startMinutes) * 60);
+            if ($dailySeconds === 0) {
+                return 0;
+            }
+
+            $days = 0;
+            $cursor = $rangeStart->copy()->startOfDay();
+            $endDay = $rangeEnd->copy()->startOfDay();
+            while ($cursor->lte($endDay)) {
+                if (in_array($cursor->dayOfWeek, $daySet, true)) {
+                    $days++;
+                }
+                $cursor->addDay();
+            }
+            return $days * $dailySeconds;
+        }
+
         return $totalSeconds;
     }
 
