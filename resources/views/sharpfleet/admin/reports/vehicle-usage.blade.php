@@ -140,7 +140,7 @@
             </div>
 
             <div class="mt-3 text-end">
-                <button type="submit" class="btn btn-outline-primary">
+                <button type="submit" class="btn-sf-navy">
                     Update Report
                 </button>
             </div>

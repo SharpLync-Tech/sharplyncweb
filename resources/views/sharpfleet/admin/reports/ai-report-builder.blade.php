@@ -61,7 +61,7 @@
                     Generate tailored fleet reports using AI-assisted analysis. Designed for advanced users to explore data beyond standard reports.
                 </p>
             </div>
-            <a href="/app/sharpfleet/admin/reports" class="btn-sf-navy btn-sm">Back to reports</a>
+            <a href="/app/sharpfleet/admin/reports" class="btn btn-sf-secondary">Back to reports</a>
         </div>
     </div>
 
@@ -82,7 +82,7 @@
                         <div class="text-danger small mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-secondary btn-sm">Generate report</button>
+                <button type="submit" class="btn-sf-navy btn-sm">Generate report</button>
                 <div class="sf-ai-meta mt-2">
                     Beta features may change and are not recommended for formal reporting at this stage.
                 </div>
