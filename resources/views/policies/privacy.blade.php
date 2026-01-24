@@ -175,7 +175,7 @@
 
     <ul>
         <li>Email: privacy@sharplync.com.au</li>
-        <li>Phone: 0404 442 066</li>
+        <li>Phone: 0492 014 463</li>
         <li>Address: PO Box 1081, Stanthorpe QLD 4380</li>
     </ul>
 </div>

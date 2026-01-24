@@ -596,11 +596,28 @@
                 return;
             }
 
-            periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, {
-                dateFormat: 'Y-m-d',
-                altInput: true,
-                altFormat: '{{ $dateFormat }}'
-            }));
+            const weekOptions = period === 'week'
+                ? {
+                    altInput: true,
+                    altFormat: '\\W\\e\\e\\k\\ \\o\\f {{ $dateFormat }}',
+                    dateFormat: 'Y-m-d',
+                    onChange: function (selectedDates) {
+                        if (!selectedDates || !selectedDates.length) return;
+                        const picked = selectedDates[0];
+                        const day = picked.getDay(); // 0 Sun - 6 Sat
+                        const diff = (day === 0 ? -6 : 1 - day);
+                        const weekStart = new Date(picked);
+                        weekStart.setDate(picked.getDate() + diff);
+                        periodPicker.setDate(weekStart, false);
+                    }
+                }
+                : {
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: '{{ $dateFormat }}'
+                };
+
+            periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, weekOptions));
         }
 
         const initialScope = document.querySelector('input[name="scope"]:checked');
