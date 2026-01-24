@@ -29,7 +29,10 @@
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y'
         : 'd/m/Y';
-    $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
+
+    $datePlaceholder = $dateFormat === 'm/d/Y'
+        ? 'mm/dd/yyyy'
+        : 'dd/mm/yyyy';
 
     /*
     |--------------------------------------------------------------------------
@@ -65,6 +68,7 @@
     <form method="GET"
           action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"
           class="card sf-report-card mb-3">
+
         <div class="card-body">
 
             <div class="grid grid-4 align-end">
@@ -101,14 +105,14 @@
                 <div>
                     <label class="form-label">Branch</label>
 
-                    <div class="sf-report-select {{ $uiScope !== 'branch' ? 'is-disabled' : '' }}">
+                    <div class="sf-report-select">
                         <select name="branch_id"
                                 class="form-select"
                                 {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
                             <option value="">All branches</option>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}"
-                                    {{ (string)$uiBranchId === (string)$branch->id ? 'selected' : '' }}>
+                                    {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
                                     {{ $branch->name }}
                                 </option>
                             @endforeach
@@ -222,7 +226,12 @@
                                     <td class="text-end">{{ $v->total_distance_km }} km</td>
                                     <td class="text-end">{{ $v->total_duration }}</td>
                                     <td class="text-end">{{ $v->average_distance_km }} km</td>
-                                    <td>{{ $v->last_used_at ?? '—' }}</td>
+                                    <td>
+                                        {{ $v->last_used_at
+                                            ? Carbon::parse($v->last_used_at)->timezone($companyTimezone)->format($dateFormat)
+                                            : '—'
+                                        }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -244,7 +253,10 @@
 
 @endsection
 
+{{-- ================= STYLES ================= --}}
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <style>
     .sf-report-card {
         border: 1px solid rgba(255, 255, 255, 0.25);
@@ -270,13 +282,33 @@
         pointer-events: none;
     }
 
-    .sf-report-select.is-disabled {
-        opacity: 0.6;
-        pointer-events: none;
+    .sf-report-select .form-select {
+        appearance: none;
+        border-radius: 10px;
+        border: 1px solid rgba(10, 42, 77, 0.2);
+        padding: 10px 36px 10px 12px;
+        background: #f7fafc;
+        font-weight: 600;
+        color: #0A2A4D;
     }
 
     tr[data-trip-count="0"] {
         opacity: 0.65;
     }
 </style>
+@endpush
+
+{{-- ================= SCRIPTS ================= --}}
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr('.sf-date', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: '{{ $dateFormat }}',
+            allowInput: true
+        });
+    });
+</script>
 @endpush
