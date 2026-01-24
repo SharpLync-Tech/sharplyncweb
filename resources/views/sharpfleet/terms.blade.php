@@ -57,8 +57,8 @@
     <div class="card sf-terms-card">
         <div class="card-body sf-terms-content">
             <div class="sf-terms-meta">
-                <span>Version: v1.3</span>
-                <span>Last updated: 1 January 2026</span>
+                <span>Version: v1.4</span>
+                <span>Last updated: 24 January 2026</span>
             </div>
 
             <div class="sf-terms-divider"></div>
