@@ -5,7 +5,8 @@ namespace App\Mail\SharpFleet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\\Mail\\Mailables\\Envelope;
+use Illuminate\\Mail\\Mailables\\Address;
 use Illuminate\Queue\SerializesModels;
 
 class ServiceReminderDigest extends Mailable
@@ -27,6 +28,7 @@ class ServiceReminderDigest extends Mailable
         $subjectOrg = $org !== '' ? (" - {$org}") : '';
 
         return new Envelope(
+            from: new Address(config('mail.from.address'), 'SharpFleet'),
             subject: 'SharpFleet servicing reminders' . $subjectOrg,
         );
     }
@@ -50,3 +52,4 @@ class ServiceReminderDigest extends Mailable
         return [];
     }
 }
+

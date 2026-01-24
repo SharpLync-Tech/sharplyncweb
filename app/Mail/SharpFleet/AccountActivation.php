@@ -24,11 +24,12 @@ class AccountActivation extends Mailable
 
     public function build()
     {
-        return $this->subject('Activate your SharpFleet account')
-                    ->view('emails.sharpfleet.account-activation')
-                    ->with([
-                        'name' => $this->user->first_name,
-                        'activationUrl' => $this->activationUrl,
-                    ]);
+        return $this->from(config('mail.from.address'), 'SharpFleet')
+            ->subject('Activate your SharpFleet account')
+            ->view('emails.sharpfleet.account-activation')
+            ->with([
+                'name' => $this->user->first_name,
+                'activationUrl' => $this->activationUrl,
+            ]);
     }
 }

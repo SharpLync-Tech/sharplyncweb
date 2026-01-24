@@ -87,7 +87,8 @@ class SupportController extends Controller
 
         try {
             Mail::send('emails.sharpfleet.support-request', $viewData, function ($message) use ($email, $name) {
-                $message->to('info@sharplync.com.au')
+                $message->from(config('mail.from.address'), 'SharpFleet')
+                    ->to('info@sharplync.com.au')
                     ->subject('SharpFleet Support Request');
 
                 if ($email !== '') {

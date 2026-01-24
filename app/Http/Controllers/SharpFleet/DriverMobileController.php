@@ -482,7 +482,8 @@ class DriverMobileController extends Controller
 
         try {
             Mail::raw($body, function ($message) use ($email, $name) {
-                $message->to('info@sharplync.com.au')
+                $message->from(config('mail.from.address'), 'SharpFleet')
+                    ->to('info@sharplync.com.au')
                     ->subject('SharpFleet Mobile Support Request');
 
                 if ($email !== '') {
@@ -589,7 +590,8 @@ class DriverMobileController extends Controller
         try {
             $fileContents = Storage::get($path);
             \Mail::send('emails.sharpfleet.fuel-receipt', $mailData, function ($message) use ($recipient, $file, $fileContents) {
-                $message->to($recipient)
+                $message->from(config('mail.from.address'), 'SharpFleet')
+                    ->to($recipient)
                     ->subject('SharpFleet Fuel Receipt');
 
                 $message->attachData($fileContents, $file->getClientOriginalName(), [

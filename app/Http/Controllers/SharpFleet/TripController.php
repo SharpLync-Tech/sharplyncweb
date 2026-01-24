@@ -393,7 +393,8 @@ class TripController extends Controller
 
             try {
                 Mail::raw($body, function ($message) use ($previousDriver, $vehicleLabel) {
-                    $message->to((string) $previousDriver->email)
+                    $message->from(config('mail.from.address'), 'SharpFleet')
+                        ->to((string) $previousDriver->email)
                         ->subject('SharpFleet: Trip closed during handover (' . $vehicleLabel . ')');
                 });
             } catch (\Throwable $e) {
@@ -415,7 +416,8 @@ class TripController extends Controller
 
             try {
                 Mail::raw($body, function ($message) use ($adminEmail, $vehicleLabel) {
-                    $message->to($adminEmail)
+                    $message->from(config('mail.from.address'), 'SharpFleet')
+                        ->to($adminEmail)
                         ->subject('SharpFleet: Trip closed during handover (' . $vehicleLabel . ')');
                 });
             } catch (\Throwable $e) {

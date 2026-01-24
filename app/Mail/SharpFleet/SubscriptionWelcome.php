@@ -5,7 +5,8 @@ namespace App\Mail\SharpFleet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\\Mail\\Mailables\\Envelope;
+use Illuminate\\Mail\\Mailables\\Address;
 use Illuminate\Queue\SerializesModels;
 
 class SubscriptionWelcome extends Mailable
@@ -20,6 +21,7 @@ class SubscriptionWelcome extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: new Address(config('mail.from.address'), 'SharpFleet'),
             subject: 'Welcome to SharpFleet',
         );
     }
@@ -39,3 +41,4 @@ class SubscriptionWelcome extends Mailable
         return [];
     }
 }
+

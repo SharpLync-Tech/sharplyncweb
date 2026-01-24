@@ -5,7 +5,8 @@ namespace App\Mail\SharpFleet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\\Mail\\Mailables\\Envelope;
+use Illuminate\\Mail\\Mailables\\Address;
 use Illuminate\Queue\SerializesModels;
 
 class FaultReported extends Mailable
@@ -34,6 +35,7 @@ class FaultReported extends Mailable
         $typeLabel = ucfirst($this->reportType);
         $subjectOrg = trim($this->organisationName) !== '' ? (' - ' . trim($this->organisationName)) : '';
         return new Envelope(
+            from: new Address(config('mail.from.address'), 'SharpFleet'),
             subject: "SharpFleet {$typeLabel} reported" . $subjectOrg,
         );
     }
@@ -65,3 +67,4 @@ class FaultReported extends Mailable
         return [];
     }
 }
+

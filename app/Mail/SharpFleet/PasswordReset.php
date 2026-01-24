@@ -19,7 +19,8 @@ class PasswordReset extends Mailable
 
     public function build()
     {
-        return $this->subject('Reset your SharpFleet password')
+        return $this->from(config('mail.from.address'), 'SharpFleet')
+            ->subject('Reset your SharpFleet password')
             ->view('emails.sharpfleet.password-reset')
             ->with([
                 'name' => $this->payload->first_name ?? null,
@@ -28,3 +29,4 @@ class PasswordReset extends Mailable
             ]);
     }
 }
+

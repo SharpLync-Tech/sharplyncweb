@@ -33,7 +33,9 @@ class BookingReminder extends Mailable
             // ignore formatting errors
         }
 
-        return $this->subject($subject)
+        return $this->from(config('mail.from.address'), 'SharpFleet')
+            ->subject($subject)
             ->view('emails.sharpfleet.booking-reminder');
     }
 }
+

@@ -21,7 +21,8 @@ class DriverInvitation extends Mailable
 
     public function build()
     {
-        return $this->subject('You\'re invited to SharpFleet')
+        return $this->from(config('mail.from.address'), 'SharpFleet')
+            ->subject('You\'re invited to SharpFleet')
             ->view('emails.sharpfleet.driver-invitation')
             ->with([
                 'organisationName' => $this->invite->organisation_name ?? null,
@@ -29,3 +30,4 @@ class DriverInvitation extends Mailable
             ]);
     }
 }
+

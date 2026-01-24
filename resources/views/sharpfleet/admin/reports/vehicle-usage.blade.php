@@ -253,7 +253,7 @@
 
 {{-- ================= STYLES ================= --}}
 @push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
 
 <style>
     .sf-report-card {
@@ -298,14 +298,56 @@
 
 {{-- ================= SCRIPTS ================= --}}
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://unpkg.com/flatpickr"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        flatpickr('.sf-date', {
-            dateFormat: 'Y-m-d',
-            altInput: true,
-            altFormat: '{{ $dateFormat }}',
-            allowInput: true
+        const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/vehicle-usage"]');
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
+        const branchSelect = document.querySelector('select[name="branch_id"]');
+        const dateInputs = document.querySelectorAll('.sf-date');
+
+        function submitForm() {
+            if (!form) return;
+            form.submit();
+        }
+
+        function updateBranchState(scopeValue) {
+            if (!branchSelect) return;
+            if (scopeValue === 'branch') {
+                branchSelect.disabled = false;
+            } else {
+                branchSelect.value = '';
+                branchSelect.disabled = true;
+            }
+        }
+
+        if (scopeRadios.length && branchSelect) {
+            scopeRadios.forEach(function (radio) {
+                radio.addEventListener('change', function (e) {
+                    updateBranchState(e.target.value);
+                    submitForm();
+                });
+            });
+        }
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', submitForm);
+        }
+
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('.sf-date', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: '{{ $dateFormat }}',
+                allowInput: true,
+                onClose: function () {
+                    submitForm();
+                }
+            });
+        }
+
+        dateInputs.forEach(function (input) {
+            input.addEventListener('change', submitForm);
         });
     });
 </script>

@@ -35,7 +35,9 @@ class BookingChanged extends Mailable
             default => 'Booking updated',
         };
 
-        return $this->subject($subject)
+        return $this->from(config('mail.from.address'), 'SharpFleet')
+            ->subject($subject)
             ->view('emails.sharpfleet.booking-changed');
     }
 }
+

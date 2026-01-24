@@ -5,7 +5,8 @@ namespace App\Mail\SharpFleet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\\Mail\\Mailables\\Envelope;
+use Illuminate\\Mail\\Mailables\\Address;
 use Illuminate\Queue\SerializesModels;
 
 class TrialEndingSoon extends Mailable
@@ -26,6 +27,7 @@ class TrialEndingSoon extends Mailable
             : 'Your SharpFleet trial ends in ' . $this->daysRemaining . ' days';
 
         return new Envelope(
+            from: new Address(config('mail.from.address'), 'SharpFleet'),
             subject: $subject,
         );
     }
@@ -47,3 +49,4 @@ class TrialEndingSoon extends Mailable
         return [];
     }
 }
+
