@@ -746,15 +746,13 @@ details.card[open] .incident-toggle-hint-closed {
 }
 
 /* =====================================================
-   SharpFleet Navy Action Button
-   Distinct standalone button (no primary/secondary)
+   SharpFleet Navy Action Button (Refined)
 ===================================================== */
 
 .btn-sf-navy {
     display: inline-block;
-    padding: 0.65rem 1.7rem;
+    padding: 0.5rem 1.4rem; /* reduced height */
 
-    /* SharpFleet navy base */
     background: linear-gradient(
         180deg,
         #0f3a66 0%,
@@ -762,26 +760,26 @@ details.card[open] .incident-toggle-hint-closed {
     );
 
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     text-decoration: none;
     text-align: center;
 
-    border-radius: 12px;
-    border: 1px solid rgba(44, 191, 174, 0.35);
+    border-radius: 11px;
+    border: 1px solid rgba(44, 191, 174, 0.28);
 
-    /* 3D depth */
+    /* Subtle depth */
     box-shadow:
-        0 10px 24px rgba(10, 42, 77, 0.45),
+        0 8px 18px rgba(10, 42, 77, 0.45),
         inset 0 1px 0 rgba(255, 255, 255, 0.12);
 
     cursor: pointer;
 
     transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
+        transform 0.14s ease,
+        box-shadow 0.14s ease,
+        background 0.14s ease,
+        border-color 0.14s ease;
 }
 
 .btn-sf-navy:hover {
@@ -793,22 +791,23 @@ details.card[open] .incident-toggle-hint-closed {
         #0a2a4d 100%
     );
 
-    border-color: rgba(44, 191, 174, 0.65);
+    border-color: rgba(44, 191, 174, 0.45);
 
     box-shadow:
-        0 14px 34px rgba(10, 42, 77, 0.55),        /* lift */
-        0 0 0 1px rgba(44, 191, 174, 0.45),        /* crisp teal edge */
-        0 0 16px rgba(44, 191, 174, 0.45),         /* teal glow */
-        inset 0 1px 0 rgba(255, 255, 255, 0.18);  /* highlight */
+        0 10px 22px rgba(10, 42, 77, 0.55),  /* lift */
+        0 0 0 1px rgba(44, 191, 174, 0.25),  /* thin teal edge */
+        0 0 6px rgba(44, 191, 174, 0.25),    /* soft glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .btn-sf-navy:active {
     transform: translateY(0);
 
     box-shadow:
-        0 8px 18px rgba(10, 42, 77, 0.45),
-        inset 0 2px 6px rgba(0, 0, 0, 0.25);
+        0 6px 14px rgba(10, 42, 77, 0.45),
+        inset 0 2px 6px rgba(0, 0, 0, 0.28);
 }
+
 
 
 .btn-danger {
