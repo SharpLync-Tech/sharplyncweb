@@ -20,6 +20,20 @@
         flex-direction: column;
         min-height: 170px;
     }
+
+    .sf-report-card:hover {
+        border: 1px solid rgba(44, 191, 174, 0.6); /* SharpFleet teal */
+        border-radius: 14px;
+        padding: 18px;
+        background: rgba(10, 42, 77, 0.85);
+        box-shadow:
+            0 0 0 1px rgba(44, 191, 174, 0.25),
+            0 0 12px rgba(44, 191, 174, 0.35),
+            0 12px 20px rgba(10, 42, 77, 0.15);
+        display: flex;
+        flex-direction: column;
+        min-height: 170px;
+    }
     .sf-report-card h4 {
         margin: 0 0 8px 0;
         font-size: 16px;
