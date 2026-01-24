@@ -126,22 +126,38 @@
                 {{-- Dates --}}
                 <div>
                     <label class="form-label">Start date</label>
-                    <input type="text"
-                           name="start_date"
-                           class="form-control sf-date"
-                           placeholder="{{ $datePlaceholder }}"
-                           value="{{ $uiStartDate }}"
-                           autocomplete="off">
+                    <div class="sf-date-field">
+                        <span class="sf-date-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <input type="text"
+                               name="start_date"
+                               class="form-control sf-date"
+                               placeholder="{{ $datePlaceholder }}"
+                               value="{{ $uiStartDate }}"
+                               autocomplete="off">
+                    </div>
                 </div>
 
                 <div>
                     <label class="form-label">End date</label>
-                    <input type="text"
-                           name="end_date"
-                           class="form-control sf-date"
-                           placeholder="{{ $datePlaceholder }}"
-                           value="{{ $uiEndDate }}"
-                           autocomplete="off">
+                    <div class="sf-date-field">
+                        <span class="sf-date-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <input type="text"
+                               name="end_date"
+                               class="form-control sf-date"
+                               placeholder="{{ $datePlaceholder }}"
+                               value="{{ $uiEndDate }}"
+                               autocomplete="off">
+                    </div>
                 </div>
 
             </div>
@@ -291,6 +307,24 @@
         background: #f7fafc;
         font-weight: 600;
         color: #0A2A4D;
+    }
+
+    .sf-date-field {
+        position: relative;
+    }
+
+    .sf-date-field .sf-date-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2CBFAE;
+        pointer-events: none;
+    }
+
+    .sf-date-field .form-control.sf-date,
+    .sf-date-field .flatpickr-input.form-control {
+        padding-left: 36px;
     }
 
     tr[data-trip-count="0"] {
