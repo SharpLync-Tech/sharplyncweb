@@ -68,7 +68,7 @@
 
                     @foreach ($features as $feature)
                         <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;">
-                            <span aria-hidden="true" class="sf-tick">✔</span>
+                            <span aria-hidden="true" style="color:#2CBFAE;">✔</span>
                             <span>{{ $feature }}</span>
                         </li>
 
