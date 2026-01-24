@@ -107,7 +107,7 @@
           Professional IT support that costs less than most businesses
           spend fixing preventable problems.
         </p>
-        <a href="/pricing" class="learn-more primary">View Pricing</a>
+        <a href="/contact" class="learn-more primary">Contact us for Pricing</a>
       </div>
 
     </div>

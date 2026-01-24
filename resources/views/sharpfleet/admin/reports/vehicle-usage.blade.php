@@ -97,17 +97,20 @@
                 {{-- Branch --}}
                 <div>
                     <label class="form-label">Branch</label>
-                    <select name="branch_id"
-                            class="form-select"
-                            {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
-                        <option value="">All branches</option>
-                        @foreach($branches as $branch)
-                            <option value="{{ $branch->id }}"
-                                {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
-                                {{ $branch->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="sf-report-select">
+                        <select name="branch_id"
+                                class="form-select"
+                                data-auto-submit="1"
+                                {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
+                            <option value="">All branches</option>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}"
+                                    {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
+                                    {{ $branch->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 {{-- Dates --}}
@@ -217,6 +220,42 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+<style>
+    .sf-report-select {
+        position: relative;
+    }
+    .sf-report-select::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid rgba(10, 42, 77, 0.6);
+        border-bottom: 2px solid rgba(10, 42, 77, 0.6);
+        transform: translateY(-50%) rotate(45deg);
+        pointer-events: none;
+    }
+    .sf-report-select .form-select {
+        appearance: none;
+        border-radius: 10px;
+        border: 1px solid rgba(10, 42, 77, 0.2);
+        padding: 10px 36px 10px 12px;
+        background: #f7fafc;
+        font-weight: 600;
+        color: #0A2A4D;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .sf-report-select .form-select:focus {
+        border-color: rgba(57, 183, 170, 0.6);
+        box-shadow: 0 0 0 3px rgba(57, 183, 170, 0.18);
+    }
+    .sf-report-select .form-select:disabled {
+        background: #eef2f6;
+        color: rgba(10, 42, 77, 0.5);
+    }
+</style>
 @endpush
 
 @push('scripts')
@@ -237,6 +276,20 @@
                     instance.altInput.placeholder = displayPlaceholder;
                 }
             },
+        });
+    })();
+</script>
+<script>
+    (function () {
+        const form = document.querySelector('form[action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"]');
+        if (!form) return;
+
+        form.querySelectorAll('select[data-auto-submit="1"]').forEach((select) => {
+            select.addEventListener('change', () => form.submit());
+        });
+
+        form.querySelectorAll('input[type="radio"][name="scope"]').forEach((radio) => {
+            radio.addEventListener('change', () => form.submit());
         });
     })();
 </script>
