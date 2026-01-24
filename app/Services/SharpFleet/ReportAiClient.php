@@ -217,12 +217,16 @@ class ReportAiClient
             $unsupported = $json['unsupported'] ?? null;
             $unsupported = is_bool($unsupported) ? $unsupported : null;
 
-            if ($driver === null && $customer === null && $vehicle === null) {
-                $fallback = $this->fallbackIntentFromPrompt($prompt);
-                if ($fallback !== null) {
-                    $driver = $fallback['driver'] ?? $driver;
-                    $customer = $fallback['customer'] ?? $customer;
-                    $vehicle = $fallback['vehicle'] ?? $vehicle;
+            $fallback = $this->fallbackIntentFromPrompt($prompt);
+            if ($fallback !== null) {
+                if ($driver === null) {
+                    $driver = $fallback['driver'] ?? null;
+                }
+                if ($customer === null) {
+                    $customer = $fallback['customer'] ?? null;
+                }
+                if ($vehicle === null) {
+                    $vehicle = $fallback['vehicle'] ?? null;
                 }
             }
 
