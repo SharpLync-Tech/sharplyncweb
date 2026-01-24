@@ -229,8 +229,10 @@ class ReportAiClient
             $hasEntity = ($driver !== null || $customer !== null || $vehicle !== null);
             $hasFilter = ($clientPresent !== null || $dateFrom !== null || $dateTo !== null);
 
-            if ($unsupported === null) {
-                $unsupported = !($hasEntity || $hasFilter);
+            if ($hasEntity || $hasFilter) {
+                $unsupported = false;
+            } elseif ($unsupported === null) {
+                $unsupported = true;
             }
 
             return [
