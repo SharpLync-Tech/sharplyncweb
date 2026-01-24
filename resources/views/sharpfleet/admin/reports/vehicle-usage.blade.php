@@ -5,6 +5,8 @@
 @section('sharpfleet-content')
 
 @php
+    use Carbon\Carbon;
+
     /*
     |--------------------------------------------------------------------------
     | Inputs (resolved by controller)
@@ -71,24 +73,22 @@
                 <div>
                     <label class="form-label">Scope</label>
 
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
+                    <label class="sf-radio">
+                        <input type="radio"
                                name="scope"
                                value="company"
                                {{ $uiScope === 'company' ? 'checked' : '' }}>
-                        <label class="form-check-label">Company-wide</label>
-                    </div>
+                        <span>Company-wide</span>
+                    </label>
 
                     @if($hasBranches)
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                   type="radio"
+                        <label class="sf-radio">
+                            <input type="radio"
                                    name="scope"
                                    value="branch"
                                    {{ $uiScope === 'branch' ? 'checked' : '' }}>
-                            <label class="form-check-label">Single branch</label>
-                        </div>
+                            <span>Single branch</span>
+                        </label>
                     @endif
 
                     <div class="text-muted small mt-1">
@@ -100,15 +100,15 @@
                 {{-- Branch --}}
                 <div>
                     <label class="form-label">Branch</label>
-                    <div class="sf-report-select">
+
+                    <div class="sf-report-select {{ $uiScope !== 'branch' ? 'is-disabled' : '' }}">
                         <select name="branch_id"
                                 class="form-select"
-                                data-auto-submit="1"
                                 {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
                             <option value="">All branches</option>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}"
-                                    {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
+                                    {{ (string)$uiBranchId === (string)$branch->id ? 'selected' : '' }}>
                                     {{ $branch->name }}
                                 </option>
                             @endforeach
@@ -123,7 +123,8 @@
                            name="start_date"
                            class="form-control sf-date"
                            placeholder="{{ $datePlaceholder }}"
-                           value="{{ $uiStartDate }}">
+                           value="{{ $uiStartDate }}"
+                           autocomplete="off">
                 </div>
 
                 <div>
@@ -132,7 +133,8 @@
                            name="end_date"
                            class="form-control sf-date"
                            placeholder="{{ $datePlaceholder }}"
-                           value="{{ $uiEndDate }}">
+                           value="{{ $uiEndDate }}"
+                           autocomplete="off">
                 </div>
 
             </div>
@@ -220,9 +222,7 @@
                                     <td class="text-end">{{ $v->total_distance_km }} km</td>
                                     <td class="text-end">{{ $v->total_duration }}</td>
                                     <td class="text-end">{{ $v->average_distance_km }} km</td>
-                                    <td>
-                                        {{ $v->last_used_at ?? '—' }}
-                                    </td>
+                                    <td>{{ $v->last_used_at ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -243,3 +243,40 @@
 </div>
 
 @endsection
+
+@push('styles')
+<style>
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
+    .sf-report-select {
+        position: relative;
+    }
+
+    .sf-report-select::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid rgba(10, 42, 77, 0.6);
+        border-bottom: 2px solid rgba(10, 42, 77, 0.6);
+        transform: translateY(-50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .sf-report-select.is-disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    tr[data-trip-count="0"] {
+        opacity: 0.65;
+    }
+</style>
+@endpush
