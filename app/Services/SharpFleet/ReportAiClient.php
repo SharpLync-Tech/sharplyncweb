@@ -152,14 +152,17 @@ class ReportAiClient
                                 'content' => implode("\n", [
                                     'Schema:',
                                     '{',
-                                    '  "report_type": "trips",',
+                                    '  "report_type": "trips|vehicles|customers|customers_with_trips|users|branches|faults|bookings",',
                                     '  "entities": {',
                                     '    "driver": string|null,',
                                     '    "customer": string|null,',
-                                    '    "vehicle": string|null',
+                                    '    "vehicle": string|null,',
+                                    '    "user": string|null,',
+                                    '    "branch": string|null',
                                     '  },',
                                     '  "filters": {',
                                     '    "client_present": boolean|null,',
+                                    '    "has_registration": boolean|null,',
                                     '    "date_range": {',
                                     '      "from": string|null,',
                                     '      "to": string|null',
@@ -174,7 +177,7 @@ class ReportAiClient
                             ],
                         ],
                         'temperature' => 0.1,
-                        'max_tokens' => 220,
+                        'max_tokens' => 260,
                     ],
                 ]
             );
@@ -188,8 +191,18 @@ class ReportAiClient
             }
 
             $reportType = strtolower(trim((string) ($json['report_type'] ?? '')));
-            if ($reportType !== 'trips') {
-                return null;
+            $allowedTypes = [
+                'trips',
+                'vehicles',
+                'customers',
+                'customers_with_trips',
+                'users',
+                'branches',
+                'faults',
+                'bookings',
+            ];
+            if (!in_array($reportType, $allowedTypes, true)) {
+                $reportType = '';
             }
 
             $entities = is_array($json['entities'] ?? null) ? $json['entities'] : [];
@@ -199,14 +212,23 @@ class ReportAiClient
             $driver = array_key_exists('driver', $entities) ? $entities['driver'] : null;
             $customer = array_key_exists('customer', $entities) ? $entities['customer'] : null;
             $vehicle = array_key_exists('vehicle', $entities) ? $entities['vehicle'] : null;
+            $user = array_key_exists('user', $entities) ? $entities['user'] : null;
+            $branch = array_key_exists('branch', $entities) ? $entities['branch'] : null;
 
             $driver = is_string($driver) && trim($driver) !== '' ? trim($driver) : null;
             $customer = is_string($customer) && trim($customer) !== '' ? trim($customer) : null;
             $vehicle = is_string($vehicle) && trim($vehicle) !== '' ? trim($vehicle) : null;
+            $user = is_string($user) && trim($user) !== '' ? trim($user) : null;
+            $branch = is_string($branch) && trim($branch) !== '' ? trim($branch) : null;
 
             $clientPresent = array_key_exists('client_present', $filters) ? $filters['client_present'] : null;
             if (!is_bool($clientPresent)) {
                 $clientPresent = null;
+            }
+
+            $hasRegistration = array_key_exists('has_registration', $filters) ? $filters['has_registration'] : null;
+            if (!is_bool($hasRegistration)) {
+                $hasRegistration = null;
             }
 
             $dateFrom = array_key_exists('from', $dateRange) ? $dateRange['from'] : null;
@@ -219,6 +241,9 @@ class ReportAiClient
 
             $fallback = $this->fallbackIntentFromPrompt($prompt);
             if ($fallback !== null) {
+                if ($reportType === '') {
+                    $reportType = $fallback['report_type'] ?? '';
+                }
                 if ($driver === null) {
                     $driver = $fallback['driver'] ?? null;
                 }
@@ -228,26 +253,41 @@ class ReportAiClient
                 if ($vehicle === null) {
                     $vehicle = $fallback['vehicle'] ?? null;
                 }
+                if ($user === null) {
+                    $user = $fallback['user'] ?? null;
+                }
+                if ($branch === null) {
+                    $branch = $fallback['branch'] ?? null;
+                }
+                if ($hasRegistration === null && array_key_exists('has_registration', $fallback)) {
+                    $hasRegistration = $fallback['has_registration'];
+                }
             }
 
             $hasEntity = ($driver !== null || $customer !== null || $vehicle !== null);
             $hasFilter = ($clientPresent !== null || $dateFrom !== null || $dateTo !== null);
+            if ($hasRegistration !== null) {
+                $hasFilter = true;
+            }
 
-            if ($hasEntity || $hasFilter) {
+            if ($reportType !== '' || $hasEntity || $hasFilter) {
                 $unsupported = false;
             } elseif ($unsupported === null) {
                 $unsupported = true;
             }
 
             return [
-                'report_type' => 'trips',
+                'report_type' => $reportType !== '' ? $reportType : 'trips',
                 'entities' => [
                     'driver' => $driver,
                     'customer' => $customer,
                     'vehicle' => $vehicle,
+                    'user' => $user,
+                    'branch' => $branch,
                 ],
                 'filters' => [
                     'client_present' => $clientPresent,
+                    'has_registration' => $hasRegistration,
                     'date_range' => [
                         'from' => $dateFrom,
                         'to' => $dateTo,
@@ -268,9 +308,13 @@ class ReportAiClient
         }
 
         $result = [
+            'report_type' => null,
             'driver' => null,
             'customer' => null,
             'vehicle' => null,
+            'user' => null,
+            'branch' => null,
+            'has_registration' => null,
         ];
 
         // Examples:
@@ -293,8 +337,42 @@ class ReportAiClient
             $result['customer'] = null;
         }
 
+        if (preg_match('/\bvehicles?\b/i', $text)) {
+            $result['report_type'] = 'vehicles';
+        }
+        if (preg_match('/\bcustomers?\b/i', $text)) {
+            $result['report_type'] = 'customers';
+        }
+        if (preg_match('/\bbranches?\b/i', $text)) {
+            $result['report_type'] = 'branches';
+        }
+        if (preg_match('/\bfaults?\b|\bissues?\b|\baccidents?\b/i', $text)) {
+            $result['report_type'] = 'faults';
+        }
+        if (preg_match('/\bbookings?\b/i', $text)) {
+            $result['report_type'] = 'bookings';
+        }
+        if (preg_match('/\busers?\b|\bdrivers?\b/i', $text)) {
+            $result['report_type'] = 'users';
+        }
+        if (preg_match('/\btrips?\b/i', $text)) {
+            $result['report_type'] = $result['report_type'] ?? 'trips';
+        }
+        if (preg_match('/\bcustomers?\b.*\btrips?\b|\btrips?\b.*\bcustomers?\b/i', $text)) {
+            $result['report_type'] = 'customers_with_trips';
+        }
+
+        if (preg_match('/registration numbers?/i', $text) || preg_match('/with registration/i', $text)) {
+            $result['has_registration'] = true;
+            if ($result['report_type'] === null) {
+                $result['report_type'] = 'vehicles';
+            }
+        }
+
         if ($result['driver'] === null && $result['customer'] === null && $result['vehicle'] === null) {
-            return null;
+            if ($result['report_type'] === null) {
+                return null;
+            }
         }
 
         return $result;
