@@ -14,7 +14,7 @@
         border: 1px solid rgba(255, 255, 255, 0.28);
         border-radius: 14px;
         padding: 18px;
-        background: rgba(240, 246, 252, 0.92);
+        background: rgba(240, 246, 252, 0.99);
         box-shadow:
             0 10px 18px rgba(10, 42, 77, 0.18),
             inset 0 1px 0 rgba(255, 255, 255, 0.45);
@@ -75,7 +75,7 @@
         margin-top: -6px;
         margin-bottom: 12px;
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.65);
+        color: navy;
     }
     .sf-report-card .btn-group-inline {
         display: flex;

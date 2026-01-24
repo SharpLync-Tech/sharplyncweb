@@ -12,9 +12,9 @@
     | Inputs resolved by controller (single source of truth)
     |--------------------------------------------------------------------------
     */
-    $companyTimezone      = $companyTimezone ?? config('app.timezone');
-    $clientPresenceLabel  = trim((string) ($clientPresenceLabel ?? 'Client'));
-    $clientPresenceLabel  = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
+    $companyTimezone     = $companyTimezone ?? config('app.timezone');
+    $clientPresenceLabel = trim((string) ($clientPresenceLabel ?? 'Client'));
+    $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
 
     /*
     |--------------------------------------------------------------------------
@@ -39,11 +39,9 @@
     | Date formatting (display only)
     |--------------------------------------------------------------------------
     */
-    if (str_starts_with($companyTimezone, 'America/')) {
-        $dateFormat = 'm/d/Y';
-    } else {
-        $dateFormat = 'd/m/Y';
-    }
+    $dateFormat = str_starts_with($companyTimezone, 'America/')
+        ? 'm/d/Y'
+        : 'd/m/Y';
 
     $displayStartDate = $uiStartDate
         ? Carbon::parse($uiStartDate)->timezone($companyTimezone)->format($dateFormat)
@@ -64,7 +62,8 @@
             <div>
                 <h1 class="page-title">Compliance & Trip Reports</h1>
                 <p class="page-description">
-                    Generate structured reports for tax, care compliance, and internal review.
+                    Structured trip reporting for compliance review, internal audits,
+                    and operational oversight.
                 </p>
             </div>
 
@@ -80,95 +79,105 @@
         </div>
     </div>
 
-    {{-- ================= REPORT OPTIONS ================= --}}
-    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
-        <div class="card mb-3">
-            <div class="card-body">
+    {{-- ================= FILTERS ================= --}}
+    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}"
+          class="card sf-report-card mb-3">
+        <div class="card-body">
 
-                <h3 class="mb-4">Reports</h3>
+            <div class="grid grid-3 gap-4">
 
-                <div class="grid grid-3 gap-4">
+                {{-- Scope --}}
+                <div>
+                    <h5 class="mb-2">Scope</h5>
 
-                    {{-- Scope --}}
-                    <div>
-                        <h5 class="mb-2">Scope</h5>
-
-                        <label class="d-block mb-1">
-                            <input type="radio" name="scope" value="company" checked>
-                            Company-wide
-                        </label>
-
-                        @if($branchesEnabled)
-                            <label class="d-block">
-                                <input type="radio" name="scope" value="branch">
-                                Branch only
-                            </label>
-                        @endif
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="scope"
+                               value="company"
+                               checked>
+                        <label class="form-check-label">Company-wide</label>
                     </div>
 
-                    {{-- Filters --}}
-                    <div>
-                        <h5 class="mb-2">Filter by</h5>
+                    @if($branchesEnabled)
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="scope"
+                                   value="branch">
+                            <label class="form-check-label">Single branch</label>
+                        </div>
+                    @endif
 
-                        <label class="d-block mb-1">
-                            <input type="checkbox" name="filter_drivers">
-                            Drivers
-                        </label>
-
-                        <label class="d-block">
-                            <input type="checkbox" name="filter_vehicles">
-                            Vehicles
-                        </label>
+                    <div class="text-muted small mt-1">
+                        Select whether trips are reported across the entire company
+                        or limited to a single branch.
                     </div>
-
-                    {{-- Screen columns --}}
-                    <div>
-                        <h5 class="mb-2">Show on screen</h5>
-
-                        <label class="d-block mb-1">
-                            <input type="checkbox" name="show_registration">
-                            Registration number
-                        </label>
-
-                        <label class="d-block mb-1">
-                            <input type="checkbox" name="show_purpose">
-                            Purpose of travel
-                        </label>
-
-                        <label class="d-block mb-1">
-                            <input type="checkbox" name="show_distance">
-                            Distance
-                        </label>
-
-                        <label class="d-block mb-1">
-                            <input type="checkbox" name="show_duration">
-                            Duration
-                        </label>
-
-                        <label class="d-block">
-                            <input type="checkbox" name="show_times">
-                            Start & end times
-                        </label>
-                    </div>
-
                 </div>
 
-                <div class="flex-between mt-4">
-                    <div class="text-muted small">
-                        Screen options affect on-screen display only. CSV export always includes full data.
+                {{-- Filters --}}
+                <div>
+                    <h5 class="mb-2">Filter by</h5>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="filter_drivers">
+                        <label class="form-check-label">Drivers</label>
                     </div>
 
-                    <button type="submit" class="btn btn-secondary">
-                        Update Report
-                    </button>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="filter_vehicles">
+                        <label class="form-check-label">Vehicles</label>
+                    </div>
+                </div>
+
+                {{-- Screen columns --}}
+                <div>
+                    <h5 class="mb-2">Show on screen</h5>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="show_registration">
+                        <label class="form-check-label">Registration number</label>
+                    </div>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="show_purpose">
+                        <label class="form-check-label">Purpose of travel</label>
+                    </div>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="show_distance">
+                        <label class="form-check-label">Distance</label>
+                    </div>
+
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="show_duration">
+                        <label class="form-check-label">Duration</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="show_times">
+                        <label class="form-check-label">Start & end times</label>
+                    </div>
                 </div>
 
             </div>
+
+            <div class="flex-between mt-4">
+                <div class="text-muted small">
+                    Screen options affect on-screen display only.
+                    CSV export always includes the full trip dataset.
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary">
+                    Update Report
+                </button>
+            </div>
+
         </div>
     </form>
 
     {{-- ================= SUMMARY ================= --}}
-    <div class="card mb-3">
+    <div class="card sf-report-card mb-3">
         <div class="card-body">
             <div class="grid grid-4 text-center">
                 <div>
@@ -192,7 +201,7 @@
     </div>
 
     {{-- ================= RESULTS ================= --}}
-    <div class="card">
+    <div class="card sf-report-card">
         <div class="card-body">
 
             @if($trips->count() === 0)
@@ -206,7 +215,7 @@
                             <tr>
                                 <th>Vehicle</th>
                                 <th>Driver</th>
-                                <th>Business / Private</th>
+                                <th>Type</th>
                                 <th>{{ $clientPresenceLabel }}</th>
                                 <th>Started</th>
                                 <th>Ended</th>
@@ -220,7 +229,11 @@
                                         <small class="text-muted">{{ $t->registration_number }}</small>
                                     </td>
                                     <td>{{ $t->driver_name }}</td>
-                                    <td>{{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}</td>
+                                    <td>
+                                        <span class="badge {{ strtolower($t->trip_mode) === 'private' ? 'bg-secondary' : 'bg-success' }}">
+                                            {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
+                                        </span>
+                                    </td>
                                     <td>{{ $t->customer_name_display ?: '—' }}</td>
                                     <td>
                                         {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
@@ -242,5 +255,22 @@
     </div>
 
 </div>
+
+@push('styles')
+<style>
+    /* Align with Fleet Manager – Operational */
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+</style>
+@endpush
 
 @endsection

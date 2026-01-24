@@ -38,7 +38,7 @@
     */
     $totalVehicles = $summary['vehicles'] ?? 0;
     $totalTrips    = $summary['trips'] ?? 0;
-    $totalDistance = $summary['distance'] ?? '0 km';
+    $totalDistance = $summary['distance'] ?? '0';
 @endphp
 
 <div class="container">
@@ -49,12 +49,12 @@
             <div>
                 <h1 class="page-title">Vehicle Usage Report</h1>
                 <p class="page-description">
-                    See how often vehicles are used, how far they travel, and which assets may be over- or under-utilised.
+                    Understand how often vehicles are used, how far they travel,
+                    and which assets may be under- or over-utilised.
                 </p>
             </div>
 
-            {{-- CSV export (to be wired properly later) --}}
-            <button class="btn btn-secondary" disabled
+            <button class="btn btn-primary" disabled
                     title="CSV export for vehicle usage will be added next">
                 Export Report (CSV)
             </button>
@@ -64,7 +64,7 @@
     {{-- ================= FILTERS ================= --}}
     <form method="GET"
           action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"
-          class="card mb-3">
+          class="card sf-report-card mb-3">
         <div class="card-body">
 
             <div class="grid grid-4 align-end">
@@ -89,9 +89,14 @@
                                    name="scope"
                                    value="branch"
                                    {{ $uiScope === 'branch' ? 'checked' : '' }}>
-                            <label class="form-check-label">Branch only</label>
+                            <label class="form-check-label">Single branch</label>
                         </div>
                     @endif
+
+                    <div class="text-muted small mt-1">
+                        Choose whether usage is calculated across the whole company
+                        or limited to a single branch.
+                    </div>
                 </div>
 
                 {{-- Branch --}}
@@ -141,20 +146,19 @@
             </div>
 
             <div class="text-muted small mt-2">
-                This on-screen report shows aggregated vehicle usage.
-                CSV export will include full trip-level data.
+                Usage is calculated based on trips that started within the selected date range.
             </div>
 
         </div>
     </form>
 
     {{-- ================= SUMMARY ================= --}}
-    <div class="card mb-3">
+    <div class="card sf-report-card mb-3">
         <div class="card-body">
             <div class="grid grid-3 text-center">
                 <div>
                     <strong>{{ $totalVehicles }}</strong><br>
-                    <span class="text-muted small">Vehicles used</span>
+                    <span class="text-muted small">Active vehicles</span>
                 </div>
                 <div>
                     <strong>{{ $totalTrips }}</strong><br>
@@ -169,7 +173,7 @@
     </div>
 
     {{-- ================= RESULTS ================= --}}
-    <div class="card">
+    <div class="card sf-report-card">
         <div class="card-body">
 
             @if($vehicles->count() === 0)
@@ -182,6 +186,7 @@
                         <thead>
                             <tr>
                                 <th>Vehicle</th>
+                                <th>Status</th>
                                 <th class="text-end">Trips</th>
                                 <th class="text-end">Total distance</th>
                                 <th class="text-end">Total driving time</th>
@@ -191,10 +196,28 @@
                         </thead>
                         <tbody>
                             @foreach($vehicles as $v)
-                                <tr>
+                                @php
+                                    // Usage status using existing data only
+                                    if ($v->trip_count === 0) {
+                                        $usageStatus = 'Idle';
+                                        $badgeClass = 'bg-secondary';
+                                    } elseif ($v->trip_count >= 10) {
+                                        $usageStatus = 'High';
+                                        $badgeClass = 'bg-success';
+                                    } else {
+                                        $usageStatus = 'Low';
+                                        $badgeClass = 'bg-warning text-dark';
+                                    }
+                                @endphp
+                                <tr data-trip-count="{{ $v->trip_count }}">
                                     <td class="fw-bold">
                                         {{ $v->vehicle_name }}<br>
                                         <small class="text-muted">{{ $v->registration_number }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $badgeClass }}">
+                                            {{ $usageStatus }}
+                                        </span>
                                     </td>
                                     <td class="text-end">{{ $v->trip_count }}</td>
                                     <td class="text-end">{{ $v->total_distance_km }} km</td>
@@ -211,6 +234,13 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="text-muted small mt-2">
+                    <strong>Usage status guide:</strong>
+                    High = frequent use during the period,
+                    Low = occasional use,
+                    Idle = no recorded trips.
+                </div>
             @endif
 
         </div>
@@ -221,6 +251,14 @@
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
 <style>
+    /* Match Fleet Manager – Operational visual style */
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
     .sf-report-select {
         position: relative;
     }
@@ -255,6 +293,16 @@
         background: #eef2f6;
         color: rgba(10, 42, 77, 0.5);
     }
+
+    .btn-primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    /* Subtle visual cue for idle vehicles */
+    tr[data-trip-count="0"] {
+        opacity: 0.65;
+    }
 </style>
 @endpush
 
@@ -279,9 +327,12 @@
         });
     })();
 </script>
+
 <script>
     (function () {
-        const form = document.querySelector('form[action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"]');
+        const form = document.querySelector(
+            'form[action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}"]'
+        );
         if (!form) return;
 
         form.querySelectorAll('select[data-auto-submit="1"]').forEach((select) => {
