@@ -257,6 +257,7 @@ class UtilizationReportController extends Controller
         string $workStart,
         string $workEnd
     ): int {
+        $sameDay = $rangeStart->isSameDay($rangeEnd);
         if ($preset === '24_7') {
             return $rangeEnd->diffInSeconds($rangeStart);
         }
@@ -281,13 +282,29 @@ class UtilizationReportController extends Controller
             return $rangeEnd->diffInSeconds($rangeStart);
         }
 
+        if ($sameDay) {
+            $dayIndex = $rangeStart->dayOfWeek; // 0 (Sun) - 6 (Sat)
+            if (!in_array($dayIndex, $daySet, true)) {
+                return 0;
+            }
+
+            $dayStart = $rangeStart->copy()->startOfDay()->addMinutes($startMinutes);
+            $dayEnd = $rangeStart->copy()->startOfDay()->addMinutes($endMinutes);
+
+            $windowStart = $dayStart->greaterThan($rangeStart) ? $dayStart : $rangeStart;
+            $windowEnd = $dayEnd->lessThan($rangeEnd) ? $dayEnd : $rangeEnd;
+
+            return $windowEnd->greaterThan($windowStart)
+                ? $windowEnd->diffInSeconds($windowStart)
+                : 0;
+        }
+
         $totalSeconds = 0;
         $cursor = $rangeStart->copy()->startOfDay();
         $endDay = $rangeEnd->copy()->startOfDay();
 
         while ($cursor->lte($endDay)) {
-            $dayIndex = $cursor->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
-            $dayIndex = $dayIndex % 7; // 0 (Sun) - 6 (Sat)
+            $dayIndex = $cursor->dayOfWeek; // 0 (Sun) - 6 (Sat)
 
             if (in_array($dayIndex, $daySet, true)) {
                 $dayStart = $cursor->copy()->addMinutes($startMinutes);
