@@ -2007,3 +2007,67 @@ details.card[open] .incident-toggle-hint-closed {
 .trial-summary li {
     margin-bottom: 0.4rem;
 }
+
+
+/* =====================================================
+   SharpFleet CTA Button
+===================================================== */
+
+.sf-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 14px 34px;
+
+    background: linear-gradient(
+        135deg,
+        #2CBFAE 0%,
+        #4FD1C5 100%
+    );
+
+    color: #0A2A4D;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+
+    border-radius: 14px;
+    border: none;
+
+    box-shadow:
+        0 10px 22px rgba(44, 191, 174, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+    cursor: pointer;
+}
+
+/* Hover – confident, not jumpy */
+.sf-cta:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 32px rgba(44, 191, 174, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Active – subtle press */
+.sf-cta:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 8px 18px rgba(44, 191, 174, 0.35),
+        inset 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Keyboard accessibility */
+.sf-cta:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(44, 191, 174, 0.45),
+        0 12px 24px rgba(44, 191, 174, 0.35);
+}
