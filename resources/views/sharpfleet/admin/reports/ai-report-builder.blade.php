@@ -98,46 +98,62 @@
             <div class="card-body">
                 <div class="sf-ai-result">
                     <h3>{{ $result['title'] ?? 'AI Report' }}</h3>
-                    @if(!empty($result['summary']))
-                        <p>{{ $result['summary'] }}</p>
-                    @endif
+                    <div class="sf-ai-meta mb-2">{{ $result['subtitle'] ?? '' }}</div>
+                    <div class="sf-ai-meta mb-3">Date range: {{ $result['date_range'] ?? '—' }}</div>
 
-                    @foreach(($result['sections'] ?? []) as $section)
-                        <h4>{{ $section['heading'] ?? 'Overview' }}</h4>
-                        @if(!empty($section['bullets']))
-                            <ul>
-                                @foreach($section['bullets'] as $bullet)
-                                    <li>{{ $bullet }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                    @endforeach
+                    <h4>Summary</h4>
+                    <ul>
+                        <li>Total trips: {{ $result['totals']['total_trips'] ?? 0 }}</li>
+                        <li>Total distance: {{ $result['totals']['total_distance'] ?? '0' }}</li>
+                        <li>Total drive time: {{ $result['totals']['total_drive_time'] ?? '0h 0m' }}</li>
+                        <li>Vehicle used most: {{ $result['vehicle_used_most'] ?? '—' }}</li>
+                        <li>Purpose: {{ $result['purpose'] ?? '—' }}</li>
+                        <li>Top customer visited: {{ $result['top_customer'] ?? '—' }}</li>
+                    </ul>
 
-                    @if(!empty($result['key_metrics']))
-                        <h4>Key metrics</h4>
+                    <h4>Vehicles used</h4>
+                    @if(!empty($result['vehicles_used']))
                         <ul>
-                            @foreach($result['key_metrics'] as $metric)
-                                <li>{{ $metric }}</li>
+                            @foreach($result['vehicles_used'] as $vehicle)
+                                <li>{{ $vehicle }}</li>
                             @endforeach
                         </ul>
+                    @else
+                        <div class="sf-ai-meta">No vehicles found.</div>
                     @endif
 
-                    @if(!empty($result['recommended_filters']))
-                        <h4>Recommended filters</h4>
-                        <ul>
-                            @foreach($result['recommended_filters'] as $filter)
-                                <li>{{ $filter }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-
-                    @if(!empty($result['caveats']))
-                        <h4>Notes</h4>
-                        <ul>
-                            @foreach($result['caveats'] as $note)
-                                <li>{{ $note }}</li>
-                            @endforeach
-                        </ul>
+                    <h4>Trips</h4>
+                    @if(!empty($result['trips']))
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Started</th>
+                                        <th>Ended</th>
+                                        <th>Vehicle</th>
+                                        <th class="text-end">Distance</th>
+                                        <th class="text-end">Duration</th>
+                                        <th>Purpose</th>
+                                        <th>Customer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($result['trips'] as $trip)
+                                        <tr>
+                                            <td>{{ $trip['started_at'] ?? '—' }}</td>
+                                            <td>{{ $trip['ended_at'] ?? '—' }}</td>
+                                            <td>{{ $trip['vehicle'] ?? '—' }}</td>
+                                            <td class="text-end">{{ $trip['distance'] ?? '—' }}</td>
+                                            <td class="text-end">{{ $trip['duration'] ?? '—' }}</td>
+                                            <td>{{ $trip['purpose'] ?? '' }}</td>
+                                            <td>{{ $trip['customer'] ?? '' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="sf-ai-meta">No trips found for the selected target.</div>
                     @endif
                 </div>
             </div>

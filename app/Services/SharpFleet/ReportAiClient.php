@@ -107,6 +107,84 @@ class ReportAiClient
         }
     }
 
+    public function parseIntent(string $prompt): ?array
+    {
+        if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {
+            return null;
+        }
+
+        $system = implode("\n", [
+            'You are the SharpFleet report intent parser.',
+            'Return valid JSON only. No prose.',
+            'Schema:',
+            '{',
+            '  "entity_type": "driver|customer|vehicle|unknown",',
+            '  "name": "string"',
+            '}',
+            'Rules:',
+            '- entity_type must be one of: driver, customer, vehicle, unknown.',
+            '- name should be the most relevant person/vehicle/customer name from the request.',
+            '- If unclear, set entity_type to "unknown" and name to empty string.',
+            '- Do not include extra keys.',
+        ]);
+
+        try {
+            $response = $this->client->post(
+                "/openai/deployments/{$this->deployment}/chat/completions",
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'api-key' => $this->apiKey,
+                    ],
+                    'query' => [
+                        'api-version' => '2024-10-01-preview',
+                    ],
+                    'json' => [
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' => $system,
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => trim($prompt),
+                            ],
+                        ],
+                        'temperature' => 0.1,
+                        'max_tokens' => 120,
+                    ],
+                ]
+            );
+
+            $data = json_decode($response->getBody()->getContents(), true);
+            $content = $data['choices'][0]['message']['content'] ?? '';
+            $json = json_decode($content, true);
+
+            if (!is_array($json)) {
+                return null;
+            }
+
+            $type = strtolower(trim((string) ($json['entity_type'] ?? 'unknown')));
+            $name = trim((string) ($json['name'] ?? ''));
+
+            $allowed = ['driver', 'customer', 'vehicle', 'unknown'];
+            if (!in_array($type, $allowed, true)) {
+                $type = 'unknown';
+            }
+
+            if ($type === 'unknown') {
+                $name = '';
+            }
+
+            return [
+                'entity_type' => $type,
+                'name' => $name,
+            ];
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     private function normaliseReport(array $json): ?array
     {
         $title = isset($json['title']) ? trim((string) $json['title']) : '';
