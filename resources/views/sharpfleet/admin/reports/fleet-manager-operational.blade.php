@@ -11,6 +11,7 @@
     $uiStatus = $statusFilter ?? request('status', 'all');
     $uiBranchId = $branchId ?? request('branch_id');
     $hasBranches = isset($branches) && $branches->count() > 1;
+    $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
 @endphp
 
 <div class="container">
@@ -47,17 +48,19 @@
 
                 <div>
                     <label class="form-label">Start date</label>
-                    <input type="date"
+                    <input type="text"
                            name="start_date"
-                           class="form-control"
+                           class="form-control sf-date"
+                           placeholder="{{ $datePlaceholder }}"
                            value="{{ $uiStartDate }}">
                 </div>
 
                 <div>
                     <label class="form-label">End date</label>
-                    <input type="date"
+                    <input type="text"
                            name="end_date"
-                           class="form-control"
+                           class="form-control sf-date"
+                           placeholder="{{ $datePlaceholder }}"
                            value="{{ $uiEndDate }}">
                 </div>
 
@@ -102,6 +105,7 @@
     </form>
 
     @push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
     <style>
         .sf-report-select {
             position: relative;
@@ -141,8 +145,26 @@
     @endpush
 
     @push('scripts')
+    <script src="https://unpkg.com/flatpickr"></script>
     <script>
         (function () {
+            if (typeof flatpickr !== 'undefined') {
+                const displayFormat = @json($dateFormat);
+                const displayPlaceholder = @json($datePlaceholder);
+
+                flatpickr('.sf-date', {
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: displayFormat,
+                    allowInput: true,
+                    onReady: function (selectedDates, dateStr, instance) {
+                        if (instance && instance.altInput) {
+                            instance.altInput.placeholder = displayPlaceholder;
+                        }
+                    },
+                });
+            }
+
             const form = document.getElementById('fleetManagerReportFilters');
             if (!form) return;
             form.querySelectorAll('select[data-auto-submit="1"]').forEach((select) => {

@@ -29,6 +29,7 @@
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y'
         : 'd/m/Y';
+    $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
 
     /*
     |--------------------------------------------------------------------------
@@ -112,17 +113,19 @@
                 {{-- Dates --}}
                 <div>
                     <label class="form-label">Start date</label>
-                    <input type="date"
+                    <input type="text"
                            name="start_date"
-                           class="form-control"
+                           class="form-control sf-date"
+                           placeholder="{{ $datePlaceholder }}"
                            value="{{ $uiStartDate }}">
                 </div>
 
                 <div>
                     <label class="form-label">End date</label>
-                    <input type="date"
+                    <input type="text"
                            name="end_date"
-                           class="form-control"
+                           class="form-control sf-date"
+                           placeholder="{{ $datePlaceholder }}"
                            value="{{ $uiEndDate }}">
                 </div>
 
@@ -211,5 +214,32 @@
     </div>
 
 </div>
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/flatpickr"></script>
+<script>
+    (function () {
+        if (typeof flatpickr === 'undefined') return;
+        const displayFormat = @json($dateFormat);
+        const displayPlaceholder = @json($datePlaceholder);
+
+        flatpickr('.sf-date', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: displayFormat,
+            allowInput: true,
+            onReady: function (selectedDates, dateStr, instance) {
+                if (instance && instance.altInput) {
+                    instance.altInput.placeholder = displayPlaceholder;
+                }
+            },
+        });
+    })();
+</script>
+@endpush
 
 @endsection
