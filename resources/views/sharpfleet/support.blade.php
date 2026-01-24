@@ -65,7 +65,7 @@
 </div>
 
 <div style="max-width: 820px; margin: 12px auto 0; text-align: right;">
-    <button type="submit" form="sfSupportForm" class="btn btn-primary">Send Support Request</button>
+    <button type="submit" form="sfSupportForm" class="btn btn-secondary">Send Support Request</button>
 </div>
 
 <script>

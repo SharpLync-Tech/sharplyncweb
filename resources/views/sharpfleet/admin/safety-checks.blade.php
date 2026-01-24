@@ -47,7 +47,7 @@
                 @endforelse
             </div>
 
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addItem()">
+            <button type="button" class="btn-sf-navy btn-sm" onclick="addItem()">
                 + Add safety check
             </button>
         </div>

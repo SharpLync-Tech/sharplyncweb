@@ -148,7 +148,7 @@
                                                     Re-enable user
                                                 </button>
                                             @else
-                                                <a class="btn btn-secondary btn-sm" href="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/edit') }}">
+                                                <a class="btn-sf-navy btn-sm" href="{{ url('/app/sharpfleet/admin/users/'.$user->id.'/edit') }}">
                                                     Edit
                                                 </a>
                                             @endif
