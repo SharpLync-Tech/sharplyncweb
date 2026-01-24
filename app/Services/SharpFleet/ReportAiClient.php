@@ -1,0 +1,157 @@
+<?php
+
+namespace App\Services\SharpFleet;
+
+use GuzzleHttp\Client;
+
+class ReportAiClient
+{
+    protected Client $client;
+    protected string $endpoint;
+    protected string $deployment;
+    protected string $apiKey;
+
+    public function __construct()
+    {
+        $this->endpoint = rtrim((string) env('AZURE_OPENAI_ENDPOINT'), '/');
+        $this->deployment = (string) env('AZURE_OPENAI_DEPLOYMENT');
+        $this->apiKey = (string) env('AZURE_OPENAI_KEY');
+
+        $this->client = new Client([
+            'base_uri' => $this->endpoint,
+            'timeout' => 25,
+        ]);
+    }
+
+    public function generateReport(string $prompt, array $context = []): ?array
+    {
+        if ($this->endpoint === '' || $this->deployment === '' || $this->apiKey === '') {
+            return null;
+        }
+
+        $timezone = trim((string) ($context['timezone'] ?? 'Australia/Brisbane'));
+        $dateFormat = trim((string) ($context['date_format'] ?? 'd/m/Y'));
+        $distanceUnit = strtolower(trim((string) ($context['distance_unit'] ?? 'km')));
+        $distanceUnit = $distanceUnit === 'mi' ? 'mi' : 'km';
+
+        $system = implode("\n", [
+            'You are the SharpFleet AI report builder.',
+            'Return valid JSON only. No markdown or prose outside JSON.',
+            'Schema:',
+            '{',
+            '  "title": "string",',
+            '  "summary": "string",',
+            '  "sections": [',
+            '    {"heading": "string", "bullets": ["string"]}',
+            '  ],',
+            '  "recommended_filters": ["string"],',
+            '  "key_metrics": ["string"],',
+            '  "caveats": ["string"]',
+            '}',
+            'Rules:',
+            '- Keep content operational (fleet usage, trips, vehicles, branches, drivers).',
+            '- Do NOT mention tax authorities, ATO, or registration abbreviations like "Rego".',
+            '- Keep the report concise and practical for fleet managers.',
+        ]);
+
+        $user = implode("\n", [
+            'User request:',
+            trim($prompt),
+            '',
+            'Context:',
+            "- Timezone: {$timezone}",
+            "- Date format: {$dateFormat}",
+            "- Distance unit: {$distanceUnit}",
+            '- Available data tables: trips, vehicles, branches, users, company_settings.',
+        ]);
+
+        try {
+            $response = $this->client->post(
+                "/openai/deployments/{$this->deployment}/chat/completions",
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'api-key' => $this->apiKey,
+                    ],
+                    'query' => [
+                        'api-version' => '2024-10-01-preview',
+                    ],
+                    'json' => [
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' => $system,
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => $user,
+                            ],
+                        ],
+                        'temperature' => 0.2,
+                        'max_tokens' => 700,
+                    ],
+                ]
+            );
+
+            $data = json_decode($response->getBody()->getContents(), true);
+            $content = $data['choices'][0]['message']['content'] ?? '';
+            $json = json_decode($content, true);
+
+            if (!is_array($json)) {
+                return null;
+            }
+
+            return $this->normaliseReport($json);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function normaliseReport(array $json): ?array
+    {
+        $title = isset($json['title']) ? trim((string) $json['title']) : '';
+        $summary = isset($json['summary']) ? trim((string) $json['summary']) : '';
+        $sections = is_array($json['sections'] ?? null) ? $json['sections'] : [];
+        $filters = is_array($json['recommended_filters'] ?? null) ? $json['recommended_filters'] : [];
+        $metrics = is_array($json['key_metrics'] ?? null) ? $json['key_metrics'] : [];
+        $caveats = is_array($json['caveats'] ?? null) ? $json['caveats'] : [];
+
+        if ($title === '' && $summary === '' && $sections === []) {
+            return null;
+        }
+
+        $sections = array_values(array_filter(array_map(function ($section) {
+            if (!is_array($section)) {
+                return null;
+            }
+
+            $heading = trim((string) ($section['heading'] ?? ''));
+            $bulletsRaw = $section['bullets'] ?? [];
+            $bullets = is_array($bulletsRaw)
+                ? array_values(array_filter(array_map('strval', $bulletsRaw)))
+                : [];
+
+            if ($heading === '' && $bullets === []) {
+                return null;
+            }
+
+            return [
+                'heading' => $heading === '' ? 'Overview' : $heading,
+                'bullets' => $bullets,
+            ];
+        }, $sections)));
+
+        $filters = array_values(array_filter(array_map('strval', $filters)));
+        $metrics = array_values(array_filter(array_map('strval', $metrics)));
+        $caveats = array_values(array_filter(array_map('strval', $caveats)));
+
+        return [
+            'title' => $title !== '' ? $title : 'AI Report Builder (Beta)',
+            'summary' => $summary,
+            'sections' => $sections,
+            'recommended_filters' => $filters,
+            'key_metrics' => $metrics,
+            'caveats' => $caveats,
+        ];
+    }
+}

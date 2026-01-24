@@ -19,6 +19,7 @@
         display: flex;
         flex-direction: column;
         min-height: 170px;
+        position: relative;
     }
 
     .sf-report-card:hover {
@@ -46,6 +47,27 @@
         font-size: 13px;
         line-height: 1.5;
         flex: 1 1 auto;
+    }
+    .sf-report-card--ai {
+        padding-right: 58px;
+    }
+    .sf-report-card__icon {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 28px;
+        height: 28px;
+        opacity: 0.9;
+    }
+    .sf-report-card__icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .sf-report-card__disclaimer {
+        margin-top: -6px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.65);
     }
     .sf-report-card .btn-group-inline {
         display: flex;
@@ -109,6 +131,24 @@
 
     <div class="sf-report-section-title">Future <span>(planned)</span></div>
     <div class="sf-report-grid">
+        <div class="sf-report-card sf-report-card--ai">
+            <div class="sf-report-card__icon">
+                <img src="/images/sharpfleet/ai.png" alt="AI">
+            </div>
+            <h4>AI Report Builder (Beta)</h4>
+            <p>
+                Generate tailored fleet reports using AI-assisted analysis.
+                Designed for advanced users to explore data beyond standard reports.
+                All data processing occurs securely in Australia.
+            </p>
+            <div class="sf-report-card__disclaimer">
+                Beta features may change and are not recommended for formal reporting at this stage.
+            </div>
+            <div class="btn-group-inline">
+                <a href="/app/sharpfleet/admin/reports/ai-report-builder" class="btn btn-primary btn-sm">View report</a>
+            </div>
+        </div>
+
         <div class="sf-report-card">
             <h4>Faults by Vehicle</h4>
             <p>Breakdown of reported vehicle faults by asset and severity.</p>
