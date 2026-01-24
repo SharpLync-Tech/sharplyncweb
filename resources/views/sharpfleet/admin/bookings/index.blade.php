@@ -77,9 +77,9 @@
             <div class="d-flex justify-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <div class="btn-group" role="group" aria-label="Calendar view">
-                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewDay">Day</button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewWeek">Week</button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkViewMonth">Month</button>
+                        <button type="button" class="btn-sf-navy btn-sm" id="sfBkViewDay">Day</button>
+                        <button type="button" class="btn-sf-navy btn-sm" id="sfBkViewWeek">Week</button>
+                        <button type="button" class="btn-sf-navy btn-sm" id="sfBkViewMonth">Month</button>
                     </div>
 
                     @if($branchesEnabled && $branches->count() > 1)
@@ -97,11 +97,11 @@
 
                 <div class="d-flex align-items-center gap-2">
                     @if($sfCanEditBookings)
-                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkCreateBtn">Create Booking</button>
+                        <button type="button" class="btn-sf-navy btn-sm" id="sfBkCreateBtn">Create Booking</button>
                     @endif
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkPrev">Prev</button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkToday">Today</button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkNext">Next</button>
+                    <button type="button" class="btn-sf-navy btn-sm" id="sfBkPrev">Prev</button>
+                    <button type="button" class="btn-sf-navy btn-sm" id="sfBkToday">Today</button>
+                    <button type="button" class="btn-sf-navy btn-sm" id="sfBkNext">Next</button>
                 </div>
             </div>
             <div class="text-muted small mt-2" id="sfBkRangeLabel"></div>
@@ -272,8 +272,8 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkCreateCancelBtn">Cancel</button>
-                    <button id="sfBkCreateSubmit" type="submit" class="btn btn-secondary btn-sm" disabled>Create Booking</button>
+                    <button type="button" class="btn-sf-navy btn-sm" id="sfBkCreateCancelBtn">Cancel</button>
+                    <button id="sfBkCreateSubmit" type="submit" class="btn-sf-navy btn-sm" disabled>Create Booking</button>
                 </div>
             </form>
         </div>
@@ -290,7 +290,7 @@
                     <p class="text-muted mb-0" id="sfBkEditSubtitle"></p>
                 </div>
                 <button type="button"
-                    class="sf-modal-close"
+                    class="sf-modal-close btn-sf-navy"
                         id="sfBkEditClose"
                         aria-label="Close"
                         title="Close"
@@ -422,10 +422,10 @@
                 </div>
 
                 <div class="d-flex justify-content-between gap-2">
-                    <button type="button" class="btn btn-secondary btn-sm" id="sfBkEditCancelBooking">Cancel booking</button>
+                    <button type="button" class="btn-sf-navy btn-sm" id="sfBkEditCancelBooking">Cancel booking</button>
                     <div class="d-flex gap-2" id="sfBkEditActions">
-                        <button type="button" class="btn btn-secondary btn-sm" id="sfBkEditCloseBtn">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm" id="sfBkEditSubmit">Save changes</button>
+                        <button type="button" class="btn-sf-navy btn-sm" id="sfBkEditCloseBtn">Close</button>
+                        <button type="submit" class="btn-sf-navy btn-sm" id="sfBkEditSubmit">Save changes</button>
                     </div>
                 </div>
             </form>

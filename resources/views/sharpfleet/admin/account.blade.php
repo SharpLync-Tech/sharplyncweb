@@ -30,7 +30,7 @@
 
                 <form method="POST" action="/app/sharpfleet/admin/account/upgrade-to-sole-trader">
                     @csrf
-                    <button class="btn btn-primary" type="submit">Upgrade</button>
+                    <button class="btn-sf-navy" type="submit">Upgrade</button>
                 </form>
             </div>
         </div>
@@ -189,7 +189,7 @@
                     <button
                         type="submit"
                         id="sf-confirm-subscribe"
-                        class="btn sf-btn-spotlight"
+                        class="btn-sf-navy"
                         disabled
                     >
                         Confirm &amp; Subscribe

@@ -11,7 +11,7 @@
                 <h1 class="page-title">Vehicles</h1>
                 <p class="page-description">Manage vehicles for your organisation.</p>
             </div>
-            <a href="{{ url('/app/sharpfleet/admin/vehicles/create') }}" class="btn btn-primary">+ Add Vehicle</a>
+            <a href="{{ url('/app/sharpfleet/admin/vehicles/create') }}" class="btn btn-secondary">+ Add Vehicle</a>
         </div>
     </div>
 

@@ -28,7 +28,7 @@
                 <div class="fw-bold">Trial ending soon</div>
                 <div class="small">{{ (int) $trialDaysRemaining }} day(s) remaining on your trial.</div>
             </div>
-            <a class="btn sf-btn-spotlight" href="/app/sharpfleet/admin/account">View Account</a>
+            <a class="btn-sf-navy" href="/app/sharpfleet/admin/account">View Account</a>
         </div>
     </div>
 @endif
