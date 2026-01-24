@@ -53,7 +53,7 @@
                                     <td class="fw-bold">{{ $c->name }}</td>
                                     <td>
                                         <div class="d-flex gap-2 flex-wrap">
-                                            <a class="btn btn-secondary btn-sm" href="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/edit') }}">Edit</a>
+                                            <a class="btn-sf-navy btn-sm" href="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/edit') }}">Edit</a>
 
                                             <form method="POST"
                                                   action="{{ url('/app/sharpfleet/admin/customers/' . $c->id . '/archive') }}"

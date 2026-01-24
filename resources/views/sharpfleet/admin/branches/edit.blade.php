@@ -32,15 +32,13 @@
             <input type="text" name="name" value="{{ old('name', (string) ($branch->name ?? '')) }}" required class="form-control">
             @error('name') <div class="text-error mb-2">{{ $message }}</div> @enderror
 
-            <label class="form-label mt-2">Timezone (IANA)</label>
+            <label class="form-label mt-2">Timezone</label>
             <select name="timezone" required class="form-control">
                 @php($selectedTimezone = (string) old('timezone', (string) ($branch->timezone ?? '')))
                 @include('sharpfleet.partials.timezone-options', ['selectedTimezone' => $selectedTimezone])
             </select>
-            <div class="form-hint">Use an IANA timezone for correct DST handling.</div>
-            @error('timezone') <div class="text-error mb-2">{{ $message }}</div> @enderror
-
-            <hr class="my-3">
+            
+            @error('timezone') <div class="text-error mb-2">{{ $message }}</div> @enderror           
 
             <input type="hidden" name="is_default" value="0">
             <label class="checkbox-label mb-2">
@@ -61,13 +59,11 @@
                 <option value="mi" {{ $selectedDistanceUnit === 'mi' ? 'selected' : '' }}>Miles (mi)</option>
             </select>
             <div class="form-hint">Use this if this branch uses a different distance unit to the company default.</div>
-            @error('distance_unit') <div class="text-error mb-2">{{ $message }}</div> @enderror
-
-            <hr class="my-3">
+            @error('distance_unit') <div class="text-error mb-2">{{ $message }}</div> @enderror            
 
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ url('/app/sharpfleet/admin/branches') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn-sf-navy btn-sm">Save</button>
+                <a href="{{ url('/app/sharpfleet/admin/branches') }}" class="btn-sf-navy btn-sm">Cancel</a>
             </div>
         </div>
     </form>

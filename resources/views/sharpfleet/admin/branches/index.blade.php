@@ -13,7 +13,7 @@
             </div>
             <div class="btn-group">
                 @if(($branchesEnabled ?? false) === true)
-                    <a class="btn btn-primary" href="{{ url('/app/sharpfleet/admin/branches/create') }}">Add branch</a>
+                    <a class="btn btn-secondary" href="{{ url('/app/sharpfleet/admin/branches/create') }}">Add branch</a>
                 @endif
             </div>
         </div>
@@ -67,7 +67,7 @@
                                     <td>{{ $isDefault ? 'Yes' : '—' }}</td>
                                     <td>{{ $isActive ? 'Active' : 'Archived' }}</td>
                                     <td class="text-right">
-                                        <a class="btn btn-sm btn-secondary" href="{{ url('/app/sharpfleet/admin/branches/' . (int) $b->id . '/edit') }}">Edit</a>
+                                        <a class="btn-sf-navy btn-sm" href="{{ url('/app/sharpfleet/admin/branches/' . (int) $b->id . '/edit') }}">Edit</a>
                                     </td>
                                 </tr>
                             @endforeach

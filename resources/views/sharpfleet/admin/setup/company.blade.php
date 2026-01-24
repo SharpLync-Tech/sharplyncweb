@@ -41,7 +41,7 @@
                 These details are used across SharpFleet (emails, reports, and date/time display).
             </div>
 
-            <form method="POST" action="/app/sharpfleet/admin/setup/company">
+            <form id="sfSetupCompanyForm" method="POST" action="/app/sharpfleet/admin/setup/company">
                 @csrf
 
                 <div class="mb-3">
@@ -77,12 +77,12 @@
                     </select>
                     <div class="form-hint">Controls how distances are displayed in reports and trip/vehicle readings.</div>
                 </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Next</button>
-                </div>
             </form>
         </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+        <button type="submit" class="btn-sf-navy btn-sm" form="sfSetupCompanyForm">Next</button>
     </div>
 </div>
 </div>

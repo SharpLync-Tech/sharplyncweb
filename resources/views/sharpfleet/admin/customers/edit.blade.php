@@ -57,7 +57,7 @@
                             <div class="text-error small">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-sm">Save Changes</button>
+                    <button type="submit" class="btn-sf-navy btn-sm">Save Changes</button>
                 </form>
             </div>
         </div>
