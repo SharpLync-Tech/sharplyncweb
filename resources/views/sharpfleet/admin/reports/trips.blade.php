@@ -9,7 +9,7 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Inputs
+    | Environment
     |--------------------------------------------------------------------------
     */
     $companyTimezone     = $companyTimezone ?? config('app.timezone');
@@ -17,11 +17,11 @@
 
     /*
     |--------------------------------------------------------------------------
-    | UI column toggles (checkbox driven)
+    | Column selection (STRICT)
     |--------------------------------------------------------------------------
     */
-    $showVehicles     = request()->boolean('filter_vehicles', true);
-    $showDrivers      = request()->boolean('filter_drivers', true);
+    $showVehicles     = request()->boolean('filter_vehicles');
+    $showDrivers      = request()->boolean('filter_drivers');
 
     $showRegistration = request()->boolean('show_registration');
     $showPurpose      = request()->boolean('show_purpose');
@@ -31,19 +31,12 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Dates
+    | Date formatting
     |--------------------------------------------------------------------------
     */
-    $dateFormat = str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Totals
-    |--------------------------------------------------------------------------
-    */
-    $totalTrips    = $trips->count();
-    $businessTrips = $trips->where('trip_mode', 'business')->count();
-    $privateTrips  = $trips->where('trip_mode', 'private')->count();
+    $dateFormat = str_starts_with($companyTimezone, 'America/')
+        ? 'm/d/Y'
+        : 'd/m/Y';
 @endphp
 
 <div class="container">
@@ -71,13 +64,14 @@
     </div>
 
     {{-- ================= FILTERS ================= --}}
-    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}"
+    <form method="GET"
+          action="{{ url('/app/sharpfleet/admin/reports/trips') }}"
           class="card sf-report-card mb-3">
         <div class="card-body">
 
             <div class="grid grid-3 gap-4">
 
-                {{-- Scope --}}
+                {{-- Scope (LEFT) --}}
                 <div>
                     <h5 class="mb-2">Scope</h5>
 
@@ -92,51 +86,73 @@
                     </label>
 
                     <div class="text-muted small mt-1">
-                        Select whether trips are reported across the entire company or a single branch.
+                        Select whether trips are reported across the entire company
+                        or limited to a single branch.
                     </div>
                 </div>
 
-                {{-- Filter by --}}
+                {{-- Filter by (RIGHT) --}}
                 <div>
                     <h5 class="mb-2">Filter by</h5>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="filter_drivers" {{ $showDrivers ? 'checked' : '' }}>
-                        Drivers
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="filter_vehicles"
+                               {{ $showVehicles ? 'checked' : '' }}>
+                        Vehicles
                     </label>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="filter_vehicles" {{ $showVehicles ? 'checked' : '' }}>
-                        Vehicles
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="filter_drivers"
+                               {{ $showDrivers ? 'checked' : '' }}>
+                        Drivers
                     </label>
                 </div>
 
-                {{-- Show columns --}}
+                {{-- Show on screen (RIGHT) --}}
                 <div>
                     <h5 class="mb-2">Show on screen</h5>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="show_registration" {{ $showRegistration ? 'checked' : '' }}>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="show_registration"
+                               {{ $showRegistration ? 'checked' : '' }}>
                         Registration number
                     </label>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="show_purpose" {{ $showPurpose ? 'checked' : '' }}>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="show_purpose"
+                               {{ $showPurpose ? 'checked' : '' }}>
                         Purpose of travel
                     </label>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="show_distance" {{ $showDistance ? 'checked' : '' }}>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="show_distance"
+                               {{ $showDistance ? 'checked' : '' }}>
                         Distance
                     </label>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="show_duration" {{ $showDuration ? 'checked' : '' }}>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="show_duration"
+                               {{ $showDuration ? 'checked' : '' }}>
                         Duration
                     </label>
 
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" name="show_times" {{ $showTimes ? 'checked' : '' }}>
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="show_times"
+                               {{ $showTimes ? 'checked' : '' }}>
                         Start & end times
                     </label>
                 </div>
@@ -149,7 +165,7 @@
                     CSV export always includes the full trip dataset.
                 </div>
 
-                <button type="submit" class="btn-sf-navy">
+                <button type="submit" class="btn btn-outline-primary">
                     Update Report
                 </button>
             </div>
@@ -178,9 +194,9 @@
                                 <th>Driver</th>
                             @endif
 
-                            <th>Type</th>
-
-                            <th>{{ $clientPresenceLabel }}</th>
+                            @if($showPurpose)
+                                <th>Purpose</th>
+                            @endif
 
                             @if($showDistance)
                                 <th class="text-end">Distance</th>
@@ -204,7 +220,8 @@
                                     <td class="fw-bold">
                                         {{ $t->vehicle_name }}
                                         @if($showRegistration)
-                                            <br><small class="text-muted">{{ $t->registration_number }}</small>
+                                            <br>
+                                            <small class="text-muted">{{ $t->registration_number }}</small>
                                         @endif
                                     </td>
                                 @endif
@@ -213,13 +230,9 @@
                                     <td>{{ $t->driver_name }}</td>
                                 @endif
 
-                                <td>
-                                    <span class="badge {{ strtolower($t->trip_mode) === 'private' ? 'bg-secondary' : 'bg-success' }}">
-                                        {{ strtolower($t->trip_mode) === 'private' ? 'Private' : 'Business' }}
-                                    </span>
-                                </td>
-
-                                <td>{{ $t->customer_name_display ?: '—' }}</td>
+                                @if($showPurpose)
+                                    <td>{{ $t->purpose_of_travel ?: '—' }}</td>
+                                @endif
 
                                 @if($showDistance)
                                     <td class="text-end">{{ $t->distance_label ?? '—' }}</td>
@@ -230,7 +243,9 @@
                                 @endif
 
                                 @if($showTimes)
-                                    <td>{{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}</td>
+                                    <td>
+                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
+                                    </td>
                                     <td>
                                         {{ $t->end_time
                                             ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format($dateFormat)

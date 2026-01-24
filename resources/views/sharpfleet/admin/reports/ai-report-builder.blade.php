@@ -16,6 +16,7 @@
         color: #ffffff;
         border-bottom: 0;
         border-radius: 14px 14px 0 0;
+        padding-top: 12px;
         padding-left: 24px;
     }
     .sf-ai-report-card .card-header h2 {
