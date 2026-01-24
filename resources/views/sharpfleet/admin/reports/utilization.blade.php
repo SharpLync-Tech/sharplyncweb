@@ -300,6 +300,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/plugins/monthSelect/style.css">
 
 <style>
     .sf-report-card {
@@ -364,12 +365,16 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 10px;
+        padding: 6px 12px;
         border-radius: 999px;
         background: rgba(10, 42, 77, 0.08);
         font-weight: 600;
         color: #0A2A4D;
         cursor: pointer;
+    }
+
+    .sf-period-toggle input:checked + span {
+        color: #0A2A4D;
     }
 
     .sf-period-toggle input {
@@ -448,6 +453,7 @@
 
 @push('scripts')
 <script src="https://unpkg.com/flatpickr"></script>
+<script src="https://unpkg.com/flatpickr/dist/plugins/monthSelect/index.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/utilization"]');
@@ -464,6 +470,7 @@
         const workEnd = document.querySelector('input[name="work_end"]');
         const dayInputs = document.querySelectorAll('input[name="availability_days[]"]');
         const dateInput = document.querySelector('input[name="period_date"]');
+        let periodPicker = null;
 
         function submitForm() {
             if (!form) return;
@@ -533,6 +540,7 @@
             periodRadios.forEach(function (radio) {
                 radio.addEventListener('change', function () {
                     updatePeriodLabel();
+                    initPeriodPicker();
                     submitForm();
                 });
             });
@@ -560,20 +568,44 @@
             input.addEventListener('change', updateAvailabilitySummary);
         });
 
-        if (typeof flatpickr !== 'undefined') {
-            flatpickr('.sf-date', {
-                dateFormat: 'Y-m-d',
-                altInput: true,
-                altFormat: '{{ $dateFormat }}',
+        function initPeriodPicker() {
+            if (!dateInput || typeof flatpickr === 'undefined') return;
+
+            if (periodPicker) {
+                periodPicker.destroy();
+                periodPicker = null;
+            }
+
+            const period = selectedPeriod();
+            const baseOptions = {
                 allowInput: true,
+                defaultDate: dateInput.value || null,
                 onClose: function () {
                     submitForm();
                 }
-            });
+            };
+
+            if (period === 'month' && typeof monthSelectPlugin !== 'undefined') {
+                periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, {
+                    plugins: [new monthSelectPlugin({
+                        shorthand: true,
+                        dateFormat: 'Y-m-01',
+                        altFormat: 'F Y'
+                    })]
+                }));
+                return;
+            }
+
+            periodPicker = flatpickr(dateInput, Object.assign({}, baseOptions, {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: '{{ $dateFormat }}'
+            }));
         }
 
         const initialScope = document.querySelector('input[name="scope"]:checked');
         updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
+        initPeriodPicker();
         updatePeriodLabel();
         updateAvailabilitySummary();
     });
