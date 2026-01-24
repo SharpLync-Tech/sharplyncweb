@@ -50,20 +50,36 @@ class UtilizationReportController extends Controller
 
         $dateFormat = str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y';
 
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $scope = $request->input('scope', 'company'); // company | branch
+        $branchId = $request->input('branch_id');
+        $vehicleId = $request->input('vehicle_id');
 
-        if (!$startDate || !$endDate) {
-            $end = Carbon::now($companyTimezone)->startOfDay();
-            $start = $end->copy()->subDays(6);
-            $startDate = $start->toDateString();
-            $endDate = $end->toDateString();
+        $period = $request->input('period', 'month'); // day | week | month
+        $periodDate = $request->input('period_date');
+
+        $availabilityPreset = $request->input('availability_preset', 'business_hours'); // business_hours | 24_7 | custom
+        $availabilityDays = $request->input('availability_days', ['1', '2', '3', '4', '5']);
+        $workStart = $request->input('work_start', '07:00');
+        $workEnd = $request->input('work_end', '17:00');
+
+        $baseDate = $periodDate
+            ? Carbon::parse($periodDate, $companyTimezone)->startOfDay()
+            : Carbon::now($companyTimezone)->startOfDay();
+
+        if ($period === 'week') {
+            $rangeStart = $baseDate->copy()->startOfWeek(Carbon::MONDAY);
+            $rangeEnd = $baseDate->copy()->endOfWeek(Carbon::SUNDAY);
+        } elseif ($period === 'day') {
+            $rangeStart = $baseDate->copy()->startOfDay();
+            $rangeEnd = $baseDate->copy()->endOfDay();
+        } else {
+            $rangeStart = $baseDate->copy()->startOfMonth();
+            $rangeEnd = $baseDate->copy()->endOfMonth();
         }
 
-        $branchId = $request->input('branch_id');
+        $startDate = $rangeStart->toDateString();
+        $endDate = $rangeEnd->toDateString();
 
-        $rangeStart = Carbon::parse($startDate, $companyTimezone)->startOfDay();
-        $rangeEnd = Carbon::parse($endDate, $companyTimezone)->endOfDay();
         $rangeSeconds = max(1, $rangeEnd->diffInSeconds($rangeStart));
 
         $vehicleQuery = DB::connection('sharpfleet')
@@ -89,8 +105,12 @@ class UtilizationReportController extends Controller
             $vehicleQuery->whereIn('v.branch_id', $accessibleBranchIds);
         }
 
-        if (is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+        if ($scope === 'branch' && is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
             $vehicleQuery->where('v.branch_id', (int) $branchId);
+        }
+
+        if (is_numeric($vehicleId)) {
+            $vehicleQuery->where('v.id', (int) $vehicleId);
         }
 
         $vehicles = $vehicleQuery
@@ -110,7 +130,16 @@ class UtilizationReportController extends Controller
             ->orderBy('v.name')
             ->get();
 
-        $rows = $vehicles->map(function ($row) use ($companyTimezone, $dateFormat, $rangeSeconds) {
+        $availabilitySeconds = $this->calculateAvailabilitySeconds(
+            $rangeStart,
+            $rangeEnd,
+            $availabilityPreset,
+            $availabilityDays,
+            $workStart,
+            $workEnd
+        );
+
+        $rows = $vehicles->map(function ($row) use ($companyTimezone, $dateFormat, $availabilitySeconds) {
             $totalSeconds = (int) ($row->total_seconds ?? 0);
             $tripCount = (int) ($row->trip_count ?? 0);
 
@@ -118,10 +147,14 @@ class UtilizationReportController extends Controller
             $minutes = (int) floor(($totalSeconds % 3600) / 60);
             $durationLabel = $totalSeconds > 0 ? ($hours . 'h ' . $minutes . 'm') : '0h 0m';
 
-            $utilization = round(($totalSeconds / $rangeSeconds) * 100, 1);
+            $denominator = max(1, (int) $availabilitySeconds);
+            $utilization = round(($totalSeconds / $denominator) * 100, 1);
             if ($utilization > 100) {
                 $utilization = 100.0;
             }
+
+            $availableHours = round($denominator / 3600, 1);
+            $usedHours = round($totalSeconds / 3600, 1);
 
             $lastUsed = $row->last_used_at
                 ? Carbon::parse($row->last_used_at)->timezone($companyTimezone)->format($dateFormat)
@@ -135,6 +168,8 @@ class UtilizationReportController extends Controller
                 'trip_count' => $tripCount,
                 'total_duration' => $durationLabel,
                 'utilization_percent' => $utilization,
+                'available_hours' => $availableHours,
+                'used_hours' => $usedHours,
                 'last_used_at' => $lastUsed,
             ];
         });
@@ -143,6 +178,23 @@ class UtilizationReportController extends Controller
             ? round($rows->avg('utilization_percent'), 1)
             : 0.0;
 
+        $underUtilisedCount = $rows->filter(fn ($r) => $r->utilization_percent < 20)->count();
+        $overUtilisedCount = $rows->filter(fn ($r) => $r->utilization_percent >= 85)->count();
+        $totalUsedHours = round($rows->sum('used_hours'), 1);
+
+        if ($request->input('export') === 'csv') {
+            return $this->streamCsv(
+                $rows,
+                $period,
+                $startDate,
+                $endDate,
+                $availabilityPreset,
+                $availabilityDays,
+                $workStart,
+                $workEnd
+            );
+        }
+
         $branches = collect();
         if ($branchesEnabled) {
             $branches = $branchScopeEnabled
@@ -150,15 +202,186 @@ class UtilizationReportController extends Controller
                 : $branchesService->getBranches($organisationId);
         }
 
+        $vehicleListQuery = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->select('id', 'name', 'registration_number', 'branch_id')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1);
+
+        if ($branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+            $vehicleListQuery->whereIn('branch_id', $accessibleBranchIds);
+        }
+
+        if ($scope === 'branch' && is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+            $vehicleListQuery->where('branch_id', (int) $branchId);
+        }
+
+        $vehicleList = $vehicleListQuery
+            ->orderBy('name')
+            ->get();
+
         return view('sharpfleet.admin.reports.utilization', [
             'rows' => $rows,
             'branches' => $branches,
+            'vehicles' => $vehicleList,
             'companyTimezone' => $companyTimezone,
             'dateFormat' => $dateFormat,
             'startDate' => $startDate,
             'endDate' => $endDate,
             'branchId' => $branchId,
+            'scope' => $scope,
+            'vehicleId' => $vehicleId,
+            'period' => $period,
+            'periodDate' => $periodDate,
+            'availabilityPreset' => $availabilityPreset,
+            'availabilityDays' => $availabilityDays,
+            'workStart' => $workStart,
+            'workEnd' => $workEnd,
             'averageUtilization' => $averageUtilization,
+            'underUtilisedCount' => $underUtilisedCount,
+            'overUtilisedCount' => $overUtilisedCount,
+            'totalUsedHours' => $totalUsedHours,
+        ]);
+    }
+
+    private function calculateAvailabilitySeconds(
+        Carbon $rangeStart,
+        Carbon $rangeEnd,
+        string $preset,
+        $days,
+        string $workStart,
+        string $workEnd
+    ): int {
+        if ($preset === '24_7') {
+            return max(1, $rangeEnd->diffInSeconds($rangeStart));
+        }
+
+        $daySet = collect($days ?? [])
+            ->map(fn ($d) => (int) $d)
+            ->filter(fn ($d) => $d >= 0 && $d <= 6)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($preset === 'business_hours' || empty($daySet)) {
+            $daySet = [1, 2, 3, 4, 5]; // Mon-Fri
+        }
+
+        $startParts = explode(':', $workStart);
+        $endParts = explode(':', $workEnd);
+        $startMinutes = ((int) ($startParts[0] ?? 0) * 60) + (int) ($startParts[1] ?? 0);
+        $endMinutes = ((int) ($endParts[0] ?? 0) * 60) + (int) ($endParts[1] ?? 0);
+
+        if ($endMinutes <= $startMinutes) {
+            return max(1, $rangeEnd->diffInSeconds($rangeStart));
+        }
+
+        $totalSeconds = 0;
+        $cursor = $rangeStart->copy()->startOfDay();
+        $endDay = $rangeEnd->copy()->startOfDay();
+
+        while ($cursor->lte($endDay)) {
+            $dayIndex = $cursor->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
+            $dayIndex = $dayIndex % 7; // 0 (Sun) - 6 (Sat)
+
+            if (in_array($dayIndex, $daySet, true)) {
+                $dayStart = $cursor->copy()->addMinutes($startMinutes);
+                $dayEnd = $cursor->copy()->addMinutes($endMinutes);
+
+                $windowStart = $dayStart->greaterThan($rangeStart) ? $dayStart : $rangeStart;
+                $windowEnd = $dayEnd->lessThan($rangeEnd) ? $dayEnd : $rangeEnd;
+
+                if ($windowEnd->greaterThan($windowStart)) {
+                    $totalSeconds += $windowEnd->diffInSeconds($windowStart);
+                }
+            }
+
+            $cursor->addDay();
+        }
+
+        return max(1, $totalSeconds);
+    }
+
+    private function streamCsv(
+        $rows,
+        string $period,
+        string $startDate,
+        string $endDate,
+        string $preset,
+        $days,
+        string $workStart,
+        string $workEnd
+    ) {
+        $filename = 'utilization-' . $period . '-' . $startDate . '-to-' . $endDate . '.csv';
+
+        $dayMap = [
+            1 => 'Mon',
+            2 => 'Tue',
+            3 => 'Wed',
+            4 => 'Thu',
+            5 => 'Fri',
+            6 => 'Sat',
+            0 => 'Sun',
+        ];
+        $daysList = collect($days ?? [])
+            ->map(fn ($d) => (int) $d)
+            ->map(fn ($d) => $dayMap[$d] ?? null)
+            ->filter()
+            ->unique()
+            ->implode(', ');
+
+        $availabilityLabel = match ($preset) {
+            '24_7' => '24/7',
+            'business_hours' => 'Business hours (Mon-Fri)',
+            default => 'Custom (' . ($daysList !== '' ? $daysList : 'Mon-Fri') . ' ' . $workStart . '-' . $workEnd . ')',
+        };
+
+        return response()->streamDownload(function () use ($rows, $period, $startDate, $endDate, $availabilityLabel) {
+            $out = fopen('php://output', 'w');
+
+            fputcsv($out, [
+                'Period',
+                'Date Range',
+                'Availability',
+                'Vehicle',
+                'Registration',
+                'Trips',
+                'Used Hours',
+                'Available Hours',
+                'Utilisation %',
+                'Last Used',
+                'Status',
+                'Recommendation',
+            ]);
+
+            foreach ($rows as $row) {
+                $status = $row->utilization_percent < 20
+                    ? 'Low'
+                    : ($row->utilization_percent >= 85 ? 'Overused' : 'Healthy');
+
+                $recommendation = $row->utilization_percent < 20
+                    ? 'Consider reassigning or reducing idle time'
+                    : ($row->utilization_percent >= 85 ? 'Review load or allocate more vehicles' : 'Healthy usage');
+
+                fputcsv($out, [
+                    ucfirst($period),
+                    $startDate . ' to ' . $endDate,
+                    $availabilityLabel,
+                    $row->vehicle_name,
+                    $row->registration_number,
+                    $row->trip_count,
+                    $row->used_hours,
+                    $row->available_hours,
+                    number_format($row->utilization_percent, 1),
+                    $row->last_used_at ?? 'N/A',
+                    $status,
+                    $recommendation,
+                ]);
+            }
+
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 }

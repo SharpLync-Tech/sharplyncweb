@@ -7,11 +7,19 @@
 @php
     $companyTimezone = $companyTimezone ?? config('app.timezone');
     $branches = $branches ?? collect();
+    $vehicles = $vehicles ?? collect();
     $hasBranches = $branches->count() > 1;
 
-    $uiBranchId = request('branch_id');
-    $uiStartDate = request('start_date', $startDate ?? '');
-    $uiEndDate = request('end_date', $endDate ?? '');
+    $uiScope = request('scope', $scope ?? 'company');
+    $uiBranchId = request('branch_id', $branchId ?? '');
+    $uiVehicleId = request('vehicle_id', $vehicleId ?? '');
+    $uiPeriod = request('period', $period ?? 'month');
+    $uiPeriodDate = request('period_date', $periodDate ?? '');
+
+    $uiAvailabilityPreset = request('availability_preset', $availabilityPreset ?? 'business_hours');
+    $uiAvailabilityDays = collect(request('availability_days', $availabilityDays ?? ['1','2','3','4','5']))->map(fn ($d) => (string) $d)->all();
+    $uiWorkStart = request('work_start', $workStart ?? '07:00');
+    $uiWorkEnd = request('work_end', $workEnd ?? '17:00');
 
     $dateFormat = $dateFormat ?? (str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y');
     $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
@@ -34,11 +42,25 @@
           class="card sf-report-card mb-3">
 
         <div class="card-body">
-            <div class="grid grid-3 align-end">
+            <div class="grid grid-4 align-end">
+                <div>
+                    <label class="form-label">Scope</label>
+                    <label class="sf-radio">
+                        <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
+                        <span>Company-wide</span>
+                    </label>
+                    @if($hasBranches)
+                        <label class="sf-radio">
+                            <input type="radio" name="scope" value="branch" {{ $uiScope === 'branch' ? 'checked' : '' }}>
+                            <span>Single branch</span>
+                        </label>
+                    @endif
+                </div>
+
                 <div>
                     <label class="form-label">Branch</label>
                     <div class="sf-report-select">
-                        <select name="branch_id" class="form-select" {{ $hasBranches ? '' : 'disabled' }}>
+                        <select name="branch_id" class="form-select" {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
                             <option value="">All branches</option>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}"
@@ -51,7 +73,42 @@
                 </div>
 
                 <div>
-                    <label class="form-label">Start date</label>
+                    <label class="form-label">Vehicle</label>
+                    <div class="sf-report-select">
+                        <select name="vehicle_id" class="form-select">
+                            <option value="">All vehicles</option>
+                            @foreach($vehicles as $vehicle)
+                                <option value="{{ $vehicle->id }}"
+                                    {{ (string) $uiVehicleId === (string) $vehicle->id ? 'selected' : '' }}>
+                                    {{ $vehicle->name }} {{ $vehicle->registration_number ? '(' . $vehicle->registration_number . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label">Period</label>
+                    <div class="sf-period-toggle">
+                        <label>
+                            <input type="radio" name="period" value="day" {{ $uiPeriod === 'day' ? 'checked' : '' }}>
+                            <span>Day</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="period" value="week" {{ $uiPeriod === 'week' ? 'checked' : '' }}>
+                            <span>Week</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="period" value="month" {{ $uiPeriod === 'month' ? 'checked' : '' }}>
+                            <span>Month</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-3 align-end mt-3">
+                <div>
+                    <label class="form-label" id="sfPeriodLabel">Select period</label>
                     <div class="sf-date-field">
                         <span class="sf-date-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
@@ -60,56 +117,116 @@
                             </svg>
                         </span>
                         <input type="text"
-                               name="start_date"
+                               name="period_date"
                                class="form-control sf-date"
                                placeholder="{{ $datePlaceholder }}"
-                               value="{{ $uiStartDate }}"
+                               value="{{ $uiPeriodDate }}"
                                autocomplete="off">
                     </div>
                 </div>
 
                 <div>
-                    <label class="form-label">End date</label>
-                    <div class="sf-date-field">
-                        <span class="sf-date-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                                <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
-                                <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                            </svg>
-                        </span>
-                        <input type="text"
-                               name="end_date"
-                               class="form-control sf-date"
-                               placeholder="{{ $datePlaceholder }}"
-                               value="{{ $uiEndDate }}"
-                               autocomplete="off">
+                    <label class="form-label">Availability</label>
+                    <div class="sf-report-select">
+                        <select name="availability_preset" class="form-select" id="sfAvailabilityPreset">
+                            <option value="business_hours" {{ $uiAvailabilityPreset === 'business_hours' ? 'selected' : '' }}>
+                                Business hours (Mon-Fri)
+                            </option>
+                            <option value="24_7" {{ $uiAvailabilityPreset === '24_7' ? 'selected' : '' }}>
+                                24/7
+                            </option>
+                            <option value="custom" {{ $uiAvailabilityPreset === 'custom' ? 'selected' : '' }}>
+                                Custom (advanced)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="text-muted small mt-1" id="sfAvailabilitySummary">
+                        7:00am - 5:00pm, Monday to Friday
+                    </div>
+                </div>
+
+                <div class="sf-advanced-wrap">
+                    <button type="button" class="btn-sf-navy" id="sfAdvancedToggle">Advanced availability</button>
+                </div>
+            </div>
+
+            <div class="sf-advanced-panel mt-3 {{ $uiAvailabilityPreset === 'custom' ? 'is-open' : '' }}" id="sfAdvancedPanel">
+                <div class="grid grid-2">
+                    <div>
+                        <label class="form-label">Working days</label>
+                        <div class="sf-days">
+                            @foreach([
+                                '1' => 'Mon',
+                                '2' => 'Tue',
+                                '3' => 'Wed',
+                                '4' => 'Thu',
+                                '5' => 'Fri',
+                                '6' => 'Sat',
+                                '0' => 'Sun'
+                            ] as $dayValue => $dayLabel)
+                                <label class="sf-check">
+                                    <input type="checkbox" name="availability_days[]"
+                                           value="{{ $dayValue }}"
+                                           {{ in_array((string) $dayValue, $uiAvailabilityDays, true) ? 'checked' : '' }}>
+                                    <span>{{ $dayLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Working hours</label>
+                        <div class="sf-time-grid">
+                            <div>
+                                <label class="form-label small">Start time</label>
+                                <input type="time" name="work_start" class="form-control" value="{{ $uiWorkStart }}">
+                            </div>
+                            <div>
+                                <label class="form-label small">End time</label>
+                                <input type="time" name="work_end" class="form-control" value="{{ $uiWorkEnd }}">
+                            </div>
+                        </div>
+                        <div class="text-muted small mt-2">
+                            Public holiday exclusion coming soon.
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="mt-3 text-end">
-                <button type="submit" class="btn-sf-navy">Update Report</button>
+                <button type="submit" class="btn-sf-navy">Apply</button>
             </div>
         </div>
     </form>
 
     <div class="card sf-report-card mb-3">
         <div class="card-body">
-            <div class="grid grid-3 text-center">
+            <div class="grid grid-4 text-center">
                 <div>
                     <strong>{{ number_format($averageUtilization, 1) }}%</strong><br>
                     <span class="text-muted small">Average utilization</span>
                 </div>
                 <div>
-                    <strong>{{ $rows->count() }}</strong><br>
-                    <span class="text-muted small">Active vehicles</span>
+                    <strong>{{ $underUtilisedCount }}</strong><br>
+                    <span class="text-muted small">Under-utilised vehicles</span>
                 </div>
                 <div>
-                    <strong>{{ $startDate }} - {{ $endDate }}</strong><br>
-                    <span class="text-muted small">Report range</span>
+                    <strong>{{ $overUtilisedCount }}</strong><br>
+                    <span class="text-muted small">Over-utilised vehicles</span>
+                </div>
+                <div>
+                    <strong>{{ number_format($totalUsedHours, 1) }} h</strong><br>
+                    <span class="text-muted small">Total hours used</span>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="text-end mb-3">
+        @php
+            $exportQuery = array_merge(request()->query(), ['export' => 'csv']);
+            $exportUrl = url('/app/sharpfleet/admin/reports/utilization') . '?' . http_build_query($exportQuery);
+        @endphp
+        <a href="{{ $exportUrl }}" class="btn btn-primary">Export CSV</a>
     </div>
 
     <div class="card sf-report-card">
@@ -127,12 +244,26 @@
                                 <th>Branch</th>
                                 <th class="text-end">Trips</th>
                                 <th class="text-end">Total driving time</th>
+                                <th class="text-end">Available time</th>
                                 <th>Utilization</th>
                                 <th class="text-end">Last used</th>
+                                <th>Status</th>
+                                <th>Recommendation</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($rows as $row)
+                                @php
+                                    $statusLabel = $row->utilization_percent < 20
+                                        ? 'Low'
+                                        : ($row->utilization_percent >= 85 ? 'Overused' : 'Healthy');
+                                    $badgeClass = $row->utilization_percent < 20
+                                        ? 'bg-secondary'
+                                        : ($row->utilization_percent >= 85 ? 'bg-danger' : 'bg-success');
+                                    $recommendation = $row->utilization_percent < 20
+                                        ? 'Consider reassigning or reducing idle time'
+                                        : ($row->utilization_percent >= 85 ? 'Review load or allocate more vehicles' : 'Healthy usage');
+                                @endphp
                                 <tr>
                                     <td class="fw-bold">
                                         {{ $row->vehicle_name }}<br>
@@ -141,6 +272,7 @@
                                     <td>{{ $row->branch_name }}</td>
                                     <td class="text-end">{{ $row->trip_count }}</td>
                                     <td class="text-end">{{ $row->total_duration }}</td>
+                                    <td class="text-end">{{ number_format($row->available_hours, 1) }} h</td>
                                     <td>
                                         <div class="sf-util-row">
                                             <div class="sf-util-bar">
@@ -150,6 +282,10 @@
                                         </div>
                                     </td>
                                     <td class="text-end">{{ $row->last_used_at ?: '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+                                    </td>
+                                    <td>{{ $recommendation }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -218,6 +354,67 @@
         padding-left: 36px;
     }
 
+    .sf-period-toggle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sf-period-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(10, 42, 77, 0.08);
+        font-weight: 600;
+        color: #0A2A4D;
+        cursor: pointer;
+    }
+
+    .sf-period-toggle input {
+        accent-color: #2CBFAE;
+    }
+
+    .sf-advanced-wrap {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+    .sf-advanced-panel {
+        border-top: 1px dashed rgba(10, 42, 77, 0.15);
+        padding-top: 14px;
+        display: none;
+    }
+
+    .sf-advanced-panel.is-open {
+        display: block;
+    }
+
+    .sf-days {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .sf-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(10, 42, 77, 0.08);
+        font-weight: 600;
+        color: #0A2A4D;
+    }
+
+    .sf-time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
     .sf-util-row {
         display: flex;
         align-items: center;
@@ -254,16 +451,114 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/utilization"]');
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
         const branchSelect = document.querySelector('select[name="branch_id"]');
+        const vehicleSelect = document.querySelector('select[name="vehicle_id"]');
+        const periodRadios = document.querySelectorAll('input[name="period"]');
+        const periodLabel = document.getElementById('sfPeriodLabel');
+        const advancedToggle = document.getElementById('sfAdvancedToggle');
+        const advancedPanel = document.getElementById('sfAdvancedPanel');
+        const availabilityPreset = document.getElementById('sfAvailabilityPreset');
+        const availabilitySummary = document.getElementById('sfAvailabilitySummary');
+        const workStart = document.querySelector('input[name="work_start"]');
+        const workEnd = document.querySelector('input[name="work_end"]');
+        const dayInputs = document.querySelectorAll('input[name="availability_days[]"]');
+        const dateInput = document.querySelector('input[name="period_date"]');
 
         function submitForm() {
             if (!form) return;
             form.submit();
         }
 
+        function updateBranchState(value) {
+            if (!branchSelect) return;
+            if (value === 'branch') {
+                branchSelect.disabled = false;
+            } else {
+                branchSelect.value = '';
+                branchSelect.disabled = true;
+            }
+        }
+
+        function selectedPeriod() {
+            const checked = document.querySelector('input[name="period"]:checked');
+            return checked ? checked.value : 'month';
+        }
+
+        function updatePeriodLabel() {
+            if (!periodLabel) return;
+            const period = selectedPeriod();
+            periodLabel.textContent = period === 'day'
+                ? 'Select day'
+                : (period === 'week' ? 'Select week' : 'Select month');
+        }
+
+        function updateAvailabilitySummary() {
+            if (!availabilitySummary) return;
+            const preset = availabilityPreset ? availabilityPreset.value : 'business_hours';
+            if (preset === '24_7') {
+                availabilitySummary.textContent = 'All days, 24 hours';
+                return;
+            }
+            if (preset === 'business_hours') {
+                availabilitySummary.textContent = '7:00am – 5:00pm, Monday to Friday';
+                return;
+            }
+            const days = Array.from(dayInputs)
+                .filter(input => input.checked)
+                .map(input => input.nextElementSibling ? input.nextElementSibling.textContent.trim() : '')
+                .filter(Boolean);
+            const dayLabel = days.length ? days.join(', ') : 'Mon-Fri';
+            availabilitySummary.textContent = `${workStart.value} - ${workEnd.value}, ${dayLabel}`;
+        }
+
+        if (scopeRadios.length) {
+            scopeRadios.forEach(function (radio) {
+                radio.addEventListener('change', function (e) {
+                    updateBranchState(e.target.value);
+                    submitForm();
+                });
+            });
+        }
+
         if (branchSelect) {
             branchSelect.addEventListener('change', submitForm);
         }
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener('change', submitForm);
+        }
+
+        if (periodRadios.length) {
+            periodRadios.forEach(function (radio) {
+                radio.addEventListener('change', function () {
+                    updatePeriodLabel();
+                    submitForm();
+                });
+            });
+        }
+
+        if (advancedToggle && advancedPanel) {
+            advancedToggle.addEventListener('click', function () {
+                advancedPanel.classList.toggle('is-open');
+            });
+        }
+
+        if (availabilityPreset) {
+            availabilityPreset.addEventListener('change', function () {
+                if (advancedPanel) {
+                    advancedPanel.classList.toggle('is-open', availabilityPreset.value === 'custom');
+                }
+                updateAvailabilitySummary();
+                submitForm();
+            });
+        }
+
+        if (workStart) workStart.addEventListener('change', updateAvailabilitySummary);
+        if (workEnd) workEnd.addEventListener('change', updateAvailabilitySummary);
+        dayInputs.forEach(function (input) {
+            input.addEventListener('change', updateAvailabilitySummary);
+        });
 
         if (typeof flatpickr !== 'undefined') {
             flatpickr('.sf-date', {
@@ -276,6 +571,11 @@
                 }
             });
         }
+
+        const initialScope = document.querySelector('input[name="scope"]:checked');
+        updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
+        updatePeriodLabel();
+        updateAvailabilitySummary();
     });
 </script>
 @endpush
