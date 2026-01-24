@@ -129,9 +129,16 @@
   }
 
   /* CTA button: full width feels better on mobile */
-  .sf-cta {
-    width: 100%;
-    text-align: center;
-    padding: 0.85rem 1.25rem;
+  .hero .sf-cta {
+  width: 100%;
+  text-align: center;
+  padding: 0.85rem 1.25rem;
+}
+
+  /* Keep CTAs inside cards nicely sized */
+  .sf-home-features-grid .sf-cta,
+  .sf-home-pricing-card .sf-cta {
+    width: auto;
   }
+
 }

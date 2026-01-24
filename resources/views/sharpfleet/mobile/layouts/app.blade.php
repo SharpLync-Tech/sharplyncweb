@@ -473,6 +473,7 @@ if ('serviceWorker' in navigator) {
         if (item.usage_mode) fd.append('usage_mode', item.usage_mode);
         if (item.client_timezone) fd.append('client_timezone', item.client_timezone);
         if (item.page_url) fd.append('page_url', item.page_url);
+        if (item.device_id) fd.append('device_id', item.device_id);
         if (item.logs) fd.append('logs', item.logs);
         return fd;
     }

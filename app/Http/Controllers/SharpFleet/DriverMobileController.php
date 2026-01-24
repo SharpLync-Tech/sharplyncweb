@@ -385,6 +385,7 @@ class DriverMobileController extends Controller
             'usage_mode' => ['nullable', 'string', 'max:40'],
             'client_timezone' => ['nullable', 'string', 'max:120'],
             'page_url' => ['nullable', 'string', 'max:500'],
+            'device_id' => ['nullable', 'string', 'max:100'],
             'logs' => ['nullable', 'string', 'max:20000'],
         ]);
 
@@ -414,6 +415,39 @@ class DriverMobileController extends Controller
             $adminEmail = trim((string) ($admin->email ?? ''));
         }
 
+        $deviceId = trim((string) ($validated['device_id'] ?? ''));
+        if ($deviceId === '') {
+            $deviceId = trim((string) $request->header('X-Device-Id', ''));
+        }
+        if ($deviceId === '') {
+            $deviceId = trim((string) $request->input('device_id', ''));
+        }
+        if ($deviceId === '') {
+            $deviceId = trim((string) ($request->session()->get('sharpfleet.mobile_device_id', '') ?? ''));
+        }
+
+        $tokenAuth = (bool) $request->attributes->get('sharpfleet.mobile_token_valid', false);
+        $authPath = $tokenAuth ? 'token' : 'session';
+        $tokenExists = 'unknown';
+        if ($deviceId !== '') {
+            $tokenExists = DB::connection('sharpfleet')
+                ->table('sharpfleet_mobile_tokens')
+                ->where('user_id', (int) $user['id'])
+                ->where('device_id', $deviceId)
+                ->whereNull('revoked_at')
+                ->exists() ? 'yes' : 'no';
+        }
+
+        \Log::info('[SharpFleet Mobile Support] Debug', [
+            'organisation_id' => $organisationId,
+            'user_id' => (int) ($user['id'] ?? 0),
+            'host' => $request->getHost(),
+            'device_id' => $deviceId !== '' ? $deviceId : null,
+            'token_exists' => $tokenExists,
+            'auth_path' => $authPath,
+            'page_url' => $validated['page_url'] ?? null,
+        ]);
+
         $bodyLines = [
             'SharpFleet Mobile Support Request',
             '----------------------------------',
@@ -427,6 +461,10 @@ class DriverMobileController extends Controller
             'Usage mode: ' . ($validated['usage_mode'] ?? 'Unknown'),
             'Client Timezone: ' . ($validated['client_timezone'] ?? 'Unknown'),
             'Page URL: ' . ($validated['page_url'] ?? 'Unknown'),
+            'Current Host: ' . ($request->getHost() ?: 'Unknown'),
+            'Device ID: ' . ($deviceId !== '' ? $deviceId : 'Unknown'),
+            'Token exists: ' . $tokenExists,
+            'Auth path: ' . $authPath,
             'Company Timezone: ' . ($companyTimezone !== '' ? $companyTimezone : 'Unknown'),
             'Submitted: ' . now()->toDateTimeString(),
             '',

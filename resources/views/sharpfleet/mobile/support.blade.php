@@ -61,6 +61,7 @@
         <input type="hidden" name="usage_mode" id="sfSupportUsageMode">
         <input type="hidden" name="client_timezone" id="sfSupportClientTimezone">
         <input type="hidden" name="page_url" id="sfSupportPageUrl">
+        <input type="hidden" name="device_id" id="sfSupportDeviceId">
         <input type="hidden" name="logs" id="sfSupportLogs">
 
         <div class="hint-text" style="margin-bottom: 12px;">
@@ -82,6 +83,7 @@
     const logsField = document.getElementById('sfSupportLogs');
     const timezoneField = document.getElementById('sfSupportClientTimezone');
     const pageUrlField = document.getElementById('sfSupportPageUrl');
+    const deviceIdField = document.getElementById('sfSupportDeviceId');
     const queuedCard = document.getElementById('sfSupportQueued');
     const form = document.getElementById('sfSupportForm');
     const QUEUE_KEY = 'sf_support_queue_v1';
@@ -109,6 +111,14 @@
     function detectTimezone() {
         try {
             return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function detectDeviceId() {
+        try {
+            return localStorage.getItem('sf_device_id') || '';
         } catch (e) {
             return '';
         }
@@ -163,6 +173,7 @@
             usage_mode: modeField ? String(modeField.value || '') : detectUsageMode(),
             client_timezone: timezoneField ? String(timezoneField.value || '') : detectTimezone(),
             page_url: pageUrlField ? String(pageUrlField.value || '') : detectPageUrl(),
+            device_id: deviceIdField ? String(deviceIdField.value || '') : detectDeviceId(),
             logs: serializeLogs(),
             queuedAt: new Date().toISOString(),
         };
@@ -190,6 +201,7 @@
     if (modeField) modeField.value = detectUsageMode();
     if (timezoneField) timezoneField.value = detectTimezone();
     if (pageUrlField) pageUrlField.value = detectPageUrl();
+    if (deviceIdField) deviceIdField.value = detectDeviceId();
 
     if (message) {
         message.addEventListener('input', updateCounter);
@@ -222,6 +234,7 @@
             if (modeField) modeField.value = detectUsageMode();
             if (timezoneField) timezoneField.value = detectTimezone();
             if (pageUrlField) pageUrlField.value = detectPageUrl();
+            if (deviceIdField) deviceIdField.value = detectDeviceId();
             showQueued();
             setTimeout(() => {
                 window.location.href = '/app/sharpfleet/mobile';
