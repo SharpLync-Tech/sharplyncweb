@@ -65,27 +65,46 @@ class AiReportBuilderController extends Controller
         $customerName = is_string($entities['customer'] ?? null) ? trim((string) $entities['customer']) : '';
         $vehicleName = is_string($entities['vehicle'] ?? null) ? trim((string) $entities['vehicle']) : '';
 
-        $entityType = 'unknown';
-        $entityName = '';
+        $targets = [
+            'driver' => null,
+            'customer' => null,
+            'vehicle' => null,
+        ];
+
         if ($driverName !== '') {
-            $entityType = 'driver';
-            $entityName = $driverName;
-        } elseif ($customerName !== '') {
-            $entityType = 'customer';
-            $entityName = $customerName;
-        } elseif ($vehicleName !== '') {
-            $entityType = 'vehicle';
-            $entityName = $vehicleName;
+            $targets['driver'] = $this->resolveTarget($organisationId, 'driver', $driverName, $settings);
+        }
+        if ($customerName !== '') {
+            $targets['customer'] = $this->resolveTarget($organisationId, 'customer', $customerName, $settings);
+        }
+        if ($vehicleName !== '') {
+            $targets['vehicle'] = $this->resolveTarget($organisationId, 'vehicle', $vehicleName, $settings);
         }
 
-        $target = $this->resolveTarget($organisationId, $entityType, $entityName, $settings);
-        if ($target === null) {
+        if ($driverName !== '' && $targets['driver'] === null) {
+            return back()
+                ->withErrors(['prompt' => 'No matching driver found for that request.'])
+                ->withInput();
+        }
+        if ($customerName !== '' && $targets['customer'] === null) {
+            return back()
+                ->withErrors(['prompt' => 'No matching customer found for that request.'])
+                ->withInput();
+        }
+        if ($vehicleName !== '' && $targets['vehicle'] === null) {
+            return back()
+                ->withErrors(['prompt' => 'No matching vehicle found for that request.'])
+                ->withInput();
+        }
+
+        $fallbackTarget = $targets['driver'] ?? $targets['customer'] ?? $targets['vehicle'];
+        if ($fallbackTarget === null) {
             return back()
                 ->withErrors(['prompt' => 'No matching driver, customer, or vehicle found for that request.'])
                 ->withInput();
         }
 
-        $result = $this->buildReport($organisationId, $user, $target, $settings);
+        $result = $this->buildReport($organisationId, $user, $fallbackTarget, $settings, $targets);
 
         return view('sharpfleet.admin.reports.ai-report-builder', [
             'prompt' => trim($validated['prompt']),
@@ -184,7 +203,8 @@ class AiReportBuilderController extends Controller
         int $organisationId,
         array $user,
         array $target,
-        CompanySettingsService $settings
+        CompanySettingsService $settings,
+        array $targets = []
     ): array {
         $reporting = $settings->all()['reporting'] ?? [];
         $includePrivateTrips = (bool) ($reporting['include_private_trips'] ?? true);
@@ -255,10 +275,27 @@ class AiReportBuilderController extends Controller
             $query->where('trips.started_at', '<=', $endDate->toDateTimeString());
         }
 
-        if ($target['type'] === 'driver') {
+        $driverTarget = $targets['driver'] ?? null;
+        $customerTarget = $targets['customer'] ?? null;
+        $vehicleTarget = $targets['vehicle'] ?? null;
+
+        if (is_array($driverTarget) && isset($driverTarget['id'])) {
+            $query->where('trips.user_id', (int) $driverTarget['id']);
+        } elseif ($target['type'] === 'driver') {
             $query->where('trips.user_id', (int) $target['id']);
+        }
+
+        if (is_array($vehicleTarget) && isset($vehicleTarget['id'])) {
+            $query->where('trips.vehicle_id', (int) $vehicleTarget['id']);
         } elseif ($target['type'] === 'vehicle') {
             $query->where('trips.vehicle_id', (int) $target['id']);
+        }
+
+        if (is_array($customerTarget) && isset($customerTarget['id'])) {
+            $query->where(function ($sub) use ($customerTarget) {
+                $sub->where('trips.customer_id', (int) $customerTarget['id'])
+                    ->orWhere('trips.customer_name', (string) $customerTarget['label']);
+            });
         } elseif ($target['type'] === 'customer') {
             $query->where(function ($sub) use ($target) {
                 $sub->where('trips.customer_id', (int) $target['id'])

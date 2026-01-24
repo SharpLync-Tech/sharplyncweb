@@ -108,132 +108,138 @@
 <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
 
 <style>
-    /* =====================================================
-       Global reset for selects (kill native arrows)
-    ===================================================== */
-    select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: none;
-    }
+        /* =====================================================
+        SharpFleet SELECTS (Status / Branch) — FINAL
+        ===================================================== */
+        .sf-report-select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
 
-    select::-ms-expand {
-        display: none;
-    }
+        /* Kill ALL native + Bootstrap arrows (scoped, not global) */
+        .sf-report-select select,
+        .sf-report-select .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: none !important;
+            width: 100%;
+        }
 
-    /* =====================================================
-       SharpFleet SELECTS (Status / Branch)
-    ===================================================== */
-    .sf-report-select {
-        position: relative;
-    }
+        /* IE fallback */
+        .sf-report-select select::-ms-expand {
+            display: none;
+        }
 
-    .sf-report-select::after {
-        content: "";
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        width: 8px;
-        height: 8px;
-        border-right: 2px solid #2CBFAE;
-        border-bottom: 2px solid #2CBFAE;
-        transform: translateY(-50%) rotate(45deg);
-        pointer-events: none;
-    }
+        /* Custom SharpFleet arrow (wrapper-based = reliable) */
+        .sf-report-select::after {
+            content: "";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #2CBFAE;
+            border-bottom: 2px solid #2CBFAE;
+            transform: translateY(-50%) rotate(45deg);
+            pointer-events: none;
+        }
 
-    .sf-report-select .form-select {
-        border-radius: 12px;
-        border: 1px solid rgba(44, 191, 174, 0.35);
-        padding: 10px 44px 10px 14px;
-        background-color: #f8fcfb;
+        /* Select styling */
+        .sf-report-select .form-select {
+            border-radius: 12px;
+            border: 1px solid rgba(44, 191, 174, 0.35);
+            padding: 10px 44px 10px 14px; /* space for arrow */
+            background-color: #f8fcfb;
 
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #0A2A4D;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0A2A4D;
 
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.85),
-            0 1px 2px rgba(10, 42, 77, 0.05);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.85),
+                0 1px 2px rgba(10, 42, 77, 0.05);
 
-        transition:
-            border-color 150ms ease,
-            box-shadow 150ms ease,
-            background-color 150ms ease;
+            transition:
+                border-color 150ms ease,
+                box-shadow 150ms ease,
+                background-color 150ms ease;
 
-        cursor: pointer;
-    }
+            cursor: pointer;
+        }
 
-    .sf-report-select .form-select:hover {
-        background-color: #ffffff;
-        border-color: #2CBFAE;
-    }
+        .sf-report-select .form-select:hover {
+            background-color: #ffffff;
+            border-color: #2CBFAE;
+        }
 
-    .sf-report-select .form-select:focus {
-        outline: none;
-        background-color: #ffffff;
-        border-color: #2CBFAE;
-        box-shadow:
-            0 0 0 3px rgba(44, 191, 174, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    }
+        .sf-report-select .form-select:focus {
+            outline: none;
+            background-color: #ffffff;
+            border-color: #2CBFAE;
+            box-shadow:
+                0 0 0 3px rgba(44, 191, 174, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
 
-    .sf-report-select .form-select:disabled {
-        background-color: #eef2f6;
-        color: rgba(10, 42, 77, 0.5);
-        border-color: rgba(10, 42, 77, 0.15);
-        cursor: not-allowed;
-    }
+        .sf-report-select .form-select:disabled {
+            background-color: #eef2f6;
+            color: rgba(10, 42, 77, 0.5);
+            border-color: rgba(10, 42, 77, 0.15);
+            cursor: not-allowed;
+        }
 
-    /* =====================================================
-       SharpFleet DATE INPUTS (Flatpickr)
-       Real inputs are type="text"
-    ===================================================== */
-    .sf-date.form-control,
-    .flatpickr-input.form-control {
-        border-radius: 12px;
-        border: 1px solid rgba(44, 191, 174, 0.35);
-        padding: 10px 14px;
-        background-color: #f8fcfb;
+        /* =====================================================
+        SharpFleet DATE INPUTS (Flatpickr)
+        Real inputs are type="text"
+        ===================================================== */
+        .sf-date.form-control,
+        .flatpickr-input.form-control {
+            border-radius: 12px;
+            border: 1px solid rgba(44, 191, 174, 0.35);
+            padding: 10px 14px;
+            background-color: #f8fcfb;
 
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #0A2A4D;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0A2A4D;
 
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.85),
-            0 1px 2px rgba(10, 42, 77, 0.05);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.85),
+                0 1px 2px rgba(10, 42, 77, 0.05);
 
-        transition:
-            border-color 150ms ease,
-            box-shadow 150ms ease,
-            background-color 150ms ease;
+            transition:
+                border-color 150ms ease,
+                box-shadow 150ms ease,
+                background-color 150ms ease;
 
-        cursor: pointer;
-    }
+            cursor: pointer;
+        }
 
-    .sf-date.form-control:hover,
-    .flatpickr-input.form-control:hover {
-        background-color: #ffffff;
-        border-color: #2CBFAE;
-    }
+        .sf-date.form-control:hover,
+        .flatpickr-input.form-control:hover {
+            background-color: #ffffff;
+            border-color: #2CBFAE;
+        }
 
-    .sf-date.form-control:focus,
-    .sf-date.form-control.active,
-    .flatpickr-input.form-control:focus,
-    .flatpickr-input.form-control.active {
-        outline: none;
-        background-color: #ffffff;
-        border-color: #2CBFAE;
-        box-shadow:
-            0 0 0 3px rgba(44, 191, 174, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    }
+        .sf-date.form-control:focus,
+        .sf-date.form-control.active,
+        .flatpickr-input.form-control:focus,
+        .flatpickr-input.form-control.active {
+            outline: none;
+            background-color: #ffffff;
+            border-color: #2CBFAE;
+            box-shadow:
+                0 0 0 3px rgba(44, 191, 174, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
 
-    .sf-date::placeholder {
-        color: rgba(10, 42, 77, 0.45);
-        font-weight: 500;
-    }
+        .sf-date::placeholder {
+            color: rgba(10, 42, 77, 0.45);
+            font-weight: 500;
+        }
+
 </style>
 @endpush
 
