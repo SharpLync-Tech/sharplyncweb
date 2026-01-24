@@ -20,7 +20,7 @@
     <div class="page-header mb-3">
         <div class="flex-between">
             <div>
-                <h1 class="page-title">Fleet Manager Reports (Operational)</h1>
+                <h1 class="page-title">Operational Reports</h1>
                 <p class="page-description">
                     Daily/weekly operational view of fleet usage, idle vehicles, and last active dates.
                 </p>
