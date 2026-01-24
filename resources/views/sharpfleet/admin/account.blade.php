@@ -129,7 +129,7 @@
                 <button
                     type="button"
                     id="sf-show-subscribe-step"
-                    class="btn btn-sm sf-btn-spotlight"
+                    class="btn-sf-navy"
                 >
                     Subscribe
                 </button>
