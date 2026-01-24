@@ -305,34 +305,24 @@ class UtilizationReportController extends Controller
         $startMinutes = ((int) ($startParts[0] ?? 0) * 60) + (int) ($startParts[1] ?? 0);
         $endMinutes = ((int) ($endParts[0] ?? 0) * 60) + (int) ($endParts[1] ?? 0);
 
-        if ($endMinutes <= $startMinutes) {
-            return $rangeEnd->diffInSeconds($rangeStart);
+        $dailySeconds = max(0, ($endMinutes - $startMinutes) * 60);
+        if ($dailySeconds === 0) {
+            return 0;
         }
 
-        $totalSeconds = 0;
         $period = CarbonPeriod::create(
             $rangeStart->copy()->startOfDay(),
             $rangeEnd->copy()->startOfDay()
         );
 
+        $daysCount = 0;
         foreach ($period as $day) {
-            $dayIndex = $day->dayOfWeek; // 0 (Sun) - 6 (Sat)
-            if (!in_array($dayIndex, $daySet, true)) {
-                continue;
-            }
-
-            $dayStart = $day->copy()->startOfDay()->addMinutes($startMinutes);
-            $dayEnd = $day->copy()->startOfDay()->addMinutes($endMinutes);
-
-            $windowStart = $dayStart->greaterThan($rangeStart) ? $dayStart : $rangeStart;
-            $windowEnd = $dayEnd->lessThan($rangeEnd) ? $dayEnd : $rangeEnd;
-
-            if ($windowEnd->greaterThan($windowStart)) {
-                $totalSeconds += $windowEnd->diffInSeconds($windowStart);
+            if (in_array($day->dayOfWeek, $daySet, true)) {
+                $daysCount++;
             }
         }
 
-        return $totalSeconds;
+        return $daysCount * $dailySeconds;
     }
 
     private function streamCsv(
