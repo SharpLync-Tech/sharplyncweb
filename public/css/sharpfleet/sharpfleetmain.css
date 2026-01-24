@@ -769,9 +769,9 @@ details.card[open] .incident-toggle-hint-closed {
     border: 1px solid rgba(44, 191, 174, 0.28);
 
     /* Subtle depth */
-    box-shadow:
-        0 8px 18px rgba(10, 42, 77, 0.45),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+     box-shadow:
+        0 6px 14px rgba(10, 42, 77, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
 
     cursor: pointer;
 
@@ -795,8 +795,8 @@ details.card[open] .incident-toggle-hint-closed {
 
     box-shadow:
         0 10px 22px rgba(10, 42, 77, 0.55),  /* lift */
-        0 0 0 1px rgba(44, 191, 174, 0.25),  /* thin teal edge */
-        0 0 6px rgba(44, 191, 174, 0.25),    /* soft glow */
+        0 0 0 1px rgba(44, 191, 174, 0.22),  /* thin teal edge */
+        0 0 4px rgba(44, 191, 174, 0.18),    /* soft glow */
         inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
