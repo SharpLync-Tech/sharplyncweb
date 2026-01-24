@@ -85,7 +85,7 @@
                                     <td>{{ trim(($v->make ?? '') . ' ' . ($v->model ?? '')) ?: '—' }}</td>
                                     <td>
                                         <div class="btn-group-sm">
-                                            <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/edit') }}" class="btn btn-secondary btn-sm">Edit</a>
+                                            <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/edit') }}" class="btn-sf-navy btn-sm">Edit</a>
                                             @if(!empty($isSubscribed))
                                                 <a href="{{ url('/app/sharpfleet/admin/vehicles/'.$v->id.'/archive/confirm') }}" class="btn btn-danger btn-sm">Archive</a>
                                             @else
