@@ -432,7 +432,7 @@
                         @endif
 
                         @if($settings['customer']['allow_manual'] ?? true)
-                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter {{ $partyLabelLower }} name (e.g. Jannie B / Job 12345)">
+                            <input id="customerNameInput" type="text" name="customer_name" class="form-control mt-2" maxlength="150" placeholder="Or enter {{ $partyLabelLower }} name (e.g. John D / Job 12345)">
                         @endif
                     </div>
                 @endif
@@ -441,7 +441,7 @@
                 @if($settingsService->purposeOfTravelEnabled())
                     <div id="purposeOfTravelBlock" class="form-group">
                         <label class="form-label">Purpose of Travel (optional)</label>
-                        <input type="text" name="purpose_of_travel" class="form-control" maxlength="255" placeholder="e.g. Materials pickup at Bunnings">
+                        <input type="text" name="purpose_of_travel" class="form-control" maxlength="255" placeholder="e.g. Materials pickup">
                     </div>
                 @endif
 
@@ -494,7 +494,7 @@
                     </div>
                 @endif
 
-                <button type="submit" id="startTripBtn" class="btn btn-primary btn-full">Start Trip</button>
+                <button type="submit" id="startTripBtn" class="btn-sf-navy btn-full">Start Trip</button>
             </form>
         </div>
     </div>
