@@ -103,23 +103,25 @@
                     <div>
                         <label class="form-label">Scope</label>
 
-                        <label class="sf-radio">
-                            <input type="radio"
-                                   name="scope"
-                                   value="company"
-                                   {{ $uiScope === 'company' ? 'checked' : '' }}>
-                            <span>Company-wide</span>
-                        </label>
-
-                        @if($hasBranches)
+                        <div class="sf-radio-row">
                             <label class="sf-radio">
                                 <input type="radio"
                                        name="scope"
-                                       value="branch"
-                                       {{ $uiScope === 'branch' ? 'checked' : '' }}>
-                                <span style="white-space: nowrap;">Single branch</span>
+                                       value="company"
+                                       {{ $uiScope === 'company' ? 'checked' : '' }}>
+                                <span>Company-wide</span>
                             </label>
-                        @endif
+
+                            @if($hasBranches)
+                                <label class="sf-radio">
+                                    <input type="radio"
+                                           name="scope"
+                                           value="branch"
+                                           {{ $uiScope === 'branch' ? 'checked' : '' }}>
+                                    <span>Single branch</span>
+                                </label>
+                            @endif
+                        </div>
 
                         <div class="text-muted small mt-1">
                             Choose whether trips are reported across the whole company
@@ -405,6 +407,20 @@
         color: rgba(10, 42, 77, 0.5);
         border-color: rgba(10, 42, 77, 0.15);
         cursor: not-allowed;
+    }
+
+    .sf-radio-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .sf-radio {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
     }
 
     .sf-date-field {
