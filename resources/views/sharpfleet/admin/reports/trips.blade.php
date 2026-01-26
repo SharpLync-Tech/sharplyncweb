@@ -278,21 +278,24 @@
                                     $startValue = $t->start_time ?? $t->started_at ?? null;
                                     $endValue = $t->end_time ?? $t->ended_at ?? null;
                                     if (!empty($startValue) && !empty($endValue)) {
-                                        $appTz = (string) (config('app.timezone') ?: 'UTC');
-                                        $startAt = Carbon::parse($startValue, $appTz)->timezone($companyTimezone);
-                                        $endAt = Carbon::parse($endValue, $appTz)->timezone($companyTimezone);
+                                        $dbTz = 'UTC';
+                                        $startAt = Carbon::parse($startValue, $dbTz)->timezone($companyTimezone);
+                                        $endAt = Carbon::parse($endValue, $dbTz)->timezone($companyTimezone);
 
                                         if ($endAt->greaterThanOrEqualTo($startAt)) {
                                             $seconds = $endAt->diffInSeconds($startAt);
-                                            $hours = (int) floor($seconds / 3600);
-                                            $minutes = (int) floor(($seconds % 3600) / 60);
-                                            $durationLabel = $hours . 'h ' . $minutes . 'm';
+                                        } else {
+                                            $seconds = abs($endAt->diffInSeconds($startAt));
                                         }
+
+                                        $hours = (int) floor($seconds / 3600);
+                                        $minutes = (int) floor(($seconds % 3600) / 60);
+                                        $durationLabel = $hours . 'h ' . $minutes . 'm';
                                     }
                                 @endphp
                                 <tr>
                                     <td>
-                                        {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
+                                        {{ Carbon::parse($startValue ?? $t->started_at, 'UTC')->timezone($companyTimezone)->format($dateFormat) }}
                                     </td>
 
                                     <td class="fw-bold">
@@ -312,14 +315,14 @@
                                     <td class="text-end">{{ $durationLabel ?? '—' }}</td>
 
                                     <td>
-                                        {{ $t->started_at
-                                            ? Carbon::parse($t->started_at)->timezone($companyTimezone)->format('H:i')
+                                        {{ $startValue
+                                            ? Carbon::parse($startValue, 'UTC')->timezone($companyTimezone)->format('H:i')
                                             : '—' }}
                                     </td>
 
                                     <td>
-                                        {{ $t->end_time
-                                            ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format('H:i')
+                                        {{ $endValue
+                                            ? Carbon::parse($endValue, 'UTC')->timezone($companyTimezone)->format('H:i')
                                             : '—' }}
                                     </td>
                                 </tr>
@@ -561,5 +564,6 @@
     });
 </script>
 @endpush
+
 
 
