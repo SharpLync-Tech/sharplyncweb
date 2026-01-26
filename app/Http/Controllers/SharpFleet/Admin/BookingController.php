@@ -206,7 +206,7 @@ class BookingController extends Controller
             ->when($branchScopeEnabled && !$branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('users', 'branch_id'), function ($q) use ($accessibleBranchIds) {
                 $q->whereIn('users.branch_id', $accessibleBranchIds);
             })
-            ->where('organisation_id', $organisationId)
+            ->where('users.organisation_id', $organisationId)
             ->where(function ($q) {
                 $q
                     ->where(function ($qq) {
