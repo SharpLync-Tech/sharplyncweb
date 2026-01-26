@@ -75,6 +75,11 @@
         .muted {
             color: #4b5b6b;
         }
+        .footer {
+            margin-top: 16px;
+            font-size: 10px;
+            color: #4b5b6b;
+        }
     </style>
 </head>
 <body>
@@ -146,5 +151,9 @@
             @endforelse
         </tbody>
     </table>
+
+    <div class="footer">
+        This report is system-generated and reflects recorded trip data at the time of export.
+    </div>
 </body>
 </html>
