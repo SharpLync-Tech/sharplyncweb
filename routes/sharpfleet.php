@@ -48,6 +48,7 @@ use App\Http\Controllers\SharpFleet\Reports\AiReportBuilderController;
 Route::get('/sharpfleet', fn () => view('sharpfleet.home'));
 Route::get('/sharpfleet/about', fn () => view('sharpfleet.about'));
 Route::get('/sharpfleet/why', fn () => view('sharpfleet.why'));
+Route::get('/sharpfleet/how-it-works', fn () => view('sharpfleet.how-it-works'));
 
 Route::prefix('app/sharpfleet')
     ->middleware([\App\Http\Middleware\SharpFleetNoStore::class])
