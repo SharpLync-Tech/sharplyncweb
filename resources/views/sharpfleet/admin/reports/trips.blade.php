@@ -221,7 +221,15 @@
                     <span class="text-muted small">Trips in report</span>
                 </div>
                 <div>
-                    <strong>{{ $uiStartDate ?: '-' }} - {{ $uiEndDate ?: '-' }}</strong><br>
+                    @php
+                        $uiStartLabel = $uiStartDate
+                            ? Carbon::parse($uiStartDate, 'UTC')->timezone($companyTimezone)->format($dateFormat)
+                            : '-';
+                        $uiEndLabel = $uiEndDate
+                            ? Carbon::parse($uiEndDate, 'UTC')->timezone($companyTimezone)->format($dateFormat)
+                            : '-';
+                    @endphp
+                    <strong>{{ $uiStartLabel }} - {{ $uiEndLabel }}</strong><br>
                     <span class="text-muted small">Reporting period</span>
                 </div>
                 <div>
