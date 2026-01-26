@@ -15,7 +15,7 @@
     $companyTimezone = $companyTimezone ?? config('app.timezone');
     $branches = $branches ?? collect();
     $vehicles = $vehicles ?? collect();
-    $hasBranches = $branches->count() > 1;
+    $hasBranches = $branches->count() > 0;
 
     /*
     |--------------------------------------------------------------------------
