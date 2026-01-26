@@ -127,6 +127,10 @@
                                 </label>
                             @endif
                         </div>
+                        <div class="text-muted small mt-1">
+                            Choose whether trips are reported across the whole company
+                            or limited to a single branch.
+                        </div>
                     </div>
 
                     <div>
