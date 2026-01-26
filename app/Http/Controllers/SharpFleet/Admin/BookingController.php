@@ -191,6 +191,8 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
+        $role = Roles::normalize($user['role'] ?? null);
+
         $drivers = DB::connection('sharpfleet')
             ->table('users')
             ->when($branchScopeEnabled && $branchAccessEnabled, function ($q) use ($organisationId, $accessibleBranchIds) {
@@ -207,6 +209,9 @@ class BookingController extends Controller
                 $q->whereIn('users.branch_id', $accessibleBranchIds);
             })
             ->where('users.organisation_id', $organisationId)
+            ->when($role !== Roles::COMPANY_ADMIN, function ($q) {
+                $q->whereNotIn('users.role', [Roles::COMPANY_ADMIN, 'admin']);
+            })
             ->where(function ($q) {
                 $q
                     ->where(function ($qq) {
