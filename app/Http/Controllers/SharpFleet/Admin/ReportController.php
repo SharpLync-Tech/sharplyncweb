@@ -231,7 +231,13 @@ class ReportController extends Controller
             abort(403);
         }
 
-        return view('sharpfleet.admin.reports.index');
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        return view('sharpfleet.admin.reports.index', [
+            'reportVisibility' => $companySettings->reportVisibility(),
+        ]);
     }
 
     

@@ -4,6 +4,30 @@
 
 @section('sharpfleet-content')
 
+@php
+    $reportVisibility = $reportVisibility ?? [];
+    $reportDefaults = [
+        'trips_compliance' => true,
+        'fleet_manager_operational' => true,
+        'vehicle_usage' => true,
+        'utilization' => true,
+        'faults_by_vehicle' => true,
+        'safety_issues' => true,
+        'vehicle_booking' => true,
+        'ai_report_builder' => true,
+    ];
+    $reports = array_replace($reportDefaults, $reportVisibility);
+
+    $showOperational = ($reports['fleet_manager_operational'] ?? false)
+        || ($reports['vehicle_usage'] ?? false)
+        || ($reports['utilization'] ?? false);
+    $showCompliance = (bool) ($reports['trips_compliance'] ?? false);
+    $showFuture = ($reports['faults_by_vehicle'] ?? false)
+        || ($reports['safety_issues'] ?? false)
+        || ($reports['vehicle_booking'] ?? false)
+        || ($reports['ai_report_builder'] ?? false);
+@endphp
+
 <style>
     .sf-report-grid {
         display: grid;
@@ -25,12 +49,10 @@
         position: relative;
     }
 
-
-
     .sf-report-card:hover {
         border: 1px solid rgba(44, 191, 174, 1.5); /* SharpFleet teal */
         border-radius: 14px;
-        padding: 18px;        
+        padding: 18px;
         box-shadow:
             0 0 0 1px rgba(44, 191, 174, 0.25),
             0 0 12px rgba(44, 191, 174, 0.35),
@@ -56,13 +78,13 @@
         padding-right: 58px;
     }
     .sf-report-card__icon {
-    position: absolute;
-    top: 12px;          /* pull it in slightly */
-    right: 12px;
-    width: 36px;        /* ↑ from 28 */
-    height: 36px;
-    opacity: 0.95;
-    filter: drop-shadow(0 0 6px rgba(44, 191, 174, 0.35));
+        position: absolute;
+        top: 12px;          /* pull it in slightly */
+        right: 12px;
+        width: 36px;        /* up from 28 */
+        height: 36px;
+        opacity: 0.95;
+        filter: drop-shadow(0 0 6px rgba(44, 191, 174, 0.35));
     }
 
     .sf-report-card__icon img {
@@ -105,81 +127,110 @@
         <p class="page-description">Operational and compliance reporting for SharpFleet.</p>
     </div>
 
-    <div class="sf-report-section-title">Operational Reports</div>
-    <div class="sf-report-grid">
-        <div class="sf-report-card">
-            <h4>Fleet Manager – Operational</h4>
-            <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
-            <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn-sf-navy">View report</a>                
-            </div>
-        </div>
+    @if ($showOperational)
+        <div class="sf-report-section-title">Operational Reports</div>
+        <div class="sf-report-grid">
+            @if ($reports['fleet_manager_operational'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Fleet Manager - Operational</h4>
+                    <p>Daily and weekly overview of vehicle usage, idle vehicles, and last activity.</p>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/fleet-manager-operational" class="btn-sf-navy">View report</a>
+                    </div>
+                </div>
+            @endif
 
-        <div class="sf-report-card">
-            <h4>Vehicle Usage</h4>
-            <p>Usage frequency, distance totals, and last active dates by vehicle.</p>
-            <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn-sf-navy">View report</a>
-            </div>
-        </div>
+            @if ($reports['vehicle_usage'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Vehicle Usage</h4>
+                    <p>Usage frequency, distance totals, and last active dates by vehicle.</p>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/vehicle-usage" class="btn-sf-navy">View report</a>
+                    </div>
+                </div>
+            @endif
 
-        <div class="sf-report-card">
-            <h4>Utilization Report</h4>
-            <p>Utilization percentages with visual bars to spot underused and overused vehicles.</p>
-            <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/utilization" class="btn-sf-navy">View report</a>
-            </div>
+            @if ($reports['utilization'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Utilization Report</h4>
+                    <p>Utilization percentages with visual bars to spot underused and overused vehicles.</p>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/utilization" class="btn-sf-navy">View report</a>
+                    </div>
+                </div>
+            @endif
         </div>
-    </div>
+    @endif
 
-    <div class="sf-report-section-title">Compliance &amp; Trip Reports</div>
-    <div class="sf-report-grid">
-        <div class="sf-report-card">
-            <h4>Trips &amp; Compliance</h4>
-            <p>Compliance-ready trip reporting with export for audit and review.</p>
-            <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/trips" class="btn-sf-navy">View report</a>                
-            </div>
+    @if ($showCompliance)
+        <div class="sf-report-section-title">Compliance &amp; Trip Reports</div>
+        <div class="sf-report-grid">
+            @if ($reports['trips_compliance'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Trips &amp; Compliance</h4>
+                    <p>Compliance-ready trip reporting with export for audit and review.</p>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/trips" class="btn-sf-navy">View report</a>
+                    </div>
+                </div>
+            @endif
         </div>
-    </div>
+    @endif
 
-    <div class="sf-report-section-title">Future <span>(planned)</span></div>
-    <div class="sf-report-grid">        
+    @if ($showFuture)
+        <div class="sf-report-section-title">Future <span>(planned)</span></div>
+        <div class="sf-report-grid">
+            @if ($reports['faults_by_vehicle'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Faults by Vehicle</h4>
+                    <p>Breakdown of reported vehicle faults by asset and severity.</p>
+                    <div class="btn-group-inline">
+                        <button type="button" class="btn-sf-navy" disabled>View report</button>
+                    </div>
+                </div>
+            @endif
 
-        <div class="sf-report-card">
-            <h4>Faults by Vehicle</h4>
-            <p>Breakdown of reported vehicle faults by asset and severity.</p>
-            <div class="btn-group-inline">
-                <button type="button" class="btn-sf-navy" disabled>View report</button>
-            </div>
+            @if ($reports['safety_issues'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Safety Issues</h4>
+                    <p>Active safety items that require attention or follow-up.</p>
+                    <div class="btn-group-inline">
+                        <button type="button" class="btn-sf-navy" disabled>View report</button>
+                    </div>
+                </div>
+            @endif
+
+            @if ($reports['vehicle_booking'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Vehicle Booking</h4>
+                    <p>Summary view of vehicle bookings, upcoming reservations, and usage history.</p>
+                    <div class="btn-group-inline">
+                        <button type="button" class="btn-sf-navy" disabled>View report</button>
+                    </div>
+                </div>
+            @endif
+
+            @if ($reports['ai_report_builder'] ?? false)
+                <div class="sf-report-card">
+                    <div class="sf-report-card__icon">
+                        
+                    </div>
+                    <h4>AI Report Builder (Beta)</h4>
+                    <p>
+                        Generate tailored fleet reports using AI-assisted analysis.
+                        Designed for advanced users to explore data beyond standard reports.
+                        All data processing occurs securely in Australia.
+                    </p>
+                    <div class="sf-report-card__disclaimer">
+                        Beta features may change and are not recommended for formal reporting at this stage.
+                    </div>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/ai-report-builder" class="btn-sf-navy">Build your Report</a>
+                    </div>
+                </div>
+            @endif
         </div>
-
-        <div class="sf-report-card">
-            <h4>Open Safety Issues</h4>
-            <p>Active safety items that require attention or follow-up.</p>
-            <div class="btn-group-inline">
-                <button type="button" class="btn-sf-navy" disabled>View report</button>
-            </div>
-        </div>
-
-        <div class="sf-report-card">
-            <div class="sf-report-card__icon">
-                
-            </div>
-            <h4>AI Report Builder (Beta)</h4>
-            <p>
-                Generate tailored fleet reports using AI-assisted analysis.
-                Designed for advanced users to explore data beyond standard reports.
-                All data processing occurs securely in Australia.
-            </p>
-            <div class="sf-report-card__disclaimer">
-                Beta features may change and are not recommended for formal reporting at this stage.
-            </div>
-            <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/ai-report-builder" class="btn-sf-navy">Build your Report</a>
-            </div>
-        </div>
-    </div>
+    @endif
 </div>
 
 @endsection

@@ -283,6 +283,16 @@
             'require_end_of_trip_check' => false,
             'during_trip_recipients' => '',
         ],
+        'reports' => [
+            'trips_compliance' => true,
+            'fleet_manager_operational' => true,
+            'vehicle_usage' => true,
+            'utilization' => true,
+            'faults_by_vehicle' => true,
+            'safety_issues' => true,
+            'vehicle_booking' => true,
+            'ai_report_builder' => true,
+        ],
     ], $settings ?? []);
 
 @endphp
@@ -328,6 +338,9 @@
                 </button>
                 <button type="button" class="sf-tab" id="sf-tab-issues-button" data-sf-tab="issues" role="tab" aria-controls="sf-tab-issues" aria-selected="false">
                     Incident Reporting
+                </button>
+                <button type="button" class="sf-tab" id="sf-tab-reports-button" data-sf-tab="reports" role="tab" aria-controls="sf-tab-reports" aria-selected="false">
+                    Reports
                 </button>
                 <button type="button" class="sf-tab" id="sf-tab-fuel-button" data-sf-tab="fuel" role="tab" aria-controls="sf-tab-fuel" aria-selected="false">
                     Fuel
@@ -576,6 +589,63 @@
                             <input type="checkbox" name="require_end_of_trip_fault_check" value="1"
                                    {{ ($settings['faults']['require_end_of_trip_check'] ?? false) ? 'checked' : '' }}>
                             <strong>Require a quick issue/accident check when ending a trip (coming soon)</strong>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="sf-tab-panel" id="sf-tab-reports" data-sf-panel="reports" role="tabpanel" aria-labelledby="sf-tab-reports-button">
+                    <h2 class="card-title">Reports</h2>
+                    <p class="text-muted mb-3">
+                        Choose which reports appear in the Reports page for this company.
+                    </p>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_trips_compliance" value="1"
+                                   {{ ($settings['reports']['trips_compliance'] ?? true) ? 'checked' : '' }}>
+                            <strong>Trips &amp; Compliance</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_fleet_manager_operational" value="1"
+                                   {{ ($settings['reports']['fleet_manager_operational'] ?? true) ? 'checked' : '' }}>
+                            <strong>Fleet Manager - Operational</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_vehicle_usage" value="1"
+                                   {{ ($settings['reports']['vehicle_usage'] ?? true) ? 'checked' : '' }}>
+                            <strong>Vehicle Usage</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_utilization" value="1"
+                                   {{ ($settings['reports']['utilization'] ?? true) ? 'checked' : '' }}>
+                            <strong>Utilization Report</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_faults_by_vehicle" value="1"
+                                   {{ ($settings['reports']['faults_by_vehicle'] ?? true) ? 'checked' : '' }}>
+                            <strong>Faults by Vehicle</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_safety_issues" value="1"
+                                   {{ ($settings['reports']['safety_issues'] ?? true) ? 'checked' : '' }}>
+                            <strong>Safety Issues</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_vehicle_booking" value="1"
+                                   {{ ($settings['reports']['vehicle_booking'] ?? true) ? 'checked' : '' }}>
+                            <strong>Vehicle Booking</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_ai_report_builder" value="1"
+                                   {{ ($settings['reports']['ai_report_builder'] ?? true) ? 'checked' : '' }}>
+                            <strong>AI Report Builder (Beta)</strong>
                         </label>
                     </div>
                 </section>

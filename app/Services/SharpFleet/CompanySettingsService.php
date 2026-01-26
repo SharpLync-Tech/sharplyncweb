@@ -121,6 +121,19 @@ class CompanySettingsService
             'default_vehicle_id' => null,
             'default_customer_id' => null,
         ],
+
+        // Report visibility (reports home)
+        // Defaults keep existing cards visible unless a subscriber opts out.
+        'reports' => [
+            'trips_compliance' => true,
+            'fleet_manager_operational' => true,
+            'vehicle_usage' => true,
+            'utilization' => true,
+            'faults_by_vehicle' => true,
+            'safety_issues' => true,
+            'vehicle_booking' => true,
+            'ai_report_builder' => true,
+        ],
     ];
 
     /**
@@ -384,6 +397,19 @@ class CompanySettingsService
         return (bool) $this->settings['faults']['require_end_of_trip_check'];
     }
 
+    // ---- Report visibility ----
+
+    public function reportVisibility(): array
+    {
+        $defaults = $this->defaults['reports'] ?? [];
+        $current = $this->settings['reports'] ?? [];
+        if (!is_array($current)) {
+            $current = [];
+        }
+
+        return array_replace($defaults, $current);
+    }
+
     /**
      * Persist settings updated via the admin settings UI
      */
@@ -473,6 +499,31 @@ class CompanySettingsService
         $settings['reminders']['service_recipients'] = trim((string) $request->input('reminder_service_recipients', ''));
 
         $settings['faults']['during_trip_recipients'] = trim((string) $request->input('fault_during_trip_recipients', ''));
+
+        // ---- Reports visibility ----
+        $settings['reports']['trips_compliance']
+            = $request->boolean('report_trips_compliance');
+
+        $settings['reports']['fleet_manager_operational']
+            = $request->boolean('report_fleet_manager_operational');
+
+        $settings['reports']['vehicle_usage']
+            = $request->boolean('report_vehicle_usage');
+
+        $settings['reports']['utilization']
+            = $request->boolean('report_utilization');
+
+        $settings['reports']['faults_by_vehicle']
+            = $request->boolean('report_faults_by_vehicle');
+
+        $settings['reports']['safety_issues']
+            = $request->boolean('report_safety_issues');
+
+        $settings['reports']['vehicle_booking']
+            = $request->boolean('report_vehicle_booking');
+
+        $settings['reports']['ai_report_builder']
+            = $request->boolean('report_ai_report_builder');
 
         // Persist to DB
         DB::connection('sharpfleet')
