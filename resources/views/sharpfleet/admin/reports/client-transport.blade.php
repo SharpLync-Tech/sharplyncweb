@@ -11,9 +11,8 @@
     $appTimezone = (string) (config('app.timezone') ?: 'UTC');
     $branches = $branches ?? collect();
     $customers = $customers ?? collect();
-    $hasBranches = $branches->count() > 1;
+    $hasBranches = $branches->count() > 0;
     $showCustomerFilter = $ui['show_customer_filter'] ?? ($customerLinkingEnabled ?? false);
-    $showBranchFilter = $hasBranches;
     $controls = $ui['controls_enabled'] ?? [];
     $allowBranchOverride = (bool) ($controls['branch'] ?? true);
     $allowCustomerOverride = (bool) ($controls['customer'] ?? true);
@@ -133,7 +132,9 @@
                     <div>
                         <label class="form-label">Branch</label>
                         <div class="sf-report-select">
-                            <select name="branch_id" class="form-select" {{ ($showBranchFilter && $allowBranchOverride && $uiScope === 'branch') ? '' : 'disabled' }}>
+                            <select name="branch_id"
+                                    class="form-select"
+                                    {{ ($uiScope !== 'branch' || !$hasBranches || !$allowBranchOverride) ? 'disabled' : '' }}>
                                 <option value="">All branches</option>
                                 @foreach($branches as $branch)
                                     <option value="{{ $branch->id }}"
@@ -443,8 +444,14 @@
             form.submit();
         }
 
+        const hasBranches = {{ $hasBranches ? 'true' : 'false' }};
+
         function updateBranchState(value) {
             if (!branchSelect) return;
+            if (!hasBranches) {
+                branchSelect.disabled = true;
+                return;
+            }
             if (value === 'branch') {
                 branchSelect.disabled = false;
             } else {
