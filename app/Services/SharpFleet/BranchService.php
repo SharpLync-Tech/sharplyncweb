@@ -265,4 +265,17 @@ class BranchService
             ->select('branches.*')
             ->get();
     }
+
+    public function getDefaultBranchIdForUser(int $organisationId, int $userId): ?int
+    {
+        if (!$this->branchesEnabled()) {
+            return null;
+        }
+
+        $branches = $this->getBranchesForUser($organisationId, $userId);
+        $first = $branches->first();
+        $id = $first && isset($first->id) ? (int) $first->id : 0;
+
+        return $id > 0 ? $id : null;
+    }
 }

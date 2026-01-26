@@ -15,11 +15,13 @@
     $companyTimezone = $companyTimezone ?? config('app.timezone');
     $branches        = $branches ?? collect();
     $hasBranches     = $branches->count() > 1;
+    $forceBranchScope = $forceBranchScope ?? false;
+    $showBranchScope = $hasBranches || $forceBranchScope;
 
-    $uiScope     = request('scope', 'company');
-    $uiBranchId  = request('branch_id');
-    $uiStartDate = request('start_date');
-    $uiEndDate   = request('end_date');
+    $uiScope     = $scope ?? request('scope', 'company');
+    $uiBranchId  = $branchId ?? request('branch_id');
+    $uiStartDate = $startDate ?? request('start_date');
+    $uiEndDate   = $endDate ?? request('end_date');
 
     /*
     |--------------------------------------------------------------------------
@@ -80,15 +82,17 @@
                 <div>
                     <label class="form-label">Scope</label>
 
-                    <label class="sf-radio">
-                        <input type="radio"
-                               name="scope"
-                               value="company"
-                               {{ $uiScope === 'company' ? 'checked' : '' }}>
-                        <span>Company-wide</span>
-                    </label>
+                    @if(!$forceBranchScope)
+                        <label class="sf-radio">
+                            <input type="radio"
+                                   name="scope"
+                                   value="company"
+                                   {{ $uiScope === 'company' ? 'checked' : '' }}>
+                            <span>Company-wide</span>
+                        </label>
+                    @endif
 
-                    @if($hasBranches)
+                    @if($showBranchScope)
                         <label class="sf-radio">
                             <input type="radio"
                                    name="scope"

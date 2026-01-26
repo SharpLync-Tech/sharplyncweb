@@ -9,17 +9,19 @@
     $branches = $branches ?? collect();
     $vehicles = $vehicles ?? collect();
     $hasBranches = $branches->count() > 1;
+    $forceBranchScope = $forceBranchScope ?? false;
+    $showBranchScope = $hasBranches || $forceBranchScope;
 
-    $uiScope = request('scope', $scope ?? 'company');
-    $uiBranchId = request('branch_id', $branchId ?? '');
-    $uiVehicleId = request('vehicle_id', $vehicleId ?? '');
-    $uiPeriod = request('period', $period ?? 'month');
-    $uiPeriodDate = request('period_date', $periodDate ?? '');
+    $uiScope = $scope ?? request('scope', 'company');
+    $uiBranchId = $branchId ?? request('branch_id', '');
+    $uiVehicleId = $vehicleId ?? request('vehicle_id', '');
+    $uiPeriod = $period ?? request('period', 'month');
+    $uiPeriodDate = $periodDate ?? request('period_date', '');
 
-    $uiAvailabilityPreset = request('availability_preset', $availabilityPreset ?? 'business_hours');
-    $uiAvailabilityDays = collect(request('availability_days', $availabilityDays ?? ['1','2','3','4','5']))->map(fn ($d) => (string) $d)->all();
-    $uiWorkStart = request('work_start', $workStart ?? '07:00');
-    $uiWorkEnd = request('work_end', $workEnd ?? '17:00');
+    $uiAvailabilityPreset = $availabilityPreset ?? request('availability_preset', 'business_hours');
+    $uiAvailabilityDays = collect($availabilityDays ?? request('availability_days', ['1','2','3','4','5']))->map(fn ($d) => (string) $d)->all();
+    $uiWorkStart = $workStart ?? request('work_start', '07:00');
+    $uiWorkEnd = $workEnd ?? request('work_end', '17:00');
 
     $dateFormat = $dateFormat ?? (str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y');
     $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
@@ -45,11 +47,13 @@
             <div class="grid grid-4 align-end">
                 <div>
                     <label class="form-label">Scope</label>
-                    <label class="sf-radio">
-                        <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
-                        <span>Company-wide</span>
-                    </label>
-                    @if($hasBranches)
+                    @if(!$forceBranchScope)
+                        <label class="sf-radio">
+                            <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
+                            <span>Company-wide</span>
+                        </label>
+                    @endif
+                    @if($showBranchScope)
                         <label class="sf-radio">
                             <input type="radio" name="scope" value="branch" {{ $uiScope === 'branch' ? 'checked' : '' }}>
                             <span>Single branch</span>

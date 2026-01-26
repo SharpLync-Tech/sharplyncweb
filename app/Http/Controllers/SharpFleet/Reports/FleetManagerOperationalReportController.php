@@ -61,7 +61,21 @@ class FleetManagerOperationalReportController extends Controller
         }
 
         $statusFilter = $request->input('status', 'all'); // all | active | inactive
-        $branchId = $request->input('branch_id');
+        $branchIdRaw = $request->input('branch_id');
+        $branchIdProvided = $request->has('branch_id');
+        $branchId = is_numeric($branchIdRaw) ? (int) $branchIdRaw : null;
+
+        if ($branchScopeEnabled) {
+            if ($branchId && !in_array($branchId, $accessibleBranchIds, true)) {
+                $branchId = null;
+            }
+            if (!$branchId && !$branchIdProvided) {
+                $branchId = $branchesService->getDefaultBranchIdForUser($organisationId, (int) ($user['id'] ?? 0));
+                if (!$branchId && count($accessibleBranchIds) > 0) {
+                    $branchId = (int) $accessibleBranchIds[0];
+                }
+            }
+        }
 
         $vehicleQuery = DB::connection('sharpfleet')
             ->table('vehicles as v')
@@ -86,7 +100,7 @@ class FleetManagerOperationalReportController extends Controller
             $vehicleQuery->whereIn('v.branch_id', $accessibleBranchIds);
         }
 
-        if (is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+        if ($branchId && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
             $vehicleQuery->where('v.branch_id', (int) $branchId);
         }
 

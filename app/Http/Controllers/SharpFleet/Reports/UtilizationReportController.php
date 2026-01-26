@@ -52,8 +52,23 @@ class UtilizationReportController extends Controller
         $dateFormat = str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y';
 
         $scope = $request->input('scope', 'company'); // company | branch
-        $branchId = $request->input('branch_id');
+        $branchIdRaw = $request->input('branch_id');
+        $branchIdProvided = $request->has('branch_id');
+        $branchId = is_numeric($branchIdRaw) ? (int) $branchIdRaw : null;
         $vehicleId = $request->input('vehicle_id');
+
+        if ($branchScopeEnabled) {
+            $scope = 'branch';
+            if ($branchId && !in_array($branchId, $accessibleBranchIds, true)) {
+                $branchId = null;
+            }
+            if (!$branchId && !$branchIdProvided) {
+                $branchId = $branchesService->getDefaultBranchIdForUser($organisationId, (int) ($user['id'] ?? 0));
+                if (!$branchId && count($accessibleBranchIds) > 0) {
+                    $branchId = (int) $accessibleBranchIds[0];
+                }
+            }
+        }
 
         $period = $request->input('period', 'month'); // day | week | month
         $periodDate = $request->input('period_date');
@@ -118,7 +133,7 @@ class UtilizationReportController extends Controller
             $vehicleQuery->whereIn('v.branch_id', $accessibleBranchIds);
         }
 
-        if ($scope === 'branch' && is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+        if ($scope === 'branch' && $branchId && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
             $vehicleQuery->where('v.branch_id', (int) $branchId);
         }
 
@@ -245,7 +260,7 @@ class UtilizationReportController extends Controller
             $vehicleListQuery->whereIn('branch_id', $accessibleBranchIds);
         }
 
-        if ($scope === 'branch' && is_numeric($branchId) && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
+        if ($scope === 'branch' && $branchId && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id')) {
             $vehicleListQuery->where('branch_id', (int) $branchId);
         }
 
@@ -263,6 +278,7 @@ class UtilizationReportController extends Controller
             'endDate' => $endDate,
             'branchId' => $branchId,
             'scope' => $scope,
+            'forceBranchScope' => $branchScopeEnabled,
             'vehicleId' => $vehicleId,
             'period' => $period,
             'periodDate' => $periodDate,

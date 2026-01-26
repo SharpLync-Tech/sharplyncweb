@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\SharpFleet\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Services\SharpFleet\BranchService;
+use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -18,12 +20,28 @@ class VehicleUsageReportController extends Controller
         */
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || !isset($user['organisation_id'])) {
+        if (!$user || !Roles::canViewReports($user)) {
             abort(403);
         }
 
         $organisationId = (int) $user['organisation_id'];
         $companyTimezone = $user['timezone'] ?? config('app.timezone');
+
+        $branchesService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser($organisationId, (int) ($user['id'] ?? 0))
+            : [];
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
 
         /*
         |----------------------------------------------------------------------
@@ -40,9 +58,27 @@ class VehicleUsageReportController extends Controller
         |----------------------------------------------------------------------
         */
         $scope     = $request->input('scope', 'company'); // company | branch
-        $branchId  = $request->input('branch_id');
+        $branchIdRaw  = $request->input('branch_id');
+        $branchIdProvided = $request->has('branch_id');
+        $branchId = is_numeric($branchIdRaw) ? (int) $branchIdRaw : null;
         $startDate = $request->input('start_date');
         $endDate   = $request->input('end_date');
+
+        $hasTripBranch = $branchesService->tripsHaveBranchSupport();
+        $hasVehicleBranch = $branchesService->vehiclesHaveBranchSupport();
+
+        if ($branchScopeEnabled) {
+            $scope = 'branch';
+            if ($branchId && !in_array($branchId, $accessibleBranchIds, true)) {
+                $branchId = null;
+            }
+            if (!$branchId && !$branchIdProvided) {
+                $branchId = $branchesService->getDefaultBranchIdForUser($organisationId, (int) ($user['id'] ?? 0));
+                if (!$branchId && count($accessibleBranchIds) > 0) {
+                    $branchId = (int) $accessibleBranchIds[0];
+                }
+            }
+        }
 
         /*
         |----------------------------------------------------------------------
@@ -61,8 +97,20 @@ class VehicleUsageReportController extends Controller
         | Branch filter
         |----------------------------------------------------------------------
         */
-        if ($scope === 'branch' && is_numeric($branchId)) {
-            $tripQuery->where('trips.branch_id', (int) $branchId);
+        if ($branchScopeEnabled && count($accessibleBranchIds) > 0) {
+            if ($hasTripBranch) {
+                $tripQuery->whereIn('trips.branch_id', $accessibleBranchIds);
+            } elseif ($hasVehicleBranch) {
+                $tripQuery->whereIn('vehicles.branch_id', $accessibleBranchIds);
+            }
+        }
+
+        if ($scope === 'branch' && $branchId) {
+            if ($hasTripBranch) {
+                $tripQuery->where('trips.branch_id', (int) $branchId);
+            } elseif ($hasVehicleBranch) {
+                $tripQuery->where('vehicles.branch_id', (int) $branchId);
+            }
         }
 
         /*
@@ -171,11 +219,12 @@ class VehicleUsageReportController extends Controller
         | Branch list (for selector)
         |----------------------------------------------------------------------
         */
-        $branches = DB::connection('sharpfleet')
-            ->table('branches')
-            ->where('organisation_id', $organisationId)
-            ->orderBy('name')
-            ->get();
+        $branches = collect();
+        if ($branchesEnabled) {
+            $branches = $branchScopeEnabled
+                ? $branchesService->getBranchesForUser($organisationId, (int) ($user['id'] ?? 0))
+                : $branchesService->getBranches($organisationId);
+        }
 
         /*
         |----------------------------------------------------------------------
@@ -187,6 +236,11 @@ class VehicleUsageReportController extends Controller
             'summary'         => $summary,
             'branches'        => $branches,
             'companyTimezone' => $companyTimezone,
+            'scope' => $scope,
+            'branchId' => $branchId,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'forceBranchScope' => $branchScopeEnabled,
         ]);
     }
 
