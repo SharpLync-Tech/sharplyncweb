@@ -62,8 +62,8 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="btn btn-secondary">Apply</button>
-                        <a href="{{ url('/app/sharpfleet/admin/customers') }}" class="btn btn-light">Reset</a>
+                        <button type="submit" class="btn-sf-navy">Apply</button>
+                        <a href="{{ url('/app/sharpfleet/admin/customers') }}" class="btn-sf-navy>
                     </div>
                 </div>
             </form>
