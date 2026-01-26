@@ -84,7 +84,7 @@
             @endphp
 
             <div class="flex" style="display:flex; gap:10px; align-items:center;">
-                <a class="btn btn-outline-primary" href="{{ $pdfUrl }}">Export PDF</a>
+                <a class="btn btn-primary" href="{{ $pdfUrl }}">Export PDF</a>
 
                 <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
                 <input type="hidden" name="export" value="csv">

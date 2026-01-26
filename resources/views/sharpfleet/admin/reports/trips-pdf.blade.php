@@ -10,7 +10,7 @@
     $rangeEnd = $ui['end_date'] ?? null;
     $rangeStartLabel = $rangeStart ? Carbon::parse($rangeStart, 'UTC')->timezone($companyTimezone)->format($dateFormat) : '-';
     $rangeEndLabel = $rangeEnd ? Carbon::parse($rangeEnd, 'UTC')->timezone($companyTimezone)->format($dateFormat) : '-';
-    $logoPath = public_path('images/sharpfleet/logo.png');
+    $logoPath = public_path('images/sharpfleet/pdf.png');
     $logoData = is_file($logoPath) ? base64_encode(file_get_contents($logoPath)) : null;
 @endphp
 <!DOCTYPE html>
