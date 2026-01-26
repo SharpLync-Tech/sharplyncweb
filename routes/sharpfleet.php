@@ -300,6 +300,8 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/reports', [ReportController::class, 'home']);
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
         Route::get('/admin/reports/trips/pdf', [ReportController::class, 'tripsPdf']);
+        Route::get('/admin/reports/client-transport', [ReportController::class, 'clientTransport']);
+        Route::get('/admin/reports/client-transport/pdf', [ReportController::class, 'clientTransportPdf']);
        
         Route::get(
             '/admin/reports/vehicle-usage',

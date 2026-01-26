@@ -126,6 +126,7 @@ class CompanySettingsService
         // Defaults keep existing cards visible unless a subscriber opts out.
         'reports' => [
             'trips_compliance' => true,
+            'client_transport' => true,
             'fleet_manager_operational' => true,
             'vehicle_usage' => true,
             'utilization' => true,
@@ -503,6 +504,9 @@ class CompanySettingsService
         // ---- Reports visibility ----
         $settings['reports']['trips_compliance']
             = $request->boolean('report_trips_compliance');
+
+        $settings['reports']['client_transport']
+            = $request->boolean('report_client_transport');
 
         $settings['reports']['fleet_manager_operational']
             = $request->boolean('report_fleet_manager_operational');

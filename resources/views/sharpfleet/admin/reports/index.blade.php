@@ -8,6 +8,7 @@
     $reportVisibility = $reportVisibility ?? [];
     $reportDefaults = [
         'trips_compliance' => true,
+        'client_transport' => true,
         'fleet_manager_operational' => true,
         'vehicle_usage' => true,
         'utilization' => true,
@@ -21,7 +22,8 @@
     $showOperational = ($reports['fleet_manager_operational'] ?? false)
         || ($reports['vehicle_usage'] ?? false)
         || ($reports['utilization'] ?? false);
-    $showCompliance = (bool) ($reports['trips_compliance'] ?? false);
+    $showCompliance = (bool) ($reports['trips_compliance'] ?? false)
+        || (bool) ($reports['client_transport'] ?? false);
     $showFuture = ($reports['faults_by_vehicle'] ?? false)
         || ($reports['safety_issues'] ?? false)
         || ($reports['vehicle_booking'] ?? false)
@@ -171,6 +173,16 @@
                     <p>Compliance-ready trip reporting with export for audit and review.</p>
                     <div class="btn-group-inline">
                         <a href="/app/sharpfleet/admin/reports/trips" class="btn-sf-navy">View report</a>
+                    </div>
+                </div>
+            @endif
+
+            @if ($reports['client_transport'] ?? false)
+                <div class="sf-report-card">
+                    <h4>Client Transport Report</h4>
+                    <p>Client-focused trip view with timing, vehicle, driver, and distance details.</p>
+                    <div class="btn-group-inline">
+                        <a href="/app/sharpfleet/admin/reports/client-transport" class="btn-sf-navy">View report</a>
                     </div>
                 </div>
             @endif

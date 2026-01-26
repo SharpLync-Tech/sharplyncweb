@@ -220,6 +220,95 @@ class ReportController extends Controller
 
     /**
      * --------------------------------------------------------------------------
+     * Client Transport Report
+     * --------------------------------------------------------------------------
+     */
+    public function clientTransport(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::canViewReports($user)) {
+            abort(403);
+        }
+
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        if ($request->export === 'csv') {
+            return $this->reportingService->streamClientTransportCsv(
+                (int) $user['organisation_id'],
+                $request,
+                $user
+            );
+        }
+
+        $result = $this->reportingService->buildTripReport(
+            (int) $user['organisation_id'],
+            $request,
+            $user
+        );
+
+        return view('sharpfleet.admin.reports.client-transport', [
+            'trips' => $result['trips'],
+            'applied' => $result['applied'],
+            'ui' => $result['ui'],
+            'branches' => $result['branches'] ?? collect(),
+            'customers' => $result['customers'],
+            'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
+            'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
+
+            // Time & formatting
+            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
+            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+            'clientPresenceLabel' => $companySettings->clientLabel(),
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Client Transport Report (PDF)
+     * --------------------------------------------------------------------------
+     */
+    public function clientTransportPdf(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::canViewReports($user)) {
+            abort(403);
+        }
+
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        $result = $this->reportingService->buildTripReport(
+            (int) $user['organisation_id'],
+            $request,
+            $user
+        );
+
+        $data = [
+            'trips' => $result['trips'],
+            'applied' => $result['applied'],
+            'ui' => $result['ui'],
+            'branches' => $result['branches'] ?? collect(),
+            'customers' => $result['customers'],
+            'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
+            'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
+            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
+            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+            'clientPresenceLabel' => $companySettings->clientLabel(),
+        ];
+
+        $pdf = Pdf::loadView('sharpfleet.admin.reports.client-transport-pdf', $data)
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('sharpfleet_client_transport_report.pdf');
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Reports Home (cards)
      * --------------------------------------------------------------------------
      */

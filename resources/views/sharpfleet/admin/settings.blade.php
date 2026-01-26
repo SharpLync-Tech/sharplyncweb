@@ -296,6 +296,7 @@
         ],
         'reports' => [
             'trips_compliance' => true,
+            'client_transport' => true,
             'fleet_manager_operational' => true,
             'vehicle_usage' => true,
             'utilization' => true,
@@ -615,6 +616,12 @@
                             <input type="checkbox" name="report_trips_compliance" value="1"
                                    {{ ($settings['reports']['trips_compliance'] ?? true) ? 'checked' : '' }}>
                             <strong>Trips &amp; Compliance</strong>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="report_client_transport" value="1"
+                                   {{ ($settings['reports']['client_transport'] ?? true) ? 'checked' : '' }}>
+                            <strong>Client Transport Report</strong>
                         </label>
 
                         <label class="checkbox-label">

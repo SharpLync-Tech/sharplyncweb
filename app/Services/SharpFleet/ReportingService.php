@@ -665,6 +665,109 @@ class ReportingService
     }
 
     /**
+     * Stream a CSV export for the Client Transport Report.
+     */
+    public function streamClientTransportCsv(int $organisationId, Request $request, ?array $actor = null)
+    {
+        $result = $this->buildTripReport($organisationId, $request, $actor);
+        /** @var Collection<int, object> $trips */
+        $trips = $result['trips'];
+
+        $companyTimezone = (string) ($result['companyTimezone'] ?? (new CompanySettingsService($organisationId))->timezone());
+        $appTimezone = (string) (config('app.timezone') ?: 'UTC');
+
+        $dateFormat = str_starts_with($companyTimezone, 'America/')
+            ? 'm/d/Y'
+            : 'd/m/Y';
+
+        $dateTimeFormat = $dateFormat . ' H:i';
+        $timeFormat = 'H:i';
+
+        $purposeOfTravelEnabled = (new CompanySettingsService($organisationId))->purposeOfTravelEnabled();
+
+        $headers = [
+            'Client Name',
+            'Date/Time',
+            'Start Time',
+            'End Time',
+            'Vehicle',
+            'Driver',
+            'Trip Purpose',
+            'Distance (km)',
+        ];
+
+        $callback = function () use (
+            $trips,
+            $headers,
+            $companyTimezone,
+            $appTimezone,
+            $dateTimeFormat,
+            $timeFormat,
+            $purposeOfTravelEnabled
+        ) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $headers);
+
+            foreach ($trips as $trip) {
+                $start = $trip->started_at ?? null;
+                $endValue = $trip->end_time ?? $trip->ended_at ?? null;
+
+                $dateTimeText = '';
+                $startTimeText = '';
+                $endTimeText = '';
+
+                if (!empty($start)) {
+                    $startCarbon = Carbon::parse($start, $appTimezone)->timezone($companyTimezone);
+                    $dateTimeText = $startCarbon->format($dateTimeFormat);
+                    $startTimeText = $startCarbon->format($timeFormat);
+                }
+
+                if (!empty($endValue)) {
+                    $endCarbon = Carbon::parse($endValue, $appTimezone)->timezone($companyTimezone);
+                    $endTimeText = $endCarbon->format($timeFormat);
+                }
+
+                $distanceText = '';
+                if (isset($trip->start_km, $trip->end_km) && is_numeric($trip->start_km) && is_numeric($trip->end_km)) {
+                    $delta = (float) $trip->end_km - (float) $trip->start_km;
+                    if ($delta >= 0) {
+                        $distanceText = number_format($delta, 1);
+                    }
+                }
+
+                $tripPurpose = '';
+                if ($purposeOfTravelEnabled) {
+                    $rawMode = strtolower((string) ($trip->trip_mode ?? ''));
+                    $isBusiness = $rawMode !== 'private';
+                    $tripPurpose = $isBusiness ? ($trip->purpose_of_travel ?? '') : '';
+                }
+
+                $row = [
+                    $trip->customer_name_display ?? '',
+                    $dateTimeText,
+                    $startTimeText,
+                    $endTimeText,
+                    $trip->vehicle_name,
+                    $trip->driver_name,
+                    $tripPurpose,
+                    $distanceText,
+                ];
+
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        $todayLocal = Carbon::now($companyTimezone)->format('Y-m-d');
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="client_transport_' . $todayLocal . '.csv"',
+        ]);
+    }
+
+    /**
      * Resolve start/end range using subscriber rules.
      *
      * - If request dates are allowed and supplied, they will be used (subject to max_range_days if set).
