@@ -377,6 +377,17 @@
         cursor: not-allowed;
     }
 
+    .sf-radio-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .sf-radio {
+        white-space: nowrap;
+    }
+
     .sf-date-field {
         position: relative;
     }
