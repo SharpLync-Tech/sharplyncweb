@@ -312,7 +312,13 @@
 
                                     <td class="text-end">{{ $distanceLabel ?? '—' }}</td>
 
-                                    <td class="text-end">{{ $durationLabel ?? '—' }}</td>
+                                    <td class="text-end">
+                                        {{ $durationLabel ?? '—' }}
+                                        <div class="text-muted small mt-1">
+                                            raw_start: {{ $startValue ?? 'null' }}<br>
+                                            raw_end: {{ $endValue ?? 'null' }}
+                                        </div>
+                                    </td>
 
                                     <td>
                                         {{ $startValue
