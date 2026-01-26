@@ -106,13 +106,13 @@
     }
 
     .sf-settings-wrap {
-        width: min(1500px, 98vw);
-        max-width: 1500px;
+        width: min(1200px, 100%);
+        max-width: 1200px;
         margin: 0 auto;
     }
 
     .sf-settings-wrap.container {
-        max-width: 1500px;
+        max-width: 1200px;
     }
 
     .sf-settings-tabs {
