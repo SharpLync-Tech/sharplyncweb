@@ -249,6 +249,12 @@ class ReportController extends Controller
             $user
         );
 
+        $result['trips'] = $result['trips']->filter(function ($trip) {
+            $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+            $hasName = !empty(trim((string) ($trip->customer_name_display ?? '')));
+            return $hasClient && $hasName;
+        })->values();
+
         return view('sharpfleet.admin.reports.client-transport', [
             'trips' => $result['trips'],
             'applied' => $result['applied'],
@@ -287,6 +293,12 @@ class ReportController extends Controller
             $request,
             $user
         );
+
+        $result['trips'] = $result['trips']->filter(function ($trip) {
+            $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+            $hasName = !empty(trim((string) ($trip->customer_name_display ?? '')));
+            return $hasClient && $hasName;
+        })->values();
 
         $data = [
             'trips' => $result['trips'],

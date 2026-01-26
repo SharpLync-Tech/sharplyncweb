@@ -2,6 +2,7 @@
     use Carbon\Carbon;
 
     $companyTimezone = $companyTimezone ?? config('app.timezone');
+    $appTimezone = (string) (config('app.timezone') ?: 'UTC');
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y'
         : 'd/m/Y';
@@ -128,13 +129,13 @@
                     $endValue = $t->end_time ?? $t->ended_at ?? null;
 
                     $dateTimeLabel = $start
-                        ? Carbon::parse($start, 'UTC')->timezone($companyTimezone)->format($dateFormat . ' H:i')
+                        ? Carbon::parse($start, $appTimezone)->timezone($companyTimezone)->format($dateFormat . ' H:i')
                         : '-';
                     $startTimeLabel = $start
-                        ? Carbon::parse($start, 'UTC')->timezone($companyTimezone)->format($timeFormat)
+                        ? Carbon::parse($start, $appTimezone)->timezone($companyTimezone)->format($timeFormat)
                         : '-';
                     $endTimeLabel = $endValue
-                        ? Carbon::parse($endValue, 'UTC')->timezone($companyTimezone)->format($timeFormat)
+                        ? Carbon::parse($endValue, $appTimezone)->timezone($companyTimezone)->format($timeFormat)
                         : '-';
 
                     $distanceLabel = '-';

@@ -709,6 +709,12 @@ class ReportingService
             fputcsv($file, $headers);
 
             foreach ($trips as $trip) {
+                $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+                $hasName = !empty(trim((string) ($trip->customer_name_display ?? '')));
+                if (!$hasClient || !$hasName) {
+                    continue;
+                }
+
                 $start = $trip->started_at ?? null;
                 $endValue = $trip->end_time ?? $trip->ended_at ?? null;
 
