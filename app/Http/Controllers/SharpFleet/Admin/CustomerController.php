@@ -4,9 +4,11 @@ namespace App\Http\Controllers\SharpFleet\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\CustomerService;
+use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Schema;
 
 class CustomerController extends Controller
 {
@@ -53,8 +55,20 @@ class CustomerController extends Controller
 
         $customersTableExists = $this->customerService->customersTableExists();
 
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = $customersTableExists
+            && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+
+        $branches = $branchesEnabled
+            ? $branchesService->getBranchesForUser((int) $user['organisation_id'], (int) $user['id'])
+            : collect();
+
         return view('sharpfleet.admin.customers.create', [
             'customersTableExists' => $customersTableExists,
+            'branches' => $branches,
+            'branchesEnabled' => $branchesEnabled,
+            'hasCustomerBranch' => $hasCustomerBranch,
         ]);
     }
 
@@ -79,9 +93,21 @@ class CustomerController extends Controller
             abort(404);
         }
 
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = $customersTableExists
+            && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+
+        $branches = $branchesEnabled
+            ? $branchesService->getBranchesForUser((int) $user['organisation_id'], (int) $user['id'])
+            : collect();
+
         return view('sharpfleet.admin.customers.edit', [
-            'customer'            => $customer,
+            'customer' => $customer,
             'customersTableExists' => $customersTableExists,
+            'branches' => $branches,
+            'branchesEnabled' => $branchesEnabled,
+            'hasCustomerBranch' => $hasCustomerBranch,
         ]);
     }
 
@@ -106,11 +132,34 @@ class CustomerController extends Controller
             abort(404);
         }
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:150'],
-        ]);
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $branches = $branchesEnabled
+            ? $branchesService->getBranchesForUser($organisationId, (int) $user['id'])
+            : collect();
+        $branchIds = $branches->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
 
-        $this->customerService->updateCustomerName($organisationId, $customerId, $validated['name']);
+        $rules = [
+            'name' => ['required', 'string', 'max:150'],
+        ];
+
+        if ($branchesEnabled && $hasCustomerBranch && count($branchIds) > 1) {
+            $rules['branch_id'] = ['required', 'integer', 'in:' . implode(',', $branchIds)];
+        } elseif ($branchesEnabled && $hasCustomerBranch && count($branchIds) === 1) {
+            $rules['branch_id'] = ['nullable', 'integer', 'in:' . implode(',', $branchIds)];
+        }
+
+        $validated = $request->validate($rules);
+
+        $branchId = null;
+        if ($branchesEnabled && $hasCustomerBranch && $request->filled('branch_id')) {
+            $branchId = (int) $request->input('branch_id');
+        } elseif ($branchesEnabled && $hasCustomerBranch && count($branchIds) === 1) {
+            $branchId = (int) $branchIds[0];
+        }
+
+        $this->customerService->updateCustomer($organisationId, $customerId, $validated['name'], $branchId);
 
         return redirect('/app/sharpfleet/admin/customers')
             ->with('success', 'Customer updated.');
@@ -175,11 +224,34 @@ class CustomerController extends Controller
         }
 
         // Single add
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:150'],
-        ]);
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $branches = $branchesEnabled
+            ? $branchesService->getBranchesForUser($organisationId, (int) $user['id'])
+            : collect();
+        $branchIds = $branches->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
 
-        $this->customerService->createCustomer($organisationId, $validated['name']);
+        $rules = [
+            'name' => ['required', 'string', 'max:150'],
+        ];
+
+        if ($branchesEnabled && $hasCustomerBranch && count($branchIds) > 1) {
+            $rules['branch_id'] = ['required', 'integer', 'in:' . implode(',', $branchIds)];
+        } elseif ($branchesEnabled && $hasCustomerBranch && count($branchIds) === 1) {
+            $rules['branch_id'] = ['nullable', 'integer', 'in:' . implode(',', $branchIds)];
+        }
+
+        $validated = $request->validate($rules);
+
+        $branchId = null;
+        if ($branchesEnabled && $hasCustomerBranch && $request->filled('branch_id')) {
+            $branchId = (int) $request->input('branch_id');
+        } elseif ($branchesEnabled && $hasCustomerBranch && count($branchIds) === 1) {
+            $branchId = (int) $branchIds[0];
+        }
+
+        $this->customerService->createCustomer($organisationId, $validated['name'], $branchId);
 
         return redirect('/app/sharpfleet/admin/customers/create')
             ->with('success', 'Customer saved.');

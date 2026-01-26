@@ -4,7 +4,13 @@
 
 @section('sharpfleet-content')
 
-@php($customersTableExists = $customersTableExists ?? true)
+@php
+    $customersTableExists = $customersTableExists ?? true;
+    $branches = $branches ?? collect();
+    $branchesEnabled = $branchesEnabled ?? false;
+    $hasCustomerBranch = $hasCustomerBranch ?? false;
+    $singleBranch = $branches->count() === 1 ? $branches->first() : null;
+@endphp
 
 <div class="container">
     <div class="page-header">
@@ -57,6 +63,30 @@
                             <div class="text-error small">{{ $message }}</div>
                         @enderror
                     </div>
+                    @if($branchesEnabled && $hasCustomerBranch)
+                        <div class="form-group">
+                            <label class="form-label">Branch</label>
+                            @if($branches->count() > 1)
+                                <select name="branch_id" class="form-control">
+                                    <option value="">Select branch</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}"
+                                            {{ (string) old('branch_id', $customer->branch_id ?? '') === (string) $branch->id ? 'selected' : '' }}>
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @elseif($singleBranch)
+                                <div class="hint-text">{{ $singleBranch->name }}</div>
+                                <input type="hidden" name="branch_id" value="{{ $singleBranch->id }}">
+                            @else
+                                <div class="text-muted small">No branches available.</div>
+                            @endif
+                            @error('branch_id')
+                                <div class="text-error small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @endif
                     <button type="submit" class="btn-sf-navy btn-sm">Save Changes</button>
                 </form>
             </div>

@@ -40,31 +40,43 @@ class CustomerService
             return null;
         }
 
-        return DB::connection('sharpfleet')
+        $query = DB::connection('sharpfleet')
             ->table('customers')
             ->where('organisation_id', $organisationId)
-            ->where('id', $customerId)
-            ->select('id', 'name', 'is_active')
-            ->first();
+            ->where('id', $customerId);
+
+        if (Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')) {
+            $query->select('id', 'name', 'is_active', 'branch_id');
+        } else {
+            $query->select('id', 'name', 'is_active');
+        }
+
+        return $query->first();
     }
 
     /**
      * Update customer name (scoped to organisation).
      */
-    public function updateCustomerName(int $organisationId, int $customerId, string $name): void
+    public function updateCustomer(int $organisationId, int $customerId, string $name, ?int $branchId = null): void
     {
         if (!$this->customersTableExists()) {
             return;
+        }
+
+        $payload = [
+            'name' => trim($name),
+            'updated_at' => now(),
+        ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')) {
+            $payload['branch_id'] = $branchId ?: null;
         }
 
         DB::connection('sharpfleet')
             ->table('customers')
             ->where('organisation_id', $organisationId)
             ->where('id', $customerId)
-            ->update([
-                'name' => trim($name),
-                'updated_at' => now(),
-            ]);
+            ->update($payload);
     }
 
     /**
@@ -89,7 +101,7 @@ class CustomerService
     /**
      * Create a single customer.
      */
-    public function createCustomer(int $organisationId, string $name): int
+    public function createCustomer(int $organisationId, string $name, ?int $branchId = null): int
     {
         $name = trim($name);
 
@@ -116,15 +128,21 @@ class CustomerService
             return (int) $existing->id;
         }
 
+        $payload = [
+            'organisation_id' => $organisationId,
+            'name'            => $name,
+            'is_active'       => 1,
+            'created_at'      => now(),
+            'updated_at'      => now(),
+        ];
+
+        if (Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')) {
+            $payload['branch_id'] = $branchId ?: null;
+        }
+
         return (int) DB::connection('sharpfleet')
             ->table('customers')
-            ->insertGetId([
-                'organisation_id' => $organisationId,
-                'name'            => $name,
-                'is_active'       => 1,
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ]);
+            ->insertGetId($payload);
     }
 
     /**
