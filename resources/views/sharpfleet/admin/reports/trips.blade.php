@@ -117,7 +117,7 @@
                                        name="scope"
                                        value="branch"
                                        {{ $uiScope === 'branch' ? 'checked' : '' }}>
-                                <span>Single branch</span>
+                                <span style="white-space: nowrap;">Single branch</span>
                             </label>
                         @endif
 
@@ -203,7 +203,7 @@
                         No columns are omitted in the CSV export.
                     </div>
 
-                    <button type="submit" class="btn btn-outline-primary">
+                    <button type="submit" class="btn-sf-navy">
                         Update Report
                     </button>
                 </div>
