@@ -105,6 +105,11 @@
         box-shadow: 0 18px 30px rgba(10, 42, 77, 0.12);
     }
 
+    .sf-settings-wrap {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
     .sf-settings-tabs {
         position: relative;
     }
@@ -297,7 +302,7 @@
 
 @endphp
 
-<div class="container">
+<div class="container sf-settings-wrap">
     <div class="page-header">
         <h1 class="page-title">Company Settings</h1>
         <p class="page-description">
