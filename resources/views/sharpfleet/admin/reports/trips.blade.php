@@ -102,23 +102,38 @@
                     {{-- Scope --}}
                     <div>
                         <label class="form-label">Scope</label>
+
                         <label class="sf-radio">
-                            <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
+                            <input type="radio"
+                                   name="scope"
+                                   value="company"
+                                   {{ $uiScope === 'company' ? 'checked' : '' }}>
                             <span>Company-wide</span>
                         </label>
+
                         @if($hasBranches)
                             <label class="sf-radio">
-                                <input type="radio" name="scope" value="branch" {{ $uiScope === 'branch' ? 'checked' : '' }}>
+                                <input type="radio"
+                                       name="scope"
+                                       value="branch"
+                                       {{ $uiScope === 'branch' ? 'checked' : '' }}>
                                 <span>Single branch</span>
                             </label>
                         @endif
+
+                        <div class="text-muted small mt-1">
+                            Choose whether trips are reported across the whole company
+                            or limited to a single branch.
+                        </div>
                     </div>
 
                     {{-- Branch --}}
                     <div>
                         <label class="form-label">Branch</label>
                         <div class="sf-report-select">
-                            <select name="branch_id" class="form-select" {{ ($uiScope !== 'branch' || !$hasBranches) ? 'disabled' : '' }}>
+                            <select name="branch_id"
+                                    class="form-select"
+                                    {{ ($uiScope !== 'branch' || !$hasBranches) ? 'disabled' : '' }}>
                                 <option value="">All branches</option>
                                 @foreach($branches as $branch)
                                     <option value="{{ $branch->id }}"
@@ -131,6 +146,7 @@
                         <input type="hidden" name="branch_ids[]" value="">
                     </div>
 
+                    {{-- Vehicle --}}
                     <div>
                         <label class="form-label">Vehicle</label>
                         <div class="sf-report-select">
@@ -146,6 +162,7 @@
                         </div>
                     </div>
 
+                    {{-- Date range --}}
                     <div>
                         <label class="form-label">Date range</label>
                         <div class="sf-date-field">
@@ -177,6 +194,7 @@
                                    autocomplete="off">
                         </div>
                     </div>
+
                 </div>
 
                 <div class="flex-between mt-4">
@@ -241,6 +259,34 @@
                         </thead>
                         <tbody>
                             @foreach($trips as $t)
+                                @php
+                                    $unit = isset($t->display_unit)
+                                        ? (string) $t->display_unit
+                                        : (((string) ($t->tracking_mode ?? 'distance')) === 'hours' ? 'hours' : 'km');
+                                    $startReading = $t->display_start ?? $t->start_km ?? null;
+                                    $endReading = $t->display_end ?? $t->end_km ?? null;
+                                    $distanceLabel = null;
+                                    if ($startReading !== null && $endReading !== null && is_numeric($startReading) && is_numeric($endReading)) {
+                                        $delta = (float) $endReading - (float) $startReading;
+                                        if ($delta >= 0) {
+                                            $labelUnit = $unit === 'hours' ? 'h' : $unit;
+                                            $distanceLabel = number_format($delta, 1) . ' ' . $labelUnit;
+                                        }
+                                    }
+
+                                    $durationLabel = null;
+                                    $endValue = $t->end_time ?? $t->ended_at ?? null;
+                                    if (!empty($t->started_at) && !empty($endValue)) {
+                                        $startAt = Carbon::parse($t->started_at);
+                                        $endAt = Carbon::parse($endValue);
+                                        if ($endAt->greaterThanOrEqualTo($startAt)) {
+                                            $seconds = $endAt->diffInSeconds($startAt);
+                                            $hours = (int) floor($seconds / 3600);
+                                            $minutes = (int) floor(($seconds % 3600) / 60);
+                                            $durationLabel = $hours . 'h ' . $minutes . 'm';
+                                        }
+                                    }
+                                @endphp
                                 <tr>
                                     <td>
                                         {{ Carbon::parse($t->started_at)->timezone($companyTimezone)->format($dateFormat) }}
@@ -258,9 +304,9 @@
 
                                     <td>{{ $t->purpose_of_travel ?: '—' }}</td>
 
-                                    <td class="text-end">{{ $t->distance_label ?? '—' }}</td>
+                                    <td class="text-end">{{ $distanceLabel ?? '—' }}</td>
 
-                                    <td class="text-end">{{ $t->duration_label ?? '—' }}</td>
+                                    <td class="text-end">{{ $durationLabel ?? '—' }}</td>
 
                                     <td>
                                         {{ $t->started_at
