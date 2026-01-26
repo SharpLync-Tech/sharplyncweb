@@ -34,19 +34,6 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Display toggles (screen only)
-    |--------------------------------------------------------------------------
-    */
-    $showRegistration = request()->boolean('show_registration', true);
-    $showPurpose      = request()->boolean('show_purpose', true);
-    $showDistance     = request()->boolean('show_distance', true);
-    $showDuration     = request()->boolean('show_duration', true);
-    $showTimes        = request()->boolean('show_times', false);
-    $showDriver       = request()->boolean('show_driver', true);
-    $showClient       = request()->boolean('show_client', true);
-
-    /*
-    |--------------------------------------------------------------------------
     | Summary
     |--------------------------------------------------------------------------
     */
@@ -61,8 +48,8 @@
             <div>
                 <h1 class="page-title">Trips & Compliance Report</h1>
                 <p class="page-description">
-                    Detailed trip-level reporting suitable for tax review, billing support,
-                    and internal audit purposes.
+                    Detailed trip-level vehicle usage report suitable for regulatory compliance,
+                    accountant review, and audit evidence.
                 </p>
             </div>
 
@@ -72,7 +59,7 @@
                 <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                 <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
                 <button type="submit" class="btn btn-primary">
-                    Export Report (CSV)
+                    Export CSV
                 </button>
             </form>
         </div>
@@ -96,38 +83,32 @@
 
                     {{-- Filters --}}
                     <div>
-                        <h5 class="mb-2">Filter trips by</h5>
+                        <h5 class="mb-2">Filters</h5>
 
                         <label class="d-block mb-1">
-                            <input type="checkbox" name="filter_vehicle" {{ $uiVehicleId ? 'checked' : '' }}>
                             Vehicle
                         </label>
 
                         <label class="d-block">
-                            <input type="checkbox" name="filter_driver">
-                            Driver
+                            Date range
                         </label>
                     </div>
 
-                    {{-- Screen columns --}}
+                    {{-- Compliance note --}}
                     <div>
-                        <h5 class="mb-2">Show on screen</h5>
-
-                        <label class="d-block"><input type="checkbox" name="show_registration" {{ $showRegistration ? 'checked' : '' }}> Registration number</label>
-                        <label class="d-block"><input type="checkbox" name="show_purpose" {{ $showPurpose ? 'checked' : '' }}> Purpose of travel</label>
-                        <label class="d-block"><input type="checkbox" name="show_distance" {{ $showDistance ? 'checked' : '' }}> Distance</label>
-                        <label class="d-block"><input type="checkbox" name="show_duration" {{ $showDuration ? 'checked' : '' }}> Duration</label>
-                        <label class="d-block"><input type="checkbox" name="show_times" {{ $showTimes ? 'checked' : '' }}> Start & end times</label>
-                        <label class="d-block"><input type="checkbox" name="show_driver" {{ $showDriver ? 'checked' : '' }}> Driver</label>
-                        <label class="d-block"><input type="checkbox" name="show_client" {{ $showClient ? 'checked' : '' }}> Client / customer</label>
+                        <h5 class="mb-2">Compliance format</h5>
+                        <p class="text-muted small mb-0">
+                            This report includes full trip detail in a fixed layout
+                            designed to support regulatory and financial review.
+                        </p>
                     </div>
 
                 </div>
 
                 <div class="flex-between mt-4">
                     <div class="text-muted small">
-                        Screen options affect on-screen display only.
-                        CSV export always includes the full trip dataset.
+                        On-screen view matches exported data.
+                        No columns are omitted in the CSV export.
                     </div>
 
                     <button type="submit" class="btn btn-outline-primary">
@@ -174,35 +155,14 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Vehicle</th>
-
-                                @if($showRegistration)
-                                    <th>Registration</th>
-                                @endif
-
-                                @if($showDriver)
-                                    <th>Driver</th>
-                                @endif
-
-                                @if($showClient)
-                                    <th>Client</th>
-                                @endif
-
-                                @if($showPurpose)
-                                    <th>Purpose</th>
-                                @endif
-
-                                @if($showDistance)
-                                    <th class="text-end">Distance</th>
-                                @endif
-
-                                @if($showDuration)
-                                    <th class="text-end">Duration</th>
-                                @endif
-
-                                @if($showTimes)
-                                    <th>Start</th>
-                                    <th>End</th>
-                                @endif
+                                <th>Registration</th>
+                                <th>Driver</th>
+                                <th>Client / Customer</th>
+                                <th>Purpose of travel</th>
+                                <th class="text-end">Distance</th>
+                                <th class="text-end">Duration</th>
+                                <th>Start time</th>
+                                <th>End time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -216,34 +176,29 @@
                                         {{ $t->vehicle_name }}
                                     </td>
 
-                                    @if($showRegistration)
-                                        <td>{{ $t->registration_number ?: '—' }}</td>
-                                    @endif
+                                    <td>{{ $t->registration_number ?: '—' }}</td>
 
-                                    @if($showDriver)
-                                        <td>{{ $t->driver_name ?: '—' }}</td>
-                                    @endif
+                                    <td>{{ $t->driver_name ?: '—' }}</td>
 
-                                    @if($showClient)
-                                        <td>{{ $t->customer_name_display ?: '—' }}</td>
-                                    @endif
+                                    <td>{{ $t->customer_name_display ?: '—' }}</td>
 
-                                    @if($showPurpose)
-                                        <td>{{ $t->purpose_of_travel ?: '—' }}</td>
-                                    @endif
+                                    <td>{{ $t->purpose_of_travel ?: '—' }}</td>
 
-                                    @if($showDistance)
-                                        <td class="text-end">{{ $t->distance_label ?? '—' }}</td>
-                                    @endif
+                                    <td class="text-end">{{ $t->distance_label ?? '—' }}</td>
 
-                                    @if($showDuration)
-                                        <td class="text-end">{{ $t->duration_label ?? '—' }}</td>
-                                    @endif
+                                    <td class="text-end">{{ $t->duration_label ?? '—' }}</td>
 
-                                    @if($showTimes)
-                                        <td>{{ $t->started_at ? Carbon::parse($t->started_at)->timezone($companyTimezone)->format('H:i') : '—' }}</td>
-                                        <td>{{ $t->end_time ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format('H:i') : '—' }}</td>
-                                    @endif
+                                    <td>
+                                        {{ $t->started_at
+                                            ? Carbon::parse($t->started_at)->timezone($companyTimezone)->format('H:i')
+                                            : '—' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $t->end_time
+                                            ? Carbon::parse($t->end_time)->timezone($companyTimezone)->format('H:i')
+                                            : '—' }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -252,6 +207,12 @@
             @endif
 
         </div>
+    </div>
+
+    {{-- ================= FOOTER ================= --}}
+    <div class="text-muted small mt-3 text-center">
+        This report is system-generated and reflects recorded trip data
+        at the time of export.
     </div>
 
 </div>

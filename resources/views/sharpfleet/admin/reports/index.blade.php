@@ -176,7 +176,7 @@
                 Beta features may change and are not recommended for formal reporting at this stage.
             </div>
             <div class="btn-group-inline">
-                <a href="/app/sharpfleet/admin/reports/ai-report-builder" class="btn-sf-navy">View report</a>
+                <a href="/app/sharpfleet/admin/reports/ai-report-builder" class="btn-sf-navy">Build your Report</a>
             </div>
         </div>
     </div>
