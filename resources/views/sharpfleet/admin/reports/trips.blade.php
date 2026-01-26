@@ -275,6 +275,7 @@
                                     }
 
                                     $durationLabel = null;
+                                    $durationDebug = null;
                                     $startValue = $t->start_time ?? $t->started_at ?? null;
                                     $endValue = $t->end_time ?? $t->ended_at ?? null;
                                     if (!empty($startValue) && !empty($endValue)) {
@@ -291,6 +292,9 @@
                                         $hours = (int) floor($seconds / 3600);
                                         $minutes = (int) floor(($seconds % 3600) / 60);
                                         $durationLabel = $hours . 'h ' . $minutes . 'm';
+                                        $durationDebug = $startAt->toDateTimeString()
+                                            . ' -> ' . $endAt->toDateTimeString()
+                                            . ' | seconds=' . $seconds;
                                     }
                                 @endphp
                                 <tr>
@@ -316,7 +320,8 @@
                                         {{ $durationLabel ?? '—' }}
                                         <div class="text-muted small mt-1">
                                             raw_start: {{ $startValue ?? 'null' }}<br>
-                                            raw_end: {{ $endValue ?? 'null' }}
+                                            raw_end: {{ $endValue ?? 'null' }}<br>
+                                            calc: {{ $durationDebug ?? 'n/a' }}
                                         </div>
                                     </td>
 
