@@ -674,6 +674,12 @@
             });
         }
 
+        if (form) {
+            form.addEventListener('submit', function () {
+                syncBranchIds();
+            });
+        }
+
         const initialScope = document.querySelector('input[name="scope"]:checked');
         updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
         syncBranchIds();
