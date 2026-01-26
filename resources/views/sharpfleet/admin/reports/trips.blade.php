@@ -13,12 +13,17 @@
     |--------------------------------------------------------------------------
     */
     $companyTimezone = $companyTimezone ?? config('app.timezone');
+    $branches = $branches ?? collect();
+    $vehicles = $vehicles ?? collect();
+    $hasBranches = $branches->count() > 1;
 
     /*
     |--------------------------------------------------------------------------
     | UI state
     |--------------------------------------------------------------------------
     */
+    $uiScope = $ui['scope'] ?? request('scope', 'company');
+    $uiBranchId = $ui['branch_id'] ?? request('branch_id');
     $uiVehicleId = $ui['vehicle_id'] ?? request('vehicle_id');
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate   = $ui['end_date'] ?? request('end_date');
@@ -31,6 +36,10 @@
     $dateFormat = str_starts_with($companyTimezone, 'America/')
         ? 'm/d/Y'
         : 'd/m/Y';
+
+    $datePlaceholder = $dateFormat === 'm/d/Y'
+        ? 'mm/dd/yyyy'
+        : 'dd/mm/yyyy';
 
     /*
     |--------------------------------------------------------------------------
@@ -55,6 +64,8 @@
 
             <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
                 <input type="hidden" name="export" value="csv">
+                <input type="hidden" name="scope" value="{{ $uiScope }}">
+                <input type="hidden" name="branch_id" value="{{ $uiBranchId }}">
                 <input type="hidden" name="vehicle_id" value="{{ $uiVehicleId }}">
                 <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                 <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
@@ -67,42 +78,88 @@
 
     {{-- ================= FILTERS ================= --}}
     <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
-        <div class="card mb-3">
+        <div class="card sf-report-card mb-3">
             <div class="card-body">
 
-                <div class="grid grid-3 gap-4">
+                <div class="grid grid-4 align-end">
 
                     {{-- Scope --}}
                     <div>
-                        <h5 class="mb-2">Scope</h5>
-                        <label class="d-block">
-                            <input type="radio" name="scope" value="company" checked>
-                            Company-wide
+                        <label class="form-label">Scope</label>
+                        <label class="sf-radio">
+                            <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
+                            <span>Company-wide</span>
                         </label>
+                        @if($hasBranches)
+                            <label class="sf-radio">
+                                <input type="radio" name="scope" value="branch" {{ $uiScope === 'branch' ? 'checked' : '' }}>
+                                <span>Single branch</span>
+                            </label>
+                        @endif
                     </div>
 
-                    {{-- Filters --}}
+                    {{-- Branch --}}
                     <div>
-                        <h5 class="mb-2">Filters</h5>
-
-                        <label class="d-block mb-1">
-                            Vehicle
-                        </label>
-
-                        <label class="d-block">
-                            Date range
-                        </label>
+                        <label class="form-label">Branch</label>
+                        <div class="sf-report-select">
+                            <select name="branch_id" class="form-select" {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
+                                <option value="">All branches</option>
+                                @foreach($branches as $branch)
+                                    <option value="{{ $branch->id }}"
+                                        {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
-                    {{-- Compliance note --}}
                     <div>
-                        <h5 class="mb-2">Compliance format</h5>
-                        <p class="text-muted small mb-0">
-                            This report includes full trip detail in a fixed layout
-                            designed to support regulatory and financial review.
-                        </p>
+                        <label class="form-label">Vehicle</label>
+                        <div class="sf-report-select">
+                            <select name="vehicle_id" class="form-select">
+                                <option value="">All vehicles</option>
+                                @foreach($vehicles as $vehicle)
+                                    <option value="{{ $vehicle->id }}"
+                                        {{ (string) $uiVehicleId === (string) $vehicle->id ? 'selected' : '' }}>
+                                        {{ $vehicle->name }} {{ $vehicle->registration_number ? '(' . $vehicle->registration_number . ')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
+                    <div>
+                        <label class="form-label">Date range</label>
+                        <div class="sf-date-field">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input type="text"
+                                   name="start_date"
+                                   class="form-control sf-date"
+                                   placeholder="{{ $datePlaceholder }}"
+                                   value="{{ $uiStartDate }}"
+                                   autocomplete="off">
+                        </div>
+                        <div class="sf-date-field mt-2">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input type="text"
+                                   name="end_date"
+                                   class="form-control sf-date"
+                                   placeholder="{{ $datePlaceholder }}"
+                                   value="{{ $uiEndDate }}"
+                                   autocomplete="off">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex-between mt-4">
@@ -218,3 +275,199 @@
 </div>
 
 @endsection
+
+{{-- ================= STYLES ================= --}}
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
+    .sf-report-select {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .sf-report-select select,
+    .sf-report-select .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: none !important;
+        width: 100%;
+    }
+
+    .sf-report-select select::-ms-expand {
+        display: none;
+    }
+
+    .sf-report-select::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #2CBFAE;
+        border-bottom: 2px solid #2CBFAE;
+        transform: translateY(-50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .sf-report-select .form-select {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 44px 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-report-select .form-select:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-report-select .form-select:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .sf-report-select .form-select:disabled {
+        background-color: #eef2f6;
+        color: rgba(10, 42, 77, 0.5);
+        border-color: rgba(10, 42, 77, 0.15);
+        cursor: not-allowed;
+    }
+
+    .sf-date-field {
+        position: relative;
+    }
+
+    .sf-date-field .sf-date-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2CBFAE;
+        pointer-events: none;
+    }
+
+    .sf-date-field .form-control.sf-date,
+    .sf-date-field .flatpickr-input.form-control {
+        padding-left: 36px;
+    }
+
+    .sf-date.form-control,
+    .flatpickr-input.form-control {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-date.form-control:hover,
+    .flatpickr-input.form-control:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-date.form-control:focus,
+    .flatpickr-input.form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+</style>
+@endpush
+
+{{-- ================= SCRIPTS ================= --}}
+@push('scripts')
+<script src="https://unpkg.com/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/trips"]');
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
+        const branchSelect = document.querySelector('select[name="branch_id"]');
+        const vehicleSelect = document.querySelector('select[name="vehicle_id"]');
+
+        function submitForm() {
+            if (!form) return;
+            form.submit();
+        }
+
+        function updateBranchState(value) {
+            if (!branchSelect) return;
+            if (value === 'branch') {
+                branchSelect.disabled = false;
+            } else {
+                branchSelect.value = '';
+                branchSelect.disabled = true;
+            }
+        }
+
+        scopeRadios.forEach(function (radio) {
+            radio.addEventListener('change', function (e) {
+                updateBranchState(e.target.value);
+                submitForm();
+            });
+        });
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', submitForm);
+        }
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener('change', submitForm);
+        }
+
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('.sf-date', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: '{{ $dateFormat }}',
+                allowInput: true,
+                onClose: function () {
+                    submitForm();
+                }
+            });
+        }
+
+        const initialScope = document.querySelector('input[name="scope"]:checked');
+        updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
+    });
+</script>
+@endpush
