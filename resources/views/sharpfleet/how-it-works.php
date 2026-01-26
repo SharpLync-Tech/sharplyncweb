@@ -15,16 +15,13 @@
          Page Intro
     ================================ --}}
     <div class="hero">
-        <h1>
-            How <span class="highlight">SharpFleet</span> Works
-        </h1>
+        <h1>How <span class="highlight">SharpFleet</span> Works</h1>
 
         <p class="hero-intro">
             A quick look at how SharpFleet is used day to day —
             from drivers starting trips to clear, audit-ready reports.
         </p>
 
-        {{-- Anchor list --}}
         <ul class="sf-anchor-list">
             <li><a href="#trips">Start & End Trips</a></li>
             <li><a href="#receipts">Receipt Capture</a></li>
