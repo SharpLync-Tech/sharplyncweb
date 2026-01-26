@@ -82,14 +82,16 @@
 
                                 @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN || $sfRole === \App\Support\SharpFleet\Roles::BRANCH_ADMIN)
                                     <div class="sharpfleet-nav-dropdown">
-                                        <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/company*') || request()->is('app/sharpfleet/admin/branches*') || request()->is('app/sharpfleet/admin/users*') || request()->is('app/sharpfleet/admin/settings*') ? 'is-active' : '' }}">Company</button>
+                                        <button type="button" class="sharpfleet-nav-link sharpfleet-nav-dropdown-toggle {{ request()->is('app/sharpfleet/admin/company*') || request()->is('app/sharpfleet/admin/branches*') || request()->is('app/sharpfleet/admin/users*') || request()->is('app/sharpfleet/admin/settings*') ? 'is-active' : '' }}">
+                                            {{ $sfRole === \App\Support\SharpFleet\Roles::BRANCH_ADMIN ? 'Branch' : 'Company' }}
+                                        </button>
                                         <div class="sharpfleet-nav-dropdown-menu">
                                             @if($sfRole === \App\Support\SharpFleet\Roles::COMPANY_ADMIN)
                                                 <a href="/app/sharpfleet/admin/company" class="sharpfleet-nav-dropdown-item">Company Overview</a>
                                                 <a href="/app/sharpfleet/admin/settings" class="sharpfleet-nav-dropdown-item">Company Settings</a>
                                                 <a href="/app/sharpfleet/admin/branches" class="sharpfleet-nav-dropdown-item">Branches</a>
-                                                <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
                                             @endif
+                                            <a href="/app/sharpfleet/admin/users" class="sharpfleet-nav-dropdown-item">Users / Drivers</a>
                                         </div>
                                     </div>
                                 @endif
