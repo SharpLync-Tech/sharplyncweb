@@ -102,7 +102,7 @@
         </div>
     </div>
 
-    <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}">
+    <form id="clientTransportFilters" method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}">
         <div class="card sf-report-card mb-3">
             <div class="card-body">
                 <div class="grid grid-4 align-end">
@@ -603,10 +603,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/client-transport"]');
-        const scopeRadios = document.querySelectorAll('input[name="scope"]');
-        const branchSelect = document.querySelector('select[name="branch_id"]');
-        const branchIdsHidden = document.querySelector('input[name="branch_ids[]"]');
+        const form = document.getElementById('clientTransportFilters');
+        const scopeRadios = form ? form.querySelectorAll('input[name="scope"]') : [];
+        const branchSelect = form ? form.querySelector('select[name="branch_id"]') : null;
+        const branchIdsHidden = form ? form.querySelector('input[name="branch_ids[]"]') : null;
 
         function submitForm() {
             if (!form) return;
@@ -655,11 +655,13 @@
             });
         }
 
-        document.addEventListener('change', function (event) {
-            if (event.target && event.target.matches('[name="customer_id"]')) {
-                submitForm();
-            }
-        });
+        if (form) {
+            form.addEventListener('change', function (event) {
+                if (event.target && event.target.matches('[name="customer_id"]')) {
+                    submitForm();
+                }
+            });
+        }
 
         if (typeof flatpickr !== 'undefined') {
             flatpickr('.sf-date', {
