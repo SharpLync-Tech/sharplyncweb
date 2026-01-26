@@ -41,14 +41,18 @@
             font-size: 11px;
             color: #4b5b6b;
         }
-        .header-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
         }
         .logo img {
-            height: 36px;
+            height: 40px;
             width: auto;
         }
         table {
@@ -75,20 +79,24 @@
 </head>
 <body>
     <div class="header">
-        <div class="header-row">
-            <div>
-                <div class="title">Trips & Compliance Report</div>
-                <div class="subtitle">Trip-level compliance view with odometer readings.</div>
-                <div class="meta">
-                    Reporting period: {{ $rangeStartLabel }} - {{ $rangeEndLabel }}
-                </div>
-            </div>
-            @if($logoData)
-                <div class="logo">
-                    <img src="data:image/png;base64,{{ $logoData }}" alt="SharpFleet">
-                </div>
-            @endif
-        </div>
+        <table class="header-table">
+            <tr>
+                <td>
+                    <div class="title">Trips & Compliance Report</div>
+                    <div class="subtitle">Trip-level compliance view with odometer readings.</div>
+                    <div class="meta">
+                        Reporting period: {{ $rangeStartLabel }} - {{ $rangeEndLabel }}
+                    </div>
+                </td>
+                <td style="text-align:right;">
+                    @if($logoData)
+                        <div class="logo">
+                            <img src="data:image/png;base64,{{ $logoData }}" alt="SharpFleet">
+                        </div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
     <table>
