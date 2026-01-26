@@ -10,6 +10,8 @@
     $rangeEnd = $ui['end_date'] ?? null;
     $rangeStartLabel = $rangeStart ? Carbon::parse($rangeStart, 'UTC')->timezone($companyTimezone)->format($dateFormat) : '-';
     $rangeEndLabel = $rangeEnd ? Carbon::parse($rangeEnd, 'UTC')->timezone($companyTimezone)->format($dateFormat) : '-';
+    $logoPath = public_path('images/sharpfleet/logo.png');
+    $logoData = is_file($logoPath) ? base64_encode(file_get_contents($logoPath)) : null;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -39,6 +41,16 @@
             font-size: 11px;
             color: #4b5b6b;
         }
+        .header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .logo img {
+            height: 36px;
+            width: auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -63,10 +75,19 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">Trips & Compliance Report</div>
-        <div class="subtitle">Trip-level compliance view with odometer readings.</div>
-        <div class="meta">
-            Reporting period: {{ $rangeStartLabel }} - {{ $rangeEndLabel }}
+        <div class="header-row">
+            <div>
+                <div class="title">Trips & Compliance Report</div>
+                <div class="subtitle">Trip-level compliance view with odometer readings.</div>
+                <div class="meta">
+                    Reporting period: {{ $rangeStartLabel }} - {{ $rangeEndLabel }}
+                </div>
+            </div>
+            @if($logoData)
+                <div class="logo">
+                    <img src="data:image/png;base64,{{ $logoData }}" alt="SharpFleet">
+                </div>
+            @endif
         </div>
     </div>
 
