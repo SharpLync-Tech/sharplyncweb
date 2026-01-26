@@ -15,27 +15,102 @@ class ContactController extends Controller
         $recaptchaEnabled = config('services.recaptcha.key') && config('services.recaptcha.secret');
         $recaptchaScoreThreshold = (float) config('services.recaptcha.score', 0.5);
 
-        // Validation
+        /*
+        |--------------------------------------------------------------------------
+        | Validation (basic sanity only)
+        |--------------------------------------------------------------------------
+        */
         $validated = $request->validate([
-            'name'            => ['required', 'string', 'max:255'],
-            'email'           => ['required', 'email', 'max:255'],
-            'phone'           => ['nullable', 'string', 'max:50'],
-            'subject'         => ['required', 'string', 'max:255'],
-            'message'         => ['required', 'string', 'max:5000'],
-            'address_bot_trap'=> ['nullable', 'string', 'max:255'],
-            'recaptcha_token' => $recaptchaEnabled
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'email', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:50'],
+            'subject'          => ['required', 'string', 'max:255'],
+            'message'          => ['required', 'string', 'max:5000'],
+            'address_bot_trap' => ['nullable', 'string', 'max:255'],
+            'recaptcha_token'  => $recaptchaEnabled
                 ? ['required', 'string']
                 : ['nullable', 'string'],
         ]);
 
-        // Honeypot – if filled, pretend success but do nothing
+        /*
+        |--------------------------------------------------------------------------
+        | Honeypot – if filled, silently discard
+        |--------------------------------------------------------------------------
+        */
         if (!empty($validated['address_bot_trap'])) {
+            Log::info('[Contact Form Blocked: Honeypot]', [
+                'ip' => $request->ip(),
+            ]);
+
             return back()
-                ->with('success', "Message sent! We’ll get back to you shortly.")
-                ->withInput();
+                ->with('success', "Message sent! We’ll get back to you shortly.");
         }
 
-        // reCAPTCHA v3 verification (if enabled)
+        /*
+        |--------------------------------------------------------------------------
+        | URL / link detection (kills the sharplink.com.au spam)
+        |--------------------------------------------------------------------------
+        */
+        $urlPattern = '/(
+            https?:\/\/
+            | www\.
+            | [a-z0-9\-]+\.(com|net|org|io|au|co|info|biz)
+        )/ix';
+
+        foreach (['name', 'subject', 'message', 'phone'] as $field) {
+            if (!empty($validated[$field]) && preg_match($urlPattern, $validated[$field])) {
+
+                Log::warning('[Contact Form Blocked: URL Detected]', [
+                    'ip'    => $request->ip(),
+                    'email' => $validated['email'],
+                    'field' => $field,
+                    'value' => $validated[$field],
+                ]);
+
+                // Silent success – bot never knows
+                return back()
+                    ->with('success', "Message sent! We’ll get back to you shortly.");
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEO / backlink spam phrase detection
+        |--------------------------------------------------------------------------
+        */
+        $spamPhrases = [
+            'website audit',
+            'seo service',
+            'seo services',
+            'google ranking',
+            'improve ranking',
+            'backlinks',
+            'search engine optimisation',
+            'digital marketing',
+            'increase traffic'
+        ];
+
+        foreach ($spamPhrases as $phrase) {
+            if (
+                stripos($validated['subject'], $phrase) !== false ||
+                stripos($validated['message'], $phrase) !== false
+            ) {
+                Log::warning('[Contact Form Blocked: Spam Phrase]', [
+                    'ip'    => $request->ip(),
+                    'email' => $validated['email'],
+                    'match' => $phrase,
+                ]);
+
+                return back()
+                    ->with('success', "Message sent! We’ll get back to you shortly.");
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | reCAPTCHA v3 verification (unchanged logic)
+        |--------------------------------------------------------------------------
+        */
         if ($recaptchaEnabled) {
             try {
                 $response = Http::asForm()->post(
@@ -64,7 +139,6 @@ class ContactController extends Controller
                 $success = $result['success'] ?? false;
                 $action  = $result['action']  ?? null;
 
-                // Optional: check action === 'submit_contact' if you want to be strict
                 if (!$success || $score < $recaptchaScoreThreshold) {
                     Log::info('reCAPTCHA failed or low score on contact form', [
                         'score'  => $score,
@@ -88,24 +162,28 @@ class ContactController extends Controller
             }
         }
 
-        // Prepare data for emails
+        /*
+        |--------------------------------------------------------------------------
+        | Prepare email payload
+        |--------------------------------------------------------------------------
+        */
         $data = [
-            'name'    => $validated['name'],
-            'email'   => $validated['email'],
-            'phone'   => $validated['phone'] ?? null,
-            'subject' => $validated['subject'],
+            'name'         => $validated['name'],
+            'email'        => $validated['email'],
+            'phone'        => $validated['phone'] ?? null,
+            'subject'      => $validated['subject'],
             'user_message' => $validated['message'],
         ];
 
         try {
-            // 1) Email to SharpLync (admin notification)
+            // Admin notification
             Mail::send('emails.contact.admin-notification', $data, function ($user_message) use ($data) {
                 $user_message->to('info@sharplync.com.au')
                     ->subject('New Contact Form Message from ' . $data['name'])
                     ->from(config('mail.from.address'), 'SharpLync');
             });
 
-            // 2) Confirmation email to the user (branded)
+            // User confirmation
             Mail::send('emails.contact.user-confirmation', $data, function ($user_message) use ($data) {
                 $user_message->to($data['email'], $data['name'])
                     ->subject('We’ve received your message – SharpLync')
