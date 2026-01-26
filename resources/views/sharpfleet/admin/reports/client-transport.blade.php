@@ -156,7 +156,7 @@
                         <input
                             id="customerSearchInput"
                             type="text"
-                            class="form-control"
+                            class="form-control sf-report-input"
                             list="customerOptions"
                             placeholder="Search {{ $clientLabel }}"
                             value="{{ $selectedCustomerName ?? '' }}"
@@ -371,6 +371,44 @@
     }
 
     .sf-report-select .form-select:disabled {
+        background-color: #eef2f6;
+        color: rgba(10, 42, 77, 0.5);
+        border-color: rgba(10, 42, 77, 0.15);
+        cursor: not-allowed;
+    }
+
+    .sf-report-input.form-control {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+    }
+
+    .sf-report-input.form-control:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-report-input.form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .sf-report-input.form-control:disabled {
         background-color: #eef2f6;
         color: rgba(10, 42, 77, 0.5);
         border-color: rgba(10, 42, 77, 0.15);
