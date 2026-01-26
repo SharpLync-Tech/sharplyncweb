@@ -118,7 +118,7 @@
                                 <span>Company-wide</span>
                             </label>
 
-                            @if($showBranchFilter)
+                            @if($hasBranches)
                                 <label class="sf-radio">
                                     <input type="radio"
                                            name="scope"
