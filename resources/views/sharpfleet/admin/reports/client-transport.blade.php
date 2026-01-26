@@ -154,7 +154,7 @@
                     <div>
                         <label class="form-label">{{ $clientLabel }}</label>
                         <div
-                            x-data="clientSearch({{ $uiCustomerId ? (int) $uiCustomerId : 'null' }}, @json($customers->map(fn ($c) => ['id' => (int) $c->id, 'name' => (string) $c->name])->values()), {{ ($showCustomerFilter && $allowCustomerOverride) ? 'true' : 'false' }})"
+                            x-data="clientSearch({{ $uiCustomerId ? (int) $uiCustomerId : 'null' }}, @js($customers->map(fn ($c) => ['id' => (int) $c->id, 'name' => (string) $c->name])->values()), {{ ($showCustomerFilter && $allowCustomerOverride) ? 'true' : 'false' }})"
                             x-init="init()"
                             class="sf-search"
                         >
