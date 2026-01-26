@@ -38,7 +38,7 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn btn-secondary">Load</button>
+                <button type="submit" class="btn-sf-navy btn-sm">Load</button>
             </form>
         </div>
     </div>
@@ -163,8 +163,8 @@
                 </form>
 
                 <div class="btn-group mt-3">
-                    <button type="submit" class="btn btn-primary" form="sfUserRightsForm" {{ $isArchived ? 'disabled' : '' }}>Save</button>
-                    <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn btn-secondary">Back to Users</a>
+                    <button type="submit" class="btn-sf-navy btn-sm" form="sfUserRightsForm" {{ $isArchived ? 'disabled' : '' }}>Save</button>
+                    <a href="{{ url('/app/sharpfleet/admin/users') }}" class="btn-sf-navy btn-sm">Back to Users</a>
                 </div>
             </div>
         </div>
