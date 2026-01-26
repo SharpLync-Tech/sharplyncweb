@@ -235,7 +235,25 @@ class BranchService
 
     public function getBranchesForUser(int $organisationId, int $userId): Collection
     {
-        if (!$this->branchesEnabled() || !$this->userBranchAccessEnabled() || $userId <= 0) {
+        if (!$this->branchesEnabled() || $userId <= 0) {
+            return $this->getBranches($organisationId);
+        }
+
+        if (!$this->userBranchAccessEnabled()) {
+            if (Schema::connection('sharpfleet')->hasColumn('users', 'branch_id')) {
+                $branchId = DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('organisation_id', $organisationId)
+                    ->where('id', $userId)
+                    ->value('branch_id');
+
+                $branchId = $branchId !== null && $branchId !== '' ? (int) $branchId : 0;
+                if ($branchId > 0) {
+                    $branch = $this->getBranch($organisationId, $branchId);
+                    return $branch ? collect([$branch]) : collect();
+                }
+            }
+
             return $this->getBranches($organisationId);
         }
 
@@ -272,10 +290,41 @@ class BranchService
             return null;
         }
 
+        $primary = $this->getPrimaryBranchIdForUser($organisationId, $userId);
+        if ($primary) {
+            return $primary;
+        }
+
         $branches = $this->getBranchesForUser($organisationId, $userId);
         $first = $branches->first();
         $id = $first && isset($first->id) ? (int) $first->id : 0;
 
         return $id > 0 ? $id : null;
+    }
+
+    public function getPrimaryBranchIdForUser(int $organisationId, int $userId): ?int
+    {
+        if (!$this->branchesEnabled() || $userId <= 0) {
+            return null;
+        }
+
+        if ($this->userBranchAccessEnabled()) {
+            $ids = $this->getAccessibleBranchIdsForUser($organisationId, $userId);
+            $id = (int) ($ids[0] ?? 0);
+            return $id > 0 ? $id : null;
+        }
+
+        if (Schema::connection('sharpfleet')->hasColumn('users', 'branch_id')) {
+            $branchId = DB::connection('sharpfleet')
+                ->table('users')
+                ->where('organisation_id', $organisationId)
+                ->where('id', $userId)
+                ->value('branch_id');
+
+            $branchId = $branchId !== null && $branchId !== '' ? (int) $branchId : 0;
+            return $branchId > 0 ? $branchId : null;
+        }
+
+        return null;
     }
 }

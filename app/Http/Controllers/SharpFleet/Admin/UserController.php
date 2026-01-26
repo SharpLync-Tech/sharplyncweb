@@ -21,14 +21,23 @@ class UserController extends Controller
             return [];
         }
 
-        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        $branchesEnabled = $branchService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled && $branchService->userBranchAccessEnabled();
         if (!$branchesEnabled) {
             return [];
         }
 
         $actorId = (int) ($fleetUser['id'] ?? 0);
-        $ids = $branchService->getAccessibleBranchIdsForUser($organisationId, $actorId);
-        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn ($v) => $v > 0)));
+        $ids = [];
+        if ($branchAccessEnabled) {
+            $ids = $branchService->getAccessibleBranchIdsForUser($organisationId, $actorId);
+            $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn ($v) => $v > 0)));
+        } else {
+            $primary = $branchService->getPrimaryBranchIdForUser($organisationId, $actorId);
+            if ($primary) {
+                $ids = [(int) $primary];
+            }
+        }
 
         if (count($ids) > 0) {
             return $ids;
@@ -44,7 +53,8 @@ class UserController extends Controller
             return;
         }
 
-        $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        $branchesEnabled = $branchService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled && $branchService->userBranchAccessEnabled();
         if (!$branchesEnabled) {
             return;
         }
@@ -54,12 +64,26 @@ class UserController extends Controller
             abort(403, 'You do not have access to any branches.');
         }
 
-        $targetBranchIds = $branchService->getAccessibleBranchIdsForUser($organisationId, $targetUserId);
-        $targetBranchIds = array_values(array_unique(array_filter(array_map('intval', $targetBranchIds), fn ($v) => $v > 0)));
+        if ($branchAccessEnabled) {
+            $targetBranchIds = $branchService->getAccessibleBranchIdsForUser($organisationId, $targetUserId);
+            $targetBranchIds = array_values(array_unique(array_filter(array_map('intval', $targetBranchIds), fn ($v) => $v > 0)));
 
-        $hasIntersection = count(array_intersect($actorBranchIds, $targetBranchIds)) > 0;
-        if (!$hasIntersection) {
-            abort(403, 'You can only manage users in your branch.');
+            $hasIntersection = count(array_intersect($actorBranchIds, $targetBranchIds)) > 0;
+            if (!$hasIntersection) {
+                abort(403, 'You can only manage users in your branch.');
+            }
+        } else {
+            if (Schema::connection('sharpfleet')->hasColumn('users', 'branch_id')) {
+                $targetBranchId = (int) (DB::connection('sharpfleet')
+                    ->table('users')
+                    ->where('organisation_id', $organisationId)
+                    ->where('id', $targetUserId)
+                    ->value('branch_id') ?? 0);
+
+                if ($targetBranchId > 0 && !in_array($targetBranchId, $actorBranchIds, true)) {
+                    abort(403, 'You can only manage users in your branch.');
+                }
+            }
         }
     }
 
@@ -76,6 +100,8 @@ class UserController extends Controller
 
         $branchService = new BranchService();
         $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        $branchAccessEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        $hasUserBranchId = Schema::connection('sharpfleet')->hasColumn('users', 'branch_id');
 
         $status = strtolower(trim((string) $request->query('status', 'active')));
         if (!in_array($status, ['active', 'archived', 'all'], true)) {
@@ -104,7 +130,7 @@ class UserController extends Controller
             })
 
             // Branch restriction (only for non-company admins; schema-guarded)
-            ->when(count($actorBranchIds) > 0, function ($q) use ($organisationId, $actorBranchIds) {
+            ->when(count($actorBranchIds) > 0 && $branchAccessEnabled, function ($q) use ($organisationId, $actorBranchIds) {
                 $q->join('user_branch_access as uba', function ($join) use ($organisationId) {
                     $join->on('users.id', '=', 'uba.user_id')
                         ->where('uba.organisation_id', '=', $organisationId);
@@ -116,6 +142,9 @@ class UserController extends Controller
 
                 $q->whereIn('uba.branch_id', $actorBranchIds);
                 $q->distinct();
+            })
+            ->when(!$branchAccessEnabled && $hasUserBranchId && count($actorBranchIds) > 0, function ($q) use ($actorBranchIds) {
+                $q->whereIn('users.branch_id', $actorBranchIds);
             })
 
             // Archive filter (schema-guarded for backwards compatibility)
