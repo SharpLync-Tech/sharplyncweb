@@ -8,6 +8,7 @@
     @php
         $sfActor = session('sharpfleet.user');
         $sfCanManageUsers = $sfActor ? \App\Support\SharpFleet\Roles::canManageUsers($sfActor) : false;
+        $sfIsCompanyAdmin = $sfActor ? \App\Support\SharpFleet\Roles::isCompanyAdmin($sfActor) : false;
     @endphp
 
     <div class="page-header">
@@ -44,6 +45,9 @@
                     </button>
                 @endif
                 <a class="btn btn-secondary" href="/app/sharpfleet/admin/users/import">Import CSV</a>
+                @if($sfIsCompanyAdmin)
+                    <a class="btn btn-secondary" href="/app/sharpfleet/admin/user-rights">User Admin</a>
+                @endif
             </div>
         </div>
     @endif

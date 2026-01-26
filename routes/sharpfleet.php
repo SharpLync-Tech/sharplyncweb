@@ -27,6 +27,7 @@ use App\Http\Controllers\SharpFleet\Admin\ReminderController;
 use App\Http\Controllers\SharpFleet\Admin\ReportController;
 use App\Http\Controllers\SharpFleet\Admin\SetupWizardController;
 use App\Http\Controllers\SharpFleet\Admin\UserController;
+use App\Http\Controllers\SharpFleet\Admin\UserRightsController;
 use App\Http\Controllers\SharpFleet\Admin\VehicleController;
 use App\Http\Controllers\SharpFleet\Admin\VehicleAiTestController;
 use App\Http\Controllers\SharpFleet\DriverInviteController;
@@ -232,6 +233,7 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/users/{userId}/resend-invite', [AdminDriverInviteController::class, 'resend'])->whereNumber('userId');
 
         Route::get('/admin/users', [UserController::class, 'index']);
+        Route::get('/admin/user-rights', [UserRightsController::class, 'index']);
         Route::get('/admin/users/{userId}/details', [UserController::class, 'details'])->whereNumber('userId');
         Route::get('/admin/users/{userId}/edit', [UserController::class, 'edit'])->whereNumber('userId');
         Route::post('/admin/users/{userId}', [UserController::class, 'update'])->whereNumber('userId');

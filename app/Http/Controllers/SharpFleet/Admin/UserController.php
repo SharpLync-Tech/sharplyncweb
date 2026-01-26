@@ -365,6 +365,7 @@ class UserController extends Controller
             'branch_ids' => ['nullable', 'array'],
             'branch_ids.*' => ['integer'],
             'revoke_mobile_tokens' => ['nullable', 'in:0,1'],
+            'return_to' => ['nullable', 'string', 'max:255'],
         ]);
 
         // The form submits a hidden 0 plus a checkbox 1 when checked.
@@ -496,6 +497,11 @@ class UserController extends Controller
             if (isset($requestedRole) && $requestedRole !== null) {
                 $request->session()->put('sharpfleet.user.role', $requestedRole);
             }
+        }
+
+        $returnTo = (string) $request->input('return_to', '');
+        if ($returnTo !== '' && str_starts_with($returnTo, '/app/sharpfleet/') && !str_contains($returnTo, '://') && !str_starts_with($returnTo, '//')) {
+            return redirect($returnTo)->with('success', 'User updated.');
         }
 
         return redirect('/app/sharpfleet/admin/users')
