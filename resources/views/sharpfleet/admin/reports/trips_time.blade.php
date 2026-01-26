@@ -221,7 +221,7 @@
                     <span class="text-muted small">Trips in report</span>
                 </div>
                 <div>
-                    <strong>{{ $uiStartDate ?: '-' }} - {{ $uiEndDate ?: '-' }}</strong><br>
+                    <strong>{{ $uiStartDate ?: '—' }} ? {{ $uiEndDate ?: '—' }}</strong><br>
                     <span class="text-muted small">Reporting period</span>
                 </div>
                 <div>
@@ -249,10 +249,12 @@
                                 <th>Vehicle</th>
                                 <th>Registration</th>
                                 <th>Driver</th>
-                                <th>{{ $clientPresenceLabel ?? 'Client / Customer' }}</th>
-                                <th class="text-end">Start odometer</th>
-                                <th class="text-end">End odometer</th>
+                                <th>Client / Customer</th>
+                                <th>Purpose of travel</th>
                                 <th class="text-end">Distance</th>
+                                <th class="text-end">Duration</th>
+                                <th>Start time</th>
+                                <th>End time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -271,31 +273,51 @@
                                             $distanceLabel = number_format($delta, 1) . ' ' . $labelUnit;
                                         }
                                     }
+
+                                    $durationLabel = null;
+                                    $startValue = $t->start_time ?? $t->started_at ?? null;
+                                    $endValue = $t->end_time ?? $t->ended_at ?? null;
+                                    if (!empty($startValue) && !empty($endValue)) {
+                                        $startAt = Carbon::parse($startValue, 'UTC')->timezone($companyTimezone);
+                                        $endAt = Carbon::parse($endValue, 'UTC')->timezone($companyTimezone);
+                                        $seconds = $startAt->diffInSeconds($endAt, true);
+                                        $hours = (int) floor($seconds / 3600);
+                                        $minutes = (int) floor(($seconds % 3600) / 60);
+                                        $durationLabel = $hours . 'h ' . $minutes . 'm';
+                                    }
                                 @endphp
                                 <tr>
                                     <td>
-                                        {{ Carbon::parse($t->start_time ?? $t->started_at, 'UTC')->timezone($companyTimezone)->format($dateFormat) }}
+                                        {{ Carbon::parse($startValue ?? $t->started_at, 'UTC')->timezone($companyTimezone)->format($dateFormat) }}
                                     </td>
 
                                     <td class="fw-bold">
                                         {{ $t->vehicle_name }}
                                     </td>
 
-                                    <td>{{ $t->registration_number ?: '-' }}</td>
+                                    <td>{{ $t->registration_number ?: '—' }}</td>
 
-                                    <td>{{ $t->driver_name ?: '-' }}</td>
+                                    <td>{{ $t->driver_name ?: '—' }}</td>
 
-                                    <td>{{ $t->customer_name_display ?: '-' }}</td>
+                                    <td>{{ $t->customer_name_display ?: '—' }}</td>
 
-                                    <td class="text-end">
-                                        {{ $startReading !== null && $startReading !== '' ? $startReading . ' ' . ($unit === 'hours' ? 'h' : $unit) : '-' }}
+                                    <td>{{ $t->purpose_of_travel ?: '—' }}</td>
+
+                                    <td class="text-end">{{ $distanceLabel ?? '—' }}</td>
+
+                                    <td class="text-end">{{ $durationLabel ?? '—' }}</td>
+
+                                    <td>
+                                        {{ $startValue
+                                            ? Carbon::parse($startValue, 'UTC')->timezone($companyTimezone)->format('H:i')
+                                            : '—' }}
                                     </td>
 
-                                    <td class="text-end">
-                                        {{ $endReading !== null && $endReading !== '' ? $endReading . ' ' . ($unit === 'hours' ? 'h' : $unit) : '-' }}
+                                    <td>
+                                        {{ $endValue
+                                            ? Carbon::parse($endValue, 'UTC')->timezone($companyTimezone)->format('H:i')
+                                            : '—' }}
                                     </td>
-
-                                    <td class="text-end">{{ $distanceLabel ?? '-' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -535,3 +557,5 @@
     });
 </script>
 @endpush
+
+
