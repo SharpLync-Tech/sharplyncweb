@@ -22,8 +22,11 @@
     | UI state
     |--------------------------------------------------------------------------
     */
-    $uiScope = $ui['scope'] ?? request('scope', 'company');
-    $uiBranchId = $ui['branch_id'] ?? request('branch_id');
+    $uiBranchIds = collect($ui['branch_ids'] ?? request('branch_ids', []))
+        ->filter(fn ($id) => is_numeric($id))
+        ->map(fn ($id) => (string) (int) $id)
+        ->values()
+        ->all();
     $uiVehicleId = $ui['vehicle_id'] ?? request('vehicle_id');
     $uiStartDate = $ui['start_date'] ?? request('start_date');
     $uiEndDate   = $ui['end_date'] ?? request('end_date');
@@ -64,8 +67,9 @@
 
             <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
                 <input type="hidden" name="export" value="csv">
-                <input type="hidden" name="scope" value="{{ $uiScope }}">
-                <input type="hidden" name="branch_id" value="{{ $uiBranchId }}">
+                @foreach($uiBranchIds as $branchId)
+                    <input type="hidden" name="branch_ids[]" value="{{ $branchId }}">
+                @endforeach
                 <input type="hidden" name="vehicle_id" value="{{ $uiVehicleId }}">
                 <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
                 <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
@@ -81,32 +85,17 @@
         <div class="card sf-report-card mb-3">
             <div class="card-body">
 
-                <div class="grid grid-4 align-end">
-
-                    {{-- Scope --}}
-                    <div>
-                        <label class="form-label">Scope</label>
-                        <label class="sf-radio">
-                            <input type="radio" name="scope" value="company" {{ $uiScope === 'company' ? 'checked' : '' }}>
-                            <span>Company-wide</span>
-                        </label>
-                        @if($hasBranches)
-                            <label class="sf-radio">
-                                <input type="radio" name="scope" value="branch" {{ $uiScope === 'branch' ? 'checked' : '' }}>
-                                <span>Single branch</span>
-                            </label>
-                        @endif
-                    </div>
+                <div class="grid grid-3 align-end">
 
                     {{-- Branch --}}
                     <div>
                         <label class="form-label">Branch</label>
                         <div class="sf-report-select">
-                            <select name="branch_id" class="form-select" {{ $uiScope !== 'branch' ? 'disabled' : '' }}>
+                            <select name="branch_ids[]" class="form-select" {{ !$hasBranches ? 'disabled' : '' }}>
                                 <option value="">All branches</option>
                                 @foreach($branches as $branch)
                                     <option value="{{ $branch->id }}"
-                                        {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
+                                        {{ in_array((string) $branch->id, $uiBranchIds, true) ? 'selected' : '' }}>
                                         {{ $branch->name }}
                                     </option>
                                 @endforeach
@@ -420,31 +409,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/trips"]');
-        const scopeRadios = document.querySelectorAll('input[name="scope"]');
-        const branchSelect = document.querySelector('select[name="branch_id"]');
+        const branchSelect = document.querySelector('select[name="branch_ids[]"]');
         const vehicleSelect = document.querySelector('select[name="vehicle_id"]');
 
         function submitForm() {
             if (!form) return;
             form.submit();
         }
-
-        function updateBranchState(value) {
-            if (!branchSelect) return;
-            if (value === 'branch') {
-                branchSelect.disabled = false;
-            } else {
-                branchSelect.value = '';
-                branchSelect.disabled = true;
-            }
-        }
-
-        scopeRadios.forEach(function (radio) {
-            radio.addEventListener('change', function (e) {
-                updateBranchState(e.target.value);
-                submitForm();
-            });
-        });
 
         if (branchSelect) {
             branchSelect.addEventListener('change', submitForm);
@@ -466,8 +437,6 @@
             });
         }
 
-        const initialScope = document.querySelector('input[name="scope"]:checked');
-        updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
     });
 </script>
 @endpush
