@@ -170,8 +170,8 @@
                         No columns are omitted in the CSV export.
                     </div>
                     <div class="flex" style="gap: 10px;">
-                        <button type="submit" class="btn btn-primary">Apply filters</button>
-                        <a href="{{ url('/app/sharpfleet/admin/reports/client-transport') }}" class="btn btn-secondary">Reset</a>
+                        <button type="submit" class="btn-sf-navy">Apply filters</button>
+                        <a href="{{ url('/app/sharpfleet/admin/reports/client-transport') }}" class="btn-sf-navy">Reset</a>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@
                                 }
                             @endphp
                             <tr>
-                                <td>{{ $trip->customer_name_display ?: '-' }}</td>
+                                <td>{{ $trip->client_name_display ?: '-' }}</td>
                                 <td>{{ $dateTimeLabel }}</td>
                                 <td>{{ $startTimeLabel }}</td>
                                 <td>{{ $endTimeLabel }}</td>
@@ -248,3 +248,176 @@
 </div>
 
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    .sf-report-card {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: #EEF3F8;
+        box-shadow: 0 10px 18px rgba(10, 42, 77, 0.16);
+    }
+
+    .sf-report-select {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .sf-report-select select,
+    .sf-report-select .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: none !important;
+        width: 100%;
+    }
+
+    .sf-report-select select::-ms-expand {
+        display: none;
+    }
+
+    .sf-report-select::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #2CBFAE;
+        border-bottom: 2px solid #2CBFAE;
+        transform: translateY(-50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .sf-report-select .form-select {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 44px 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-report-select .form-select:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-report-select .form-select:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .sf-report-select .form-select:disabled {
+        background-color: #eef2f6;
+        color: rgba(10, 42, 77, 0.5);
+        border-color: rgba(10, 42, 77, 0.15);
+        cursor: not-allowed;
+    }
+
+    .sf-date-field {
+        position: relative;
+    }
+
+    .sf-date-field .sf-date-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2CBFAE;
+        pointer-events: none;
+    }
+
+    .sf-date-field .form-control.sf-date,
+    .sf-date-field .flatpickr-input.form-control {
+        padding-left: 36px;
+    }
+
+    .sf-date.form-control,
+    .flatpickr-input.form-control {
+        border-radius: 12px;
+        border: 1px solid rgba(44, 191, 174, 0.35);
+        padding: 10px 14px;
+        background-color: #f8fcfb;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0A2A4D;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.85),
+            0 1px 2px rgba(10, 42, 77, 0.05);
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease,
+            background-color 150ms ease;
+        cursor: pointer;
+    }
+
+    .sf-date.form-control:hover,
+    .flatpickr-input.form-control:hover {
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+    }
+
+    .sf-date.form-control:focus,
+    .flatpickr-input.form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        border-color: #2CBFAE;
+        box-shadow:
+            0 0 0 3px rgba(44, 191, 174, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/client-transport"]');
+        const branchSelect = document.querySelector('select[name="branch_ids[]"]');
+        const customerSelect = document.querySelector('select[name="customer_id"]');
+
+        function submitForm() {
+            if (!form) return;
+            form.submit();
+        }
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', submitForm);
+        }
+
+        if (customerSelect) {
+            customerSelect.addEventListener('change', submitForm);
+        }
+
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('.sf-date', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: '{{ $dateFormat }}',
+                allowInput: true,
+                onClose: function () {
+                    submitForm();
+                }
+            });
+        }
+    });
+</script>
+@endpush

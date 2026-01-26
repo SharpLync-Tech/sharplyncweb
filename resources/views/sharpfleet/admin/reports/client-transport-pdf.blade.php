@@ -154,7 +154,7 @@
                     }
                 @endphp
                 <tr>
-                    <td>{{ $t->customer_name_display ?: '-' }}</td>
+                    <td>{{ $t->client_name_display ?: '-' }}</td>
                     <td>{{ $dateTimeLabel }}</td>
                     <td>{{ $startTimeLabel }}</td>
                     <td>{{ $endTimeLabel }}</td>

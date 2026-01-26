@@ -249,11 +249,19 @@ class ReportController extends Controller
             $user
         );
 
-        $result['trips'] = $result['trips']->filter(function ($trip) {
-            $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
-            $hasName = !empty(trim((string) ($trip->customer_name_display ?? '')));
-            return $hasClient && $hasName;
-        })->values();
+        $result['trips'] = $result['trips']
+            ->map(function ($trip) {
+                $rawName = trim((string) ($trip->customer_name ?? ''));
+                $display = $rawName !== '' ? $rawName : trim((string) ($trip->customer_name_display ?? ''));
+                $trip->client_name_display = $display;
+                return $trip;
+            })
+            ->filter(function ($trip) {
+                $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+                $hasName = !empty(trim((string) ($trip->client_name_display ?? '')));
+                return $hasClient && $hasName;
+            })
+            ->values();
 
         return view('sharpfleet.admin.reports.client-transport', [
             'trips' => $result['trips'],
@@ -294,11 +302,19 @@ class ReportController extends Controller
             $user
         );
 
-        $result['trips'] = $result['trips']->filter(function ($trip) {
-            $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
-            $hasName = !empty(trim((string) ($trip->customer_name_display ?? '')));
-            return $hasClient && $hasName;
-        })->values();
+        $result['trips'] = $result['trips']
+            ->map(function ($trip) {
+                $rawName = trim((string) ($trip->customer_name ?? ''));
+                $display = $rawName !== '' ? $rawName : trim((string) ($trip->customer_name_display ?? ''));
+                $trip->client_name_display = $display;
+                return $trip;
+            })
+            ->filter(function ($trip) {
+                $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+                $hasName = !empty(trim((string) ($trip->client_name_display ?? '')));
+                return $hasClient && $hasName;
+            })
+            ->values();
 
         $data = [
             'trips' => $result['trips'],
