@@ -153,21 +153,49 @@
 
                     <div>
                         <label class="form-label">{{ $clientLabel }}</label>
-                        <input
-                            id="customerSearchInput"
-                            type="text"
-                            class="form-control sf-report-input"
-                            list="customerOptions"
-                            placeholder="Search {{ $clientLabel }}"
-                            value="{{ $selectedCustomerName ?? '' }}"
-                            {{ ($showCustomerFilter && $allowCustomerOverride) ? '' : 'disabled' }}
+                        <div
+                            x-data="clientSearch({{ $uiCustomerId ? (int) $uiCustomerId : 'null' }}, @json($customers->map(fn ($c) => ['id' => (int) $c->id, 'name' => (string) $c->name])->values()), {{ ($showCustomerFilter && $allowCustomerOverride) ? 'true' : 'false' }})"
+                            x-init="init()"
+                            class="sf-search"
                         >
-                        <datalist id="customerOptions">
-                            @foreach($customers as $customer)
-                                <option data-id="{{ $customer->id }}" value="{{ $customer->name }}"></option>
-                            @endforeach
-                        </datalist>
-                        <input type="hidden" name="customer_id" id="customerIdInput" value="{{ $uiCustomerId }}">
+                            <input
+                                type="text"
+                                class="form-control sf-report-input"
+                                placeholder="Search {{ $clientLabel }}"
+                                x-model="query"
+                                x-on:focus="isEnabled ? open = true : null"
+                                x-on:input="if (isEnabled) { selectedId = ''; open = true; }"
+                                :disabled="!isEnabled"
+                                autocomplete="off"
+                            >
+                            <input type="hidden" name="customer_id" x-model="selectedId">
+                            <button
+                                type="button"
+                                class="sf-search__clear"
+                                x-show="isEnabled && query"
+                                x-on:click="clear()"
+                                aria-label="Clear selection"
+                            >
+                                ×
+                            </button>
+                            <div
+                                class="sf-search__panel"
+                                x-show="open && isEnabled"
+                                x-on:click.outside="open = false"
+                            >
+                                <template x-if="filtered.length === 0">
+                                    <div class="sf-search__empty">No matches found.</div>
+                                </template>
+                                <template x-for="item in filtered" :key="item.id">
+                                    <button
+                                        type="button"
+                                        class="sf-search__option"
+                                        x-text="item.name"
+                                        x-on:click="select(item)"
+                                    ></button>
+                                </template>
+                            </div>
+                        </div>
                         @if(!$showCustomerFilter)
                             <div class="text-muted small mt-1">
                                 Customer linking is disabled for this company.
@@ -415,6 +443,64 @@
         cursor: not-allowed;
     }
 
+    .sf-search {
+        position: relative;
+    }
+
+    .sf-search__panel {
+        position: absolute;
+        z-index: 20;
+        left: 0;
+        right: 0;
+        margin-top: 6px;
+        background: #ffffff;
+        border: 1px solid rgba(44, 191, 174, 0.25);
+        border-radius: 12px;
+        box-shadow: 0 12px 24px rgba(10, 42, 77, 0.12);
+        max-height: 240px;
+        overflow: auto;
+        padding: 6px;
+    }
+
+    .sf-search__option {
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #0A2A4D;
+        cursor: pointer;
+        transition: background-color 120ms ease, color 120ms ease;
+    }
+
+    .sf-search__option:hover,
+    .sf-search__option:focus {
+        background: rgba(44, 191, 174, 0.12);
+        color: #0A2A4D;
+        outline: none;
+    }
+
+    .sf-search__empty {
+        padding: 10px;
+        color: #6b7a90;
+        font-size: 0.9rem;
+    }
+
+    .sf-search__clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #6b7a90;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
     .sf-radio-row {
         display: flex;
         flex-direction: column;
@@ -482,15 +568,45 @@
 @endpush
 
 @push('scripts')
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://unpkg.com/flatpickr"></script>
 <script>
+    function clientSearch(initialId, items, isEnabled) {
+        return {
+            open: false,
+            query: '',
+            selectedId: initialId || '',
+            items: Array.isArray(items) ? items : [],
+            isEnabled: !!isEnabled,
+            init() {
+                if (this.selectedId) {
+                    const selected = this.items.find(item => String(item.id) === String(this.selectedId));
+                    if (selected) this.query = selected.name;
+                }
+            },
+            get filtered() {
+                const q = (this.query || '').toLowerCase();
+                if (!q) return this.items;
+                return this.items.filter(item => String(item.name).toLowerCase().includes(q));
+            },
+            select(item) {
+                this.selectedId = item.id;
+                this.query = item.name;
+                this.open = false;
+            },
+            clear() {
+                this.selectedId = '';
+                this.query = '';
+                this.open = false;
+            }
+        };
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/client-transport"]');
         const scopeRadios = document.querySelectorAll('input[name="scope"]');
         const branchSelect = document.querySelector('select[name="branch_id"]');
         const branchIdsHidden = document.querySelector('input[name="branch_ids[]"]');
-        const customerSearchInput = document.getElementById('customerSearchInput');
-        const customerIdInput = document.getElementById('customerIdInput');
 
         function submitForm() {
             if (!form) return;
@@ -539,15 +655,11 @@
             });
         }
 
-        if (customerSearchInput) {
-            customerSearchInput.addEventListener('input', () => {
-                if (!customerIdInput) return;
-                const options = document.querySelectorAll('#customerOptions option');
-                const match = Array.from(options).find(opt => opt.value === customerSearchInput.value);
-                customerIdInput.value = match ? match.dataset.id : '';
-            });
-            customerSearchInput.addEventListener('change', submitForm);
-        }
+        document.addEventListener('change', function (event) {
+            if (event.target && event.target.matches('[name="customer_id"]')) {
+                submitForm();
+            }
+        });
 
         if (typeof flatpickr !== 'undefined') {
             flatpickr('.sf-date', {
