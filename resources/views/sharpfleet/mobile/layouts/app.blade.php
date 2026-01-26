@@ -60,6 +60,20 @@
 (function () {
     const DEVICE_ID_KEY = 'sf_device_id';
     const TOKEN_KEY = 'sf_device_token';
+    const COOKIE_MAX_DAYS = 30;
+
+    function setCookie(name, value, days) {
+        if (!value) return;
+        const maxAge = Math.max(1, days || COOKIE_MAX_DAYS) * 24 * 60 * 60;
+        let cookie = name + '=' + encodeURIComponent(value)
+            + '; path=/app/sharpfleet'
+            + '; max-age=' + maxAge
+            + '; samesite=lax';
+        if (window.location && window.location.protocol === 'https:') {
+            cookie += '; secure';
+        }
+        document.cookie = cookie;
+    }
 
     function getDeviceId() {
         try {
@@ -76,6 +90,7 @@
         } catch (e) {
             // ignore storage errors
         }
+        setCookie('sf_device_id', value, COOKIE_MAX_DAYS);
     }
 
     function getToken() {
@@ -93,6 +108,7 @@
         } catch (e) {
             // ignore storage errors
         }
+        setCookie('sf_device_token', value, COOKIE_MAX_DAYS);
     }
 
     let deviceId = getDeviceId();

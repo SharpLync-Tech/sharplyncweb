@@ -123,7 +123,12 @@ class MobileDriverTokenAuth
             return trim(substr($auth, 7));
         }
 
-        return trim((string) $request->header('X-Device-Token', ''));
+        $headerToken = trim((string) $request->header('X-Device-Token', ''));
+        if ($headerToken !== '') {
+            return $headerToken;
+        }
+
+        return trim((string) $request->cookie('sf_device_token', ''));
     }
 
     private function extractDeviceId(Request $request): string
@@ -133,7 +138,12 @@ class MobileDriverTokenAuth
             return $deviceId;
         }
 
-        return trim((string) $request->input('device_id', ''));
+        $inputDeviceId = trim((string) $request->input('device_id', ''));
+        if ($inputDeviceId !== '') {
+            return $inputDeviceId;
+        }
+
+        return trim((string) $request->cookie('sf_device_id', ''));
     }
 
     private function setSharpFleetUserContext(Request $request, array $user): void

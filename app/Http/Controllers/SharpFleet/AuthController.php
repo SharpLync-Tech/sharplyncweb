@@ -115,6 +115,8 @@ class AuthController extends Controller
         // Only clear SharpFleet session data (do not invalidate the entire Laravel session).
         $request->session()->forget('sharpfleet.user');
         Cookie::queue(Cookie::forget('sharpfleet_remember'));
+        Cookie::queue(Cookie::forget('sf_device_token'));
+        Cookie::queue(Cookie::forget('sf_device_id'));
 
         // Redirect to the public SharpFleet landing page on the canonical host (no :8080).
         return redirect()->away('https://' . $request->getHost() . '/sharpfleet');
