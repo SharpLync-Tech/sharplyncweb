@@ -37,11 +37,45 @@ class CustomerController extends Controller
         $organisationId = (int) $user['organisation_id'];
 
         $customersTableExists = $this->customerService->customersTableExists();
-        $customers = $this->customerService->getCustomers($organisationId);
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = $customersTableExists
+            && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $isCompanyAdmin = Roles::isCompanyAdmin($user);
+
+        $branches = $branchesEnabled
+            ? ($isCompanyAdmin
+                ? $branchesService->getBranches($organisationId)
+                : $branchesService->getBranchesForUser($organisationId, (int) $user['id']))
+            : collect();
+
+        $selectedBranchId = $isCompanyAdmin ? (int) $request->query('branch_id', 0) : 0;
+        $branchIdsForFilter = [];
+        if ($branchesEnabled && $hasCustomerBranch) {
+            if ($isCompanyAdmin && $selectedBranchId > 0) {
+                $branchIdsForFilter = [$selectedBranchId];
+            } elseif (!$isCompanyAdmin) {
+                $branchIdsForFilter = $branches->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+            }
+        }
+
+        $search = trim((string) $request->query('q', ''));
+        $customers = $this->customerService->getCustomers(
+            $organisationId,
+            500,
+            $branchIdsForFilter,
+            $search
+        );
 
         return view('sharpfleet.admin.customers.index', [
             'customers'            => $customers,
             'customersTableExists' => $customersTableExists,
+            'branches' => $branches,
+            'branchesEnabled' => $branchesEnabled,
+            'hasCustomerBranch' => $hasCustomerBranch,
+            'isCompanyAdmin' => $isCompanyAdmin,
+            'selectedBranchId' => $selectedBranchId,
+            'searchQuery' => $search,
         ]);
     }
 

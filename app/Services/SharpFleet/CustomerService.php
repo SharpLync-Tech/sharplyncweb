@@ -16,17 +16,36 @@ class CustomerService
     /**
      * List active customers for an organisation.
      */
-    public function getCustomers(int $organisationId, int $limit = 500)
+    public function getCustomers(
+        int $organisationId,
+        int $limit = 500,
+        ?array $branchIds = null,
+        ?string $search = null
+    )
     {
         if (!$this->customersTableExists()) {
             return collect();
         }
 
-        return DB::connection('sharpfleet')
+        $query = DB::connection('sharpfleet')
             ->table('customers')
             ->where('organisation_id', $organisationId)
             ->where('is_active', 1)
-            ->orderBy('name')
+            ->orderBy('name');
+
+        if ($search !== null && trim($search) !== '') {
+            $term = '%' . trim($search) . '%';
+            $query->where('name', 'like', $term);
+        }
+
+        if (is_array($branchIds)
+            && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id')
+            && count($branchIds) > 0
+        ) {
+            $query->whereIn('branch_id', $branchIds);
+        }
+
+        return $query
             ->limit($limit)
             ->get();
     }

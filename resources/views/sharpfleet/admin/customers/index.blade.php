@@ -34,6 +34,40 @@
             <h2 class="card-title">Customer List</h2>
         </div>
         <div class="card-body">
+            <form method="GET" action="{{ url('/app/sharpfleet/admin/customers') }}" class="mb-3">
+                <div class="grid grid-3 align-end">
+                    @if(($isCompanyAdmin ?? false) && ($branchesEnabled ?? false) && ($hasCustomerBranch ?? false) && ($branches->count() > 1))
+                        <div>
+                            <label class="form-label">Branch</label>
+                            <select name="branch_id" class="form-control">
+                                <option value="">All branches</option>
+                                @foreach($branches as $branch)
+                                    <option value="{{ $branch->id }}" {{ (int) ($selectedBranchId ?? 0) === (int) $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+                    <div>
+                        <label class="form-label">Search</label>
+                        <input
+                            type="text"
+                            name="q"
+                            class="form-control"
+                            value="{{ $searchQuery ?? '' }}"
+                            placeholder="Search customers"
+                        >
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-secondary">Apply</button>
+                        <a href="{{ url('/app/sharpfleet/admin/customers') }}" class="btn btn-light">Reset</a>
+                    </div>
+                </div>
+            </form>
+
             @if(!$customersTableExists)
                 <p class="text-muted fst-italic">Customer management is unavailable until the database table is created.</p>
             @elseif($customers->count() === 0)
