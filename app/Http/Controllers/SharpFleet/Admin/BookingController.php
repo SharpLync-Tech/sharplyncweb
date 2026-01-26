@@ -152,6 +152,15 @@ class BookingController extends Controller
             abort(403, 'No branch access.');
         }
 
+        // Fallback to users.branch_id when user_branch_access is not available.
+        if (!$branchScopeEnabled && !$bypassBranchRestrictions && $branchesEnabled && Schema::connection('sharpfleet')->hasColumn('users', 'branch_id')) {
+            $fallbackBranchId = $branchesService->getPrimaryBranchIdForUser($organisationId, (int) $user['id']);
+            if ($fallbackBranchId) {
+                $branchScopeEnabled = true;
+                $accessibleBranchIds = [(int) $fallbackBranchId];
+            }
+        }
+
         $branches = $branchesEnabled
             ? ($branchScopeEnabled ? $branchesService->getBranchesForUser($organisationId, (int) $user['id']) : $branchesService->getBranches($organisationId))
             : collect();
@@ -184,6 +193,19 @@ class BookingController extends Controller
 
         $drivers = DB::connection('sharpfleet')
             ->table('users')
+            ->when($branchScopeEnabled && $branchAccessEnabled, function ($q) use ($organisationId, $accessibleBranchIds) {
+                $q->join('user_branch_access as uba', function ($join) use ($organisationId) {
+                    $join->on('users.id', '=', 'uba.user_id')
+                        ->where('uba.organisation_id', '=', $organisationId);
+                });
+                if (Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'is_active')) {
+                    $q->where('uba.is_active', 1);
+                }
+                $q->whereIn('uba.branch_id', $accessibleBranchIds);
+            })
+            ->when($branchScopeEnabled && !$branchAccessEnabled && Schema::connection('sharpfleet')->hasColumn('users', 'branch_id'), function ($q) use ($accessibleBranchIds) {
+                $q->whereIn('users.branch_id', $accessibleBranchIds);
+            })
             ->where('organisation_id', $organisationId)
             ->where(function ($q) {
                 $q
@@ -209,6 +231,9 @@ class BookingController extends Controller
                 ->table('customers')
                 ->where('organisation_id', $organisationId)
                 ->where('is_active', 1)
+                ->when($branchScopeEnabled && Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id'), function ($q) use ($accessibleBranchIds) {
+                    $q->whereIn('branch_id', $accessibleBranchIds);
+                })
                 ->orderBy('name')
                 ->limit(500)
                 ->get();
