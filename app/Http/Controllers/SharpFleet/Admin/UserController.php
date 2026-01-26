@@ -72,6 +72,7 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
 
         $branchService = new BranchService();
         $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
@@ -94,6 +95,9 @@ class UserController extends Controller
             ->select($select)
             ->where('users.organisation_id', $organisationId)
             ->where('users.email', 'not like', 'deleted+%@example.invalid')
+            ->when($actorRole !== Roles::COMPANY_ADMIN, function ($q) {
+                $q->whereNotIn('users.role', [Roles::COMPANY_ADMIN, 'admin']);
+            })
             ->where(function ($q) {
                 $q->whereNull('users.account_status')
                     ->orWhere('users.account_status', '!=', 'deleted');
@@ -148,6 +152,7 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
 
         $branchService = new BranchService();
         $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
@@ -175,6 +180,10 @@ class UserController extends Controller
             abort(404);
         }
 
+        if ($actorRole !== Roles::COMPANY_ADMIN && Roles::normalize($user->role ?? null) === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
+        }
+
         $branchesEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
         $branches = $branchesEnabled
             ? (Roles::bypassesBranchRestrictions($fleetUser)
@@ -200,6 +209,7 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
 
         $branchService = new BranchService();
         $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
@@ -213,6 +223,10 @@ class UserController extends Controller
 
         if (!$user) {
             abort(404);
+        }
+
+        if ($actorRole !== Roles::COMPANY_ADMIN && Roles::normalize($user->role ?? null) === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
         }
 
         $settings = new CompanySettingsService($organisationId);
@@ -518,6 +532,7 @@ class UserController extends Controller
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
         $currentUserId = (int) ($fleetUser['id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
 
         $branchService = new BranchService();
         $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
@@ -536,6 +551,10 @@ class UserController extends Controller
 
         if (!$user) {
             abort(404);
+        }
+
+        if ($actorRole !== Roles::COMPANY_ADMIN && Roles::normalize($user->role ?? null) === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
         }
 
         // Only allow deleting drivers via this screen.
@@ -595,6 +614,7 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
 
         $branchService = new BranchService();
         $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
@@ -613,6 +633,10 @@ class UserController extends Controller
 
         if (!$user) {
             abort(404);
+        }
+
+        if ($actorRole !== Roles::COMPANY_ADMIN && Roles::normalize($user->role ?? null) === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
         }
 
         // Keep behaviour consistent with archive: only manage driver accounts here.
@@ -648,18 +672,23 @@ class UserController extends Controller
         }
 
         $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
         $branchService = new BranchService();
         $this->assertActorCanManageTargetUser($fleetUser, $organisationId, $userId, $branchService);
 
         $target = DB::connection('sharpfleet')
             ->table('users')
-            ->select('id', 'is_driver', 'archived_at')
+            ->select('id', 'is_driver', 'archived_at', 'role')
             ->where('organisation_id', $organisationId)
             ->where('id', $userId)
             ->first();
 
         if (!$target) {
             abort(404);
+        }
+
+        if ($actorRole !== Roles::COMPANY_ADMIN && Roles::normalize($target->role ?? null) === Roles::COMPANY_ADMIN) {
+            abort(403, 'Only company admins can manage company admin accounts.');
         }
 
         if ((int) ($target->is_driver ?? 0) !== 1 || !empty($target->archived_at)) {
