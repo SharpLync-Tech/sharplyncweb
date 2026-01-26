@@ -13,7 +13,7 @@
     $customers = $customers ?? collect();
     $hasBranches = $branches->count() > 1;
     $showCustomerFilter = $ui['show_customer_filter'] ?? ($customerLinkingEnabled ?? false);
-    $showBranchFilter = $ui['show_branch_filter'] ?? $hasBranches;
+    $showBranchFilter = $hasBranches;
     $controls = $ui['controls_enabled'] ?? [];
     $allowBranchOverride = (bool) ($controls['branch'] ?? true);
     $allowCustomerOverride = (bool) ($controls['customer'] ?? true);
