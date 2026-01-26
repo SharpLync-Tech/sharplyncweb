@@ -395,7 +395,7 @@
                             <label class="form-label">
                                 {{ $settings['client_presence']['label'] ?? 'Client' }} Present? {{ $settings['client_presence']['required'] ? '(Required)' : '' }}
                             </label>
-                            <select name="client_present" class="form-control" {{ $settings['client_presence']['required'] ? 'required' : '' }}>
+                            <select id="clientPresentSelect" name="client_present" class="form-control" {{ $settings['client_presence']['required'] ? 'required' : '' }}>
                                 <option value="">— Select —</option>
                                 <option value="1">Yes</option>
                                 <option value="0">No</option>
@@ -412,14 +412,14 @@
                     </div>
                 @endif
 
-                {{-- Customer / Client (optional; never blocks trip start) --}}
+                {{{-- Client --}}}
                 @if(($settings['customer']['enabled'] ?? false) && (($settings['customer']['allow_select'] ?? true) || ($settings['customer']['allow_manual'] ?? true)))
                     @php
                         $partyLabel = trim((string) $settingsService->clientLabel());
                         $partyLabelLower = mb_strtolower($partyLabel !== '' ? $partyLabel : 'customer');
                     @endphp
                     <div id="customerBlock" class="form-group">
-                        <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Customer' }} (optional)</label>
+                        <label class="form-label">{{ $partyLabel !== '' ? $partyLabel : 'Client' }}</label>
 
                         @if(($settings['customer']['allow_select'] ?? true) && $customers->count() > 0)
                             <select id="customerSelect" name="customer_id" class="form-control">
@@ -905,9 +905,11 @@
 
         const customerBlock = document.getElementById('customerBlock');
         const clientPresenceBlock = document.getElementById('clientPresenceBlock');
+        const clientPresentSelect = document.getElementById('clientPresentSelect');
         const customerSelect = document.getElementById('customerSelect');
         const customerNameInput = document.getElementById('customerNameInput');
         const purposeOfTravelBlock = document.getElementById('purposeOfTravelBlock');
+        const clientPresenceRequired = {{ ($settings['client_presence']['required'] ?? false) ? 'true' : 'false' }};
 
         const tripModeRadios = document.querySelectorAll('input[name="trip_mode"][type="radio"]');
         const tripModeHidden = document.querySelector('input[name="trip_mode"][type="hidden"]');
@@ -1273,6 +1275,24 @@
             refreshVehicleOptionsFromServer();
         }, 30000);
 
+        function updateClientBlocksVisibility(isBusinessTrip) {
+            const presentValue = clientPresentSelect ? clientPresentSelect.value : '';
+            const showClientBlock = isBusinessTrip && (!clientPresenceRequired || presentValue === '1');
+
+            if (clientPresenceBlock) {
+                clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+            }
+
+            if (customerBlock) {
+                customerBlock.style.display = showClientBlock ? '' : 'none';
+            }
+
+            if (!showClientBlock && customerBlock) {
+                if (customerSelect) customerSelect.value = '';
+                if (customerNameInput) customerNameInput.value = '';
+            }
+        }
+
         function updateBusinessOnlyBlocksVisibility() {
             const selected = document.querySelector('input[name="trip_mode"][type="radio"]:checked');
             const mode = selected ? selected.value : (tripModeHidden ? tripModeHidden.value : 'business');
@@ -1288,8 +1308,7 @@
             updateStartKm();
 
             const isBusinessTrip = mode !== 'private';
-            if (customerBlock) customerBlock.style.display = isBusinessTrip ? '' : 'none';
-            if (clientPresenceBlock) clientPresenceBlock.style.display = isBusinessTrip ? '' : 'none';
+            updateClientBlocksVisibility(isBusinessTrip);
             if (purposeOfTravelBlock) purposeOfTravelBlock.style.display = isBusinessTrip ? '' : 'none';
         }
 
@@ -1304,6 +1323,12 @@
                 if (customerNameInput.value.trim()) {
                     customerSelect.value = '';
                 }
+            });
+        }
+
+        if (clientPresentSelect) {
+            clientPresentSelect.addEventListener('change', () => {
+                updateClientBlocksVisibility(true);
             });
         }
 
@@ -1365,6 +1390,26 @@
                     openHandoverModal();
                     startTripSubmitting = false;
                     return;
+                }
+
+                if (clientPresenceRequired && clientPresentSelect) {
+                    const presentValue = clientPresentSelect.value;
+                    if (presentValue === '') {
+                        e.preventDefault();
+                        showOfflineMessage('Select whether a client was present.');
+                        startTripSubmitting = false;
+                        return;
+                    }
+                    if (presentValue === '1') {
+                        const hasClientName = (customerSelect && customerSelect.value)
+                            || (customerNameInput && customerNameInput.value.trim() !== '');
+                        if (!hasClientName) {
+                            e.preventDefault();
+                            showOfflineMessage('Enter a client name before starting.');
+                            startTripSubmitting = false;
+                            return;
+                        }
+                    }
                 }
 
                 if (navigator.onLine) {
@@ -1688,3 +1733,4 @@
     </script>
 @endif
 @endsection
+
