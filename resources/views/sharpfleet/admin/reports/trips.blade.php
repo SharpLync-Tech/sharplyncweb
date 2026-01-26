@@ -277,8 +277,16 @@
                                     $durationLabel = null;
                                     $endValue = $t->end_time ?? $t->ended_at ?? null;
                                     if (!empty($t->started_at) && !empty($endValue)) {
-                                        $startAt = Carbon::parse($t->started_at);
-                                        $endAt = Carbon::parse($endValue);
+                                        $appTz = (string) (config('app.timezone') ?: 'UTC');
+                                        $startAt = Carbon::parse($t->started_at, $appTz)->timezone($companyTimezone);
+                                        $endAt = Carbon::parse($endValue, $appTz)->timezone($companyTimezone);
+
+                                        if ($endAt->lessThan($startAt)) {
+                                            // Fallback if values are already stored in company timezone.
+                                            $startAt = Carbon::parse($t->started_at, $companyTimezone);
+                                            $endAt = Carbon::parse($endValue, $companyTimezone);
+                                        }
+
                                         if ($endAt->greaterThanOrEqualTo($startAt)) {
                                             $seconds = $endAt->diffInSeconds($startAt);
                                             $hours = (int) floor($seconds / 3600);
