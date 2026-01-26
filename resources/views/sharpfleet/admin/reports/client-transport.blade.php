@@ -19,11 +19,18 @@
     $allowCustomerOverride = (bool) ($controls['customer'] ?? true);
     $allowDateOverride = (bool) ($controls['date'] ?? true);
 
+    $uiScope = $ui['scope'] ?? request('scope', 'company');
+    $uiBranchId = $ui['branch_id'] ?? request('branch_id');
+
     $uiBranchIds = collect($ui['branch_ids'] ?? request('branch_ids', []))
         ->filter(fn ($id) => is_numeric($id))
         ->map(fn ($id) => (string) (int) $id)
         ->values()
         ->all();
+
+    if (!$uiBranchId && count($uiBranchIds) > 0) {
+        $uiBranchId = $uiBranchIds[0];
+    }
 
     $uiCustomerId = $ui['customer_id'] ?? request('customer_id');
     $uiStartDate = $ui['start_date'] ?? request('start_date');
@@ -40,6 +47,12 @@
     $timeFormat = 'H:i';
 
     $clientLabel = $clientPresenceLabel ?? 'Client / Customer';
+
+    $selectedCustomerName = null;
+    if ($uiCustomerId) {
+        $selectedCustomer = $customers->firstWhere('id', (int) $uiCustomerId);
+        $selectedCustomerName = $selectedCustomer ? $selectedCustomer->name : null;
+    }
 @endphp
 
 <div class="container">
@@ -93,35 +106,63 @@
     <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}">
         <div class="card sf-report-card mb-3">
             <div class="card-body">
-                <div class="grid grid-3 align-end">
+                <div class="grid grid-4 align-end">
+                    <div>
+                        <label class="form-label">Scope</label>
+                        <div class="sf-radio-row">
+                            <label class="sf-radio">
+                                <input type="radio"
+                                       name="scope"
+                                       value="company"
+                                       {{ $uiScope === 'company' ? 'checked' : '' }}>
+                                <span>Company-wide</span>
+                            </label>
+
+                            @if($showBranchFilter)
+                                <label class="sf-radio">
+                                    <input type="radio"
+                                           name="scope"
+                                           value="branch"
+                                           {{ $uiScope === 'branch' ? 'checked' : '' }}>
+                                    <span>Single branch</span>
+                                </label>
+                            @endif
+                        </div>
+                    </div>
+
                     <div>
                         <label class="form-label">Branch</label>
                         <div class="sf-report-select">
-                            <select name="branch_ids[]" class="form-select" {{ ($showBranchFilter && $allowBranchOverride) ? '' : 'disabled' }}>
+                            <select name="branch_id" class="form-select" {{ ($showBranchFilter && $allowBranchOverride && $uiScope === 'branch') ? '' : 'disabled' }}>
                                 <option value="">All branches</option>
                                 @foreach($branches as $branch)
                                     <option value="{{ $branch->id }}"
-                                        {{ in_array((string) $branch->id, $uiBranchIds, true) ? 'selected' : '' }}>
+                                        {{ (string) $uiBranchId === (string) $branch->id ? 'selected' : '' }}>
                                         {{ $branch->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+                        <input type="hidden" name="branch_ids[]" value="">
                     </div>
 
                     <div>
                         <label class="form-label">{{ $clientLabel }}</label>
-                        <div class="sf-report-select">
-                            <select name="customer_id" class="form-select" {{ ($showCustomerFilter && $allowCustomerOverride) ? '' : 'disabled' }}>
-                                <option value="">All {{ $clientLabel }}s</option>
-                                @foreach($customers as $customer)
-                                    <option value="{{ $customer->id }}"
-                                        {{ (string) $uiCustomerId === (string) $customer->id ? 'selected' : '' }}>
-                                        {{ $customer->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <input
+                            id="customerSearchInput"
+                            type="text"
+                            class="form-control"
+                            list="customerOptions"
+                            placeholder="Search {{ $clientLabel }}"
+                            value="{{ $selectedCustomerName ?? '' }}"
+                            {{ ($showCustomerFilter && $allowCustomerOverride) ? '' : 'disabled' }}
+                        >
+                        <datalist id="customerOptions">
+                            @foreach($customers as $customer)
+                                <option data-id="{{ $customer->id }}" value="{{ $customer->name }}"></option>
+                            @endforeach
+                        </datalist>
+                        <input type="hidden" name="customer_id" id="customerIdInput" value="{{ $uiCustomerId }}">
                         @if(!$showCustomerFilter)
                             <div class="text-muted small mt-1">
                                 Customer linking is disabled for this company.
@@ -391,20 +432,61 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form[action="/app/sharpfleet/admin/reports/client-transport"]');
-        const branchSelect = document.querySelector('select[name="branch_ids[]"]');
-        const customerSelect = document.querySelector('select[name="customer_id"]');
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
+        const branchSelect = document.querySelector('select[name="branch_id"]');
+        const branchIdsHidden = document.querySelector('input[name="branch_ids[]"]');
+        const customerSearchInput = document.getElementById('customerSearchInput');
+        const customerIdInput = document.getElementById('customerIdInput');
 
         function submitForm() {
             if (!form) return;
             form.submit();
         }
 
-        if (branchSelect) {
-            branchSelect.addEventListener('change', submitForm);
+        function updateBranchState(value) {
+            if (!branchSelect) return;
+            if (value === 'branch') {
+                branchSelect.disabled = false;
+            } else {
+                branchSelect.value = '';
+                branchSelect.disabled = true;
+            }
         }
 
-        if (customerSelect) {
-            customerSelect.addEventListener('change', submitForm);
+        function syncBranchIds() {
+            if (!branchIdsHidden) return;
+            const scope = document.querySelector('input[name="scope"]:checked');
+            const scopeValue = scope ? scope.value : 'company';
+            if (scopeValue === 'branch' && branchSelect && branchSelect.value) {
+                branchIdsHidden.value = branchSelect.value;
+            } else {
+                branchIdsHidden.value = '';
+            }
+        }
+
+        scopeRadios.forEach(function (radio) {
+            radio.addEventListener('change', function (e) {
+                updateBranchState(e.target.value);
+                syncBranchIds();
+                submitForm();
+            });
+        });
+
+        if (branchSelect) {
+            branchSelect.addEventListener('change', function () {
+                syncBranchIds();
+                submitForm();
+            });
+        }
+
+        if (customerSearchInput) {
+            customerSearchInput.addEventListener('input', () => {
+                if (!customerIdInput) return;
+                const options = document.querySelectorAll('#customerOptions option');
+                const match = Array.from(options).find(opt => opt.value === customerSearchInput.value);
+                customerIdInput.value = match ? match.dataset.id : '';
+            });
+            customerSearchInput.addEventListener('change', submitForm);
         }
 
         if (typeof flatpickr !== 'undefined') {
@@ -414,10 +496,15 @@
                 altFormat: '{{ $dateFormat }}',
                 allowInput: true,
                 onClose: function () {
+                    syncBranchIds();
                     submitForm();
                 }
             });
         }
+
+        const initialScope = document.querySelector('input[name="scope"]:checked');
+        updateBranchState(initialScope ? initialScope.value : '{{ $uiScope }}');
+        syncBranchIds();
     });
 </script>
 @endpush
