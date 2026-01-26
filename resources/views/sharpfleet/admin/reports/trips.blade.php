@@ -71,7 +71,22 @@
                 </p>
             </div>
 
-            <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
+            @php
+                $pdfQuery = request()->query();
+                $pdfQuery['scope'] = $uiScope;
+                $pdfQuery['branch_id'] = $uiBranchId;
+                if (count($uiBranchIds) > 0) {
+                    $pdfQuery['branch_ids'] = $uiBranchIds;
+                } elseif ($uiBranchId) {
+                    $pdfQuery['branch_ids'] = [$uiBranchId];
+                }
+                $pdfUrl = url('/app/sharpfleet/admin/reports/trips/pdf') . '?' . http_build_query($pdfQuery);
+            @endphp
+
+            <div class="flex" style="display:flex; gap:10px; align-items:center;">
+                <a class="btn btn-outline-primary" href="{{ $pdfUrl }}">Export PDF</a>
+
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
                 <input type="hidden" name="export" value="csv">
                 <input type="hidden" name="scope" value="{{ $uiScope }}">
                 @if(count($uiBranchIds) > 0)
@@ -88,7 +103,8 @@
                 <button type="submit" class="btn btn-primary">
                     Export CSV
                 </button>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 

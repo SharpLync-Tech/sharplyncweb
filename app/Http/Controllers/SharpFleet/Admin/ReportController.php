@@ -7,6 +7,7 @@ use App\Services\SharpFleet\BranchService;
 use App\Services\SharpFleet\ReportingService;
 use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
@@ -152,6 +153,69 @@ class ReportController extends Controller
             // 🔑 Label resolved ONCE — same as start trip
             'clientPresenceLabel' => $companySettings->clientLabel(),
         ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Standard Trip Report (PDF)
+     * --------------------------------------------------------------------------
+     */
+    public function tripsPdf(Request $request)
+    {
+        $user = $request->session()->get('sharpfleet.user');
+
+        if (!$user || !Roles::canViewReports($user)) {
+            abort(403);
+        }
+
+        $companySettings = new CompanySettingsService(
+            (int) $user['organisation_id']
+        );
+
+        $branchesService = new BranchService();
+        $bypassBranchRestrictions = Roles::bypassesBranchRestrictions($user);
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $branchAccessEnabled = $branchesEnabled
+            && $branchesService->vehiclesHaveBranchSupport()
+            && $branchesService->userBranchAccessEnabled();
+
+        $branchScopeEnabled = $branchAccessEnabled && !$bypassBranchRestrictions;
+
+        $accessibleBranchIds = $branchScopeEnabled
+            ? $branchesService->getAccessibleBranchIdsForUser(
+                (int) $user['organisation_id'],
+                (int) $user['id']
+            )
+            : [];
+
+        if ($branchScopeEnabled && count($accessibleBranchIds) === 0) {
+            abort(403, 'No branch access.');
+        }
+
+        $result = $this->reportingService->buildTripReport(
+            (int) $user['organisation_id'],
+            $request,
+            $user
+        );
+
+        $data = [
+            'trips' => $result['trips'],
+            'totals' => $result['totals'],
+            'applied' => $result['applied'],
+            'ui' => $result['ui'],
+            'branches' => $result['branches'] ?? collect(),
+            'customers' => $result['customers'],
+            'hasCustomersTable' => (bool) ($result['hasCustomersTable'] ?? false),
+            'customerLinkingEnabled' => (bool) ($result['customerLinkingEnabled'] ?? false),
+            'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
+            'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
+            'clientPresenceLabel' => $companySettings->clientLabel(),
+        ];
+
+        $pdf = Pdf::loadView('sharpfleet.admin.reports.trips-pdf', $data)
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('sharpfleet_trips_report.pdf');
     }
 
     /**

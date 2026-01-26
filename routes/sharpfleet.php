@@ -299,6 +299,7 @@ Route::prefix('app/sharpfleet')
         Route::get('/admin/reminders/vehicles', [ReminderController::class, 'vehicles']);
         Route::get('/admin/reports', [ReportController::class, 'home']);
         Route::get('/admin/reports/trips', [ReportController::class, 'trips']);
+        Route::get('/admin/reports/trips/pdf', [ReportController::class, 'tripsPdf']);
        
         Route::get(
             '/admin/reports/vehicle-usage',
