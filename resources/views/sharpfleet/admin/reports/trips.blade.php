@@ -221,7 +221,7 @@
                     <span class="text-muted small">Trips in report</span>
                 </div>
                 <div>
-                    <strong>{{ $uiStartDate ?: 'â€”' }} â†’ {{ $uiEndDate ?: 'â€”' }}</strong><br>
+                    <strong>{{ $uiStartDate ?: '—' }} ? {{ $uiEndDate ?: '—' }}</strong><br>
                     <span class="text-muted small">Reporting period</span>
                 </div>
                 <div>
@@ -275,26 +275,15 @@
                                     }
 
                                     $durationLabel = null;
-                                    $durationDebug = null;
                                     $startValue = $t->start_time ?? $t->started_at ?? null;
                                     $endValue = $t->end_time ?? $t->ended_at ?? null;
                                     if (!empty($startValue) && !empty($endValue)) {
-                                        $dbTz = 'UTC';
-                                        $startAt = Carbon::parse($startValue, $dbTz)->timezone($companyTimezone);
-                                        $endAt = Carbon::parse($endValue, $dbTz)->timezone($companyTimezone);
-
-                                        if ($endAt->greaterThanOrEqualTo($startAt)) {
-                                            $seconds = $endAt->diffInSeconds($startAt);
-                                        } else {
-                                            $seconds = abs($endAt->diffInSeconds($startAt));
-                                        }
-
+                                        $startAt = Carbon::parse($startValue, 'UTC')->timezone($companyTimezone);
+                                        $endAt = Carbon::parse($endValue, 'UTC')->timezone($companyTimezone);
+                                        $seconds = $startAt->diffInSeconds($endAt, true);
                                         $hours = (int) floor($seconds / 3600);
                                         $minutes = (int) floor(($seconds % 3600) / 60);
                                         $durationLabel = $hours . 'h ' . $minutes . 'm';
-                                        $durationDebug = $startAt->toDateTimeString()
-                                            . ' -> ' . $endAt->toDateTimeString()
-                                            . ' | seconds=' . $seconds;
                                     }
                                 @endphp
                                 <tr>
@@ -306,35 +295,28 @@
                                         {{ $t->vehicle_name }}
                                     </td>
 
-                                    <td>{{ $t->registration_number ?: 'â€”' }}</td>
+                                    <td>{{ $t->registration_number ?: '—' }}</td>
 
-                                    <td>{{ $t->driver_name ?: 'â€”' }}</td>
+                                    <td>{{ $t->driver_name ?: '—' }}</td>
 
-                                    <td>{{ $t->customer_name_display ?: 'â€”' }}</td>
+                                    <td>{{ $t->customer_name_display ?: '—' }}</td>
 
-                                    <td>{{ $t->purpose_of_travel ?: 'â€”' }}</td>
+                                    <td>{{ $t->purpose_of_travel ?: '—' }}</td>
 
-                                    <td class="text-end">{{ $distanceLabel ?? 'â€”' }}</td>
+                                    <td class="text-end">{{ $distanceLabel ?? '—' }}</td>
 
-                                    <td class="text-end">
-                                        {{ $durationLabel ?? 'â€”' }}
-                                        <div class="text-muted small mt-1">
-                                            raw_start: {{ $startValue ?? 'null' }}<br>
-                                            raw_end: {{ $endValue ?? 'null' }}<br>
-                                            calc: {{ $durationDebug ?? 'n/a' }}
-                                        </div>
-                                    </td>
+                                    <td class="text-end">{{ $durationLabel ?? '—' }}</td>
 
                                     <td>
                                         {{ $startValue
                                             ? Carbon::parse($startValue, 'UTC')->timezone($companyTimezone)->format('H:i')
-                                            : 'â€”' }}
+                                            : '—' }}
                                     </td>
 
                                     <td>
                                         {{ $endValue
                                             ? Carbon::parse($endValue, 'UTC')->timezone($companyTimezone)->format('H:i')
-                                            : 'â€”' }}
+                                            : '—' }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -575,6 +557,3 @@
     });
 </script>
 @endpush
-
-
-
