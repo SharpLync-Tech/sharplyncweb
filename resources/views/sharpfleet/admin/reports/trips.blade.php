@@ -279,12 +279,26 @@
                                     if (!empty($t->started_at) && !empty($endValue)) {
                                         $appTz = (string) (config('app.timezone') ?: 'UTC');
                                         $startAt = Carbon::parse($t->started_at, $appTz)->timezone($companyTimezone);
-                                        $endAt = Carbon::parse($endValue, $appTz)->timezone($companyTimezone);
+
+                                        $endAt = null;
+                                        $endValueText = trim((string) $endValue);
+                                        $timeOnly = (bool) preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $endValueText);
+
+                                        if ($timeOnly) {
+                                            $endAt = $startAt->copy();
+                                            $endAt->setTimeFromTimeString($endValueText);
+                                        } else {
+                                            $endAt = Carbon::parse($endValue, $appTz)->timezone($companyTimezone);
+                                        }
 
                                         if ($endAt->lessThan($startAt)) {
                                             // Fallback if values are already stored in company timezone.
                                             $startAt = Carbon::parse($t->started_at, $companyTimezone);
-                                            $endAt = Carbon::parse($endValue, $companyTimezone);
+                                            if ($timeOnly) {
+                                                $endAt = $startAt->copy()->setTimeFromTimeString($endValueText);
+                                            } else {
+                                                $endAt = Carbon::parse($endValue, $companyTimezone);
+                                            }
                                         }
 
                                         if ($endAt->greaterThanOrEqualTo($startAt)) {
