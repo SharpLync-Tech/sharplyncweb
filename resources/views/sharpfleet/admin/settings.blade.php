@@ -106,8 +106,13 @@
     }
 
     .sf-settings-wrap {
-        max-width: 1400px;
+        width: min(1500px, 98vw);
+        max-width: 1500px;
         margin: 0 auto;
+    }
+
+    .sf-settings-wrap.container {
+        max-width: 1500px;
     }
 
     .sf-settings-tabs {
@@ -146,6 +151,7 @@
         margin-left: -1px;
         margin-bottom: -1px;
         z-index: 1;
+        white-space: nowrap;
     }
 
     .sf-tab:hover {
