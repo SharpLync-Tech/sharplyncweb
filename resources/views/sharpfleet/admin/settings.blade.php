@@ -106,7 +106,7 @@
     }
 
     .sf-settings-wrap {
-        width: min(1200px, 100%);
+        width: min(1200px, 110%);
         max-width: 1200px;
         margin: 0 auto;
     }
