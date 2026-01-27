@@ -1,5 +1,5 @@
 {{-- =========================================================
-     SharpFleet – How It Works
+     SharpFleet - How It Works
      Layout-first scaffold (placeholder images)
 ========================================================= --}}
 
@@ -18,7 +18,7 @@
         <h1>How <span class="highlight">SharpFleet</span> Works</h1>
 
         <p class="hero-intro">
-            A quick look at how SharpFleet is used day to day —
+            A quick look at how SharpFleet is used day to day --
             from drivers starting trips to clear, audit-ready reports.
         </p>
 
@@ -145,3 +145,4 @@
 </div>
 
 @endsection
+
