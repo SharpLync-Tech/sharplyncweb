@@ -345,7 +345,7 @@
                 if (searchTimer) {
                     clearTimeout(searchTimer);
                 }
-                if (query.length < 2) {
+                if (query.length === 0) {
                     clearSearchResults();
                     return;
                 }
@@ -354,7 +354,7 @@
 
             searchInput.addEventListener('focus', function () {
                 const query = searchInput.value.trim();
-                if (query.length >= 2) {
+                if (query.length >= 1) {
                     runSearch(query);
                 }
             });
