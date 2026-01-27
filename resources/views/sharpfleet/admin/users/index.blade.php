@@ -277,6 +277,8 @@
         const searchClear = document.getElementById('sf-user-search-clear');
         let searchTimer = null;
         let searchAbort = null;
+        const canAbortSearch = typeof AbortController !== 'undefined';
+        const canFetch = typeof fetch === 'function';
 
         function clearSearchResults() {
             if (!searchResults) return;
@@ -298,7 +300,7 @@
                     const button = document.createElement('button');
                     button.type = 'button';
                     button.className = 'list-group-item list-group-item-action';
-                    button.textContent = item.email ? `${item.name} • ${item.email}` : item.name;
+                    button.textContent = item.email ? `${item.name} - ${item.email}` : item.name;
                     button.addEventListener('click', function () {
                         window.location.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
                     });
@@ -313,23 +315,57 @@
 
         function runSearch(query) {
             if (!searchInput || !searchResults) return;
-            if (searchAbort) {
+            if (canAbortSearch && searchAbort) {
                 searchAbort.abort();
             }
 
-            const controller = new AbortController();
-            searchAbort = controller;
+            const controller = canAbortSearch ? new AbortController() : null;
+            if (controller) {
+                searchAbort = controller;
+            }
 
             const status = statusSelect ? statusSelect.value : 'active';
             const url = `/app/sharpfleet/admin/users/search?query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}`;
 
-            fetch(url, { signal: controller.signal })
-                .then(res => (res.ok ? res.json() : []))
-                .then(items => renderSearchResults(items, query))
-                .catch(err => {
-                    if (err && err.name === 'AbortError') return;
-                    clearSearchResults();
-                });
+            const showError = () => {
+                if (!searchResults) return;
+                searchResults.innerHTML = '';
+                const errorItem = document.createElement('div');
+                errorItem.className = 'list-group-item text-muted';
+                errorItem.textContent = 'Search unavailable';
+                searchResults.appendChild(errorItem);
+                searchResults.style.display = 'block';
+            };
+
+            if (canFetch) {
+                const fetchOptions = controller ? { signal: controller.signal } : {};
+                fetch(url, fetchOptions)
+                    .then(res => (res.ok ? res.json() : []))
+                    .then(items => renderSearchResults(items, query))
+                    .catch(err => {
+                        if (err && err.name === 'AbortError') return;
+                        showError();
+                    });
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const items = JSON.parse(xhr.responseText || '[]');
+                        renderSearchResults(items, query);
+                    } catch (e) {
+                        showError();
+                    }
+                } else {
+                    showError();
+                }
+            };
+            xhr.onerror = showError;
+            xhr.send();
         }
 
         if (searchInput) {
