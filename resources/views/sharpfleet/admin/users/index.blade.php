@@ -65,7 +65,7 @@
                         </select>
                         <div class="d-flex align-items-center gap-2">
                             <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
-                            <div class="position-relative" style="max-width: 220px;">
+                            <div class="position-relative" style="width: 220px;">
                                 <input
                                     type="text"
                                     class="form-control"
@@ -73,7 +73,8 @@
                                     name="search"
                                     value="{{ $search ?? '' }}"
                                     placeholder="Name or email"
-                                    autocomplete="off">
+                                    autocomplete="off"
+                                    style="padding-right:28px;">
                                 <button type="button"
                                         id="sf-user-search-clear"
                                         class="btn btn-sm btn-secondary"
@@ -84,7 +85,7 @@
                                 </button>
                                 <div id="sf-user-search-results"
                                      class="list-group"
-                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
+                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto; background:#fff; border:1px solid #dee2e6;"></div>
                             </div>
                         </div>
                     </form>
@@ -286,6 +287,16 @@
             searchResults.style.display = 'none';
         }
 
+        function showSearchStatus(message) {
+            if (!searchResults) return;
+            searchResults.innerHTML = '';
+            const item = document.createElement('div');
+            item.className = 'list-group-item text-muted';
+            item.textContent = message;
+            searchResults.appendChild(item);
+            searchResults.style.display = 'block';
+        }
+
         function renderSearchResults(items, query) {
             if (!searchResults) return;
 
@@ -327,17 +338,10 @@
             const status = statusSelect ? statusSelect.value : 'active';
             const url = `/app/sharpfleet/admin/users/search?query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}`;
 
-            const showError = () => {
-                if (!searchResults) return;
-                searchResults.innerHTML = '';
-                const errorItem = document.createElement('div');
-                errorItem.className = 'list-group-item text-muted';
-                errorItem.textContent = 'Search unavailable';
-                searchResults.appendChild(errorItem);
-                searchResults.style.display = 'block';
-            };
+            const showError = () => showSearchStatus('Search unavailable');
 
             if (canFetch) {
+                showSearchStatus('Searching...');
                 const fetchOptions = controller ? { signal: controller.signal } : {};
                 fetch(url, fetchOptions)
                     .then(res => (res.ok ? res.json() : []))
@@ -349,6 +353,7 @@
                 return;
             }
 
+            showSearchStatus('Searching...');
             const xhr = new XMLHttpRequest();
             xhr.open('GET', url);
             xhr.onreadystatechange = function () {
