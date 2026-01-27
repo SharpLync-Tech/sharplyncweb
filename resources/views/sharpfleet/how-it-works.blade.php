@@ -9,7 +9,7 @@
 
 @section('sharpfleet-content')
 
-<div class="sf-page">
+<div class="sf-page sf-page--plain">
 
     {{-- ===============================
          Page Intro
@@ -155,6 +155,12 @@
         flex-direction: column;
         gap: 36px;
         padding: 8px 0 32px;
+    }
+
+    .sf-page--plain {
+        background: #ffffff;
+        padding: 16px 20px 40px;
+        border-radius: 18px;
     }
 
     .sf-hero {
