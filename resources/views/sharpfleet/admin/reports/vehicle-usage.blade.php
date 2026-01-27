@@ -41,9 +41,10 @@
     | Summary (from controller)
     |--------------------------------------------------------------------------
     */
-    $totalVehicles = $summary['vehicles'] ?? 0;
+    $totalVehicles = $totalVehicles ?? ($summary['vehicles'] ?? 0);
     $totalTrips    = $summary['trips'] ?? 0;
     $totalDistance = $summary['distance'] ?? '0';
+    $pageSize = $pageSize ?? 25;
 @endphp
 
 <div class="container">
@@ -60,12 +61,24 @@
             </div>
 
             @php
-                $exportQuery = array_merge(request()->query(), ['export' => 'csv']);
-                $exportUrl = url('/app/sharpfleet/admin/reports/vehicle-usage') . '?' . http_build_query($exportQuery);
+                $baseQuery = request()->except(['export', 'export_scope']);
+                $pageQuery = array_merge($baseQuery, [
+                    'export' => 'csv',
+                    'export_scope' => 'page',
+                    'page' => $vehicles->currentPage(),
+                    'page_size' => $pageSize,
+                ]);
+                $allQuery = array_merge($baseQuery, [
+                    'export' => 'csv',
+                    'export_scope' => 'all',
+                ]);
+                $csvPageUrl = url('/app/sharpfleet/admin/reports/vehicle-usage') . '?' . http_build_query($pageQuery);
+                $csvAllUrl = url('/app/sharpfleet/admin/reports/vehicle-usage') . '?' . http_build_query($allQuery);
             @endphp
-            <a class="btn btn-primary" href="{{ $exportUrl }}">
-                Export Report (CSV)
-            </a>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a class="btn btn-primary" href="{{ $csvPageUrl }}">Export CSV (page)</a>
+                <a class="btn btn-primary" href="{{ $csvAllUrl }}">Export CSV (all)</a>
+            </div>
         </div>
     </div>
 
@@ -75,6 +88,7 @@
           class="card sf-report-card mb-3">
 
         <div class="card-body">
+            <input type="hidden" name="page_size" value="{{ $pageSize }}">
 
             <div class="grid grid-4 align-end">
 
@@ -269,6 +283,33 @@
 
         </div>
     </div>
+
+    @if($vehicles instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="card mt-3">
+            <div class="card-body" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/vehicle-usage') }}" style="display:flex; gap:10px; align-items:center;">
+                    @foreach(request()->except(['page', 'page_size', 'export', 'export_scope']) as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $item)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label class="text-muted small">Rows per page</label>
+                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
+                        @foreach([25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div>
+                    {{ $vehicles->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
 
 </div>
 

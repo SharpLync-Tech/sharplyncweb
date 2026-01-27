@@ -8,6 +8,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -170,8 +171,15 @@ class FleetManagerOperationalReportController extends Controller
             $rows = $rows->filter(fn ($r) => $r->trip_count === 0)->values();
         }
 
+        $pageSize = $this->resolvePageSize($request);
+        $pagedRows = $this->paginateCollection($rows, $pageSize, $request);
+
         if ($request->input('export') === 'csv') {
-            return $this->streamCsv($rows, $startDate, $endDate);
+            $exportScope = (string) $request->input('export_scope', 'all');
+            $exportRows = $exportScope === 'page'
+                ? collect($pagedRows->items())
+                : $rows;
+            return $this->streamCsv($exportRows, $startDate, $endDate);
         }
 
         $branches = collect();
@@ -182,7 +190,8 @@ class FleetManagerOperationalReportController extends Controller
         }
 
         return view('sharpfleet.admin.reports.fleet-manager-operational', [
-            'rows' => $rows,
+            'rows' => $pagedRows,
+            'totalRows' => $rows->count(),
             'branches' => $branches,
             'companyTimezone' => $companyTimezone,
             'dateFormat' => $dateFormat,
@@ -190,6 +199,7 @@ class FleetManagerOperationalReportController extends Controller
             'endDate' => $endDate,
             'statusFilter' => $statusFilter,
             'branchId' => $branchId,
+            'pageSize' => $pageSize,
         ]);
     }
 
@@ -228,5 +238,29 @@ class FleetManagerOperationalReportController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    private function resolvePageSize(Request $request): int
+    {
+        $size = (int) $request->input('page_size', 25);
+        return in_array($size, [25, 50, 100], true) ? $size : 25;
+    }
+
+    private function paginateCollection($items, int $pageSize, Request $request): LengthAwarePaginator
+    {
+        $page = max(1, (int) $request->input('page', 1));
+        $total = $items->count();
+        $sliced = $items->forPage($page, $pageSize)->values();
+
+        return new LengthAwarePaginator(
+            $sliced,
+            $total,
+            $pageSize,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
     }
 }

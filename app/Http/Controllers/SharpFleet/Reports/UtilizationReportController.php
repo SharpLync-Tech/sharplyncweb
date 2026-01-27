@@ -9,6 +9,7 @@ use App\Support\SharpFleet\Roles;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -222,6 +223,9 @@ class UtilizationReportController extends Controller
             ];
         });
 
+        $pageSize = $this->resolvePageSize($request);
+        $pagedRows = $this->paginateCollection($rows, $pageSize, $request);
+
         $averageUtilization = $rows->count() > 0
             ? round($rows->avg('utilization_percent'), 1)
             : 0.0;
@@ -231,8 +235,12 @@ class UtilizationReportController extends Controller
         $totalUsedHours = round($rows->sum('used_hours'), 1);
 
         if ($request->input('export') === 'csv') {
+            $exportScope = (string) $request->input('export_scope', 'all');
+            $exportRows = $exportScope === 'page'
+                ? collect($pagedRows->items())
+                : $rows;
             return $this->streamCsv(
-                $rows,
+                $exportRows,
                 $period,
                 $startDate,
                 $endDate,
@@ -269,7 +277,8 @@ class UtilizationReportController extends Controller
             ->get();
 
         return view('sharpfleet.admin.reports.utilization', [
-            'rows' => $rows,
+            'rows' => $pagedRows,
+            'totalRows' => $rows->count(),
             'branches' => $branches,
             'vehicles' => $vehicleList,
             'companyTimezone' => $companyTimezone,
@@ -290,6 +299,7 @@ class UtilizationReportController extends Controller
             'underUtilisedCount' => $underUtilisedCount,
             'overUtilisedCount' => $overUtilisedCount,
             'totalUsedHours' => $totalUsedHours,
+            'pageSize' => $pageSize,
         ]);
     }
 
@@ -422,5 +432,29 @@ class UtilizationReportController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    private function resolvePageSize(Request $request): int
+    {
+        $size = (int) $request->input('page_size', 25);
+        return in_array($size, [25, 50, 100], true) ? $size : 25;
+    }
+
+    private function paginateCollection($items, int $pageSize, Request $request): LengthAwarePaginator
+    {
+        $page = max(1, (int) $request->input('page', 1));
+        $total = $items->count();
+        $sliced = $items->forPage($page, $pageSize)->values();
+
+        return new LengthAwarePaginator(
+            $sliced,
+            $total,
+            $pageSize,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
     }
 }

@@ -55,7 +55,8 @@
     | Summary
     |--------------------------------------------------------------------------
     */
-    $totalTrips = $trips->count();
+    $totalTrips = $totalTrips ?? ($trips instanceof \Illuminate\Pagination\LengthAwarePaginator ? $trips->total() : $trips->count());
+    $pageSize = $pageSize ?? 25;
 @endphp
 
 <div class="container">
@@ -71,39 +72,43 @@
                 </p>
             </div>
 
-            @php
-                $pdfQuery = request()->query();
-                $pdfQuery['scope'] = $uiScope;
-                $pdfQuery['branch_id'] = $uiBranchId;
-                if (count($uiBranchIds) > 0) {
-                    $pdfQuery['branch_ids'] = $uiBranchIds;
-                } elseif ($uiBranchId) {
-                    $pdfQuery['branch_ids'] = [$uiBranchId];
-                }
-                $pdfUrl = url('/app/sharpfleet/admin/reports/trips/pdf') . '?' . http_build_query($pdfQuery);
-            @endphp
-
             <div class="flex" style="display:flex; gap:10px; align-items:center;">
-                <a class="btn btn-primary" href="{{ $pdfUrl }}">Export PDF</a>
-
-                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
-                <input type="hidden" name="export" value="csv">
-                <input type="hidden" name="scope" value="{{ $uiScope }}">
-                @if(count($uiBranchIds) > 0)
-                    @foreach($uiBranchIds as $branchId)
-                        <input type="hidden" name="branch_ids[]" value="{{ $branchId }}">
-                    @endforeach
-                @elseif($uiBranchId)
-                    <input type="hidden" name="branch_ids[]" value="{{ $uiBranchId }}">
-                @endif
-                <input type="hidden" name="branch_id" value="{{ $uiBranchId }}">
-                <input type="hidden" name="vehicle_id" value="{{ $uiVehicleId }}">
-                <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
-                <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
-                <button type="submit" class="btn btn-primary">
-                    Export CSV
-                </button>
-                </form>
+                @php
+                    $baseQuery = request()->except(['export', 'export_scope']);
+                    $baseQuery['scope'] = $uiScope;
+                    $baseQuery['branch_id'] = $uiBranchId;
+                    if (count($uiBranchIds) > 0) {
+                        $baseQuery['branch_ids'] = $uiBranchIds;
+                    } elseif ($uiBranchId) {
+                        $baseQuery['branch_ids'] = [$uiBranchId];
+                    }
+                    $pageQuery = array_merge($baseQuery, [
+                        'export' => 'csv',
+                        'export_scope' => 'page',
+                        'page' => $trips->currentPage(),
+                        'page_size' => $pageSize,
+                    ]);
+                    $allQuery = array_merge($baseQuery, [
+                        'export' => 'csv',
+                        'export_scope' => 'all',
+                    ]);
+                    $pdfPageQuery = array_merge($baseQuery, [
+                        'export_scope' => 'page',
+                        'page' => $trips->currentPage(),
+                        'page_size' => $pageSize,
+                    ]);
+                    $pdfAllQuery = array_merge($baseQuery, [
+                        'export_scope' => 'all',
+                    ]);
+                    $csvPageUrl = url('/app/sharpfleet/admin/reports/trips') . '?' . http_build_query($pageQuery);
+                    $csvAllUrl = url('/app/sharpfleet/admin/reports/trips') . '?' . http_build_query($allQuery);
+                    $pdfPageUrl = url('/app/sharpfleet/admin/reports/trips/pdf') . '?' . http_build_query($pdfPageQuery);
+                    $pdfAllUrl = url('/app/sharpfleet/admin/reports/trips/pdf') . '?' . http_build_query($pdfAllQuery);
+                @endphp
+                <a class="btn btn-primary" href="{{ $pdfPageUrl }}">Export PDF (page)</a>
+                <a class="btn btn-primary" href="{{ $pdfAllUrl }}">Export PDF (all)</a>
+                <a class="btn btn-primary" href="{{ $csvPageUrl }}">Export CSV (page)</a>
+                <a class="btn btn-primary" href="{{ $csvAllUrl }}">Export CSV (all)</a>
             </div>
         </div>
     </div>
@@ -112,6 +117,7 @@
     <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}">
         <div class="card sf-report-card mb-3">
             <div class="card-body">
+                <input type="hidden" name="page_size" value="{{ $pageSize }}">
 
                 <div class="grid grid-4 align-end">
 
@@ -331,6 +337,33 @@
 
         </div>
     </div>
+
+    @if($trips instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="card mt-3">
+            <div class="card-body" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/trips') }}" style="display:flex; gap:10px; align-items:center;">
+                    @foreach(request()->except(['page', 'page_size', 'export', 'export_scope']) as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $item)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label class="text-muted small">Rows per page</label>
+                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
+                        @foreach([25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div>
+                    {{ $trips->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- ================= FOOTER ================= --}}
     <div class="text-muted small mt-3 text-center">

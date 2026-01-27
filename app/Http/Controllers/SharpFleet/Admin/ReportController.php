@@ -9,6 +9,7 @@ use App\Services\SharpFleet\CompanySettingsService;
 use App\Support\SharpFleet\Roles;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
@@ -112,6 +113,10 @@ class ReportController extends Controller
             $request,
             $user
         );
+        $allTrips = $result['trips'];
+        $totalTrips = $allTrips->count();
+        $pageSize = $this->resolvePageSize($request);
+        $trips = $this->paginateCollection($allTrips, $pageSize, $request);
 
         /*
         |----------------------------------------------------------------------
@@ -136,7 +141,8 @@ class ReportController extends Controller
         |----------------------------------------------------------------------
         */
         return view('sharpfleet.admin.reports.trips', [
-            'trips' => $result['trips'],
+            'trips' => $trips,
+            'totalTrips' => $totalTrips,
             'totals' => $result['totals'],
             'applied' => $result['applied'],
             'ui' => $result['ui'],
@@ -152,6 +158,7 @@ class ReportController extends Controller
 
             // 🔑 Label resolved ONCE — same as start trip
             'clientPresenceLabel' => $companySettings->clientLabel(),
+            'pageSize' => $pageSize,
         ]);
     }
 
@@ -197,9 +204,15 @@ class ReportController extends Controller
             $request,
             $user
         );
+        $trips = $result['trips'];
+        if ($request->input('export_scope') === 'page') {
+            $pageSize = $this->resolvePageSize($request);
+            $page = max(1, (int) $request->input('page', 1));
+            $trips = $trips->forPage($page, $pageSize)->values();
+        }
 
         $data = [
-            'trips' => $result['trips'],
+            'trips' => $trips,
             'totals' => $result['totals'],
             'applied' => $result['applied'],
             'ui' => $result['ui'],
@@ -249,7 +262,7 @@ class ReportController extends Controller
             $user
         );
 
-        $result['trips'] = $result['trips']
+        $filteredTrips = $result['trips']
             ->map(function ($trip) {
                 $rawName = trim((string) ($trip->customer_name ?? ''));
                 $display = $rawName !== '' ? $rawName : trim((string) ($trip->customer_name_display ?? ''));
@@ -262,9 +275,13 @@ class ReportController extends Controller
                 return $hasClient && $hasName;
             })
             ->values();
+        $totalTrips = $filteredTrips->count();
+        $pageSize = $this->resolvePageSize($request);
+        $trips = $this->paginateCollection($filteredTrips, $pageSize, $request);
 
         return view('sharpfleet.admin.reports.client-transport', [
-            'trips' => $result['trips'],
+            'trips' => $trips,
+            'totalTrips' => $totalTrips,
             'applied' => $result['applied'],
             'ui' => $result['ui'],
             'branches' => $result['branches'] ?? collect(),
@@ -276,6 +293,7 @@ class ReportController extends Controller
             'companyTimezone' => (string) ($result['companyTimezone'] ?? $companySettings->timezone()),
             'purposeOfTravelEnabled' => (bool) $companySettings->purposeOfTravelEnabled(),
             'clientPresenceLabel' => $companySettings->clientLabel(),
+            'pageSize' => $pageSize,
         ]);
     }
 
@@ -302,7 +320,7 @@ class ReportController extends Controller
             $user
         );
 
-        $result['trips'] = $result['trips']
+        $trips = $result['trips']
             ->map(function ($trip) {
                 $rawName = trim((string) ($trip->customer_name ?? ''));
                 $display = $rawName !== '' ? $rawName : trim((string) ($trip->customer_name_display ?? ''));
@@ -315,9 +333,14 @@ class ReportController extends Controller
                 return $hasClient && $hasName;
             })
             ->values();
+        if ($request->input('export_scope') === 'page') {
+            $pageSize = $this->resolvePageSize($request);
+            $page = max(1, (int) $request->input('page', 1));
+            $trips = $trips->forPage($page, $pageSize)->values();
+        }
 
         $data = [
-            'trips' => $result['trips'],
+            'trips' => $trips,
             'applied' => $result['applied'],
             'ui' => $result['ui'],
             'branches' => $result['branches'] ?? collect(),
@@ -361,5 +384,29 @@ class ReportController extends Controller
     public function vehicles()
     {
         // to be implemented later
+    }
+
+    private function resolvePageSize(Request $request): int
+    {
+        $size = (int) $request->input('page_size', 25);
+        return in_array($size, [25, 50, 100], true) ? $size : 25;
+    }
+
+    private function paginateCollection($items, int $pageSize, Request $request): LengthAwarePaginator
+    {
+        $page = max(1, (int) $request->input('page', 1));
+        $total = $items->count();
+        $sliced = $items->forPage($page, $pageSize)->values();
+
+        return new LengthAwarePaginator(
+            $sliced,
+            $total,
+            $pageSize,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
     }
 }

@@ -12,6 +12,7 @@
     $uiBranchId = $branchId ?? request('branch_id');
     $hasBranches = isset($branches) && $branches->count() > 1;
     $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
+    $pageSize = $pageSize ?? 25;
 @endphp
 
 <div class="container">
@@ -26,16 +27,25 @@
                 </p>
             </div>
 
-            <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/fleet-manager-operational') }}">
-                <input type="hidden" name="export" value="csv">
-                <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
-                <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
-                <input type="hidden" name="status" value="{{ $uiStatus }}">
-                <input type="hidden" name="branch_id" value="{{ $uiBranchId }}">
-                <button type="submit" class="btn btn-primary">
-                    Export Report (CSV)
-                </button>
-            </form>
+            @php
+                $baseQuery = request()->except(['export', 'export_scope']);
+                $pageQuery = array_merge($baseQuery, [
+                    'export' => 'csv',
+                    'export_scope' => 'page',
+                    'page' => $rows->currentPage(),
+                    'page_size' => $pageSize,
+                ]);
+                $allQuery = array_merge($baseQuery, [
+                    'export' => 'csv',
+                    'export_scope' => 'all',
+                ]);
+                $csvPageUrl = url('/app/sharpfleet/admin/reports/fleet-manager-operational') . '?' . http_build_query($pageQuery);
+                $csvAllUrl = url('/app/sharpfleet/admin/reports/fleet-manager-operational') . '?' . http_build_query($allQuery);
+            @endphp
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a class="btn btn-primary" href="{{ $csvPageUrl }}">Export CSV (page)</a>
+                <a class="btn btn-primary" href="{{ $csvAllUrl }}">Export CSV (all)</a>
+            </div>
         </div>
     </div>
 
@@ -44,6 +54,7 @@
           action="{{ url('/app/sharpfleet/admin/reports/fleet-manager-operational') }}"
           class="card mb-3" id="fleetManagerReportFilters">
         <div class="card-body">
+            <input type="hidden" name="page_size" value="{{ $pageSize }}">
             <div class="grid grid-4 align-end">
 
                 <div>
@@ -321,6 +332,33 @@
 
         </div>
     </div>
+
+    @if($rows instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="card mt-3">
+            <div class="card-body" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/fleet-manager-operational') }}" style="display:flex; gap:10px; align-items:center;">
+                    @foreach(request()->except(['page', 'page_size', 'export', 'export_scope']) as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $item)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label class="text-muted small">Rows per page</label>
+                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
+                        @foreach([25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div>
+                    {{ $rows->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
 
 </div>
 

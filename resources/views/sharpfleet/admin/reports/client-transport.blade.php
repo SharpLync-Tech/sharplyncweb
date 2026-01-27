@@ -52,6 +52,9 @@
         $selectedCustomer = $customers->firstWhere('id', (int) $uiCustomerId);
         $selectedCustomerName = $selectedCustomer ? $selectedCustomer->name : null;
     }
+
+    $totalTrips = $totalTrips ?? ($trips instanceof \Illuminate\Pagination\LengthAwarePaginator ? $trips->total() : $trips->count());
+    $pageSize = $pageSize ?? 25;
 @endphp
 
 <div class="container">
@@ -64,40 +67,48 @@
                 </p>
             </div>
 
-            @php
-                $pdfQuery = request()->query();
-                if (count($uiBranchIds) > 0) {
-                    $pdfQuery['branch_ids'] = $uiBranchIds;
-                }
-                if ($uiCustomerId) {
-                    $pdfQuery['customer_id'] = $uiCustomerId;
-                }
-                if ($uiStartDate) {
-                    $pdfQuery['start_date'] = $uiStartDate;
-                }
-                if ($uiEndDate) {
-                    $pdfQuery['end_date'] = $uiEndDate;
-                }
-                $pdfUrl = url('/app/sharpfleet/admin/reports/client-transport/pdf') . '?' . http_build_query($pdfQuery);
-            @endphp
-
             <div class="flex" style="display:flex; gap:10px; align-items:center;">
-                <a class="btn btn-primary" href="{{ $pdfUrl }}">Export PDF</a>
-
-                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}">
-                    <input type="hidden" name="export" value="csv">
-                    @if(count($uiBranchIds) > 0)
-                        @foreach($uiBranchIds as $branchId)
-                            <input type="hidden" name="branch_ids[]" value="{{ $branchId }}">
-                        @endforeach
-                    @else
-                        <input type="hidden" name="branch_ids[]" value="">
-                    @endif
-                    <input type="hidden" name="customer_id" value="{{ $uiCustomerId }}">
-                    <input type="hidden" name="start_date" value="{{ $uiStartDate }}">
-                    <input type="hidden" name="end_date" value="{{ $uiEndDate }}">
-                    <button type="submit" class="btn btn-primary">Export CSV</button>
-                </form>
+                @php
+                    $baseQuery = request()->except(['export', 'export_scope']);
+                    if (count($uiBranchIds) > 0) {
+                        $baseQuery['branch_ids'] = $uiBranchIds;
+                    }
+                    if ($uiCustomerId) {
+                        $baseQuery['customer_id'] = $uiCustomerId;
+                    }
+                    if ($uiStartDate) {
+                        $baseQuery['start_date'] = $uiStartDate;
+                    }
+                    if ($uiEndDate) {
+                        $baseQuery['end_date'] = $uiEndDate;
+                    }
+                    $pageQuery = array_merge($baseQuery, [
+                        'export' => 'csv',
+                        'export_scope' => 'page',
+                        'page' => $trips->currentPage(),
+                        'page_size' => $pageSize,
+                    ]);
+                    $allQuery = array_merge($baseQuery, [
+                        'export' => 'csv',
+                        'export_scope' => 'all',
+                    ]);
+                    $pdfPageQuery = array_merge($baseQuery, [
+                        'export_scope' => 'page',
+                        'page' => $trips->currentPage(),
+                        'page_size' => $pageSize,
+                    ]);
+                    $pdfAllQuery = array_merge($baseQuery, [
+                        'export_scope' => 'all',
+                    ]);
+                    $csvPageUrl = url('/app/sharpfleet/admin/reports/client-transport') . '?' . http_build_query($pageQuery);
+                    $csvAllUrl = url('/app/sharpfleet/admin/reports/client-transport') . '?' . http_build_query($allQuery);
+                    $pdfPageUrl = url('/app/sharpfleet/admin/reports/client-transport/pdf') . '?' . http_build_query($pdfPageQuery);
+                    $pdfAllUrl = url('/app/sharpfleet/admin/reports/client-transport/pdf') . '?' . http_build_query($pdfAllQuery);
+                @endphp
+                <a class="btn btn-primary" href="{{ $pdfPageUrl }}">Export PDF (page)</a>
+                <a class="btn btn-primary" href="{{ $pdfAllUrl }}">Export PDF (all)</a>
+                <a class="btn btn-primary" href="{{ $csvPageUrl }}">Export CSV (page)</a>
+                <a class="btn btn-primary" href="{{ $csvAllUrl }}">Export CSV (all)</a>
             </div>
         </div>
     </div>
@@ -105,6 +116,7 @@
     <form id="clientTransportFilters" method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}">
         <div class="card sf-report-card mb-3">
             <div class="card-body">
+                <input type="hidden" name="page_size" value="{{ $pageSize }}">
                 <div class="grid grid-4 align-end">
                     <div>
                         <label class="form-label">Scope</label>
@@ -319,6 +331,33 @@
             </div>
         </div>
     </div>
+
+    @if($trips instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="card mt-3">
+            <div class="card-body" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/client-transport') }}" style="display:flex; gap:10px; align-items:center;">
+                    @foreach(request()->except(['page', 'page_size', 'export', 'export_scope']) as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $item)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label class="text-muted small">Rows per page</label>
+                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
+                        @foreach([25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div>
+                    {{ $trips->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 @endsection

@@ -25,6 +25,7 @@
 
     $dateFormat = $dateFormat ?? (str_starts_with($companyTimezone, 'America/') ? 'm/d/Y' : 'd/m/Y');
     $datePlaceholder = $dateFormat === 'm/d/Y' ? 'mm/dd/yyyy' : 'dd/mm/yyyy';
+    $pageSize = $pageSize ?? 25;
 @endphp
 
 <div class="container">
@@ -44,6 +45,7 @@
           class="card sf-report-card mb-3">
 
         <div class="card-body">
+            <input type="hidden" name="page_size" value="{{ $pageSize }}">
             <div class="grid grid-4 align-end">
                 <div>
                     <label class="form-label">Scope</label>
@@ -225,10 +227,24 @@
 
     <div class="text-end mb-3">
         @php
-            $exportQuery = array_merge(request()->query(), ['export' => 'csv']);
-            $exportUrl = url('/app/sharpfleet/admin/reports/utilization') . '?' . http_build_query($exportQuery);
+            $baseQuery = request()->except(['export', 'export_scope']);
+            $pageQuery = array_merge($baseQuery, [
+                'export' => 'csv',
+                'export_scope' => 'page',
+                'page' => $rows->currentPage(),
+                'page_size' => $pageSize,
+            ]);
+            $allQuery = array_merge($baseQuery, [
+                'export' => 'csv',
+                'export_scope' => 'all',
+            ]);
+            $csvPageUrl = url('/app/sharpfleet/admin/reports/utilization') . '?' . http_build_query($pageQuery);
+            $csvAllUrl = url('/app/sharpfleet/admin/reports/utilization') . '?' . http_build_query($allQuery);
         @endphp
-        <a href="{{ $exportUrl }}" class="btn btn-primary">Export CSV</a>
+        <div style="display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+            <a href="{{ $csvPageUrl }}" class="btn btn-primary">Export CSV (page)</a>
+            <a href="{{ $csvAllUrl }}" class="btn btn-primary">Export CSV (all)</a>
+        </div>
     </div>
 
     <div class="card sf-report-card">
@@ -296,6 +312,33 @@
             @endif
         </div>
     </div>
+
+    @if($rows instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="card mt-3">
+            <div class="card-body" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+                <form method="GET" action="{{ url('/app/sharpfleet/admin/reports/utilization') }}" style="display:flex; gap:10px; align-items:center;">
+                    @foreach(request()->except(['page', 'page_size', 'export', 'export_scope']) as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $item)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label class="text-muted small">Rows per page</label>
+                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
+                        @foreach([25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                <div>
+                    {{ $rows->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 @endsection

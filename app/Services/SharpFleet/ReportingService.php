@@ -552,6 +552,12 @@ class ReportingService
         $result = $this->buildTripReport($organisationId, $request, $actor);
         /** @var Collection<int, object> $trips */
         $trips = $result['trips'];
+        $exportScope = (string) $request->input('export_scope', 'all');
+        if ($exportScope === 'page') {
+            $pageSize = $this->resolvePageSize($request);
+            $page = max(1, (int) $request->input('page', 1));
+            $trips = $trips->forPage($page, $pageSize)->values();
+        }
 
         $companyTimezone = (string) ($result['companyTimezone'] ?? (new CompanySettingsService($organisationId))->timezone());
         $appTimezone = (string) (config('app.timezone') ?: 'UTC');
@@ -671,7 +677,25 @@ class ReportingService
     {
         $result = $this->buildTripReport($organisationId, $request, $actor);
         /** @var Collection<int, object> $trips */
-        $trips = $result['trips'];
+        $trips = $result['trips']
+            ->map(function ($trip) {
+                $rawName = trim((string) ($trip->customer_name ?? ''));
+                $display = $rawName !== '' ? $rawName : trim((string) ($trip->customer_name_display ?? ''));
+                $trip->client_name_display = $display;
+                return $trip;
+            })
+            ->filter(function ($trip) {
+                $hasClient = isset($trip->client_present) && (bool) $trip->client_present;
+                $hasName = !empty(trim((string) ($trip->client_name_display ?? '')));
+                return $hasClient && $hasName;
+            })
+            ->values();
+        $exportScope = (string) $request->input('export_scope', 'all');
+        if ($exportScope === 'page') {
+            $pageSize = $this->resolvePageSize($request);
+            $page = max(1, (int) $request->input('page', 1));
+            $trips = $trips->forPage($page, $pageSize)->values();
+        }
 
         $companyTimezone = (string) ($result['companyTimezone'] ?? (new CompanySettingsService($organisationId))->timezone());
         $appTimezone = (string) (config('app.timezone') ?: 'UTC');
@@ -848,6 +872,12 @@ class ReportingService
         $endApp = $end ? $end->copy()->setTimezone($appTz) : null;
 
         return [$startApp, $endApp];
+    }
+
+    private function resolvePageSize(Request $request): int
+    {
+        $size = (int) $request->input('page_size', 25);
+        return in_array($size, [25, 50, 100], true) ? $size : 25;
     }
 
     /**

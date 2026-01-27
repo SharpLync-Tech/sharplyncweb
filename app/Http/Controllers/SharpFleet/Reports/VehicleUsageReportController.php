@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SharpFleet\BranchService;
 use App\Support\SharpFleet\Roles;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -194,13 +195,20 @@ class VehicleUsageReportController extends Controller
             ];
         });
 
+        $pageSize = $this->resolvePageSize($request);
+        $pagedVehicles = $this->paginateCollection($vehicles, $pageSize, $request);
+
         /*
         |----------------------------------------------------------------------
         | CSV export (matches on-screen data)
         |----------------------------------------------------------------------
         */
         if ($request->input('export') === 'csv') {
-            return $this->streamCsv($vehicles, $startDate, $endDate);
+            $exportScope = (string) $request->input('export_scope', 'all');
+            $exportVehicles = $exportScope === 'page'
+                ? collect($pagedVehicles->items())
+                : $vehicles;
+            return $this->streamCsv($exportVehicles, $startDate, $endDate);
         }
 
         /*
@@ -232,7 +240,8 @@ class VehicleUsageReportController extends Controller
         |----------------------------------------------------------------------
         */
         return view('sharpfleet.admin.reports.vehicle-usage', [
-            'vehicles'        => $vehicles,
+            'vehicles'        => $pagedVehicles,
+            'totalVehicles'   => $vehicles->count(),
             'summary'         => $summary,
             'branches'        => $branches,
             'companyTimezone' => $companyTimezone,
@@ -241,6 +250,7 @@ class VehicleUsageReportController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'forceBranchScope' => $branchScopeEnabled,
+            'pageSize' => $pageSize,
         ]);
     }
 
@@ -285,5 +295,29 @@ class VehicleUsageReportController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    private function resolvePageSize(Request $request): int
+    {
+        $size = (int) $request->input('page_size', 25);
+        return in_array($size, [25, 50, 100], true) ? $size : 25;
+    }
+
+    private function paginateCollection($items, int $pageSize, Request $request): LengthAwarePaginator
+    {
+        $page = max(1, (int) $request->input('page', 1));
+        $total = $items->count();
+        $sliced = $items->forPage($page, $pageSize)->values();
+
+        return new LengthAwarePaginator(
+            $sliced,
+            $total,
+            $pageSize,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
     }
 }
