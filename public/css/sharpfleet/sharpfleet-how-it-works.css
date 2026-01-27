@@ -1,0 +1,99 @@
+/* =========================================================
+   SharpFleet – How It Works
+   Scoped page styles only
+========================================================= */
+
+.sf-how-it-works {
+    padding-bottom: 4rem;
+}
+
+/* -----------------------------------------
+   Anchor links
+----------------------------------------- */
+.sf-anchor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.sf-anchor-list a {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2CBFAE;
+    text-decoration: none;
+}
+
+.sf-anchor-list a:hover {
+    text-decoration: underline;
+}
+
+/* -----------------------------------------
+   Feature rows
+----------------------------------------- */
+.sf-feature-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    margin: 4rem 0;
+}
+
+.sf-feature-row.reverse {
+    direction: rtl;
+}
+
+.sf-feature-row.reverse > * {
+    direction: ltr;
+}
+
+/* -----------------------------------------
+   Images
+----------------------------------------- */
+.sf-feature-image img {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 14px;
+    background: #f4f6f8;
+    padding: 1rem;
+}
+
+/* -----------------------------------------
+   Text
+----------------------------------------- */
+.sf-feature-text h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+    color: #0A2A4D;
+}
+
+.sf-feature-text p {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #444;
+}
+
+/* -----------------------------------------
+   CTA
+----------------------------------------- */
+.sf-how-cta {
+    margin-top: 5rem;
+    text-align: center;
+}
+
+/* -----------------------------------------
+   Mobile
+----------------------------------------- */
+@media (max-width: 900px) {
+    .sf-feature-row {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+        text-align: center;
+    }
+
+    .sf-feature-image img {
+        margin: 0 auto;
+    }
+}
