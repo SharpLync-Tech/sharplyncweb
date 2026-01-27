@@ -289,6 +289,24 @@
             searchResults.style.display = 'none';
         }
 
+        function positionSearchResults() {
+            if (!searchResults || !searchInput) return;
+            const rect = searchInput.getBoundingClientRect();
+            searchResults.style.position = 'absolute';
+            searchResults.style.top = `${rect.bottom + window.scrollY}px`;
+            searchResults.style.left = `${rect.left + window.scrollX}px`;
+            searchResults.style.width = `${rect.width}px`;
+            searchResults.style.zIndex = '2000';
+        }
+
+        function ensureSearchPortal() {
+            if (!searchResults || !document.body) return;
+            if (searchResults.parentElement !== document.body) {
+                document.body.appendChild(searchResults);
+            }
+            positionSearchResults();
+        }
+
         function setDebug(message) {
             if (!searchDebug) return;
             if (!message) {
@@ -302,6 +320,7 @@
 
         function showSearchStatus(message) {
             if (!searchResults) return;
+            ensureSearchPortal();
             searchResults.innerHTML = '';
             const item = document.createElement('div');
             item.className = 'list-group-item text-muted';
@@ -315,6 +334,7 @@
 
         function renderSearchResults(items, query) {
             if (!searchResults) return;
+            ensureSearchPortal();
 
             const frag = document.createDocumentFragment();
             if (!items || items.length === 0) {
@@ -429,6 +449,18 @@
                 }
             });
         }
+
+        window.addEventListener('resize', function () {
+            if (searchResults && searchResults.style.display === 'block') {
+                positionSearchResults();
+            }
+        });
+
+        window.addEventListener('scroll', function () {
+            if (searchResults && searchResults.style.display === 'block') {
+                positionSearchResults();
+            }
+        }, true);
 
         if (searchClear && searchInput) {
             searchClear.addEventListener('click', function () {
