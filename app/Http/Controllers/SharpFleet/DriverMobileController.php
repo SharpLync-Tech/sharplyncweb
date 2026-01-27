@@ -198,7 +198,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -209,7 +209,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -345,7 +345,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -356,7 +356,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -375,7 +375,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -501,7 +501,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -626,7 +626,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
@@ -637,7 +637,7 @@ class DriverMobileController extends Controller
     {
         $user = $request->session()->get('sharpfleet.user');
 
-        if (!$user || Roles::normalize((string) $user['role']) !== Roles::DRIVER) {
+        if (!$user || !Roles::isDriver($user)) {
             abort(403);
         }
 
