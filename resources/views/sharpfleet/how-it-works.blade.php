@@ -14,7 +14,7 @@
     {{-- ===============================
          Page Intro
     ================================ --}}
-    <div class="sf-hero">
+    <div class="sf-hero" id="top">
         <h1>How <span class="highlight">SharpFleet</span> Works</h1>
 
         <p class="sf-hero-intro">
@@ -27,12 +27,13 @@
         <ul class="sf-anchor-list">
             <li><a href="#trips">Start &amp; End Trips</a></li>
             <li><a href="#receipts">Receipt Capture</a></li>
-            <li><a href="#no-gps">No GPS, No Hardware</a></li>
             <li><a href="#offline">Works Offline</a></li>
             <li><a href="#reports">Reporting &amp; Compliance</a></li>
             <li><a href="#bookings">Bookings Overview</a></li>
         </ul>
     </nav>
+
+    <a href="#top" class="sf-back-to-top" aria-label="Back to top">↑</a>
 
     {{-- ===============================
          Section: Start & End Trips
@@ -193,6 +194,39 @@
         background: rgba(44, 191, 174, 0.22);
     }
 
+    .sf-back-to-top {
+        position: fixed;
+        right: 18px;
+        bottom: 22px;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: rgba(10, 42, 77, 0.9);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 20px;
+        box-shadow: 0 10px 20px rgba(10, 42, 77, 0.2);
+        z-index: 10;
+        transition: transform 0.15s ease, background 0.15s ease;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(6px);
+    }
+
+    .sf-back-to-top:hover {
+        background: rgba(10, 42, 77, 1);
+        transform: translateY(-2px);
+    }
+
+    .sf-back-to-top.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
     .sf-feature-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
@@ -231,7 +265,7 @@
         max-width: 360px;
         height: auto;
         border-radius: 12px;
-        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.08);
+        box-shadow: 0 8px 18px rgba(44, 191, 174, 0.18);
     }
 
     .sf-feature-image--phone img {
@@ -275,3 +309,19 @@
 </style>
 @endpush
 
+@push('scripts')
+<script>
+    (() => {
+        const btn = document.querySelector('.sf-back-to-top');
+        if (!btn) return;
+
+        const toggle = () => {
+            const show = window.scrollY > 240;
+            btn.classList.toggle('is-visible', show);
+        };
+
+        toggle();
+        window.addEventListener('scroll', toggle, { passive: true });
+    })();
+</script>
+@endpush
