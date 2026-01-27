@@ -38,7 +38,7 @@
          Section: Start & End Trips
     ================================ --}}
     <section id="trips" class="sf-feature-row">
-        <div class="sf-feature-image">
+        <div class="sf-feature-image sf-feature-image--phone">
             <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="Start and end trips">
         </div>
         <div class="sf-feature-text">
@@ -248,6 +248,13 @@
         height: auto;
         border-radius: 12px;
         box-shadow: 0 8px 18px rgba(10, 42, 77, 0.08);
+    }
+
+    .sf-feature-image--phone img {
+        max-width: 300px;
+        aspect-ratio: 9 / 16;
+        height: auto;
+        object-fit: cover;
     }
 
     .sf-feature-text h2 {
