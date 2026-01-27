@@ -352,11 +352,13 @@
                         @endif
                     @endforeach
                     <label class="text-muted small">Rows per page</label>
-                    <select name="page_size" class="form-select" style="width:120px;" onchange="this.form.submit()">
-                        @foreach([25, 50, 100] as $size)
-                            <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
-                        @endforeach
-                    </select>
+                    <div class="sf-report-select" style="width:140px;">
+                        <select name="page_size" class="form-select" onchange="this.form.submit()">
+                            @foreach([25, 50, 100] as $size)
+                                <option value="{{ $size }}" {{ (int) $pageSize === $size ? 'selected' : '' }}>{{ $size }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </form>
                 <div>
                     {{ $trips->links() }}
