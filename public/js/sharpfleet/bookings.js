@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearCalendar();
         if (!els.cal) return;
         // Locked grid: hour-based columns, teal hour dividers and thicker teal day separators.
-        const pxPerHour = (state.view === 'day') ? 92 : 72;
+        const pxPerHour = (state.view === 'day') ? 110 : 72;
         const pxPerMin = pxPerHour / 60;
         const minutes = Math.round((state.rangeEndMs - state.rangeStartMs) / 60000);
         const timelineWidth = Math.max(720, Math.round(minutes * pxPerMin));
