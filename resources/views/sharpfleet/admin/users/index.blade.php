@@ -63,16 +63,25 @@
                             <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
                             <option value="all" {{ (($status ?? 'active') === 'all') ? 'selected' : '' }}>All users</option>
                         </select>
-                        <div class="d-flex align-items-center gap-1">
+                        <div class="d-flex align-items-center gap-2">
                             <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
                             <div class="position-relative" style="max-width: 220px;">
                                 <input
-                                    type="search"
+                                    type="text"
                                     class="form-control"
                                     id="sf-user-search"
                                     name="search"
                                     value="{{ $search ?? '' }}"
-                                    placeholder="Name or email">
+                                    placeholder="Name or email"
+                                    autocomplete="off">
+                                <button type="button"
+                                        id="sf-user-search-clear"
+                                        class="btn btn-sm btn-secondary"
+                                        aria-label="Clear search"
+                                        title="Clear"
+                                        style="position:absolute; right:6px; top:50%; transform:translateY(-50%); padding:2px 6px; line-height:1; display:none;">
+                                    &times;
+                                </button>
                                 <div id="sf-user-search-results"
                                      class="list-group"
                                      style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
@@ -265,6 +274,7 @@
 
         const searchInput = document.getElementById('sf-user-search');
         const searchResults = document.getElementById('sf-user-search-results');
+        const searchClear = document.getElementById('sf-user-search-clear');
         let searchTimer = null;
         let searchAbort = null;
 
@@ -323,8 +333,15 @@
         }
 
         if (searchInput) {
+            if (searchClear) {
+                searchClear.style.display = searchInput.value.trim() ? 'block' : 'none';
+            }
+
             searchInput.addEventListener('input', function () {
                 const query = searchInput.value.trim();
+                if (searchClear) {
+                    searchClear.style.display = query ? 'block' : 'none';
+                }
                 if (searchTimer) {
                     clearTimeout(searchTimer);
                 }
@@ -339,6 +356,17 @@
                 const query = searchInput.value.trim();
                 if (query.length >= 2) {
                     runSearch(query);
+                }
+            });
+        }
+
+        if (searchClear && searchInput) {
+            searchClear.addEventListener('click', function () {
+                searchInput.value = '';
+                clearSearchResults();
+                searchClear.style.display = 'none';
+                if (filterForm) {
+                    filterForm.submit();
                 }
             });
         }
