@@ -108,6 +108,8 @@ class UserController extends Controller
             $status = 'active';
         }
 
+        $search = trim((string) $request->query('search', ''));
+
         $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
 
         // Qualify columns because branch admins may join user_branch_access, which can introduce ambiguity.
@@ -147,6 +149,15 @@ class UserController extends Controller
                 $q->whereIn('users.branch_id', $actorBranchIds);
             })
 
+            ->when($search !== '', function ($q) use ($search) {
+                $like = '%' . $search . '%';
+                $q->where(function ($q) use ($like) {
+                    $q->where('users.first_name', 'like', $like)
+                        ->orWhere('users.last_name', 'like', $like)
+                        ->orWhere('users.email', 'like', $like);
+                });
+            })
+
             // Archive filter (schema-guarded for backwards compatibility)
             ->when($hasArchivedAt && $status !== 'all', function ($q) use ($status) {
                 if ($status === 'archived') {
@@ -169,7 +180,108 @@ class UserController extends Controller
         return view('sharpfleet.admin.users.index', [
             'users' => $users,
             'status' => $status,
+            'search' => $search,
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || !Roles::canSetUserGroups($fleetUser)) {
+            abort(403);
+        }
+
+        $organisationId = (int) ($fleetUser['organisation_id'] ?? 0);
+        $actorRole = Roles::normalize($fleetUser['role'] ?? null);
+
+        $branchService = new BranchService();
+        $actorBranchIds = $this->resolveActorBranchIds($fleetUser, $organisationId, $branchService);
+        $branchAccessEnabled = $branchService->branchesEnabled() && $branchService->userBranchAccessEnabled();
+        $hasUserBranchId = Schema::connection('sharpfleet')->hasColumn('users', 'branch_id');
+
+        $status = strtolower(trim((string) $request->query('status', 'active')));
+        if (!in_array($status, ['active', 'archived', 'all'], true)) {
+            $status = 'active';
+        }
+
+        $search = trim((string) $request->query('query', ''));
+        if ($search === '') {
+            return response()->json([]);
+        }
+
+        $hasArchivedAt = Schema::connection('sharpfleet')->hasColumn('users', 'archived_at');
+
+        $select = ['users.id as id', 'users.first_name', 'users.last_name', 'users.email', 'users.role'];
+        if ($hasArchivedAt) {
+            $select[] = 'users.archived_at';
+        }
+
+        $query = DB::connection('sharpfleet')
+            ->table('users')
+            ->select($select)
+            ->where('users.organisation_id', $organisationId)
+            ->where('users.email', 'not like', 'deleted+%@example.invalid')
+            ->when($actorRole !== Roles::COMPANY_ADMIN, function ($q) {
+                $q->whereNotIn('users.role', [Roles::COMPANY_ADMIN, 'admin']);
+            })
+            ->where(function ($q) {
+                $q->whereNull('users.account_status')
+                    ->orWhere('users.account_status', '!=', 'deleted');
+            })
+            ->when(count($actorBranchIds) > 0 && $branchAccessEnabled, function ($q) use ($organisationId, $actorBranchIds) {
+                $q->join('user_branch_access as uba', function ($join) use ($organisationId) {
+                    $join->on('users.id', '=', 'uba.user_id')
+                        ->where('uba.organisation_id', '=', $organisationId);
+                });
+
+                if (Schema::connection('sharpfleet')->hasColumn('user_branch_access', 'is_active')) {
+                    $q->where('uba.is_active', 1);
+                }
+
+                $q->whereIn('uba.branch_id', $actorBranchIds);
+                $q->distinct();
+            })
+            ->when(!$branchAccessEnabled && $hasUserBranchId && count($actorBranchIds) > 0, function ($q) use ($actorBranchIds) {
+                $q->whereIn('users.branch_id', $actorBranchIds);
+            })
+            ->when($search !== '', function ($q) use ($search) {
+                $like = '%' . $search . '%';
+                $q->where(function ($q) use ($like) {
+                    $q->where('users.first_name', 'like', $like)
+                        ->orWhere('users.last_name', 'like', $like)
+                        ->orWhere('users.email', 'like', $like);
+                });
+            })
+            ->when($hasArchivedAt && $status !== 'all', function ($q) use ($status) {
+                if ($status === 'archived') {
+                    return $q->whereNotNull('users.archived_at');
+                }
+
+                return $q->whereNull('users.archived_at');
+            });
+
+        $users = $query
+            ->orderByRaw("CASE WHEN users.role IN ('company_admin','admin') THEN 0 ELSE 1 END")
+            ->orderBy('users.first_name')
+            ->orderBy('users.last_name')
+            ->limit(8)
+            ->get()
+            ->map(function ($user) {
+                $first = trim((string) ($user->first_name ?? ''));
+                $last = trim((string) ($user->last_name ?? ''));
+                $name = trim($first . ' ' . $last);
+
+                return [
+                    'id' => $user->id,
+                    'name' => $name !== '' ? $name : ($user->email ?? ''),
+                    'email' => $user->email ?? '',
+                    'role' => $user->role ?? '',
+                ];
+            })
+            ->values();
+
+        return response()->json($users);
     }
 
     public function edit(Request $request, int $userId)

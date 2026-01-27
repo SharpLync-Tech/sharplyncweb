@@ -63,6 +63,38 @@
                             <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
                             <option value="all" {{ (($status ?? 'active') === 'all') ? 'selected' : '' }}>All users</option>
                         </select>
+                        <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
+                        <div class="position-relative" style="max-width: 220px;">
+                            <input
+                                type="search"
+                                class="form-control"
+                                id="sf-user-search"
+                                name="search"
+                                value="{{ $search ?? '' }}"
+                                placeholder="Name or email">
+                            <div id="sf-user-search-results"
+                                 class="list-group"
+                                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
+                        </div>
+                        <label class="text-muted small" style="margin-bottom:0;">Roles</label>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                                <input type="checkbox" class="sf-role-filter" value="company_admin">
+                                Company admin
+                            </label>
+                            <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                                <input type="checkbox" class="sf-role-filter" value="branch_admin">
+                                Branch admin
+                            </label>
+                            <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                                <input type="checkbox" class="sf-role-filter" value="booking_admin">
+                                Booking admin
+                            </label>
+                            <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                                <input type="checkbox" class="sf-role-filter" value="driver">
+                                Driver
+                            </label>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -95,7 +127,7 @@
                                     $isArchived = !empty($user->archived_at);
                                     $showReEnable = (($status ?? 'active') === 'archived') || ((($status ?? 'active') === 'all') && $isArchived);
                                 @endphp
-                                <tr class="{{ $isArchived ? 'text-muted' : '' }}">
+                                <tr class="{{ $isArchived ? 'text-muted' : '' }}" data-role="{{ $user->role ?? '' }}">
                                     <td>
                                         @if($sfCanManageUsers && $isPendingDriver && !$isArchived)
                                             <input
@@ -160,7 +192,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr id="sf-users-empty-row">
                                     <td colspan="7" class="text-muted">No users found.</td>
                                 </tr>
                             @endforelse
@@ -228,6 +260,122 @@
                 filterForm.submit();
             });
         }
+
+        const searchInput = document.getElementById('sf-user-search');
+        const searchResults = document.getElementById('sf-user-search-results');
+        let searchTimer = null;
+        let searchAbort = null;
+
+        function clearSearchResults() {
+            if (!searchResults) return;
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+        }
+
+        function renderSearchResults(items) {
+            if (!searchResults) return;
+            if (!items || items.length === 0) {
+                clearSearchResults();
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+            items.forEach(item => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'list-group-item list-group-item-action';
+                button.textContent = item.email ? `${item.name} • ${item.email}` : item.name;
+                button.addEventListener('click', function () {
+                    window.location.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
+                });
+                frag.appendChild(button);
+            });
+
+            searchResults.innerHTML = '';
+            searchResults.appendChild(frag);
+            searchResults.style.display = 'block';
+        }
+
+        function runSearch(query) {
+            if (!searchInput || !searchResults) return;
+            if (searchAbort) {
+                searchAbort.abort();
+            }
+
+            const controller = new AbortController();
+            searchAbort = controller;
+
+            const status = statusSelect ? statusSelect.value : 'active';
+            const url = `/app/sharpfleet/admin/users/search?query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}`;
+
+            fetch(url, { signal: controller.signal })
+                .then(res => (res.ok ? res.json() : []))
+                .then(items => renderSearchResults(items))
+                .catch(err => {
+                    if (err && err.name === 'AbortError') return;
+                    clearSearchResults();
+                });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.trim();
+                if (searchTimer) {
+                    clearTimeout(searchTimer);
+                }
+                if (query.length < 2) {
+                    clearSearchResults();
+                    return;
+                }
+                searchTimer = setTimeout(() => runSearch(query), 200);
+            });
+
+            searchInput.addEventListener('focus', function () {
+                const query = searchInput.value.trim();
+                if (query.length >= 2) {
+                    runSearch(query);
+                }
+            });
+        }
+
+        document.addEventListener('click', function (event) {
+            if (!searchResults || !searchInput) return;
+            if (searchResults.contains(event.target) || searchInput.contains(event.target)) return;
+            clearSearchResults();
+        });
+
+        const roleFilters = Array.from(document.querySelectorAll('.sf-role-filter'));
+        const userRows = Array.from(document.querySelectorAll('tbody tr[data-role]'));
+        const emptyRow = document.getElementById('sf-users-empty-row');
+
+        function applyRoleFilters() {
+            if (roleFilters.length === 0) return;
+            const activeRoles = roleFilters
+                .filter(cb => cb.checked)
+                .map(cb => (cb.value || '').toLowerCase());
+
+            let visibleCount = 0;
+            userRows.forEach(row => {
+                const role = (row.getAttribute('data-role') || '').toLowerCase();
+                const show = activeRoles.length === 0 || activeRoles.includes(role);
+                row.style.display = show ? '' : 'none';
+                if (show) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (emptyRow) {
+                if (userRows.length === 0) {
+                    emptyRow.style.display = '';
+                } else {
+                    emptyRow.style.display = visibleCount === 0 ? '' : 'none';
+                }
+            }
+        }
+
+        roleFilters.forEach(cb => {
+            cb.addEventListener('change', applyRoleFilters);
+        });
 
         const modal = document.getElementById('sfUnarchiveModal');
         const closeBtn = document.getElementById('sfUnarchiveClose');
