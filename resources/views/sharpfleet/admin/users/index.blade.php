@@ -56,7 +56,7 @@
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-3">
                 <div>
-                    <form method="GET" action="/app/sharpfleet/admin/users" id="sf-users-filter" class="d-flex flex-wrap gap-2 align-items-center">
+                    <form method="GET" action="/app/sharpfleet/admin/users" id="sf-users-filter" class="d-flex flex-nowrap gap-2 align-items-center">
                         <label class="text-muted small" for="status" style="margin-bottom:0;">Show</label>
                         <select class="form-control" id="status" name="status" style="max-width: 220px;">
                             <option value="active" {{ (($status ?? 'active') === 'active') ? 'selected' : '' }}>Active users</option>
