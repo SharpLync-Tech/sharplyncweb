@@ -62,7 +62,7 @@ class SecurityHeaders
                     . "https://www.googleadservices.com; " .
 
                 // Frames
-                "frame-src 'self' https://www.googletagmanager.com;"
+                "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://www.youtube-nocookie.com;"
 
         );
 
