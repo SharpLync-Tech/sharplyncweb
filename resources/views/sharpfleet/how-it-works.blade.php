@@ -123,7 +123,7 @@
             SharpFleet helps businesses stay organised without GPS tracking,
             hardware installs, or complicated workflows.
         </p>
-        <a href="/app/sharpfleet/admin/register" class="btn btn-primary">
+        <a href="/app/sharpfleet/admin/register" class="sf-cta">
             Get Started
         </a>
     </div>
