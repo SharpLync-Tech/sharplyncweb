@@ -36,18 +36,38 @@ document.addEventListener('DOMContentLoaded', function() {
         tooltip.style.display = 'none';
     }
 
-    document.querySelectorAll('.sf-bk-block[data-tooltip]').forEach(function(block) {
-        block.addEventListener('mouseenter', function(e) {
-            showTooltip(e, block.getAttribute('data-tooltip'));
-        });
-        block.addEventListener('mousemove', function(e) {
-            showTooltip(e, block.getAttribute('data-tooltip'));
-        });
-        block.addEventListener('mouseleave', hideTooltip);
-        block.addEventListener('touchstart', function(e) {
-            showTooltip(e.touches[0], block.getAttribute('data-tooltip'));
-        });
-        block.addEventListener('touchend', hideTooltip);
+    let activeBlock = null;
+
+    document.addEventListener('mouseover', function (e) {
+        const block = e.target && e.target.closest ? e.target.closest('.sf-bk-block[data-tooltip]') : null;
+        if (!block) return;
+        activeBlock = block;
+        showTooltip(e, block.getAttribute('data-tooltip'));
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (!activeBlock) return;
+        showTooltip(e, activeBlock.getAttribute('data-tooltip'));
+    });
+
+    document.addEventListener('mouseout', function (e) {
+        if (!activeBlock) return;
+        const toEl = e.relatedTarget;
+        if (toEl && toEl.closest && toEl.closest('.sf-bk-block[data-tooltip]')) return;
+        activeBlock = null;
+        hideTooltip();
+    });
+
+    document.addEventListener('touchstart', function (e) {
+        const block = e.target && e.target.closest ? e.target.closest('.sf-bk-block[data-tooltip]') : null;
+        if (!block) return;
+        activeBlock = block;
+        showTooltip(e.touches[0], block.getAttribute('data-tooltip'));
+    }, { passive: true });
+
+    document.addEventListener('touchend', function () {
+        activeBlock = null;
+        hideTooltip();
     });
 });
 (function () {
