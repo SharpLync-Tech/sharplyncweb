@@ -197,6 +197,54 @@
                 body: formData,
             });
 
+            if (res.status === 422) {
+                let errors = [];
+                try {
+                    const data = await res.json();
+                    if (data && data.errors) {
+                        Object.values(data.errors).forEach(list => {
+                            if (Array.isArray(list)) {
+                                list.forEach(msg => errors.push(String(msg)));
+                            }
+                        });
+                    }
+                    if (errors.length === 0 && data && data.message) {
+                        errors.push(String(data.message));
+                    }
+                } catch (e) {
+                    errors = [];
+                }
+                if (errors.length === 0) {
+                    errors = ['Please complete the required fields.'];
+                }
+
+                if (form.id === 'startTripForm') {
+                    const sheet = document.getElementById('sf-sheet-start-trip');
+                    const backdrop = document.getElementById('sf-sheet-backdrop');
+                    if (sheet) {
+                        sheet.classList.add('is-open');
+                        sheet.setAttribute('aria-hidden', 'false');
+                    }
+                    if (backdrop) backdrop.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+
+                    const modal = document.getElementById('sf-mobile-validation-modal');
+                    const list = document.getElementById('sf-mobile-validation-list');
+                    if (modal && list) {
+                        list.innerHTML = '';
+                        errors.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            list.appendChild(li);
+                        });
+                        modal.classList.add('is-open');
+                        modal.setAttribute('aria-hidden', 'false');
+                        modal.hidden = false;
+                    }
+                    return;
+                }
+            }
+
             if (res.status === 202) {
                 const alert = document.getElementById('offlineTripAlert');
                 if (alert) {
