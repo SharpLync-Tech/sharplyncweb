@@ -14,23 +14,25 @@
     {{-- ===============================
          Page Intro
     ================================ --}}
-    <div class="hero">
+    <div class="sf-hero">
         <h1>How <span class="highlight">SharpFleet</span> Works</h1>
 
-        <p class="hero-intro">
+        <p class="sf-hero-intro">
             A quick look at how SharpFleet is used day to day --
             from drivers starting trips to clear, audit-ready reports.
         </p>
+    </div>
 
+    <nav class="sf-anchor-nav" aria-label="How it works sections">
         <ul class="sf-anchor-list">
-            <li><a href="#trips">Start & End Trips</a></li>
+            <li><a href="#trips">Start &amp; End Trips</a></li>
             <li><a href="#receipts">Receipt Capture</a></li>
             <li><a href="#no-gps">No GPS, No Hardware</a></li>
             <li><a href="#offline">Works Offline</a></li>
-            <li><a href="#reports">Reporting & Compliance</a></li>
+            <li><a href="#reports">Reporting &amp; Compliance</a></li>
             <li><a href="#bookings">Bookings Overview</a></li>
         </ul>
-    </div>
+    </nav>
 
     {{-- ===============================
          Section: Start & End Trips
@@ -131,7 +133,7 @@
     {{-- ===============================
          CTA
     ================================ --}}
-    <div class="hero">
+    <div class="sf-hero sf-hero-cta">
         <h2>Simple. Practical. Built for real businesses.</h2>
         <p>
             SharpFleet helps businesses stay organised without GPS tracking,
@@ -145,4 +147,135 @@
 </div>
 
 @endsection
+
+@push('styles')
+<style>
+    .sf-page {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        padding: 16px 0 32px;
+    }
+
+    .sf-hero {
+        background: linear-gradient(135deg, rgba(10, 42, 77, 0.08), rgba(44, 191, 174, 0.08));
+        border-radius: 18px;
+        padding: 28px 32px;
+    }
+
+    .sf-hero h1,
+    .sf-hero h2 {
+        margin-bottom: 10px;
+    }
+
+    .sf-hero-intro {
+        max-width: 720px;
+        margin: 0;
+    }
+
+    .sf-anchor-nav {
+        position: sticky;
+        top: 86px;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(10, 42, 77, 0.08);
+        border-radius: 14px;
+        padding: 12px 16px;
+        backdrop-filter: blur(6px);
+    }
+
+    .sf-anchor-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .sf-anchor-list a {
+        color: #0A2A4D;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(44, 191, 174, 0.12);
+    }
+
+    .sf-anchor-list a:hover {
+        background: rgba(44, 191, 174, 0.22);
+    }
+
+    .sf-feature-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        gap: 24px;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 24px;
+        border: 1px solid rgba(10, 42, 77, 0.08);
+        box-shadow: 0 12px 24px rgba(10, 42, 77, 0.08);
+        scroll-margin-top: 120px;
+    }
+
+    .sf-feature-row.reverse {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    }
+
+    .sf-feature-row.reverse .sf-feature-image {
+        order: 2;
+    }
+
+    .sf-feature-row.reverse .sf-feature-text {
+        order: 1;
+    }
+
+    .sf-feature-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sf-feature-image img {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+        border-radius: 16px;
+        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.12);
+    }
+
+    .sf-feature-text h2 {
+        margin-bottom: 10px;
+    }
+
+    .sf-feature-text p {
+        margin: 0;
+    }
+
+    .sf-hero-cta {
+        text-align: center;
+    }
+
+    @media (max-width: 900px) {
+        .sf-anchor-nav {
+            top: 72px;
+        }
+
+        .sf-feature-row,
+        .sf-feature-row.reverse {
+            grid-template-columns: 1fr;
+        }
+
+        .sf-feature-row.reverse .sf-feature-image,
+        .sf-feature-row.reverse .sf-feature-text {
+            order: initial;
+        }
+
+        .sf-feature-image img {
+            max-width: 100%;
+        }
+    }
+</style>
+@endpush
 
