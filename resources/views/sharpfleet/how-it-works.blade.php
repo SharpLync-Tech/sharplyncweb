@@ -218,6 +218,12 @@
         scroll-margin-top: 120px;
     }
 
+    .sf-feature-row + .sf-feature-row {
+        border-top: 1px solid rgba(10, 42, 77, 0.08);
+        padding-top: 28px;
+        margin-top: 8px;
+    }
+
     .sf-feature-row.reverse {
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     }
