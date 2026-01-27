@@ -153,14 +153,12 @@
     .sf-page {
         display: flex;
         flex-direction: column;
-        gap: 28px;
-        padding: 16px 0 32px;
+        gap: 36px;
+        padding: 8px 0 32px;
     }
 
     .sf-hero {
-        background: linear-gradient(135deg, rgba(10, 42, 77, 0.08), rgba(44, 191, 174, 0.08));
-        border-radius: 18px;
-        padding: 28px 32px;
+        padding: 8px 0;
     }
 
     .sf-hero h1,
@@ -177,10 +175,9 @@
         position: sticky;
         top: 86px;
         z-index: 2;
-        background: rgba(255, 255, 255, 0.92);
-        border: 1px solid rgba(10, 42, 77, 0.08);
-        border-radius: 14px;
-        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(10, 42, 77, 0.1);
+        padding: 10px 0 14px;
         backdrop-filter: blur(6px);
     }
 
@@ -211,11 +208,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
         gap: 24px;
         align-items: center;
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 24px;
-        border: 1px solid rgba(10, 42, 77, 0.08);
-        box-shadow: 0 12px 24px rgba(10, 42, 77, 0.08);
+        padding: 8px 0;
         scroll-margin-top: 120px;
     }
 
@@ -241,8 +234,8 @@
         width: 100%;
         max-width: 360px;
         height: auto;
-        border-radius: 16px;
-        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.12);
+        border-radius: 12px;
+        box-shadow: 0 8px 18px rgba(10, 42, 77, 0.08);
     }
 
     .sf-feature-text h2 {
