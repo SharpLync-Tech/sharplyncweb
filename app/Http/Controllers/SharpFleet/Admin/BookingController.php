@@ -399,8 +399,9 @@ class BookingController extends Controller
         ]);
         if ($isDriver) {
             $validated['user_id'] = (int) ($user['id'] ?? 0);
-        } elseif (!isset($validated['user_id']) || $validated['user_id'] === null || $validated['user_id'] === '') {
-            $validated['user_id'] = null;
+        } else {
+            $userId = isset($validated['user_id']) ? (int) $validated['user_id'] : 0;
+            $validated['user_id'] = $userId > 0 ? $userId : null;
         }
 
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
@@ -419,7 +420,7 @@ class BookingController extends Controller
         $this->assertVehicleAccessible($organisationId, (int) $validated['vehicle_id'], $ctx);
 
         $this->bookingService->createBooking($organisationId, [
-            'user_id' => (int) $validated['user_id'],
+            'user_id' => $validated['user_id'] ?? null,
             'vehicle_id' => (int) $validated['vehicle_id'],
             'branch_id' => $branchId,
             'planned_start' => $plannedStart,
@@ -462,9 +463,8 @@ class BookingController extends Controller
             'notes' => ['nullable', 'string'],
             'remind_me' => ['nullable'],
         ]);
-        if (!isset($validated['user_id']) || $validated['user_id'] === null || $validated['user_id'] === '') {
-            $validated['user_id'] = null;
-        }
+        $userId = isset($validated['user_id']) ? (int) $validated['user_id'] : 0;
+        $validated['user_id'] = $userId > 0 ? $userId : null;
 
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
         $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);
@@ -479,7 +479,7 @@ class BookingController extends Controller
         $this->assertVehicleAccessible($organisationId, (int) $validated['vehicle_id'], $ctx);
 
         $this->bookingService->updateBooking($organisationId, (int) $booking, [
-            'user_id' => (int) $validated['user_id'],
+            'user_id' => $validated['user_id'] ?? null,
             'vehicle_id' => (int) $validated['vehicle_id'],
             'branch_id' => $branchId,
             'planned_start' => $plannedStart,

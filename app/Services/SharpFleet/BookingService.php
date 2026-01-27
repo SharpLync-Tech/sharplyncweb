@@ -316,6 +316,9 @@ class BookingService
         $userId = isset($data['user_id']) && $data['user_id'] !== null && $data['user_id'] !== ''
             ? (int) $data['user_id']
             : null;
+        if ($userId !== null && $userId <= 0) {
+            $userId = null;
+        }
         $vehicleId = (int) ($data['vehicle_id'] ?? 0);
 
         $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
@@ -638,6 +641,9 @@ class BookingService
         $newUserId = isset($data['user_id']) && $data['user_id'] !== null && $data['user_id'] !== ''
             ? (int) $data['user_id']
             : null;
+        if ($newUserId !== null && $newUserId <= 0) {
+            $newUserId = null;
+        }
         $newVehicleId = (int) ($data['vehicle_id'] ?? 0);
         $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
             ? (int) $data['branch_id']
