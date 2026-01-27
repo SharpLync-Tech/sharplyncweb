@@ -56,42 +56,44 @@
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-3">
                 <div>
-                    <form method="GET" action="/app/sharpfleet/admin/users" id="sf-users-filter" class="d-flex gap-2 align-items-center">
-                        <label class="text-muted small" for="status" style="margin-bottom:0;">Show</label>
-                        <select class="form-control" id="status" name="status" style="max-width: 220px;">
-                            <option value="active" {{ (($status ?? 'active') === 'active') ? 'selected' : '' }}>Active users</option>
-                            <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
-                            <option value="all" {{ (($status ?? 'active') === 'all') ? 'selected' : '' }}>All users</option>
-                        </select>
-                        <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
-                        <div class="position-relative" style="max-width: 220px;">
-                            <input
-                                type="search"
-                                class="form-control"
-                                id="sf-user-search"
-                                name="search"
-                                value="{{ $search ?? '' }}"
-                                placeholder="Name or email">
-                            <div id="sf-user-search-results"
-                                 class="list-group"
-                                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
-                        </div>
-                        <label class="text-muted small" style="margin-bottom:0;">Roles</label>
+                    <form method="GET" action="/app/sharpfleet/admin/users" id="sf-users-filter" class="d-flex flex-column gap-2">
                         <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <label class="text-muted small" for="status" style="margin-bottom:0;">Show</label>
+                            <select class="form-control" id="status" name="status" style="max-width: 220px;">
+                                <option value="active" {{ (($status ?? 'active') === 'active') ? 'selected' : '' }}>Active users</option>
+                                <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
+                                <option value="all" {{ (($status ?? 'active') === 'all') ? 'selected' : '' }}>All users</option>
+                            </select>
+                            <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
+                            <div class="position-relative" style="max-width: 220px;">
+                                <input
+                                    type="search"
+                                    class="form-control"
+                                    id="sf-user-search"
+                                    name="search"
+                                    value="{{ $search ?? '' }}"
+                                    placeholder="Name or email">
+                                <div id="sf-user-search-results"
+                                     class="list-group"
+                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <label class="text-muted small mb-0">Roles</label>
                             <label class="d-flex gap-1 align-items-center text-muted small mb-0">
-                                <input type="checkbox" class="sf-role-filter" value="company_admin">
+                                <input type="checkbox" class="sf-role-filter" value="company_admin" style="accent-color:#1aa3a3;">
                                 Company admin
                             </label>
                             <label class="d-flex gap-1 align-items-center text-muted small mb-0">
-                                <input type="checkbox" class="sf-role-filter" value="branch_admin">
+                                <input type="checkbox" class="sf-role-filter" value="branch_admin" style="accent-color:#1aa3a3;">
                                 Branch admin
                             </label>
                             <label class="d-flex gap-1 align-items-center text-muted small mb-0">
-                                <input type="checkbox" class="sf-role-filter" value="booking_admin">
+                                <input type="checkbox" class="sf-role-filter" value="booking_admin" style="accent-color:#1aa3a3;">
                                 Booking admin
                             </label>
                             <label class="d-flex gap-1 align-items-center text-muted small mb-0">
-                                <input type="checkbox" class="sf-role-filter" value="driver">
+                                <input type="checkbox" class="sf-role-filter" value="driver" style="accent-color:#1aa3a3;">
                                 Driver
                             </label>
                         </div>
@@ -272,24 +274,27 @@
             searchResults.style.display = 'none';
         }
 
-        function renderSearchResults(items) {
+        function renderSearchResults(items, query) {
             if (!searchResults) return;
-            if (!items || items.length === 0) {
-                clearSearchResults();
-                return;
-            }
 
             const frag = document.createDocumentFragment();
-            items.forEach(item => {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'list-group-item list-group-item-action';
-                button.textContent = item.email ? `${item.name} • ${item.email}` : item.name;
-                button.addEventListener('click', function () {
-                    window.location.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
+            if (!items || items.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'list-group-item text-muted';
+                empty.textContent = query ? `No matches for "${query}"` : 'No matches';
+                frag.appendChild(empty);
+            } else {
+                items.forEach(item => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'list-group-item list-group-item-action';
+                    button.textContent = item.email ? `${item.name} • ${item.email}` : item.name;
+                    button.addEventListener('click', function () {
+                        window.location.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
+                    });
+                    frag.appendChild(button);
                 });
-                frag.appendChild(button);
-            });
+            }
 
             searchResults.innerHTML = '';
             searchResults.appendChild(frag);
@@ -310,7 +315,7 @@
 
             fetch(url, { signal: controller.signal })
                 .then(res => (res.ok ? res.json() : []))
-                .then(items => renderSearchResults(items))
+                .then(items => renderSearchResults(items, query))
                 .catch(err => {
                     if (err && err.name === 'AbortError') return;
                     clearSearchResults();
