@@ -153,6 +153,8 @@ body.sf-bk-fullscreen-open{overflow:hidden;}
 #sfBkCreateModal .sf-time-sep,
 #sfBkEditModal .sf-time-sep{color:var(--sl-navy,#0A2A4D);opacity:.70;}
 #sfBkCreateModal .sf-reminder-inline{font-size:13px;white-space:nowrap;}
+#sfBkCreateModal .sf-reminder-inline.is-disabled,
+#sfBkEditModal .sf-reminder-inline.is-disabled{opacity:.55;cursor:not-allowed;}
 #sfBkCreateModal .sf-bk-notes{font-size:13px;opacity:.90;}
 
 #sfBkCreateModal .sf-date-field,

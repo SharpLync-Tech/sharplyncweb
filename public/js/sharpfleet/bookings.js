@@ -1,4 +1,4 @@
-// Booking block tooltip logic
+﻿// Booking block tooltip logic
 document.addEventListener('DOMContentLoaded', function() {
     const tooltip = document.createElement('div');
     tooltip.style.position = 'fixed';
@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         createEndDate: document.getElementById('sfBkCreateEndDate'),
         createEndHour: document.getElementById('sfBkCreateEndHour'),
         createEndMinute: document.getElementById('sfBkCreateEndMinute'),
+        createRemindMe: document.getElementById('sfBkCreateRemindMe'),
         createCustomer: document.getElementById('sfBkCreateCustomer'),
         createCustomerName: document.getElementById('sfBkCreateCustomerName'),
         createNotes: document.getElementById('sfBkCreateNotes'),
@@ -136,6 +137,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function syncReminderAvailability(driverEl, reminderEl) {
+        if (!reminderEl) return;
+        let hasDriver = true;
+        if (driverEl && driverEl.tagName === 'SELECT') {
+            hasDriver = String(driverEl.value || '').trim() !== '';
+        }
+
+        const label = reminderEl.closest('label');
+        if (!hasDriver) {
+            reminderEl.checked = false;
+            reminderEl.disabled = true;
+            if (label) label.classList.add('is-disabled');
+        } else {
+            reminderEl.disabled = false;
+            if (label) label.classList.remove('is-disabled');
+        }
+    }
 
     function selectedBranchId() {
         if (!els.branch) return null;
@@ -1009,11 +1028,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     continue;
                 }
 
-                // Expanded rows: optional chips (overview) + hour grid + time-positioned blocks.
-                const chips = document.createElement('div');
-                chips.className = 'sf-wk-v1-chips';
-                cell.appendChild(chips);
-
+                // Expanded rows: hour grid + time-positioned blocks.
                 const grid = document.createElement('div');
                 grid.className = 'sf-wk-v1-grid';
                 grid.style.height = timelineHeight + 'px';
@@ -1067,27 +1082,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dayEndMs = dayStartMs + dayMs;
                 if (endMs <= dayStartMs || startMs >= dayEndMs) continue;
 
-                const chipWrap = cell.querySelector('.sf-wk-v1-chips');
                 const grid = cell.querySelector('.sf-wk-v1-grid');
-                if (!chipWrap || !grid) continue;
-
-                // Chip time range clipped to the calendar day (overview only).
-                const chipSegStart = Math.max(startMs, dayStartMs);
-                const chipSegEnd = Math.min(endMs, dayEndMs);
-                const chipStartDt = new Date(chipSegStart);
-                const chipEndDt = new Date(chipSegEnd);
-                const chipTime = pad2(chipStartDt.getUTCHours()) + ':' + pad2(chipStartDt.getUTCMinutes()) + '–' +
-                    pad2(chipEndDt.getUTCHours()) + ':' + pad2(chipEndDt.getUTCMinutes());
-
-                const chip = document.createElement('div');
-                chip.className = 'sf-wk-v1-chip';
-                chip.dataset.bookingId = String(b.id);
-                chip.textContent = (b.driver_name || 'Unassigned') + ' ' + chipTime;
-                chip.addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    openEditModal(b);
-                });
-                chipWrap.appendChild(chip);
+                if (!grid) continue;
 
                 // Time-positioned block clipped to 06:00–18:00 window.
                 const windowStart = dayStartMs + startHour * 3600000;
@@ -1166,6 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (els.createSubmit) {
             els.createSubmit.disabled = true;
         }
+        syncReminderAvailability(els.createDriver, els.createRemindMe);
     }
 
     function createHasValidWindow() {
@@ -1328,6 +1325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        syncReminderAvailability(els.createDriver, els.createRemindMe);
         show(els.createModal);
         updateCreateVehicleSectionVisibility(vehicleId);
     }
@@ -1395,6 +1393,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (els.editRemindMe) {
             els.editRemindMe.checked = Number(b.remind_me || 0) === 1;
         }
+        syncReminderAvailability(els.editDriver, els.editRemindMe);
 
         if (els.editCustomer) {
             els.editCustomer.value = b.customer_id ? String(b.customer_id) : '';
@@ -1501,6 +1500,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (els.createSubmit) els.createSubmit.disabled = !els.createVehicle.value;
         });
     }
+    if (els.createDriver && els.createDriver.tagName === 'SELECT') {
+        els.createDriver.addEventListener('change', () => syncReminderAvailability(els.createDriver, els.createRemindMe));
+    }
     [els.createStartDate, els.createStartHour, els.createStartMinute, els.createEndDate, els.createEndHour, els.createEndMinute, els.createBranch].forEach(el => {
         if (!el) return;
         el.addEventListener('change', () => updateCreateVehicleSectionVisibility());
@@ -1511,6 +1513,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (els.editClose) els.editClose.addEventListener('click', closeEditModal);
     if (els.editCloseBtn) els.editCloseBtn.addEventListener('click', closeEditModal);
     wireCustomerFields(els.editCustomer, els.editCustomerName);
+    if (els.editDriver) {
+        els.editDriver.addEventListener('change', () => syncReminderAvailability(els.editDriver, els.editRemindMe));
+    }
 
     if (els.editCancelBooking) {
         els.editCancelBooking.addEventListener('click', () => {

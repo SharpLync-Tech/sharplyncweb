@@ -429,7 +429,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                    <label class="d-flex align-items-center gap-2 sf-reminder-inline" style="cursor:pointer;">
                         <input id="sfBkEditRemindMe" type="checkbox" name="remind_me" value="1">
                         <span>Reminder (1 hour before start)</span>
                     </label>
