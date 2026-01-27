@@ -63,18 +63,20 @@
                             <option value="archived" {{ (($status ?? 'active') === 'archived') ? 'selected' : '' }}>Archived users</option>
                             <option value="all" {{ (($status ?? 'active') === 'all') ? 'selected' : '' }}>All users</option>
                         </select>
-                        <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
-                        <div class="position-relative" style="max-width: 220px;">
-                            <input
-                                type="search"
-                                class="form-control"
-                                id="sf-user-search"
-                                name="search"
-                                value="{{ $search ?? '' }}"
-                                placeholder="Name or email">
-                            <div id="sf-user-search-results"
-                                 class="list-group"
-                                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
+                        <div class="d-flex align-items-center gap-1">
+                            <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
+                            <div class="position-relative" style="max-width: 220px;">
+                                <input
+                                    type="search"
+                                    class="form-control"
+                                    id="sf-user-search"
+                                    name="search"
+                                    value="{{ $search ?? '' }}"
+                                    placeholder="Name or email">
+                                <div id="sf-user-search-results"
+                                     class="list-group"
+                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto;"></div>
+                            </div>
                         </div>
                     </form>
                     <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
