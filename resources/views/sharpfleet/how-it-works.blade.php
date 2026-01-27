@@ -40,7 +40,7 @@
     <section id="trips" class="sf-feature-row">
         <div class="sf-feature-image sf-feature-image--phone">
             <iframe
-                src="https://www.youtube.com/embed/Z3G2PrJkutM"
+                src="https://www.youtube.com/embed/JuDGt-_txZc"
                 title="SharpFleet mobile start and end trips"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
