@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
             block.style.width = widthPx + 'px';
             block.dataset.bookingId = String(b.id);
 
-            const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
+            const title = (b.driver_name || 'Unassigned') + (b.customer_name ? ' · ' + b.customer_name : '');
             const time = b.planned_start_local.split(' ')[1] + ' → ' + b.planned_end_local.split(' ')[1];
             block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
                 '<div class="sf-bk-block-time">' + time + '</div>';
@@ -888,14 +888,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 block.dataset.bookingId = String(b.id);
                 // Tooltip content: driver, customer, vehicle, time, notes
                 let tooltip = '';
-                tooltip += 'Driver: ' + (b.driver_name || 'Driver') + '\n';
+                tooltip += 'Driver: ' + (b.driver_name || 'Unassigned') + '\n';
                 if (b.customer_name) tooltip += 'Customer: ' + b.customer_name + '\n';
                 if (b.vehicle_name) tooltip += 'Vehicle: ' + b.vehicle_name + '\n';
                 tooltip += 'Time: ' + segTime + '\n';
                 if (b.notes) tooltip += 'Notes: ' + b.notes;
                 block.setAttribute('data-tooltip', tooltip.trim());
 
-                const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
+                const title = (b.driver_name || 'Unassigned') + (b.customer_name ? ' · ' + b.customer_name : '');
                 block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
                     '<div class="sf-bk-block-time">' + segTime + '</div>';
 
@@ -1082,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const chip = document.createElement('div');
                 chip.className = 'sf-wk-v1-chip';
                 chip.dataset.bookingId = String(b.id);
-                chip.textContent = (b.driver_name || 'Driver') + ' ' + chipTime;
+                chip.textContent = (b.driver_name || 'Unassigned') + ' ' + chipTime;
                 chip.addEventListener('click', (ev) => {
                     ev.stopPropagation();
                     openEditModal(b);
@@ -1111,13 +1111,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 block.dataset.bookingId = String(b.id);
                 // Tooltip content: driver, customer, vehicle, time, notes
                 let tooltip = '';
-                tooltip += 'Driver: ' + (b.driver_name || 'Driver') + '\n';
+                tooltip += 'Driver: ' + (b.driver_name || 'Unassigned') + '\n';
                 if (b.customer_name) tooltip += 'Customer: ' + b.customer_name + '\n';
                 if (b.vehicle_name) tooltip += 'Vehicle: ' + b.vehicle_name + '\n';
                 tooltip += 'Time: ' + segTime + '\n';
                 if (b.notes) tooltip += 'Notes: ' + b.notes;
                 block.setAttribute('data-tooltip', tooltip.trim());
-                const title = (b.driver_name || 'Driver') + (b.customer_name ? ' · ' + b.customer_name : '');
+                const title = (b.driver_name || 'Unassigned') + (b.customer_name ? ' · ' + b.customer_name : '');
                 block.innerHTML = '<div class="sf-bk-block-title">' + title + '</div>' +
                     '<div class="sf-bk-block-time">' + segTime + '</div>';
                 block.addEventListener('click', (ev) => {

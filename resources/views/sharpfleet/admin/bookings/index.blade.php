@@ -151,8 +151,8 @@
                         <input type="hidden" id="sfBkCreateDriver" name="user_id" value="{{ $sfUserId }}">
                         <input type="text" class="form-control" value="{{ $sfUserName ?: 'Driver' }}" readonly>
                     @else
-                        <select id="sfBkCreateDriver" name="user_id" class="form-control" required>
-                            <option value="">— Select driver —</option>
+                        <select id="sfBkCreateDriver" name="user_id" class="form-control">
+                            <option value="">— Unassigned (assign later) —</option>
                             @foreach($drivers as $d)
                                 <option value="{{ $d->id }}" {{ (int)$d->id === $sfUserId ? 'selected' : '' }}>
                                     {{ $d->first_name }} {{ $d->last_name }}
@@ -182,7 +182,15 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkCreateStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
+                        <div class="sf-date-field">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input id="sfBkCreateStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -217,7 +225,15 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input id="sfBkCreateEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
+                        <div class="sf-date-field">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input id="sfBkCreateEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -309,8 +325,8 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Driver</label>
-                        <select id="sfBkEditDriver" name="user_id" class="form-control" required>
-                            <option value="">— Select driver —</option>
+                        <select id="sfBkEditDriver" name="user_id" class="form-control">
+                            <option value="">— Unassigned (assign later) —</option>
                             @foreach($drivers as $d)
                                 <option value="{{ $d->id }}">{{ $d->first_name }} {{ $d->last_name }}</option>
                             @endforeach
@@ -345,7 +361,15 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">Start date</label>
-                        <input id="sfBkEditStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
+                        <div class="sf-date-field">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input id="sfBkEditStartDate" type="text" name="planned_start_date" class="form-control sf-date" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Start time</label>
@@ -372,7 +396,15 @@
                 <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label">End date</label>
-                        <input id="sfBkEditEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
+                        <div class="sf-date-field">
+                            <span class="sf-date-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                                    <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M7 3v4M17 3v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <input id="sfBkEditEndDate" type="text" name="planned_end_date" class="form-control sf-date" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">End time</label>

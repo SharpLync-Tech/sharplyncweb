@@ -380,8 +380,10 @@ class BookingController extends Controller
             abort(403);
         }
 
+        $isDriver = $role === Roles::DRIVER;
+
         $validated = $request->validate([
-            'user_id' => ['required', 'integer'],
+            'user_id' => $isDriver ? ['required', 'integer'] : ['nullable', 'integer'],
             'vehicle_id' => ['required', 'integer'],
             'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
@@ -395,6 +397,11 @@ class BookingController extends Controller
             'notes' => ['nullable', 'string'],
             'remind_me' => ['nullable'],
         ]);
+        if ($isDriver) {
+            $validated['user_id'] = (int) ($user['id'] ?? 0);
+        } elseif (!isset($validated['user_id']) || $validated['user_id'] === null || $validated['user_id'] === '') {
+            $validated['user_id'] = null;
+        }
 
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
         $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);
@@ -441,7 +448,7 @@ class BookingController extends Controller
         $this->assertBookingAccessible($organisationId, (int) $booking, $ctx);
 
         $validated = $request->validate([
-            'user_id' => ['required', 'integer'],
+            'user_id' => ['nullable', 'integer'],
             'vehicle_id' => ['required', 'integer'],
             'branch_id' => ['nullable', 'integer'],
             'planned_start_date' => ['required', 'date'],
@@ -455,6 +462,9 @@ class BookingController extends Controller
             'notes' => ['nullable', 'string'],
             'remind_me' => ['nullable'],
         ]);
+        if (!isset($validated['user_id']) || $validated['user_id'] === null || $validated['user_id'] === '') {
+            $validated['user_id'] = null;
+        }
 
         $startTime = sprintf('%02d:%02d', (int) $validated['planned_start_hour'], (int) $validated['planned_start_minute']);
         $endTime = sprintf('%02d:%02d', (int) $validated['planned_end_hour'], (int) $validated['planned_end_minute']);

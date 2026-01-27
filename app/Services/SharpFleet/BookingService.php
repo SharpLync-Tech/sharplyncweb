@@ -313,7 +313,9 @@ class BookingService
             ]);
         }
 
-        $userId = (int) ($data['user_id'] ?? 0);
+        $userId = isset($data['user_id']) && $data['user_id'] !== null && $data['user_id'] !== ''
+            ? (int) $data['user_id']
+            : null;
         $vehicleId = (int) ($data['vehicle_id'] ?? 0);
 
         $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
@@ -332,9 +334,6 @@ class BookingService
             ]);
         }
 
-        if ($userId <= 0) {
-            throw ValidationException::withMessages(['user_id' => 'Driver is required.']);
-        }
         if ($vehicleId <= 0) {
             throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
         }
@@ -352,7 +351,7 @@ class BookingService
 
         // Enforce branch access for the booking owner (server-side).
         // This prevents creating bookings in branches the user can't access.
-        if ($branches->branchesEnabled() && $branches->userBranchAccessEnabled() && $userId > 0) {
+        if ($branches->branchesEnabled() && $branches->userBranchAccessEnabled() && $userId !== null && $userId > 0) {
             $effectiveBranchId = $branchId;
 
             if ($effectiveBranchId === null && $branches->vehiclesHaveBranchSupport()) {
@@ -466,7 +465,7 @@ class BookingService
 
         // Notify the booking driver that a booking was created for them.
         // (Previously we only emailed on update/cancel + reminders, so "booking created" had no email.)
-        if (is_array($actor)) {
+        if (is_array($actor) && $userId !== null && $userId > 0) {
             $stub = (object) [
                 'user_id' => $userId,
                 'vehicle_id' => $vehicleId,
@@ -524,7 +523,7 @@ class BookingService
 
         $query = DB::connection('sharpfleet')
             ->table('bookings')
-            ->join('users', 'bookings.user_id', '=', 'users.id')
+            ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
             ->leftJoin('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id');
 
         if ($hasCustomers) {
@@ -582,7 +581,7 @@ class BookingService
 
             $out[] = [
                 'id' => (int) $b->id,
-                'user_id' => (int) $b->user_id,
+                'user_id' => isset($b->user_id) && $b->user_id !== null ? (int) $b->user_id : null,
                 'driver_name' => (string) ($b->driver_name ?? ''),
                 'vehicle_id' => (int) $b->vehicle_id,
                 'vehicle_name' => (string) ($b->vehicle_name ?? ''),
@@ -636,15 +635,14 @@ class BookingService
             ]);
         }
 
-        $newUserId = (int) ($data['user_id'] ?? 0);
+        $newUserId = isset($data['user_id']) && $data['user_id'] !== null && $data['user_id'] !== ''
+            ? (int) $data['user_id']
+            : null;
         $newVehicleId = (int) ($data['vehicle_id'] ?? 0);
         $branchId = isset($data['branch_id']) && $data['branch_id'] !== null && $data['branch_id'] !== ''
             ? (int) $data['branch_id']
             : null;
 
-        if ($newUserId <= 0) {
-            throw ValidationException::withMessages(['user_id' => 'Driver is required.']);
-        }
         if ($newVehicleId <= 0) {
             throw ValidationException::withMessages(['vehicle_id' => 'Vehicle is required.']);
         }
@@ -885,7 +883,7 @@ class BookingService
 
         $query = DB::connection('sharpfleet')
             ->table('bookings')
-            ->join('users', 'bookings.user_id', '=', 'users.id')
+            ->leftJoin('users', 'bookings.user_id', '=', 'users.id')
             ->leftJoin('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id');
 
         if ($hasCustomers) {
