@@ -308,6 +308,9 @@
             item.textContent = message;
             searchResults.appendChild(item);
             searchResults.style.display = 'block';
+            searchResults.style.visibility = 'visible';
+            searchResults.style.opacity = '1';
+            searchResults.style.pointerEvents = 'auto';
         }
 
         function renderSearchResults(items, query) {
@@ -321,20 +324,20 @@
                 frag.appendChild(empty);
             } else {
                 items.forEach(item => {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'list-group-item list-group-item-action';
-                    button.textContent = item.email ? `${item.name} - ${item.email}` : item.name;
-                    button.addEventListener('click', function () {
-                        window.location.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
-                    });
-                    frag.appendChild(button);
+                    const link = document.createElement('a');
+                    link.className = 'list-group-item list-group-item-action';
+                    link.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
+                    link.textContent = item.email ? `${item.name} - ${item.email}` : item.name;
+                    frag.appendChild(link);
                 });
             }
 
             searchResults.innerHTML = '';
             searchResults.appendChild(frag);
             searchResults.style.display = 'block';
+            searchResults.style.visibility = 'visible';
+            searchResults.style.opacity = '1';
+            searchResults.style.pointerEvents = 'auto';
         }
 
         function runSearch(query) {
