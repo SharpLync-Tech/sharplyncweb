@@ -54,7 +54,7 @@
          Section: Receipt Capture
     ================================ --}}
     <section id="receipts" class="sf-feature-row reverse">
-        <div class="sf-feature-image">
+        <div class="sf-feature-image sf-feature-image--phone">
             <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="Receipt capture">
         </div>
         <div class="sf-feature-text">
@@ -69,24 +69,8 @@
     {{-- ===============================
          Section: No GPS
     ================================ --}}
-    <section id="no-gps" class="sf-feature-row">
-        <div class="sf-feature-image">
-            <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="No GPS tracking">
-        </div>
-        <div class="sf-feature-text">
-            <h2>No GPS tracking. No hardware.</h2>
-            <p>
-                SharpFleet records trips without GPS tracking or vehicle installs,
-                avoiding privacy concerns and unnecessary complexity.
-            </p>
-        </div>
-    </section>
-
-    {{-- ===============================
-         Section: Offline
-    ================================ --}}
-    <section id="offline" class="sf-feature-row reverse">
-        <div class="sf-feature-image">
+    <section id="offline" class="sf-feature-row">
+        <div class="sf-feature-image sf-feature-image--phone">
             <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="Offline mode">
         </div>
         <div class="sf-feature-text">
