@@ -29,12 +29,14 @@
             @if($manualTripTimesRequired)
                 <div class="form-group">
                     <label class="form-label">End time</label>
-                    <input
-                        type="datetime-local"
-                        name="ended_at"
-                        class="form-control sharpfleet-trip-datetime"
-                        required
-                    >
+                    <div class="sf-datetime-wrap">
+                        <input
+                            type="datetime-local"
+                            name="ended_at"
+                            class="form-control sharpfleet-trip-datetime"
+                            required
+                        >
+                    </div>
                     <div class="hint-text">Enter the local time for this trip.</div>
                 </div>
             @endif
