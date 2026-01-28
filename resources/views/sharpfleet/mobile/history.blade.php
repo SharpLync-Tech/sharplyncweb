@@ -297,12 +297,20 @@
 
         if (Array.isArray(completed)) {
             completed.forEach((t, idx) => {
+                const label = t.vehicle_text
+                    ? String(t.vehicle_text)
+                    : (t.private_vehicle ? 'Private vehicle' : `Vehicle ${t.vehicle_id ?? ''}`);
+                const distanceUnit = t.distance_unit ? String(t.distance_unit) : '';
+                const trackingMode = t.tracking_mode ? String(t.tracking_mode) : 'distance';
+                const unitLabel = trackingMode === 'hours' ? 'hours' : (distanceUnit || '');
+
                 entries.push({
-                    title: t.private_vehicle ? 'Private vehicle' : `Vehicle ${t.vehicle_id ?? ''}`,
+                    title: label,
                     started: t.started_at ? formatDate(t.started_at) : '-',
                     ended: t.ended_at ? formatDate(t.ended_at) : '-',
                     start_km: t.start_km ?? null,
                     end_km: t.end_km ?? null,
+                    unit: unitLabel,
                     type: 'Completed offline',
                     key: `completed-${idx}`,
                 });
@@ -339,8 +347,8 @@
                 <div class="hint-text" style="margin-top: 6px;"><strong>Status:</strong> ${entry.type}</div>
                 ${entry.started ? `<div class="hint-text" style="margin-top: 6px;"><strong>Started:</strong> ${entry.started}</div>` : ''}
                 ${entry.ended ? `<div class="hint-text" style="margin-top: 6px;"><strong>Ended:</strong> ${entry.ended}</div>` : ''}
-                ${(entry.start_km !== null && entry.start_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>Start:</strong> ${entry.start_km}</div>` : ''}
-                ${(entry.end_km !== null && entry.end_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>End:</strong> ${entry.end_km}</div>` : ''}
+                ${(entry.start_km !== null && entry.start_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>Start:</strong> ${entry.start_km} ${entry.unit || ''}</div>` : ''}
+                ${(entry.end_km !== null && entry.end_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>End:</strong> ${entry.end_km} ${entry.unit || ''}</div>` : ''}
             `;
             queuedList.appendChild(item);
         });

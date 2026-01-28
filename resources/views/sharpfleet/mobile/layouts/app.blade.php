@@ -18,8 +18,8 @@
     <link rel="apple-touch-icon" href="/images/sharpfleet/pwa/icon-192.png">
 
     {{-- CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css?v=20260114-1') }}">
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css?v=20260114-1') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css?v=20260128-1') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css?v=20260128-1') }}">
 
     @stack('styles')
 </head>
@@ -195,7 +195,14 @@
             }
         }
 
+        let controller = null;
+        let timeoutId = null;
         try {
+            if (typeof AbortController !== 'undefined') {
+                controller = new AbortController();
+                timeoutId = setTimeout(() => controller.abort(), 6000);
+            }
+
             const res = await fetch(form.action, {
                 method: form.method || 'POST',
                 credentials: 'same-origin',
@@ -205,7 +212,9 @@
                     'Accept': 'application/json',
                 },
                 body: formData,
+                signal: controller ? controller.signal : undefined,
             });
+            if (timeoutId) clearTimeout(timeoutId);
 
             if (res.status === 422) {
                 let errors = [];
@@ -271,6 +280,7 @@
 
             window.location.reload();
         } catch (e) {
+            if (timeoutId) clearTimeout(timeoutId);
             if (typeof window.sfHandleOfflineTripSubmit === 'function') {
                 try {
                     const handled = await window.sfHandleOfflineTripSubmit(form, formData, { force: true });
@@ -281,7 +291,9 @@
             }
             const alert = document.getElementById('offlineTripAlert');
             if (alert) {
-                alert.textContent = 'Network error. Please try again when you are back online.';
+                alert.textContent = (e && e.name === 'AbortError')
+                    ? 'Network timeout. If you are offline, the trip will sync when you are back online.'
+                    : 'Network error. Please try again when you are back online.';
                 alert.style.display = '';
             }
         }
@@ -362,7 +374,13 @@
 {{-- Service Worker --}}
 <script>
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/sw.js').then((reg) => {
+        if (reg && reg.update) {
+            reg.update();
+        }
+    }).catch(() => {
+        // ignore registration errors
+    });
 }
 </script>
 

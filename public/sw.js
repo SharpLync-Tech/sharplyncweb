@@ -4,7 +4,7 @@
  * - PWA install compatible
  */
 
-const CACHE_VERSION = 'sharpfleet-v2';
+const CACHE_VERSION = 'sharpfleet-v3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 

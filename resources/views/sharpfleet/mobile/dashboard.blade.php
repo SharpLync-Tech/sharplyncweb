@@ -257,6 +257,15 @@
     const endTripForm = document.getElementById('endTripForm');
     const vehicleSelect = document.getElementById('vehicleSelect');
 
+    if (endTripForm) {
+        endTripForm.addEventListener('submit', (e) => {
+            if (!navigator.onLine && typeof window.sfHandleOfflineTripSubmit === 'function') {
+                e.preventDefault();
+                window.sfHandleOfflineTripSubmit(endTripForm, new FormData(endTripForm));
+            }
+        });
+    }
+
     function showOfflineMessage(msg) {
         if (!offlineTripAlert) return;
         offlineTripAlert.textContent = msg;
@@ -651,6 +660,9 @@
             completed.push({
                 vehicle_id: active.vehicle_id,
                 private_vehicle: active.private_vehicle ? 1 : 0,
+                vehicle_text: active.vehicle_text || null,
+                tracking_mode: active.tracking_mode || 'distance',
+                distance_unit: active.distance_unit || COMPANY_DISTANCE_UNIT,
                 trip_mode: active.trip_mode,
                 start_km: active.start_km,
                 end_km: endKmVal,

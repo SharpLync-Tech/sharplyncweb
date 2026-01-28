@@ -1055,6 +1055,11 @@
 
     if (startTripForm) {
         startTripForm.addEventListener('submit', (e) => {
+            if (!navigator.onLine && typeof window.sfHandleOfflineTripSubmit === 'function') {
+                e.preventDefault();
+                window.sfHandleOfflineTripSubmit(startTripForm, new FormData(startTripForm));
+                return;
+            }
             if (startTripForm.checkValidity()) return;
             e.preventDefault();
 
