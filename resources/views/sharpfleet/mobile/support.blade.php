@@ -6,7 +6,7 @@
 @php
     $driverName = trim((string) (($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')));
     $driverEmail = trim((string) ($user['email'] ?? ''));
-    $mobileVersion = '1.2.2';
+    $mobileVersion = config('sharpfleet.mobile_version', '1.2.2');
 @endphp
 
 <section class="sf-mobile-dashboard">
