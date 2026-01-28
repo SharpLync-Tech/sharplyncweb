@@ -30,7 +30,7 @@
     ================================ --}}
     @if($activeTrip)
         <div id="activeTripCard" class="sf-mobile-card sf-drive-active" style="margin-bottom: 20px; position:relative;">
-            <div class="sf-mobile-card-title">Drive in Progress</div>
+            <div class="sf-mobile-card-title" style="color: #EAF7F4;">Drive in Progress</div>
 
             <div class="hint-text" style="margin-top: 8px;">
                 <strong>Vehicle:</strong>
@@ -111,7 +111,7 @@
     @endif
 
     <div id="offlineActiveTripCard" class="sf-mobile-card" style="margin-bottom: 20px; display:none;">
-        <div class="sf-mobile-card-title">Trip in Progress (Offline)</div>
+        <div class="sf-mobile-card-title" style="color: #EAF7F4;">Trip in Progress (Offline)</div>
         <div class="hint-text" style="margin-top: 6px;">
             <strong>Vehicle:</strong> <span id="offlineTripVehicle">-</span>
         </div>
@@ -140,8 +140,8 @@
             data-sheet-open="fuel-entry"
             style="text-align: left; width: 100%; margin-bottom: 8px;"
         >
-            <div class="sf-mobile-card-title">⛽ Add Fuel</div>
-            <div class="sf-mobile-card-text">Log a fuel receipt for a vehicle.</div>
+            <div class="sf-mobile-card-title" style="color: #EAF7F4;">⛽ Add Fuel</div>
+            <div class="sf-mobile-card-text" style="color: #EAF7F4;">Log a fuel receipt for a vehicle.</div>
         </button>
     @endif
 
@@ -153,7 +153,7 @@
         $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
     @endphp
     <div class="sf-mobile-card sf-card-accent" style="margin-top: 12px; margin-bottom: 20px;">
-        <div class="sf-mobile-card-title">
+        <div class="sf-mobile-card-title" style="color: #EAF7F4;">
             Before each trip, your company requires:
         </div>
 
@@ -717,5 +717,6 @@
 </script>
 
 @endsection
+
 
 
