@@ -8,54 +8,6 @@
     <meta name="theme-color" content="#0A2A4D">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Theme bootstrap (system default with manual override) --}}
-    <script>
-    (function () {
-        const KEY = 'sf_theme';
-        const root = document.documentElement;
-        const mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-
-        function safeGet() {
-            try { return localStorage.getItem(KEY) || 'system'; } catch (e) { return 'system'; }
-        }
-
-        function safeSet(value) {
-            try { localStorage.setItem(KEY, value); } catch (e) {}
-        }
-
-        function resolve(mode) {
-            if (mode === 'system') {
-                return mq && mq.matches ? 'dark' : 'light';
-            }
-            return mode === 'dark' ? 'dark' : 'light';
-        }
-
-        function apply(mode) {
-            const resolved = resolve(mode);
-            root.dataset.theme = resolved;
-            root.dataset.themeMode = mode;
-        }
-
-        const initial = safeGet();
-        apply(initial);
-
-        if (mq && mq.addEventListener) {
-            mq.addEventListener('change', () => {
-                if (safeGet() === 'system') apply('system');
-            });
-        }
-
-        window.sfSetTheme = function (mode) {
-            safeSet(mode);
-            apply(mode);
-        };
-
-        window.sfGetThemeMode = function () {
-            return safeGet();
-        };
-    })();
-    </script>
-
     {{-- PWA --}}
     <link rel="manifest" href="/manifest.json">
 
@@ -66,8 +18,8 @@
     <link rel="apple-touch-icon" href="/images/sharpfleet/pwa/icon-192.png">
 
     {{-- CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css?v=20260128-2') }}">
-    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css?v=20260128-2') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-mobile.css?v=20260128-1') }}">
+    <link rel="stylesheet" href="{{ asset('css/sharpfleet/sharpfleet-sheets.css?v=20260128-1') }}">
 
     @stack('styles')
 </head>

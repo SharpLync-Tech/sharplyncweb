@@ -23,7 +23,11 @@
     height: 92vh;
     max-height: 92vh;
 
-    background: linear-gradient(180deg, var(--sf-bg-1) 0%, var(--sf-bg-2) 100%);
+    background: linear-gradient(
+        180deg,
+        #0B3B5F 0%,
+        #06233A 100%
+    );
 
     border-radius: 22px 22px 0 0;
     z-index: 1000;
@@ -55,14 +59,14 @@
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    color: var(--sf-text);
+    color: #EAF7F4;
 }
 
 /* Close button */
 .sf-sheet-close {
     background: none;
     border: none;
-    color: var(--sf-text);
+    color: #EAF7F4;
     font-size: 26px;
     line-height: 1;
     padding: 2px;
@@ -92,7 +96,7 @@
     margin-bottom: 6px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--sf-muted);
+    color: #BFEDE6;
 }
 
 /* Base inputs */
@@ -103,9 +107,9 @@
 
     padding: 14px 14px;
     border-radius: 14px;
-    border: 1px solid var(--sf-input-border);
-    background: var(--sf-input-bg);
-    color: var(--sf-text);
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: #EAF7F4;
     font-size: 16px;
 
     outline: none;
@@ -151,7 +155,7 @@
 
 /* Focus */
 .sf-sheet-body .form-control:focus {
-    border-color: var(--sf-accent);
+    border-color: #2CBFAE;
     box-shadow: 0 0 0 2px rgba(44,191,174,0.25);
 }
 
@@ -167,11 +171,11 @@
     align-items: center;
     gap: 8px;
     font-size: 15px;
-    color: var(--sf-text);
+    color: #EAF7F4;
 }
 
 .radio-label input {
-    accent-color: var(--sf-accent);
+    accent-color: #2CBFAE;
 }
 
 /* Checkbox */
@@ -180,12 +184,12 @@
     align-items: flex-start;
     gap: 10px;
     font-size: 15px;
-    color: var(--sf-text);
+    color: #EAF7F4;
 }
 
 .checkbox-label input {
     margin-top: 3px;
-    accent-color: var(--sf-accent);
+    accent-color: #2CBFAE;
 }
 
 /* Hint text */
