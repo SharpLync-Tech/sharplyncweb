@@ -172,6 +172,17 @@
                     @endif
                 </div>
 
+                {{-- NEW CLEAR CONFIRMATION COPY --}}
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>
+                        Based on your current active vehicles ({{ (int) $vehiclesCount }}),
+                        your monthly subscription will be AU${{ number_format((float) $monthlyPrice, 2) }} per month.
+                    </strong>
+                    <div class="small mt-1">
+                        Your first payment is charged when you subscribe.
+                    </div>
+                </div>
+
                 <div class="mt-3">
                     <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
                         <input type="checkbox" id="sf-accept-terms">
