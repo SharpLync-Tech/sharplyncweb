@@ -152,7 +152,7 @@
         $clientPresenceLabel = trim((string) ($settings['client_presence']['label'] ?? 'Client'));
         $clientPresenceLabel = $clientPresenceLabel !== '' ? $clientPresenceLabel : 'Client';
     @endphp
-    <div class="sf-mobile-card" style="margin-top: 12px; margin-bottom: 20px;">
+    <div class="sf-mobile-card sf-card-accent" style="margin-top: 12px; margin-bottom: 20px;">
         <div class="sf-mobile-card-title">
             Before each trip, your company requires:
         </div>
@@ -174,7 +174,7 @@
     ================================ --}}
     @if($faultsEnabled)
         <button
-            class="sf-mobile-secondary-btn"
+            class="sf-mobile-secondary-btn sf-card-accent"
             type="button"
             data-sheet-open="report-fault"
             style="margin-top: 12px;"

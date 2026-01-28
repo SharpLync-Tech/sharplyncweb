@@ -295,7 +295,7 @@
 [data-theme="light"] .sf-drive-active,
 [data-theme="light"] .sf-card-accent {
     background: #FFFFFF;
-    border: 1px solid rgba(25, 156, 143, 0.45);
+    border: 1px solid rgba(25, 156, 143, 0.55);
     box-shadow: 0 0 0 1px rgba(25,156,143,0.2), 0 0 18px rgba(25,156,143,0.18), 0 10px 24px rgba(11,29,42,0.12);
     color: #0B1D2A;
 }
