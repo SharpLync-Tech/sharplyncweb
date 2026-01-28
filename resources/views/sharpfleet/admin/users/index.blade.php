@@ -85,7 +85,7 @@
                                 </button>
                                 <div id="sf-user-search-results"
                                      class="list-group"
-                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto; background:#fff; border:1px solid #dee2e6;"></div>
+                                     style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto; background:#fff; border:1px solid #dee2e6; border-radius:8px; box-shadow:0 10px 24px rgba(16,24,40,0.12);"></div>
                             </div>
                         </div>
                     </form>
@@ -265,6 +265,7 @@
     })();
 
     (function () {
+        const searchItemClass = 'sf-user-search-item';
         const filterForm = document.getElementById('sf-users-filter');
         const statusSelect = document.getElementById('status');
         if (filterForm && statusSelect) {
@@ -333,7 +334,7 @@
                 items.forEach(item => {
                     const button = document.createElement('button');
                     button.type = 'button';
-                    button.className = 'list-group-item list-group-item-action text-start';
+                    button.className = `list-group-item list-group-item-action text-start ${searchItemClass}`;
 
                     const name = item.name || '';
                     const email = item.email || '';
@@ -545,5 +546,24 @@
         });
     })();
 </script>
+
+<style>
+    .sf-user-search-item {
+        border: 0;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 0;
+        background: #fff;
+        padding: 10px 12px;
+    }
+    .sf-user-search-item:last-child {
+        border-bottom: 0;
+    }
+    .sf-user-search-item:focus {
+        box-shadow: none;
+    }
+    #sf-user-search-results .list-group-item-action:hover {
+        background: #f4f7fb;
+    }
+</style>
 
 @endsection
