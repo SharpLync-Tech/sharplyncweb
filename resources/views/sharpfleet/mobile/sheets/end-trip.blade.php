@@ -53,7 +53,7 @@
             @endphp
 
             <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" id="endReadingLabel">
                     {{ $trackingMode === 'hours'
                         ? 'Ending hour meter (hours)'
                         : ('Ending odometer (' . $activeTripDistanceUnit . ')')
@@ -61,6 +61,7 @@
                 </label>
                 <input
                     type="number"
+                    id="endKmInput"
                     name="end_km"
                     class="form-control"
                     inputmode="numeric"

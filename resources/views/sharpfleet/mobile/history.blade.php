@@ -108,6 +108,12 @@
         </button>
     </div>
 
+    <div id="sf-offline-queued" class="sf-mobile-card" style="display:none;">
+        <div class="sf-mobile-card-title">Queued Trips (Offline)</div>
+        <div class="sf-mobile-card-text">These entries will sync when you are back online.</div>
+        <div id="sf-offline-queued-list" style="margin-top: 10px;"></div>
+    </div>
+
     @if($activeTrip)
         <div class="sf-mobile-card">
             <div class="sf-mobile-card-title">Trip in Progress</div>
@@ -241,10 +247,110 @@
 (function () {
     const card = document.getElementById('sf-offline-history');
     const closeBtn = document.getElementById('sf-offline-history-close');
+    const queuedCard = document.getElementById('sf-offline-queued');
+    const queuedList = document.getElementById('sf-offline-queued-list');
+    const companyTimezone = @json($companyTimezone ?? 'UTC');
+    const OFFLINE_ACTIVE_KEY = 'sharpfleet_offline_active_trip_v1';
+    const OFFLINE_COMPLETED_KEY = 'sharpfleet_offline_completed_trips_v1';
+    const OFFLINE_END_UPDATES_KEY = 'sharpfleet_offline_end_updates_v1';
     if (!card) return;
+
+    function safeParse(raw, fallback) {
+        try { return JSON.parse(raw); } catch (e) { return fallback; }
+    }
+
+    function getLocalJson(key, fallback) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? safeParse(raw, fallback) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function formatDate(iso) {
+        if (!iso) return '-';
+        try {
+            return new Date(iso).toLocaleString(undefined, { timeZone: companyTimezone });
+        } catch (e) {
+            try { return new Date(iso).toLocaleString(); } catch (e2) { return String(iso); }
+        }
+    }
+
+    function renderQueuedTrips() {
+        if (!queuedCard || !queuedList) return;
+        const active = getLocalJson(OFFLINE_ACTIVE_KEY, null);
+        const completed = getLocalJson(OFFLINE_COMPLETED_KEY, []);
+        const endUpdates = getLocalJson(OFFLINE_END_UPDATES_KEY, []);
+
+        const entries = [];
+        if (active && active.source === 'offline') {
+            entries.push({
+                title: active.private_vehicle ? 'Private vehicle' : (active.vehicle_text || `Vehicle ${active.vehicle_id || ''}`),
+                started: active.started_at ? formatDate(active.started_at) : '-',
+                ended: null,
+                start_km: active.start_km ?? null,
+                end_km: null,
+                type: 'In progress',
+            });
+        }
+
+        if (Array.isArray(completed)) {
+            completed.forEach((t, idx) => {
+                entries.push({
+                    title: t.private_vehicle ? 'Private vehicle' : `Vehicle ${t.vehicle_id ?? ''}`,
+                    started: t.started_at ? formatDate(t.started_at) : '-',
+                    ended: t.ended_at ? formatDate(t.ended_at) : '-',
+                    start_km: t.start_km ?? null,
+                    end_km: t.end_km ?? null,
+                    type: 'Completed offline',
+                    key: `completed-${idx}`,
+                });
+            });
+        }
+
+        if (Array.isArray(endUpdates)) {
+            endUpdates.forEach((t, idx) => {
+                entries.push({
+                    title: `Trip ${t.trip_id ?? ''}`,
+                    started: null,
+                    ended: t.ended_at ? formatDate(t.ended_at) : '-',
+                    start_km: null,
+                    end_km: t.end_km ?? null,
+                    type: 'End queued',
+                    key: `end-${idx}`,
+                });
+            });
+        }
+
+        if (entries.length === 0) {
+            queuedCard.style.display = 'none';
+            queuedList.innerHTML = '';
+            return;
+        }
+
+        queuedList.innerHTML = '';
+        entries.forEach((entry) => {
+            const item = document.createElement('div');
+            item.className = 'sf-mobile-card';
+            item.style.marginTop = '10px';
+            item.innerHTML = `
+                <div class="sf-mobile-card-title">${entry.title || 'Trip'}</div>
+                <div class="hint-text" style="margin-top: 6px;"><strong>Status:</strong> ${entry.type}</div>
+                ${entry.started ? `<div class="hint-text" style="margin-top: 6px;"><strong>Started:</strong> ${entry.started}</div>` : ''}
+                ${entry.ended ? `<div class="hint-text" style="margin-top: 6px;"><strong>Ended:</strong> ${entry.ended}</div>` : ''}
+                ${(entry.start_km !== null && entry.start_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>Start:</strong> ${entry.start_km}</div>` : ''}
+                ${(entry.end_km !== null && entry.end_km !== undefined) ? `<div class="hint-text" style="margin-top: 6px;"><strong>End:</strong> ${entry.end_km}</div>` : ''}
+            `;
+            queuedList.appendChild(item);
+        });
+
+        queuedCard.style.display = '';
+    }
 
     function syncOfflineCard() {
         card.style.display = navigator.onLine ? 'none' : '';
+        renderQueuedTrips();
     }
 
     if (closeBtn) {

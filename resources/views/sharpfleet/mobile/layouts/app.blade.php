@@ -175,6 +175,7 @@
     document.addEventListener('submit', async (event) => {
         const form = event.target;
         if (!form || !form.matches('[data-mobile-token-form]')) return;
+        if (event.defaultPrevented) return;
 
         const token = getToken();
         const device = getDeviceId();
@@ -183,6 +184,15 @@
         const formData = new FormData(form);
         if (device) {
             formData.set('device_id', device);
+        }
+
+        if (!navigator.onLine && typeof window.sfHandleOfflineTripSubmit === 'function') {
+            try {
+                const handled = await window.sfHandleOfflineTripSubmit(form, formData);
+                if (handled) return;
+            } catch (e) {
+                // fall through to fetch if offline handler fails
+            }
         }
 
         try {
@@ -261,9 +271,17 @@
 
             window.location.reload();
         } catch (e) {
+            if (typeof window.sfHandleOfflineTripSubmit === 'function') {
+                try {
+                    const handled = await window.sfHandleOfflineTripSubmit(form, formData, { force: true });
+                    if (handled) return;
+                } catch (err) {
+                    // ignore and fall back to generic message
+                }
+            }
             const alert = document.getElementById('offlineTripAlert');
             if (alert) {
-                alert.textContent = 'Network error. Trip saved offline and will sync when you are back online.';
+                alert.textContent = 'Network error. Please try again when you are back online.';
                 alert.style.display = '';
             }
         }
