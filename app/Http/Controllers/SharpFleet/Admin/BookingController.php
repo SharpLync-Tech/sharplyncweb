@@ -331,7 +331,10 @@ class BookingController extends Controller
             abort(403, 'No SharpFleet organisation context.');
         }
 
-        $companyTimezone = (new CompanySettingsService($organisationId))->timezone();
+        $settingsService = new CompanySettingsService($organisationId);
+        $companyTimezone = $settingsService->timezone();
+        $clientLabel = trim((string) $settingsService->clientLabel());
+        $clientLabel = $clientLabel !== '' ? $clientLabel : 'Client';
         $ctx = $this->branchAccessContext($user);
         $tripsTableExists = Schema::connection('sharpfleet')->hasTable('trips');
         $tripsHaveTimezone = $tripsTableExists && Schema::connection('sharpfleet')->hasColumn('trips', 'timezone');
@@ -378,6 +381,7 @@ class BookingController extends Controller
             'trips' => $trips,
             'companyTimezone' => $companyTimezone,
             'customersTableExists' => $customersTableExists,
+            'clientLabel' => $clientLabel,
         ]);
     }
 
