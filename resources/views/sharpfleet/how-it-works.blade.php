@@ -50,7 +50,7 @@
             <div class="sf-device-frame">
                 <video
                     src="{{ asset('images/sharpfleet/startend.optimized.mp4') }}"
-                    controls
+                    autoplay
                     loop
                     muted
                     playsinline
@@ -395,6 +395,24 @@
 
         .sf-feature-image img {
             max-width: 100%;
+        }
+
+        .sf-device-frame {
+            max-width: 100%;
+            padding: 8px;
+            border-radius: 22px;
+            box-shadow: 0 12px 24px rgba(10, 42, 77, 0.18);
+        }
+
+        .sf-device-frame::before {
+            inset: 5px;
+            border-radius: 18px;
+        }
+
+        .sf-device-frame::after {
+            top: 10px;
+            width: 52px;
+            height: 5px;
         }
     }
 </style>
