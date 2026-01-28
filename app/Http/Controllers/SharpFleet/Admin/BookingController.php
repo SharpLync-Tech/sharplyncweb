@@ -335,6 +335,7 @@ class BookingController extends Controller
         $ctx = $this->branchAccessContext($user);
         $tripsTableExists = Schema::connection('sharpfleet')->hasTable('trips');
         $tripsHaveTimezone = $tripsTableExists && Schema::connection('sharpfleet')->hasColumn('trips', 'timezone');
+        $customersTableExists = Schema::connection('sharpfleet')->hasTable('customers');
 
         $trips = collect();
         if ($tripsTableExists) {
@@ -342,6 +343,10 @@ class BookingController extends Controller
                 ->table('trips')
                 ->leftJoin('vehicles', 'trips.vehicle_id', '=', 'vehicles.id')
                 ->leftJoin('users', 'trips.user_id', '=', 'users.id')
+                ->when(
+                    $customersTableExists,
+                    fn ($q) => $q->leftJoin('customers', 'trips.customer_id', '=', 'customers.id')
+                )
                 ->where('trips.organisation_id', $organisationId)
                 ->whereNotNull('trips.started_at')
                 ->whereNull('trips.ended_at')
@@ -354,12 +359,16 @@ class BookingController extends Controller
                     'trips.id as trip_id',
                     'trips.started_at',
                     $tripsHaveTimezone ? 'trips.timezone' : null,
+                    'trips.trip_mode',
+                    'trips.client_present',
+                    'trips.customer_name',
                     'vehicles.id as vehicle_id',
                     'vehicles.name as vehicle_name',
                     'vehicles.registration_number',
                     'users.id as driver_id',
                     'users.first_name as driver_first_name',
                     'users.last_name as driver_last_name',
+                    $customersTableExists ? DB::raw('COALESCE(customers.name, trips.customer_name) as customer_name_display') : null,
                 ]))
                 ->get();
         }
@@ -368,6 +377,7 @@ class BookingController extends Controller
             'tripsTableExists' => $tripsTableExists,
             'trips' => $trips,
             'companyTimezone' => $companyTimezone,
+            'customersTableExists' => $customersTableExists,
         ]);
     }
 

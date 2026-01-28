@@ -32,6 +32,7 @@
                                 <th>Vehicle</th>
                                 <th>Driver</th>
                                 <th>Start time</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,11 +59,30 @@
                                             $startedAtLabel = (string) $startedAt;
                                         }
                                     }
+
+                                    $customerName = trim((string) ($t->customer_name_display ?? $t->customer_name ?? ''));
+                                    if ($customerName === '') {
+                                        $customerName = '—';
+                                    }
+                                    $clientPresent = $t->client_present ?? null;
+                                    $clientPresentLabel = $clientPresent === null || $clientPresent === '' ? '—' : ((int) $clientPresent === 1 ? 'Yes' : 'No');
                                 @endphp
                                 <tr>
                                     <td class="fw-bold">{{ $vehicleName ?: '—' }}</td>
                                     <td>{{ $driverName }}</td>
                                     <td>{{ $startedAtLabel }}</td>
+                                    <td>
+                                        <details>
+                                            <summary>View</summary>
+                                            <div class="text-muted" style="margin-top:8px;">
+                                                <div><strong>Vehicle:</strong> {{ $vehicleName ?: '—' }}</div>
+                                                <div><strong>Driver:</strong> {{ $driverName }}</div>
+                                                <div><strong>Customer/Client:</strong> {{ $customerName }}</div>
+                                                <div><strong>Started:</strong> {{ $startedAtLabel }}</div>
+                                                <div><strong>Client present:</strong> {{ $clientPresentLabel }}</div>
+                                            </div>
+                                        </details>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
