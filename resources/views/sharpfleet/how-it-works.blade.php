@@ -47,13 +47,15 @@
                 allowfullscreen
             ></iframe>
             --}}
-            <video
-                src="{{ asset('images/sharpfleet/startend.optimized.mp4') }}"
-                controls
-                loop
-                muted
-                playsinline
-            ></video>
+            <div class="sf-device-frame">
+                <video
+                    src="{{ asset('images/sharpfleet/startend.optimized.mp4') }}"
+                    controls
+                    loop
+                    muted
+                    playsinline
+                ></video>
+            </div>
         </div>
         <div class="sf-feature-text">
             <h2>Drivers start and end trips in seconds</h2>
@@ -296,6 +298,56 @@
         box-shadow: 0 8px 18px rgba(44, 191, 174, 0.18);
     }
 
+    .sf-device-frame {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        aspect-ratio: 9 / 16;
+        padding: 10px;
+        border-radius: 26px;
+        background: linear-gradient(160deg, rgba(10, 42, 77, 0.9), rgba(44, 191, 174, 0.35));
+        box-shadow: 0 18px 36px rgba(10, 42, 77, 0.22);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sf-device-frame::before {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: inset 0 0 0 1px rgba(10, 42, 77, 0.08);
+        pointer-events: none;
+    }
+
+    .sf-device-frame::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        width: 64px;
+        height: 6px;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: inset 0 0 0 1px rgba(10, 42, 77, 0.25);
+        pointer-events: none;
+    }
+
+    .sf-device-frame video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 18px;
+        object-fit: cover;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    }
+
+    .sf-feature-image--phone .sf-device-frame:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 22px 44px rgba(10, 42, 77, 0.28);
+    }
+
     .sf-feature-image--phone img {
         max-width: 300px;
         aspect-ratio: 9 / 16;
@@ -309,10 +361,8 @@
         height: auto;
     }
 
-    .sf-feature-image--phone video {
+    .sf-feature-image--phone .sf-device-frame {
         max-width: 300px;
-        aspect-ratio: 9 / 16;
-        height: auto;
     }
 
     .sf-feature-text h2 {
