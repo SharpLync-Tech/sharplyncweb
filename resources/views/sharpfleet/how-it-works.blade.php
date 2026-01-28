@@ -339,7 +339,8 @@
         width: 100%;
         height: 100%;
         border-radius: 18px;
-        object-fit: cover;
+        object-fit: contain;
+        background: #0a0f14;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
     }
 
