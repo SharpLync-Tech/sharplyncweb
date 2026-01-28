@@ -65,7 +65,7 @@
                         </select>
                         <div class="d-flex align-items-center gap-2">
                             <label class="text-muted small" for="sf-user-search" style="margin-bottom:0;">Search</label>
-                            <div class="position-relative" style="width: 220px;">
+                            <div class="position-relative" style="position:relative; width: 220px;">
                                 <input
                                     type="text"
                                     class="form-control"
@@ -91,19 +91,19 @@
                     </form>
                     <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
                         <label class="text-muted small mb-0">Roles</label>
-                        <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                        <label class="d-flex gap-2 align-items-center text-muted small mb-0">
                             <input type="checkbox" class="sf-role-filter" value="company_admin" style="accent-color:#1aa3a3;">
                             Company admin
                         </label>
-                        <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                        <label class="d-flex gap-2 align-items-center text-muted small mb-0">
                             <input type="checkbox" class="sf-role-filter" value="branch_admin" style="accent-color:#1aa3a3;">
                             Branch admin
                         </label>
-                        <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                        <label class="d-flex gap-2 align-items-center text-muted small mb-0">
                             <input type="checkbox" class="sf-role-filter" value="booking_admin" style="accent-color:#1aa3a3;">
                             Booking admin
                         </label>
-                        <label class="d-flex gap-1 align-items-center text-muted small mb-0">
+                        <label class="d-flex gap-2 align-items-center text-muted small mb-0">
                             <input type="checkbox" class="sf-role-filter" value="driver" style="accent-color:#1aa3a3;">
                             Driver
                         </label>
