@@ -49,11 +49,20 @@
                                     }
 
                                     $startedAt = $t->started_at ?? null;
+                                    $tripTz = isset($t->timezone) && trim((string) $t->timezone) !== "" ? (string) $t->timezone : ($companyTimezone ?? "UTC");
+                                    $startedAtLabel = "—";
+                                    if ($startedAt) {
+                                        try {
+                                            $startedAtLabel = \Carbon\Carbon::parse($startedAt)->timezone($tripTz)->format("M j, Y g:i A");
+                                        } catch (\Throwable $e) {
+                                            $startedAtLabel = (string) $startedAt;
+                                        }
+                                    }
                                 @endphp
                                 <tr>
                                     <td class="fw-bold">{{ $vehicleName ?: '—' }}</td>
                                     <td>{{ $driverName }}</td>
-                                    <td>{{ $startedAt ? (string) $startedAt : '—' }}</td>
+                                    <td>{{ $startedAtLabel }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -64,3 +73,8 @@
     </div>
 </div>
 @endsection
+
+
+
+
+

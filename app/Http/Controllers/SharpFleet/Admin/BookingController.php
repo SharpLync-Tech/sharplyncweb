@@ -331,8 +331,10 @@ class BookingController extends Controller
             abort(403, 'No SharpFleet organisation context.');
         }
 
+        $companyTimezone = (new CompanySettingsService($organisationId))->timezone();
         $ctx = $this->branchAccessContext($user);
         $tripsTableExists = Schema::connection('sharpfleet')->hasTable('trips');
+        $tripsHaveTimezone = $tripsTableExists && Schema::connection('sharpfleet')->hasColumn('trips', 'timezone');
 
         $trips = collect();
         if ($tripsTableExists) {
@@ -348,22 +350,24 @@ class BookingController extends Controller
                     fn ($q) => $q->whereIn('vehicles.branch_id', $ctx['accessibleBranchIds'])
                 )
                 ->orderByDesc('trips.started_at')
-                ->select(
+                ->select(array_filter([
                     'trips.id as trip_id',
                     'trips.started_at',
+                    $tripsHaveTimezone ? 'trips.timezone' : null,
                     'vehicles.id as vehicle_id',
                     'vehicles.name as vehicle_name',
                     'vehicles.registration_number',
                     'users.id as driver_id',
                     'users.first_name as driver_first_name',
-                    'users.last_name as driver_last_name'
-                )
+                    'users.last_name as driver_last_name',
+                ]))
                 ->get();
         }
 
         return view('sharpfleet.admin.trips.active', [
             'tripsTableExists' => $tripsTableExists,
             'trips' => $trips,
+            'companyTimezone' => $companyTimezone,
         ]);
     }
 
