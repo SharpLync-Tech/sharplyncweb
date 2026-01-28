@@ -6,6 +6,7 @@
 @php
     $driverName = trim((string) (($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')));
     $driverEmail = trim((string) ($user['email'] ?? ''));
+    $mobileVersion = '1.2.2';
 @endphp
 
 <section class="sf-mobile-dashboard">
@@ -62,6 +63,7 @@
         <input type="hidden" name="client_timezone" id="sfSupportClientTimezone">
         <input type="hidden" name="page_url" id="sfSupportPageUrl">
         <input type="hidden" name="device_id" id="sfSupportDeviceId">
+        <input type="hidden" name="app_version" id="sfSupportAppVersion" value="v{{ $mobileVersion }} (Mobile)">
         <input type="hidden" name="logs" id="sfSupportLogs">
 
         <div class="hint-text" style="margin-bottom: 12px;">
@@ -84,6 +86,7 @@
     const timezoneField = document.getElementById('sfSupportClientTimezone');
     const pageUrlField = document.getElementById('sfSupportPageUrl');
     const deviceIdField = document.getElementById('sfSupportDeviceId');
+    const appVersionField = document.getElementById('sfSupportAppVersion');
     const queuedCard = document.getElementById('sfSupportQueued');
     const form = document.getElementById('sfSupportForm');
     const QUEUE_KEY = 'sf_support_queue_v1';
@@ -174,6 +177,7 @@
             client_timezone: timezoneField ? String(timezoneField.value || '') : detectTimezone(),
             page_url: pageUrlField ? String(pageUrlField.value || '') : detectPageUrl(),
             device_id: deviceIdField ? String(deviceIdField.value || '') : detectDeviceId(),
+            app_version: appVersionField ? String(appVersionField.value || '') : '',
             logs: serializeLogs(),
             queuedAt: new Date().toISOString(),
         };
@@ -202,6 +206,7 @@
     if (timezoneField) timezoneField.value = detectTimezone();
     if (pageUrlField) pageUrlField.value = detectPageUrl();
     if (deviceIdField) deviceIdField.value = detectDeviceId();
+    if (appVersionField && !appVersionField.value) appVersionField.value = 'v{{ $mobileVersion }} (Mobile)';
 
     if (message) {
         message.addEventListener('input', updateCounter);
@@ -235,6 +240,7 @@
             if (timezoneField) timezoneField.value = detectTimezone();
             if (pageUrlField) pageUrlField.value = detectPageUrl();
             if (deviceIdField) deviceIdField.value = detectDeviceId();
+            if (appVersionField && !appVersionField.value) appVersionField.value = 'v{{ $mobileVersion }} (Mobile)';
             showQueued();
             setTimeout(() => {
                 window.location.href = '/app/sharpfleet/mobile';

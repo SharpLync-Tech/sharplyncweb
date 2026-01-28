@@ -601,6 +601,7 @@
 
             showOfflineMessage('No signal: trip started offline. End it to sync later.');
             renderOfflineActiveTrip();
+            closeSheetById('start-trip');
             return true;
         }
 

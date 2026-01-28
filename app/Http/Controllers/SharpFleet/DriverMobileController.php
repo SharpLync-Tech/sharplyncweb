@@ -381,6 +381,7 @@ class DriverMobileController extends Controller
 
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:500'],
+            'app_version' => ['nullable', 'string', 'max:40'],
             'platform' => ['nullable', 'string', 'max:40'],
             'usage_mode' => ['nullable', 'string', 'max:40'],
             'client_timezone' => ['nullable', 'string', 'max:120'],
@@ -459,6 +460,7 @@ class DriverMobileController extends Controller
             'Company Admin Email: ' . ($adminEmail !== '' ? $adminEmail : 'Unknown'),
             'Platform: ' . ($validated['platform'] ?? 'Unknown'),
             'Usage mode: ' . ($validated['usage_mode'] ?? 'Unknown'),
+            'App Version: ' . ($validated['app_version'] ?? 'Unknown'),
             'Client Timezone: ' . ($validated['client_timezone'] ?? 'Unknown'),
             'Page URL: ' . ($validated['page_url'] ?? 'Unknown'),
             'Current Host: ' . ($request->getHost() ?: 'Unknown'),

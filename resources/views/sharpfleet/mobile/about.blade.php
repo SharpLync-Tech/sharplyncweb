@@ -19,7 +19,7 @@
 
     <div class="sf-mobile-card" style="margin-top: 12px;">
         <div class="sf-mobile-card-title">Version</div>
-        <div class="sf-mobile-card-text">v1.2.1 (Mobile)</div>
+        <div class="sf-mobile-card-text">v1.2.2 (Mobile)</div>
     </div>
 
     <div class="sf-mobile-card" style="margin-top: 12px;">

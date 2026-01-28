@@ -569,6 +569,7 @@ if ('serviceWorker' in navigator) {
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         fd.append('_token', token);
         fd.append('message', item.message || '');
+        if (item.app_version) fd.append('app_version', item.app_version);
         if (item.platform) fd.append('platform', item.platform);
         if (item.usage_mode) fd.append('usage_mode', item.usage_mode);
         if (item.client_timezone) fd.append('client_timezone', item.client_timezone);
