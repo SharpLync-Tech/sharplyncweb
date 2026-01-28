@@ -89,7 +89,6 @@
                             </div>
                         </div>
                     </form>
-                    <div id="sf-user-search-debug" class="text-muted small mt-1" style="display:none;"></div>
                     <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
                         <label class="text-muted small mb-0">Roles</label>
                         <label class="d-flex gap-1 align-items-center text-muted small mb-0">
@@ -277,7 +276,6 @@
         const searchInput = document.getElementById('sf-user-search');
         const searchResults = document.getElementById('sf-user-search-results');
         const searchClear = document.getElementById('sf-user-search-clear');
-        const searchDebug = document.getElementById('sf-user-search-debug');
         let searchTimer = null;
         let searchAbort = null;
         const canAbortSearch = typeof AbortController !== 'undefined';
@@ -307,17 +305,6 @@
             positionSearchResults();
         }
 
-        function setDebug(message) {
-            if (!searchDebug) return;
-            if (!message) {
-                searchDebug.textContent = '';
-                searchDebug.style.display = 'none';
-                return;
-            }
-            searchDebug.textContent = message;
-            searchDebug.style.display = 'block';
-        }
-
         function showSearchStatus(message) {
             if (!searchResults) return;
             ensureSearchPortal();
@@ -344,11 +331,34 @@
                 frag.appendChild(empty);
             } else {
                 items.forEach(item => {
-                    const link = document.createElement('a');
-                    link.className = 'list-group-item list-group-item-action';
-                    link.href = `/app/sharpfleet/admin/users/${encodeURIComponent(item.id)}/details`;
-                    link.textContent = item.email ? `${item.name} - ${item.email}` : item.name;
-                    frag.appendChild(link);
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'list-group-item list-group-item-action text-start';
+
+                    const name = item.name || '';
+                    const email = item.email || '';
+
+                    const nameEl = document.createElement('div');
+                    nameEl.className = 'fw-semibold';
+                    nameEl.textContent = name !== '' ? name : email;
+
+                    const emailEl = document.createElement('div');
+                    emailEl.className = 'text-muted small';
+                    emailEl.textContent = email;
+
+                    button.appendChild(nameEl);
+                    if (email !== '' && email !== name) {
+                        button.appendChild(emailEl);
+                    }
+
+                    button.addEventListener('click', function () {
+                        if (!searchInput || !filterForm) return;
+                        searchInput.value = name !== '' ? name : email;
+                        clearSearchResults();
+                        filterForm.submit();
+                    });
+
+                    frag.appendChild(button);
                 });
             }
 
@@ -362,7 +372,6 @@
 
         function runSearch(query) {
             if (!searchInput || !searchResults) return;
-            setDebug(`runSearch("${query}") canFetch=${canFetch} canAbort=${canAbortSearch}`);
             if (canAbortSearch && searchAbort) {
                 searchAbort.abort();
             }
@@ -374,7 +383,6 @@
 
             const status = statusSelect ? statusSelect.value : 'active';
             const url = `/app/sharpfleet/admin/users/search?query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}`;
-            setDebug(`Requesting ${url}`);
 
             const showError = () => showSearchStatus('Search unavailable');
 
@@ -383,13 +391,9 @@
                 const fetchOptions = controller ? { signal: controller.signal } : {};
                 fetch(url, fetchOptions)
                     .then(res => (res.ok ? res.json() : []))
-                    .then(items => {
-                        setDebug(`Results: ${Array.isArray(items) ? items.length : 'invalid'}`);
-                        renderSearchResults(items, query);
-                    })
+                    .then(items => renderSearchResults(items, query))
                     .catch(err => {
                         if (err && err.name === 'AbortError') return;
-                        setDebug(`Fetch error: ${err && err.message ? err.message : err}`);
                         showError();
                     });
                 return;
@@ -403,19 +407,15 @@
                 if (xhr.status >= 200 && xhr.status < 300) {
                     try {
                         const items = JSON.parse(xhr.responseText || '[]');
-                        setDebug(`XHR results: ${Array.isArray(items) ? items.length : 'invalid'}`);
                         renderSearchResults(items, query);
                     } catch (e) {
-                        setDebug('XHR parse error');
                         showError();
                     }
                 } else {
-                    setDebug(`XHR status ${xhr.status}`);
                     showError();
                 }
             };
             xhr.onerror = function () {
-                setDebug('XHR error');
                 showError();
             };
             xhr.send();
@@ -428,7 +428,6 @@
 
             searchInput.addEventListener('input', function () {
                 const query = searchInput.value.trim();
-                setDebug('');
                 if (searchClear) {
                     searchClear.style.display = query ? 'block' : 'none';
                 }
