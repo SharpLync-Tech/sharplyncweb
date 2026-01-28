@@ -48,7 +48,7 @@
             ></iframe>
             --}}
             <video
-                src="{{ asset('images/sharpfleet/startend.mp4') }}"
+                src="{{ asset('images/sharpfleet/startend.optimized.mp4') }}"
                 controls
                 loop
                 muted
