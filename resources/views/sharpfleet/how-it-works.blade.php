@@ -39,12 +39,21 @@
     ================================ --}}
     <section id="trips" class="sf-feature-row">
         <div class="sf-feature-image sf-feature-image--phone">
+            {{--
             <iframe
                 src="https://www.youtube.com/embed/JuDGt-_txZc"
                 title="SharpFleet mobile start and end trips"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
             ></iframe>
+            --}}
+            <video
+                src="{{ asset('images/sharpfleet/startend.mp4') }}"
+                controls
+                loop
+                muted
+                playsinline
+            ></video>
         </div>
         <div class="sf-feature-text">
             <h2>Drivers start and end trips in seconds</h2>
@@ -280,6 +289,13 @@
         box-shadow: 0 8px 18px rgba(44, 191, 174, 0.18);
     }
 
+    .sf-feature-image video {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 12px;
+        box-shadow: 0 8px 18px rgba(44, 191, 174, 0.18);
+    }
+
     .sf-feature-image--phone img {
         max-width: 300px;
         aspect-ratio: 9 / 16;
@@ -288,6 +304,12 @@
     }
 
     .sf-feature-image--phone iframe {
+        max-width: 300px;
+        aspect-ratio: 9 / 16;
+        height: auto;
+    }
+
+    .sf-feature-image--phone video {
         max-width: 300px;
         aspect-ratio: 9 / 16;
         height: auto;
