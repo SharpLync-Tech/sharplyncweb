@@ -12,7 +12,7 @@
 
         <div class="auth-content text-center">
             <p class="text-muted mb-3">If you believe this is an error, please contact your administrator.</p>
-            <a href="/app/sharpfleet/login" class="btn-sf-navy btn-sm">Return to Dashboard</a>
+            <a href="/app/sharpfleet/login" class="btn-sf-navy">Return to Dashboard</a>
         </div>
     </div>
 </div>

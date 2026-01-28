@@ -33,12 +33,12 @@
             <div class="d-flex gap-2 justify-content-center flex-wrap">
                 <button
                     type="button"
-                    class="btn btn-secondary"
+                    class="btn-sf-navy"
                     onclick="if (window.history && window.history.length > 1) { window.history.back(); } else { window.location.href='{{ $dashboardUrl }}'; }"
                 >
                     Go back
                 </button>
-                <a href="{{ $dashboardUrl }}" class="btn btn-primary">Go to dashboard</a>
+                <a href="{{ $dashboardUrl }}" class="btn-sf-navy">Go to dashboard</a>
             </div>
         </div>
     </div>
