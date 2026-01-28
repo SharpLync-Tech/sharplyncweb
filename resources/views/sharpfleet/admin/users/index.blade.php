@@ -353,7 +353,7 @@
 
                     button.addEventListener('click', function () {
                         if (!searchInput || !filterForm) return;
-                        searchInput.value = name !== '' ? name : email;
+                        searchInput.value = email !== '' ? email : name;
                         clearSearchResults();
                         filterForm.submit();
                     });
