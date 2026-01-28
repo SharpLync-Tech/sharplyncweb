@@ -402,6 +402,9 @@
             padding: 8px;
             border-radius: 22px;
             box-shadow: 0 12px 24px rgba(10, 42, 77, 0.18);
+            aspect-ratio: auto;
+            height: auto;
+            overflow: hidden;
         }
 
         .sf-device-frame::before {
@@ -413,6 +416,11 @@
             top: 10px;
             width: 52px;
             height: 5px;
+        }
+
+        .sf-device-frame video {
+            height: auto;
+            aspect-ratio: 9 / 16;
         }
     }
 </style>
