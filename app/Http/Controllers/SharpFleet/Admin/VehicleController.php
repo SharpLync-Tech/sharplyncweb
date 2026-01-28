@@ -73,9 +73,12 @@ class VehicleController extends Controller
         $entitlements = new EntitlementService($fleetUser);
         $isSubscribed = $entitlements->isSubscriptionActive();
 
+        $search = trim((string) $request->query('search', ''));
+
         $vehicles = $this->vehicleService->getAvailableVehicles(
             $organisationId,
-            $branchScopeEnabled ? $accessibleBranchIds : null
+            $branchScopeEnabled ? $accessibleBranchIds : null,
+            $search
         );
 
         $activeTrips = DB::connection('sharpfleet')
@@ -119,7 +122,53 @@ class VehicleController extends Controller
             'activeTripVehicleIds' => $activeTripVehicleIds,
             'activeTripsByVehicle' => $activeTripsByVehicle,
             'isSubscribed' => $isSubscribed,
+            'search' => $search,
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $fleetUser = $request->session()->get('sharpfleet.user');
+
+        if (!$fleetUser || empty($fleetUser['organisation_id'])) {
+            abort(403, 'No SharpFleet organisation context.');
+        }
+
+        $organisationId = (int) $fleetUser['organisation_id'];
+        $search = trim((string) $request->query('query', ''));
+        if ($search === '') {
+            return response()->json([]);
+        }
+
+        $branchService = new BranchService();
+        [$branchScopeEnabled, $accessibleBranchIds] = $this->resolveVehicleBranchScope($fleetUser, $organisationId, $branchService);
+        $hasBranchId = Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id');
+
+        $term = '%' . $search . '%';
+        $vehicles = DB::connection('sharpfleet')
+            ->table('vehicles')
+            ->where('organisation_id', $organisationId)
+            ->where('is_active', 1)
+            ->when($branchScopeEnabled && $hasBranchId, fn ($q) => $q->whereIn('branch_id', $accessibleBranchIds))
+            ->where(function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                    ->orWhere('registration_number', 'like', $term)
+                    ->orWhere('make', 'like', $term)
+                    ->orWhere('model', 'like', $term);
+            })
+            ->orderBy('name')
+            ->limit(8)
+            ->get(['id', 'name', 'registration_number', 'make', 'model']);
+
+        return response()->json(
+            $vehicles->map(fn ($v) => [
+                'id' => (int) $v->id,
+                'name' => (string) ($v->name ?? ''),
+                'registration' => (string) ($v->registration_number ?? ''),
+                'make' => (string) ($v->make ?? ''),
+                'model' => (string) ($v->model ?? ''),
+            ])->values()
+        );
     }
 
     /**

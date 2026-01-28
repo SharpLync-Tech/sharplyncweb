@@ -252,6 +252,7 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/customers/{customerId}/archive', [CustomerController::class, 'archive'])->whereNumber('customerId');
 
         Route::get('/admin/vehicles', [VehicleController::class, 'index']);
+        Route::get('/admin/vehicles/search', [VehicleController::class, 'search']);
         Route::get('/admin/vehicles/assigned', [VehicleController::class, 'assigned']);
         Route::get('/admin/vehicles/out-of-service', [VehicleController::class, 'outOfService']);
         Route::get('/admin/vehicles/create', [VehicleController::class, 'create']);

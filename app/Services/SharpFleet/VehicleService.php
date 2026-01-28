@@ -77,7 +77,7 @@ class VehicleService
     /**
      * Get all active vehicles for an organisation
      */
-    public function getAvailableVehicles(int $organisationId, ?array $branchIds = null)
+    public function getAvailableVehicles(int $organisationId, ?array $branchIds = null, ?string $search = null)
     {
         $query = DB::connection('sharpfleet')
             ->table('vehicles')
@@ -87,6 +87,15 @@ class VehicleService
                 $branchIds !== null && Schema::connection('sharpfleet')->hasColumn('vehicles', 'branch_id'),
                 fn ($q) => $q->whereIn('branch_id', $branchIds)
             )
+            ->when($search !== null && trim($search) !== '', function ($q) use ($search) {
+                $term = '%' . trim($search) . '%';
+                $q->where(function ($q) use ($term) {
+                    $q->where('name', 'like', $term)
+                        ->orWhere('registration_number', 'like', $term)
+                        ->orWhere('make', 'like', $term)
+                        ->orWhere('model', 'like', $term);
+                });
+            })
             ->orderBy('name')
             ;
 
