@@ -244,6 +244,7 @@ Route::prefix('app/sharpfleet')
         Route::post('/admin/users/{userId}/unarchive', [UserController::class, 'unarchive'])->whereNumber('userId');
 
         Route::get('/admin/customers', [CustomerController::class, 'index']);
+        Route::get('/admin/customers/search', [CustomerController::class, 'search']);
         Route::get('/admin/customers/create', [CustomerController::class, 'create']);
         Route::post('/admin/customers', [CustomerController::class, 'store']);
         Route::get('/admin/customers/{customerId}/edit', [CustomerController::class, 'edit'])->whereNumber('customerId');

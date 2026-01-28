@@ -35,18 +35,16 @@
         </div>
         <div class="card-body">
             <form
-                x-data="customerSearch('{{ $searchQuery ?? '' }}')"
-                x-init="init()"
-                x-ref="form"
                 method="GET"
                 action="{{ url('/app/sharpfleet/admin/customers') }}"
                 class="mb-3"
+                id="sf-customers-filter"
             >
                 <div class="grid grid-3 align-end">
                     @if(($isCompanyAdmin ?? false) && ($branchesEnabled ?? false) && ($hasCustomerBranch ?? false) && ($branches->count() > 1))
                         <div>
                             <label class="form-label">Branch</label>
-                            <select name="branch_id" class="form-control">
+                            <select name="branch_id" class="form-control" id="sf-customers-branch">
                                 <option value="">All branches</option>
                                 @foreach($branches as $branch)
                                     <option value="{{ $branch->id }}" {{ (int) ($selectedBranchId ?? 0) === (int) $branch->id ? 'selected' : '' }}>
@@ -59,25 +57,30 @@
 
                     <div>
                         <label class="form-label">Search</label>
-                        <div class="sf-search">
+                        <div class="sf-search position-relative" style="position:relative; width: 220px;">
                             <input
                                 type="text"
                                 name="q"
-                                class="form-control sf-report-input"
+                                class="form-control"
                                 placeholder="Search customers"
-                                x-model="q"
-                                x-on:input.debounce.350ms="submit()"
+                                id="sf-customer-search"
+                                value="{{ $searchQuery ?? '' }}"
                                 autocomplete="off"
+                                style="padding-right:28px;"
                             >
                             <button
                                 type="button"
-                                class="sf-search__clear"
-                                x-show="q"
-                                x-on:click="clear()"
+                                class="btn btn-sm btn-secondary"
+                                id="sf-customer-search-clear"
                                 aria-label="Clear search"
+                                title="Clear"
+                                style="position:absolute; right:6px; top:50%; transform:translateY(-50%); padding:2px 6px; line-height:1; display:none;"
                             >
-                                ×
+                                &times;
                             </button>
+                            <div id="sf-customer-search-results"
+                                 class="list-group"
+                                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:240px; overflow:auto; background:#fff; border:1px solid #dee2e6; border-radius:8px; box-shadow:0 10px 24px rgba(16,24,40,0.12);"></div>
                         </div>
                     </div>
 
@@ -133,75 +136,227 @@
 
 @push('styles')
 <style>
-    .sf-report-input.form-control {
-        border-radius: 12px;
-        border: 1px solid rgba(44, 191, 174, 0.35);
-        padding: 10px 14px;
-        background-color: #f8fcfb;
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #0A2A4D;
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.85),
-            0 1px 2px rgba(10, 42, 77, 0.05);
-        transition:
-            border-color 150ms ease,
-            box-shadow 150ms ease,
-            background-color 150ms ease;
+    .sf-customer-search-item {
+        border: 0;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 0;
+        background: #fff;
+        padding: 10px 12px;
     }
-
-    .sf-report-input.form-control:hover {
-        background-color: #ffffff;
-        border-color: #2CBFAE;
+    .sf-customer-search-item:last-child {
+        border-bottom: 0;
     }
-
-    .sf-report-input.form-control:focus {
-        outline: none;
-        background-color: #ffffff;
-        border-color: #2CBFAE;
-        box-shadow:
-            0 0 0 3px rgba(44, 191, 174, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    .sf-customer-search-item:focus {
+        box-shadow: none;
     }
-
-    .sf-search {
-        position: relative;
-    }
-
-    .sf-search__clear {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        border: none;
-        background: transparent;
-        color: #6b7a90;
-        font-size: 18px;
-        line-height: 1;
-        cursor: pointer;
+    #sf-customer-search-results .list-group-item-action:hover {
+        background: #f4f7fb;
     }
 </style>
 @endpush
 
 @push('scripts')
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script>
-    function customerSearch(initialQuery) {
-        return {
-            q: initialQuery || '',
-            init() {
-                this.q = initialQuery || '';
-            },
-            submit() {
-                if (this.$refs.form) this.$refs.form.submit();
-            },
-            clear() {
-                this.q = '';
-                this.submit();
+    (function () {
+        const searchItemClass = 'sf-customer-search-item';
+        const filterForm = document.getElementById('sf-customers-filter');
+        const branchSelect = document.getElementById('sf-customers-branch');
+        const searchInput = document.getElementById('sf-customer-search');
+        const searchResults = document.getElementById('sf-customer-search-results');
+        const searchClear = document.getElementById('sf-customer-search-clear');
+        let searchTimer = null;
+        let searchAbort = null;
+        const canAbortSearch = typeof AbortController !== 'undefined';
+        const canFetch = typeof fetch === 'function';
+
+        function clearSearchResults() {
+            if (!searchResults) return;
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+        }
+
+        function positionSearchResults() {
+            if (!searchResults || !searchInput) return;
+            const rect = searchInput.getBoundingClientRect();
+            searchResults.style.position = 'absolute';
+            searchResults.style.top = `${rect.bottom + window.scrollY}px`;
+            searchResults.style.left = `${rect.left + window.scrollX}px`;
+            searchResults.style.width = `${rect.width}px`;
+            searchResults.style.zIndex = '2000';
+        }
+
+        function ensureSearchPortal() {
+            if (!searchResults || !document.body) return;
+            if (searchResults.parentElement !== document.body) {
+                document.body.appendChild(searchResults);
             }
-        };
-    }
+            positionSearchResults();
+        }
+
+        function showSearchStatus(message) {
+            if (!searchResults) return;
+            ensureSearchPortal();
+            searchResults.innerHTML = '';
+            const item = document.createElement('div');
+            item.className = 'list-group-item text-muted';
+            item.textContent = message;
+            searchResults.appendChild(item);
+            searchResults.style.display = 'block';
+            searchResults.style.visibility = 'visible';
+            searchResults.style.opacity = '1';
+            searchResults.style.pointerEvents = 'auto';
+        }
+
+        function renderSearchResults(items, query) {
+            if (!searchResults) return;
+            ensureSearchPortal();
+
+            const frag = document.createDocumentFragment();
+            if (!items || items.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'list-group-item text-muted';
+                empty.textContent = query ? `No matches for "${query}"` : 'No matches';
+                frag.appendChild(empty);
+            } else {
+                items.forEach(item => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = `list-group-item list-group-item-action text-start ${searchItemClass}`;
+
+                    const name = item.name || '';
+                    const nameEl = document.createElement('div');
+                    nameEl.className = 'fw-semibold';
+                    nameEl.textContent = name;
+                    button.appendChild(nameEl);
+
+                    button.addEventListener('click', function () {
+                        if (!searchInput || !filterForm) return;
+                        searchInput.value = name;
+                        clearSearchResults();
+                        filterForm.submit();
+                    });
+
+                    frag.appendChild(button);
+                });
+            }
+
+            searchResults.innerHTML = '';
+            searchResults.appendChild(frag);
+            searchResults.style.display = 'block';
+            searchResults.style.visibility = 'visible';
+            searchResults.style.opacity = '1';
+            searchResults.style.pointerEvents = 'auto';
+        }
+
+        function runSearch(query) {
+            if (!searchInput || !searchResults) return;
+            if (canAbortSearch && searchAbort) {
+                searchAbort.abort();
+            }
+
+            const controller = canAbortSearch ? new AbortController() : null;
+            if (controller) {
+                searchAbort = controller;
+            }
+
+            const branchId = branchSelect ? branchSelect.value : '';
+            const url = `/app/sharpfleet/admin/customers/search?query=${encodeURIComponent(query)}&branch_id=${encodeURIComponent(branchId)}`;
+
+            const showError = () => showSearchStatus('Search unavailable');
+
+            if (canFetch) {
+                showSearchStatus('Searching...');
+                const fetchOptions = controller ? { signal: controller.signal } : {};
+                fetch(url, fetchOptions)
+                    .then(res => (res.ok ? res.json() : []))
+                    .then(items => renderSearchResults(items, query))
+                    .catch(err => {
+                        if (err && err.name === 'AbortError') return;
+                        showError();
+                    });
+                return;
+            }
+
+            showSearchStatus('Searching...');
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const items = JSON.parse(xhr.responseText || '[]');
+                        renderSearchResults(items, query);
+                    } catch (e) {
+                        showError();
+                    }
+                } else {
+                    showError();
+                }
+            };
+            xhr.onerror = showError;
+            xhr.send();
+        }
+
+        if (searchInput) {
+            if (searchClear) {
+                searchClear.style.display = searchInput.value.trim() ? 'block' : 'none';
+            }
+
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.trim();
+                if (searchClear) {
+                    searchClear.style.display = query ? 'block' : 'none';
+                }
+                if (searchTimer) {
+                    clearTimeout(searchTimer);
+                }
+                if (query.length === 0) {
+                    clearSearchResults();
+                    return;
+                }
+                searchTimer = setTimeout(() => runSearch(query), 200);
+            });
+
+            searchInput.addEventListener('focus', function () {
+                const query = searchInput.value.trim();
+                if (query.length >= 1) {
+                    runSearch(query);
+                }
+            });
+        }
+
+        if (searchClear && searchInput) {
+            searchClear.addEventListener('click', function () {
+                searchInput.value = '';
+                clearSearchResults();
+                searchClear.style.display = 'none';
+                if (filterForm) {
+                    filterForm.submit();
+                }
+            });
+        }
+
+        document.addEventListener('click', function (event) {
+            if (!searchResults || !searchInput) return;
+            if (searchResults.contains(event.target) || searchInput.contains(event.target)) return;
+            clearSearchResults();
+        });
+
+        window.addEventListener('resize', function () {
+            if (searchResults && searchResults.style.display === 'block') {
+                positionSearchResults();
+            }
+        });
+
+        window.addEventListener('scroll', function () {
+            if (searchResults && searchResults.style.display === 'block') {
+                positionSearchResults();
+            }
+        }, true);
+    })();
 </script>
 @endpush
 
 @endsection
+
+

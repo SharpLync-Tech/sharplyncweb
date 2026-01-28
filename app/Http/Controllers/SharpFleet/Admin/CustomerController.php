@@ -79,6 +79,60 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $user = $this->getSharpFleetUser($request);
+
+        if (!$user || !Roles::canManageFleet($user)) {
+            abort(403);
+        }
+
+        $organisationId = (int) $user['organisation_id'];
+        if (!$this->customerService->customersTableExists()) {
+            return response()->json([]);
+        }
+
+        $branchesService = new BranchService();
+        $branchesEnabled = $branchesService->branchesEnabled();
+        $hasCustomerBranch = Schema::connection('sharpfleet')->hasColumn('customers', 'branch_id');
+        $isCompanyAdmin = Roles::isCompanyAdmin($user);
+
+        $branches = $branchesEnabled
+            ? ($isCompanyAdmin
+                ? $branchesService->getBranches($organisationId)
+                : $branchesService->getBranchesForUser($organisationId, (int) $user['id']))
+            : collect();
+
+        $selectedBranchId = $isCompanyAdmin ? (int) $request->query('branch_id', 0) : 0;
+        $branchIdsForFilter = [];
+        if ($branchesEnabled && $hasCustomerBranch) {
+            if ($isCompanyAdmin && $selectedBranchId > 0) {
+                $branchIdsForFilter = [$selectedBranchId];
+            } elseif (!$isCompanyAdmin) {
+                $branchIdsForFilter = $branches->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+            }
+        }
+
+        $search = trim((string) $request->query('query', ''));
+        if ($search === '') {
+            return response()->json([]);
+        }
+
+        $customers = $this->customerService->getCustomers(
+            $organisationId,
+            8,
+            $branchIdsForFilter,
+            $search
+        );
+
+        return response()->json(
+            $customers->map(fn ($c) => [
+                'id' => (int) $c->id,
+                'name' => (string) ($c->name ?? ''),
+            ])->values()
+        );
+    }
+
     public function create(Request $request)
     {
         $user = $this->getSharpFleetUser($request);
