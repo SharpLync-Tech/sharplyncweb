@@ -88,8 +88,8 @@
         )
         ->whereNotNull('trips.started_at')
         ->whereNotNull('trips.ended_at')
-        ->orderByDesc('trips.started_at')
-        ->limit(5);
+        ->orderByDesc('trips.ended_at')
+        ->limit(10);
 
     $trips = $tripQuery->get();
 @endphp
