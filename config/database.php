@@ -62,39 +62,15 @@ return [
         ],
 
         // ==========================================================
-        // SharpFleet Fleet Management
+        // SharpLync Marketing (NEW)
         // ==========================================================
-        'sharpfleet' => [
+        'marketing' => [
             'driver' => 'mysql',
-            'host' => env('SHARPFLEET_DB_HOST'),
-            'port' => env('SHARPFLEET_DB_PORT', '3306'),
-            'database' => env('SHARPFLEET_DB_DATABASE'),
-            'username' => env('SHARPFLEET_DB_USERNAME'),
-            'password' => env('SHARPFLEET_DB_PASSWORD'),
-            'unix_socket' => '',
-            'charset' => env('SHARPFLEET_DB_CHARSET', 'utf8mb4'),
-            'collation' => env('SHARPFLEET_DB_COLLATION', 'utf8mb4_unicode_ci'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? [
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-            ] : [],
-        ],
-
-
-        // ==========================================================
-        // SharpLync Facilities
-        // ==========================================================
-        'sharplync_facilities' => [
-            'driver' => 'mysql',
-            'host' => env('FACILITIES_DB_HOST'),
-            'port' => env('FACILITIES_DB_PORT', '3306'),
-            'database' => env('FACILITIES_DB_DATABASE'),
-            'username' => env('FACILITIES_DB_USERNAME'),
-            'password' => env('FACILITIES_DB_PASSWORD'),
+            'host' => env('MARKETING_DB_HOST', env('DB_HOST')),
+            'port' => env('MARKETING_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('MARKETING_DB_DATABASE'),
+            'username' => env('MARKETING_DB_USERNAME', env('DB_USERNAME')),
+            'password' => env('MARKETING_DB_PASSWORD', env('DB_PASSWORD')),
             'unix_socket' => '',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -103,7 +79,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? [
-                PDO::MYSQL_ATTR_SSL_CA => env('FACILITIES_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+                PDO::MYSQL_ATTR_SSL_CA => env('MARKETING_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ] : [],
         ],
