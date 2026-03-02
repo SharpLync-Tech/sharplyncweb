@@ -1,6 +1,9 @@
-@extends('marketing.admin.layout')
+﻿@extends('marketing.admin.layout')
 
 @section('content')
+@php
+    $brandScope = $brandScope ?? 'both';
+@endphp
 
 <h1 style="margin-bottom:20px;">Create Campaign</h1>
 
@@ -30,18 +33,48 @@
 <form method="POST" action="{{ route('marketing.admin.campaigns.store') }}">
     @csrf
 
+    @if($brandScope === 'both')
+        <div style="margin-bottom:20px;">
+            <label style="display:block;margin-bottom:6px;font-weight:600;">Brand</label>
+            <select name="brand" required style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+                <option value="sl" {{ old('brand') === 'sl' ? 'selected' : '' }}>SharpLync</option>
+                <option value="sf" {{ old('brand') === 'sf' ? 'selected' : '' }}>SharpFleet</option>
+            </select>
+        </div>
+    @else
+        <input type="hidden" name="brand" value="{{ $brandScope }}">
+    @endif
+
     <div style="margin-bottom:20px;">
         <label style="display:block;margin-bottom:6px;font-weight:600;">Campaign Name (internal)</label>
         <input type="text" name="name" required value="{{ old('name') }}"
                style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
         <div style="font-size:12px;color:#666;margin-top:6px;">
-            Example: “March 2026 AV Promo”
+            Example: "March 2026 AV Promo"
         </div>
     </div>
 
     <div style="margin-bottom:20px;">
         <label style="display:block;margin-bottom:6px;font-weight:600;">Email Subject</label>
         <input type="text" name="subject" required value="{{ old('subject') }}"
+               style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+    </div>
+
+    <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Template</label>
+        <select name="template_view" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+            <option value="">Default (brand template)</option>
+            <option value="emails.marketing.templates.sl-basic">SharpLync - Basic</option>
+            <option value="emails.marketing.templates.sf-basic">SharpFleet - Basic</option>
+        </select>
+        <div style="font-size:12px;color:#666;margin-top:6px;">
+            If left blank, the brand default template will be used.
+        </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Hero Image URL (optional)</label>
+        <input type="text" name="hero_image" value="{{ old('hero_image') }}"
                style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
     </div>
 

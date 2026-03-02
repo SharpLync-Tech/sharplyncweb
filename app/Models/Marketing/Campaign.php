@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models\Marketing;
 
@@ -11,10 +11,22 @@ class Campaign extends Model
     protected $table = 'email_campaigns';
 
     protected $fillable = [
+        'brand',
         'name',
         'subject',
         'body_html',
+        'template_view',
+        'hero_image',
+        'body_json',
         'status',
         'scheduled_at',
+        'sent_at',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'body_json' => 'array',
+        'scheduled_at' => 'datetime',
+        'sent_at' => 'datetime',
     ];
 }

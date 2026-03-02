@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Marketing;
 
@@ -23,21 +23,23 @@ class SubscriptionController extends Controller
         $email = strtolower(trim($request->email));
         $brand = $request->brand;
 
-        // Check if already exists for this brand
         $subscriber = EmailSubscriber::where('email', $email)
             ->where('brand', $brand)
             ->first();
 
         if ($subscriber) {
-            // If unsubscribed, reset to pending for new confirmation
             if ($subscriber->status === 'unsubscribed') {
                 $subscriber->status = 'pending';
                 $subscriber->confirmation_token = Str::random(60);
                 $subscriber->confirmed_at = null;
                 $subscriber->unsubscribed_at = null;
                 $subscriber->save();
+            } elseif ($subscriber->status === 'subscribed') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'You are already subscribed.',
+                ]);
             }
-
         } else {
             $subscriber = EmailSubscriber::create([
                 'email' => $email,
@@ -48,7 +50,11 @@ class SubscriptionController extends Controller
             ]);
         }
 
-        // Send confirmation email
+        if (!$subscriber->confirmation_token) {
+            $subscriber->confirmation_token = Str::random(60);
+            $subscriber->save();
+        }
+
         Mail::send('emails.marketing.confirm-subscription', [
             'subscriber' => $subscriber,
         ], function ($message) use ($subscriber) {

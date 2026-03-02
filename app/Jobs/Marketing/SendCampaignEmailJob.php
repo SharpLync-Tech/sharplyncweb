@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 namespace App\Jobs\Marketing;
 
 use App\Models\Marketing\Campaign;
-use App\Models\Marketing\Subscriber;
+use App\Models\Marketing\EmailSubscriber;
 use App\Models\Marketing\EmailSend;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Mail;
@@ -16,60 +16,84 @@ class SendCampaignEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $campaign;
-    protected $subscriber;
+    protected int $campaignId;
+    protected int $subscriberId;
 
-    public function __construct(Campaign $campaign, Subscriber $subscriber)
+    public function __construct(int $campaignId, int $subscriberId)
     {
-        $this->campaign = $campaign;
-        $this->subscriber = $subscriber;
+        $this->campaignId = $campaignId;
+        $this->subscriberId = $subscriberId;
     }
 
     public function handle()
     {
-        $existingSend = EmailSend::where('campaign_id', $this->campaign->id)
-            ->where('subscriber_id', $this->subscriber->id)
-            ->first();
+        $campaign = Campaign::find($this->campaignId);
+        $subscriber = EmailSubscriber::find($this->subscriberId);
 
-        if ($existingSend && $existingSend->status === 'sent') {
+        if (!$campaign || !$subscriber) {
             return;
         }
 
-        try {
+        $existingSend = EmailSend::where('campaign_id', $campaign->id)
+            ->where('subscriber_id', $subscriber->id)
+            ->first();
 
+        if ($existingSend && $existingSend->status == 'sent') {
+            return;
+        }
+
+        $brand = $campaign->brand;
+        $template = $campaign->template_view;
+
+        if (!$template) {
+            $template = $brand === 'sf'
+                ? 'emails.marketing.templates.sf-basic'
+                : 'emails.marketing.templates.sl-basic';
+        }
+
+        $unsubscribeUrl = $subscriber->unsubscribe_token
+            ? url('/marketing/unsubscribe/' . $subscriber->unsubscribe_token)
+            : null;
+
+        $payload = array_merge($campaign->body_json ?? [], [
+            'campaign' => $campaign,
+            'subscriber' => $subscriber,
+            'brand' => $brand,
+            'heroImage' => $campaign->hero_image,
+            'unsubscribeUrl' => $unsubscribeUrl,
+            'subject' => $campaign->subject,
+            'bodyHtml' => $campaign->body_html,
+        ]);
+
+        try {
             Mail::send(
-                'marketing.emails.master', // THIS IS YOUR TEMPLATE
-                [
-                    'campaign'   => $this->campaign,
-                    'subscriber' => $this->subscriber,
-                ],
-                function ($message) {
-                    $message->to($this->subscriber->email)
-                            ->subject($this->campaign->subject);
+                $template,
+                $payload,
+                function ($message) use ($campaign, $subscriber) {
+                    $message->to($subscriber->email)
+                        ->subject($campaign->subject);
                 }
             );
 
             EmailSend::updateOrCreate(
                 [
-                    'campaign_id'   => $this->campaign->id,
-                    'subscriber_id' => $this->subscriber->id,
+                    'campaign_id' => $campaign->id,
+                    'subscriber_id' => $subscriber->id,
                 ],
                 [
-                    'status'   => 'sent',
-                    'sent_at'  => now(),
+                    'status' => 'sent',
+                    'sent_at' => now(),
                     'message_id' => null,
                 ]
             );
-
         } catch (\Exception $e) {
-
             EmailSend::updateOrCreate(
                 [
-                    'campaign_id'   => $this->campaign->id,
-                    'subscriber_id' => $this->subscriber->id,
+                    'campaign_id' => $campaign->id,
+                    'subscriber_id' => $subscriber->id,
                 ],
                 [
-                    'status'  => 'failed',
+                    'status' => 'failed',
                     'sent_at' => now(),
                 ]
             );

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -14,7 +14,7 @@
 
 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden;">
 
-    <!-- NAVY HEADER -->
+    <!-- HEADER -->
     <tr>
         <td style="background:#0b1f3a; padding:28px 30px; text-align:left;">
             <h1 style="color:#ffffff; margin:0; font-size:20px; font-weight:600;">
@@ -23,7 +23,7 @@
         </td>
     </tr>
 
-    <!-- TEAL ACCENT LINE -->
+    <!-- ACCENT LINE -->
     <tr>
         <td style="height:4px; background:#0ea5e9;"></td>
     </tr>
@@ -61,7 +61,7 @@
             @endif
 
             <p style="margin:15px 0 0 0;">
-                © {{ date('Y') }} SharpLync Pty Ltd
+                &copy; {{ date('Y') }} SharpLync Pty Ltd
             </p>
 
         </td>

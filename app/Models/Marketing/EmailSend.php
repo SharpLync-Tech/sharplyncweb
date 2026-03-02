@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models\Marketing;
 
@@ -25,11 +25,6 @@ class EmailSend extends Model
         'sent_at' => 'datetime',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | AU Formatted Date (Display Only)
-    |--------------------------------------------------------------------------
-    */
     public function getSentAtAuAttribute()
     {
         if (!$this->sent_at) {
@@ -41,11 +36,6 @@ class EmailSend extends Model
             ->format('d/m/Y H:i');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);
@@ -53,6 +43,6 @@ class EmailSend extends Model
 
     public function subscriber()
     {
-        return $this->belongsTo(Subscriber::class);
+        return $this->belongsTo(EmailSubscriber::class, 'subscriber_id');
     }
 }

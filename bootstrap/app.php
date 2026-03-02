@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
-        // 🔐 If you're using cookie-based auth for web SPA clients, enable this:
+        // If you're using cookie-based auth for web SPA clients, enable this:
         // $middleware->prepend(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
 
         /**
@@ -46,10 +46,11 @@ return Application::configure(basePath: dirname(__DIR__))
          * ------------------------------------------------------------
          */
         $middleware->alias([
-            'admin.auth'    => \App\Http\Middleware\AdminAuth::class,
-            'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
-            'auth:sanctum'  => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'api.key'       => \App\Http\Middleware\ApiKeyAuth::class,
+            'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+            'marketing.access' => \App\Http\Middleware\MarketingAccess::class,
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'api.key' => \App\Http\Middleware\ApiKeyAuth::class,
         ]);
     })
     ->withProviders([

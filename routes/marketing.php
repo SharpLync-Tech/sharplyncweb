@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Marketing\SubscriptionController;
@@ -18,22 +18,35 @@ Route::prefix('marketing')->group(function () {
 
     Route::get('/unsubscribe/{token}', [SubscriptionController::class, 'unsubscribe'])
         ->name('marketing.unsubscribe');
-
-
-    // ============================
-    // Admin Campaign UI
-    // ============================
-
-    Route::get('/admin/campaigns', [CampaignController::class, 'index'])
-        ->name('marketing.admin.campaigns');
-
-    Route::get('/admin/campaigns/create', [CampaignController::class, 'create'])
-        ->name('marketing.admin.campaigns.create');
-
-    Route::post('/admin/campaigns', [CampaignController::class, 'store'])
-        ->name('marketing.admin.campaigns.store');
-
-    Route::post('/admin/campaigns/{id}/send', [CampaignController::class, 'sendNowWeb'])
-        ->name('marketing.admin.campaigns.send');
-
 });
+
+// ============================
+// Admin Campaign UI (SSO + Marketing Access)
+// ============================
+Route::middleware(['admin.auth', 'marketing.access'])
+    ->prefix('marketing/admin')
+    ->group(function () {
+        Route::get('/campaigns', [CampaignController::class, 'index'])
+            ->name('marketing.admin.campaigns');
+
+        Route::get('/campaigns/create', [CampaignController::class, 'create'])
+            ->name('marketing.admin.campaigns.create');
+
+        Route::post('/campaigns', [CampaignController::class, 'store'])
+            ->name('marketing.admin.campaigns.store');
+
+        Route::post('/campaigns/{id}/submit', [CampaignController::class, 'submitForReview'])
+            ->name('marketing.admin.campaigns.submit');
+
+        Route::post('/campaigns/{id}/approve', [CampaignController::class, 'approve'])
+            ->name('marketing.admin.campaigns.approve');
+
+        Route::post('/campaigns/{id}/schedule', [CampaignController::class, 'schedule'])
+            ->name('marketing.admin.campaigns.schedule');
+
+        Route::get('/campaigns/{id}/preview', [CampaignController::class, 'preview'])
+            ->name('marketing.admin.campaigns.preview');
+
+        Route::post('/campaigns/{id}/send', [CampaignController::class, 'sendNowWeb'])
+            ->name('marketing.admin.campaigns.send');
+    });
