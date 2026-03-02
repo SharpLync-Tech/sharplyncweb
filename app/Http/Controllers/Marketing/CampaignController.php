@@ -8,6 +8,7 @@ use App\Models\Marketing\Campaign;
 use App\Models\Marketing\EmailSubscriber;
 use App\Jobs\Marketing\SendCampaignEmailJob;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CampaignController extends Controller
 {
@@ -26,22 +27,64 @@ class CampaignController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
-            'body_html' => 'required|string',
+        // --- DEBUG: log what we received ---
+        Log::info('[MARKETING] Campaign store hit', [
+            'ip' => $request->ip(),
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'payload' => $request->all(),
         ]);
 
-        Campaign::create([
-            'name' => $request->name,
-            'subject' => $request->subject,
-            'body_html' => $request->body_html,
-            'status' => 'draft',
+        // --- Validate ---
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
+            'body_html' => ['required', 'string'],
         ]);
 
-        return redirect()
-            ->route('marketing.admin.campaigns')
-            ->with('success', 'Campaign created.');
+        Log::info('[MARKETING] Campaign validation passed', [
+            'validated' => $validated,
+        ]);
+
+        try {
+            $campaign = Campaign::create([
+                'name' => $validated['name'],
+                'subject' => $validated['subject'],
+                'body_html' => $validated['body_html'],
+                'status' => 'draft',
+            ]);
+
+            Log::info('[MARKETING] Campaign created', [
+                'campaign_id' => $campaign->id ?? null,
+                'campaign' => $campaign->toArray(),
+            ]);
+
+            if (!$campaign || !$campaign->id) {
+                Log::error('[MARKETING] Campaign create returned no ID', [
+                    'campaign_object' => $campaign ? $campaign->toArray() : null,
+                ]);
+
+                return redirect()
+                    ->route('marketing.admin.campaigns.create')
+                    ->withInput()
+                    ->with('error', 'Campaign did not return an ID. Check logs: storage/logs/laravel.log');
+            }
+
+            return redirect()
+                ->route('marketing.admin.campaigns')
+                ->with('success', 'Campaign created (ID: ' . $campaign->id . ').');
+        } catch (\Throwable $e) {
+            Log::error('[MARKETING] Campaign create failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('marketing.admin.campaigns.create')
+                ->withInput()
+                ->with('error', 'Create failed: ' . $e->getMessage());
+        }
     }
 
     public function preview($id)
@@ -65,8 +108,8 @@ class CampaignController extends Controller
 
         Mail::send([], [], function ($message) use ($campaign, $subscriber) {
             $message->to($subscriber->email)
-                    ->subject('[TEST] ' . $campaign->subject)
-                    ->html($campaign->body_html);
+                ->subject('[TEST] ' . $campaign->subject)
+                ->html($campaign->body_html);
         });
 
         return redirect()
