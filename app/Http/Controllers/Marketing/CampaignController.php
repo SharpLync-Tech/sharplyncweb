@@ -27,11 +27,13 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'body_html' => 'required|string',
         ]);
 
         Campaign::create([
+            'name' => $request->name,
             'subject' => $request->subject,
             'body_html' => $request->body_html,
             'status' => 'draft',
