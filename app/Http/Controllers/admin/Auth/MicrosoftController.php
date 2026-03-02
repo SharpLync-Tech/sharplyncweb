@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * SharpLync Microsoft 365 Login Controller
  * Version: 1.0
@@ -18,6 +18,7 @@ class MicrosoftController extends Controller
     {
         $state = Str::random(64);
         Session::put('admin_oauth_state', $state);
+        Session::save();
 
         $params = [
             'client_id' => env('MICROSOFT_CLIENT_ID'),
