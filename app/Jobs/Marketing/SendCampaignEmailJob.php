@@ -66,6 +66,7 @@ class SendCampaignEmailJob implements ShouldQueue
             'unsubscribeUrl' => $unsubscribeUrl,
             'preferencesUrl' => $preferencesUrl,
             'subject' => $campaign->subject,
+            'preheader' => $campaign->preheader,
             'bodyHtml' => $campaign->body_html,
         ]);
 

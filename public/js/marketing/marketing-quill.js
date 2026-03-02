@@ -25,6 +25,16 @@
         hiddenInput.value = quill.root.innerHTML;
     });
 
+    window.MarketingQuill = {
+        setHtml: function (html) {
+            quill.root.innerHTML = html || '';
+            hiddenInput.value = quill.root.innerHTML;
+        },
+        getHtml: function () {
+            return quill.root.innerHTML;
+        }
+    };
+
     function uploadImage(file) {
         var formData = new FormData();
         formData.append('image', file);

@@ -64,6 +64,15 @@
     </div>
 
     <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Preheader (optional)</label>
+        <input type="text" name="preheader" value="{{ old('preheader') }}"
+               style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+        <div style="font-size:12px;color:#666;margin-top:6px;">
+            Short preview text shown next to the subject in most inboxes.
+        </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
         <label style="display:block;margin-bottom:6px;font-weight:600;">Template</label>
         <select name="template_view" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
             <option value="">Default (brand template)</option>
@@ -83,6 +92,50 @@
 
     <div style="margin-bottom:20px;">
         <label style="display:block;margin-bottom:6px;font-weight:600;">Email Content</label>
+        <div style="background:#f8f9fb;border:1px solid #e5e7eb;border-radius:6px;padding:12px;margin-bottom:12px;">
+            <div style="font-weight:600;margin-bottom:8px;">Generate with AI</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">Goal</label>
+                    <input type="text" id="ai-goal" placeholder="Promote a new feature, announce a promo, etc."
+                           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">Audience</label>
+                    <input type="text" id="ai-audience" placeholder="Existing customers, leads, fleet managers, etc."
+                           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">Tone</label>
+                    <select id="ai-tone" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                        <option value="professional">Professional</option>
+                        <option value="friendly">Friendly</option>
+                        <option value="concise">Concise</option>
+                        <option value="energetic">Energetic</option>
+                        <option value="formal">Formal</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">CTA Text</label>
+                    <input type="text" id="ai-cta-text" placeholder="Book a demo"
+                           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">CTA URL</label>
+                    <input type="text" id="ai-cta-url" placeholder="https://example.com"
+                           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                </div>
+                <div style="grid-column:1 / -1;">
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">Key Points</label>
+                    <textarea id="ai-key-points" rows="3" placeholder="Bullet points or key messages..."
+                              style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></textarea>
+                </div>
+            </div>
+            <div style="margin-top:10px;">
+                <button type="button" id="ai-generate-btn" class="btn-send" style="background:#0ea5e9;">Generate & Replace</button>
+                <span id="ai-status" style="margin-left:10px;font-size:12px;color:#666;"></span>
+            </div>
+        </div>
         <div id="marketing-quill-toolbar" class="quill-toolbar" style="margin-bottom:10px;">
             <span class="ql-formats">
                 <select class="ql-header">
@@ -125,5 +178,54 @@
 <link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
 <script src="{{ secure_asset('quill/quill.min.js') }}"></script>
 <script src="{{ secure_asset('js/marketing/marketing-quill.js') }}"></script>
+<script>
+    (function () {
+        var btn = document.getElementById('ai-generate-btn');
+        if (!btn) return;
+
+        btn.addEventListener('click', function () {
+            var statusEl = document.getElementById('ai-status');
+            if (statusEl) statusEl.textContent = 'Generating...';
+
+            var brandEl = document.querySelector('select[name="brand"]');
+            var brand = brandEl ? brandEl.value : document.querySelector('input[name="brand"]').value;
+
+            fetch("{{ route('marketing.admin.ai.generate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    brand: brand,
+                    goal: document.getElementById('ai-goal').value,
+                    audience: document.getElementById('ai-audience').value,
+                    key_points: document.getElementById('ai-key-points').value,
+                    tone: document.getElementById('ai-tone').value,
+                    cta_text: document.getElementById('ai-cta-text').value,
+                    cta_url: document.getElementById('ai-cta-url').value
+                })
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.error) {
+                    if (statusEl) statusEl.textContent = 'Error: ' + data.error;
+                    return;
+                }
+                var subject = document.querySelector('input[name="subject"]');
+                var preheader = document.querySelector('input[name="preheader"]');
+                if (subject && data.subject) subject.value = data.subject;
+                if (preheader && data.preheader) preheader.value = data.preheader;
+                if (window.MarketingQuill && data.html) {
+                    window.MarketingQuill.setHtml(data.html);
+                }
+                if (statusEl) statusEl.textContent = 'Done.';
+            })
+            .catch(function (err) {
+                if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+            });
+        });
+    })();
+</script>
 
 @endsection

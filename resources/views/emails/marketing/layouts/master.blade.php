@@ -9,6 +9,12 @@
 
 <body style="margin:0; padding:0; background:#f4f6f8; font-family: Arial, Helvetica, sans-serif;">
 
+@if(!empty($preheader))
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+    {{ $preheader }}
+</div>
+@endif
+
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8; padding:40px 0;">
 <tr>
 <td align="center">

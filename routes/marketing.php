@@ -41,6 +41,9 @@ Route::middleware(['admin.auth', 'marketing.access'])
         Route::post('/uploads', [CampaignController::class, 'upload'])
             ->name('marketing.admin.uploads');
 
+        Route::post('/ai/generate', [CampaignController::class, 'generateAi'])
+            ->name('marketing.admin.ai.generate');
+
         Route::get('/campaigns/create', [CampaignController::class, 'create'])
             ->name('marketing.admin.campaigns.create');
 

@@ -14,6 +14,7 @@ class Campaign extends Model
         'brand',
         'name',
         'subject',
+        'preheader',
         'body_html',
         'template_view',
         'hero_image',

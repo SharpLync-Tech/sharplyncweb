@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Marketing\Campaign;
 use App\Models\Marketing\EmailSubscriber;
 use App\Jobs\Marketing\SendCampaignEmailJob;
+use App\Services\Marketing\MarketingAiClient;
 use Illuminate\Support\Facades\Log;
 
 class CampaignController extends Controller
@@ -87,6 +88,27 @@ class CampaignController extends Controller
         ]);
     }
 
+    public function generateAi(Request $request, MarketingAiClient $client)
+    {
+        $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
+
+        $validated = $request->validate([
+            'brand' => ['required', 'in:sl,sf'],
+            'goal' => ['required', 'string', 'max:500'],
+            'audience' => ['required', 'string', 'max:500'],
+            'key_points' => ['nullable', 'string', 'max:2000'],
+            'tone' => ['required', 'string', 'max:100'],
+            'cta_text' => ['nullable', 'string', 'max:100'],
+            'cta_url' => ['nullable', 'string', 'max:300'],
+        ]);
+
+        $this->assertBrandAllowed($validated['brand']);
+
+        $result = $client->generateEmail($validated);
+
+        return response()->json($result);
+    }
+
     public function create()
     {
         $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
@@ -123,6 +145,7 @@ class CampaignController extends Controller
             'brand' => ['required', 'in:sl,sf'],
             'name' => ['required', 'string', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
+            'preheader' => ['nullable', 'string', 'max:190'],
             'body_html' => ['nullable', 'string'],
             'template_view' => ['nullable', 'string', 'max:255'],
             'hero_image' => ['nullable', 'string', 'max:255'],
@@ -143,6 +166,7 @@ class CampaignController extends Controller
                 'brand' => $brand,
                 'name' => $validated['name'],
                 'subject' => $validated['subject'],
+                'preheader' => $validated['preheader'] ?? null,
                 'body_html' => $validated['body_html'] ?? '',
                 'template_view' => $templateView,
                 'hero_image' => $validated['hero_image'] ?? null,
@@ -183,6 +207,7 @@ class CampaignController extends Controller
             'brand' => ['required', 'in:sl,sf'],
             'name' => ['required', 'string', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
+            'preheader' => ['nullable', 'string', 'max:190'],
             'body_html' => ['nullable', 'string'],
             'template_view' => ['nullable', 'string', 'max:255'],
             'hero_image' => ['nullable', 'string', 'max:255'],
@@ -201,6 +226,7 @@ class CampaignController extends Controller
         $campaign->brand = $brand;
         $campaign->name = $validated['name'];
         $campaign->subject = $validated['subject'];
+        $campaign->preheader = $validated['preheader'] ?? null;
         $campaign->body_html = $validated['body_html'] ?? '';
         $campaign->template_view = $templateView;
         $campaign->hero_image = $validated['hero_image'] ?? null;
@@ -305,6 +331,7 @@ class CampaignController extends Controller
             'heroImage' => $campaign->hero_image,
             'unsubscribeUrl' => null,
             'subject' => $campaign->subject,
+            'preheader' => $campaign->preheader,
             'bodyHtml' => $campaign->body_html,
         ]);
 
