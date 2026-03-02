@@ -34,6 +34,8 @@
 <form method="POST" action="{{ route('marketing.admin.campaigns.update', $campaign->id) }}">
     @csrf
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     @if($brandScope === 'both')
         <div style="margin-bottom:20px;">
             <label style="display:block;margin-bottom:6px;font-weight:600;">Brand</label>
@@ -74,9 +76,34 @@
     </div>
 
     <div style="margin-bottom:20px;">
-        <label style="display:block;margin-bottom:6px;font-weight:600;">Body HTML</label>
-        <textarea name="body_html" rows="14" required
-                  style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">{{ old('body_html', $campaign->body_html) }}</textarea>
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Email Content</label>
+        <div id="marketing-quill-toolbar" class="quill-toolbar" style="margin-bottom:10px;">
+            <span class="ql-formats">
+                <select class="ql-header">
+                    <option value="1">H1</option>
+                    <option value="2">H2</option>
+                    <option selected>Normal</option>
+                </select>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-clean"></button>
+            </span>
+        </div>
+        <div id="marketing-quill-editor" class="quill-editor" style="background:#fff;border:1px solid #ccc;border-radius:6px;min-height:220px;padding:10px;"></div>
+        <input type="hidden" name="body_html" id="body_html" value="{{ old('body_html', $campaign->body_html) }}">
     </div>
 
     <button type="submit" class="btn-primary">
@@ -87,5 +114,10 @@
         Cancel
     </a>
 </form>
+
+<link href="{{ secure_asset('quill/quill.core.css') }}" rel="stylesheet">
+<link href="{{ secure_asset('quill/quill.snow.css') }}" rel="stylesheet">
+<script src="{{ secure_asset('quill/quill.min.js') }}"></script>
+<script src="{{ secure_asset('js/marketing/marketing-quill.js') }}"></script>
 
 @endsection

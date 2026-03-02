@@ -63,6 +63,30 @@ class CampaignController extends Controller
         ]);
     }
 
+    public function upload(Request $request)
+    {
+        $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
+
+        $request->validate([
+            'image' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $file = $request->file('image');
+        $extension = $file->getClientOriginalExtension();
+        $filename = 'marketing-' . now()->format('Ymd-His') . '-' . bin2hex(random_bytes(6)) . '.' . $extension;
+
+        $targetDir = public_path('uploads/marketing');
+        if (!is_dir($targetDir)) {
+            @mkdir($targetDir, 0755, true);
+        }
+
+        $file->move($targetDir, $filename);
+
+        return response()->json([
+            'url' => asset('uploads/marketing/' . $filename),
+        ]);
+    }
+
     public function create()
     {
         $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);

@@ -38,6 +38,9 @@ Route::middleware(['admin.auth', 'marketing.access'])
         Route::get('/logs', [CampaignController::class, 'logs'])
             ->name('marketing.admin.logs');
 
+        Route::post('/uploads', [CampaignController::class, 'upload'])
+            ->name('marketing.admin.uploads');
+
         Route::get('/campaigns/create', [CampaignController::class, 'create'])
             ->name('marketing.admin.campaigns.create');
 
