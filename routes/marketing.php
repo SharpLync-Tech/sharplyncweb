@@ -2,13 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Marketing\SubscriptionController;
-use App\Http\Controllers\Marketing\CampaignController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes (Subscriber Flow)
-|--------------------------------------------------------------------------
-*/
 
 Route::prefix('marketing')->group(function () {
 
@@ -22,21 +15,3 @@ Route::prefix('marketing')->group(function () {
         ->name('marketing.unsubscribe');
 
 });
-
-/*
-|--------------------------------------------------------------------------
-| API Routes (Campaign Sending - No CSRF)
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('marketing')
-    ->middleware('api')
-    ->group(function () {
-
-        Route::post('/campaigns/{id}/send-now', [CampaignController::class, 'sendNow'])
-            ->name('marketing.campaigns.sendNow');
-
-        Route::post('/campaigns/process-scheduled', [CampaignController::class, 'processScheduled'])
-            ->name('marketing.campaigns.processScheduled');
-
-    });
