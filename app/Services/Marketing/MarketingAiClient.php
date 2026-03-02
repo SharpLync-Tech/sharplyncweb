@@ -119,6 +119,15 @@ class MarketingAiClient
                 ];
             }
 
+            if (!isset($parsed['ctaText']) && !isset($parsed['ctaUrl'])) {
+                if (!empty($ctaText)) {
+                    $parsed['ctaText'] = $ctaText;
+                }
+                if (!empty($ctaUrl)) {
+                    $parsed['ctaUrl'] = $ctaUrl;
+                }
+            }
+
             return $parsed;
         } catch (\Exception $e) {
             return [

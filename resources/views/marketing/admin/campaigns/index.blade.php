@@ -77,6 +77,10 @@
                 <td>{{ $campaign->created_at }}</td>
                 <td>
                     <a href="{{ route('marketing.admin.campaigns.preview', $campaign->id) }}" target="_blank" style="margin-right:8px;">Preview</a>
+                    <form method="POST" action="{{ route('marketing.admin.campaigns.test', $campaign->id) }}" style="display:inline;margin-right:6px;">
+                        @csrf
+                        <button type="submit" class="btn-send" style="background:#0ea5e9;">Test</button>
+                    </form>
 
                     @if($campaign->status === 'draft')
                         <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}" style="margin-right:8px;">Edit</a>

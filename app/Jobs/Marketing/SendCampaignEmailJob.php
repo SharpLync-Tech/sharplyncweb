@@ -67,6 +67,8 @@ class SendCampaignEmailJob implements ShouldQueue
             'preferencesUrl' => $preferencesUrl,
             'subject' => $campaign->subject,
             'preheader' => $campaign->preheader,
+            'ctaText' => $campaign->cta_text,
+            'ctaUrl' => $campaign->cta_url,
             'bodyHtml' => $campaign->body_html,
         ]);
 

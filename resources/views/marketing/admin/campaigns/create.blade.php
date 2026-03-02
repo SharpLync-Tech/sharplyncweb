@@ -73,6 +73,18 @@
     </div>
 
     <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">CTA Text (optional)</label>
+        <input type="text" name="cta_text" value="{{ old('cta_text') }}"
+               style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+    </div>
+
+    <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">CTA URL (optional)</label>
+        <input type="text" name="cta_url" value="{{ old('cta_url') }}"
+               style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+    </div>
+
+    <div style="margin-bottom:20px;">
         <label style="display:block;margin-bottom:6px;font-weight:600;">Template</label>
         <select name="template_view" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
             <option value="">Default (brand template)</option>
@@ -227,8 +239,12 @@
                 }
                 var subject = document.querySelector('input[name="subject"]');
                 var preheader = document.querySelector('input[name="preheader"]');
+                var ctaText = document.querySelector('input[name="cta_text"]');
+                var ctaUrl = document.querySelector('input[name="cta_url"]');
                 if (subject && data.subject) subject.value = data.subject;
                 if (preheader && data.preheader) preheader.value = data.preheader;
+                if (ctaText && data.ctaText) ctaText.value = data.ctaText;
+                if (ctaUrl && data.ctaUrl) ctaUrl.value = data.ctaUrl;
                 if (window.MarketingQuill && data.html) {
                     var ok = window.MarketingQuill.setHtml(data.html);
                     if (!ok && statusEl) {

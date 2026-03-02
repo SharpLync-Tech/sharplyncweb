@@ -15,6 +15,8 @@ class Campaign extends Model
         'name',
         'subject',
         'preheader',
+        'cta_text',
+        'cta_url',
         'body_html',
         'template_view',
         'hero_image',

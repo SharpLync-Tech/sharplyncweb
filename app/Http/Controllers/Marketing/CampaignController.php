@@ -155,6 +155,8 @@ class CampaignController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
             'preheader' => ['nullable', 'string', 'max:190'],
+            'cta_text' => ['nullable', 'string', 'max:100'],
+            'cta_url' => ['nullable', 'string', 'max:300'],
             'body_html' => ['nullable', 'string'],
             'template_view' => ['nullable', 'string', 'max:255'],
             'hero_image' => ['nullable', 'string', 'max:255'],
@@ -176,6 +178,8 @@ class CampaignController extends Controller
                 'name' => $validated['name'],
                 'subject' => $validated['subject'],
                 'preheader' => $validated['preheader'] ?? null,
+                'cta_text' => $validated['cta_text'] ?? null,
+                'cta_url' => $validated['cta_url'] ?? null,
                 'body_html' => $validated['body_html'] ?? '',
                 'template_view' => $templateView,
                 'hero_image' => $validated['hero_image'] ?? null,
@@ -217,6 +221,8 @@ class CampaignController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
             'preheader' => ['nullable', 'string', 'max:190'],
+            'cta_text' => ['nullable', 'string', 'max:100'],
+            'cta_url' => ['nullable', 'string', 'max:300'],
             'body_html' => ['nullable', 'string'],
             'template_view' => ['nullable', 'string', 'max:255'],
             'hero_image' => ['nullable', 'string', 'max:255'],
@@ -236,6 +242,8 @@ class CampaignController extends Controller
         $campaign->name = $validated['name'];
         $campaign->subject = $validated['subject'];
         $campaign->preheader = $validated['preheader'] ?? null;
+        $campaign->cta_text = $validated['cta_text'] ?? null;
+        $campaign->cta_url = $validated['cta_url'] ?? null;
         $campaign->body_html = $validated['body_html'] ?? '';
         $campaign->template_view = $templateView;
         $campaign->hero_image = $validated['hero_image'] ?? null;
@@ -341,6 +349,8 @@ class CampaignController extends Controller
             'unsubscribeUrl' => null,
             'subject' => $campaign->subject,
             'preheader' => $campaign->preheader,
+            'ctaText' => $campaign->cta_text,
+            'ctaUrl' => $campaign->cta_url,
             'bodyHtml' => $campaign->body_html,
         ]);
 
@@ -401,6 +411,55 @@ class CampaignController extends Controller
         return redirect()
             ->route('marketing.admin.campaigns')
             ->with('success', 'Campaign resent to ' . $count . ' subscribers.');
+    }
+
+    public function sendTest($id)
+    {
+        $this->requireRole(['reviewer', 'sender', 'admin']);
+
+        $campaign = Campaign::findOrFail($id);
+        $this->assertBrandAllowed($campaign->brand);
+
+        $template = $campaign->template_view;
+        if (!$template) {
+            $template = $campaign->brand === 'sf'
+                ? 'emails.marketing.templates.sf-basic'
+                : 'emails.marketing.templates.sl-basic';
+        }
+
+        $payload = array_merge($campaign->body_json ?? [], [
+            'campaign' => $campaign,
+            'subscriber' => null,
+            'brand' => $campaign->brand,
+            'heroImage' => $campaign->hero_image,
+            'unsubscribeUrl' => null,
+            'preferencesUrl' => null,
+            'subject' => $campaign->subject,
+            'preheader' => $campaign->preheader,
+            'ctaText' => $campaign->cta_text,
+            'ctaUrl' => $campaign->cta_url,
+            'bodyHtml' => $campaign->body_html,
+        ]);
+
+        $testEmail = 'jannie.brits@sharplync.com.au';
+        $fromAddress = config('mail.from.address');
+        $fromName = $campaign->brand === 'sf' ? 'SharpFleet' : 'SharpLync';
+
+        \Mail::send(
+            $template,
+            $payload,
+            function ($message) use ($campaign, $testEmail, $fromAddress, $fromName) {
+                if ($fromAddress) {
+                    $message->from($fromAddress, $fromName);
+                }
+                $message->to($testEmail)
+                    ->subject('[TEST] ' . $campaign->subject);
+            }
+        );
+
+        return redirect()
+            ->route('marketing.admin.campaigns')
+            ->with('success', 'Test email sent to ' . $testEmail);
     }
 
     public function sendNow($id)

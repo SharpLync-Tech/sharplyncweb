@@ -74,6 +74,9 @@ Route::middleware(['admin.auth', 'marketing.access'])
         Route::post('/campaigns/{id}/resend', [CampaignController::class, 'resend'])
             ->name('marketing.admin.campaigns.resend');
 
+        Route::post('/campaigns/{id}/test', [CampaignController::class, 'sendTest'])
+            ->name('marketing.admin.campaigns.test');
+
         Route::post('/campaigns/{id}/delete', [CampaignController::class, 'destroy'])
             ->name('marketing.admin.campaigns.delete');
     });
