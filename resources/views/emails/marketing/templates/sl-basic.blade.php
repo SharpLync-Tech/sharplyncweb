@@ -3,14 +3,16 @@
 
 @section('content')
 @php
-    $titleText = $title ?? ($subject ?? ($campaign->subject ?? 'SharpLync Update'));
+    $titleText = $title ?? null;
     $introText = $intro ?? null;
     $bodyText = $body ?? null;
 @endphp
 
+@if(!empty($titleText))
 <h2 style="margin-top:0; font-size:20px; font-weight:600;">
     {{ $titleText }}
 </h2>
+@endif
 
 @if(!empty($introText))
 <p style="margin:15px 0 20px 0;">
