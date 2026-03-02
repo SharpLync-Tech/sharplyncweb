@@ -1,4 +1,5 @@
-﻿@extends('emails.marketing.layouts.master')
+<!-- Marketing Email: SharpFleet Basic -->
+@extends('emails.marketing.layouts.master')
 
 @section('content')
 @php

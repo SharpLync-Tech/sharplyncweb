@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+<!-- Marketing Email: Master Layout -->
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">

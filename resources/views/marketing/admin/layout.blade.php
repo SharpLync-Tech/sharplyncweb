@@ -1,3 +1,4 @@
+<!-- Marketing Page: Admin Layout -->
 <!DOCTYPE html>
 <html>
 <head>

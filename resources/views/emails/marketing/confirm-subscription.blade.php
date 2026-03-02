@@ -1,3 +1,4 @@
+<!-- Marketing Email: Confirm Subscription -->
 <!DOCTYPE html>
 <html>
 <head>

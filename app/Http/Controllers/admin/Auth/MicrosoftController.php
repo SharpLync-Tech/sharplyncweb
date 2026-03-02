@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * SharpLync Microsoft 365 Login Controller
  * Version: 1.0

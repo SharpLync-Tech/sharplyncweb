@@ -1,4 +1,5 @@
-﻿@extends('marketing.admin.layout')
+<!-- Marketing Page: Campaign Create -->
+@extends('marketing.admin.layout')
 
 @section('content')
 @php

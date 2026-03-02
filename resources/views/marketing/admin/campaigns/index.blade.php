@@ -1,4 +1,5 @@
-﻿@extends('marketing.admin.layout')
+<!-- Marketing Page: Campaign Index -->
+@extends('marketing.admin.layout')
 
 @section('content')
 
