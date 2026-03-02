@@ -79,14 +79,24 @@
                     <a href="{{ route('marketing.admin.campaigns.preview', $campaign->id) }}" target="_blank" style="margin-right:8px;">Preview</a>
 
                     @if($campaign->status === 'draft')
+                        <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}" style="margin-right:8px;">Edit</a>
                         <form method="POST" action="{{ route('marketing.admin.campaigns.submit', $campaign->id) }}" style="display:inline;">
                             @csrf
                             <button type="submit" class="btn-send">Submit</button>
                         </form>
+                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
+                            @csrf
+                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
+                        </form>
                     @elseif($campaign->status === 'pending_review')
+                        <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}" style="margin-right:8px;">Edit</a>
                         <form method="POST" action="{{ route('marketing.admin.campaigns.approve', $campaign->id) }}" style="display:inline;">
                             @csrf
                             <button type="submit" class="btn-send">Approve</button>
+                        </form>
+                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
+                            @csrf
+                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
                         </form>
                     @elseif(in_array($campaign->status, ['approved', 'scheduled']))
                         <form method="POST" action="{{ route('marketing.admin.campaigns.schedule', $campaign->id) }}" style="display:inline;">
@@ -97,6 +107,15 @@
                         <form method="POST" action="{{ route('marketing.admin.campaigns.send', $campaign->id) }}" style="display:inline;margin-left:6px;">
                             @csrf
                             <button type="submit" class="btn-send">Send Now</button>
+                        </form>
+                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
+                            @csrf
+                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
+                        </form>
+                    @elseif($campaign->status === 'sent')
+                        <form method="POST" action="{{ route('marketing.admin.campaigns.resend', $campaign->id) }}" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn-send">Resend</button>
                         </form>
                     @else
                         --

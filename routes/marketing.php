@@ -32,8 +32,14 @@ Route::middleware(['admin.auth', 'marketing.access'])
         Route::get('/campaigns/create', [CampaignController::class, 'create'])
             ->name('marketing.admin.campaigns.create');
 
+        Route::get('/campaigns/{id}/edit', [CampaignController::class, 'edit'])
+            ->name('marketing.admin.campaigns.edit');
+
         Route::post('/campaigns', [CampaignController::class, 'store'])
             ->name('marketing.admin.campaigns.store');
+
+        Route::post('/campaigns/{id}', [CampaignController::class, 'update'])
+            ->name('marketing.admin.campaigns.update');
 
         Route::post('/campaigns/{id}/submit', [CampaignController::class, 'submitForReview'])
             ->name('marketing.admin.campaigns.submit');
@@ -49,4 +55,10 @@ Route::middleware(['admin.auth', 'marketing.access'])
 
         Route::post('/campaigns/{id}/send', [CampaignController::class, 'sendNowWeb'])
             ->name('marketing.admin.campaigns.send');
+
+        Route::post('/campaigns/{id}/resend', [CampaignController::class, 'resend'])
+            ->name('marketing.admin.campaigns.resend');
+
+        Route::post('/campaigns/{id}/delete', [CampaignController::class, 'destroy'])
+            ->name('marketing.admin.campaigns.delete');
     });

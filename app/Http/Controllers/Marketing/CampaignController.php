@@ -48,6 +48,25 @@ class CampaignController extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
+
+        $campaign = Campaign::findOrFail($id);
+        $this->assertBrandAllowed($campaign->brand);
+
+        if (!in_array($campaign->status, ['draft', 'pending_review'], true)) {
+            return redirect()
+                ->route('marketing.admin.campaigns')
+                ->with('error', 'Only draft campaigns can be edited.');
+        }
+
+        return view('marketing.admin.campaigns.edit', [
+            'campaign' => $campaign,
+            'brandScope' => $this->brandScope(),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
@@ -97,6 +116,56 @@ class CampaignController extends Controller
                 ->withInput()
                 ->with('error', 'Create failed: ' . $e->getMessage());
         }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);
+
+        $campaign = Campaign::findOrFail($id);
+        $this->assertBrandAllowed($campaign->brand);
+
+        if (!in_array($campaign->status, ['draft', 'pending_review'], true)) {
+            return redirect()
+                ->route('marketing.admin.campaigns')
+                ->with('error', 'Only draft campaigns can be updated.');
+        }
+
+        $validated = $request->validate([
+            'brand' => ['required', 'in:sl,sf'],
+            'name' => ['required', 'string', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
+            'body_html' => ['nullable', 'string'],
+            'template_view' => ['nullable', 'string', 'max:255'],
+            'hero_image' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $brand = $validated['brand'];
+        $this->assertBrandAllowed($brand);
+
+        $templateView = $validated['template_view'] ?? null;
+        if (!$templateView) {
+            $templateView = $brand === 'sf'
+                ? 'emails.marketing.templates.sf-basic'
+                : 'emails.marketing.templates.sl-basic';
+        }
+
+        $campaign->brand = $brand;
+        $campaign->name = $validated['name'];
+        $campaign->subject = $validated['subject'];
+        $campaign->body_html = $validated['body_html'] ?? '';
+        $campaign->template_view = $templateView;
+        $campaign->hero_image = $validated['hero_image'] ?? null;
+
+        if ($campaign->status === 'pending_review') {
+            $campaign->status = 'draft';
+        }
+
+        $campaign->save();
+
+        return redirect()
+            ->route('marketing.admin.campaigns')
+            ->with('success', 'Campaign updated.');
     }
 
     public function submitForReview($id)
@@ -225,6 +294,31 @@ class CampaignController extends Controller
             ->with('success', 'Campaign dispatched to ' . $count . ' subscribers.');
     }
 
+    public function resend($id)
+    {
+        $this->requireRole(['sender', 'admin']);
+
+        $campaign = Campaign::findOrFail($id);
+        $this->assertBrandAllowed($campaign->brand);
+
+        if ($campaign->status !== 'sent') {
+            return redirect()
+                ->route('marketing.admin.campaigns')
+                ->with('error', 'Only sent campaigns can be resent.');
+        }
+
+        \App\Models\Marketing\EmailSend::where('campaign_id', $campaign->id)->delete();
+
+        $count = $this->dispatchCampaign($campaign);
+
+        $campaign->sent_at = now();
+        $campaign->save();
+
+        return redirect()
+            ->route('marketing.admin.campaigns')
+            ->with('success', 'Campaign resent to ' . $count . ' subscribers.');
+    }
+
     public function sendNow($id)
     {
         $this->requireRole(['sender', 'admin']);
@@ -278,6 +372,26 @@ class CampaignController extends Controller
         return response()->json([
             'processed' => $processed,
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $this->requireRole(['reviewer', 'admin']);
+
+        $campaign = Campaign::findOrFail($id);
+        $this->assertBrandAllowed($campaign->brand);
+
+        if ($campaign->status === 'sent') {
+            return redirect()
+                ->route('marketing.admin.campaigns')
+                ->with('error', 'Sent campaigns cannot be deleted.');
+        }
+
+        $campaign->delete();
+
+        return redirect()
+            ->route('marketing.admin.campaigns')
+            ->with('success', 'Campaign deleted.');
     }
 
     private function dispatchCampaign(Campaign $campaign): int
