@@ -427,13 +427,24 @@ class CampaignController extends Controller
                 : 'emails.marketing.templates.sl-basic';
         }
 
+        $testEmail = 'jannie.brits@sharplync.com.au';
+        $testSubscriber = \App\Models\Marketing\EmailSubscriber::where('email', $testEmail)
+            ->where('brand', $campaign->brand)
+            ->first();
+        $unsubscribeUrl = $testSubscriber && $testSubscriber->unsubscribe_token
+            ? url('/marketing/unsubscribe/' . $testSubscriber->unsubscribe_token)
+            : null;
+        $preferencesUrl = $testSubscriber && $testSubscriber->unsubscribe_token
+            ? url('/marketing/preferences/' . $testSubscriber->unsubscribe_token)
+            : null;
+
         $payload = array_merge($campaign->body_json ?? [], [
             'campaign' => $campaign,
             'subscriber' => null,
             'brand' => $campaign->brand,
             'heroImage' => $campaign->hero_image,
-            'unsubscribeUrl' => null,
-            'preferencesUrl' => null,
+            'unsubscribeUrl' => $unsubscribeUrl,
+            'preferencesUrl' => $preferencesUrl,
             'subject' => $campaign->subject,
             'preheader' => $campaign->preheader,
             'ctaText' => $campaign->cta_text,
@@ -441,7 +452,6 @@ class CampaignController extends Controller
             'bodyHtml' => $campaign->body_html,
         ]);
 
-        $testEmail = 'jannie.brits@sharplync.com.au';
         $fromAddress = config('mail.from.address');
         $fromName = $campaign->brand === 'sf' ? 'SharpFleet' : 'SharpLync';
 

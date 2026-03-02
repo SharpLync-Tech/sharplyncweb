@@ -77,7 +77,7 @@
     </span>
     <div style="margin-top:8px;">
         <span style="display:inline-flex;align-items:center;gap:6px;">
-            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/globe.svg" width="14" height="14" alt="Website" style="display:block;border:0;">
+            <span style="font-size:14px; line-height:1;">&#127760;</span>
             <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
         </span>
         <span style="margin:0 8px;">|</span>
