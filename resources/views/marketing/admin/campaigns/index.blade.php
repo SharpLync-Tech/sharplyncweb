@@ -76,54 +76,59 @@
                 <td>{{ $campaign->scheduled_at }}</td>
                 <td>{{ $campaign->created_at }}</td>
                 <td>
-                    <a href="{{ route('marketing.admin.campaigns.preview', $campaign->id) }}" target="_blank" style="margin-right:8px;">Preview</a>
-                    <form method="POST" action="{{ route('marketing.admin.campaigns.test', $campaign->id) }}" style="display:inline;margin-right:6px;">
-                        @csrf
-                        <button type="submit" class="btn-send" style="background:#0ea5e9;">Test</button>
-                    </form>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                        <a href="{{ route('marketing.admin.campaigns.preview', $campaign->id) }}" target="_blank" style="margin-right:6px;">Preview</a>
+                        <form method="POST" action="{{ route('marketing.admin.campaigns.test', $campaign->id) }}" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn-send" style="background:#0ea5e9;">Test</button>
+                        </form>
 
-                    @if($campaign->status === 'draft')
-                        <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}" style="margin-right:8px;">Edit</a>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.submit', $campaign->id) }}" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn-send">Submit</button>
-                        </form>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
-                            @csrf
-                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
-                        </form>
-                    @elseif($campaign->status === 'pending_review')
-                        <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}" style="margin-right:8px;">Edit</a>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.approve', $campaign->id) }}" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn-send">Approve</button>
-                        </form>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
-                            @csrf
-                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
-                        </form>
-                    @elseif(in_array($campaign->status, ['approved', 'scheduled']))
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.schedule', $campaign->id) }}" style="display:inline;">
-                            @csrf
-                            <input type="datetime-local" name="scheduled_at" value="{{ $campaign->scheduled_at ? $campaign->scheduled_at->format('Y-m-d\TH:i') : '' }}" style="margin-right:6px;">
-                            <button type="submit" class="btn-send">Schedule</button>
-                        </form>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.send', $campaign->id) }}" style="display:inline;margin-left:6px;">
-                            @csrf
-                            <button type="submit" class="btn-send">Send Now</button>
-                        </form>
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;margin-left:6px;">
-                            @csrf
-                            <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
-                        </form>
-                    @elseif($campaign->status === 'sent')
-                        <form method="POST" action="{{ route('marketing.admin.campaigns.resend', $campaign->id) }}" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn-send">Resend</button>
-                        </form>
-                    @else
-                        --
-                    @endif
+                        @if($campaign->status === 'draft')
+                            <form method="POST" action="{{ route('marketing.admin.campaigns.submit', $campaign->id) }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn-send">Submit</button>
+                            </form>
+                        @elseif($campaign->status === 'pending_review')
+                            <form method="POST" action="{{ route('marketing.admin.campaigns.approve', $campaign->id) }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn-send">Approve</button>
+                            </form>
+                        @elseif(in_array($campaign->status, ['approved', 'scheduled']))
+                            <form method="POST" action="{{ route('marketing.admin.campaigns.send', $campaign->id) }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn-send">Send Now</button>
+                            </form>
+                        @elseif($campaign->status === 'sent')
+                            <form method="POST" action="{{ route('marketing.admin.campaigns.resend', $campaign->id) }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn-send">Resend</button>
+                            </form>
+                        @endif
+
+                        <details style="display:inline-block;">
+                            <summary style="cursor:pointer;list-style:none;">More</summary>
+                            <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+                                @if(in_array($campaign->status, ['draft', 'pending_review']))
+                                    <a href="{{ route('marketing.admin.campaigns.edit', $campaign->id) }}">Edit</a>
+                                @endif
+
+                                @if(in_array($campaign->status, ['approved', 'scheduled']))
+                                    <form method="POST" action="{{ route('marketing.admin.campaigns.schedule', $campaign->id) }}" style="display:inline;">
+                                        @csrf
+                                        <input type="datetime-local" name="scheduled_at" value="{{ $campaign->scheduled_at ? $campaign->scheduled_at->format('Y-m-d\TH:i') : '' }}" style="margin-bottom:6px;">
+                                        <button type="submit" class="btn-send">Schedule</button>
+                                    </form>
+                                @endif
+
+                                @if($campaign->status !== 'sent')
+                                    <form method="POST" action="{{ route('marketing.admin.campaigns.delete', $campaign->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn-send" style="background:#b40000;">Delete</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </details>
+                    </div>
                 </td>
             </tr>
         @endforeach
