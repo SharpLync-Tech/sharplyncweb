@@ -41,6 +41,22 @@
             </div>
         </div>
 
+        <div class="col-12 col-lg-6">
+            <div class="card sl-card h-100">
+                <div class="card-body p-4">
+                    <div class="text-uppercase small text-muted" style="letter-spacing: 0.12em;">Marketing</div>
+                    <div class="h4 mt-2 mb-2 fw-semibold">Marketing Campaigns</div>
+                    <div class="text-muted" style="line-height: 1.6;">
+                        Create, review, schedule, and send SharpLync or SharpFleet email campaigns.
+                    </div>
+                    <div class="mt-3">
+                        <a class="btn btn-primary" href="{{ url('/marketing/admin/campaigns') }}" target="_blank" rel="noopener">Open Marketing</a>
+                    </div>
+                    <div class="mt-2 text-muted small">Requires marketing access.</div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-12">
             <div class="alert alert-info sl-card mb-0" role="alert">
                 As new Sharp products are added, they will appear here.
