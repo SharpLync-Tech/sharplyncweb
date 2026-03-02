@@ -24,6 +24,9 @@ Route::prefix('marketing')->group(function () {
 
     Route::post('/preferences/{token}', [SubscriptionController::class, 'updatePreferences'])
         ->name('marketing.preferences.update');
+
+    Route::get('/sharppulse', fn () => view('marketing.sharppulse'))
+        ->name('marketing.sharppulse');
 });
 
 // ============================

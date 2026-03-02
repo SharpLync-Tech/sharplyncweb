@@ -49,4 +49,27 @@
 </tr>
 </table>
 @endif
+
+<table cellpadding="0" cellspacing="0" style="margin:20px 0 0 0;">
+<tr>
+    <td align="left">
+        <a href="https://www.facebook.com/SharpLync" style="display:inline-block;margin-right:10px;">
+            <img src="https://sharplync.com.au/images/facebook.png" width="24" height="24" alt="Facebook" style="display:block;border:0;">
+        </a>
+        <a href="https://www.linkedin.com/company/sharplync" style="display:inline-block;">
+            <img src="https://sharplync.com.au/images/linkedin.png" width="24" height="24" alt="LinkedIn" style="display:block;border:0;">
+        </a>
+    </td>
+</tr>
+</table>
+
+<div style="margin-top:16px; font-size:13px; color:#555; line-height:1.5;">
+    <a href="{{ url('/marketing/sharppulse') }}" style="color:#0ea5e9; text-decoration:none;">SharpPulse</a>
+    <div style="margin-top:8px;">
+        SharpLync Pty Ltd<br>
+        Managed IT Services<br>
+        Stanthorpe QLD · Australia<br>
+        0492 014 463
+    </div>
+</div>
 @endsection

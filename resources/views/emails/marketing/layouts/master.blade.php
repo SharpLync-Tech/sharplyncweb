@@ -56,21 +56,20 @@
         <td style="background:#f1f5f9; padding:20px 30px; font-size:12px; color:#666; line-height:1.5;">
 
             <p style="margin:0 0 10px 0;">
-                You are receiving this email because you subscribed to {{ $brand === 'sf' ? 'SharpFleet™' : 'SharpLync' }} updates.
+                You are receiving this email because you subscribed to updates from {{ $brand === 'sf' ? 'SharpFleet™' : 'SharpLync' }}.
             </p>
 
-            @if(!empty($preferencesUrl))
-                <p style="margin:0;">
-                    <a href="{{ $preferencesUrl }}" style="color:#0ea5e9; text-decoration:none;">
-                        Manage preferences
-                    </a>
+            @if(!empty($unsubscribeUrl))
+                <p style="margin:0 0 10px 0;">
+                    If you no longer wish to receive these emails, you can
+                    <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">unsubscribe here</a>.
                 </p>
             @endif
 
-            @if(!empty($unsubscribeUrl))
-                <p style="margin:0;">
-                    <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">
-                        Unsubscribe
+            @if(!empty($preferencesUrl))
+                <p style="margin:0 0 10px 0;">
+                    <a href="{{ $preferencesUrl }}" style="color:#0ea5e9; text-decoration:none;">
+                        Manage preferences
                     </a>
                 </p>
             @endif
