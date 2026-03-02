@@ -50,7 +50,7 @@
         <td style="background:#f1f5f9; padding:20px 30px; font-size:12px; color:#666; line-height:1.5;">
 
             <p style="margin:0 0 10px 0;">
-                You are receiving this email because you subscribed to {{ $brand === 'sf' ? 'SharpFleet' : 'SharpLync' }} updates.
+                You are receiving this email because you subscribed to {{ $brand === 'sf' ? 'SharpFleet™' : 'SharpLync' }} updates.
             </p>
 
             @if(!empty($preferencesUrl))
@@ -70,7 +70,11 @@
             @endif
 
             <p style="margin:15px 0 0 0;">
-                &copy; {{ date('Y') }} SharpLync Pty Ltd
+                @if($brand === 'sf')
+                    &copy; {{ date('Y') }} SharpFleet™ &mdash; <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
+                @else
+                    &copy; {{ date('Y') }} SharpLync &mdash; <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
+                @endif
             </p>
 
         </td>
