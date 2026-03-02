@@ -221,7 +221,20 @@
                     cta_url: document.getElementById('ai-cta-url').value
                 })
             })
-            .then(function (res) { return res.json(); })
+            .then(function (res) {
+                if (!res.ok) {
+                    return res.text().then(function (text) {
+                        throw new Error(text || ('HTTP ' + res.status));
+                    });
+                }
+                return res.text().then(function (text) {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        throw new Error('Invalid JSON from server.');
+                    }
+                });
+            })
             .then(function (data) {
                 if (data.error) {
                     if (statusEl) statusEl.textContent = 'Error: ' + data.error;
