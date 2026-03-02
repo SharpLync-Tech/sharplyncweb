@@ -27,8 +27,12 @@
 
     window.MarketingQuill = {
         setHtml: function (html) {
-            quill.root.innerHTML = html || '';
+            if (typeof html !== 'string' || html.trim() === '') {
+                return false;
+            }
+            quill.root.innerHTML = html;
             hiddenInput.value = quill.root.innerHTML;
+            return true;
         },
         getHtml: function () {
             return quill.root.innerHTML;

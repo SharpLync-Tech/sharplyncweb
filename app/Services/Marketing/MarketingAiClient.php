@@ -108,6 +108,17 @@ class MarketingAiClient
                 ];
             }
 
+            if (
+                (!isset($parsed['subject']) || trim((string) $parsed['subject']) === '') &&
+                (!isset($parsed['preheader']) || trim((string) $parsed['preheader']) === '') &&
+                (!isset($parsed['html']) || trim((string) $parsed['html']) === '')
+            ) {
+                return [
+                    'error' => 'AI returned empty fields.',
+                    'raw' => $parsed,
+                ];
+            }
+
             return $parsed;
         } catch (\Exception $e) {
             return [

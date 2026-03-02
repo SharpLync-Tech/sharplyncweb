@@ -215,12 +215,20 @@
                     if (statusEl) statusEl.textContent = 'Error: ' + data.error;
                     return;
                 }
+                if (!data.subject && !data.preheader && !data.html) {
+                    if (statusEl) statusEl.textContent = 'Error: AI returned no content.';
+                    return;
+                }
                 var subject = document.querySelector('input[name="subject"]');
                 var preheader = document.querySelector('input[name="preheader"]');
                 if (subject && data.subject) subject.value = data.subject;
                 if (preheader && data.preheader) preheader.value = data.preheader;
                 if (window.MarketingQuill && data.html) {
-                    window.MarketingQuill.setHtml(data.html);
+                    var ok = window.MarketingQuill.setHtml(data.html);
+                    if (!ok && statusEl) {
+                        statusEl.textContent = 'Error: AI returned empty HTML.';
+                        return;
+                    }
                 }
                 if (statusEl) statusEl.textContent = 'Done.';
             })
