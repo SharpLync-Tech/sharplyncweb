@@ -3,73 +3,78 @@
 namespace App\Jobs\Marketing;
 
 use App\Models\Marketing\Campaign;
-use App\Models\Marketing\EmailSubscriber;
+use App\Models\Marketing\Subscriber;
 use App\Models\Marketing\EmailSend;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 
 class SendCampaignEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $campaignId;
-    public $subscriberId;
+    protected $campaign;
+    protected $subscriber;
 
-    public function __construct($campaignId, $subscriberId)
+    public function __construct(Campaign $campaign, Subscriber $subscriber)
     {
-        $this->campaignId = $campaignId;
-        $this->subscriberId = $subscriberId;
+        $this->campaign = $campaign;
+        $this->subscriber = $subscriber;
     }
 
     public function handle()
     {
-        $campaign = Campaign::find($this->campaignId);
-        $subscriber = EmailSubscriber::find($this->subscriberId);
+        $existingSend = EmailSend::where('campaign_id', $this->campaign->id)
+            ->where('subscriber_id', $this->subscriber->id)
+            ->first();
 
-        if (!$campaign || !$subscriber) {
-            Log::error('[MARKETING] Missing campaign or subscriber', [
-                'campaign_id' => $this->campaignId,
-                'subscriber_id' => $this->subscriberId,
-            ]);
+        if ($existingSend && $existingSend->status === 'sent') {
             return;
         }
 
         try {
 
-            Mail::send([], [], function ($message) use ($campaign, $subscriber) {
-                $message->to($subscriber->email)
-                    ->subject($campaign->subject)
-                    ->html($campaign->body_html);
-            });
+            Mail::send(
+                'marketing.emails.master', // THIS IS YOUR TEMPLATE
+                [
+                    'campaign'   => $this->campaign,
+                    'subscriber' => $this->subscriber,
+                ],
+                function ($message) {
+                    $message->to($this->subscriber->email)
+                            ->subject($this->campaign->subject);
+                }
+            );
 
-            EmailSend::create([
-                'campaign_id' => $campaign->id,
-                'subscriber_id' => $subscriber->id,
-                'status' => 'sent',
-                'message_id' => null,
-                'sent_at' => now(),
-            ]);
+            EmailSend::updateOrCreate(
+                [
+                    'campaign_id'   => $this->campaign->id,
+                    'subscriber_id' => $this->subscriber->id,
+                ],
+                [
+                    'status'   => 'sent',
+                    'sent_at'  => now(),
+                    'message_id' => null,
+                ]
+            );
 
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
 
-            Log::error('[MARKETING] Send failed', [
-                'campaign_id' => $campaign->id,
-                'subscriber_id' => $subscriber->id,
-                'error' => $e->getMessage(),
-            ]);
+            EmailSend::updateOrCreate(
+                [
+                    'campaign_id'   => $this->campaign->id,
+                    'subscriber_id' => $this->subscriber->id,
+                ],
+                [
+                    'status'  => 'failed',
+                    'sent_at' => now(),
+                ]
+            );
 
-            EmailSend::create([
-                'campaign_id' => $campaign->id,
-                'subscriber_id' => $subscriber->id,
-                'status' => 'failed',
-                'message_id' => null,
-                'sent_at' => now(),
-            ]);
+            throw $e;
         }
     }
 }

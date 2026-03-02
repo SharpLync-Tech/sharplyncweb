@@ -3,22 +3,16 @@
 namespace App\Models\Marketing;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmailSend extends Model
 {
-    /**
-     * Use the marketing database connection.
-     */
+    use HasFactory;
+
     protected $connection = 'marketing';
 
-    /**
-     * Table name.
-     */
     protected $table = 'email_sends';
 
-    /**
-     * Mass assignable fields.
-     */
     protected $fillable = [
         'campaign_id',
         'subscriber_id',
@@ -27,10 +21,38 @@ class EmailSend extends Model
         'sent_at',
     ];
 
-    /**
-     * Casts.
-     */
     protected $casts = [
         'sent_at' => 'datetime',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | AU Formatted Date (Display Only)
+    |--------------------------------------------------------------------------
+    */
+    public function getSentAtAuAttribute()
+    {
+        if (!$this->sent_at) {
+            return null;
+        }
+
+        return $this->sent_at
+            ->timezone('Australia/Sydney')
+            ->format('d/m/Y H:i');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class);
+    }
+
+    public function subscriber()
+    {
+        return $this->belongsTo(Subscriber::class);
+    }
 }
