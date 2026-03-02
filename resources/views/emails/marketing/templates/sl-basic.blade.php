@@ -35,7 +35,7 @@
 <tr>
 <td align="center">
     <a href="{{ $ctaUrl }}"
-       style="background:#0ea5e9;
+       style="background:#0A2A4D;
               color:#ffffff;
               padding:12px 24px;
               text-decoration:none;
@@ -73,7 +73,7 @@
     SharpLync Pty Ltd · Managed IT Services<br>
     Stanthorpe QLD · Australia · 0492 014 463<br>
     <span style="display:inline-block;margin-top:8px;color:#666;">
-        You are receiving this email because you subscribed to updates from SharpLync.
+        You are receiving this email because you are a current SharpLync customer or you subscribed to updates from SharpLync.
     </span>
     <div style="margin-top:8px;">
         <span style="display:inline-flex;align-items:center;gap:6px;">
@@ -82,9 +82,9 @@
         </span>
         <span style="margin:0 8px;">|</span>
         @if(!empty($unsubscribeUrl))
-            <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">Unsubscribe</a>
+            <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">Manage your Subscription</a>
         @else
-            <span style="color:#999;">Unsubscribe</span>
+            <span style="color:#999;">Manage your Subscription</span>
         @endif
     </div>
     <div style="margin-top:8px;">

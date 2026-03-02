@@ -38,7 +38,7 @@
 
     <!-- ACCENT LINE -->
     <tr>
-        <td style="height:4px; background:#0ea5e9;"></td>
+        <td style="height:4px; background:#2CBFAE;"></td>
     </tr>
 
     <!-- OPTIONAL HERO IMAGE -->
