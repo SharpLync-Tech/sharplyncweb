@@ -39,6 +39,30 @@ class CampaignController extends Controller
         ]);
     }
 
+    public function logs()
+    {
+        $this->requireRole(['reviewer', 'sender', 'admin']);
+
+        $brandScope = $this->brandScope();
+
+        $logsQuery = \App\Models\Marketing\EmailSend::query()
+            ->with(['campaign', 'subscriber'])
+            ->orderByDesc('sent_at');
+
+        if ($brandScope !== 'both') {
+            $logsQuery->whereHas('campaign', function ($query) use ($brandScope) {
+                $query->where('brand', $brandScope);
+            });
+        }
+
+        $logs = $logsQuery->limit(500)->get();
+
+        return view('marketing.admin.logs.index', [
+            'logs' => $logs,
+            'brandScope' => $brandScope,
+        ]);
+    }
+
     public function create()
     {
         $this->requireRole(['creator', 'reviewer', 'sender', 'admin']);

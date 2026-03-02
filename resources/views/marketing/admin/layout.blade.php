@@ -111,7 +111,13 @@
 <body>
 
 <div class="topbar">
-    SharpLync Marketing Platform
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div>SharpLync Marketing Platform</div>
+        <div style="display:flex;gap:16px;font-size:14px;">
+            <a href="{{ route('marketing.admin.campaigns') }}" style="color:#fff;text-decoration:none;">Home</a>
+            <a href="{{ route('marketing.admin.logs') }}" style="color:#fff;text-decoration:none;">Logs</a>
+        </div>
+    </div>
 </div>
 
 <div class="container">
