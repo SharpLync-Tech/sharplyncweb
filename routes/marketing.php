@@ -1,5 +1,5 @@
 <?php
-dd('marketing routes loaded');
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Marketing\SubscriptionController;
 
