@@ -25,9 +25,9 @@
     <tr>
         <td style="background:#0b1f3a; padding:18px 20px; text-align:center;">
             @if($brand === 'sf')
-                <h1 style="color:#ffffff; margin:0; font-size:20px; font-weight:600;">
-                    SharpFleet
-                </h1>
+                <img src="https://sharplync.com.au/images/sf_logo.png"
+                     alt="SharpFleet Logo"
+                     style="max-width:180px; height:auto; display:block; margin:0 auto;">
             @else
                 <img src="https://sharplync.com.au/images/sharplync-logo.png"
                      alt="SharpLync Logo"

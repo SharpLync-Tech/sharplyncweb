@@ -81,8 +81,8 @@
             <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
         </span>
         <span style="margin:0 8px;">|</span>
-        @if(!empty($unsubscribeUrl))
-            <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">Manage your Subscription</a>
+        @if(!empty($preferencesUrl))
+            <a href="{{ $preferencesUrl }}" style="color:#0ea5e9; text-decoration:none;">Manage your Subscription</a>
         @else
             <span style="color:#999;">Manage your Subscription</span>
         @endif

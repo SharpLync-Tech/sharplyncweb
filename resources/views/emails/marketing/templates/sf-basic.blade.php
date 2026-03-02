@@ -33,9 +33,9 @@
 @if(!empty($ctaText) && !empty($ctaUrl))
 <table cellpadding="0" cellspacing="0" style="margin:30px 0;">
 <tr>
-<td align="left">
+<td align="center">
     <a href="{{ $ctaUrl }}"
-       style="background:#0ea5e9;
+       style="background:#0A2A4D;
               color:#ffffff;
               padding:12px 24px;
               text-decoration:none;
@@ -49,4 +49,33 @@
 </tr>
 </table>
 @endif
+<div style="text-align:center; margin:10px 0 0 0;">
+    <a href="{{ url('/marketing/sharppulse') }}" style="color:#0ea5e9; text-decoration:none;">
+        View this in browser · SharpPulse
+    </a>
+</div>
+
+<div style="margin-top:12px; font-size:13px; color:#555; line-height:1.6; text-align:center;">
+    SharpFleet<br>
+    Fleet Management Software<br>
+    Australia<br>
+    <span style="display:inline-block;margin-top:8px;color:#666;">
+        You are receiving this email because you are a current SharpFleet customer or you subscribed to updates from SharpFleet.
+    </span>
+    <div style="margin-top:8px;">
+        <span style="display:inline-flex;align-items:center;gap:6px;">
+            <span style="font-size:14px; line-height:1;">&#127760;</span>
+            <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
+        </span>
+        <span style="margin:0 8px;">|</span>
+        @if(!empty($preferencesUrl))
+            <a href="{{ $preferencesUrl }}" style="color:#0ea5e9; text-decoration:none;">Manage your Subscription</a>
+        @else
+            <span style="color:#999;">Manage your Subscription</span>
+        @endif
+    </div>
+    <div style="margin-top:8px;">
+        &copy; {{ date('Y') }} SharpFleet
+    </div>
+</div>
 @endsection
