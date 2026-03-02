@@ -56,9 +56,9 @@
 </div>
 
 <div style="margin-top:12px; font-size:13px; color:#555; line-height:1.6; text-align:center;">
-    SharpFleet<br>
+    SharpFleet&trade;<br>
     Fleet Management Software<br>
-    Australia<br>
+    Stanthorpe QLD · Australia · 0492 014 463<br>
     <span style="display:inline-block;margin-top:8px;color:#666;">
         You are receiving this email because you are a current SharpFleet customer or you subscribed to updates from SharpFleet.
     </span>
