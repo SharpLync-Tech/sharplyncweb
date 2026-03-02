@@ -108,4 +108,100 @@ class SubscriptionController extends Controller
 
         return view('marketing.unsubscribed');
     }
+
+    /**
+     * Show manage preferences page.
+     */
+    public function preferences($token)
+    {
+        $subscriber = EmailSubscriber::where('unsubscribe_token', $token)->first();
+
+        if (!$subscriber) {
+            return view('marketing.invalid-token');
+        }
+
+        $email = $subscriber->email;
+
+        $sl = EmailSubscriber::where('email', $email)->where('brand', 'sl')->first();
+        $sf = EmailSubscriber::where('email', $email)->where('brand', 'sf')->first();
+
+        return view('marketing.preferences', [
+            'email' => $email,
+            'token' => $token,
+            'sl' => $sl,
+            'sf' => $sf,
+        ]);
+    }
+
+    /**
+     * Update preferences for SL/SF.
+     */
+    public function updatePreferences(Request $request, $token)
+    {
+        $subscriber = EmailSubscriber::where('unsubscribe_token', $token)->first();
+
+        if (!$subscriber) {
+            return view('marketing.invalid-token');
+        }
+
+        $email = $subscriber->email;
+
+        $wantsSl = $request->boolean('pref_sl');
+        $wantsSf = $request->boolean('pref_sf');
+
+        $sl = EmailSubscriber::where('email', $email)->where('brand', 'sl')->first();
+        $sf = EmailSubscriber::where('email', $email)->where('brand', 'sf')->first();
+
+        if ($wantsSl) {
+            if (!$sl) {
+                $sl = EmailSubscriber::create([
+                    'email' => $email,
+                    'brand' => 'sl',
+                    'status' => 'subscribed',
+                    'confirmation_token' => null,
+                    'unsubscribe_token' => $subscriber->unsubscribe_token,
+                    'confirmed_at' => now(),
+                ]);
+            } else {
+                $sl->status = 'subscribed';
+                $sl->confirmed_at = $sl->confirmed_at ?: now();
+                $sl->unsubscribed_at = null;
+                $sl->save();
+            }
+        } elseif ($sl) {
+            $sl->status = 'unsubscribed';
+            $sl->unsubscribed_at = now();
+            $sl->save();
+        }
+
+        if ($wantsSf) {
+            if (!$sf) {
+                $sf = EmailSubscriber::create([
+                    'email' => $email,
+                    'brand' => 'sf',
+                    'status' => 'subscribed',
+                    'confirmation_token' => null,
+                    'unsubscribe_token' => $subscriber->unsubscribe_token,
+                    'confirmed_at' => now(),
+                ]);
+            } else {
+                $sf->status = 'subscribed';
+                $sf->confirmed_at = $sf->confirmed_at ?: now();
+                $sf->unsubscribed_at = null;
+                $sf->save();
+            }
+        } elseif ($sf) {
+            $sf->status = 'unsubscribed';
+            $sf->unsubscribed_at = now();
+            $sf->save();
+        }
+
+        return view('marketing.preferences', [
+            'email' => $email,
+            'token' => $token,
+            'sl' => $sl,
+            'sf' => $sf,
+            'saved' => true,
+        ]);
+    }
 }

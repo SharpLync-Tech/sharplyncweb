@@ -18,6 +18,12 @@ Route::prefix('marketing')->group(function () {
 
     Route::get('/unsubscribe/{token}', [SubscriptionController::class, 'unsubscribe'])
         ->name('marketing.unsubscribe');
+
+    Route::get('/preferences/{token}', [SubscriptionController::class, 'preferences'])
+        ->name('marketing.preferences');
+
+    Route::post('/preferences/{token}', [SubscriptionController::class, 'updatePreferences'])
+        ->name('marketing.preferences.update');
 });
 
 // ============================

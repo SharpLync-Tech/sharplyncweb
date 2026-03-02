@@ -54,6 +54,9 @@ class SendCampaignEmailJob implements ShouldQueue
         $unsubscribeUrl = $subscriber->unsubscribe_token
             ? url('/marketing/unsubscribe/' . $subscriber->unsubscribe_token)
             : null;
+        $preferencesUrl = $subscriber->unsubscribe_token
+            ? url('/marketing/preferences/' . $subscriber->unsubscribe_token)
+            : null;
 
         $payload = array_merge($campaign->body_json ?? [], [
             'campaign' => $campaign,
@@ -61,6 +64,7 @@ class SendCampaignEmailJob implements ShouldQueue
             'brand' => $brand,
             'heroImage' => $campaign->hero_image,
             'unsubscribeUrl' => $unsubscribeUrl,
+            'preferencesUrl' => $preferencesUrl,
             'subject' => $campaign->subject,
             'bodyHtml' => $campaign->body_html,
         ]);

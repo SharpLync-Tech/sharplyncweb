@@ -53,6 +53,14 @@
                 You are receiving this email because you subscribed to {{ $brand === 'sf' ? 'SharpFleet' : 'SharpLync' }} updates.
             </p>
 
+            @if(!empty($preferencesUrl))
+                <p style="margin:0;">
+                    <a href="{{ $preferencesUrl }}" style="color:#0ea5e9; text-decoration:none;">
+                        Manage preferences
+                    </a>
+                </p>
+            @endif
+
             @if(!empty($unsubscribeUrl))
                 <p style="margin:0;">
                     <a href="{{ $unsubscribeUrl }}" style="color:#0ea5e9; text-decoration:none;">
