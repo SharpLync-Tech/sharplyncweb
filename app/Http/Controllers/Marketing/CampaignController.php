@@ -341,12 +341,20 @@ class CampaignController extends Controller
                 : 'emails.marketing.templates.sl-basic';
         }
 
+        $testEmail = 'jannie.brits@sharplync.com.au';
+        $testSubscriber = \App\Models\Marketing\EmailSubscriber::where('email', $testEmail)
+            ->where('brand', $campaign->brand)
+            ->first();
+        $unsubscribeUrl = $testSubscriber && $testSubscriber->unsubscribe_token
+            ? url('/marketing/unsubscribe/' . $testSubscriber->unsubscribe_token)
+            : null;
+
         $data = array_merge($campaign->body_json ?? [], [
             'campaign' => $campaign,
             'subscriber' => null,
             'brand' => $campaign->brand,
             'heroImage' => $campaign->hero_image,
-            'unsubscribeUrl' => null,
+            'unsubscribeUrl' => $unsubscribeUrl,
             'subject' => $campaign->subject,
             'preheader' => $campaign->preheader,
             'ctaText' => $campaign->cta_text,
