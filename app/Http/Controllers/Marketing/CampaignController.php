@@ -3,86 +3,53 @@
 namespace App\Http\Controllers\Marketing;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\Marketing\SendCampaignEmailJob;
-use App\Models\Marketing\EmailCampaign;
-use App\Models\Marketing\EmailSubscriber;
 use Illuminate\Http\Request;
+use App\Models\Marketing\Campaign;
+use App\Models\Marketing\EmailSubscriber;
+use App\Jobs\Marketing\SendCampaignEmailJob;
 
 class CampaignController extends Controller
 {
-    /**
-     * Dispatch jobs to send a campaign now (one job per subscriber).
-     */
-    public function sendNow(Request $request, int $id)
+    public function index()
     {
-        $campaign = EmailCampaign::find($id);
+        $campaigns = Campaign::orderByDesc('id')->get();
 
-        if (!$campaign) {
-            return response()->json(['success' => false, 'message' => 'Campaign not found.'], 404);
-        }
-
-        // Mark as sending (simple v1 state)
-        $campaign->status = 'sending';
-        $campaign->sent_at = now();
-        $campaign->save();
-
-        $subscribers = EmailSubscriber::where('brand', $campaign->brand)
-            ->where('status', 'subscribed')
-            ->get(['id']);
-
-        foreach ($subscribers as $s) {
-            SendCampaignEmailJob::dispatch($campaign->id, $s->id);
-        }
-
-        // Mark as sent (v1: dispatch complete; actual delivery may still be in queue)
-        $campaign->status = 'sent';
-        $campaign->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Campaign dispatch started.',
-            'campaign_id' => $campaign->id,
-            'subscribers_dispatched' => $subscribers->count(),
-        ]);
+        return view('marketing.admin.campaigns.index', compact('campaigns'));
     }
 
-    /**
-     * Process scheduled campaigns (dispatch jobs for any due campaigns).
-     */
-    public function processScheduled(Request $request)
+    public function create()
     {
-        $due = EmailCampaign::where('status', 'scheduled')
-            ->whereNotNull('scheduled_at')
-            ->where('scheduled_at', '<=', now())
-            ->get();
+        return view('marketing.admin.campaigns.create');
+    }
 
-        $processed = 0;
-        $totalDispatched = 0;
+    public function store(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'body_html' => 'required|string',
+        ]);
 
-        foreach ($due as $campaign) {
-            $campaign->status = 'sending';
-            $campaign->sent_at = now();
-            $campaign->save();
+        Campaign::create([
+            'subject' => $request->subject,
+            'body_html' => $request->body_html,
+            'status' => 'draft',
+        ]);
 
-            $subscribers = EmailSubscriber::where('brand', $campaign->brand)
-                ->where('status', 'subscribed')
-                ->get(['id']);
+        return redirect()->route('marketing.admin.campaigns')
+            ->with('success', 'Campaign created.');
+    }
 
-            foreach ($subscribers as $s) {
-                SendCampaignEmailJob::dispatch($campaign->id, $s->id);
-            }
+    public function sendNowWeb($id)
+    {
+        $campaign = Campaign::findOrFail($id);
 
-            $campaign->status = 'sent';
-            $campaign->save();
+        $subscribers = EmailSubscriber::where('status', 'confirmed')->get();
 
-            $processed++;
-            $totalDispatched += $subscribers->count();
+        foreach ($subscribers as $subscriber) {
+            SendCampaignEmailJob::dispatch($campaign->id, $subscriber->id);
         }
 
-        return response()->json([
-            'success' => true,
-            'processed_campaigns' => $processed,
-            'total_subscribers_dispatched' => $totalDispatched,
-        ]);
+        return redirect()->route('marketing.admin.campaigns')
+            ->with('success', 'Campaign dispatched to ' . $subscribers->count() . ' subscribers.');
     }
 }
