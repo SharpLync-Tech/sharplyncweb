@@ -110,6 +110,14 @@
                     </select>
                 </div>
                 <div>
+                    <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">Detail Level</label>
+                    <select id="ai-fluff" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                        <option value="none">No Fluff (Concise)</option>
+                        <option value="light">Light Fluff</option>
+                        <option value="rich">More Fluff</option>
+                    </select>
+                </div>
+                <div>
                     <label style="display:block;font-size:12px;color:#666;margin-bottom:4px;">CTA Text</label>
                     <input type="text" id="ai-cta-text" placeholder="Book a demo"
                            style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
@@ -196,6 +204,7 @@
                     audience: document.getElementById('ai-audience').value,
                     key_points: document.getElementById('ai-key-points').value,
                     tone: document.getElementById('ai-tone').value,
+                    fluff: document.getElementById('ai-fluff').value,
                     cta_text: document.getElementById('ai-cta-text').value,
                     cta_url: document.getElementById('ai-cta-url').value
                 })

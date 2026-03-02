@@ -98,6 +98,7 @@ class CampaignController extends Controller
             'audience' => ['required', 'string', 'max:500'],
             'key_points' => ['nullable', 'string', 'max:2000'],
             'tone' => ['required', 'string', 'max:100'],
+            'fluff' => ['required', 'in:none,light,rich'],
             'cta_text' => ['nullable', 'string', 'max:100'],
             'cta_url' => ['nullable', 'string', 'max:300'],
         ]);
@@ -105,6 +106,14 @@ class CampaignController extends Controller
         $this->assertBrandAllowed($validated['brand']);
 
         $result = $client->generateEmail($validated);
+
+        if (isset($result['error'])) {
+            Log::warning('[MARKETING AI] Generation failed', [
+                'error' => $result['error'],
+                'brand' => $validated['brand'],
+                'tone' => $validated['tone'],
+            ]);
+        }
 
         return response()->json($result);
     }

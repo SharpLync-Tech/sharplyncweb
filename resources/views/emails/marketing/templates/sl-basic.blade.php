@@ -3,7 +3,7 @@
 
 @section('content')
 @php
-    $titleText = $title ?? ($campaign->name ?? 'SharpLync Update');
+    $titleText = $title ?? ($subject ?? ($campaign->subject ?? 'SharpLync Update'));
     $introText = $intro ?? null;
     $bodyText = $body ?? null;
 @endphp

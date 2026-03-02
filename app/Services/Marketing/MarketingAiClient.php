@@ -30,6 +30,7 @@ class MarketingAiClient
         $audience = $input['audience'];
         $keyPoints = $input['key_points'] ?? '';
         $tone = $input['tone'];
+        $fluff = $input['fluff'] ?? 'none';
         $ctaText = $input['cta_text'] ?? '';
         $ctaUrl = $input['cta_url'] ?? '';
 
@@ -48,6 +49,7 @@ class MarketingAiClient
             "Goal: " . $goal,
             "Audience: " . $audience,
             "Tone: " . $tone,
+            "Detail level: " . $this->mapFluff($fluff),
             "Key points: " . ($keyPoints !== '' ? $keyPoints : 'None'),
             "CTA text: " . ($ctaText !== '' ? $ctaText : 'None'),
             "CTA URL: " . ($ctaUrl !== '' ? $ctaUrl : 'None'),
@@ -79,9 +81,24 @@ class MarketingAiClient
                 ]
             );
 
-            $data = json_decode($response->getBody()->getContents(), true);
+            $raw = $response->getBody()->getContents();
+            $data = json_decode($raw, true);
+
+            if (!is_array($data)) {
+                return [
+                    'error' => 'AI returned non-JSON response.',
+                    'raw' => $raw,
+                ];
+            }
 
             $content = $data['choices'][0]['message']['content'] ?? '';
+
+            if ($content === '') {
+                return [
+                    'error' => 'AI returned empty content.',
+                    'raw' => $data,
+                ];
+            }
             $parsed = json_decode($content, true);
 
             if (!is_array($parsed)) {
@@ -97,5 +114,16 @@ class MarketingAiClient
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    private function mapFluff(string $fluff): string
+    {
+        if ($fluff === 'rich') {
+            return 'Rich detail, more descriptive language, and fuller context.';
+        }
+        if ($fluff === 'light') {
+            return 'Moderate detail, slightly expanded explanations.';
+        }
+        return 'Concise, minimal extra detail.';
     }
 }
