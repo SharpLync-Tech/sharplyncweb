@@ -14,7 +14,9 @@ class CampaignController extends Controller
     {
         $campaigns = Campaign::orderByDesc('id')->get();
 
-        return view('marketing.admin.campaigns.index', compact('campaigns'));
+        $subscriberCount = EmailSubscriber::where('status', 'subscribed')->count();
+
+        return view('marketing.admin.campaigns.index', compact('campaigns', 'subscriberCount'));
     }
 
     public function create()
@@ -43,11 +45,19 @@ class CampaignController extends Controller
     {
         $campaign = Campaign::findOrFail($id);
 
-        $subscribers = EmailSubscriber::where('status', 'confirmed')->get();
+        if ($campaign->status === 'sent') {
+            return redirect()->route('marketing.admin.campaigns')
+                ->with('success', 'Campaign already sent.');
+        }
+
+        $subscribers = EmailSubscriber::where('status', 'subscribed')->get();
 
         foreach ($subscribers as $subscriber) {
             SendCampaignEmailJob::dispatch($campaign->id, $subscriber->id);
         }
+
+        $campaign->status = 'sent';
+        $campaign->save();
 
         return redirect()->route('marketing.admin.campaigns')
             ->with('success', 'Campaign dispatched to ' . $subscribers->count() . ' subscribers.');
