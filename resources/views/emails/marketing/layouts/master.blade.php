@@ -55,10 +55,6 @@
     <tr>
         <td style="background:#f1f5f9; padding:20px 30px; font-size:12px; color:#666; line-height:1.5;">
 
-            <p style="margin:0 0 10px 0;">
-                You are receiving this email because you subscribed to updates from {{ $brand === 'sf' ? 'SharpFleet™' : 'SharpLync' }}.
-            </p>
-
             @if(!empty($unsubscribeUrl))
                 <p style="margin:0 0 10px 0;">
                     If you no longer wish to receive these emails, you can
