@@ -70,13 +70,7 @@
                 </p>
             @endif
 
-            <p style="margin:15px 0 0 0;">
-                @if($brand === 'sf')
-                    &copy; {{ date('Y') }} SharpFleet™ &mdash; <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
-                @else
-                    &copy; {{ date('Y') }} SharpLync &mdash; <a href="https://sharpfleet.com.au" style="color:#0ea5e9; text-decoration:none;">sharpfleet.com.au</a>
-                @endif
-            </p>
+            <!-- Footer legal moved into brand templates -->
 
         </td>
     </tr>

@@ -60,20 +60,18 @@
 <tr>
     <td align="center">
         <a href="https://www.facebook.com/SharpLync" style="display:inline-block;margin-right:10px;">
-            <img src="https://sharplync.com.au/images/facebook.png" width="26" height="26" alt="Facebook" style="display:block;border:0;">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" width="22" height="22" alt="Facebook" style="display:block;border:0;">
         </a>
         <a href="https://www.linkedin.com/company/sharplync" style="display:inline-block;">
-            <img src="https://sharplync.com.au/images/linkedin.png" width="26" height="26" alt="LinkedIn" style="display:block;border:0;">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" width="22" height="22" alt="LinkedIn" style="display:block;border:0;">
         </a>
     </td>
 </tr>
 </table>
 
 <div style="margin-top:12px; font-size:13px; color:#555; line-height:1.6; text-align:center;">
-    SharpLync Pty Ltd<br>
-    Managed IT Services<br>
-    Stanthorpe QLD · Australia<br>
-    0492 014 463<br>
+    SharpLync Pty Ltd · Managed IT Services<br>
+    Stanthorpe QLD · Australia · 0492 014 463<br>
     <span style="display:inline-block;margin-top:8px;color:#666;">
         You are receiving this email because you subscribed to updates from SharpLync.
     </span><br>
