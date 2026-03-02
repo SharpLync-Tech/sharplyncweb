@@ -194,6 +194,21 @@
 <script src="{{ secure_asset('js/marketing/marketing-quill.js') }}"></script>
 <script>
     (function () {
+        var storageKey = 'marketing_ai_{{ $campaign->id }}';
+        var fields = ['ai-goal','ai-audience','ai-key-points','ai-tone','ai-fluff','ai-cta-text','ai-cta-url'];
+        fields.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var saved = localStorage.getItem(storageKey + ':' + id);
+            if (saved && !el.value) el.value = saved;
+            el.addEventListener('input', function () {
+                localStorage.setItem(storageKey + ':' + id, el.value || '');
+            });
+            el.addEventListener('change', function () {
+                localStorage.setItem(storageKey + ':' + id, el.value || '');
+            });
+        });
+
         var btn = document.getElementById('ai-generate-btn');
         if (!btn) return;
 
