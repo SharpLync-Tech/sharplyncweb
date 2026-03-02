@@ -162,3 +162,4 @@
         require __DIR__ . '/azureai.php';
         require __DIR__ . '/tools.php';
         require __DIR__ . '/sharpfleet.php';
+        require __DIR__.'/marketing.php';
