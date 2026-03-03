@@ -86,6 +86,8 @@ class SubscriptionController extends Controller
         $subscriber->confirmation_token = null;
         $subscriber->save();
 
+        $this->sendAdminNotice($subscriber, 'Subscription confirmed');
+
         return view('marketing.subscription-confirmed');
     }
 
@@ -105,6 +107,8 @@ class SubscriptionController extends Controller
         $subscriber->status = 'unsubscribed';
         $subscriber->unsubscribed_at = now();
         $subscriber->save();
+
+        $this->sendAdminNotice($subscriber, 'Unsubscribed');
 
         return view('marketing.unsubscribed');
     }
@@ -151,6 +155,8 @@ class SubscriptionController extends Controller
 
         $sl = EmailSubscriber::where('email', $email)->where('brand', 'sl')->first();
         $sf = EmailSubscriber::where('email', $email)->where('brand', 'sf')->first();
+        $slBefore = $sl ? $sl->status : null;
+        $sfBefore = $sf ? $sf->status : null;
 
         if ($wantsSl) {
             if (!$sl) {
@@ -196,6 +202,13 @@ class SubscriptionController extends Controller
             $sf->save();
         }
 
+        if ($sl && $slBefore !== $sl->status) {
+            $this->sendAdminNotice($sl, $sl->status === 'subscribed' ? 'Subscription updated' : 'Unsubscribed');
+        }
+        if ($sf && $sfBefore !== $sf->status) {
+            $this->sendAdminNotice($sf, $sf->status === 'subscribed' ? 'Subscription updated' : 'Unsubscribed');
+        }
+
         return view('marketing.preferences', [
             'email' => $email,
             'token' => $token,
@@ -203,5 +216,31 @@ class SubscriptionController extends Controller
             'sf' => $sf,
             'saved' => true,
         ]);
+    }
+
+    private function sendAdminNotice(EmailSubscriber $subscriber, string $event): void
+    {
+        $brand = $subscriber->brand === 'sf' ? 'SharpFleet' : 'SharpLync';
+        $to = $subscriber->brand === 'sf'
+            ? 'info@sharpfleet.com.au'
+            : 'info@sharplync.com.au';
+
+        $lines = [
+            'Event: ' . $event,
+            'Brand: ' . $brand,
+            'Email: ' . $subscriber->email,
+        ];
+
+        if (!empty($subscriber->first_name)) {
+            $lines[] = 'First name: ' . $subscriber->first_name;
+        }
+
+        $lines[] = 'Status: ' . $subscriber->status;
+        $lines[] = 'Time: ' . now()->format('d/m/Y H:i:s');
+
+        Mail::raw(implode("\n", $lines), function ($message) use ($to, $event, $brand) {
+            $message->to($to)
+                ->subject('Marketing ' . $brand . ': ' . $event);
+        });
     }
 }

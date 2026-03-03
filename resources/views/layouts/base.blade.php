@@ -109,6 +109,7 @@
                 <img src="{{ asset('images/sharplync-logo.png') }}" alt="SharpLync Logo">
             </a>
             <a href="/" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
+            <a href="/marketing/sharppulse" class="nav-link {{ request()->is('marketing/sharppulse') ? 'nav-active' : '' }}">SharpPulse</a>
             <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
         </div>
 
@@ -132,6 +133,7 @@
 
         <ul>
             <li><a href="/">Home</a></li>
+            <li><a href="/marketing/sharppulse">SharpPulse</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials">Testimonials</a></li>

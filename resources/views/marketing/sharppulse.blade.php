@@ -35,6 +35,8 @@
                             '/^\\s*<p>\\s*Regards,?\\s*<\\/p>\\s*/i',
                             '/^\\s*Dear[^<]*(<br\\s*\\/?>)?\\s*/i',
                             '/^\\s*Regards,?\\s*(<br\\s*\\/?>)?\\s*/i',
+                            '/<p>\\s*Regards,?\\s*<\\/p>/i',
+                            '/\\bRegards,?\\b/i',
                         ];
                         foreach ($patterns as $pattern) {
                             $html = preg_replace($pattern, '', $html);
