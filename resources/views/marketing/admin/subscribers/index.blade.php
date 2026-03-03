@@ -17,7 +17,7 @@
 
 <div class="card">
     <h2 style="margin-top:0;">Add Subscriber</h2>
-    <form method="POST" action="{{ route('marketing.admin.subscribers.store') }}" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <form method="POST" action="{{ route('marketing.admin.subscribers.store') }}" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
         @csrf
         <div>
             <label style="display:block;margin-bottom:6px;font-weight:600;">First Name</label>
@@ -61,17 +61,39 @@
                 <th>Brand</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         @foreach($subscribers as $subscriber)
             <tr>
-                <td>{{ $subscriber->id }}</td>
-                <td>{{ $subscriber->first_name ?? '-' }}</td>
-                <td>{{ $subscriber->email }}</td>
-                <td>{{ strtoupper($subscriber->brand) }}</td>
-                <td>{{ $subscriber->status }}</td>
-                <td>{{ $subscriber->created_at ? $subscriber->created_at->format('d/m/Y H:i') : '-' }}</td>
+                <form method="POST" action="{{ route('marketing.admin.subscribers.update', $subscriber->id) }}">
+                    @csrf
+                    <td>{{ $subscriber->id }}</td>
+                    <td>
+                        <input type="text" name="first_name" value="{{ $subscriber->first_name }}" style="width:140px;padding:6px 8px;border:1px solid #ddd;border-radius:6px;">
+                    </td>
+                    <td>
+                        <input type="email" name="email" value="{{ $subscriber->email }}" style="width:220px;padding:6px 8px;border:1px solid #ddd;border-radius:6px;">
+                    </td>
+                    <td>
+                        <select name="brand" style="padding:6px 8px;border:1px solid #ddd;border-radius:6px;">
+                            <option value="sl" {{ $subscriber->brand === 'sl' ? 'selected' : '' }}>SL</option>
+                            <option value="sf" {{ $subscriber->brand === 'sf' ? 'selected' : '' }}>SF</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="status" style="padding:6px 8px;border:1px solid #ddd;border-radius:6px;">
+                            <option value="subscribed" {{ $subscriber->status === 'subscribed' ? 'selected' : '' }}>subscribed</option>
+                            <option value="pending" {{ $subscriber->status === 'pending' ? 'selected' : '' }}>pending</option>
+                            <option value="unsubscribed" {{ $subscriber->status === 'unsubscribed' ? 'selected' : '' }}>unsubscribed</option>
+                        </select>
+                    </td>
+                    <td>{{ $subscriber->created_at ? $subscriber->created_at->format('d/m/Y H:i') : '-' }}</td>
+                    <td>
+                        <button type="submit" class="btn-send">Save</button>
+                    </td>
+                </form>
             </tr>
         @endforeach
         </tbody>

@@ -90,4 +90,7 @@ Route::middleware(['admin.auth', 'marketing.access'])
 
         Route::post('/subscribers', [SubscriberController::class, 'store'])
             ->name('marketing.admin.subscribers.store');
+
+        Route::post('/subscribers/{id}', [SubscriberController::class, 'update'])
+            ->name('marketing.admin.subscribers.update');
     });

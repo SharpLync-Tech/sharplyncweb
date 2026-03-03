@@ -26,7 +26,19 @@
                     </span>
                 </div>
                 <div style="margin-top:14px;line-height:1.7;">
-                    {!! $email->body_html !!}
+                    @php
+                        $html = (string) ($email->body_html ?? '');
+                        $patterns = [
+                            '/^\\s*<p>\\s*Dear[^<]*<\\/p>\\s*/i',
+                            '/^\\s*<p>\\s*Hi[^<]*<\\/p>\\s*/i',
+                            '/^\\s*<p>\\s*Hello[^<]*<\\/p>\\s*/i',
+                            '/^\\s*Dear[^<]*(<br\\s*\\/?>)?\\s*/i',
+                        ];
+                        foreach ($patterns as $pattern) {
+                            $html = preg_replace($pattern, '', $html);
+                        }
+                    @endphp
+                    {!! $html !!}
                 </div>
 
                 <div style="margin-top:16px;border-top:1px solid #eef2f6;padding-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">

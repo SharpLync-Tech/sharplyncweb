@@ -54,4 +54,46 @@ class SubscriberController extends Controller
             ->route('marketing.admin.subscribers')
             ->with('success', 'Subscriber added.');
     }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'first_name' => ['nullable', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:190'],
+            'brand' => ['required', 'in:sl,sf'],
+            'status' => ['required', 'in:pending,subscribed,unsubscribed'],
+        ]);
+
+        $subscriber = EmailSubscriber::findOrFail($id);
+
+        $email = strtolower(trim($validated['email']));
+        $exists = EmailSubscriber::where('email', $email)
+            ->where('brand', $validated['brand'])
+            ->where('id', '!=', $subscriber->id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()
+                ->route('marketing.admin.subscribers')
+                ->with('error', 'Another subscriber already exists for this email + brand.');
+        }
+
+        $subscriber->first_name = $validated['first_name'] ?? null;
+        $subscriber->email = $email;
+        $subscriber->brand = $validated['brand'];
+        $subscriber->status = $validated['status'];
+
+        if ($validated['status'] === 'subscribed') {
+            $subscriber->confirmed_at = $subscriber->confirmed_at ?: now();
+            $subscriber->unsubscribed_at = null;
+        } elseif ($validated['status'] === 'unsubscribed') {
+            $subscriber->unsubscribed_at = now();
+        }
+
+        $subscriber->save();
+
+        return redirect()
+            ->route('marketing.admin.subscribers')
+            ->with('success', 'Subscriber updated.');
+    }
 }
