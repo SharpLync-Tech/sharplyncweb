@@ -77,7 +77,7 @@
     SharpLync Pty Ltd · Managed IT Services<br>
     Stanthorpe QLD · Australia · 0492 014 463<br>
     <span style="display:inline-block;margin-top:8px;color:#666;">
-        You are receiving this email because you are a current SharpLync customer or you subscribed to updates from SharpLync.
+        You’re receiving this email because you’re a current SharpLync customer or have subscribed to receive updates from us.
     </span>
     <div style="margin-top:8px;">
         <span style="display:inline-flex;align-items:center;gap:6px;">
