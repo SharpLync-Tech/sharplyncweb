@@ -20,6 +20,10 @@
 </p>
 @endif
 
+<p style="margin:0 0 16px 0;">
+    Hi {{ !empty($subscriber->first_name) ? $subscriber->first_name : 'there' }},
+</p>
+
 @if(!empty($bodyHtml))
 <div style="margin:0 0 20px 0;">
     {!! $bodyHtml !!}
