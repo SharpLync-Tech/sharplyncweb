@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Marketing\SubscriptionController;
 use App\Http\Controllers\Marketing\CampaignController;
+use App\Http\Controllers\Marketing\SharpPulseController;
+use App\Http\Controllers\Marketing\SubscriberController;
 
 Route::prefix('marketing')->group(function () {
 
@@ -25,7 +27,7 @@ Route::prefix('marketing')->group(function () {
     Route::post('/preferences/{token}', [SubscriptionController::class, 'updatePreferences'])
         ->name('marketing.preferences.update');
 
-    Route::get('/sharppulse', fn () => view('marketing.sharppulse'))
+    Route::get('/sharppulse', [SharpPulseController::class, 'index'])
         ->name('marketing.sharppulse');
 });
 
@@ -82,4 +84,10 @@ Route::middleware(['admin.auth', 'marketing.access'])
 
         Route::post('/campaigns/{id}/delete', [CampaignController::class, 'destroy'])
             ->name('marketing.admin.campaigns.delete');
+
+        Route::get('/subscribers', [SubscriberController::class, 'index'])
+            ->name('marketing.admin.subscribers');
+
+        Route::post('/subscribers', [SubscriberController::class, 'store'])
+            ->name('marketing.admin.subscribers.store');
     });

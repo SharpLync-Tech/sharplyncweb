@@ -116,6 +116,7 @@
         <div style="display:flex;gap:16px;font-size:14px;">
             <a href="{{ route('marketing.admin.campaigns') }}" style="color:#fff;text-decoration:none;">Home</a>
             <a href="{{ route('marketing.admin.logs') }}" style="color:#fff;text-decoration:none;">Logs</a>
+            <a href="{{ route('marketing.admin.subscribers') }}" style="color:#fff;text-decoration:none;">Subscribers</a>
         </div>
     </div>
 </div>

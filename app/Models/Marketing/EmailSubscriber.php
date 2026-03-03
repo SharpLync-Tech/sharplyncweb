@@ -20,6 +20,7 @@ class EmailSubscriber extends Model
      * Mass assignable fields.
      */
     protected $fillable = [
+        'first_name',
         'email',
         'brand',
         'status',
