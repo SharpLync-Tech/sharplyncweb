@@ -38,9 +38,9 @@ class MarketingHtmlFormatter
                     return ' style="' . $style . '"' . $attrs;
                 };
 
-                $p1 = '<p' . $applyStyle($matches[1], 'margin:0 0 6px 0; line-height:1.4;') . '>Regards,</p>';
-                $p2 = '<p' . $applyStyle($matches[2], 'margin:0 0 6px 0; line-height:1.4;') . '>' . $matches[3] . '</p>';
-                $p3 = '<p' . $applyStyle($matches[4], 'margin:0; line-height:1.4;') . '>' . $matches[5] . '</p>';
+                $p1 = '<p' . $applyStyle($matches[1], 'margin:0 0 10px 0; line-height:1.6;') . '>Regards,</p>';
+                $p2 = '<p' . $applyStyle($matches[2], 'margin:0 0 10px 0; line-height:1.6;') . '>' . $matches[3] . '</p>';
+                $p3 = '<p' . $applyStyle($matches[4], 'margin:0 0 10px 0; line-height:1.6;') . '>' . $matches[5] . '</p>';
 
                 return $p1 . $p2 . $p3;
             },

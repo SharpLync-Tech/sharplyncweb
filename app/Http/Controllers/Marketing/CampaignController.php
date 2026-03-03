@@ -468,11 +468,15 @@ class CampaignController extends Controller
             $template,
             $payload,
             function ($message) use ($campaign, $testEmail, $fromAddress, $fromName) {
+                $replyTo = $campaign->brand === 'sf'
+                    ? 'info@sharpfleet.com.au'
+                    : 'info@sharplync.com.au';
                 if ($fromAddress) {
                     $message->from($fromAddress, $fromName);
                 }
                 $message->to($testEmail)
-                    ->subject('[TEST] ' . $campaign->subject);
+                    ->subject('[TEST] ' . $campaign->subject)
+                    ->replyTo($replyTo);
             }
         );
 

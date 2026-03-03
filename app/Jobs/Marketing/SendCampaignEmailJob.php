@@ -77,16 +77,20 @@ class SendCampaignEmailJob implements ShouldQueue
             Mail::send(
                 $template,
                 $payload,
-                function ($message) use ($campaign, $subscriber, $brand) {
+            function ($message) use ($campaign, $subscriber, $brand) {
                     $fromAddress = config('mail.from.address');
                     $fromName = $brand === 'sf' ? 'SharpFleet' : 'SharpLync';
+                    $replyTo = $brand === 'sf'
+                        ? 'info@sharpfleet.com.au'
+                        : 'info@sharplync.com.au';
 
                     if ($fromAddress) {
                         $message->from($fromAddress, $fromName);
                     }
 
                     $message->to($subscriber->email)
-                        ->subject($campaign->subject);
+                        ->subject($campaign->subject)
+                        ->replyTo($replyTo);
                 }
             );
 
