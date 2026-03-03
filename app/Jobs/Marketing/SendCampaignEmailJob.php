@@ -5,6 +5,7 @@ namespace App\Jobs\Marketing;
 use App\Models\Marketing\Campaign;
 use App\Models\Marketing\EmailSubscriber;
 use App\Models\Marketing\EmailSend;
+use App\Services\Marketing\MarketingHtmlFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -69,7 +70,7 @@ class SendCampaignEmailJob implements ShouldQueue
             'preheader' => $campaign->preheader,
             'ctaText' => $campaign->cta_text,
             'ctaUrl' => $campaign->cta_url,
-            'bodyHtml' => $campaign->body_html,
+            'bodyHtml' => MarketingHtmlFormatter::normalize($campaign->body_html),
         ]);
 
         try {

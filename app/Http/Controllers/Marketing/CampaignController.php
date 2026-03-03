@@ -8,6 +8,7 @@ use App\Models\Marketing\Campaign;
 use App\Models\Marketing\EmailSubscriber;
 use App\Jobs\Marketing\SendCampaignEmailJob;
 use App\Services\Marketing\MarketingAiClient;
+use App\Services\Marketing\MarketingHtmlFormatter;
 use Illuminate\Support\Facades\Log;
 
 class CampaignController extends Controller
@@ -359,7 +360,7 @@ class CampaignController extends Controller
             'preheader' => $campaign->preheader,
             'ctaText' => $campaign->cta_text,
             'ctaUrl' => $campaign->cta_url,
-            'bodyHtml' => $campaign->body_html,
+            'bodyHtml' => MarketingHtmlFormatter::normalize($campaign->body_html),
         ]);
 
         return view($template, $data);
@@ -457,7 +458,7 @@ class CampaignController extends Controller
             'preheader' => $campaign->preheader,
             'ctaText' => $campaign->cta_text,
             'ctaUrl' => $campaign->cta_url,
-            'bodyHtml' => $campaign->body_html,
+            'bodyHtml' => MarketingHtmlFormatter::normalize($campaign->body_html),
         ]);
 
         $fromAddress = config('mail.from.address');
