@@ -42,6 +42,7 @@ class MarketingAiClient
             "Use short paragraphs, bullets where helpful, and a clear CTA button if provided.",
             "Ensure the tone is followed precisely.",
             "Keep subject under 60 chars and preheader under 90 chars.",
+            "Do not include greetings like 'Dear Customer' or 'Hi there' in the body.",
         ]);
 
         $user = implode("\n", [
@@ -128,6 +129,10 @@ class MarketingAiClient
                 }
             }
 
+            if (!empty($parsed['html'])) {
+                $parsed['html'] = $this->stripGenericGreeting((string) $parsed['html']);
+            }
+
             return $parsed;
         } catch (\Exception $e) {
             return [
@@ -145,5 +150,21 @@ class MarketingAiClient
             return 'Moderate detail, slightly expanded explanations.';
         }
         return 'Concise, minimal extra detail.';
+    }
+
+    private function stripGenericGreeting(string $html): string
+    {
+        $patterns = [
+            '/^\\s*<p>\\s*Dear[^<]*<\\/p>\\s*/i',
+            '/^\\s*<p>\\s*Hi[^<]*<\\/p>\\s*/i',
+            '/^\\s*<p>\\s*Hello[^<]*<\\/p>\\s*/i',
+            '/^\\s*Dear[^<]*(<br\\s*\\/?>)?\\s*/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            $html = preg_replace($pattern, '', $html);
+        }
+
+        return $html;
     }
 }
