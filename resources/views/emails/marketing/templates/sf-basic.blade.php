@@ -52,7 +52,7 @@
     {!! $ctaHtml !!}
 @endif
 
-<div style="height:2px;background:#0A2A4D;margin:18px auto 12px auto;width:140px;"></div>
+<div style="height:2px;background:#2b3f5f;margin:18px auto 12px auto;width:92%;max-width:520px;"></div>
 <div style="text-align:center; margin:10px 0 0 0;">
     <a href="{{ url('/marketing/sharppulse') }}" style="color:#0ea5e9; text-decoration:none;">
         View this in browser · SharpPulse
