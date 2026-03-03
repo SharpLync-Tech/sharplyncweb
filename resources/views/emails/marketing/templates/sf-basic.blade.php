@@ -6,6 +6,13 @@
     $titleText = $title ?? null;
     $introText = $intro ?? null;
     $bodyText = $body ?? null;
+    $ctaHtml = '';
+    if (!empty($ctaText) && !empty($ctaUrl)) {
+        $ctaHtml = '<table cellpadding="0" cellspacing="0" style="margin:24px auto 24px auto;"><tr><td align="center">'
+            . '<a href="' . e($ctaUrl) . '" style="background:#0A2A4D;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-size:14px;font-weight:600;display:inline-block;">'
+            . e($ctaText)
+            . '</a></td></tr></table>';
+    }
 @endphp
 
 @if(!empty($titleText))
@@ -25,34 +32,27 @@
 </p>
 
 @if(!empty($bodyHtml))
-<div style="margin:0 0 20px 0;">
-    {!! $bodyHtml !!}
-</div>
+    @php
+        $bodyHtmlWithCta = $bodyHtml;
+        $inserted = 0;
+        if ($ctaHtml !== '') {
+            $bodyHtmlWithCta = preg_replace('/(<p[^>]*>\\s*Regards,?\\s*<\\/p>)/i', $ctaHtml . '$1', $bodyHtmlWithCta, 1, $inserted);
+            if ($inserted === 0) {
+                $bodyHtmlWithCta .= $ctaHtml;
+            }
+        }
+    @endphp
+    <div style="margin:0 0 20px 0;">
+        {!! $bodyHtmlWithCta !!}
+    </div>
 @elseif(!empty($bodyText))
-<p style="margin:0 0 20px 0;">
-    {!! nl2br(e($bodyText)) !!}
-</p>
+    <p style="margin:0 0 20px 0;">
+        {!! nl2br(e($bodyText)) !!}
+    </p>
+    {!! $ctaHtml !!}
 @endif
 
-@if(!empty($ctaText) && !empty($ctaUrl))
-<table cellpadding="0" cellspacing="0" style="margin:30px 0;">
-<tr>
-<td align="center">
-    <a href="{{ $ctaUrl }}"
-       style="background:#0A2A4D;
-              color:#ffffff;
-              padding:12px 24px;
-              text-decoration:none;
-              border-radius:6px;
-              font-size:14px;
-              font-weight:600;
-              display:inline-block;">
-        {{ $ctaText }}
-    </a>
-</td>
-</tr>
-</table>
-@endif
+<div style="height:2px;background:#0A2A4D;margin:18px auto 12px auto;width:140px;"></div>
 <div style="text-align:center; margin:10px 0 0 0;">
     <a href="{{ url('/marketing/sharppulse') }}" style="color:#0ea5e9; text-decoration:none;">
         View this in browser · SharpPulse
