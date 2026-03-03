@@ -22,12 +22,12 @@
         <div>
             <label style="display:block;margin-bottom:6px;font-weight:600;">First Name</label>
             <input type="text" name="first_name" value="{{ old('first_name') }}"
-                   style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+                   style="width:95%;padding:10px;border:1px solid #ccc;border-radius:6px;">
         </div>
         <div>
             <label style="display:block;margin-bottom:6px;font-weight:600;">Email</label>
             <input type="email" name="email" required value="{{ old('email') }}"
-                   style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+                   style="width:95%;padding:10px;border:1px solid #ccc;border-radius:6px;">
         </div>
         <div>
             <label style="display:block;margin-bottom:6px;font-weight:600;">Brand</label>
