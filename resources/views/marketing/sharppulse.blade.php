@@ -6,8 +6,8 @@
 @section('content')
 <section class="fade-section" style="padding:60px 0;">
     <div style="max-width:900px;margin:0 auto;padding:0 20px;">
-        <h1 style="margin-bottom:8px;">SharpPulse</h1>
-        <p style="color:#5b6b7a;margin-bottom:28px;">
+        <h1 style="margin-bottom:8px;color:#ffffff;">SharpPulse</h1>
+        <p style="color:#ffffff;margin-bottom:28px;">
             Latest updates and announcements from SharpLync and SharpFleet.
         </p>
 
