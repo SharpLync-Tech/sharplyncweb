@@ -165,7 +165,7 @@ class DeviceController extends Controller
         // CASE 2 — ASSIGN TO EXISTING CUSTOMER
         //
         $data = $request->validate([
-            'customer_profile_id' => ['required', 'integer', 'exists:customer_profiles,id'],
+            'customer_profile_id' => ['required', 'integer', 'exists:crm.customer_profiles,id'],
         ]);
 
         $customer = CustomerProfile::on('crm')->find($data['customer_profile_id']);
