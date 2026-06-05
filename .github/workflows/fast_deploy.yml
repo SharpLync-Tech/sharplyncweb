@@ -43,14 +43,6 @@ jobs:
           package: .
           clean: false   # ⚡ Upload only changed files
 
-      - name: Remove stale SGC static directory
-        run: |
-          echo "Removing old public/sgc directory so /sgc is served by Laravel..."
-          az webapp ssh --name sharplyncweb --resource-group SharpLync-RG --command "
-            rm -rf /home/site/wwwroot/public/sgc
-          "
-        continue-on-error: true
-
       # ✅ Quick cache clear to prevent stale views/config
       - name: Clear Laravel cache remotely
         run: |
