@@ -140,7 +140,7 @@ svg {
   background:
     linear-gradient(90deg, rgba(5, 16, 11, .83) 0%, rgba(5, 16, 11, .55) 39%, rgba(5, 16, 11, .10) 72%),
     linear-gradient(0deg, rgba(0, 0, 0, .18), rgba(0, 0, 0, .04)),
-    url("/sgc-demo/images/hero-course.png") center / cover no-repeat;
+    url("/sgc/images/hero-course.png") center / cover no-repeat;
   display: grid;
   grid-template-columns: minmax(380px, 1fr) minmax(330px, 390px);
   gap: clamp(34px, 6vw, 120px);
@@ -660,7 +660,7 @@ address {
     grid-template-columns: 1fr;
     background:
       linear-gradient(180deg, rgba(5, 16, 11, .82) 0%, rgba(5, 16, 11, .58) 58%, rgba(5, 16, 11, .30) 100%),
-      url("/sgc-demo/images/hero-course.png") center / cover no-repeat;
+      url("/sgc/images/hero-course.png") center / cover no-repeat;
   }
 
   h1 {
