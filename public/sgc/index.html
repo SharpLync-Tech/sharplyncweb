@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stanthorpe Golf Club</title>
+  <meta name="description" content="Stanthorpe Golf Club website refresh demo.">
+  <link rel="stylesheet" href="/sgc/css/sgc.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/sgc/" aria-label="Stanthorpe Golf Club home">
+      <img src="/sgc/images/logo.png" alt="Stanthorpe Golf Club">
+    </a>
+
+    <input class="nav-toggle" id="nav-toggle" type="checkbox" aria-label="Toggle navigation">
+    <label class="nav-button" for="nav-toggle" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+
+    <nav class="main-nav" aria-label="Primary navigation">
+      <a class="active" href="/sgc/">Home</a>
+      <a href="#when-we-play">When We Play</a>
+      <a href="#golf">Golf</a>
+      <a href="#whats-on">What's On</a>
+      <a href="#venue-hire">Venue Hire</a>
+      <a href="#results">Results</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <a class="login-button" href="#member-login" aria-label="Member login">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 1 1 8 0v3m-9 0h10a1 1 0 0 1 1 1v9H6v-9a1 1 0 0 1 1-1Zm3 0h4V7a2 2 0 1 0-4 0v3Z"/></svg>
+      Member Login
+    </a>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">Welcome to</p>
+        <h1>Stanthorpe<br>Golf Club</h1>
+        <span class="rule"></span>
+        <p class="hero-text">Stanthorpe Golf Club welcomes visitors all year round.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#when-we-play">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v3M17 2v3M4 8h16M5 4h14a1 1 0 0 1 1 1v17H4V5a1 1 0 0 1 1-1Zm3 8h4v4H8v-4Z"/></svg>
+            When We Play
+          </a>
+          <a class="button button-ghost" href="#whats-on">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v3M17 2v3M4 8h16M5 4h14a1 1 0 0 1 1 1v17H4V5a1 1 0 0 1 1-1Zm5 8h6M10 16h4"/></svg>
+            What's On
+          </a>
+          <a class="button button-light" href="#member-login">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 1 1 8 0v3m-9 0h10a1 1 0 0 1 1 1v9H6v-9a1 1 0 0 1 1-1Zm3 0h4V7a2 2 0 1 0-4 0v3Z"/></svg>
+            Member Login
+          </a>
+        </div>
+      </div>
+
+      <aside class="events-panel" id="whats-on" aria-labelledby="events-title">
+        <div class="panel-header">
+          <h2 id="events-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v3M17 2v3M4 8h16M5 4h14a1 1 0 0 1 1 1v17H4V5a1 1 0 0 1 1-1Zm3 8h3v3H8v-3Z"/></svg>
+            Upcoming Events
+          </h2>
+          <a href="#events">View all</a>
+        </div>
+        <div class="event-list">
+          <article class="event">
+            <time datetime="2026-06-06"><span>Jun</span>06</time>
+            <div><h3>Saturday Monthly Medal</h3><p>Single Stroke and Putting</p><p>Molly Pratt Qualifier (Ladies)</p></div>
+          </article>
+          <article class="event">
+            <time datetime="2026-06-10"><span>Jun</span>10</time>
+            <div><h3>Wednesday Single Stableford</h3><p>Competition day</p><p>Stanthorpe Golf Club</p></div>
+          </article>
+          <article class="event">
+            <time datetime="2026-06-13"><span>Jun</span>13</time>
+            <div><h3>Saturday Single Stableford</h3><p>Sponsor: Keith &amp; Helen Jones</p><p>Stanthorpe Golf Club</p></div>
+          </article>
+          <article class="event">
+            <time datetime="2026-06-17"><span>Jun</span>17</time>
+            <div><h3>Wednesday Single Stableford</h3><p>Competition day</p><p>Stanthorpe Golf Club</p></div>
+          </article>
+          <article class="event">
+            <time datetime="2026-06-20"><span>Jun</span>20</time>
+            <div><h3>Saturday Single Stableford</h3><p>Finch Cup</p><p>Sponsor: Michael O'Brien</p></div>
+          </article>
+        </div>
+        <a class="panel-footer" href="#events">Full Event Calendar <span aria-hidden="true">-&gt;</span></a>
+      </aside>
+    </section>
+
+    <section class="content-shell">
+      <div class="feature-grid" id="golf">
+        <article class="feature-card">
+          <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M7 21V4m0 0c4-2 7 2 11 0v8c-4 2-7-2-11 0"/></svg></span>
+          <h2>Scenic 18-Hole Course</h2>
+          <p>Beautifully maintained course with stunning Granite Belt views.</p>
+          <a href="#course">Explore the Course <span aria-hidden="true">-&gt;</span></a>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3 20a5 5 0 0 1 10 0m-2-1a5 5 0 0 1 10 0"/></svg></span>
+          <h2>Visitors Welcome</h2>
+          <p>We welcome players and groups all year round.</p>
+          <a href="#visitors">Visitor Information <span aria-hidden="true">-&gt;</span></a>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M7 2v3M17 2v3M4 8h16M5 4h14a1 1 0 0 1 1 1v17H4V5a1 1 0 0 1 1-1Zm4 9h6"/></svg></span>
+          <h2>Active Club Community</h2>
+          <p>Regular competitions, social golf and clubhouse events.</p>
+          <a href="#whats-on">What's On <span aria-hidden="true">-&gt;</span></a>
+        </article>
+        <article class="feature-card" id="venue-hire">
+          <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/></svg></span>
+          <h2>Venue Hire</h2>
+          <p>The perfect location for your next event or celebration.</p>
+          <a href="#venue">Find Out More <span aria-hidden="true">-&gt;</span></a>
+        </article>
+      </div>
+
+      <section class="news-wrap" aria-labelledby="news-title">
+        <div class="section-heading">
+          <h2 id="news-title">Latest News &amp; Updates</h2>
+          <a href="#news">View all news</a>
+        </div>
+        <div class="news-grid">
+          <article class="news-card">
+            <img src="/sgc/images/news-course.png" alt="Sunlit golf course fairway">
+            <h3>Course Update</h3>
+            <p>Greens renovations continue this month.</p>
+            <time datetime="2026-05-16">May 16, 2026</time>
+          </article>
+          <article class="news-card">
+            <img src="/sgc/images/news-roses.png" alt="Garden roses near the clubhouse">
+            <h3>Thank You Volunteers</h3>
+            <p>A huge thank you to our volunteers.</p>
+            <time datetime="2026-05-12">May 12, 2026</time>
+          </article>
+          <article class="news-card">
+            <img src="/sgc/images/news-golf-ball.png" alt="Golf ball on the green">
+            <h3>Winter Competition Calendar</h3>
+            <p>Check out the winter fixture list.</p>
+            <time datetime="2026-05-08">May 8, 2026</time>
+          </article>
+        </div>
+      </section>
+
+      <section class="venue-card" id="venue">
+        <h2>Host Your Next Event</h2>
+        <img src="/sgc/images/venu_hire.png" alt="Clubhouse function room">
+        <p>Our clubhouse offers the perfect setting for weddings, celebrations, meetings and more.</p>
+        <a class="mini-button" href="#venue-hire">Venue Hire Information <span aria-hidden="true">-&gt;</span></a>
+      </section>
+    </section>
+
+    <section class="results-strip" id="results">
+      <div>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Zm10 2h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3"/></svg>
+        <p><strong>Check the latest results and leaders</strong><span>Stay up to date with all competition results.</span></p>
+      </div>
+      <a href="#leaderboard">View Results <span aria-hidden="true">-&gt;</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <address>
+      <span>54 Amosfield Rd<br>Stanthorpe QLD 4380, Australia</span>
+      <span>(07) 4681 1276<br>play@stanthorpegolfclub.com</span>
+    </address>
+    <nav aria-label="Footer navigation">
+      <a href="#when-we-play">When We Play</a>
+      <a href="#golf">Golf</a>
+      <a href="#whats-on">What's On</a>
+      <a href="#venue-hire">Venue Hire</a>
+      <a href="#results">Results</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="social">
+      <p>Follow us on Facebook for the latest news, events and course updates.</p>
+      <a href="#facebook" aria-label="Facebook">f</a>
+    </div>
+    <p class="legal">&copy; 2026 Stanthorpe Golf Club Inc. All rights reserved.</p>
+  </footer>
+</body>
+</html>

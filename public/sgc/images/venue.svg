@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" preserveAspectRatio="xMidYMid slice">
+  <rect width="760" height="360" fill="#d7b881"/>
+  <rect x="0" y="0" width="760" height="82" fill="#6d4a2e"/>
+  <rect x="34" y="82" width="692" height="208" fill="#f2ead8"/>
+  <g fill="#6f8d70"><rect x="74" y="120" width="132" height="94"/><rect x="280" y="120" width="132" height="94"/><rect x="486" y="120" width="132" height="94"/></g>
+  <g fill="#513722"><rect x="70" y="112" width="140" height="12"/><rect x="276" y="112" width="140" height="12"/><rect x="482" y="112" width="140" height="12"/><rect x="126" y="104" width="10" height="126"/><rect x="332" y="104" width="10" height="126"/><rect x="538" y="104" width="10" height="126"/></g>
+  <rect x="0" y="290" width="760" height="70" fill="#35502f"/>
+  <g fill="#f6f0df"><circle cx="150" cy="274" r="36"/><circle cx="342" cy="274" r="36"/><circle cx="534" cy="274" r="36"/></g>
+  <g fill="#5b3d28"><rect x="105" y="260" width="90" height="14" rx="7"/><rect x="297" y="260" width="90" height="14" rx="7"/><rect x="489" y="260" width="90" height="14" rx="7"/></g>
+</svg>

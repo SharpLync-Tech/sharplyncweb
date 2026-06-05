@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice">
+  <defs><radialGradient id="ball" cx=".36" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".78" stop-color="#e9efe7"/><stop offset="1" stop-color="#cdd8cb"/></radialGradient></defs>
+  <rect width="600" height="360" fill="#89aa55"/>
+  <path d="M0 212c172-54 370-66 600-20v168H0Z" fill="#4e832d"/>
+  <path d="M0 296c130-36 290-39 600-11" fill="none" stroke="#b5ca72" stroke-width="18" opacity=".45"/>
+  <circle cx="360" cy="182" r="70" fill="url(#ball)"/>
+  <g fill="#d8dfd6" opacity=".75"><circle cx="337" cy="159" r="5"/><circle cx="365" cy="151" r="5"/><circle cx="391" cy="166" r="5"/><circle cx="331" cy="190" r="5"/><circle cx="365" cy="188" r="5"/><circle cx="393" cy="205" r="5"/></g>
+</svg>
