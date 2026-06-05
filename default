@@ -23,6 +23,11 @@ server {
         try_files $uri $uri/ =404;
     }
 
+    # SGC demo is served by Laravel so /sgc does not become an nginx directory redirect.
+    location = /sgc {
+        try_files /index.php =404;
+    }
+
     # --- Laravel front controller ---
     location / {
         try_files $uri $uri/ /index.php?$query_string;
