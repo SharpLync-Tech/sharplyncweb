@@ -42,6 +42,9 @@
         
 
         Route::get('/', fn() => view('/home')); // Home Page
+        $serveSgcDemo = fn () => response()->file(public_path('sgc-demo/index.html'));
+        Route::get('/sgc', $serveSgcDemo);
+        Route::get('/sgc/', $serveSgcDemo);
         // Route::get('/', fn() => view('coming_soon')); // Coming Soon
         // Route::get('/welcome', fn() => view('welcome')); //Sydney
         Route::get('/contact', fn() => view('contact'));
