@@ -13,6 +13,9 @@
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+    # Stanthorpe Golf Club static demo folder
+    RewriteRule ^sgc$ /sgc/ [L,R=301]
+
     # --- Prevent Hotlinking of Images (Stops other sites using your logo or assets) ---
     RewriteCond %{HTTP_REFERER} !^https://(www\.)?sharplync\.com\.au/ [NC]
     RewriteCond %{HTTP_REFERER} !^https://(www\.)?sharplink\.com\.au/ [NC]
@@ -52,4 +55,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
