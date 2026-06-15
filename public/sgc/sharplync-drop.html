@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SharpLync Stanthorpe Folder Drop Checklist</title>
+  <style>
+    :root {
+      --navy: #0f2f4a;
+      --teal: #18b7a7;
+      --bg: #f4f7f8;
+      --card: #ffffff;
+      --text: #182026;
+      --muted: #60707d;
+      --border: #dce5e8;
+      --done: #e6f7f4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: linear-gradient(135deg, var(--navy), #17496c);
+      color: white;
+      padding: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      opacity: .95;
+    }
+
+    .progress-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.22);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--teal);
+      border-radius: 999px;
+      transition: width .2s ease;
+    }
+
+    main {
+      padding: 14px;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 16px;
+      background: white;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-size: 15px;
+      font-weight: 700;
+      background: var(--navy);
+      color: white;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #ffffff;
+      color: var(--navy);
+      border: 1px solid var(--border);
+    }
+
+    .list {
+      display: grid;
+      gap: 11px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(16, 40, 60, .06);
+      display: grid;
+      gap: 10px;
+    }
+
+    .card.done {
+      background: var(--done);
+      border-color: #bde7df;
+    }
+
+    .top-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .tick {
+      width: 34px;
+      height: 34px;
+      margin-top: 1px;
+      accent-color: var(--teal);
+    }
+
+    .business {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--navy);
+    }
+
+    .type {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef4f6;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .address {
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.35;
+      padding-left: 52px;
+    }
+
+    .map-link {
+      color: var(--teal);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 15px;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 16px 2px 30px;
+      line-height: 1.4;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (min-width: 720px) {
+      h1 { font-size: 24px; }
+      .toolbar { grid-template-columns: 1fr auto; align-items: center; }
+      .buttons { grid-template-columns: auto auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SharpLync Stanthorpe Folder Drop</h1>
+    <div class="progress-wrap">
+      <div class="progress-text">
+        <span id="progressText">0 of 0 dropped</span>
+        <span id="percentText">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="toolbar">
+      <input id="search" type="search" placeholder="Search business, type, or address">
+      <div class="buttons">
+        <button class="secondary" id="showAll" type="button">Show all</button>
+        <button id="exportCsv" type="button">Export CSV</button>
+      </div>
+    </section>
+
+    <section id="list" class="list" aria-live="polite"></section>
+
+    <p class="footer-note">
+      Your ticks and notes save on this phone/browser using local storage. No database needed.
+      If you clear browser data or use another device, the checklist will be blank again.
+    </p>
+  </main>
+
+  <script>
+    const prospects = [{"business": "Stanthorpe Real Estate", "address": "", "type": "Real estate", "visit_notes": ""}, {"business": "Cec Mann Real Estate Property Services", "address": "", "type": "Real estate / property management", "visit_notes": ""}, {"business": "Crisp Real Estate", "address": "", "type": "Real estate", "visit_notes": ""}, {"business": "House 2 Home Real Estate", "address": "", "type": "Real estate", "visit_notes": ""}, {"business": "Cold Country Real Estate", "address": "", "type": "Real estate", "visit_notes": ""}, {"business": "Granite Belt Property Management", "address": "", "type": "Property management", "visit_notes": ""}, {"business": "David Schnitzerling & Co", "address": "", "type": "Real estate", "visit_notes": ""}, {"business": "Power Tynan", "address": "", "type": "Accounting / advisory", "visit_notes": ""}, {"business": "Granite Belt Insurance Brokers", "address": "", "type": "Insurance broker", "visit_notes": ""}, {"business": "Cav Insure", "address": "", "type": "Insurance", "visit_notes": ""}, {"business": "Stanthorpe Medical Clinic", "address": "", "type": "Medical clinic", "visit_notes": ""}, {"business": "Amcal Pharmacy Stanthorpe", "address": "", "type": "Pharmacy", "visit_notes": ""}, {"business": "Granite Belt Pharmacy", "address": "", "type": "Pharmacy", "visit_notes": ""}, {"business": "Water Benders Plumbing", "address": "", "type": "Plumbing / trades", "visit_notes": ""}, {"business": "MWF Plumbing", "address": "", "type": "Plumbing / trades", "visit_notes": ""}, {"business": "Solar Blessing", "address": "", "type": "Solar / electrical", "visit_notes": ""}, {"business": "JSI Motorcycles", "address": "", "type": "Workshop / retail / service", "visit_notes": ""}, {"business": "Elite Torque Mechanical", "address": "", "type": "Mechanic / workshop", "visit_notes": ""}, {"business": "Cattarins Mechanical Repairs", "address": "", "type": "Mechanic / workshop", "visit_notes": ""}, {"business": "Pierpoint Motors", "address": "", "type": "Dealership / service / parts", "visit_notes": ""}, {"business": "Aqua Rural Supplies", "address": "", "type": "Rural / irrigation supplies", "visit_notes": ""}, {"business": "Granite Belt Body Works", "address": "", "type": "Smash repairs / body shop", "visit_notes": ""}, {"business": "Border Refrigeration", "address": "", "type": "Refrigeration / service trade", "visit_notes": ""}, {"business": "HL Joiners", "address": "", "type": "Joinery / cabinetry", "visit_notes": ""}, {"business": "TJ Glass and Aluminium", "address": "", "type": "Glass / aluminium / trade service", "visit_notes": ""}, {"business": "Busy At Work Stanthorpe", "address": "", "type": "Second-pass / boots-on-the-ground", "visit_notes": ""}, {"business": "APM Employment Services Stanthorpe", "address": "", "type": "Second-pass / boots-on-the-ground", "visit_notes": ""}];
+    const storageKey = "sharplync_stanthorpe_folder_drop_v1";
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function itemKey(item) {
+      return item.business.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
+    let state = loadState();
+
+    function mapsUrl(address, business) {
+      const query = address && address.trim() ? address : business + " Stanthorpe QLD";
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+    }
+
+    function render() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      prospects.forEach((item, index) => {
+        const key = itemKey(item);
+        const saved = state[key] || {};
+        const done = !!saved.done;
+        const note = saved.note || item.visit_notes || "";
+
+        const haystack = [item.business, item.address, item.type].join(" ").toLowerCase();
+        if (q && !haystack.includes(q)) {
+          return;
+        }
+
+        const card = document.createElement("article");
+        card.className = "card" + (done ? " done" : "");
+
+        const topRow = document.createElement("div");
+        topRow.className = "top-row";
+
+        const tick = document.createElement("input");
+        tick.className = "tick";
+        tick.type = "checkbox";
+        tick.checked = done;
+        tick.setAttribute("aria-label", "Mark " + item.business + " as dropped");
+        tick.addEventListener("change", () => {
+          state[key] = state[key] || {};
+          state[key].done = tick.checked;
+          saveState(state);
+          render();
+        });
+
+        const titleWrap = document.createElement("div");
+
+        const business = document.createElement("div");
+        business.className = "business";
+        business.textContent = (index + 1) + ". " + item.business;
+
+        const type = document.createElement("span");
+        type.className = "type";
+        type.textContent = item.type || "Prospect";
+
+        titleWrap.appendChild(business);
+        titleWrap.appendChild(type);
+        topRow.appendChild(tick);
+        topRow.appendChild(titleWrap);
+
+        const address = document.createElement("div");
+        address.className = "address";
+
+        const addressText = document.createElement("div");
+        addressText.textContent = item.address || "Address to confirm";
+
+        const map = document.createElement("a");
+        map.className = "map-link";
+        map.href = mapsUrl(item.address, item.business);
+        map.target = "_blank";
+        map.rel = "noopener";
+        map.textContent = "Open in Maps";
+
+        address.appendChild(addressText);
+        address.appendChild(map);
+
+        const notes = document.createElement("textarea");
+        notes.placeholder = "Visit note, contact name, follow-up...";
+        notes.value = note;
+        notes.addEventListener("input", () => {
+          state[key] = state[key] || {};
+          state[key].note = notes.value;
+          saveState(state);
+          updateProgress();
+        });
+
+        card.appendChild(topRow);
+        card.appendChild(address);
+        card.appendChild(notes);
+        list.appendChild(card);
+      });
+
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = prospects.length;
+      const done = prospects.filter(item => {
+        const saved = state[itemKey(item)] || {};
+        return !!saved.done;
+      }).length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById("progressText").textContent = `${done} of ${total} dropped`;
+      document.getElementById("percentText").textContent = `${percent}%`;
+      document.getElementById("progressFill").style.width = percent + "%";
+    }
+
+    function csvEscape(value) {
+      return '"' + String(value || "").replace(/"/g, '""') + '"';
+    }
+
+    function exportCsv() {
+      const rows = [["Dropped", "Business", "Address", "Type", "Visit Note"]];
+      prospects.forEach(item => {
+        const saved = state[itemKey(item)] || {};
+        rows.push([
+          saved.done ? "Yes" : "No",
+          item.business,
+          item.address,
+          item.type,
+          saved.note || ""
+        ]);
+      });
+
+      const csv = rows.map(row => row.map(csvEscape).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "sharplync-folder-drop-progress.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("search").addEventListener("input", render);
+    document.getElementById("showAll").addEventListener("click", () => {
+      document.getElementById("search").value = "";
+      render();
+    });
+    document.getElementById("exportCsv").addEventListener("click", exportCsv);
+
+    render();
+  </script>
+</body>
+</html>
