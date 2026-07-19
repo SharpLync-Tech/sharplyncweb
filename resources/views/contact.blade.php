@@ -4,7 +4,9 @@
     <link rel="stylesheet" href="{{ asset('css/contact.css') }}">
 @endpush
 
-@section('title', 'Contact SharpLync')
+@section('title', 'Contact SharpLync | IT Support Stanthorpe')
+@section('meta_description', 'Contact SharpLync for local IT support, computer repairs and technology advice in Stanthorpe, the Granite Belt and surrounding areas.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . '/contact')
 
 @section('content')
 
@@ -56,6 +58,15 @@
                 <a href="https://wa.me/message/K7U44ZE6X53LH1" target="_blank" class="info-link">
                     Chat with us
                 </a>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">
+                    <img src="{{ asset('images/onsite_support.png') }}" alt="Stanthorpe and Granite Belt service area" />
+                </div>
+                <h4>Local Service Area</h4>
+                <p>On-site support in Stanthorpe, the Granite Belt and wider Southern Downs by arrangement.</p>
+                <a href="{{ route('it-support.stanthorpe') }}" class="info-link">View local IT support</a>
             </div>
 
         </div>

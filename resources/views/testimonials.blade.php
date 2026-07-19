@@ -1,6 +1,8 @@
 @extends('layouts.testimonials-base') 
 
 @section('title', 'SharpLync | Testimonials')
+@section('meta_description', 'Read genuine endorsements of SharpLync founder Jannie Brits covering technical expertise, integrity and commitment to reliable IT support.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('testimonials', [], false))
 
 @php
     use Illuminate\Support\Str;

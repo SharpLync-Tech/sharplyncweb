@@ -1,6 +1,8 @@
 @extends('layouts.base')
 
 @section('title', 'Cybersecurity Check')
+@section('meta_description', 'Use the SharpLync cybersecurity check to identify practical security improvements for a small business or home.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('tools.cyber-check', [], false))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/tools/cyber-check.css') }}">

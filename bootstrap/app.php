@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
          * Global middleware
          * ------------------------------------------------------------
          */
+        $middleware->append(\App\Http\Middleware\CanonicalHost::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         // If you're using cookie-based auth for web SPA clients, enable this:

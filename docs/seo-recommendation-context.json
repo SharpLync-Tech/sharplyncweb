@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-07-20",
+  "purpose": "Machine-readable, non-secret context for SEO recommendations. Null values require owner verification and must not be invented.",
+  "business": {
+    "name": "SharpLync Pty Ltd",
+    "brand": "SharpLync",
+    "canonical_url": "https://sharplync.com.au",
+    "phone": "+61 492 014 463",
+    "email": "info@sharplync.com.au",
+    "locality": "Stanthorpe",
+    "region": "QLD",
+    "postal_code": "4380",
+    "country": "AU",
+    "public_street_address": null,
+    "opening_hours": null,
+    "google_business_profile_url": null,
+    "google_business_primary_category": null,
+    "google_business_secondary_categories": null,
+    "business_model": "Business IT support and technology services",
+    "residential_customers_accepted": null
+  },
+  "verified_service_areas": [
+    "Stanthorpe",
+    "Granite Belt",
+    "Southern Downs"
+  ],
+  "verified_services_from_project": [
+    "Remote IT support",
+    "On-site IT support by arrangement",
+    "Laptop and desktop repairs",
+    "Microsoft 365 and cloud support",
+    "Cybersecurity",
+    "Networking and Wi-Fi",
+    "Backup and business continuity",
+    "Endpoint protection and patching",
+    "IT planning and advisory",
+    "Hardware procurement and setup"
+  ],
+  "priority_queries": [
+    "IT Support Stanthorpe",
+    "computer repairs Stanthorpe",
+    "managed IT Stanthorpe",
+    "Microsoft 365 support Stanthorpe",
+    "cybersecurity Stanthorpe",
+    "IT support Granite Belt"
+  ],
+  "priority_pages": [
+    {
+      "url": "https://sharplync.com.au/",
+      "intent": "Local business IT provider overview"
+    },
+    {
+      "url": "https://sharplync.com.au/it-support-stanthorpe",
+      "intent": "Local business IT support"
+    },
+    {
+      "url": "https://sharplync.com.au/computer-repairs-stanthorpe",
+      "intent": "Local laptop and desktop repair help"
+    },
+    {
+      "url": "https://sharplync.com.au/services",
+      "intent": "All IT services overview"
+    }
+  ],
+  "claims_requiring_verification": [
+    "Street address",
+    "Opening hours",
+    "Response time or same-day availability",
+    "Prices and guarantees",
+    "Review count and rating",
+    "Certifications and awards",
+    "Residential service availability",
+    "Additional towns or travel radius"
+  ],
+  "recommended_evidence_inputs": {
+    "google_search_console": [
+      "query",
+      "page",
+      "country",
+      "device",
+      "clicks",
+      "impressions",
+      "ctr",
+      "position",
+      "indexing_status",
+      "google_selected_canonical"
+    ],
+    "google_business_profile": [
+      "categories",
+      "service_areas",
+      "website_clicks",
+      "calls",
+      "directions",
+      "review_count",
+      "average_rating"
+    ],
+    "website": [
+      "landing_page",
+      "contact_submissions",
+      "phone_clicks",
+      "qualified_enquiries",
+      "service_requested"
+    ]
+  }
+}

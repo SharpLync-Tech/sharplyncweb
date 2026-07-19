@@ -1,7 +1,9 @@
 <!-- Marketing Page: SharpPulse -->
 @extends('layouts.base')
 
-@section('title', 'SharpPulse')
+@section('title', 'SharpPulse IT & Cybersecurity Updates | SharpLync')
+@section('meta_description', 'SharpPulse shares practical IT, cybersecurity and SharpLync updates for businesses in Stanthorpe, the Granite Belt and across Australia.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('marketing.sharppulse', [], false))
 
 @section('content')
 <section class="fade-section" style="padding:60px 0;">

@@ -1,6 +1,8 @@
 @extends('layouts.base')
 
 @section('title', 'Policies | SharpLync')
+@section('meta_description', 'SharpLync terms, privacy, security and remote-support policies.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('policies.hub', [], false))
 
 @section('content')
 

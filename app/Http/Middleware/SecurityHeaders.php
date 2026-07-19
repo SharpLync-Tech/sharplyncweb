@@ -14,6 +14,20 @@ class SecurityHeaders
     {
         $response = $next($request);
 
+        // Keep authenticated, account, administrative and application screens
+        // out of search even when a crawler discovers a direct URL.
+        if ($request->is([
+            'admin', 'admin/*', 'auth/*',
+            'customers', 'customers/*',
+            'app', 'app/*',
+            'login', 'register', 'set-password/*', 'password/*', 'forgot-password', 'password-reset*', 'verify/*',
+            'marketing/confirm/*', 'marketing/unsubscribe/*', 'marketing/preferences/*',
+            'marketing/admin', 'marketing/admin/*',
+            'support-admin', 'support-admin/*',
+        ])) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
+
         // --- Strict Transport Security ---
         $response->headers->set(
             'Strict-Transport-Security',

@@ -7,7 +7,9 @@
 
 @extends('layouts.base')
 
-@section('title', 'SharpLync | Home')
+@section('title', 'IT Support Stanthorpe & Granite Belt | SharpLync')
+@section('meta_description', 'Local IT support for Stanthorpe and the Granite Belt. SharpLync helps businesses with computer repairs, Microsoft 365, cybersecurity, Wi-Fi, backups and remote support.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . '/')
 
 @section('content')
 
@@ -23,10 +25,10 @@
 
   {{-- Hero text --}}
   <div class="hero-text">
-    <h1>Your Business,<br><span class="highlight">Secure & Connected</span></h1>
+    <h1>Local IT Support for<br><span class="highlight">Stanthorpe & the Granite Belt</span></h1>
     <p>
-      From the Granite Belt to the Cloud — smart tech, local heart, and real people
-      who care about getting IT right.
+      Practical business IT support, computer repairs, cloud, cybersecurity and networking—
+      delivered locally or through secure remote support.
     </p>
   </div>
 
@@ -74,7 +76,7 @@
           Protection that actually makes sense. We secure
           your systems without locking you out of your own business.
         </p>
-        <a href="/services/security" class="learn-more">Learn more</a>
+        <a href="{{ route('services') }}#cybersecurity" class="learn-more">Learn more</a>
       </div>
 
       <div class="tile transparent">
@@ -83,7 +85,7 @@
           Email, files, and collaboration done right —
           simple, secure, and fully supported.
         </p>
-        <a href="/services/cloud" class="learn-more">Learn more</a>
+        <a href="{{ route('services') }}#cloud-m365" class="learn-more">Learn more</a>
       </div>
 
       <div class="tile transparent">
@@ -92,7 +94,7 @@
           On-site when you need it, remote when you don’t.
           Real people who actually answer the phone.
         </p>
-        <a href="/services/support" class="learn-more">Learn more</a>
+        <a href="{{ route('it-support.stanthorpe') }}" class="learn-more">Learn more</a>
       </div>
 
     </div>
@@ -113,6 +115,19 @@
     </div>
 
   </div>
+
+  <section class="home-local-intro fade-section" aria-labelledby="home-local-heading">
+    <h2 id="home-local-heading">IT help for businesses in Stanthorpe and surrounding areas</h2>
+    <p>
+      SharpLync supports businesses across Stanthorpe, the Granite Belt and the wider Southern Downs.
+      Get help with day-to-day technology problems, Microsoft 365, computer faults, cybersecurity,
+      business Wi-Fi, backups and sensible IT planning.
+    </p>
+    <div class="home-local-links">
+      <a href="{{ route('it-support.stanthorpe') }}" class="learn-more primary">IT Support Stanthorpe</a>
+      <a href="{{ route('computer-repairs.stanthorpe') }}" class="learn-more">Computer Repairs Stanthorpe</a>
+    </div>
+  </section>
 
 </section>
 
@@ -143,6 +158,20 @@
   width: 100%;
   text-align: center;
 }
+
+.home-local-intro {
+  max-width: 1000px;
+  margin: 3rem auto 0;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #17324d;
+}
+
+.home-local-intro h2 { margin-top: 0; }
+.home-local-intro p { max-width: 820px; margin: 0 auto 1.5rem; line-height: 1.7; }
+.home-local-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
 
 /* Responsive */
 @media (max-width: 900px) {

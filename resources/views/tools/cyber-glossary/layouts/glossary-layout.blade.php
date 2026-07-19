@@ -13,6 +13,10 @@
 
 @extends('layouts.base')
 
+@section('title', 'Cybersecurity Glossary in Plain English | SharpLync')
+@section('meta_description', 'Plain-English explanations of common cybersecurity terms for small businesses and everyday technology users.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('tools.cyber-glossary', [], false))
+
 @push('styles')
     {{-- SharpLync global styling --}}
     <link rel="stylesheet" href="{{ asset('css/sharplync.css') }}">

@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php
+        $testimonialTitle = trim($__env->yieldContent('title')) ?: 'SharpLync | Testimonials';
+        $testimonialDescription = trim($__env->yieldContent('meta_description')) ?: config('seo.default_description');
+        $testimonialCanonical = trim($__env->yieldContent('canonical')) ?: rtrim(config('seo.site_url'), '/') . '/' . ltrim(request()->path(), '/');
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SharpLync | Testimonials')</title>
+    <title>{{ $testimonialTitle }}</title>
+    <meta name="description" content="{{ $testimonialDescription }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ $testimonialCanonical }}">
+    <meta property="og:title" content="{{ $testimonialTitle }}">
+    <meta property="og:description" content="{{ $testimonialDescription }}">
+    <meta property="og:url" content="{{ $testimonialCanonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ rtrim(config('seo.site_url'), '/') . config('seo.default_image') }}">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -26,8 +39,6 @@
 
     <!-- ICO fallback -->
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-</head>
-
 </head>
 <body class="testimonials-body">
 

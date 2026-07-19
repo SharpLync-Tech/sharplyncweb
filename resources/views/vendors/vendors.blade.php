@@ -11,6 +11,8 @@
 @endpush
 
 @section('title', 'SharpLync | Our Technology Partners')
+@section('meta_description', 'Explore the trusted technology vendors and partnerships SharpLync uses to deliver reliable business IT, cloud, networking and cybersecurity services.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('vendors', [], false))
 
 @section('content')
 <div class="vendors-page">

@@ -1,5 +1,8 @@
 @extends('layouts.base')
 
+@section('title')@yield('policy_title') | SharpLync @endsection
+@section('meta_description')Read the SharpLync @yield('policy_title'), including the current terms and operational information.@endsection
+
 @section('content')
 
 <link rel="stylesheet" href="{{ asset('css/policies.css') }}">

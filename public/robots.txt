@@ -25,13 +25,8 @@ Disallow: /admin/*
 Disallow: /customers/
 Disallow: /customers/*
 
-# Login & Registration (Google recommends blocking sign-in pages)
-Disallow: /login
-Disallow: /register
-Disallow: /password-reset
-Disallow: /forgot-password
-Disallow: /verify-email
-Disallow: /auth/*
+# Authentication and token pages use meta/X-Robots-Tag noindex. They are not
+# blocked here because crawlers must be able to fetch a URL to see noindex.
 
 # API & Webhooks
 Disallow: /api/
@@ -54,10 +49,6 @@ Disallow: /logs/*
 Disallow: /.env
 Disallow: /server-status
 Disallow: /server-info
-
-# Prevent crawling query strings (clean SEO)
-Disallow: /*?*
-Disallow: /*&*
 
 # ===============================
 # SPECIAL BOT HANDLING

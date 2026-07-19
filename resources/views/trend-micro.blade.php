@@ -11,6 +11,8 @@
 @endpush
 
 @section('title', 'SharpLync | Trend Micro Security for Business')
+@section('meta_description', 'Business cybersecurity and Trend Micro security support from SharpLync for organisations in Stanthorpe, the Granite Belt and beyond.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('trend-micro', [], false))
 
 @section('content')
 <div class="tm-page">

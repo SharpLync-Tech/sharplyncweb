@@ -7,6 +7,8 @@
 @endpush
 
 @section('title', 'SharpLync | About')
+@section('meta_description', 'Meet SharpLync founder Jannie Brits and learn about the practical technical experience behind local IT support for Stanthorpe and the Granite Belt.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('about', [], false))
 
 @php
     use Illuminate\Support\Str;
@@ -22,6 +24,7 @@
       <h1 class="about-title">
           About <span class="gradient">SharpLync</span>
       </h1>      
+      <p>Local, practical IT expertise serving businesses in Stanthorpe, the Granite Belt and surrounding areas.</p>
   </div>
 
   {{-- =============================================== --}}

@@ -1,6 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php
+        $seoSiteUrl = rtrim((string) config('seo.site_url'), '/');
+        $seoPath = request()->path();
+        $seoDefaultCanonical = $seoSiteUrl . (($seoPath === '/' || $seoPath === '') ? '/' : '/' . ltrim($seoPath, '/'));
+        $seoTitle = trim($__env->yieldContent('title')) ?: config('seo.default_title');
+        $seoDescription = trim($__env->yieldContent('meta_description')) ?: config('seo.default_description');
+        $seoCanonical = trim($__env->yieldContent('canonical')) ?: $seoDefaultCanonical;
+        $seoPrivatePath = request()->is([
+            'admin', 'admin/*', 'auth/*', 'customers', 'customers/*', 'app', 'app/*',
+            'login', 'register', 'set-password/*', 'password/*', 'forgot-password',
+            'password-reset*', 'verify/*', 'marketing/confirm/*', 'marketing/unsubscribe/*',
+            'marketing/preferences/*', 'marketing/admin', 'marketing/admin/*',
+            'support-admin', 'support-admin/*',
+        ]);
+        $seoRobots = trim($__env->yieldContent('robots')) ?: ($seoPrivatePath ? 'noindex, nofollow' : 'index, follow');
+        $seoImage = trim($__env->yieldContent('og_image')) ?: $seoSiteUrl . config('seo.default_image');
+        $business = config('seo.business');
+        $businessSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => ['LocalBusiness', 'ProfessionalService'],
+                    '@id' => $business['id'],
+                    'name' => $business['name'],
+                    'url' => $seoSiteUrl . '/',
+                    'logo' => ['@type' => 'ImageObject', 'url' => $business['logo']],
+                    'image' => $seoImage,
+                    'telephone' => $business['telephone'],
+                    'email' => $business['email'],
+                    'description' => config('seo.default_description'),
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'addressLocality' => $business['locality'],
+                        'addressRegion' => $business['region'],
+                        'postalCode' => $business['postal_code'],
+                        'addressCountry' => $business['country'],
+                    ],
+                    'areaServed' => array_map(fn ($area) => ['@type' => 'Place', 'name' => $area], $business['areas_served']),
+                    'contactPoint' => [
+                        '@type' => 'ContactPoint',
+                        'telephone' => $business['telephone'],
+                        'email' => $business['email'],
+                        'contactType' => 'customer support',
+                        'areaServed' => 'AU',
+                        'availableLanguage' => 'English',
+                    ],
+                    'sameAs' => $business['same_as'],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $seoSiteUrl . '/#website',
+                    'url' => $seoSiteUrl . '/',
+                    'name' => config('seo.site_name'),
+                    'publisher' => ['@id' => $business['id']],
+                    'inLanguage' => 'en-AU',
+                ],
+            ],
+        ];
+    @endphp
     <!-- Google tag (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
     <script>
@@ -21,57 +80,35 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SharpLync | IT Support & Cloud Services for Queensland Businesses')</title>
+    <title>{{ $seoTitle }}</title>
 
         <!-- Primary SEO -->
-        <meta name="description" content="SharpLync provides expert IT support, cybersecurity, and cloud services for businesses across Queensland. Proudly serving Stanthorpe and the Granite Belt with modern, reliable technology solutions.">
-        <meta name="keywords" content="IT Support Queensland, IT Support Stanthorpe, Managed Services Queensland, Cloud Services QLD, Cybersecurity Granite Belt, Business IT Support, SharpLync">
-        <meta name="robots" content="index, follow">
+        <meta name="description" content="{{ $seoDescription }}">
+        <meta name="robots" content="{{ $seoRobots }}">
         <meta name="facebook-domain-verification" content="nlot90unrp0fw2s4uquw1q8hnxnh7a" />
 
-        <!-- ✅ Open Graph / Facebook -->
-        <meta property="og:title" content="SharpLync | IT Support & Cloud Services for Queensland Businesses">
-        <meta property="og:description" content="Your personal tech link, backed by experience.">
-        <meta property="og:image" content="https://sharplync.com.au/images/og-sharplync.png">
+        <!-- Open Graph / social -->
+        <meta property="og:title" content="{{ $seoTitle }}">
+        <meta property="og:description" content="{{ $seoDescription }}">
+        <meta property="og:image" content="{{ $seoImage }}">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="https://sharplync.com.au">
-
+        <meta property="og:url" content="{{ $seoCanonical }}">
+        <meta property="og:site_name" content="SharpLync">
+        <meta property="og:locale" content="en_AU">
+        <meta name="twitter:card" content="summary_large_image">
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://sharplync.com.au/">
+    <link rel="canonical" href="{{ $seoCanonical }}">
 
     <!-- Sitemap reference -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 
     <meta name="author" content="SharpLync Pty Ltd">
 
-    {{-- Structured data for Google / Knowledge Graph --}}
-    @verbatim
-    <script type="application/ld+json">
-    {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "SharpLync Pty Ltd",
-    "image": "https://sharplync.com.au/images/sharplync-logo.png",
-    "@id": "https://sharplync.com.au",
-    "url": "https://sharplync.com.au",
-    "telephone": "+61 492 014 463",
-    "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Stanthorpe",
-        "addressRegion": "QLD",
-        "addressCountry": "AU"
-    },
-    "description": "SharpLync provides IT support, managed services, cloud solutions, and cybersecurity for businesses across Queensland.",
-    "sameAs": [
-        "https://www.linkedin.com/company/sharplync",
-        "https://x.com/sharplync"
-    ]
-    }
-    </script>
-    @endverbatim
+    <script type="application/ld+json">@json($businessSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
+    @stack('structured_data')
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -168,6 +205,11 @@
     <footer>
         <div class="footer-content">
             <p>&copy; {{ date('Y') }} SharpLync Pty Ltd. All rights reserved.</p>
+            <p class="footer-local-links">
+                <a href="{{ route('it-support.stanthorpe') }}">IT Support Stanthorpe</a>
+                <span aria-hidden="true"> · </span>
+                <a href="{{ route('computer-repairs.stanthorpe') }}">Computer Repairs Stanthorpe</a>
+            </p>
             <p><span class="sl-builtby">Designed & built by SharpLync</span></p>
 
             <div class="social-icons">

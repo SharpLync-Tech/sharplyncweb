@@ -3,6 +3,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    @php
+        $policyTitle = trim($__env->yieldContent('title')) ?: 'SharpLync | Policy';
+        $policyDescription = trim($__env->yieldContent('meta_description')) ?: 'SharpLync legal, privacy, security and service policy information.';
+        $policyCanonical = trim($__env->yieldContent('canonical')) ?: rtrim(config('seo.site_url'), '/') . '/' . ltrim(request()->path(), '/');
+    @endphp
     <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SCQ2YCEW8"></script>
         <script>
@@ -15,7 +20,10 @@
         
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SharpLync | Policy')</title>
+    <title>{{ $policyTitle }}</title>
+    <meta name="description" content="{{ $policyDescription }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ $policyCanonical }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     {{-- Assuming about.css contains all necessary base styling --}}

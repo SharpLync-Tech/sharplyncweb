@@ -1,7 +1,35 @@
 {{-- resources/views/services/services.blade.php --}}
 @extends('layouts.base')
 
-@section('title', 'SharpLync | Services')
+@section('title', 'IT Services Stanthorpe & Granite Belt | SharpLync')
+@section('meta_description', 'Explore SharpLync IT services for Stanthorpe and Granite Belt businesses: support, computer repairs, Microsoft 365, cybersecurity, Wi-Fi, backups and IT planning.')
+@section('canonical', rtrim(config('seo.site_url'), '/') . route('services', [], false))
+
+@php
+    $servicesCanonical = rtrim(config('seo.site_url'), '/') . route('services', [], false);
+    $servicesSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        '@id' => $servicesCanonical . '#services',
+        'name' => 'SharpLync IT services',
+        'url' => $servicesCanonical,
+        'itemListElement' => array_map(fn ($category, $index) => [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'item' => [
+                '@type' => 'Service',
+                '@id' => $servicesCanonical . '#' . $category['id'],
+                'name' => $category['title'],
+                'description' => $category['long'],
+                'provider' => ['@id' => config('seo.business.id')],
+            ],
+        ], $categories, array_keys($categories)),
+    ];
+@endphp
+
+@push('structured_data')
+<script type="application/ld+json">@json($servicesSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
+@endpush
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/services/services.css') }}?v=7001">
@@ -20,13 +48,14 @@
 
     {{-- HEADING --}}
     <div class="hero-text">
-        <h1>Your Business,<br><span class="highlight">Secure & Connected</span></h1>
+        <h1>Business IT Services for<br><span class="highlight">Stanthorpe & the Granite Belt</span></h1>
+        <p class="services-intro">Local and remote support covering everyday IT, computer repairs, cloud, security, networks and business continuity.</p>
     </div>
 
     {{-- SERVICE GRID --}}
     <div id="servicesGrid" class="services-cards">
         @foreach ($categories as $cat)
-        <div class="service-tile"
+        <article class="service-tile" id="{{ $cat['id'] }}"
              data-title="{{ $cat['title'] }}"
              data-short="{{ $cat['short'] }}"
              data-long="{{ $cat['long'] }}"
@@ -46,8 +75,15 @@
                 <p>{{ $cat['short'] }}</p>
                 <button class="tile-toggle">Learn More</button>
             </div>
-
-        </div>
+            <div class="service-seo-copy">
+                <p>{{ $cat['long'] }}</p>
+                <ul>
+                    @foreach($cat['subs'] as $service)
+                        <li>{{ $service }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </article>
         @endforeach
     </div>
 
@@ -96,6 +132,13 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="services-local-links">
+        <h2>Local support and repairs</h2>
+        <p>See service information created specifically for customers in Stanthorpe and the surrounding region.</p>
+        <a href="{{ route('it-support.stanthorpe') }}">IT Support Stanthorpe</a>
+        <a href="{{ route('computer-repairs.stanthorpe') }}">Computer Repairs Stanthorpe</a>
     </div>
 
 </section>

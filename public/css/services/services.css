@@ -149,6 +149,41 @@
     background-color: #35e0c2;
 }
 
+.services-intro {
+    max-width: 760px;
+    margin: 1rem auto 0;
+    line-height: 1.7;
+    color: #e8f3ff;
+}
+
+.service-seo-copy {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,.12);
+    text-align: left;
+    font-size: .92rem;
+    line-height: 1.6;
+}
+
+.service-seo-copy p { margin-top: 0; }
+.service-seo-copy ul { margin-bottom: 0; padding-left: 1.2rem; }
+
+.services-local-links {
+    max-width: 900px;
+    margin: 3rem auto 0;
+    padding: 2rem;
+    border-radius: 18px;
+    background: #fff;
+    color: #17324d;
+}
+
+.services-local-links a {
+    display: inline-block;
+    margin: .5rem;
+    color: #087a83;
+    font-weight: 600;
+}
+
 /* ==================== EXPANDED CLEAN VIEW ==================== */
 
 /* The main grid disappears in expanded mode */
