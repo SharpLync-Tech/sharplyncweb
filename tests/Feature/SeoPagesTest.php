@@ -40,10 +40,11 @@ class SeoPagesTest extends TestCase
     {
         $this->get('/products/sharpfleet')
             ->assertOk()
-            ->assertSee('SharpFleet SaaS Fleet Management Software | SharpLync')
+            ->assertSee('About SharpFleet | A SharpLync SaaS Product')
             ->assertSee('<link rel="canonical" href="https://sharplync.com.au/products/sharpfleet">', false)
             ->assertSee('SoftwareApplication', false)
-            ->assertSee('Software as a Service', false);
+            ->assertSee('Software as a Service', false)
+            ->assertSee('Open SharpFleet in a new tab', false);
     }
 
     public function test_duplicate_home_url_redirects_permanently(): void

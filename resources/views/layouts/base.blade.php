@@ -113,8 +113,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/sharplync-nav.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/sharplync.css') }}?v={{ @filemtime(public_path('css/sharplync.css')) ?: time() }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/sharplync-nav.css') }}?v={{ @filemtime(public_path('css/sharplync-nav.css')) ?: time() }}">
 
     @stack('styles')
 
@@ -148,12 +148,12 @@
             <a href="/" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
             <a href="/marketing/sharppulse" class="nav-link {{ request()->is('marketing/sharppulse') ? 'nav-active' : '' }}">SharpPulse</a>
             <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
-            <details class="nav-products">
-                <summary class="nav-link {{ request()->is('products/*') ? 'nav-active' : '' }}">Products</summary>
+            <div class="nav-products">
+                <button type="button" class="nav-products-trigger nav-link {{ request()->is('products/*') ? 'nav-active' : '' }}" aria-haspopup="true">Products</button>
                 <div class="nav-products-menu">
                     <a href="{{ route('products.sharpfleet') }}">SharpFleet</a>
                 </div>
-            </details>
+            </div>
         </div>
 
         <!-- RIGHT -->
@@ -252,17 +252,6 @@
             document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
         });
 
-        document.addEventListener('click', (event) => {
-            document.querySelectorAll('.nav-products[open]').forEach(menu => {
-                if (!menu.contains(event.target)) menu.removeAttribute('open');
-            });
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.nav-products[open]').forEach(menu => menu.removeAttribute('open'));
-            }
-        });
     </script>
 
     @stack('scripts')

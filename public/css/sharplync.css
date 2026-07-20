@@ -273,7 +273,7 @@ footer {
 .footer-local-links a:hover,
 .footer-local-links a:focus {
   color: #2CBFAE;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .social-icons img {
   width: 28px; height: 28px;

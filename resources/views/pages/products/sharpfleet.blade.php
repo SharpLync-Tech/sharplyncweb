@@ -1,7 +1,7 @@
 @extends('layouts.base')
 
-@section('title', 'SharpFleet SaaS Fleet Management Software | SharpLync')
-@section('meta_description', 'SharpFleet is SharpLync’s browser-based SaaS fleet management product for trips, logbooks, vehicle bookings, fuel receipts, safety checks, reminders and reports.')
+@section('title', 'About SharpFleet | A SharpLync SaaS Product')
+@section('meta_description', 'Learn about SharpFleet, a fleet management SaaS product created and operated by SharpLync for practical vehicle, equipment and trip records.')
 @section('canonical', rtrim(config('seo.site_url'), '/') . route('products.sharpfleet', [], false))
 
 @push('styles')
@@ -54,19 +54,15 @@
     <header class="sf-product-hero">
         <div class="sf-product-container sf-product-hero-grid">
             <div>
-                <p class="sf-product-eyebrow">A SharpLync SaaS product</p>
+                <p class="sf-product-eyebrow">A product of SharpLync</p>
                 <img class="sf-product-logo" src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet">
-                <h1>Fleet management without GPS tracking, hardware or unnecessary complexity</h1>
-                <p class="sf-product-lead">SharpFleet is browser-based fleet management software for businesses that need clear trip, vehicle, equipment and compliance records—without turning every vehicle into a surveillance device.</p>
-                <div class="sf-product-actions">
-                    <a class="sf-product-button sf-product-button-primary" href="/sharpfleet">Explore SharpFleet</a>
-                    <a class="sf-product-button sf-product-button-secondary" href="/app/sharpfleet/admin/register">Start a free trial</a>
-                </div>
+                <h1>About SharpFleet</h1>
+                <p class="sf-product-lead">SharpFleet is a software-as-a-service product created and operated by SharpLync. It gives organisations a practical way to manage fleet records without requiring GPS tracking or hardware installed in vehicles.</p>
             </div>
             <aside class="sf-product-saas-card">
                 <span>SaaS</span>
                 <h2>Software as a Service</h2>
-                <p>Access SharpFleet through a web browser on phones, tablets and computers. SharpLync operates and improves the software while your team uses one shared system for day-to-day fleet records.</p>
+                <p>SharpFleet is accessed through a web browser on phones, tablets and computers. SharpLync is responsible for the product, its ongoing development and its supporting services.</p>
             </aside>
         </div>
     </header>
@@ -77,9 +73,9 @@
 
     <section class="sf-product-section sf-product-container">
         <div class="sf-product-section-heading">
-            <p class="sf-product-kicker">One connected workspace</p>
-            <h2>What SharpFleet manages</h2>
-            <p>SharpFleet brings the records surrounding vehicles, plant, equipment and drivers into a practical system that can be used by both drivers and administrators.</p>
+            <p class="sf-product-kicker">What it is</p>
+            <h2>A focused fleet record system</h2>
+            <p>SharpFleet brings the everyday records surrounding vehicles, plant, equipment and drivers into one browser-based system. Drivers can record activity as it happens, while authorised administrators can manage the wider fleet and review its records.</p>
         </div>
         <div class="sf-product-feature-grid">
             <section><h3>Trips and logbooks</h3><p>Record business and private trips, purposes, distance and engine hours as work happens.</p></section>
@@ -94,9 +90,9 @@
     <section class="sf-product-section sf-product-section-dark">
         <div class="sf-product-container sf-product-two-column">
             <div>
-                <p class="sf-product-kicker">Designed around trust</p>
-                <h2>No GPS tracking. No installed vehicle hardware.</h2>
-                <p>SharpFleet focuses on useful records and clear workflows rather than continuous driver surveillance. It is designed for organisations that want accountability without introducing unnecessary hardware, monitoring or complexity.</p>
+                <p class="sf-product-kicker">Why it exists</p>
+                <h2>Built around useful records, not surveillance</h2>
+                <p>SharpLync developed SharpFleet for organisations that need better fleet records but do not want the cost, complexity or workplace concerns that can come with continuous GPS monitoring. The product focuses on clear workflows and information people can actually use.</p>
             </div>
             <ul class="sf-product-checklist">
                 <li>Works with cars, utes, trucks, plant and equipment</li>
@@ -110,23 +106,15 @@
 
     <section class="sf-product-section sf-product-container sf-product-two-column">
         <div>
-            <p class="sf-product-kicker">Who it is for</p>
-            <h2>Fleet tools for real-world operations</h2>
-            <p>SharpFleet is suited to trades, service businesses, community organisations and growing teams that share vehicles or equipment and need better records without adopting a large enterprise fleet platform.</p>
+            <p class="sf-product-kicker">Part of SharpLync</p>
+            <h2>One of the products we build and support</h2>
+            <p>SharpFleet has its own name, interface and product website, but it remains a SharpLync product. The same practical approach behind SharpLync’s technology services shapes how SharpFleet is designed, developed and supported.</p>
+            <p>This page explains where SharpFleet fits within SharpLync. Detailed features, current pricing, account registration and product support are available on the dedicated SharpFleet website.</p>
         </div>
         <div class="sf-product-callout">
-            <h3>Already using SharpFleet?</h3>
-            <p>Open the secure application to access your driver or administrator workspace.</p>
-            <a href="/app/sharpfleet/login">Sign in to SharpFleet →</a>
-        </div>
-    </section>
-
-    <section class="sf-product-cta">
-        <div class="sf-product-container">
-            <img src="{{ asset('images/sharpfleet/logo.png') }}" alt="" aria-hidden="true">
-            <h2>See how SharpFleet works</h2>
-            <p>Visit the full SharpFleet product site for feature details, pricing, common questions and account registration.</p>
-            <a class="sf-product-button sf-product-button-primary" href="/sharpfleet">Visit SharpFleet</a>
+            <h3>Visit SharpFleet</h3>
+            <p>Open the dedicated SharpFleet website to learn more about the product.</p>
+            <a href="{{ url('/sharpfleet') }}" target="_blank" rel="noopener noreferrer">Open SharpFleet in a new tab ↗</a>
         </div>
     </section>
 </article>
