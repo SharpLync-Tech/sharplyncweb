@@ -16,10 +16,14 @@
 .sf-product-section-heading { max-width: 800px; }
 .sf-product-section h2 { margin: 0 0 1rem; font-size: clamp(1.9rem, 3.5vw, 2.7rem); }
 .sf-product-section p { font-size: 1.04rem; line-height: 1.8; }
-.sf-product-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin-top: 2.2rem; }
-.sf-product-feature-grid section { padding: 1.5rem; border: 1px solid #dae7ec; border-radius: 15px; background: #fff; box-shadow: 0 8px 24px rgba(11,49,76,.06); }
-.sf-product-feature-grid h3 { margin-top: 0; color: #0a5665; }
-.sf-product-feature-grid p { margin-bottom: 0; font-size: .96rem; }
+.sf-product-pillar-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; margin-top: 2.2rem; }
+.sf-product-pillar { padding: 1.8rem; border: 1px solid #dae7ec; border-radius: 18px; background: #fff; box-shadow: 0 8px 24px rgba(11,49,76,.06); }
+.sf-product-pillar h3 { margin: 0 0 .7rem; color: #0a5665; font-size: 1.55rem; }
+.sf-product-pillar p { font-size: .98rem; }
+.sf-product-pillar .sf-product-pillar-label { margin: 0 0 .5rem; color: #087a83; font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.sf-product-pillar ul { margin: 1.2rem 0 0; padding-left: 1.25rem; line-height: 1.7; }
+.sf-product-pillar li + li { margin-top: .45rem; }
+.sf-product-pillar li::marker { color: #16a99f; }
 .sf-product-section-dark { color: #fff; background: #092846; }
 .sf-product-section-dark p { color: #dcecf4; }
 .sf-product-two-column { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 3rem; align-items: center; }
@@ -30,9 +34,8 @@
 .sf-product-callout a { color: #087a83; text-decoration: none; font-weight: 700; }
 @media (max-width: 820px) {
     .sf-product-hero-grid, .sf-product-two-column { grid-template-columns: 1fr; }
-    .sf-product-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sf-product-pillar-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
     .sf-product-hero { padding: 3.5rem 0 3rem; }
-    .sf-product-feature-grid { grid-template-columns: 1fr; }
 }

@@ -141,9 +141,9 @@ Included topics:
 
 ### `/products/sharpfleet`
 
-Primary intent: explain SharpFleet as a SharpLync software-as-a-service product.
+Primary intent: explain SharpFleet as SharpLync's fleet and job management software-as-a-service product.
 
-The page describes verified product capabilities already represented in the application, including trip and logbook records, distance and engine hours, drivers and vehicles, bookings, fuel receipts, safety checks, reminders and reporting. It uses `SoftwareApplication` and breadcrumb structured data and links to the full SharpFleet product experience and account registration.
+The page explains the two connected parts of the platform. Fleet Management covers trips and logbooks, vehicles, drivers, bookings, costs, safety, compliance, reporting and optional phone-based GPS. Job Management covers customer requests, quotes, scheduling, field updates, time and cost capture, margins, billing review and accounting handoff. Each product can be used independently or both can be used together. The page uses `SoftwareApplication` and breadcrumb structured data and links to the official product website at `https://sharpfleet.com.au`.
 
 ## Recommended next content decisions
 

@@ -44,7 +44,10 @@ class SeoPagesTest extends TestCase
             ->assertSee('<link rel="canonical" href="https://sharplync.com.au/products/sharpfleet">', false)
             ->assertSee('SoftwareApplication', false)
             ->assertSee('Software as a Service', false)
-            ->assertSee('Open SharpFleet in a new tab', false);
+            ->assertSee('Fleet Management', false)
+            ->assertSee('Job Management', false)
+            ->assertSee('href="https://sharpfleet.com.au"', false)
+            ->assertSee('Open sharpfleet.com.au in a new tab', false);
     }
 
     public function test_duplicate_home_url_redirects_permanently(): void

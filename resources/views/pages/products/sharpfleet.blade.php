@@ -1,11 +1,11 @@
 @extends('layouts.base')
 
 @section('title', 'About SharpFleet | A SharpLync SaaS Product')
-@section('meta_description', 'Learn about SharpFleet, a fleet management SaaS product created and operated by SharpLync for practical vehicle, equipment and trip records.')
+@section('meta_description', 'Learn about SharpFleet, SharpLync’s connected fleet and job management SaaS platform for vehicles, field work, customers, scheduling, costs and reporting.')
 @section('canonical', rtrim(config('seo.site_url'), '/') . route('products.sharpfleet', [], false))
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/pages/sharpfleet-product.css') }}">
+<link rel="stylesheet" href="{{ secure_asset('css/pages/sharpfleet-product.css') }}?v={{ @filemtime(public_path('css/pages/sharpfleet-product.css')) ?: time() }}">
 @endpush
 
 @php
@@ -17,21 +17,21 @@
                 '@type' => 'SoftwareApplication',
                 '@id' => $sharpFleetUrl . '#software',
                 'name' => 'SharpFleet',
-                'url' => $sharpFleetUrl,
+                'url' => 'https://sharpfleet.com.au/',
+                'mainEntityOfPage' => $sharpFleetUrl,
                 'applicationCategory' => 'BusinessApplication',
-                'applicationSubCategory' => 'Fleet management software',
+                'applicationSubCategory' => 'Fleet and job management software',
                 'operatingSystem' => 'Any device with a modern web browser',
-                'description' => 'Browser-based SaaS fleet management for trip and logbook records, bookings, receipts, safety checks, reminders and reporting.',
+                'description' => 'A browser-based SaaS platform from SharpLync that connects fleet management and job management while allowing either product to be used independently.',
                 'publisher' => ['@id' => config('seo.business.id')],
                 'featureList' => [
-                    'Trip and logbook records for distance and engine hours',
-                    'Driver, vehicle and equipment management',
-                    'Vehicle and equipment bookings',
-                    'Fuel receipt capture',
-                    'Safety checks and issue reporting',
-                    'Registration and service reminders',
-                    'Operational and compliance reporting',
-                    'No GPS tracking or installed vehicle hardware',
+                    'Fleet trips, logbooks, vehicles, drivers and equipment',
+                    'Fleet bookings, fuel, tolls, safety, compliance and reporting',
+                    'Optional phone-based GPS without installed vehicle hardware',
+                    'Customer requests, jobs, quotes and revisions',
+                    'Technician and vehicle scheduling',
+                    'Field time, photos, receipts, costing and margins',
+                    'Billing review and accounting handoff',
                 ],
             ],
             [
@@ -57,12 +57,12 @@
                 <p class="sf-product-eyebrow">A product of SharpLync</p>
                 <img class="sf-product-logo" src="{{ asset('images/sharpfleet/logo.png') }}" alt="SharpFleet">
                 <h1>About SharpFleet</h1>
-                <p class="sf-product-lead">SharpFleet is a software-as-a-service product created and operated by SharpLync. It gives organisations a practical way to manage fleet records without requiring GPS tracking or hardware installed in vehicles.</p>
+                <p class="sf-product-lead">SharpFleet is a software-as-a-service product created and operated by SharpLync. It connects fleet and job management so organisations can keep vehicles, field work, customers, schedules, costs and reporting in context.</p>
             </div>
             <aside class="sf-product-saas-card">
                 <span>SaaS</span>
                 <h2>Software as a Service</h2>
-                <p>SharpFleet is accessed through a web browser on phones, tablets and computers. SharpLync is responsible for the product, its ongoing development and its supporting services.</p>
+                <p>SharpFleet works in a web browser on phones, tablets and computers. Fleet Management and Job Management can be used independently or together, with optional phone-based GPS available for fleet operations.</p>
             </aside>
         </div>
     </header>
@@ -74,32 +74,54 @@
     <section class="sf-product-section sf-product-container">
         <div class="sf-product-section-heading">
             <p class="sf-product-kicker">What it is</p>
-            <h2>A focused fleet record system</h2>
-            <p>SharpFleet brings the everyday records surrounding vehicles, plant, equipment and drivers into one browser-based system. Drivers can record activity as it happens, while authorised administrators can manage the wider fleet and review its records.</p>
+            <h2>Two areas of work in one connected platform</h2>
+            <p>SharpFleet brings together the operational records surrounding fleets and field jobs. The two products are available independently, so an organisation can start with the area it needs, or use both to connect people, vehicles, customers and work without maintaining separate records.</p>
         </div>
-        <div class="sf-product-feature-grid">
-            <section><h3>Trips and logbooks</h3><p>Record business and private trips, purposes, distance and engine hours as work happens.</p></section>
-            <section><h3>Vehicles and drivers</h3><p>Manage drivers, vehicles, shared assets, permissions and the operational information attached to them.</p></section>
-            <section><h3>Bookings</h3><p>Reserve shared vehicles and equipment so teams can see availability and avoid scheduling conflicts.</p></section>
-            <section><h3>Fuel and receipts</h3><p>Capture fuel information and receipt images against the relevant vehicle and records.</p></section>
-            <section><h3>Safety and faults</h3><p>Use configurable pre-drive checks and record vehicle issues or accidents for administrator follow-up.</p></section>
-            <section><h3>Reminders and reports</h3><p>Track registration and servicing reminders, then produce operational and compliance-focused reports.</p></section>
+
+        <div class="sf-product-pillar-grid">
+            <section class="sf-product-pillar">
+                <p class="sf-product-pillar-label">Vehicles, plant and drivers</p>
+                <h3>Fleet Management</h3>
+                <p>Tools for managing everyday fleet activity, assets, costs and compliance.</p>
+                <ul>
+                    <li>Trips and logbooks, including purpose, distance and engine hours</li>
+                    <li>Vehicles, machinery, drivers, branches and shared assets</li>
+                    <li>Bookings, fuel, tolls, tyres and operating costs</li>
+                    <li>Servicing, registration, insurance and document reminders</li>
+                    <li>Safety checks, fault reporting and compliance records</li>
+                    <li>Reports, exports and optional phone-based GPS tracking</li>
+                </ul>
+            </section>
+
+            <section class="sf-product-pillar">
+                <p class="sf-product-pillar-label">Customers, field work and costs</p>
+                <h3>Job Management</h3>
+                <p>Tools that help office and field teams carry work from request through to billing review.</p>
+                <ul>
+                    <li>Customer requests, jobs, quotes, revisions and acceptance</li>
+                    <li>Visual scheduling for technicians and vehicles</li>
+                    <li>Customer sites, messages, files and portal access</li>
+                    <li>Mobile field updates, time entries, photos and receipts</li>
+                    <li>Labour, travel, materials, costs and margin visibility</li>
+                    <li>Billing review, reports and accounting handoff</li>
+                </ul>
+            </section>
         </div>
     </section>
 
     <section class="sf-product-section sf-product-section-dark">
         <div class="sf-product-container sf-product-two-column">
             <div>
-                <p class="sf-product-kicker">Why it exists</p>
-                <h2>Built around useful records, not surveillance</h2>
-                <p>SharpLync developed SharpFleet for organisations that need better fleet records but do not want the cost, complexity or workplace concerns that can come with continuous GPS monitoring. The product focuses on clear workflows and information people can actually use.</p>
+                <p class="sf-product-kicker">How it fits together</p>
+                <h2>Keep the vehicle and the work in context</h2>
+                <p>When both parts are used together, teams can schedule the people and vehicles required for a job, capture information in the field, and review fleet activity and job costs from one connected platform. Automation can assist with intake and administration while people remain in control of review and approval.</p>
             </div>
             <ul class="sf-product-checklist">
-                <li>Works with cars, utes, trucks, plant and equipment</li>
-                <li>Supports distance and engine-hour records</li>
-                <li>Suitable for shared and pool vehicles</li>
+                <li>Use Fleet Management, Job Management or both</li>
+                <li>Designed for office, field and road-based teams</li>
                 <li>Accessible on phones, tablets and desktops</li>
-                <li>Built for small and growing fleets</li>
+                <li>Optional GPS uses phones rather than installed hardware</li>
+                <li>Suitable for small and growing organisations</li>
             </ul>
         </div>
     </section>
@@ -107,14 +129,14 @@
     <section class="sf-product-section sf-product-container sf-product-two-column">
         <div>
             <p class="sf-product-kicker">Part of SharpLync</p>
-            <h2>One of the products we build and support</h2>
-            <p>SharpFleet has its own name, interface and product website, but it remains a SharpLync product. The same practical approach behind SharpLync’s technology services shapes how SharpFleet is designed, developed and supported.</p>
-            <p>This page explains where SharpFleet fits within SharpLync. Detailed features, current pricing, account registration and product support are available on the dedicated SharpFleet website.</p>
+            <h2>A SharpLync product with its own dedicated website</h2>
+            <p>SharpFleet is a product and trademark of SharpLync Pty Ltd. It has its own name, website and application, while its design, development and supporting services remain part of SharpLync.</p>
+            <p>This page explains the product’s relationship to SharpLync. The dedicated SharpFleet website contains the current feature details and access to the product.</p>
         </div>
         <div class="sf-product-callout">
             <h3>Visit SharpFleet</h3>
-            <p>Open the dedicated SharpFleet website to learn more about the product.</p>
-            <a href="{{ url('/sharpfleet') }}" target="_blank" rel="noopener noreferrer">Open SharpFleet in a new tab ↗</a>
+            <p>Open the official SharpFleet website for full product information.</p>
+            <a href="https://sharpfleet.com.au" target="_blank" rel="noopener noreferrer">Open sharpfleet.com.au in a new tab ↗</a>
         </div>
     </section>
 </article>
