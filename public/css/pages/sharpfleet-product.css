@@ -1,0 +1,46 @@
+.sf-product-page { background: #f5f9fb; color: #17324d; }
+.sf-product-container { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
+.sf-product-hero { padding: 5rem 0 4.5rem; color: #fff; background: radial-gradient(circle at 85% 20%, rgba(44,191,174,.28), transparent 32%), linear-gradient(135deg, #071d37, #0a3157 65%, #075f68); }
+.sf-product-hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(290px, .6fr); gap: 3rem; align-items: center; }
+.sf-product-eyebrow, .sf-product-kicker { margin: 0 0 .8rem; color: #16b8ae; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.sf-product-logo { display: block; width: min(390px, 85%); height: auto; margin: 0 0 1.4rem; }
+.sf-product-hero h1 { max-width: 780px; margin: 0; font-size: clamp(2.2rem, 4.8vw, 3.8rem); line-height: 1.1; }
+.sf-product-lead { max-width: 780px; margin: 1.3rem 0 0; color: #dcecf4; font-size: 1.15rem; line-height: 1.75; }
+.sf-product-actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
+.sf-product-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .75rem 1.3rem; border: 1px solid transparent; border-radius: 10px; font-weight: 700; text-decoration: none; }
+.sf-product-button-primary { background: #20c5b8; color: #06243b; }
+.sf-product-button-secondary { border-color: #8fdad8; color: #fff; background: rgba(255,255,255,.07); }
+.sf-product-saas-card { padding: 2rem; border: 1px solid rgba(255,255,255,.18); border-radius: 20px; background: rgba(255,255,255,.1); backdrop-filter: blur(10px); }
+.sf-product-saas-card > span { display: inline-block; padding: .35rem .65rem; border-radius: 999px; color: #06243b; background: #20c5b8; font-weight: 800; }
+.sf-product-saas-card h2 { margin-bottom: .5rem; }
+.sf-product-saas-card p { margin-bottom: 0; color: #e5f2f6; line-height: 1.7; }
+.sf-product-breadcrumbs { display: flex; flex-wrap: wrap; gap: .55rem; padding-top: 1.25rem; color: #61788b; font-size: .9rem; }
+.sf-product-breadcrumbs a { color: #087a83; text-decoration: none; font-weight: 600; }
+.sf-product-section { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+.sf-product-section-heading { max-width: 800px; }
+.sf-product-section h2, .sf-product-cta h2 { margin: 0 0 1rem; font-size: clamp(1.9rem, 3.5vw, 2.7rem); }
+.sf-product-section p { font-size: 1.04rem; line-height: 1.8; }
+.sf-product-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin-top: 2.2rem; }
+.sf-product-feature-grid section { padding: 1.5rem; border: 1px solid #dae7ec; border-radius: 15px; background: #fff; box-shadow: 0 8px 24px rgba(11,49,76,.06); }
+.sf-product-feature-grid h3 { margin-top: 0; color: #0a5665; }
+.sf-product-feature-grid p { margin-bottom: 0; font-size: .96rem; }
+.sf-product-section-dark { color: #fff; background: #092846; }
+.sf-product-section-dark p { color: #dcecf4; }
+.sf-product-two-column { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 3rem; align-items: center; }
+.sf-product-checklist { margin: 0; padding: 1.7rem 1.7rem 1.7rem 3.2rem; border-radius: 18px; color: #17324d; background: #fff; line-height: 2; }
+.sf-product-checklist li::marker { color: #16a99f; }
+.sf-product-callout { padding: 1.8rem; border-top: 4px solid #20c5b8; border-radius: 16px; background: #fff; box-shadow: 0 10px 30px rgba(11,49,76,.12); }
+.sf-product-callout h3 { margin-top: 0; }
+.sf-product-callout a { color: #087a83; text-decoration: none; font-weight: 700; }
+.sf-product-cta { padding: 4.5rem 0; text-align: center; color: #fff; background: #061a31; }
+.sf-product-cta img { width: min(330px, 75%); height: auto; }
+.sf-product-cta p { max-width: 720px; margin: 0 auto 1.6rem; color: #dcecf4; line-height: 1.7; }
+@media (max-width: 820px) {
+    .sf-product-hero-grid, .sf-product-two-column { grid-template-columns: 1fr; }
+    .sf-product-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+    .sf-product-hero { padding: 3.5rem 0 3rem; }
+    .sf-product-feature-grid { grid-template-columns: 1fr; }
+    .sf-product-actions, .sf-product-button { width: 100%; }
+}

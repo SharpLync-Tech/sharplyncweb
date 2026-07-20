@@ -79,9 +79,9 @@ body {
     width: 100%;
 }
 
-/* TALK TO US → 3 columns */
+/* TALK TO US → responsive card row */
 .contact-info-grid.talk {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 /* CONNECT WITH US → 2 centered wide cards */

@@ -62,7 +62,7 @@
 
             <div class="info-card">
                 <div class="info-icon">
-                    <img src="{{ asset('images/onsite_support.png') }}" alt="Stanthorpe and Granite Belt service area" />
+                    <img src="{{ asset('images/boots.png') }}" alt="On-site support service area" />
                 </div>
                 <h4>Local Service Area</h4>
                 <p>On-site support in Stanthorpe, the Granite Belt and wider Southern Downs by arrangement.</p>

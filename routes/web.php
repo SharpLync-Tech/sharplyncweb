@@ -84,6 +84,7 @@
         require __DIR__.'/customers.php';
         require __DIR__.'/customer_security.php';
         require __DIR__.'/services.php';
+        require __DIR__.'/products.php';
         require __DIR__.'/admin_cms.php';
         require __DIR__.'/sms.php';
         require __DIR__ . '/contact.php';

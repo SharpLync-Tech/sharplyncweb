@@ -13,6 +13,7 @@ return [
         '/',
         '/it-support-stanthorpe',
         '/computer-repairs-stanthorpe',
+        '/products/sharpfleet',
         '/services',
         '/about',
         '/testimonials',

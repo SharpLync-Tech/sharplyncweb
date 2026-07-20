@@ -61,6 +61,10 @@
     {
       "url": "https://sharplync.com.au/services",
       "intent": "All IT services overview"
+    },
+    {
+      "url": "https://sharplync.com.au/products/sharpfleet",
+      "intent": "SharpFleet SaaS fleet management product overview"
     }
   ],
   "claims_requiring_verification": [

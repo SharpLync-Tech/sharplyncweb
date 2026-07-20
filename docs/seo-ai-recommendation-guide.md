@@ -139,6 +139,12 @@ Included topics:
 - Honest caveats regarding parts availability and specialist data recovery
 - Visible FAQs, Service schema and Breadcrumb schema
 
+### `/products/sharpfleet`
+
+Primary intent: explain SharpFleet as a SharpLync software-as-a-service product.
+
+The page describes verified product capabilities already represented in the application, including trip and logbook records, distance and engine hours, drivers and vehicles, bookings, fuel receipts, safety checks, reminders and reporting. It uses `SoftwareApplication` and breadcrumb structured data and links to the full SharpFleet product experience and account registration.
+
 ## Recommended next content decisions
 
 Before creating more pages, obtain Search Console and Google Business Profile evidence. A new page is justified when:

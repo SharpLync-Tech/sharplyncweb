@@ -36,6 +36,16 @@ class SeoPagesTest extends TestCase
         }
     }
 
+    public function test_sharpfleet_product_page_is_indexable_and_describes_the_saas_product(): void
+    {
+        $this->get('/products/sharpfleet')
+            ->assertOk()
+            ->assertSee('SharpFleet SaaS Fleet Management Software | SharpLync')
+            ->assertSee('<link rel="canonical" href="https://sharplync.com.au/products/sharpfleet">', false)
+            ->assertSee('SoftwareApplication', false)
+            ->assertSee('Software as a Service', false);
+    }
+
     public function test_duplicate_home_url_redirects_permanently(): void
     {
         $this->get('/home')->assertRedirect('/')->assertStatus(301);
@@ -63,6 +73,7 @@ class SeoPagesTest extends TestCase
         $this->assertIsString($xml);
         $this->assertStringContainsString('https://sharplync.com.au/it-support-stanthorpe', $xml);
         $this->assertStringContainsString('https://sharplync.com.au/computer-repairs-stanthorpe', $xml);
+        $this->assertStringContainsString('https://sharplync.com.au/products/sharpfleet', $xml);
         $this->assertStringNotContainsString('https://sharplync.com.au/login', $xml);
         $this->assertStringNotContainsString('https://sharplync.com.au/register', $xml);
         $this->assertStringNotContainsString('policies/remote-support', $xml);

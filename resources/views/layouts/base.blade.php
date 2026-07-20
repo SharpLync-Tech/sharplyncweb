@@ -148,6 +148,12 @@
             <a href="/" class="nav-link {{ request()->is('/') ? 'nav-active' : '' }}">Home</a>
             <a href="/marketing/sharppulse" class="nav-link {{ request()->is('marketing/sharppulse') ? 'nav-active' : '' }}">SharpPulse</a>
             <a href="/services" class="nav-link {{ request()->is('services') ? 'nav-active' : '' }}">Services</a>
+            <details class="nav-products">
+                <summary class="nav-link {{ request()->is('products/*') ? 'nav-active' : '' }}">Products</summary>
+                <div class="nav-products-menu">
+                    <a href="{{ route('products.sharpfleet') }}">SharpFleet</a>
+                </div>
+            </details>
         </div>
 
         <!-- RIGHT -->
@@ -172,6 +178,10 @@
             <li><a href="/">Home</a></li>
             <li><a href="/marketing/sharppulse">SharpPulse</a></li>
             <li><a href="/services">Services</a></li>
+            <li class="mobile-products">
+                <span>Products</span>
+                <a href="{{ route('products.sharpfleet') }}">SharpFleet</a>
+            </li>
             <li><a href="/about">About</a></li>
             <li><a href="/testimonials">Testimonials</a></li>
             <li><a href="/contact">Contact</a></li>
@@ -240,6 +250,18 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.fade-section').forEach(section => observer.observe(section));
+        });
+
+        document.addEventListener('click', (event) => {
+            document.querySelectorAll('.nav-products[open]').forEach(menu => {
+                if (!menu.contains(event.target)) menu.removeAttribute('open');
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.nav-products[open]').forEach(menu => menu.removeAttribute('open'));
+            }
         });
     </script>
 
