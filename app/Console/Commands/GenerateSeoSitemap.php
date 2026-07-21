@@ -2,16 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Services\IndexNowService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class GenerateSeoSitemap extends Command
 {
-    protected $signature = 'seo:generate-sitemap';
+    protected $signature = 'seo:generate-sitemap
+        {--indexnow : Notify IndexNow about every URL in the generated sitemap}';
 
     protected $description = 'Generate public/sitemap.xml from the canonical SEO page list';
 
-    public function handle(): int
+    public function handle(IndexNowService $indexNow): int
     {
         $siteUrl = rtrim((string) config('seo.site_url'), '/');
         $paths = array_values(array_unique(config('seo.sitemap', [])));
@@ -31,6 +33,11 @@ class GenerateSeoSitemap extends Command
 
         File::put(public_path('sitemap.xml'), $xml);
         $this->info('Generated sitemap with ' . count($paths) . ' canonical URLs.');
+
+        if ($this->option('indexnow')) {
+            $indexNow->submit($paths);
+            $this->info('Submitted ' . count($paths) . ' URLs to IndexNow.');
+        }
 
         return self::SUCCESS;
     }

@@ -104,6 +104,27 @@ php artisan seo:generate-sitemap
 
 The generated file is `public/sitemap.xml`. Only canonical, indexable, public URLs should be included.
 
+### IndexNow
+
+The IndexNow ownership key is hosted at the site root. Notify participating search
+engines when public pages are added, updated, or deleted:
+
+```shell
+php artisan seo:indexnow /services /contact
+```
+
+Absolute URLs on the canonical `SEO_SITE_URL` host are also accepted. To submit
+the complete canonical sitemap after a broad site release, use either:
+
+```shell
+php artisan seo:indexnow --all
+php artisan seo:generate-sitemap --indexnow
+```
+
+Do not schedule full-sitemap submissions when nothing has changed. The key can be
+rotated with `INDEXNOW_KEY`; its matching `{key}.txt` file must also be deployed
+in `public/`.
+
 ## Implemented landing pages
 
 ### `/it-support-stanthorpe`

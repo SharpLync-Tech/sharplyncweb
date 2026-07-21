@@ -8,6 +8,11 @@ return [
     'default_description' => 'Local IT support for Stanthorpe and the Granite Belt, including computer repairs, Microsoft 365, cybersecurity, Wi-Fi, backups and remote support.',
     'default_image' => '/images/og-sharplync.png',
 
+    'indexnow' => [
+        'endpoint' => env('INDEXNOW_ENDPOINT', 'https://api.indexnow.org/indexnow'),
+        'key' => env('INDEXNOW_KEY', 'f7f209737ebe442c9308fc82aef471b2'),
+    ],
+
     // Canonical, public pages emitted by `php artisan seo:generate-sitemap`.
     'sitemap' => [
         '/',
