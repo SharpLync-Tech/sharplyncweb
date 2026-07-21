@@ -10,7 +10,7 @@
     <div style="max-width:900px;margin:0 auto;padding:0 20px;">
         <h1 style="margin-bottom:8px;color:#ffffff;">SharpPulse</h1>
         <p style="color:#ffffff;margin-bottom:28px;">
-            Latest updates and announcements from SharpLync and SharpFleet.
+            Practical IT insights, cybersecurity advice, and the latest updates from SharpLync and SharpFleet.
         </p>
 
         @forelse($emails as $email)
